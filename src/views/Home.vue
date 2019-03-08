@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>{{msg}}</h1>
-  </div>
+  <h1>{{msg}}</h1>
 </template>
 
 <script>
@@ -14,9 +12,9 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 h1 {
-  top: 30px;
+  top: 50px;
   position: fixed;
   color: #ffffff;
 }

@@ -1,40 +1,37 @@
 <template>
   <v-app>
     <v-toolbar app>
-      <v-toolbar-side-icon></v-toolbar-side-icon>
       <img alt="Agence Bio logo" :src="require('../src/assets/agence-bio.png')" class="logo">
       <v-toolbar-title>CartoBIO</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat href="#home" @click="$refs.fullpage.api.moveTo('home')">Home</v-btn>
-        <v-btn flat href="#problem" @click="$refs.fullpage.api.moveTo('problem')">Problem</v-btn>
-        <v-btn flat href="#about" @click="$refs.fullpage.api.moveTo('about')">About</v-btn>
-        <v-btn flat href="#partners" @click="$refs.fullpage.api.moveTo('partners')">Partners</v-btn>
+        <v-btn flat href="#home" @click="$refs.fullpage.api.moveTo('home')">Accueil</v-btn>
+        <v-btn flat href="#problem" @click="$refs.fullpage.api.moveTo('problem')">Objectif</v-btn>
+        <v-btn flat href="#about" @click="$refs.fullpage.api.moveTo('about')">L'équipe</v-btn>
+        <v-btn flat href="#partners" @click="$refs.fullpage.api.moveTo('partners')">Partenaires</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <full-page ref="fullpage" :options="options" id="fullpage">
-        <div class="section" id="section-1">
-          <div class="section-container centered">
-            <Home msg="Welcome to CartoBIO"/>
-          </div>
+      <div class="section" id="section-1">
+        <div class="section-container centered">
+          <Home msg="Welcome to CartoBIO"/>
         </div>
-        <div class="section" id="section-2">
-          <div class="section-container centered">
-            <Problem/>
-          </div>
+      </div>
+      <div class="section" id="section-2">
+        <div class="section-container centered">
+          <Problem/>
         </div>
-        <div class="section">
-          <div class="section-container centered">
-            <About/>
-          </div>
+      </div>
+      <div class="section">
+        <div class="section-container centered">
+          <About/>
         </div>
-        <div class="section">
-          <div class="section-container centered">
-            <Partners/>
-          </div>
+      </div>
+      <div class="section">
+        <div class="section-container centered">
+          <Partners/>
         </div>
-      </full-page>
+      </div>
     </v-content>
     <!-- <v-footer app></v-footer> -->
   </v-app>

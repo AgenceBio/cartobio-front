@@ -1,7 +1,6 @@
 import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
-import './plugins/fullpage.js'
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 

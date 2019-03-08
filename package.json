@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "vue": "^2.6.6",
-    "vue-fullpage.js": "^0.1.2",
     "vue-mdc-adapter": "^0.15.0",
     "vue-router": "^3.0.1",
     "vuetify": "^1.5.5"
