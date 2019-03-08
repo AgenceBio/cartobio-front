@@ -1,24 +1,115 @@
 <template>
-  <div class="about">
-    <div class="mdc-card">
-      <div class="mdc-card__media mdc-card__media--square">
-        <div class="mdc-card__media-content">Entrepreneur d'intérêt général</div>
-      </div>
-      <!-- ... additional primary action content ... -->
-      <div class="mdc-card__actions">
-        <div class="mdc-card__action-buttons">
-          <button class="mdc-button mdc-card__action mdc-card__action--button">
-            <span class="mdc-button__label">EIG</span>
-          </button>
-          <button class="mdc-button mdc-card__action mdc-card__action--button">
-            <span class="mdc-button__label">Etalab</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-container grid-list-xl>
+    <h1>Qui sommes nous ?</h1>
+    <div
+      class="subheading text-xs-center mx-5 my-3"
+    >Nous sommes deux Entrepreneurs d'Intérêt Général, présents à l'Agence BIO pour 10 mois</div>
+    <v-layout row wrap justify-center>
+      <v-flex xs12 sm4>
+        <v-card class="elevation-0 transparent">
+          <v-avatar :size="100">
+            <img :src="require('../assets/wojtek-sitarz.png')">
+          </v-avatar>
+          <v-card-title primary-title class="layout justify-center">
+            <div>
+              <div class="headline">Wojtek sitarz</div>
+              <span class="grey--text">Géomaticien</span>
+            </div>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat icon href="mailto:wojtek.sitarz@agencebio.org">
+              <v-icon class="blue--text text--lighten-2">email</v-icon>
+            </v-btn>
+            <v-btn flat icon href="https://www.linkedin.com/in/wojtek-sitarz/" target="_blank">
+              <v-icon class="blue--text text--lighten-2">fab fa-linkedin</v-icon>
+            </v-btn>
+            <v-btn flat icon href="https://github.com/wojteksitarz" target="_blank">
+              <v-icon class="blue--text text--lighten-2">fab fa-github</v-icon>
+            </v-btn>
+            <v-btn
+              flat
+              icon
+              href="https://entrepreneur-interet-general.etalab.gouv.fr/communaute/2019/wojtek-sitarz.html"
+              target="_blank"
+            >
+              <v-icon class="icon-eig">eig</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 sm4 offset-sm1>
+        <v-card class="elevation-0 transparent">
+          <v-avatar :size="100">
+            <img :src="require('../assets/lucas-bchini.png')">
+          </v-avatar>
+          <v-card-title primary-title class="layout justify-center">
+            <div>
+              <div class="headline">Lucas Bchini</div>
+              <span class="grey--text">Développeur</span>
+            </div>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat icon href="mailto:lucas.bchini@agencebio.org">
+              <v-icon class="blue--text text--lighten-2">email</v-icon>
+            </v-btn>
+            <v-btn
+              flat
+              icon
+              href="https://www.linkedin.com/in/lucas-bchini-9b1a09a8/"
+              target="_blank"
+            >
+              <v-icon class="blue--text text--lighten-2">fab fa-linkedin</v-icon>
+            </v-btn>
+            <v-btn flat icon href="https://github.com/Hold7" target="_blank">
+              <v-icon class="blue--text text--lighten-2">fab fa-github</v-icon>
+            </v-btn>
+            <v-btn
+              flat
+              icon
+              href="https://entrepreneur-interet-general.etalab.gouv.fr/communaute/2019/lucas-bchini.html"
+              target="_blank"
+            >
+              <v-icon class="icon-eig">eig</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+      <v-flex
+        xs12
+        sm4
+        class="subheading text-xs-center my-3"
+      >Nous sommes également accompagnés par nos mentors:
+        <v-card class="elevation-0 transparent">
+          <v-card-title primary-title class="layout justify-center">
+            <div>
+              <div class="headline">Samir Kebli</div>
+              <span class="grey--text">Responsable SI à l'agence BIO</span>
+            </div>
+          </v-card-title>
+        </v-card>
+        <v-card class="elevation-0 transparent">
+          <v-card-title primary-title class="layout justify-center">
+            <div>
+              <div class="headline">Dorian Fléchet</div>
+              <span class="grey--text">Chargé de l'observatoire national de l'agriculture biologique</span>
+            </div>
+          </v-card-title>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 sm4 offset-sm1>
+        <v-card class="elevation-0 transparent">
+          <v-card-title primary-title class="layout justify-center">
+            <div class="headline">Contactez nous!</div>
+          </v-card-title>
+          <v-card-text>10 mois, c'est court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet</v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 <style lang="scss" scoped>
-@import "@material/card/mdc-card";
-@import "@material/button/mdc-button";
 </style>

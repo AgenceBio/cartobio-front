@@ -1,5 +1,7 @@
 <template>
-  <h1>{{msg}}</h1>
+  <v-layout column align-center justify-center class="white--text">
+    <h1>{{msg}}</h1>
+  </v-layout>
 </template>
 
 <script>
@@ -13,9 +15,4 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-h1 {
-  top: 50px;
-  position: fixed;
-  color: #ffffff;
-}
 </style>

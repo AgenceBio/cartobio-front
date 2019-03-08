@@ -5,35 +5,41 @@
       <v-toolbar-title>CartoBIO</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat href="#home" @click="$refs.fullpage.api.moveTo('home')">Accueil</v-btn>
-        <v-btn flat href="#problem" @click="$refs.fullpage.api.moveTo('problem')">Objectif</v-btn>
-        <v-btn flat href="#about" @click="$refs.fullpage.api.moveTo('about')">L'équipe</v-btn>
-        <v-btn flat href="#partners" @click="$refs.fullpage.api.moveTo('partners')">Partenaires</v-btn>
+        <v-btn flat href="#/home" @click="$vuetify.goTo('#home', options)">Accueil</v-btn>
+        <v-btn flat href="#/problem" @click="$vuetify.goTo('#problem', options)">Objectif</v-btn>
+        <v-btn flat href="#/about" @click="$vuetify.goTo('#about', options)">L'équipe</v-btn>
+        <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners', options)">Partenaires</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <div class="section" id="section-1">
-        <div class="section-container centered">
-          <Home msg="Welcome to CartoBIO"/>
-        </div>
-      </div>
-      <div class="section" id="section-2">
-        <div class="section-container centered">
+      <section id="home">
+        <v-parallax
+          :src="require('../src/assets/Campagne-les-Boulonnais_-_Vue_aérienne.jpg')"
+          height="400"
+        >
+          <Home msg="Bienvenue sur CartoBIO"/>
+        </v-parallax>
+      </section>
+      <section id="problem">
+        <v-layout column wrap class="my-5" align-center>
           <Problem/>
-        </div>
-      </div>
-      <div class="section">
-        <div class="section-container centered">
+        </v-layout>
+      </section>
+      <section id="parallax">
+        <v-parallax :src="require('../src/assets/bio-free.jpg')" height="400"></v-parallax>
+      </section>
+      <section id="about">
+        <v-layout column wrap class="my-5" align-center>
           <About/>
-        </div>
-      </div>
-      <div class="section">
-        <div class="section-container centered">
+        </v-layout>
+      </section>
+      <section id="partners">
+        <v-layout column wrap class="my-5" align-center>
           <Partners/>
-        </div>
-      </div>
+        </v-layout>
+      </section>
     </v-content>
-    <!-- <v-footer app></v-footer> -->
+    <v-footer></v-footer>
   </v-app>
 </template>
 
@@ -53,20 +59,12 @@ export default {
     Partners
   },
   data() {
-    return {
-      options: {
-        anchors: ["home", "problem", "about", "partners"],
-        sectionsColor: ["#ffffff", "#ffffff", "#ffffff", "#ffffff"],
-        controlArrows: true
-      }
-    };
+    return {};
   }
 };
 </script>
 
 <style lang="scss">
-@import "/fullpage.js/dist/fullpage.min.css";
-@import "@material/toolbar/mdc-toolbar";
 * {
   margin: 0;
   padding: 0;
@@ -76,9 +74,8 @@ a {
   color: white;
 }
 
-.section {
+section {
   text-align: center;
-  background-size: cover;
 }
 
 .logo {
@@ -89,18 +86,16 @@ a {
   height: calc(100% - 70px);
 }
 
-#section-1 {
-  background-image: url("assets/Campagne-les-Boulonnais_-_Vue_aérienne.jpg");
-}
-
-#section-2 {
-  background-image: url("assets/bio-free.jpg");
-}
-
 .centered {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
+}
+
+.icon-eig {
+  background-image: url("../src/assets/eig.png");
+  background-position: center;
+  background-size: 24px;
 }
 </style>
