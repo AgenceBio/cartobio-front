@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <v-toolbar app>
-      <img alt="Agence Bio logo" :src="require('../src/assets/agence-bio.png')" class="logo">
+      <a href="https://www.agencebio.org/" target="_blank">
+        <img alt="Agence Bio logo" :src="require('../src/assets/agence-bio.png')" class="logo">
+      </a>
       <v-toolbar-title>CartoBIO</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
@@ -33,13 +35,10 @@
           <About/>
         </v-layout>
       </section>
-      <section id="partners">
-        <v-layout column wrap class="my-5" align-center>
-          <Partners/>
-        </v-layout>
-      </section>
     </v-content>
-    <v-footer></v-footer>
+    <v-footer id="partners" height="auto" color="#bbbbbb">
+      <Partners/>
+    </v-footer>
   </v-app>
 </template>
 

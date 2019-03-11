@@ -12,7 +12,7 @@
           </v-avatar>
           <v-card-title primary-title class="layout justify-center">
             <div>
-              <div class="headline">Wojtek sitarz</div>
+              <div class="headline">Wojtek Sitarz</div>
               <span class="grey--text">Géomaticien</span>
             </div>
           </v-card-title>
@@ -100,12 +100,26 @@
           </v-card-title>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm4 offset-sm1>
-        <v-card class="elevation-0 transparent">
+      <v-flex xs12 sm4 offset-sm1 align-content-space-around class="mt-3">
+        <v-btn
+          outline
+          class="blue--text"
+          href="https://entrepreneur-interet-general.etalab.gouv.fr/"
+          target="_blank"
+        >En savoir plus sur le programme EIG</v-btn>
+
+        <v-card class="elevation-0 transparent mt-4">
           <v-card-title primary-title class="layout justify-center">
-            <div class="headline">Contactez nous!</div>
+            <div>
+              <div>10 mois, c'est court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet</div>
+              <v-btn
+                round
+                color="primary"
+                dark
+                href="mailto:lucas.bchini@agencebio.org,wojtek.sitarz@agencebio.org"
+              >Contactez nous!</v-btn>
+            </div>
           </v-card-title>
-          <v-card-text>10 mois, c'est court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet</v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
