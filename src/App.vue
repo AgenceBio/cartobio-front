@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
         <v-btn flat href="#/home" @click="$vuetify.goTo('#home', options)">Accueil</v-btn>
-        <v-btn flat href="#/problem" @click="$vuetify.goTo('#problem', options)">Objectif</v-btn>
+        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#problem', options)">Objectifs</v-btn>
         <v-btn flat href="#/about" @click="$vuetify.goTo('#about', options)">L'équipe</v-btn>
         <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners', options)">Partenaires</v-btn>
       </v-toolbar-items>

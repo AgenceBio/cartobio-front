@@ -1,13 +1,23 @@
 <template>
   <div>
-    <h1>Objectif :</h1>
-    <div class="subheading text-xs-center mx-5 my-3">
-      Faciliter l’échange de données entre les différents acteurs administratifs ou délégataires d’un service public
-      dans le domaine de l’agriculture biologique
-    </div>
+    <h1>Objectifs :</h1>
+    <div
+      class="subheading text-xs-center mx-5 my-3"
+    >CartoBIO répond à plusieurs objectifs et problématiques observées lors de rencontres avec différents acteurs de l'Agriculture Biologique en France</div>
     <v-flex xs12>
       <v-container grid-list-xl>
         <v-layout row wrap align-center>
+          <v-flex xs12 md4>
+            <v-card class="elevation-0 transparent">
+              <v-card-text class="text-xs-center">
+                <v-icon x-large class="blue--text text--lighten-2">map</v-icon>
+              </v-card-text>
+              <v-card-title primary-title class="layout justify-center">
+                <div class="headline">Cartographie des parcelles en agriculture biologique</div>
+              </v-card-title>
+              <v-card-text>Cartographier les parcelles conduites en agriculture biologique pour constituer et diffuser une base de données fiable et à jour de l'agriculture biologique en France.</v-card-text>
+            </v-card>
+          </v-flex>
           <v-flex xs12 md4>
             <v-card class="elevation-0 transparent">
               <v-card-text class="text-xs-center">
@@ -16,18 +26,7 @@
               <v-card-title primary-title class="layout justify-center">
                 <div class="headline text-xs-center">Échange de données</div>
               </v-card-title>
-              <v-card-text>Permettre aux différentes administrations d'échanger des données nécessaire à la réalisation de leurs missions sans les redemander aux agriculteurs.</v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 md4>
-            <v-card class="elevation-0 transparent">
-              <v-card-text class="text-xs-center">
-                <v-icon x-large class="blue--text text--lighten-2">flash_on</v-icon>
-              </v-card-text>
-              <v-card-title primary-title class="layout justify-center">
-                <div class="headline">Développement rapide</div>
-              </v-card-title>
-              <v-card-text>Notre but est de co-construire avec les différents acteurs une plateforme adaptée à leurs besoins au cours de l'année, et de réfléchir à des solution de pérénnisation du projet.</v-card-text>
+              <v-card-text>Permettre aux différentes organisations d'échanger les données nécessaire à la réalisation de leurs missions sans les redemander aux agriculteurs.</v-card-text>
             </v-card>
           </v-flex>
           <v-flex xs12 md4>
@@ -38,7 +37,7 @@
               <v-card-title primary-title class="layout justify-center">
                 <div class="headline text-xs-center">Open Source</div>
               </v-card-title>
-              <v-card-text>Le code de l'application sera déposé sur GitHub. Les données publiques de l'agence Bio et des différents organismes seront publiées de manière anonyme dans le cadre de la loi Lemaire sur une République Numérique.</v-card-text>
+              <v-card-text>Le code de l'application sera déposé sur GitHub. Les données publiques de l'Agence Bio et des différents organismes seront publiées de manière anonyme, dans le respect du RGPD et de la loi pour une république numérique.</v-card-text>
             </v-card>
           </v-flex>
         </v-layout>

@@ -5,7 +5,7 @@
       class="subheading text-xs-center mx-5 my-3"
     >Nous sommes deux Entrepreneurs d'Intérêt Général, présents à l'Agence BIO pour 10 mois</div>
     <v-layout row wrap justify-center>
-      <v-flex xs12 sm4>
+      <v-flex xs12 md4>
         <v-card class="elevation-0 transparent">
           <v-avatar :size="100">
             <img :src="require('../assets/wojtek-sitarz.png')">
@@ -39,7 +39,7 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm4 offset-sm1>
+      <v-flex xs12 md4 offset-md1>
         <v-card class="elevation-0 transparent">
           <v-avatar :size="100">
             <img :src="require('../assets/lucas-bchini.png')">
@@ -80,14 +80,14 @@
       </v-flex>
       <v-flex
         xs12
-        sm4
+        md4
         class="subheading text-xs-center my-3"
       >Nous sommes également accompagnés par nos mentors:
         <v-card class="elevation-0 transparent">
           <v-card-title primary-title class="layout justify-center">
             <div>
               <div class="headline">Samir Kebli</div>
-              <span class="grey--text">Responsable SI à l'agence BIO</span>
+              <span class="grey--text">Responsable SI à l'Agence BIO</span>
             </div>
           </v-card-title>
         </v-card>
@@ -100,7 +100,7 @@
           </v-card-title>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm4 offset-sm1 align-content-space-around class="mt-3">
+      <v-flex xs12 md4 offset-md1 align-content-space-around class="mt-3">
         <v-btn
           outline
           class="blue--text"
@@ -111,12 +111,13 @@
         <v-card class="elevation-0 transparent mt-4">
           <v-card-title primary-title class="layout justify-center">
             <div>
-              <div>10 mois, c'est court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet</div>
+              <div>10 mois, c'est (très) court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet.</div>
               <v-btn
                 round
                 color="primary"
+                class="mt-3"
                 dark
-                href="mailto:lucas.bchini@agencebio.org,wojtek.sitarz@agencebio.org"
+                href="mailto:cartobio@agencebio.org"
               >Contactez nous!</v-btn>
             </div>
           </v-card-title>
