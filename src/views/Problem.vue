@@ -43,6 +43,10 @@
         </v-layout>
       </v-container>
     </v-flex>
+    <!-- <v-divider></v-divider>
+    <v-container>
+      <h1>Bénéfices</h1>
+    </v-container>-->
   </div>
 </template>
 <style scoped>
