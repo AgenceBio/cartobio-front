@@ -1,5 +1,8 @@
 <template>
   <v-layout column align-center justify-center class="white--text">
+    <v-avatar :size="100">
+      <img :src="require('../assets/logo-cartobio.png')">
+    </v-avatar>
     <h1 class="parallax-title">{{msg}}</h1>
   </v-layout>
 </template>

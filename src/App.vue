@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-toolbar app>
+    <v-toolbar app color="#b9d065">
       <a href="https://www.agencebio.org/" target="_blank">
         <img alt="Agence Bio logo" :src="require('../src/assets/agence-bio.png')" class="logo">
       </a>
@@ -33,7 +33,7 @@
         </v-layout>
       </section>
     </v-content>
-    <v-footer id="partners" height="auto" color="#bbbbbb">
+    <v-footer id="partners" height="auto" color="#b9d065">
       <Partners/>
     </v-footer>
   </v-app>
@@ -93,5 +93,14 @@ section {
   background-image: url("../src/assets/eig.png");
   background-position: center;
   background-size: 24px;
+}
+
+.v-icon.bio-green.theme--light {
+  color: #b9d065;
+}
+
+.primary-green {
+  background-color: #b9d065 !important;
+  border-color: #b9d065 !important;
 }
 </style>

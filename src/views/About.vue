@@ -19,13 +19,13 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat icon href="mailto:wojtek.sitarz@agencebio.org">
-              <v-icon class="blue--text text--lighten-2">email</v-icon>
+              <v-icon class="bio-green">email</v-icon>
             </v-btn>
             <v-btn flat icon href="https://www.linkedin.com/in/wojtek-sitarz/" target="_blank">
-              <v-icon class="blue--text text--lighten-2">fab fa-linkedin</v-icon>
+              <v-icon class="bio-green">fab fa-linkedin</v-icon>
             </v-btn>
             <v-btn flat icon href="https://github.com/wojteksitarz" target="_blank">
-              <v-icon class="blue--text text--lighten-2">fab fa-github</v-icon>
+              <v-icon class="bio-green">fab fa-github</v-icon>
             </v-btn>
             <v-btn
               flat
@@ -53,7 +53,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat icon href="mailto:lucas.bchini@agencebio.org">
-              <v-icon class="blue--text text--lighten-2">email</v-icon>
+              <v-icon class="bio-green">email</v-icon>
             </v-btn>
             <v-btn
               flat
@@ -61,10 +61,10 @@
               href="https://www.linkedin.com/in/lucas-bchini-9b1a09a8/"
               target="_blank"
             >
-              <v-icon class="blue--text text--lighten-2">fab fa-linkedin</v-icon>
+              <v-icon class="bio-green">fab fa-linkedin</v-icon>
             </v-btn>
             <v-btn flat icon href="https://github.com/Hold7" target="_blank">
-              <v-icon class="blue--text text--lighten-2">fab fa-github</v-icon>
+              <v-icon class="bio-green">fab fa-github</v-icon>
             </v-btn>
             <v-btn
               flat
@@ -103,7 +103,6 @@
       <v-flex xs12 md4 offset-md1 align-content-space-around class="mt-3">
         <v-btn
           outline
-          class="blue--text"
           href="https://entrepreneur-interet-general.etalab.gouv.fr/"
           target="_blank"
         >En savoir plus sur le programme EIG</v-btn>
@@ -114,7 +113,7 @@
               <div>10 mois, c'est (très) court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet.</div>
               <v-btn
                 round
-                color="primary"
+                color="primary-green"
                 class="mt-3"
                 dark
                 href="mailto:cartobio@agencebio.org"
