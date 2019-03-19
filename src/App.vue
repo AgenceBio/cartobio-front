@@ -103,4 +103,7 @@ section {
   background-color: #b9d065 !important;
   border-color: #b9d065 !important;
 }
+.primary-green--text {
+  color: #b9d065 !important;
+}
 </style>
