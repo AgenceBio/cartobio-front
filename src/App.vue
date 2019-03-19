@@ -15,10 +15,7 @@
     </v-toolbar>
     <v-content>
       <section id="home">
-        <v-parallax
-          :src="require('../src/assets/Campagne-les-Boulonnais_-_Vue_aérienne.jpg')"
-          height="400"
-        >
+        <v-parallax :src="require('../src/assets/coquelicots.jpg')" height="400">
           <Home msg="Bienvenue sur CartoBIO"/>
         </v-parallax>
       </section>
@@ -28,7 +25,7 @@
         </v-layout>
       </section>
       <section id="parallax">
-        <v-parallax :src="require('../src/assets/bio-free.jpg')" height="400"></v-parallax>
+        <v-parallax :src="require('../src/assets/coquelicots.jpg')" height="400"></v-parallax>
       </section>
       <section id="about">
         <v-layout column wrap class="my-5" align-center>

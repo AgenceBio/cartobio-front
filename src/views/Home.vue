@@ -1,6 +1,6 @@
 <template>
   <v-layout column align-center justify-center class="white--text">
-    <h1>{{msg}}</h1>
+    <h1 class="parallax-title">{{msg}}</h1>
   </v-layout>
 </template>
 
@@ -14,5 +14,9 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
+.parallax-title {
+  font-size: 36px;
+}
 </style>

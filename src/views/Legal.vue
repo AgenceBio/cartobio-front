@@ -53,12 +53,13 @@ export default {
             },
             {
               label: "Photos",
-              text: "Photos libres de droit. Plus d'infos à venir"
+              text:
+                "Concours Photos 2013 de l'Agence Bio - Bazoches ferme bio - Crédit : Patricia SPANIOL"
             },
             {
               label: "Utilisation du site",
               text:
-                "Ce site est temporaire est a une vocation purement informative autour du projet CartoBIO."
+                "Ce site est temporaire et a une vocation purement informative autour du projet CartoBIO."
             }
           ]
         },
