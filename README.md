@@ -1,4 +1,5 @@
-# app
+# CartoBio-Presentation
+Static website presenting CartoBio Project
 
 ## Project setup
 ```
