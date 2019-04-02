@@ -25,7 +25,30 @@
         </v-layout>
       </section>
       <section id="parallax">
-        <v-parallax :src="require('../src/assets/coquelicots.jpg')" height="400"></v-parallax>
+        <v-parallax :src="require('../src/assets/coquelicots.jpg')" height="400">
+          <v-layout align-center column justify-center>
+            <div>
+              <v-card>
+                <v-card-title primary-title>
+                  <div>
+                    <div class="headline">Démo</div>
+                    <span class="grey--text">Petite application avec des fonctionnalités réduites</span>
+                  </div>
+                </v-card-title>
+                <v-card-actions>
+                  <v-layout align-center column justify-center>
+                    <v-btn
+                      large
+                      color="#b9d065"
+                      href="http://cartobio.org:8090/#/"
+                      target="_blank"
+                    >Go</v-btn>
+                  </v-layout>
+                </v-card-actions>
+              </v-card>
+            </div>
+          </v-layout>
+        </v-parallax>
       </section>
       <section id="about">
         <v-layout column wrap class="my-5" align-center>
