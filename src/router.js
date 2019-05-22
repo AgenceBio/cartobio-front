@@ -1,14 +1,30 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import App from './App.vue'
-
+import Home from './views/Home.vue'
+import Map from './views/Map.vue'
 Vue.use(Router)
 
 export default new Router({
   routes: [{
       path: '/',
-      name: 'app',
-      component: App
+      name: 'home',
+      component: Home,
+      children: [{
+          path: 'title'
+        },
+        {
+          path: 'objectives'
+        }, {
+          path: 'about'
+        }, {
+          path: 'partners'
+        }
+      ]
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: Map
     }
     // {
     //   path: '/about',

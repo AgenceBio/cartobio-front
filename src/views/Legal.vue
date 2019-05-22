@@ -17,7 +17,7 @@
 
 <script>
 // @ is an alias to /src
-import LegalItem from "@/views/LegalItem";
+import LegalItem from "@/components/LegalItem";
 export default {
   name: "Legal",
   components: { LegalItem },

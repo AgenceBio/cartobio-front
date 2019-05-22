@@ -1,25 +1,130 @@
 <template>
-  <v-layout column align-center justify-center class="white--text">
-    <v-avatar :size="100">
-      <img :src="require('../assets/logo-cartobio.png')">
-    </v-avatar>
-    <h1 class="parallax-title">{{msg}}</h1>
-  </v-layout>
+  <div>
+    <v-toolbar app color="#b9d065">
+      <a href="https://www.agencebio.org/" target="_blank">
+        <img alt="Agence Bio logo" :src="require('../../src/assets/agence-bio.png')" class="logo">
+      </a>
+      <v-toolbar-title>CartoBIO</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat href="#/title" @click="$vuetify.goTo('#title')">Accueil</v-btn>
+        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#problem')">Objectifs</v-btn>
+        <v-btn flat href="#/about" @click="$vuetify.goTo('#about')">L'équipe</v-btn>
+        <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners')">Partenaires</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <v-content>
+      <section id="title">
+        <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
+          <Title msg="Bienvenue sur CartoBIO"/>
+        </v-parallax>
+      </section>
+      <section id="problem">
+        <v-layout column wrap class="my-5" align-center>
+          <Problem/>
+        </v-layout>
+      </section>
+      <section id="parallax">
+        <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
+          <v-layout align-center column justify-center>
+            <div>
+              <v-card>
+                <v-card-title primary-title>
+                  <div>
+                    <div class="headline">Démo</div>
+                    <span class="grey--text">Petite application avec des fonctionnalités réduites</span>
+                  </div>
+                </v-card-title>
+                <v-card-actions>
+                  <v-layout align-center column justify-center>
+                    <router-link to="/map">
+                      <v-btn large color="#b9d065">Go</v-btn>
+                    </router-link>
+                  </v-layout>
+                </v-card-actions>
+              </v-card>
+            </div>
+          </v-layout>
+        </v-parallax>
+      </section>
+      <section id="about">
+        <v-layout column wrap class="my-5" align-center>
+          <About/>
+        </v-layout>
+      </section>
+    </v-content>
+    <v-footer id="partners" height="auto" color="#b9d065">
+      <Partners/>
+    </v-footer>
+  </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import Title from "@/views/Title";
+import About from "@/views/About";
+import Problem from "@/views/Problem";
+import Partners from "@/components/Partners";
+
 export default {
   name: "Home",
-  components: {},
-  props: {
-    msg: String
+  components: {
+    Title,
+    Problem,
+    About,
+    Partners
+  },
+  data() {
+    return {};
   }
 };
 </script>
 
-<style lang="scss" scoped>
-.parallax-title {
-  font-size: 36px;
+<style lang="scss">
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+section {
+  text-align: center;
+}
+
+.logo {
+  height: 40px;
+}
+
+.section-container {
+  height: calc(100% - 70px);
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-eig {
+  background-image: url("../../src/assets/eig.png");
+  background-position: center;
+  background-size: 24px;
+}
+
+.v-icon.bio-green.theme--light {
+  color: #b9d065;
+}
+
+.primary-green {
+  background-color: #b9d065 !important;
+  border-color: #b9d065 !important;
+}
+.primary-green--text {
+  color: #b9d065 !important;
 }
 </style>
