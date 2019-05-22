@@ -1,19 +1,6 @@
 <template>
   <div>
-    <v-toolbar app color="#b9d065">
-      <a href="https://www.agencebio.org/" target="_blank">
-        <img alt="Agence Bio logo" :src="require('../../src/assets/agence-bio.png')" class="logo">
-      </a>
-      <v-toolbar-title>CartoBIO</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat href="#/title" @click="$vuetify.goTo('#title')">Accueil</v-btn>
-        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#objectives')">Objectifs</v-btn>
-        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#demo')">Démo</v-btn>
-        <v-btn flat href="#/about" @click="$vuetify.goTo('#about')">L'équipe</v-btn>
-        <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners')">Partenaires</v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
+    <HomeNavbar></HomeNavbar>
     <v-content>
       <section id="title">
         <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
@@ -62,6 +49,7 @@
 
 <script>
 // @ is an alias to /src
+import HomeNavbar from "@/components/HomeNavbar";
 import Title from "@/views/Title";
 import About from "@/views/About";
 import Problem from "@/views/Problem";
@@ -70,6 +58,7 @@ import Partners from "@/components/Partners";
 export default {
   name: "Home",
   components: {
+    HomeNavbar,
     Title,
     Problem,
     About,
@@ -90,10 +79,6 @@ export default {
 a {
   color: white;
   text-decoration: none;
-}
-
-section {
-  text-align: center;
 }
 
 .logo {
