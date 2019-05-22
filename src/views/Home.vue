@@ -8,7 +8,8 @@
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
         <v-btn flat href="#/title" @click="$vuetify.goTo('#title')">Accueil</v-btn>
-        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#problem')">Objectifs</v-btn>
+        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#objectives')">Objectifs</v-btn>
+        <v-btn flat href="#/objectives" @click="$vuetify.goTo('#demo')">Démo</v-btn>
         <v-btn flat href="#/about" @click="$vuetify.goTo('#about')">L'équipe</v-btn>
         <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners')">Partenaires</v-btn>
       </v-toolbar-items>
@@ -19,12 +20,12 @@
           <Title msg="Bienvenue sur CartoBIO"/>
         </v-parallax>
       </section>
-      <section id="problem">
+      <section id="objectives">
         <v-layout column wrap class="my-5" align-center>
           <Problem/>
         </v-layout>
       </section>
-      <section id="parallax">
+      <section id="demo">
         <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
           <v-layout align-center column justify-center>
             <div>
