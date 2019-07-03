@@ -10,9 +10,9 @@
               class="logo mx-2"
             >
           </a>
-          <!-- <a href="https://www.geoportail.gouv.fr/" target="_blank">
+          <a href="https://www.geoportail.gouv.fr/" target="_blank">
             <img alt="IGN logo" src="../assets/ign.png" class="logo mx-2">
-          </a>-->
+          </a>
           <a
             href="https://entrepreneur-interet-general.etalab.gouv.fr/defis/2019/cartobio.html"
             target="_blank"
