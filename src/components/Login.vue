@@ -15,7 +15,13 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <v-text-field label="Email*" v-model="login" required></v-text-field>
+                <p
+                  v-show="loginFailed"
+                  class="red--text text-xs-center"
+                >Email ou mot de passe erroné</p>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field label="Email*" v-model="login" autofocus required></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-text-field label="Mot de passe*" v-model="password" type="password" required></v-text-field>
@@ -46,6 +52,7 @@ export default {
   name: "Login",
   props: [""],
   data: () => ({
+    loginFailed: false,
     login: "",
     password: "",
     dialog: false,
@@ -57,6 +64,7 @@ export default {
     tryLogin: function() {
       this.loader = "loading";
       this.loading = true;
+      this.loginFailed = false;
       let params = {
         email: this.login,
         motDePasse: this.password
@@ -78,7 +86,13 @@ export default {
           this.loading = false;
           this.loader = null;
         })
-        .then(() => this.$store.commit("setUser", this.user));
+        .then(() => this.$store.commit("setUser", this.user))
+        .catch(error => {
+          console.error(error);
+          this.loading = false;
+          this.loader = null;
+          this.loginFailed = true;
+        });
     },
     treatAuthToken: function(token) {
       axios.defaults.headers.common["Authorization"] = "Bearer " + token;

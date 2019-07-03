@@ -1,5 +1,15 @@
 <template>
   <div class="map">
+    <v-dialog v-model="disclaimer" persistent max-width="500">
+      <v-card>
+        <v-card-title class="headline"></v-card-title>
+        <v-card-text>Application en cours de développement. Données non exhaustives.</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" flat @click="disclaimer = false">J'ai compris</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <MglMap
       :access-token="'noToken'"
       :mapStyle.sync="mapStyle"
@@ -129,6 +139,7 @@ export default {
   },
   data() {
     return {
+      disclaimer: true,
       map: undefined,
       zoom: 12,
       center: [5.284125, 44.795134]
