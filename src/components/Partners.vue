@@ -66,6 +66,11 @@ export default {
         activated: false
       }
     };
+  },
+  methods: {
+    displayProfile: function() {
+      console.log(this.getProfile);
+    }
   }
 };
 </script>

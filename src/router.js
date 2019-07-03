@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Map from './views/Map.vue'
+import AgriList from './views/AgriList.vue'
+import AppLayout from './views/AppLayout.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -22,9 +24,20 @@ export default new Router({
       ]
     },
     {
-      path: '/map',
-      name: 'map',
-      component: Map
+      path: '/app',
+      name: 'appHome',
+      component: AppLayout,
+      children: [{
+          path: '/map',
+          name: 'map',
+          component: Map
+        },
+        {
+          path: '/notifications',
+          name: 'notifications',
+          component: AgriList
+        }
+      ]
     }
     // {
     //   path: '/about',
