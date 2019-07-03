@@ -16,18 +16,27 @@
         <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
           <v-layout align-center column justify-center>
             <div>
-              <v-card>
+              <v-card background="transparent">
                 <v-card-title primary-title>
                   <div>
-                    <div class="headline">Démo</div>
-                    <span class="grey--text">Petite application avec des fonctionnalités réduites</span>
+                    <div class="headline">Suivre l'avancement du projet</div>
+                    <span
+                      class="grey--text"
+                    >Nous mettons régulièrement à jour ce document avec le déroulement et les avancées du projet</span>
                   </div>
                 </v-card-title>
                 <v-card-actions>
                   <v-layout align-center column justify-center>
-                    <router-link to="/map">
-                      <v-btn large color="#b9d065">Go</v-btn>
-                    </router-link>
+                    <v-btn
+                      large
+                      round
+                      outline
+                      flat
+                      href="https://pad.etalab.studio/-3GtpmIkQKaj5CJsb25lSg"
+                      target="_blank"
+                    >
+                      <v-icon>file_copy</v-icon>Pad
+                    </v-btn>
                   </v-layout>
                 </v-card-actions>
               </v-card>
