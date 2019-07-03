@@ -11,7 +11,7 @@
         <v-list-tile @click="logout">
           <v-list-tile-title>Se Déconnecter</v-list-tile-title>
         </v-list-tile>
-        <v-list-tile @click>
+        <v-list-tile>
           <v-list-tile-title>Mon Profil</v-list-tile-title>
           <!-- Renvoyer vers profil agence bio ? -->
         </v-list-tile>
