@@ -81,6 +81,10 @@ a {
   text-decoration: none;
 }
 
+section {
+  text-align: center;
+}
+
 .logo {
   height: 40px;
 }
