@@ -4,7 +4,7 @@
       <template v-slot:activator="{ on }">
         <v-btn flat v-on="on">Connexion</v-btn>
       </template>
-      <v-card>
+      <v-card v-on:keyup.enter="tryLogin()">
         <v-card-title>
           <div>
             <h3 class="headline mb-0">Connexion</h3>

@@ -1,26 +1,47 @@
 <template>
   <v-layout class="agriList">
-    <v-flex>
-      <v-card>
-        <v-container v-bind="{ [`grid-list-xl`]: true }" fluid>
-          <v-layout row wrap>
-            <v-flex v-for="item in notificationList" :key="item.id" xs4 pa-4>
-              <AgriItem :agriData="item"></AgriItem>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-card>
-    </v-flex>
-    <v-dialog v-model="loadingData" hide-overlay persistent width="300">
-      <v-card color="#b9d065">
-        <v-card-text>
-          Chargement des données...
-          <br>Cela peut prendre plusieurs minutes.
-          <br>Ce sera amélioré dans les futures versions de l'outil.
-          <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <v-container fluid>
+      <v-data-iterator
+        content-tag="v-layout"
+        row
+        wrap
+        :items="notificationList"
+        :rows-per-page-items="rowsPerPageItems"
+        :pagination.sync="pagination"
+        no-data-text="Please select a product from the left hand menu to compare."
+      >
+        <v-flex slot="item" slot-scope="props" xs4 pa-4>
+          <!-- <v-flex>
+          <v-card>
+            <v-container v-bind="{ [`grid-list-xl`]: true }" fluid>
+          <v-layout row wrap>-->
+          <!-- <v-flex v-for="item in displayedNotifications" :key="item.id" xs4 pa-4> -->
+          <AgriItem :agriData="props.item"></AgriItem>
+          <!-- </v-flex> -->
+          <!-- </v-layout> -->
+          <!-- <v-layout row wrap centered>
+                <v-btn
+                  color="primary"
+                  @click="displayMore()"
+                  v-if="displayedNotifications.length !== notificationList.length"
+                >Voir plus</v-btn>
+              </v-layout>
+          </v-container>-->
+          <!-- </v-card>
+          </v-flex>-->
+        </v-flex>
+      </v-data-iterator>
+      <v-dialog v-model="loadingData" hide-overlay persistent width="300">
+        <v-card color="#b9d065">
+          <v-card-text>
+            Chargement des données...
+            <br />Cela peut prendre plusieurs minutes.
+            <br />Ce sera amélioré dans les futures versions de l'outil.
+            <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-container>
   </v-layout>
 </template>
 <script>
@@ -39,8 +60,16 @@ export default {
   methods: {},
   data: function() {
     return {
+      itemsPerPageOptions: [6, 12, 18],
+      itemsPerPage: 6,
       notificationList: [],
-      loadingData: false
+      loadingData: false,
+      displayedNotifications: [],
+      numDisplayed: 51,
+      rowsPerPageItems: [6, 12, 18],
+      pagination: {
+        rowsPerPage: 6
+      }
     };
   },
   computed: {
@@ -54,19 +83,32 @@ export default {
       _.get(this.getProfile, "organismeCertificateurId")
     )
       .then(
-        data =>
-          (this.notificationList = _.take(data.data, 50).filter(
-            this.isProducteur
-          ))
+        function(data) {
+          console.log("hello ?");
+          this.notificationList = data.data;
+          this.displayedNotifications = _.take(
+            this.notificationList,
+            this.numDisplayed
+          );
+          console.log(this.notificationList);
+        }.bind(this)
+        // .filter(
+        //   this.isProducteur
+        // )
       )
       .then(() => (this.loadingData = false));
   },
   methods: {
     getNotificationsList: function(ocId) {
+      let params = {
+        OC: ocId,
+        activites: 1
+      };
+
       return axios.get(
-        "https://preprod-notification.agencebio.org:444/portail/notifications/filterParOrganismeCertificateur/" +
-          ocId,
+        "https://preprod-notifications.agencebio.org:444/api/getOperatorsByOc",
         {
+          params: params,
           cancelToken: new CancelToken(function executor(c) {
             // An executor function receives a cancel function as a parameter
             cancel = c;
@@ -80,6 +122,13 @@ export default {
         // console.log(activite.nom);
         return activite.nom === "Producteur";
       });
+    },
+    displayMore: function() {
+      this.numDisplayed += 51;
+      this.displayedNotifications = _.take(
+        this.notificationList,
+        this.numDisplayed
+      );
     }
   },
   beforeDestroy: function() {

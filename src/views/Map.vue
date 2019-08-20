@@ -20,10 +20,10 @@
       @load="onMapLoaded"
       ref="mapboxDiv"
     >
-      <MglNavigationControl position="top-left" :showCompass="false"/>
-      <MglGeolocateControl position="top-left"/>
-      <MglFullscreenControl position="top-left"/>
-      <MglScaleControl position="bottom-left" unit="metric"/>
+      <MglNavigationControl position="top-left" :showCompass="false" />
+      <MglGeolocateControl position="top-left" />
+      <MglFullscreenControl position="top-left" />
+      <MglScaleControl position="bottom-left" unit="metric" />
     </MglMap>
   </div>
 </template>
@@ -141,8 +141,8 @@ export default {
     return {
       disclaimer: true,
       map: undefined,
-      zoom: 12,
-      center: [5.284125, 44.795134]
+      zoom: 17,
+      center: [5.88676, 45.727178]
     };
   },
   props: ["bus"],
@@ -181,6 +181,7 @@ export default {
         "click",
         "bio-tiles",
         function(e) {
+          console.log(e.features);
           new Mapbox.Popup()
             .setLngLat(e.lngLat)
             .setHTML(e.features[0].properties.code_cultu)
