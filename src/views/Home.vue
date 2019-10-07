@@ -4,12 +4,17 @@
     <v-content>
       <section id="title">
         <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
-          <Title msg="Bienvenue sur CartoBIO"/>
+          <Title
+            msg="Ouvrir, enrichir et partager les données
+parcellaires de l’agriculture biologique
+
+"
+          />
         </v-parallax>
       </section>
       <section id="objectives">
         <v-layout column wrap class="my-5" align-center>
-          <Problem/>
+          <Problem />
         </v-layout>
       </section>
       <section id="demo">
@@ -35,7 +40,7 @@
                       href="https://pad.etalab.studio/-3GtpmIkQKaj5CJsb25lSg"
                       target="_blank"
                     >
-                      <v-icon>file_copy</v-icon>Pad
+                      <v-icon>file_copy</v-icon>Découvrir notre démarche projet
                     </v-btn>
                   </v-layout>
                 </v-card-actions>
@@ -46,12 +51,12 @@
       </section>
       <section id="about">
         <v-layout column wrap class="my-5" align-center>
-          <About/>
+          <About />
         </v-layout>
       </section>
     </v-content>
     <v-footer id="partners" height="auto" color="#b9d065">
-      <Partners/>
+      <Partners />
     </v-footer>
   </div>
 </template>

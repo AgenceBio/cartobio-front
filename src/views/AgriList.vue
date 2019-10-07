@@ -16,7 +16,7 @@
             <v-container v-bind="{ [`grid-list-xl`]: true }" fluid>
           <v-layout row wrap>-->
           <!-- <v-flex v-for="item in displayedNotifications" :key="item.id" xs4 pa-4> -->
-          <AgriItem :agriData="props.item"></AgriItem>
+          <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
           <!-- </v-flex> -->
           <!-- </v-layout> -->
           <!-- <v-layout row wrap centered>
@@ -39,6 +39,18 @@
             <br />Ce sera amélioré dans les futures versions de l'outil.
             <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
           </v-card-text>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="showConfirmPopup" hide-overlay persistent width="300">
+        <v-card>
+          <v-card-text>
+            Aller au parcellaire de {{selectedOperatorData.title}}
+            <br />Ce sera amélioré dans les futures versions de l'outil.
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="cancelSelectOperator()">Annuler</v-btn>
+            <v-btn @click="selectOperator()">Confirmer</v-btn>
+          </v-card-actions>
         </v-card>
       </v-dialog>
     </v-container>
@@ -69,16 +81,22 @@ export default {
       rowsPerPageItems: [6, 12, 18],
       pagination: {
         rowsPerPage: 6
-      }
+      },
+      selectedOperatorData: {}
     };
   },
   computed: {
     getProfile() {
       return this.$store.getters.getProfile;
+    },
+    showConfirmPopup() {
+      return !!this.selectedOperatorData.title;
     }
   },
   created: function() {
     this.loadingData = true;
+    this.$store.commit("setOperator", {}); // clear selected operator
+
     this.getNotificationsList(
       _.get(this.getProfile, "organismeCertificateurId")
     )
@@ -91,6 +109,9 @@ export default {
             this.numDisplayed
           );
           console.log(this.notificationList);
+          _.remove(this.notificationList, function(notif) {
+            return !notif.numeroBio;
+          });
         }.bind(this)
         // .filter(
         //   this.isProducteur
@@ -101,8 +122,9 @@ export default {
   methods: {
     getNotificationsList: function(ocId) {
       let params = {
-        OC: ocId,
-        activites: 1
+        oc: ocId,
+        activites: 1,
+        departementId: 26
       };
 
       return axios.get(
@@ -129,6 +151,15 @@ export default {
         this.notificationList,
         this.numDisplayed
       );
+    },
+    selectOperator: function() {
+      console.log(this.selectedOperatorData);
+      this.$store.commit("setOperator", this.selectedOperatorData);
+      this.$router.push("map");
+    },
+    cancelSelectOperator: function() {
+      this.selectedOperatorData = {};
+      this.$store.commit("setOperator", this.selectedOperatorData);
     }
   },
   beforeDestroy: function() {

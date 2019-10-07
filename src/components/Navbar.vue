@@ -1,9 +1,9 @@
 <template>
-  <v-toolbar app color="#b9d065">
+  <v-toolbar app clipped-left color="#b9d065">
     <a href="https://www.agencebio.org/" target="_blank">
-      <img alt="Agence Bio logo" :src="require('../../src/assets/agence-bio.png')" class="logo">
+      <img alt="Agence Bio logo" :src="require('../../src/assets/agence-bio.png')" class="logo" />
     </a>
-    <v-toolbar-title>CartoBIO</v-toolbar-title>
+    <v-toolbar-title>{{title}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <Geosearch @searchCompleted="searchCompleted"></Geosearch>
     <v-spacer></v-spacer>
@@ -53,8 +53,15 @@ export default {
     getProfile() {
       return this.$store.getters.getProfile;
     },
+    getOperator() {
+      return this.$store.getters.getOperator;
+    },
     currentRoute() {
       return this.$route.path;
+    },
+    title() {
+      console.log(this.getOperator);
+      return this.getOperator.title ? this.getOperator.title : "CartoBIO";
     }
   },
   created: function() {

@@ -1,12 +1,13 @@
 <template>
-  <v-card tile>
+  <v-card tile @click="selectOperator()" class="clickable-card">
     <v-card-title
-      v-bind:class="{'green lighten-3': agriData.numeroPacage, 'red lighten-3': !agriData.numeroPacage}"
-    >{{title}}</v-card-title>
+      v-bind:class="{'green lighten-3': newAgriData.numeroPacage, 'red lighten-3': !newAgriData.numeroPacage}"
+    >{{newAgriData.title}}</v-card-title>
     <v-card-text>
       <v-list>
-        <v-list-tile>Date d'engagement : {{agriData.dateEngagement}}</v-list-tile>
-        <v-list-tile>Numéro Pacage : {{agriData.numeroPacage}}</v-list-tile>
+        <v-list-tile>Date d'engagement : {{newAgriData.dateEngagement}}</v-list-tile>
+        <v-list-tile>Numéro Pacage : {{newAgriData.numeroPacage}}</v-list-tile>
+        <v-list-tile>Numéro Bio : {{newAgriData.numeroBio}}</v-list-tile>
         <!-- <v-list-tile>
           Activités :
           <v-list>
@@ -16,7 +17,7 @@
             >{{activite.nom}}</v-list-tile>
           </v-list>
         </v-list-tile>-->
-        <v-list-tile>Gérant : {{agriData.gerant}}</v-list-tile>
+        <v-list-tile>Gérant : {{newAgriData.gerant}}</v-list-tile>
         <!-- <v-list-tile>{{}}</v-list-tile> -->
       </v-list>
     </v-card-text>
@@ -26,13 +27,15 @@
 const axios = require("axios");
 export default {
   name: "AgriItem",
-  components: {},
-  props: ["agriData"],
-  created: function() {
-    console.log("hi ? ");
-    console.log(this.agriData);
-  },
+  props: ["agriData", "selectedOperator"],
   methods: {
+    selectOperator: function() {
+      console.log("hé?");
+      console.log(this.agriData);
+      this.$emit("update:selectedOperator", this.newAgriData);
+      // this.selectedOperator = this.agriData;
+      // this.$store.commit("setOperator", this.agriData);
+    },
     getOperatorName: agriData => {
       console.log(agriData);
       let user = _.find(agriData.utilisateurs, function(u) {
@@ -50,7 +53,17 @@ export default {
         : this.agriData.gerant
         ? this.agriData.gerant
         : this.getOperatorName(this.agriData);
+    },
+    newAgriData() {
+      let data = this.agriData;
+      data.title = this.title;
+      return data;
     }
   }
 };
 </script>
+<style lang="scss" scoped>
+.clickable-card {
+  cursor: pointer;
+}
+</style>

@@ -5,14 +5,24 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        userProfile: {}
+        userProfile: {},
+        currentOperator: {},
+        disclaimer: true
     },
     getters: {
-        getProfile: state => state.userProfile
+        getProfile: state => state.userProfile,
+        getOperator: state => state.currentOperator,
+        getDisclaimer: state => state.disclaimer
     },
     mutations: {
         setUser(state, profile) {
             state.userProfile = profile;
+        },
+        setOperator(state, operator) {
+            state.currentOperator = operator;
+        },
+        setDisclaimer(state, bool) {
+            state.disclaimer = bool;
         }
     }
 })
