@@ -65,7 +65,7 @@ export default {
   watch: {
     "parcels.features": {
       handler: function(newVal) {
-        console.log(newVal);
+        // console.log(newVal);
       },
       deep: true
     },
@@ -82,7 +82,6 @@ export default {
     //   });
     // },
     ilots() {
-      console.log(this.parcels);
       // first reduce to group parcels by ilots
       let reduced = _.reduce(
         this.parcels.features,

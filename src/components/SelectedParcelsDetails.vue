@@ -43,7 +43,6 @@ export default {
   computed: {
     culturList() {
       let list = {};
-      console.log(this.selectedParcels);
       _.forEach(this.selectedParcels, function(parcel) {
         let surf = _.get(parcel.properties, "surfadm")
           ? parcel.properties.surfadm
@@ -51,10 +50,7 @@ export default {
         list[parcel.properties.codecultu]
           ? (list[parcel.properties.codecultu] += parseFloat(surf))
           : (list[parcel.properties.codecultu] = parseFloat(surf));
-        // list.push(parcel.properties.codecultu);
       });
-
-      console.log(list);
       return list;
       //   this.cultures = list;
       //   return list;
@@ -85,7 +81,6 @@ export default {
     },
     createParcelArray(parcel) {
       let prop = parcel.properties;
-      console.log(prop);
       // csv properties order:
       // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
       let parcelArray = [
@@ -102,7 +97,6 @@ export default {
         _.get(prop, "surfadm", ""),
         prop.surfgeo
       ];
-      console.log(parcelArray);
       return parcelArray;
     },
     // from https://stackoverflow.com/a/49950777

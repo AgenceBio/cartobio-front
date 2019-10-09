@@ -187,7 +187,7 @@ let bioSource = {
 };
 
 let calculateBbox = function(x, y, z) {
-  console.log(x, y, z);
+  // console.log(x, y, z);
 };
 
 let espaceCollabSource = {
@@ -227,7 +227,6 @@ let bioLayer = {
   tms: true,
   maxzoom: 19
 };
-console.log(Mapbox);
 let draw = new MapboxDraw({
   displayControlsDefault: false,
   controls: {
@@ -286,7 +285,6 @@ export default {
     this.drawer = _.get(this.$store.getters.getOperator, "title");
 
     if (_.get(this.operator, "numeroBio")) {
-      console.log(this.operator);
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
       let params = {
@@ -419,7 +417,6 @@ export default {
         "click",
         "collabio",
         function(e) {
-          console.log(e.features);
           new Mapbox.Popup()
             .setLngLat(e.lngLat)
             .setHTML(e.features[0].properties.code_cultu)
@@ -430,7 +427,6 @@ export default {
         "click",
         "other-tiles",
         function(e) {
-          console.log(e.features);
           new Mapbox.Popup()
             .setLngLat(e.lngLat)
             .setHTML(e.features[0].properties.code_cultu)
@@ -442,7 +438,6 @@ export default {
         "click",
         "operator-parcels",
         function(e) {
-          console.log(e.features);
           this.selectParcel(e.features[0]);
           // new Mapbox.Popup()
           //   .setLngLat(e.lngLat)
@@ -466,10 +461,7 @@ export default {
         });
       }
       if (this.operator) {
-        console.log(this.operator);
-        console.log("hi ? ");
         this.map.addControl(draw, "top-right");
-        console.log(this.map);
         // draw.changeMode("draw_polygon");
         this.map.on(
           "draw.create",
@@ -477,11 +469,9 @@ export default {
             let newFeature = e.features[0];
             let surface = turf.area(newFeature);
             surface = Math.round(surface * 100) / 100; // round to 2 decimals
-            console.log(newFeature);
             newFeature.properties.surfgeo = surface;
             this.newParcel = newFeature;
             this.setUpParcel = true;
-            console.log(this.setUpParcel);
           }.bind(this)
         );
         this.map.on("draw.delete", updateArea);
@@ -516,7 +506,6 @@ export default {
         resourceType === "Tile" &&
         url.startsWith("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio")
       ) {
-        console.log(url, resourceType);
         let paramArr = [];
         _.forEach(url.split("&"), function(param) {
           let subparam = param.split("=");
@@ -527,10 +516,8 @@ export default {
         let row = args.TILEROW; // y
         let col = args.TILECOL; // x
         let bbox = mercator.bbox(col, row, zoom, true, "4326");
-        console.log(bbox);
         newUrl = newUrl.split("TILEMATRIX")[0];
         newUrl += "bbox=" + bbox.toString() + ",WGS84";
-        console.log(newUrl);
       }
       return { url: newUrl };
     },
@@ -538,7 +525,7 @@ export default {
       // this.connectEspaceCollaboratif().then(function(data) {
       //   console.log(data);
       // });
-      console.log(this.getProfile);
+      // console.log(this.getProfile);
       console.log("logged in, we can load bio layer");
     },
     // connectEspaceCollaboratif() {
@@ -558,10 +545,7 @@ export default {
       this.parcelsOperator = data;
       this.bboxOperator = turf.bbox(data);
       if (this.map) {
-        console.log(this.getOperator);
-        console.log("hi ? ");
         this.map.addControl(draw, "top-right");
-        console.log("hIJFDKSJNF");
         // draw.changeMode("draw_polygon");
         this.map.on(
           "draw.create",
@@ -570,17 +554,13 @@ export default {
             let newFeature = e.features[0];
             let surface = turf.area(newFeature);
             surface = Math.round(surface * 100) / 100; // round to 2 decimals
-            console.log(newFeature);
             newFeature.properties.surfgeo = surface;
             this.newParcel = newFeature;
             this.setUpParcel = true;
-            console.log(this.setUpParcel);
           }.bind(this)
         );
         this.map.on("draw.delete", updateArea);
         this.map.on("draw.update", updateArea);
-        // this.$forceUpdate();
-        console.log(this.bboxOperator);
         if (_.get(this.bboxOperator, "0")) {
           this.map.getSource("operatorParcels").setData(this.parcelsOperator);
           this.map.fitBounds(this.bboxOperator, {
@@ -653,7 +633,6 @@ export default {
       this.map.getSource("selected").setData(this.selectedParcels);
     },
     selectAllParcels(bool) {
-      console.log("hello ?");
       _.forEach(this.parcelsOperator.features, function(parcel) {
         parcel.properties.selected = bool;
       });
@@ -665,13 +644,10 @@ export default {
       this.map.getSource("selected").setData(this.selectedParcels);
     },
     saveParcel() {
-      console.log(this.newParcel);
       this.setUpParcel = !this.setUpParcel;
-      console.log(this.parcelsOperator);
       this.parcelsOperator.features.push(this.newParcel);
     },
     updateNewParcel(newData) {
-      console.log(newData);
       this.newParcel.properties = newData[0];
       this.$forceUpdate();
     }

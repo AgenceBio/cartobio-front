@@ -102,13 +102,11 @@ export default {
     )
       .then(
         function(data) {
-          console.log("hello ?");
           this.notificationList = data.data;
           this.displayedNotifications = _.take(
             this.notificationList,
             this.numDisplayed
           );
-          console.log(this.notificationList);
           _.remove(this.notificationList, function(notif) {
             return !notif.numeroBio;
           });
@@ -153,7 +151,6 @@ export default {
       );
     },
     selectOperator: function() {
-      console.log(this.selectedOperatorData);
       this.$store.commit("setOperator", this.selectedOperatorData);
       this.$router.push("map");
     },
