@@ -1,0 +1,159 @@
+<template>
+  <v-card>
+    <v-card-title>
+      <div>
+        <div>
+          Détails de la sélection:
+          <v-icon class="icon-expand" @click="showList=!showList" v-if="!showList">expand_more</v-icon>
+          <v-icon class="icon-expand" @click="showList=!showList" v-if="showList">expand_less</v-icon>
+        </div>
+
+        <span class="grey--text">Nb Parcelles : {{selectedParcels.length}}</span>
+      </div>
+    </v-card-title>
+    <v-list v-show="showList">
+      <v-list-tile v-for="(surface, culture) in culturList" :key="culture">
+        <v-list-tile-title>{{culture}} : {{surface}} ha</v-list-tile-title>
+      </v-list-tile>
+    </v-list>
+    <v-card-actions>
+      <v-btn flat color="blue" @click="downloadCSV">
+        <v-icon>save_alt</v-icon>
+        <span>Télécharger La Sélection - csv</span>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script>
+export default {
+  name: "SelectedParcelsDetails",
+  props: {
+    selectedParcels: {}
+  },
+  data() {
+    return {
+      showList: true,
+      cultures: this.culturList
+    };
+  },
+  created: function() {
+    // console.log(this.culturList);
+  },
+  computed: {
+    culturList() {
+      let list = {};
+      console.log(this.selectedParcels);
+      _.forEach(this.selectedParcels, function(parcel) {
+        let surf = _.get(parcel.properties, "surfadm")
+          ? parcel.properties.surfadm
+          : parcel.properties.surfgeo / 10000;
+        list[parcel.properties.codecultu]
+          ? (list[parcel.properties.codecultu] += parseFloat(surf))
+          : (list[parcel.properties.codecultu] = parseFloat(surf));
+        // list.push(parcel.properties.codecultu);
+      });
+
+      console.log(list);
+      return list;
+      //   this.cultures = list;
+      //   return list;
+    }
+  },
+  methods: {
+    downloadCSV() {
+      // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
+      let rows = _.map(this.selectedParcels, this.createParcelArray);
+      rows.unshift([
+        "id",
+        "numeroBio",
+        "numeroPacage",
+        "agroforest",
+        "estBio",
+        "codeCulture",
+        "engagement",
+        "maraichage",
+        "numeroIlot",
+        "numeroParcelle",
+        "surfaceAdmissible",
+        "surfaceGeometrique"
+      ]);
+      this.convertToCsvAndDownload(
+        this.$store.getters.getOperator.title + ".csv",
+        rows
+      );
+    },
+    createParcelArray(parcel) {
+      let prop = parcel.properties;
+      console.log(prop);
+      // csv properties order:
+      // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
+      let parcelArray = [
+        _.get(prop, "id", ""),
+        prop.numerobio,
+        _.get(prop, "pacage", ""),
+        _.get(prop, "maraichage", ""),
+        prop.bio,
+        prop.codecultu,
+        prop.engagement,
+        _.get(prop, "maraichage", ""),
+        prop.numilot,
+        prop.numparcel,
+        _.get(prop, "surfadm", ""),
+        prop.surfgeo
+      ];
+      console.log(parcelArray);
+      return parcelArray;
+    },
+    // from https://stackoverflow.com/a/49950777
+    convertToCsvAndDownload(fName, rows) {
+      var csv = "";
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        for (var j = 0; j < row.length; j++) {
+          var val = row[j] === null ? "" : row[j].toString();
+          val = val.replace(/\t/gi, " ");
+          if (j > 0) csv += "\t";
+          csv += val;
+        }
+        csv += "\n";
+      }
+
+      // for UTF-16
+      var cCode,
+        bArr = [];
+      bArr.push(255, 254);
+      for (var i = 0; i < csv.length; ++i) {
+        cCode = csv.charCodeAt(i);
+        bArr.push(cCode & 0xff);
+        bArr.push((cCode / 256) >>> 0);
+      }
+
+      var blob = new Blob([new Uint8Array(bArr)], {
+        type: "text/csv;charset=UTF-16LE;"
+      });
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, fName);
+      } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+          var url = window.URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", fName);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
+      }
+    }
+  }
+};
+</script>
+<style lang="scss" scoped>
+.icon-expand {
+  position: absolute;
+  right: 10px;
+}
+</style>

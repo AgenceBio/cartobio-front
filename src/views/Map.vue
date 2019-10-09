@@ -26,7 +26,16 @@
           </v-list-tile>
         </v-list>
       </v-toolbar>
-      <ParcelsList :parcels.sync="parcelsOperator" v-if="drawer && !mini"></ParcelsList>
+      <ParcelsList
+        :parcels.sync="parcelsOperator"
+        v-if="drawer && !mini"
+        v-on:hover-parcel="hoverParcel($event)"
+        v-on:stop-hovering="stopHovering($event)"
+        v-on:hover-ilot="hoverIlot($event)"
+        v-on:stop-hovering-ilot="stopHovering($event)"
+        v-on:select-parcel="selectParcel($event)"
+        v-on:select-all-parcels="selectAllParcels($event)"
+      ></ParcelsList>
     </v-navigation-drawer>
     <v-content app>
       <div class="map">
@@ -37,6 +46,22 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="green darken-1" flat @click="acknowledgeDisclaimer()">J'ai compris</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="setUpParcel" persistent v-if="operator.title">
+          <v-card>
+            <v-card-title class="headline">Nouvelle Parcelle - {{this.operator.title}}</v-card-title>
+            <v-card-text>
+              <ParcelDetails
+                :operator="operator"
+                :parcel.sync="newParcel"
+                v-on:parcel-updated="updateNewParcel($event)"
+              ></ParcelDetails>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" flat @click="saveParcel()">Valider</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -53,9 +78,13 @@
         >
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
-          <MglFullscreenControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
         </MglMap>
+        <SelectedParcelsDetails
+          class="data-card"
+          v-if="selectedParcels.features.length"
+          :selectedParcels.sync="selectedParcels.features"
+        ></SelectedParcelsDetails>
       </div>
     </v-content>
   </v-layout>
@@ -71,8 +100,9 @@ import geojsonvt from "geojson-vt";
 
 // mapbox-gl dependencies
 import Mapbox from "mapbox-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import SphericalMercator from "sphericalmercator";
-
+// import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   MglMap,
   MglNavigationControl,
@@ -83,6 +113,8 @@ import {
 
 import Navbar from "@/components/Navbar";
 import ParcelsList from "@/components/ParcelsList";
+import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
+import ParcelDetails from "@/components/ParcelDetails";
 
 let mercator = new SphericalMercator({
   size: 256
@@ -188,19 +220,35 @@ let bioLayer = {
   "source-layer": "RPGDROMEANO2018",
   minzoom: 0,
   paint: {
-    "fill-color": "yellow",
-    "fill-outline-color": "rgba(200, 100, 240, 1)",
+    "fill-color": "#D0D32E",
+    "fill-outline-color": "#83C2AB",
     "fill-opacity": 0.6
   },
   tms: true,
   maxzoom: 19
 };
+console.log(Mapbox);
+let draw = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    polygon: true,
+    trash: true
+  }
+});
+
+// map.addControl(draw);
+
+// map.on('draw.create', updateArea);
+// map.on('draw.delete', updateArea);
+// map.on('draw.update', updateArea);
 
 export default {
   name: "Map",
   components: {
     Navbar,
     ParcelsList,
+    SelectedParcelsDetails,
+    ParcelDetails,
     MglNavigationControl,
     MglGeolocateControl,
     MglFullscreenControl,
@@ -211,12 +259,23 @@ export default {
     return {
       map: undefined,
       zoom: 12,
+      mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       center: undefined,
       operator: {},
-      parcelsOperator: {},
+      parcelsOperator: { features: [], type: "FeatureCollection" },
+      highlightedParcels: { features: [], type: "FeatureCollection" },
+      selectedParcels: { features: [], type: "FeatureCollection" },
+      newParcel: {},
       bboxOperator: [],
+      popupParcel: new Mapbox.Popup({
+        closeButton: false
+      }),
+      popupSelectedParcels: new Mapbox.Popup({
+        closeButton: true
+      }),
       mini: true,
-      drawer: false
+      drawer: false,
+      setUpParcel: false
     };
   },
   props: ["bus"],
@@ -225,7 +284,9 @@ export default {
     this.operator = this.getOperator;
     this.center = [5.150809, 44.688729];
     this.drawer = _.get(this.$store.getters.getOperator, "title");
-    if (this.operator) {
+
+    if (_.get(this.operator, "numeroBio")) {
+      console.log(this.operator);
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
       let params = {
@@ -262,10 +323,8 @@ export default {
         if (this.getProfile.nom) {
           !this.map.getSource("bio-tiles")
             ? this.map.addSource("bio-tiles", bioSource)
-            : console.log("source already exists");
-          !this.map.getLayer("bio-tiles")
-            ? this.map.addLayer(bioLayer)
-            : console.log("layer already exists");
+            : null;
+          !this.map.getLayer("bio-tiles") ? this.map.addLayer(bioLayer) : null;
         } else if (this.map.getLayer("bio-tiles")) {
           this.map.removeLayer(bioLayer.id);
           this.map.removeSource("bio-tiles");
@@ -275,14 +334,63 @@ export default {
           this.map.addLayer({
             id: "operator-parcels",
             type: "fill",
-            source: {
-              data: this.parcelsOperator,
-              type: "geojson"
-            },
+            source: "operatorParcels",
             paint: {
-              "fill-color": "red",
+              "fill-color": [
+                "match",
+                ["get", "bio"],
+                "0",
+                "#F4869D",
+                "1",
+                "#0D9BA5",
+                "white"
+              ],
               "fill-outline-color": "rgba(100, 200, 240, 1)",
-              "fill-opacity": 0.6
+              "fill-opacity": 0.8
+            }
+          });
+        }
+
+        if (!this.map.getLayer("highlighted-parcels")) {
+          this.map.addLayer({
+            id: "highlighted-parcels",
+            type: "fill",
+            source: "highlight",
+            paint: {
+              "fill-color": [
+                "match",
+                ["get", "bio"],
+                "0",
+                "#6F3D48",
+                "1",
+                "#06474B",
+                "white"
+              ],
+              "fill-outline-color": "rgba(100, 200, 240, 1)",
+              "fill-opacity": 1
+            }
+          });
+        }
+        if (
+          _.get(this.selectedParcels, ["features", "length"]) &&
+          !this.map.getLayer("selected-parcels")
+        ) {
+          this.map.addLayer({
+            id: "selected-parcels",
+            type: "fill",
+            source: "selected",
+            paint: {
+              "fill-color": [
+                "match",
+                ["get", "bio"],
+                "0",
+                "#9C5664",
+                "1",
+                "#09636A",
+                "white"
+              ],
+              "fill-outline-color": "rgba(100, 200, 240, 1)",
+              "fill-opacity": 1
             }
           });
         }
@@ -294,6 +402,19 @@ export default {
     onMapLoaded(event) {
       this.map = event.map;
       // let bounds = this.map.getBounds();
+      this.map.addSource("bio-tiles", bioSource);
+      this.map.addSource("selected", {
+        type: "geojson",
+        data: this.selectedParcels
+      });
+      this.map.addSource("highlight", {
+        type: "geojson",
+        data: this.highlightedParcels
+      });
+      this.map.addSource("operatorParcels", {
+        type: "geojson",
+        data: this.parcelsOperator
+      });
       this.map.on(
         "click",
         "collabio",
@@ -307,31 +428,82 @@ export default {
       );
       this.map.on(
         "click",
-        "operator-parcels",
+        "other-tiles",
         function(e) {
           console.log(e.features);
           new Mapbox.Popup()
             .setLngLat(e.lngLat)
-            .setHTML(e.features[0].properties.codecultu)
+            .setHTML(e.features[0].properties.code_cultu)
             .addTo(this.map);
         }.bind(this)
       );
-      // this.map.on(
-      //   "click",
-      //   "bio-tiles",
-      //   function(e) {
-      //     console.log(e.features);
-      //     new Mapbox.Popup()
-      //       .setLngLat(e.lngLat)
-      //       .setHTML(e.features[0].properties.code_cultu)
-      //       .addTo(this.map);
-      //   }.bind(this)
-      // );
-      console.log(this.bboxOperator);
-      if (this.bboxOperator) {
+
+      this.map.on(
+        "click",
+        "operator-parcels",
+        function(e) {
+          console.log(e.features);
+          this.selectParcel(e.features[0]);
+          // new Mapbox.Popup()
+          //   .setLngLat(e.lngLat)
+          //   .setHTML(
+          //     "<span>" +
+          //       e.features[0].properties.codecultu +
+          //       "</span><br/>" +
+          //       "<span>" +
+          //       e.features[0].properties.numilot +
+          //       "</span><br/>" +
+          //       "<span>" +
+          //       e.features[0].properties.numparcel +
+          //       "</span>"
+          //   )
+          //   .addTo(this.map);
+        }.bind(this)
+      );
+      if (this.operator && this.bboxOperator[0] !== Infinity) {
         this.map.fitBounds(this.bboxOperator, {
-          padding: { top: 10, bottom: 25, left: 15, right: 5 }
+          padding: this.mapPadding
         });
+      }
+      if (this.operator) {
+        console.log(this.operator);
+        console.log("hi ? ");
+        this.map.addControl(draw, "top-right");
+        console.log(this.map);
+        // draw.changeMode("draw_polygon");
+        this.map.on(
+          "draw.create",
+          function(e) {
+            let newFeature = e.features[0];
+            let surface = turf.area(newFeature);
+            surface = Math.round(surface * 100) / 100; // round to 2 decimals
+            console.log(newFeature);
+            newFeature.properties.surfgeo = surface;
+            this.newParcel = newFeature;
+            this.setUpParcel = true;
+            console.log(this.setUpParcel);
+          }.bind(this)
+        );
+        this.map.on("draw.delete", updateArea);
+        this.map.on("draw.update", updateArea);
+        this.$forceUpdate();
+      }
+      function updateArea(e) {
+        var data = draw.getAll();
+        // var answer = document.getElementById("calculated-area");
+        if (data.features.length > 0) {
+          var area = turf.area(data);
+          // restrict to area to 2 decimal points
+          var rounded_area = Math.round(area * 100) / 100;
+          // answer.innerHTML =
+          //   "<p><strong>" +
+          //   rounded_area +
+          //   "</strong></p><p>square meters</p>";
+        } else {
+          // answer.innerHTML = "";
+          if (e.type !== "draw.delete")
+            alert("Use the draw tools to draw a polygon!");
+        }
       }
     },
     handleSearchResult(value) {
@@ -384,40 +556,139 @@ export default {
     },
     displayOperatorLayer(data) {
       this.parcelsOperator = data;
-      console.log(turf.bbox(data));
       this.bboxOperator = turf.bbox(data);
+      if (this.map) {
+        console.log(this.getOperator);
+        console.log("hi ? ");
+        this.map.addControl(draw, "top-right");
+        console.log("hIJFDKSJNF");
+        // draw.changeMode("draw_polygon");
+        this.map.on(
+          "draw.create",
+          "draw.create",
+          function(e) {
+            let newFeature = e.features[0];
+            let surface = turf.area(newFeature);
+            surface = Math.round(surface * 100) / 100; // round to 2 decimals
+            console.log(newFeature);
+            newFeature.properties.surfgeo = surface;
+            this.newParcel = newFeature;
+            this.setUpParcel = true;
+            console.log(this.setUpParcel);
+          }.bind(this)
+        );
+        this.map.on("draw.delete", updateArea);
+        this.map.on("draw.update", updateArea);
+        // this.$forceUpdate();
+        console.log(this.bboxOperator);
+        if (_.get(this.bboxOperator, "0")) {
+          this.map.getSource("operatorParcels").setData(this.parcelsOperator);
+          this.map.fitBounds(this.bboxOperator, {
+            padding: this.mapPadding
+          });
+        }
+      }
+      function updateArea(e) {
+        var data = draw.getAll();
+        // var answer = document.getElementById("calculated-area");
+        if (data.features.length > 0) {
+          var area = turf.area(data);
+          // restrict to area to 2 decimal points
+          var rounded_area = Math.round(area * 100) / 100;
+          // answer.innerHTML =
+          //   "<p><strong>" +
+          //   rounded_area +
+          //   "</strong></p><p>square meters</p>";
+        } else {
+          // answer.innerHTML = "";
+          if (e.type !== "draw.delete")
+            alert("Use the draw tools to draw a polygon!");
+        }
+      }
     },
-    getCenter() {
-      let defaultCenter = [5.150809, 44.688729];
-      console.log("center here");
+    hoverParcel(parcel) {
+      this.highlightedParcels = {
+        features: [parcel],
+        type: "FeatureCollection"
+      };
+      // console.log(turf.center(this.highlightedParcels).geometry.coordinates);
+      this.map.getSource("highlight").setData(this.highlightedParcels);
+      this.popupParcel
+        .setLngLat(turf.center(this.highlightedParcels).geometry.coordinates)
+        .setHTML(parcel.properties.codecultu)
+        .addTo(this.map);
+    },
+    stopHovering(parcel) {
+      this.highlightedParcels = {
+        features: [],
+        type: "FeatureCollection"
+      };
+      this.map.getSource("highlight").setData(this.highlightedParcels);
+      this.popupParcel.remove();
+    },
+    hoverIlot(ilot) {
+      this.highlightedParcels = {
+        features: ilot.parcels,
+        type: "FeatureCollection"
+      };
+      this.map.getSource("highlight").setData(this.highlightedParcels);
+    },
+    selectParcel(parcel) {
+      let tmp = _.find(this.parcelsOperator.features, function(feature) {
+        return feature.id === parcel.id;
+      });
+      tmp.properties.selected = !tmp.properties.selected;
+      if (tmp.properties.selected) {
+        this.selectedParcels.features.push(tmp);
+      } else {
+        // _.remove doesn't trigger component updates
+        // https://stackoverflow.com/questions/42090651/computed-properties-not-updating-when-using-lodash-and-vuejs
+        this.selectedParcels.features = _.filter(
+          this.selectedParcels.features,
+          function(feature) {
+            return feature.id !== tmp.id;
+          }
+        );
+      }
+      this.map.getSource("selected").setData(this.selectedParcels);
+    },
+    selectAllParcels(bool) {
+      console.log("hello ?");
+      _.forEach(this.parcelsOperator.features, function(parcel) {
+        parcel.properties.selected = bool;
+      });
+      if (bool) {
+        this.selectedParcels.features = this.parcelsOperator.features;
+      } else {
+        this.selectedParcels.features = [];
+      }
+      this.map.getSource("selected").setData(this.selectedParcels);
+    },
+    saveParcel() {
+      console.log(this.newParcel);
+      this.setUpParcel = !this.setUpParcel;
       console.log(this.parcelsOperator);
-      let center = _.get(this.parcelsOperator, "features")
-        ? // ? _.get(
-          //     turf.center(this.parcelsOperator),
-          //     ["geometry", "coordinates"],
-          //     defaultCenter
-          //   )
-          turf.center(this.parcelsOperator)
-        : defaultCenter;
-      console.log(center);
-      this.map.panTo(center);
-      return center;
+      this.parcelsOperator.features.push(this.newParcel);
     },
-    getParcelsCenter(parcels) {
-      console.log(parcels);
-      var features = turf.featureCollection([parcels.features]);
-
-      console.log(turf.center(features));
-      return [5.150809, 44.688729];
+    updateNewParcel(newData) {
+      console.log(newData);
+      this.newParcel.properties = newData[0];
+      this.$forceUpdate();
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+@import "../../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 .map {
   height: 100%;
   width: 100%;
   position: relative;
+}
+.data-card {
+  position: absolute;
+  top: 10px;
+  margin-left: 54px;
 }
 </style>
