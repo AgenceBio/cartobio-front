@@ -98,7 +98,6 @@ export default {
       axios.defaults.headers.common["Authorization"] = "Bearer " + token;
       let decodedToken = this.parseJwt(token);
       this.$ls.set("token", token, decodedToken.exp);
-      console.log(decodedToken);
       return decodedToken;
     },
     parseJwt: function(token) {

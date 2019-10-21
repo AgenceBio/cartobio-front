@@ -60,31 +60,8 @@ export default {
       return this.$route.path;
     },
     title() {
-      console.log(this.getOperator);
       return this.getOperator.title ? this.getOperator.title : "CartoBIO";
     }
-  },
-  created: function() {
-    let testOc = {
-      email: "oc@gmail.com",
-      motDePasse: "OcTest12345"
-    };
-
-    let testOp = {
-      email: "lucas.bchini@agencebio.org",
-      motDePasse: "6Lavoisier"
-    };
-
-    let testSuperOc = {
-      email: "superoc@gmail.com",
-      motDePasse: "AsmaBA12345"
-    };
-
-    let testAdmin = {
-      email: "admin@gmail.com",
-      motDePasse: "Admin12345"
-    };
-    let params = testOc;
   }
 };
 </script>

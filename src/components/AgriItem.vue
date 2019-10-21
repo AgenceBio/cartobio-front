@@ -30,14 +30,11 @@ export default {
   props: ["agriData", "selectedOperator"],
   methods: {
     selectOperator: function() {
-      console.log("hé?");
-      console.log(this.agriData);
       this.$emit("update:selectedOperator", this.newAgriData);
       // this.selectedOperator = this.agriData;
       // this.$store.commit("setOperator", this.agriData);
     },
     getOperatorName: agriData => {
-      console.log(agriData);
       let user = _.find(agriData.utilisateurs, function(u) {
         return u.nom;
       });

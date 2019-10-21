@@ -1,9 +1,13 @@
 <template>
   <v-layout column align-center justify-center class="white--text">
     <v-avatar :size="100">
-      <img :src="require('../assets/logo-cartobio.png')">
+      <img :src="require('../assets/logo-cartobio.png')" />
     </v-avatar>
-    <h1 class="parallax-title">{{msg}}</h1>
+    <h1 class="parallax-title">
+      Ouvrir, enrichir et partager
+      <br />les données
+      parcellaires de l’agriculture biologique
+    </h1>
     <router-link to="/map">
       <v-btn large flat outline round color="white">Accéder à la démo</v-btn>
     </router-link>
