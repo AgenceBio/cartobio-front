@@ -102,6 +102,18 @@
             <!-- List of years with parcels from the operator -->
             <v-list-tile v-for="(year, index) in years" :key="index">
               <v-list-tile-action>
+                <v-btn icon @click="toggleLayerAnon(year)">
+                  <v-icon v-if="layersVisible['anon' + year]">visibility</v-icon>
+                  <v-icon v-if="!layersVisible['anon' + year]">visibility_off</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+              Couche Bio {{year}}
+            </v-list-tile>
+          </v-list>
+          <v-list class="pt-0" dense v-if="operator.title">
+            <!-- List of years with parcels from the operator -->
+            <v-list-tile v-for="(year, index) in years" :key="index">
+              <v-list-tile-action>
                 <v-btn icon @click="toggleLayer(year)">
                   <v-icon v-if="layersVisible[year]">visibility</v-icon>
                   <v-icon v-if="!layersVisible[year]">visibility_off</v-icon>
@@ -207,56 +219,21 @@ let mapStyle = {
   ]
 };
 
-// bio source
-let bioSource = {
-  type: "vector",
-  scheme: "tms",
-  // tiles: [process.env.VUE_APP_GEOSERVER_REMOTE_CARTOBIOLAYER]
-  tiles: [process.env.VUE_APP_GEOSERVER_ADDR]
-};
-
-// not used right now
-
-// let espaceCollabSource = {
-//   type: "vector",
-//   tiles: [
-//     "https://espacecollaboratif.ign.fr/gcms/wfs/cartobio?service=WFS&version=1.1.0&request=GetFeature&outputFormat=GeoJSON&typeName=rpgbio2018dromewgs84" +
-//       "&srsname=4326" +
-//       "&TILEMATRIX={z}" +
-//       "&TILEROW={y}" +
-//       "&TILECOL={x}"
-//   ]
-// };
-
-// not used right now
-
-// let layerCollab = {
-//   id: "collabio",
+// // 2019 anonymous bio layer
+// let bioLayer = {
+//   id: "bio-tiles",
 //   type: "fill",
-//   source: espaceCollabSource,
-//   "source-layer": "rpgbio2018dromewgs84",
+//   source: "bio-tiles",
+//   "source-layer": "anon_rpgbio_2019",
+//   minzoom: 0,
 //   paint: {
-//     "fill-color": "yellow",
-//     "fill-outline-color": "rgba(200, 100, 240, 1)",
+//     "fill-color": "#D0D32E",
+//     "fill-outline-color": "#83C2AB",
 //     "fill-opacity": 0.6
-//   }
+//   },
+//   tms: true,
+//   maxzoom: 24
 // };
-
-// 2018 anonymous bio layer
-let bioLayer = {
-  id: "bio-tiles",
-  type: "fill",
-  source: "bio-tiles",
-  "source-layer": "anon_rpgbio_2018",
-  minzoom: 0,
-  paint: {
-    "fill-color": "#D0D32E",
-    "fill-outline-color": "#83C2AB",
-    "fill-opacity": 0.6
-  },
-  tms: true,
-  maxzoom: 24
-};
 
 // Mapbox draw control
 let draw = new MapboxDraw({
@@ -269,6 +246,13 @@ let draw = new MapboxDraw({
 
 // template for geoJSON objects
 let geoJsonTemplate = { features: [], type: "FeatureCollection" };
+
+let tokenCollab = btoa(
+  process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
+    ":" +
+    process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
+);
+console.log(tokenCollab);
 
 export default {
   name: "Map",
@@ -291,6 +275,8 @@ export default {
       zoom: 12,
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       center: [5.150809, 44.688729],
+      // anonymous layers
+      anonLayers: {},
       // current operator data
       operator: {},
       // operator parcels by year
@@ -333,7 +319,10 @@ export default {
       layersVisible: {
         2019: false,
         2018: false,
-        2017: false
+        2017: false,
+        anon2019: false,
+        anon2018: false,
+        anon2017: false
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
@@ -363,57 +352,64 @@ export default {
         srsname: "4326",
         filter: '{"numerobio":' + this.operator.numeroBio + "}"
       };
-      this.connectEspaceCollaboratif().then(
-        function() {
-          // get 2019 parcels from the operator
-          axios
-            .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
-              params: params,
-              headers: {
-                "Access-Control-Allow-Origin": "*"
-              }
-            })
-            .then(data => this.displayOperatorLayer(data.data));
+      console.log(params);
+      // this.connectEspaceCollaboratif().then(
+      // function() {
+      // get 2019 parcels from the operator
+      axios
+        .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
+          params: params,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.displayOperatorLayer(data.data));
 
-          // get 2018 parcels from the operator
-          let params2018 = params;
-          params2018.typeName = "rpgbio2018drome";
-          axios
-            .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
-              params: params2018
-            })
-            .then(data => this.addOperatorData(data.data, "2018"));
+      // get 2018 parcels from the operator
+      let params2018 = params;
+      params2018.typeName = "rpgbio2018drome";
+      axios
+        .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
+          params: params2018,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2018"));
 
-          // get 2017 parcels from the operator
-          let params2017 = params;
-          params2017.typeName = "rpgbio2017drome";
-          axios
-            .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
-              params: params2017
-            })
-            .then(data => this.addOperatorData(data.data, "2017"));
-        }.bind(this)
-      );
+      // get 2017 parcels from the operator
+      let params2017 = params;
+      params2017.typeName = "rpgbio2017drome";
+      axios
+        .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
+          params: params2017,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2017"));
+      // }.bind(this)
+      // );
       // store the layers
       // maybe in future evolutions: let user choose the color of the layers so we don't have to handle it ourselves for lager set of years.
       // maybe a loop to do it but need to store colors for each
       this.layersOperator["2019"] = this.getYearLayer(
         "2019",
-        "#0D9BA5", // bio
-        "#F4869D", // not bio
-        "rgba(100, 200, 240, 1)" // outline
+        "#0B7F88", // bio
+        "#C86E81", // not bio
+        "#004462" // outline
       );
       this.layersOperator["2018"] = this.getYearLayer(
         "2018",
         "#0D9BA5", // bio
-        "#D0A9B2", // not bio
-        "rgba(100, 200, 240, 1)" // outline
+        "#F4869D", // not bio
+        "#005377" // outline
       );
       this.layersOperator["2017"] = this.getYearLayer(
         "2017",
-        "#BDE3E6", // bio
-        "#91D1D6", // not bio
-        "rgba(100, 200, 240, 1)" // outline
+        "#39ADB5", // bio
+        "#F69CAE", // not bio
+        "#2E728F" // outline
       );
     }
   },
@@ -439,61 +435,6 @@ export default {
       // To improve
       // should not be in computed style. computed style should work for displaying/hiding layers already defined and editing their sources.
       let computedMapStyle = mapStyle;
-      if (this.map) {
-        if (this.getProfile.nom) {
-          !this.map.getSource("bio-tiles")
-            ? this.map.addSource("bio-tiles", bioSource)
-            : null;
-          !this.map.getLayer("bio-tiles") ? this.map.addLayer(bioLayer) : null;
-        } else if (this.map.getLayer("bio-tiles")) {
-          this.map.removeLayer(bioLayer.id);
-          this.map.removeSource("bio-tiles");
-        }
-
-        if (!this.map.getLayer("highlighted-parcels")) {
-          this.map.addLayer({
-            id: "highlighted-parcels",
-            type: "fill",
-            source: "highlight",
-            paint: {
-              "fill-color": [
-                "match",
-                ["get", "bio"],
-                "0",
-                "#6F3D48",
-                "1",
-                "#06474B",
-                "white"
-              ],
-              "fill-outline-color": "rgba(100, 200, 240, 1)",
-              "fill-opacity": 1
-            }
-          });
-        }
-        if (
-          _.get(this.selectedParcels, ["features", "length"]) &&
-          !this.map.getLayer("selected-parcels")
-        ) {
-          this.map.addLayer({
-            id: "selected-parcels",
-            type: "fill",
-            source: "selected",
-            paint: {
-              "fill-color": [
-                "match",
-                ["get", "bio"],
-                "0",
-                "#9C5664",
-                "1",
-                "#09636A",
-                "white"
-              ],
-              "fill-outline-color": "rgba(100, 200, 240, 1)",
-              "fill-opacity": 1
-            }
-          });
-        }
-      }
       return computedMapStyle;
     }
   },
@@ -501,28 +442,10 @@ export default {
     onMapLoaded(event) {
       this.map = event.map;
       // add map sources
-      this.map.addSource("bio-tiles", bioSource);
-      this.map.addSource("selected", {
-        type: "geojson",
-        data: this.selectedParcels
-      });
-      this.map.addSource("highlight", {
-        type: "geojson",
-        data: this.highlightedParcels
-      });
-      this.map.addSource("operatorParcels2019", {
-        type: "geojson",
-        data: this.parcelsOperator[2019]
-      });
-      this.map.addSource("operatorParcels2018", {
-        type: "geojson",
-        data: this.parcelsOperator[2018]
-      });
-      this.map.addSource("operatorParcels2017", {
-        type: "geojson",
-        data: this.parcelsOperator[2017]
-      });
-
+      // this.map.addSource("bio-tiles", bioSource);
+      if (this.getProfile.active) {
+        this.loadLayers();
+      }
       // this.map.on(
       //   "click",
       //   "collabio",
@@ -553,42 +476,125 @@ export default {
           this.selectParcel(e.features[0]);
         }.bind(this)
       );
-      if (this.operator && this.bboxOperator[0] !== Infinity) {
-        this.map.fitBounds(this.bboxOperator, {
-          padding: this.mapPadding
-        });
-      }
-      if (this.operator) {
+      if (this.operator.title && !this.isOperatorOnMap) {
+        console.log("here?");
         if (this.layersVisible[2019]) {
           this.map.addLayer(this.layersOperator[2019]);
         }
-        this.map.addControl(draw, "top-right");
-        this.map.on(
-          "draw.create",
-          function(e) {
-            let newFeature = e.features[0];
-            let surface = turf.area(newFeature);
-            surface = Math.round(surface * 100) / 100; // round to 2 decimals
-            newFeature.properties.surfgeo = surface;
-            this.newParcel = newFeature;
-            this.setUpParcel = true;
-          }.bind(this)
-        );
-        this.map.on("draw.delete", updateArea);
-        this.map.on("draw.update", updateArea);
-        this.$forceUpdate();
+        this.setUpMapOperator();
       }
-      function updateArea(e) {
-        var data = draw.getAll();
-        if (data.features.length > 0) {
-          var area = turf.area(data);
-          // restrict to area to 2 decimal points
-          var rounded_area = Math.round(area * 100) / 100;
-        } else {
-          if (e.type !== "draw.delete")
-            alert("Use the draw tools to draw a polygon!");
+    },
+    loadLayers() {
+      this.showLayersCard = true;
+      _.forEach(
+        this.years,
+        function(year) {
+          // bio source
+          let bioSource = {
+            type: "vector",
+            scheme: "tms",
+            tiles: [
+              process.env.VUE_APP_GEOSERVER_PREFIX +
+                "" +
+                year +
+                process.env.VUE_APP_GEOSERVER_SUFFIX
+            ]
+          };
+          // security to not trigger map errors
+          if (!this.map.getSource("bio-" + year)) {
+            this.map.addSource("bio-" + year, bioSource);
+          }
+          let bioLayer = {
+            id: "bio-tiles-" + year,
+            type: "fill",
+            source: "bio-" + year,
+            "source-layer": "anon_rpgbio_" + year,
+            minzoom: 0,
+            paint: {
+              "fill-color": "#D0D32E",
+              "fill-outline-color": "#83C2AB",
+              "fill-opacity": 0.6
+            },
+            tms: true,
+            maxzoom: 24
+          };
+          this.anonLayers[year] = bioLayer;
+        }.bind(this)
+      );
+
+      this.toggleLayerAnon(2019);
+
+      if (!this.map.getSource("selected")) {
+        this.map.addSource("selected", {
+          type: "geojson",
+          data: this.selectedParcels
+        });
+      }
+      if (!this.map.getSource("highlight")) {
+        this.map.addSource("highlight", {
+          type: "geojson",
+          data: this.highlightedParcels
+        });
+      }
+      if (!this.map.getSource("operatorParcels2019")) {
+        this.map.addSource("operatorParcels2019", {
+          type: "geojson",
+          data: this.parcelsOperator[2019]
+        });
+      }
+
+      if (!this.map.getSource("operatorParcels2018")) {
+        this.map.addSource("operatorParcels2018", {
+          type: "geojson",
+          data: this.parcelsOperator[2018]
+        });
+      }
+      if (!this.map.getSource("operatorParcels2017")) {
+        this.map.addSource("operatorParcels2017", {
+          type: "geojson",
+          data: this.parcelsOperator[2017]
+        });
+      }
+      this.map.addLayer({
+        id: "highlighted-parcels",
+        type: "fill",
+        source: "highlight",
+        paint: {
+          "fill-color": [
+            "match",
+            ["get", "bio"],
+            "0",
+            "#6F3D48",
+            "1",
+            "#06474B",
+            "white"
+          ],
+          "fill-outline-color": "rgba(100, 200, 240, 1)",
+          "fill-opacity": 1
         }
-      }
+      });
+      this.map.addLayer({
+        id: "selected-parcels",
+        type: "fill",
+        source: "selected",
+        paint: {
+          "fill-color": [
+            "match",
+            ["get", "bio"],
+            "0",
+            "#9C5664",
+            "1",
+            "#09636A",
+            "white"
+          ],
+          "fill-outline-color": "rgba(100, 200, 240, 1)",
+          "fill-opacity": 1
+        }
+      });
+    },
+    removeLayers() {
+      // TODO
+      console.log(this.map);
     },
     handleSearchResult(value) {
       this.map.panTo(value.geometry.coordinates);
@@ -617,13 +623,14 @@ export default {
     },
     connectEspaceCollaboratif() {
       let params = {
-        "gcms_user_login[username_email]": "cartobio@agencebio.org",
-        "gcms_user_login[password]": "6Lavoisier93100!",
+        "gcms_user_login[username_email]":
+          process.env.VUE_APP_ESPACE_COLLAB_LOGIN,
+        "gcms_user_login[password]": process.env.VUE_APP_ESPACE_COLLAB_PASSWORD,
         _submit: "Connexion"
       };
       return axios
         .post("http://espacecollaboratif.ign.fr/login", params)
-        .then(data => console.log(data));
+        .then();
     },
     acknowledgeDisclaimer() {
       this.$store.commit("setDisclaimer", false);
@@ -631,41 +638,50 @@ export default {
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2019");
       this.toggleLayer("2019");
-      this.showLayersCard = true;
       this.bboxOperator = turf.bbox(data);
-      if (this.map) {
-        this.map.addControl(draw, "top-right");
-        this.map.on(
-          "draw.create",
-          "draw.create",
-          function(e) {
-            let newFeature = e.features[0];
-            let surface = turf.area(newFeature);
-            surface = Math.round(surface * 100) / 100; // round to 2 decimals
-            newFeature.properties.surfgeo = surface;
-            this.newParcel = newFeature;
-            this.setUpParcel = true;
-          }.bind(this)
-        );
-        this.map.on("draw.delete", updateArea);
-        this.map.on("draw.update", updateArea);
-        if (_.get(this.bboxOperator, "0")) {
-          this.map
-            .getSource("operatorParcels2019")
-            .setData(this.parcelsOperator[2019]);
-          this.map.fitBounds(this.bboxOperator, {
-            padding: this.mapPadding
-          });
-        }
+      if (this.map && !this.isOperatorOnMap) {
+        this.setUpMapOperator();
       }
-      function updateArea(e) {
-        var data = draw.getAll();
-        if (data.features.length > 0) {
-          var area = turf.area(data);
-          // restrict to area to 2 decimal points
-          var rounded_area = Math.round(area * 100) / 100;
-        }
+    },
+    // function  used by draw features
+    updateArea(e) {
+      var data = draw.getAll();
+      if (data.features.length > 0) {
+        var area = turf.area(data);
+        // restrict to area to 2 decimal points
+        var rounded_area = Math.round(area * 100) / 100;
+      } else {
+        if (e.type !== "draw.delete")
+          alert("Use the draw tools to draw a polygon!");
       }
+    },
+    setUpMapOperator() {
+      console.log("setup map operator");
+      this.map.addControl(draw, "top-right");
+      this.map.on(
+        "draw.create",
+        function(e) {
+          let newFeature = e.features[0];
+          let surface = turf.area(newFeature);
+          surface = Math.round(surface * 100) / 100; // round to 2 decimals
+          newFeature.properties.surfgeo = surface;
+          this.newParcel = newFeature;
+          this.setUpParcel = true;
+        }.bind(this)
+      );
+      this.map.on("draw.delete", this.updateArea);
+      this.map.on("draw.update", this.updateArea);
+      if (
+        this.bboxOperator[0] !== undefined &&
+        this.bboxOperator[0] !== Infinity
+      ) {
+        console.log("fit bounds");
+        this.map.fitBounds(this.bboxOperator, {
+          padding: this.mapPadding
+        });
+      }
+      this.isOperatorOnMap = true;
+      this.$forceUpdate();
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -755,6 +771,20 @@ export default {
       }
       this.$forceUpdate();
     },
+    toggleLayerAnon(layerYear) {
+      let layer = this.anonLayers[layerYear];
+      this.layersVisible["anon" + layerYear] = !this.layersVisible[
+        "anon" + layerYear
+      ];
+      if (this.map) {
+        if (this.map.getLayer(layer.id)) {
+          this.map.removeLayer(layer.id);
+        } else {
+          this.map.addLayer(layer);
+        }
+      }
+      this.$forceUpdate();
+    },
     // annual parcel layer
     getYearLayer(layerYear, colorBio, colorNoBio, fillColor) {
       return {
@@ -775,6 +805,16 @@ export default {
           "fill-opacity": 0.8
         }
       };
+    }
+  },
+  watch: {
+    // whenever question changes, this function will run
+    getProfile: function(newProfile, oldProfile) {
+      if (newProfile.active) {
+        this.loadLayers();
+      } else {
+        this.removeLayers();
+      }
     }
   }
 };
