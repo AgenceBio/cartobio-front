@@ -247,7 +247,7 @@ let bioLayer = {
   id: "bio-tiles",
   type: "fill",
   source: "bio-tiles",
-  "source-layer": "anon_rpgbio2019",
+  "source-layer": "anon_rpgbio_2018",
   minzoom: 0,
   paint: {
     "fill-color": "#D0D32E",
