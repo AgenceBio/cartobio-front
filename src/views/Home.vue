@@ -37,7 +37,7 @@ parcellaires de l’agriculture biologique
                       round
                       outline
                       flat
-                      href="https://pad.etalab.studio/-3GtpmIkQKaj5CJsb25lSg"
+                      href="https://hackmd.io/@lucasbio/cartobio"
                       target="_blank"
                     >
                       <v-icon>file_copy</v-icon>Découvrir notre démarche projet
@@ -88,6 +88,10 @@ export default {
 * {
   margin: 0;
   padding: 0;
+}
+
+html {
+  overflow-y: auto;
 }
 
 a {
