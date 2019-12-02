@@ -15,7 +15,7 @@
         to="/notifications"
         class="navbar-button"
       >
-        <v-btn flat class="navbar-button">Notifications</v-btn>
+        <v-btn flat class="navbar-button">Exploitations</v-btn>
       </router-link>
       <router-link v-if="currentRoute !== '/map'" to="/map" class="navbar-button">
         <v-btn flat class="navbar-button">Carte</v-btn>
