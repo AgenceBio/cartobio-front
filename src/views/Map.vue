@@ -84,6 +84,9 @@
           ref="mapboxDiv"
           :transformRequest="transformRequest"
         >
+          <v-toolbar floating dense class="my-3 toolbar-search">
+            <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
+          </v-toolbar>
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
@@ -140,6 +143,8 @@ import geojsonvt from "geojson-vt";
 import Mapbox from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import SphericalMercator from "sphericalmercator";
+import Geosearch from "@/components/Geosearch";
+
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   MglMap,
@@ -192,6 +197,26 @@ let mapStyle = {
           "&TILEMATRIXSET=PM" +
           "&FORMAT=image/png" +
           "&LAYER=CADASTRALPARCELS.PARCELS" +
+          // "&LAYER= CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle" + // WFS not wmts
+          "&TILEMATRIX={z}" +
+          "&TILEROW={y}" +
+          "&TILECOL={x}"
+      ],
+      opacity: "1",
+      attribution: "IGN-F/Géoportail",
+      tileSize: 256
+    },
+    "geographical-names": {
+      type: "raster",
+      tiles: [
+        "https://wxs.ign.fr/" +
+          process.env.VUE_APP_API_IGN +
+          "/geoportail/wmts?" +
+          "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+          "&STYLE=normal" +
+          "&TILEMATRIXSET=PM" +
+          "&FORMAT=image/png" +
+          "&layer=GEOGRAPHICALNAMES.NAMES" +
           "&TILEMATRIX={z}" +
           "&TILEROW={y}" +
           "&TILECOL={x}"
@@ -213,6 +238,13 @@ let mapStyle = {
       id: "other-tiles",
       type: "raster",
       source: "other-tiles",
+      minzoom: 0,
+      maxzoom: 24
+    },
+    {
+      id: "geographical-names-tiles",
+      type: "raster",
+      source: "geographical-names",
       minzoom: 0,
       maxzoom: 24
     }
@@ -247,13 +279,6 @@ let draw = new MapboxDraw({
 // template for geoJSON objects
 let geoJsonTemplate = { features: [], type: "FeatureCollection" };
 
-let tokenCollab = btoa(
-  process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-    ":" +
-    process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-);
-console.log(tokenCollab);
-
 export default {
   name: "Map",
   components: {
@@ -261,6 +286,7 @@ export default {
     ParcelsList,
     SelectedParcelsDetails,
     ParcelDetails,
+    Geosearch,
     MglNavigationControl,
     MglGeolocateControl,
     MglFullscreenControl,
@@ -311,6 +337,9 @@ export default {
       // mini drawer display
       mini: true,
 
+      // edit mode
+      editMode: false,
+
       // misc data
 
       // new parcel dialog
@@ -332,8 +361,6 @@ export default {
   // event bus
   props: ["bus"],
   created: function() {
-    // handle geosearch result
-    this.bus.$on("searchCompleted", this.handleSearchResult);
     // get the current operator
     this.operator = this.getOperator;
 
@@ -348,28 +375,33 @@ export default {
         version: "1.1.0",
         request: "GetFeature",
         outputFormat: "GeoJSON",
-        typeName: "rpgbio2019drome",
+        typeName: "rpgbio2019v4",
         srsname: "4326",
         filter: '{"numerobio":' + this.operator.numeroBio + "}"
       };
-      console.log(params);
-      // this.connectEspaceCollaboratif().then(
-      // function() {
+
+      let tokenCollab = btoa(
+        process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
+          ":" +
+          process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
+      );
+
       // get 2019 parcels from the operator
       axios
-        .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
+        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
           params: params,
           headers: {
             Authorization: "Basic " + tokenCollab
           }
         })
-        .then(data => this.displayOperatorLayer(data.data));
+        .then(data => this.displayOperatorLayer(data.data))
+        .catch(data => this.displayErrorMessage(data));
 
       // get 2018 parcels from the operator
-      let params2018 = params;
-      params2018.typeName = "rpgbio2018drome";
+      let params2018 = JSON.parse(JSON.stringify(params));
+      params2018.typeName = "rpgbio2018v9";
       axios
-        .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
+        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
           params: params2018,
           headers: {
             Authorization: "Basic " + tokenCollab
@@ -378,10 +410,10 @@ export default {
         .then(data => this.addOperatorData(data.data, "2018"));
 
       // get 2017 parcels from the operator
-      let params2017 = params;
-      params2017.typeName = "rpgbio2017drome";
+      let params2017 = JSON.parse(JSON.stringify(params));
+      params2017.typeName = "rpgbio2017v7";
       axios
-        .get("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio", {
+        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
           params: params2017,
           headers: {
             Authorization: "Basic " + tokenCollab
@@ -477,7 +509,6 @@ export default {
         }.bind(this)
       );
       if (this.operator.title && !this.isOperatorOnMap) {
-        console.log("here?");
         if (this.layersVisible[2019]) {
           this.map.addLayer(this.layersOperator[2019]);
         }
@@ -594,10 +625,14 @@ export default {
     },
     removeLayers() {
       // TODO
-      console.log(this.map);
+      // console.log(this.map);
     },
     handleSearchResult(value) {
-      this.map.panTo(value.geometry.coordinates);
+      // this.map.panTo(value.geometry.coordinates);
+      this.map.easeTo({
+        center: value.geometry.coordinates,
+        zoom: 10 + parseInt(value.importance) // may be improved, difficult to know what importance stands for
+      });
     },
     // not used currently
     transformRequest(url, resourceType) {
@@ -637,10 +672,24 @@ export default {
     },
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2019");
+      console.log(data);
+      if (!data.length) {
+        this.displayErrorMessage("no data");
+      }
       this.toggleLayer("2019");
       this.bboxOperator = turf.bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
+      }
+      if (this.map) {
+        if (
+          this.bboxOperator[0] !== undefined &&
+          this.bboxOperator[0] !== Infinity
+        ) {
+          this.map.fitBounds(this.bboxOperator, {
+            padding: this.mapPadding
+          });
+        }
       }
     },
     // function  used by draw features
@@ -655,8 +704,24 @@ export default {
           alert("Use the draw tools to draw a polygon!");
       }
     },
+    startEditMode() {
+      this.editMode = true;
+      this.map.addControl(draw, "top-right");
+      this.map.on(
+        "draw.create",
+        function(e) {
+          let newFeature = e.features[0];
+          let surface = turf.area(newFeature);
+          surface = Math.round(surface * 100) / 100; // round to 2 decimals
+          newFeature.properties.surfgeo = surface;
+          this.newParcel = newFeature;
+          this.setUpParcel = true;
+        }.bind(this)
+      );
+      this.map.on("draw.delete", this.updateArea);
+      this.map.on("draw.update", this.updateArea);
+    },
     setUpMapOperator() {
-      console.log("setup map operator");
       this.map.addControl(draw, "top-right");
       this.map.on(
         "draw.create",
@@ -675,7 +740,6 @@ export default {
         this.bboxOperator[0] !== undefined &&
         this.bboxOperator[0] !== Infinity
       ) {
-        console.log("fit bounds");
         this.map.fitBounds(this.bboxOperator, {
           padding: this.mapPadding
         });
@@ -785,6 +849,9 @@ export default {
       }
       this.$forceUpdate();
     },
+    displayErrorMessage(data) {
+      alert("Impossible de trouver le parcellaire de cet opérateur");
+    },
     // annual parcel layer
     getYearLayer(layerYear, colorBio, colorNoBio, fillColor) {
       return {
@@ -826,6 +893,11 @@ export default {
   height: 100%;
   width: 100%;
   position: relative;
+}
+.toolbar-search {
+  margin-left: 50%;
+  transform: translateX(-50%) !important; // it gets overriden by vuetify
+  border-radius: 4px;
 }
 .data-card {
   position: absolute;

@@ -9,7 +9,7 @@
       parcellaires de l’agriculture biologique
     </h1>
     <router-link to="/map">
-      <v-btn large flat outline round color="white">Accéder à la démo</v-btn>
+      <v-btn large flat outline round color="white">Accéder à l'application</v-btn>
     </router-link>
   </v-layout>
 </template>

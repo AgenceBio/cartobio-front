@@ -110,7 +110,7 @@
         <v-card class="elevation-0 transparent mt-4">
           <v-card-title primary-title class="layout justify-center">
             <div>
-              <div>10 mois, c'est (très) court ! Nous serons ravis d'échanger avec vous, ou d'avoir des retours tout au long du projet.</div>
+              <div>10 mois, c'est (déjà) fini ! Mais ne vous inquiêtez pas, si Wojtek quitte l'aventure, le projet continue ! Vous pouvez toujours nous contacter pour discuter du projet.</div>
               <v-btn
                 round
                 color="primary-green"

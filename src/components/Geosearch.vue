@@ -4,11 +4,12 @@
     :items="results"
     :loading="loadingPlaces"
     :search-input.sync="searchText"
-    placeholder="Aller à ..."
     item-text="city"
     no-data-text="Pas de résultats"
     prepend-inner-icon="search"
+    placeholder="Recherche"
     hide-no-data
+    hide-details
     clearable
     return-object
   ></v-autocomplete>
@@ -74,5 +75,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.v-autocomplete {
+  padding-top: 0;
+}
 </style>
 

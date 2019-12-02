@@ -1,5 +1,6 @@
 <template>
-  <v-layout class="agriList">
+  <v-layout class="agriList" column>
+    <FilterToolbar :filters="filters" v-on:update-filters="updateAgriList($event)"></FilterToolbar>
     <v-container fluid>
       <v-data-iterator
         content-tag="v-layout"
@@ -11,24 +12,7 @@
         no-data-text="Please select a product from the left hand menu to compare."
       >
         <v-flex slot="item" slot-scope="props" xs4 pa-4>
-          <!-- <v-flex>
-          <v-card>
-            <v-container v-bind="{ [`grid-list-xl`]: true }" fluid>
-          <v-layout row wrap>-->
-          <!-- <v-flex v-for="item in displayedNotifications" :key="item.id" xs4 pa-4> -->
           <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
-          <!-- </v-flex> -->
-          <!-- </v-layout> -->
-          <!-- <v-layout row wrap centered>
-                <v-btn
-                  color="primary"
-                  @click="displayMore()"
-                  v-if="displayedNotifications.length !== notificationList.length"
-                >Voir plus</v-btn>
-              </v-layout>
-          </v-container>-->
-          <!-- </v-card>
-          </v-flex>-->
         </v-flex>
       </v-data-iterator>
       <v-dialog v-model="loadingData" hide-overlay persistent width="300">
@@ -62,14 +46,14 @@ const CancelToken = axios.CancelToken;
 let cancel;
 
 import AgriItem from "@/components/AgriItem";
-
+import FilterToolbar from "@/components/FilterToolbar";
 export default {
   name: "AgriList",
   components: {
-    AgriItem
+    AgriItem,
+    FilterToolbar
   },
   props: ["bus"],
-  methods: {},
   data: function() {
     return {
       itemsPerPageOptions: [6, 12, 18],
@@ -81,6 +65,15 @@ export default {
       rowsPerPageItems: [6, 12, 18],
       pagination: {
         rowsPerPage: 6
+      },
+      filters: {
+        firstName: "",
+        lastName: "",
+        pacage: "",
+        numeroBio: "",
+        numeroClient: "",
+        department: "",
+        city: ""
       },
       selectedOperatorData: {}
     };
@@ -97,32 +90,49 @@ export default {
     this.loadingData = true;
     this.$store.commit("setOperator", {}); // clear selected operator
 
-    this.getNotificationsList(
-      _.get(this.getProfile, "organismeCertificateurId")
-    )
-      .then(
-        function(data) {
-          this.notificationList = data.data;
-          this.displayedNotifications = _.take(
-            this.notificationList,
-            this.numDisplayed
-          );
-          _.remove(this.notificationList, function(notif) {
-            return !notif.numeroBio;
-          });
-        }.bind(this)
-        // .filter(
-        //   this.isProducteur
-        // )
-      )
-      .then(() => (this.loadingData = false));
+    this.filters.department = _.get(
+      this.getProfile,
+      ["profile", "departements", "0"],
+      "26"
+    );
+    this.getAgriList();
   },
   methods: {
-    getNotificationsList: function(ocId) {
+    updateAgriList(newFilters) {
+      this.filters = newFilters;
+      this.getAgriList();
+    },
+    getAgriList() {
+      this.loadingData = true;
+      this.getNotificationsList()
+        .then(
+          function(data) {
+            this.notificationList = data.data;
+            this.displayedNotifications = _.take(
+              this.notificationList,
+              this.numDisplayed
+            );
+            _.remove(this.notificationList, function(notif) {
+              return !notif.numeroBio;
+            });
+          }.bind(this)
+        )
+        .then(() => (this.loadingData = false));
+    },
+    getNotificationsList: function() {
+      let ocId = _.get(this.getProfile, "organismeCertificateurId");
+      console.log(this.getProfile);
+      let filters = this.filters;
       let params = {
         oc: ocId,
         activites: 1,
-        departementId: 26
+        departementId: filters.department,
+        prenom: filters.firstName,
+        nom: filters.lastName,
+        pacage: filters.pacage,
+        ville: filters.city,
+        numeroClient: filters.numeroClient,
+        numeroBio: filters.numeroBio
       };
 
       return axios.get(

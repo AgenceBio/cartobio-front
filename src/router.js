@@ -4,6 +4,8 @@ import Home from './views/Home.vue'
 import Map from './views/Map.vue'
 import AgriList from './views/AgriList.vue'
 import AppLayout from './views/AppLayout.vue'
+import store from './store.js'
+
 Vue.use(Router)
 
 export default new Router({
@@ -35,7 +37,15 @@ export default new Router({
         {
           path: '/notifications',
           name: 'notifications',
-          component: AgriList
+          component: AgriList,
+          beforeEnter: (to, from, next) => {
+            let userCategory = store.getters.getUserCategory;
+            if (userCategory !== store.getters.getCategories.oc) {
+              next('/map');
+            } else {
+              next();
+            }
+          }
         }
       ]
     }
