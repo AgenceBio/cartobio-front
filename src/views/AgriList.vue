@@ -1,20 +1,14 @@
 <template>
   <v-layout class="agriList" column>
     <FilterToolbar :filters="filters" v-on:update-filters="updateAgriList($event)"></FilterToolbar>
+    <v-divider></v-divider>
+    <h1 class="mx-5">Liste des opérateurs</h1>
     <v-container fluid>
-      <v-data-iterator
-        content-tag="v-layout"
-        row
-        wrap
-        :items="notificationList"
-        :rows-per-page-items="rowsPerPageItems"
-        :pagination.sync="pagination"
-        no-data-text="Please select a product from the left hand menu to compare."
-      >
-        <v-flex slot="item" slot-scope="props" xs4 pa-4>
+      <v-data-table :headers="headers" :items="notificationList">
+        <template v-slot:items="props">
           <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
-        </v-flex>
-      </v-data-iterator>
+        </template>
+      </v-data-table>
       <v-dialog v-model="loadingData" hide-overlay persistent width="300">
         <v-card color="#b9d065">
           <v-card-text>
@@ -25,7 +19,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="showConfirmPopup" hide-overlay persistent width="300">
+      <v-dialog v-model="showConfirmPopup" persistent width="300">
         <v-card>
           <v-card-text>
             Aller au parcellaire de {{selectedOperatorData.title}}
@@ -56,19 +50,45 @@ export default {
   props: ["bus"],
   data: function() {
     return {
-      itemsPerPageOptions: [6, 12, 18],
-      itemsPerPage: 6,
+      // itemsPerPageOptions: [6, 12, 18],
+      // itemsPerPage: 6,
       notificationList: [],
       loadingData: false,
       displayedNotifications: [],
-      numDisplayed: 51,
-      rowsPerPageItems: [6, 12, 18],
-      pagination: {
-        rowsPerPage: 6
-      },
+      headers: [
+        {
+          text: "Nom de l'exploitation",
+          align: "left",
+          sortable: true,
+          value: "title"
+        },
+        {
+          text: "Date d'engagement",
+          align: "right",
+          sortable: true,
+          value: "dateEngagement"
+        },
+        {
+          text: "Numéro Pacage",
+          align: "right",
+          sortable: true,
+          value: "numeroPacage"
+        },
+        {
+          text: "Numéro Bio",
+          align: "right",
+          sortable: true,
+          value: "numeroBio"
+        },
+        { text: "Gérant", align: "right", sortable: true, value: "gerant" }
+      ],
+      // numDisplayed: 51,
+      // rowsPerPageItems: [6, 12, 18],
+      // pagination: {
+      //   rowsPerPage: 6
+      // },
       filters: {
-        firstName: "",
-        lastName: "",
+        name: "",
         pacage: "",
         numeroBio: "",
         numeroClient: "",
@@ -93,13 +113,16 @@ export default {
     this.filters.department = _.get(
       this.getProfile,
       ["profile", "departements", "0"],
-      "26"
+      26
     );
     this.getAgriList();
   },
   methods: {
     updateAgriList(newFilters) {
       this.filters = newFilters;
+      if (this.filters.department === 1) {
+        this.filters.department = undefined;
+      }
       this.getAgriList();
     },
     getAgriList() {
@@ -121,14 +144,12 @@ export default {
     },
     getNotificationsList: function() {
       let ocId = _.get(this.getProfile, "organismeCertificateurId");
-      console.log(this.getProfile);
       let filters = this.filters;
       let params = {
         oc: ocId,
         activites: 1,
         departementId: filters.department,
-        prenom: filters.firstName,
-        nom: filters.lastName,
+        nom: filters.name,
         pacage: filters.pacage,
         ville: filters.city,
         numeroClient: filters.numeroClient,

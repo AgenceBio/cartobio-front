@@ -1,5 +1,5 @@
 <template>
-  <v-card tile @click="selectOperator()" class="clickable-card">
+  <!-- <v-card tile @click="selectOperator()" class="clickable-card">
     <v-card-title
       v-bind:class="{'green lighten-3': newAgriData.numeroPacage, 'red lighten-3': !newAgriData.numeroPacage}"
     >{{newAgriData.title}}</v-card-title>
@@ -8,20 +8,17 @@
         <v-list-tile>Date d'engagement : {{newAgriData.dateEngagement}}</v-list-tile>
         <v-list-tile>Numéro Pacage : {{newAgriData.numeroPacage}}</v-list-tile>
         <v-list-tile>Numéro Bio : {{newAgriData.numeroBio}}</v-list-tile>
-        <!-- <v-list-tile>
-          Activités :
-          <v-list>
-            <v-list-tile
-              v-for="activite in agriData.activites"
-              v-bind:key="activite.id"
-            >{{activite.nom}}</v-list-tile>
-          </v-list>
-        </v-list-tile>-->
         <v-list-tile>Gérant : {{newAgriData.gerant}}</v-list-tile>
-        <!-- <v-list-tile>{{}}</v-list-tile> -->
       </v-list>
     </v-card-text>
-  </v-card>
+  </v-card>-->
+  <tr @click="selectOperator()">
+    <td>{{newAgriData.title}}</td>
+    <td class="text-xs-right">{{newAgriData.dateEngagement}}</td>
+    <td class="text-xs-right">{{newAgriData.numeroPacage}}</td>
+    <td class="text-xs-right">{{newAgriData.numeroBio}}</td>
+    <td class="text-xs-right">{{newAgriData.gerant}}</td>
+  </tr>
 </template>
 <script>
 const axios = require("axios");
@@ -60,7 +57,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.clickable-card {
+tr {
   cursor: pointer;
 }
 </style>
