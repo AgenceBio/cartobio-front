@@ -100,31 +100,99 @@
         ></SelectedParcelsDetails>
 
         <!-- Layers selector -->
-        <v-card class="layers-card" v-show="showLayersCard">
-          <v-list class="pt-0" dense>
-            <!-- List of years with parcels from the operator -->
-            <v-list-tile v-for="(year, index) in years" :key="index">
-              <v-list-tile-action>
-                <v-btn icon @click="toggleLayerAnon(year)">
-                  <v-icon v-if="layersVisible['anon' + year]">visibility</v-icon>
-                  <v-icon v-if="!layersVisible['anon' + year]">visibility_off</v-icon>
-                </v-btn>
-              </v-list-tile-action>
-              Couche Bio {{year}}
-            </v-list-tile>
-          </v-list>
-          <v-list class="pt-0" dense v-if="operator.title">
-            <!-- List of years with parcels from the operator -->
-            <v-list-tile v-for="(year, index) in years" :key="index">
-              <v-list-tile-action>
-                <v-btn icon @click="toggleLayer(year)">
-                  <v-icon v-if="layersVisible[year]">visibility</v-icon>
-                  <v-icon v-if="!layersVisible[year]">visibility_off</v-icon>
-                </v-btn>
-              </v-list-tile-action>
-              Parcelles {{year}}
-            </v-list-tile>
-          </v-list>
+        <v-flex class="layers-panel" v-show="showLayersCard">
+          <v-expansion-panel popout expand v-bind:value="expandLayers">
+            <v-expansion-panel-content>
+              <template v-slot:header>
+                <div class="expansion-title">
+                  <v-icon>layers</v-icon>Layers
+                </div>
+              </template>
+              <v-card>
+                <v-list class="pt-0" dense two-line>
+                  <!-- List of years with parcels from the operator -->
+                  <v-list-tile
+                    v-for="(year, index) in years"
+                    :key="index"
+                    v-bind:class="{'not-visible': !layersVisible['anon' + year].visibility}"
+                  >
+                    <v-list-tile-action>
+                      <v-btn icon @click="toggleLayerAnon(year)">
+                        <v-icon v-if="layersVisible['anon' + year].visibility">visibility</v-icon>
+                        <v-icon v-if="!layersVisible['anon' + year].visibility">visibility_off</v-icon>
+                      </v-btn>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                      Parcelles Bio RPG {{year}}
+                      <v-sheet
+                        class="d-flex"
+                        v-bind:style="{'background-color' : layersVisible['anon' + year].color, 'border-color' : layersVisible['anon' + year].color}"
+                        height="20"
+                        width="20"
+                      ></v-sheet>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
+                <v-divider></v-divider>
+                <v-list dense class="pt-0" v-if="operator.title" two-line>
+                  <!-- List of years with parcels from the operator -->
+                  <v-list-tile
+                    v-for="(year, index) in years"
+                    :key="index"
+                    v-bind:class="{'not-visible': !layersVisible[year].visibility}"
+                  >
+                    <v-list-tile-action>
+                      <v-btn icon @click="toggleLayer(year)">
+                        <v-icon v-if="layersVisible[year].visibility">visibility</v-icon>
+                        <v-icon v-if="!layersVisible[year].visibility">visibility_off</v-icon>
+                      </v-btn>
+                    </v-list-tile-action>
+                    <v-list-tile-content d-flex>
+                      <span>Parcelles Exploitant {{year}}</span>
+                      <div style="display: flex; flex-direction: row; width: 100%;">
+                        <v-sheet
+                          v-bind:style="{'background-color' : layersVisible[year].colorBio, 'border-color' : layersVisible[year].colorBio}"
+                          height="20"
+                          width="20"
+                        ></v-sheet>
+                        <span class="label-legend">Bio</span>
+                        <v-spacer></v-spacer>
+                        <v-sheet
+                          v-bind:style="{'background-color' : layersVisible[year].colorNotBio, 'border-color' : layersVisible[year].colorNotBio}"
+                          height="20"
+                          width="20"
+                        ></v-sheet>
+                        <span class="label-legend">Conven.</span>
+                        <v-spacer></v-spacer>
+                      </div>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
+              </v-card>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-flex>
+
+        <v-card class="survey" v-show="displaySurvey">
+          <v-btn flat icon color="black" class="close-survey" @click="displaySurvey = false">
+            <v-icon>close</v-icon>
+          </v-btn>
+          <v-card-title primary-title>
+            <h3 class="headline mb-0">Donnez nous votre avis !</h3>
+          </v-card-title>
+          <v-card-text>
+            <v-spacer></v-spacer>Un petit questionnaire est prévu pour ça :
+            <v-spacer></v-spacer>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <a href="https://fr.surveymonkey.com/r/339NRFN" target="_blank">
+              <v-btn color="primary">
+                <v-icon>open_in_new</v-icon>questionnaire
+              </v-btn>
+            </a>
+            <v-spacer></v-spacer>
+          </v-card-actions>
         </v-card>
       </div>
     </v-content>
@@ -296,7 +364,6 @@ export default {
   data() {
     return {
       // map related data:
-
       map: undefined,
       zoom: 12,
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
@@ -335,23 +402,37 @@ export default {
       // show drawer
       drawer: false,
       // mini drawer display
-      mini: true,
+      mini: false,
 
       // edit mode
       editMode: false,
 
       // misc data
-
+      filterLabel: { filter: "numerobio", property: "numeroBio" },
+      expandLayers: [true],
+      displaySurvey: true,
       // new parcel dialog
       setUpParcel: false,
       showLayersCard: false,
       layersVisible: {
-        2019: false,
-        2018: false,
-        2017: false,
-        anon2019: false,
-        anon2018: false,
-        anon2017: false
+        2019: {
+          visibility: false,
+          colorBio: "#0B7F88",
+          colorNotBio: "#C86E81"
+        },
+        2018: {
+          visibility: false,
+          colorBio: "#0D9BA5",
+          colorNotBio: "#F4869D"
+        },
+        2017: {
+          visibility: false,
+          colorBio: "#39ADB5",
+          colorNotBio: "#F69CAE"
+        },
+        anon2019: { visibility: false, color: "#D0D32E" },
+        anon2018: { visibility: false, color: "#D0D32E" },
+        anon2017: { visibility: false, color: "#D0D32E" }
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
@@ -364,10 +445,20 @@ export default {
     // get the current operator
     this.operator = this.getOperator;
 
+    if (_.get(this.operator, "pacage") && !_.get(this.operator, "title")) {
+      alert(
+        "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
+          "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
+      );
+      this.operator.title = "pacage : " + this.operator.pacage;
+      this.operator.pacage = '"' + this.operator.pacage + '"';
+      this.filterLabel = { filter: "pacage", property: "pacage" };
+    }
+
     // if there is an operator, show drawer.
     this.drawer = _.get(this.$store.getters.getOperator, "title");
 
-    if (_.get(this.operator, "numeroBio")) {
+    if (_.get(this.operator, "numeroBio") || _.get(this.operator, "pacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
       let params = {
@@ -377,7 +468,12 @@ export default {
         outputFormat: "GeoJSON",
         typeName: "rpgbio2019v4",
         srsname: "4326",
-        filter: '{"numerobio":' + this.operator.numeroBio + "}"
+        filter:
+          '{"' +
+          this.filterLabel.filter +
+          '":' +
+          this.operator[this.filterLabel.property] +
+          "}"
       };
 
       let tokenCollab = btoa(
@@ -394,8 +490,8 @@ export default {
             Authorization: "Basic " + tokenCollab
           }
         })
-        .then(data => this.displayOperatorLayer(data.data))
-        .catch(data => this.displayErrorMessage(data));
+        .then(data => this.displayOperatorLayer(data.data));
+      // .catch(data => this.displayErrorMessage(data));
 
       // get 2018 parcels from the operator
       let params2018 = JSON.parse(JSON.stringify(params));
@@ -586,6 +682,7 @@ export default {
           data: this.parcelsOperator[2017]
         });
       }
+      // highlight
       this.map.addLayer({
         id: "highlighted-parcels",
         type: "fill",
@@ -604,6 +701,7 @@ export default {
           "fill-opacity": 1
         }
       });
+      // selected
       this.map.addLayer({
         id: "selected-parcels",
         type: "fill",
@@ -625,7 +723,6 @@ export default {
     },
     removeLayers() {
       // TODO
-      // console.log(this.map);
     },
     handleSearchResult(value) {
       // this.map.panTo(value.geometry.coordinates);
@@ -672,10 +769,6 @@ export default {
     },
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2019");
-      console.log(data);
-      if (!data.length) {
-        this.displayErrorMessage("no data");
-      }
       this.toggleLayer("2019");
       this.bboxOperator = turf.bbox(data);
       if (this.map && !this.isOperatorOnMap) {
@@ -722,20 +815,20 @@ export default {
       this.map.on("draw.update", this.updateArea);
     },
     setUpMapOperator() {
-      this.map.addControl(draw, "top-right");
-      this.map.on(
-        "draw.create",
-        function(e) {
-          let newFeature = e.features[0];
-          let surface = turf.area(newFeature);
-          surface = Math.round(surface * 100) / 100; // round to 2 decimals
-          newFeature.properties.surfgeo = surface;
-          this.newParcel = newFeature;
-          this.setUpParcel = true;
-        }.bind(this)
-      );
-      this.map.on("draw.delete", this.updateArea);
-      this.map.on("draw.update", this.updateArea);
+      // this.map.addControl(draw, "top-right");
+      // this.map.on(
+      //   "draw.create",
+      //   function(e) {
+      //     let newFeature = e.features[0];
+      //     let surface = turf.area(newFeature);
+      //     surface = Math.round(surface * 100) / 100; // round to 2 decimals
+      //     newFeature.properties.surfgeo = surface;
+      //     this.newParcel = newFeature;
+      //     this.setUpParcel = true;
+      //   }.bind(this)
+      // );
+      // this.map.on("draw.delete", this.updateArea);
+      // this.map.on("draw.update", this.updateArea);
       if (
         this.bboxOperator[0] !== undefined &&
         this.bboxOperator[0] !== Infinity
@@ -743,6 +836,8 @@ export default {
         this.map.fitBounds(this.bboxOperator, {
           padding: this.mapPadding
         });
+      } else {
+        this.displayErrorMessage();
       }
       this.isOperatorOnMap = true;
       this.$forceUpdate();
@@ -825,7 +920,8 @@ export default {
     },
     toggleLayer(layerYear) {
       let layer = this.layersOperator[layerYear];
-      this.layersVisible[layerYear] = !this.layersVisible[layerYear];
+      this.layersVisible[layerYear].visibility = !this.layersVisible[layerYear]
+        .visibility;
       if (this.map) {
         if (this.map.getLayer(layer.id)) {
           this.map.removeLayer(layer.id);
@@ -837,9 +933,9 @@ export default {
     },
     toggleLayerAnon(layerYear) {
       let layer = this.anonLayers[layerYear];
-      this.layersVisible["anon" + layerYear] = !this.layersVisible[
+      this.layersVisible["anon" + layerYear].visibility = !this.layersVisible[
         "anon" + layerYear
-      ];
+      ].visibility;
       if (this.map) {
         if (this.map.getLayer(layer.id)) {
           this.map.removeLayer(layer.id);
@@ -853,7 +949,7 @@ export default {
       alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
-    getYearLayer(layerYear, colorBio, colorNoBio, fillColor) {
+    getYearLayer(layerYear, colorBio, colorNotBio, fillColor) {
       return {
         id: "operator-parcels-" + layerYear,
         type: "fill",
@@ -863,7 +959,7 @@ export default {
             "match",
             ["get", "bio"],
             "0",
-            colorNoBio,
+            colorNotBio,
             "1",
             colorBio,
             "white"
@@ -904,9 +1000,30 @@ export default {
   top: 10px;
   margin-left: 54px;
 }
-.layers-card {
+.layers-panel {
   position: absolute;
-  top: 80px;
+  top: 20px;
   right: 10px;
+}
+.not-visible {
+  background-color: lightslategrey;
+}
+.label-legend {
+  padding-left: 3px;
+}
+.expansion-title {
+  display: flex;
+}
+
+.survey {
+  position: absolute;
+  bottom: 25px;
+  right: 10px;
+  .close-survey {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    margin: 0;
+  }
 }
 </style>

@@ -24,13 +24,19 @@
 const axios = require("axios");
 export default {
   name: "Profile",
-  props: [""],
+  props: [],
   data: () => ({ login: "", password: "", dialog: false, user: {} }),
   methods: {
-    // logout to do with api when it will exist
     logout: function() {
-      this.$store.commit("setUser", {});
-      this.$ls.remove("token");
+      let params = { token: this.$ls.get("token") };
+      axios
+        .post(
+          "https://preprod-notification.agencebio.org:444/portail/token",
+          params
+        )
+        .then(() => this.$store.commit("setUser", {}))
+        .then(() => this.$ls.remove("token"))
+        .then(() => this.$router.go(0)); // reload the page. There mush be better way to reinitiate the map
     }
   },
   computed: {

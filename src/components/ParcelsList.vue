@@ -1,44 +1,58 @@
 <template>
-  <v-list class="pt-0" dense>
+  <div>
+    <!-- download parcels button -->
     <v-divider></v-divider>
-    <v-list-tile>
-      <v-list-tile-action>
-        <v-flex>
-          <v-checkbox v-model="allSelected" label="Sélectionner tout"></v-checkbox>
-          <!-- <v-btn flat>
+    <v-btn flat color="blue" @click="downloadCSV">
+      <v-icon>save_alt</v-icon>
+      <span>Télécharger parcellaire - csv</span>
+    </v-btn>
+    <v-divider></v-divider>
+
+    <v-list class="pt-0" dense>
+      <v-divider></v-divider>
+      <v-list-tile>
+        <v-list-tile-action>
+          <v-flex>
+            <v-checkbox v-model="allSelected" label="Sélectionner tout"></v-checkbox>
+            <!-- <v-btn flat>
             <v-icon>delete</v-icon>Abandonner sélection
-          </v-btn>-->
-        </v-flex>
-      </v-list-tile-action>
-    </v-list-tile>
-    <v-list-group v-for="(ilot, i) in ilots" :key="i">
-      <template v-slot:activator>
-        <v-list-tile>
-          <v-list-tile-content
-            @mouseover="$emit('hover-ilot', ilot)"
-            @mouseleave="$emit('stop-hovering-ilot', ilot)"
+            </v-btn>-->
+          </v-flex>
+        </v-list-tile-action>
+      </v-list-tile>
+      <v-list-group v-for="(ilot, i) in ilots" :key="i">
+        <template v-slot:activator>
+          <v-list-tile>
+            <v-list-tile-content
+              @mouseover="$emit('hover-ilot', ilot)"
+              @mouseleave="$emit('stop-hovering-ilot', ilot)"
+            >
+              <v-list-tile-title>Ilot {{ilot.numIlot}}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
+        <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
+          <v-list-tile-action
+            @mouseover="$emit('hover-parcel', parcel)"
+            @mouseleave="$emit('stop-hovering', parcel)"
           >
-            <v-list-tile-title>Ilot {{ilot.numIlot}}</v-list-tile-title>
+            <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
+            <v-icon
+              color="blue"
+              @click="selectParcel(parcel)"
+              v-if="parcel.properties.selected"
+            >star</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content
+            @mouseover="$emit('hover-parcel', parcel)"
+            @mouseleave="$emit('stop-hovering', parcel)"
+          >
+            <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-      </template>
-      <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
-        <v-list-tile-action
-          @mouseover="$emit('hover-parcel', parcel)"
-          @mouseleave="$emit('stop-hovering', parcel)"
-        >
-          <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
-          <v-icon color="blue" @click="selectParcel(parcel)" v-if="parcel.properties.selected">star</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content
-          @mouseover="$emit('hover-parcel', parcel)"
-          @mouseleave="$emit('stop-hovering', parcel)"
-        >
-          <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list-group>
-  </v-list>
+      </v-list-group>
+    </v-list>
+  </div>
 </template>
 <script>
 export default {
@@ -60,6 +74,91 @@ export default {
     selectAll(bool) {
       this.$emit("select-all-parcels", bool);
       this.$forceUpdate();
+    },
+    downloadCSV() {
+      // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
+      let rows = _.map(this.parcels.features, this.createParcelArray);
+      rows.unshift([
+        "id",
+        "numeroBio",
+        "numeroPacage",
+        "agroforest",
+        "estBio",
+        "codeCulture",
+        "engagement",
+        "maraichage",
+        "numeroIlot",
+        "numeroParcelle",
+        "surfaceAdmissible",
+        "surfaceGeometrique"
+      ]);
+      this.convertToCsvAndDownload(
+        this.$store.getters.getOperator.title + ".csv",
+        rows
+      );
+    },
+    createParcelArray(parcel) {
+      let prop = parcel.properties;
+      // csv properties order:
+      // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
+      let parcelArray = [
+        _.get(prop, "id", ""),
+        prop.numerobio,
+        _.get(prop, "pacage", ""),
+        _.get(prop, "maraichage", ""),
+        prop.bio,
+        prop.codecultu,
+        prop.engagement,
+        _.get(prop, "maraichage", ""),
+        prop.numilot,
+        prop.numparcel,
+        _.get(prop, "surfadm", ""),
+        prop.surfgeo
+      ];
+      return parcelArray;
+    },
+    // from https://stackoverflow.com/a/49950777
+    convertToCsvAndDownload(fName, rows) {
+      var csv = "";
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        for (var j = 0; j < row.length; j++) {
+          var val = row[j] === null ? "" : row[j].toString();
+          val = val.replace(/\t/gi, " ");
+          if (j > 0) csv += "\t";
+          csv += val;
+        }
+        csv += "\n";
+      }
+
+      // for UTF-16
+      var cCode,
+        bArr = [];
+      bArr.push(255, 254);
+      for (var i = 0; i < csv.length; ++i) {
+        cCode = csv.charCodeAt(i);
+        bArr.push(cCode & 0xff);
+        bArr.push((cCode / 256) >>> 0);
+      }
+
+      var blob = new Blob([new Uint8Array(bArr)], {
+        type: "text/csv;charset=UTF-16LE;"
+      });
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, fName);
+      } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+          var url = window.URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", fName);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
+      }
     }
   },
   watch: {

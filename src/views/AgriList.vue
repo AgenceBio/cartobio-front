@@ -9,25 +9,48 @@
           <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
         </template>
       </v-data-table>
+
+      <v-card>
+        <v-card-text>
+          L'opérateur recherché n'est pas dans la liste ?
+          Essayez avec un numéro de Pacage:
+        </v-card-text>
+        <v-card-actions>
+          <v-text-field v-model="numPacage" label="numéro pacage" single-line counter></v-text-field>
+          <v-btn flat color="blue" @click="searchPacage">Rechercher</v-btn>
+        </v-card-actions>
+      </v-card>
       <v-dialog v-model="loadingData" hide-overlay persistent width="300">
         <v-card color="#b9d065">
           <v-card-text>
             Chargement des données...
-            <br />Cela peut prendre plusieurs minutes.
-            <br />Ce sera amélioré dans les futures versions de l'outil.
             <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
           </v-card-text>
         </v-card>
       </v-dialog>
       <v-dialog v-model="showConfirmPopup" persistent width="300">
         <v-card>
-          <v-card-text>
-            Aller au parcellaire de {{selectedOperatorData.title}}
-            <br />Ce sera amélioré dans les futures versions de l'outil.
-          </v-card-text>
+          <v-card-text>Aller au parcellaire de {{selectedOperatorData.title}} ?</v-card-text>
+
           <v-card-actions>
             <v-btn @click="cancelSelectOperator()">Annuler</v-btn>
             <v-btn @click="selectOperator()">Confirmer</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="showConfirmPacage" persistent width="300">
+        <v-card>
+          <v-card-text v-if="!errorPacage">
+            {{selectedOperatorData.nbParcelles}} parcelles trouvées.
+            Aller au parcellaire correspondant à {{selectedOperatorData.pacage}} ?
+          </v-card-text>
+          <v-card-text v-else-if="errorPacage">
+            Une erreur est survenue
+            <br />Veuillez vérifier le numéro de Pacage et réessayer svp.
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="showConfirmPacage = false">Annuler</v-btn>
+            <v-btn @click="selectOperator()" v-if="!errorPacage">Confirmer</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -95,7 +118,10 @@ export default {
         department: "",
         city: ""
       },
-      selectedOperatorData: {}
+      numPacage: "",
+      selectedOperatorData: {},
+      showConfirmPacage: false,
+      errorPacage: false
     };
   },
   computed: {
@@ -188,6 +214,43 @@ export default {
     cancelSelectOperator: function() {
       this.selectedOperatorData = {};
       this.$store.commit("setOperator", this.selectedOperatorData);
+    },
+    searchPacage: function() {
+      let params = {
+        service: "WFS",
+        version: "1.1.0",
+        request: "GetFeature",
+        outputFormat: "GeoJSON",
+        typeName: "rpgbio2019v4",
+        srsname: "4326",
+        filter: '{"pacage":"' + this.numPacage + '"}'
+      };
+      this.selectedOperatorData = { pacage: this.numPacage, nbParcelles: "" };
+      let tokenCollab = btoa(
+        process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
+          ":" +
+          process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
+      );
+      this.loadingData = true;
+      // get 2019 parcels from the operator
+      axios
+        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
+          params: params,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.displayResultSearchPacage(data.data))
+        .catch(data => (this.errorPacage = true));
+    },
+    displayResultSearchPacage: function(data) {
+      this.loadingData = false;
+      if (data.features.length === 1000) {
+        this.errorPacage = true;
+      } else {
+        this.selectedOperatorData.nbParcelles = data.features.length;
+      }
+      this.showConfirmPacage = true;
     }
   },
   beforeDestroy: function() {

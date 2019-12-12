@@ -83,12 +83,24 @@ export default {
         })
         .then(data => {
           this.user = data.data;
-          console.log(this.user);
           this.loading = false;
           this.loader = null;
         })
         .then(() => this.$store.commit("setUser", this.user))
-        .then(() => this.$store.commit("setUserCategory", this.user.groupes[0].nom))
+        .then(() =>
+          this.$store.commit("setUserCategory", this.user.groupes[0].nom)
+        )
+        .then(
+          () =>
+            function() {
+              if (
+                this.$store.getters.getUserCategory ===
+                this.$store.getters.getCategories.oc
+              ) {
+                this.$router.push("notifications");
+              }
+            }
+        )
         .catch(error => {
           console.error(error);
           this.loading = false;
