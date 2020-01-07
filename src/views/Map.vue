@@ -173,7 +173,7 @@
           </v-expansion-panel>
         </v-flex>
 
-        <v-card class="survey" v-show="displaySurvey">
+        <!--<v-card class="survey" v-show="displaySurvey">
           <v-btn flat icon color="black" class="close-survey" @click="displaySurvey = false">
             <v-icon>close</v-icon>
           </v-btn>
@@ -193,7 +193,7 @@
             </a>
             <v-spacer></v-spacer>
           </v-card-actions>
-        </v-card>
+        </v-card>-->
       </div>
     </v-content>
   </v-layout>
