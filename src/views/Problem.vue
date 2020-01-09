@@ -12,7 +12,7 @@
               <v-card-title primary-title class="layout justify-center">
                 <div class="headline">Cartographier les parcelles d’agriculture biologique</div>
               </v-card-title>
-              <v-card-text>Créer une base de donnés exhaustive et à jour permettant le suivi des parcelles cultivées en agriculture biologique en France, et diffuser une version anonymisée, en accord avec le RGPD et la loir pour une République Numérique, pour sa réutilisation à des buts informatifs ou statistiques.</v-card-text>
+              <v-card-text>Créer une base de donnés exhaustive et à jour permettant le suivi des parcelles cultivées en agriculture biologique en France, et diffuser une version anonymisée, en accord avec le RGPD et la loi pour une République Numérique, pour sa réutilisation à des buts informatifs ou statistiques.</v-card-text>
             </v-card>
           </v-flex>
           <v-flex xs12 md4>
