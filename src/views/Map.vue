@@ -605,9 +605,6 @@ export default {
         }.bind(this)
       );
       if (this.operator.title && !this.isOperatorOnMap) {
-        if (this.layersVisible[2019]) {
-          this.map.addLayer(this.layersOperator[2019]);
-        }
         this.setUpMapOperator();
       }
     },
@@ -769,7 +766,6 @@ export default {
     },
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2019");
-      this.toggleLayer("2019");
       this.bboxOperator = turf.bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
@@ -840,6 +836,7 @@ export default {
         this.displayErrorMessage();
       }
       this.isOperatorOnMap = true;
+      this.toggleLayer("2019");
       this.$forceUpdate();
     },
     hoverParcel(parcel) {
