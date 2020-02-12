@@ -31,7 +31,7 @@ export default {
       let params = { token: this.$ls.get("token") };
       axios
         .post(
-          "https://preprod-notification.agencebio.org:444/portail/token",
+          process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/token",
           params
         )
         .then(() => this.$store.commit("setUser", {}))

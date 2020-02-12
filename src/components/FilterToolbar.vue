@@ -85,7 +85,7 @@ export default {
     getDepartements: function() {
       return axios
         .get(
-          "https://preprod-notifications.agencebio.org:444/portail/departements"
+          process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/departements"
         )
         .then(
           function(data) {

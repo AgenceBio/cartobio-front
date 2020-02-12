@@ -231,7 +231,7 @@ let mercator = new SphericalMercator({
   size: 256
 });
 
-// map style. is it used ?
+// map style.
 let mapStyle = {
   version: 8,
   sources: {
@@ -484,7 +484,7 @@ export default {
 
       // get 2019 parcels from the operator
       axios
-        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
+        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params,
           headers: {
             Authorization: "Basic " + tokenCollab
@@ -497,7 +497,7 @@ export default {
       let params2018 = JSON.parse(JSON.stringify(params));
       params2018.typeName = "rpgbio2018v9";
       axios
-        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
+        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params2018,
           headers: {
             Authorization: "Basic " + tokenCollab
@@ -509,7 +509,7 @@ export default {
       let params2017 = JSON.parse(JSON.stringify(params));
       params2017.typeName = "rpgbio2017v7";
       axios
-        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
+        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params2017,
           headers: {
             Authorization: "Basic " + tokenCollab
@@ -554,10 +554,6 @@ export default {
     getDisclaimer() {
       return this.$store.getters.getDisclaimer;
     },
-    // stored layers (? wtf did I wanted to do with that)
-    sortedLayers() {
-      return;
-    },
     // map Style
     mapStyle() {
       // To improve
@@ -567,6 +563,10 @@ export default {
     }
   },
   methods: {
+    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
+      May be usefull to handle promise and avoid the mess it is right now for map init
+    */
+
     onMapLoaded(event) {
       this.map = event.map;
       // add map sources
@@ -749,17 +749,6 @@ export default {
         newUrl += "bbox=" + bbox.toString() + ",WGS84";
       }
       return { url: newUrl };
-    },
-    connectEspaceCollaboratif() {
-      let params = {
-        "gcms_user_login[username_email]":
-          process.env.VUE_APP_ESPACE_COLLAB_LOGIN,
-        "gcms_user_login[password]": process.env.VUE_APP_ESPACE_COLLAB_PASSWORD,
-        _submit: "Connexion"
-      };
-      return axios
-        .post("http://espacecollaboratif.ign.fr/login", params)
-        .then();
     },
     acknowledgeDisclaimer() {
       this.$store.commit("setDisclaimer", false);
@@ -968,7 +957,6 @@ export default {
     }
   },
   watch: {
-    // whenever question changes, this function will run
     getProfile: function(newProfile, oldProfile) {
       if (newProfile.active) {
         this.loadLayers();
