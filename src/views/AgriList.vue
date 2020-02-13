@@ -183,7 +183,7 @@ export default {
       };
 
       return axios.get(
-        "https://preprod-notifications.agencebio.org:444/api/getOperatorsByOc",
+        process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/getOperatorsByOc",
         {
           params: params,
           cancelToken: new CancelToken(function executor(c) {
@@ -234,7 +234,7 @@ export default {
       this.loadingData = true;
       // get 2019 parcels from the operator
       axios
-        .get("http://cartobio.org:8000/gcms/wfs/cartobio", {
+        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params,
           headers: {
             Authorization: "Basic " + tokenCollab

@@ -8,7 +8,7 @@
       <v-flex xs12 md4>
         <v-card class="elevation-0 transparent">
           <v-avatar :size="100">
-            <img :src="require('../assets/wojtek-sitarz.png')">
+            <img :src="require('../assets/wojtek-sitarz.png')" />
           </v-avatar>
           <v-card-title primary-title class="layout justify-center">
             <div>
@@ -42,7 +42,7 @@
       <v-flex xs12 md4 offset-md1>
         <v-card class="elevation-0 transparent">
           <v-avatar :size="100">
-            <img :src="require('../assets/lucas-bchini.png')">
+            <img :src="require('../assets/lucas-bchini.png')" />
           </v-avatar>
           <v-card-title primary-title class="layout justify-center">
             <div>
@@ -78,11 +78,8 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <v-flex
-        xs12
-        md4
-        class="subheading text-xs-center my-3"
-      >Nous sommes également accompagnés par nos mentors:
+      <v-flex xs12 md4 class="subheading text-xs-center my-3">
+        Nous sommes également accompagnés par nos mentors:
         <v-card class="elevation-0 transparent">
           <v-card-title primary-title class="layout justify-center">
             <div>
@@ -116,7 +113,7 @@
                 color="primary-green"
                 class="mt-3"
                 dark
-                href="mailto:cartobio@agencebio.org"
+                href="mailto:cartobio@beta.gouv.fr"
               >Contactez nous!</v-btn>
             </div>
           </v-card-title>

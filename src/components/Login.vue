@@ -71,13 +71,14 @@ export default {
       };
       axios
         .post(
-          "https://preprod-notification.agencebio.org:444/portail/auth/login",
+          process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/auth/login",
           params
         )
         .then(data => this.treatAuthToken(data.data.token))
         .then(data => {
           return axios.get(
-            "https://preprod-notification.agencebio.org:444/portail/users/" +
+            process.env.VUE_APP_NOTIFICATIONS_ENDPOINT +
+              "/portail/users/" +
               data.id
           );
         })
