@@ -42,6 +42,7 @@ export default {
           .get(req)
           .then(data => {
             this.results = this.formatListResults(data.data.features);
+            window._paq.push(['trackSiteSearch', this.searchText, false, this.results.length])
           })
           .finally(() => (this.loadingPlaces = false));
       } else {

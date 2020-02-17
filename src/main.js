@@ -16,6 +16,12 @@ let storageOptions = {
 Vue.use(Vuetify)
 Vue.use(Storage, storageOptions)
 
+router.afterEach((to, from) => {
+  if (to.path && to.path !== from.path) {
+    window._paq.push(['trackPageView', to.name])
+  }
+})
+
 
 Vue.config.productionTip = false
 
