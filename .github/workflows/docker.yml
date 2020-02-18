@@ -1,0 +1,35 @@
+name: Docker Image CI
+
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+    tags:
+      - v*
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      run: docker build --tag agencebio/cartobio-presentation:{{ github.ref }} .
+      env:
+        VUE_APP_API_IGN: ${{ secrets.VUE_APP_API_IGN }}
+        VUE_APP_GEOSERVER_PREFIX: ${{ secrets.VUE_APP_GEOSERVER_PREFIX }}
+        VUE_APP_GEOSERVER_SUFFIX: ${{ secrets.VUE_APP_GEOSERVER_SUFFIX }}
+        VUE_APP_ESPACE_COLLAB_LOGIN: ${{ secrets.VUE_APP_ESPACE_COLLAB_LOGIN }}
+        VUE_APP_ESPACE_COLLAB_PASSWORD: ${{ secrets.VUE_APP_ESPACE_COLLAB_PASSWORD }}
+        VUE_APP_NOTIFICATIONS_ENDPOINT: https://back.agencebio.org
+        VUE_APP_COLLABORATIF_ENDPOINT: http://cartobio.org:8000
+
+    - name: Authentify against Docker Hub
+      run: docker login --username ${USERNAME} --password ${ACCESS_TOKEN}
+      env:
+        USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Publish on Docker Hub
+      run: docker push agencebio/cartobio-presentation:{{ github.ref }}

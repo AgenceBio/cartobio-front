@@ -22,6 +22,13 @@ npm run build
 npm test
 ```
 
+### Build Docker image
+
+```bash
+$ docker build -t agencebio/cartobio-presentation:$(git describe --abbrev=0 | cut -c2-20) .
+$ docker push agencebio/cartobio-presentation:$(git describe --abbrev=0 | cut -c2-20)
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
