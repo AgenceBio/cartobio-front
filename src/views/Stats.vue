@@ -10,11 +10,14 @@
         <v-flex xs12 sm4>
           <v-card v-if="stats">
             <v-card-title class="d-block">
-                <h2 class="headline mb-0 text-xs-center">{{ Math.ceil(stats.surface.bio) }}ha</h2>
+                <h2 class="headline mb-0 text-xs-center">
+                  <span class="digits huge">{{ bioSurface | million | round }}</span>
+                  millions d'hectares
+                </h2>
             </v-card-title>
 
             <v-card-text class="text-xs-center">
-              <p>Surfaces en bio connues à ce jour.</p>
+              <p><b>Surfaces en bio</b> connues à ce jour.</p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -24,11 +27,24 @@
 </template>
 
 <style lang="scss" scoped>
+.digits {
+  font-size: 3em;
+  line-height: 1;
+  display: block;
+}
 </style>
 
 <script>
 import HomeNavbar from "@/components/HomeNavbar";
 import {get} from "axios";
+
+function million(value) {
+  return value / 1000000
+}
+
+function round (value) {
+  return value.toFixed(2)
+}
 
 export default {
   name: "Stats",
@@ -36,7 +52,17 @@ export default {
     HomeNavbar,
   },
 
-  methods: {
+  filters: {
+    round,
+    million,
+  },
+
+  computed: {
+    bioSurface () {
+      return this.stats.aggregates.reduce((total, aggregate) => {
+        return total + aggregate.bio.surface
+      }, 0)
+    }
   },
 
   data() {

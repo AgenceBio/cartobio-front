@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+// It expects you have these softwares available on your machine:
+// - gdal
+// - jq
+
+const fs = require('fs').promises
+const path = require('path')
+const {promisify} = require('util')
+const exec = promisify(require('child_process').exec)
+
+const [,,...SOURCE_FILES] = process.argv
+
+if (!SOURCE_FILES) {
+  console.error('npm run update-stats path/to/rpg-shp/*.zip')
+  process.exit(1)
+}
+
+// A zip file is named as follows
+// SURFACES-<year>-PARCELLES-GRAPHIQUES-CONSTATEES_<dept>_xxx.zip
+
+async function run (zipFiles) {
+  // Compute geojson (takes ~2h total)
+  await zipFiles.reduce(async (p, filename) => {
+    const dest = filename.replace(/.zip$/i, '.geojson')
+
+    await p
+    await fs.stat(dest).catch(() => {
+      return exec(`ogr2ogr -f GeoJSON -s_srs EPSG:2154 -t_srs EPSG:4326 "${dest}" "/vsizip/${filename}"`)
+    })
+
+    return dest
+  }, Promise.resolve())
+
+  // Compute ndjson
+  // TODO
+  // jq --unbuffered --ascii-output -c '{ dept: input_filename, bio: [.features[] | select(.properties.BIO == 1 and .properties.SURF_ADM > 0)] | { count: .|length, surface: [ .[].properties.SURF_ADM ] | add }, nonBio: [.features[] | select(.properties.BIO == 0  and .properties.SURF_ADM > 0)] | { count: .|length, surface: [ .[].properties.SURF_ADM ] | add }}' SURFACES-2019-PARCELLES-GRAPHIQUES-CONSTATEES_*_*.geojson > stats.ndjson
+
+  // Assemble stats
+  // TODO
+  // jq --arg year ${year} -s '{ "stats": { year: $year, aggregates: . } }' stats.ndjson > public/stats.json
+}
+
+run(SOURCE_FILES)
