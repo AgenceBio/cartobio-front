@@ -3,8 +3,11 @@
   "version": "0.2.12",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "start": "vue-cli-service serve",
+    "update-stats": "node bin/update-stats",
+    "serve": "npm start",
     "build": "vue-cli-service build",
+    "test": "npm run lint",
     "lint": "vue-cli-service lint"
   },
   "engines": {
