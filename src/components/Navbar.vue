@@ -10,6 +10,9 @@
       <router-link to="/" class="navbar-button">
         <v-btn flat>Accueil</v-btn>
       </router-link>
+      <router-link to="/stats" class="navbar-button">
+        <v-btn flat>Stats</v-btn>
+      </router-link>
       <router-link
         v-if="$store.getters.getUserCategory === $store.getters.getCategories.oc && currentRoute !== '/notifications'"
         to="/notifications"

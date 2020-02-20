@@ -11,6 +11,7 @@
       <v-btn flat href="#/objectives" @click="$vuetify.goTo('#objectives')">Objectifs</v-btn>
       <v-btn flat href="#/about" @click="$vuetify.goTo('#about')">A propos</v-btn>
       <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners')">Partenaires</v-btn>
+      <v-btn flat href="#/stats" @click="$vuetify.goTo('#stats')">Stats</v-btn>
     </v-toolbar-items>
   </v-toolbar>
 </template>
