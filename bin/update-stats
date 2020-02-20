@@ -4,10 +4,15 @@
 // - gdal
 // - jq
 
-const fs = require('fs').promises
-const path = require('path')
+const {createReadStream, promises:fs} = require('fs')
 const {promisify} = require('util')
 const exec = promisify(require('child_process').exec)
+const {geometry:area} = require('@mapbox/geojson-area')
+const {parse} = require('JSONStream')
+const pipeline = promisify(require('stream').pipeline)
+const ora = require('ora')
+const {basename, join} = require('path')
+const outFile = join(__dirname, '..', 'public', 'stats.json')
 
 const [,,...SOURCE_FILES] = process.argv
 
@@ -16,29 +21,90 @@ if (!SOURCE_FILES) {
   process.exit(1)
 }
 
+function getBaseRecord({dept}) {
+  return {
+    dept,
+    bio: {
+      count: 0,
+      surface: 0.0,
+      surface_admissible: 0.0,
+    },
+    nonBio: {
+      count: 0,
+      surface: 0.0,
+      surface_admissible: 0.0,
+    }
+  }
+}
+
 // A zip file is named as follows
 // SURFACES-<year>-PARCELLES-GRAPHIQUES-CONSTATEES_<dept>_xxx.zip
-
 async function run (zipFiles) {
   // Compute geojson (takes ~2h total)
-  await zipFiles.reduce(async (p, filename) => {
+  const geoFiles = await zipFiles.reduce(async (p, filename) => {
     const dest = filename.replace(/.zip$/i, '.geojson')
+    const spinner = ora({ text: basename(filename), spinner: 'simpleDotsScrolling'})
 
-    await p
+    const destFiles = await p
+    spinner.start()
+
     await fs.stat(dest).catch(() => {
       return exec(`ogr2ogr -f GeoJSON -s_srs EPSG:2154 -t_srs EPSG:4326 "${dest}" "/vsizip/${filename}"`)
     })
 
-    return dest
+    spinner.succeed()
+
+    return destFiles.concat(dest)
+  }, Promise.resolve([]))
+
+  // Compute stats.json
+  const stats = {
+    year: null,
+    aggregates: []
+  }
+
+  await geoFiles.reduce(async (p, geofile) => {
+    const {dept, year} = geofile.match(/-(?<year>\d{4})-.+_(?<dept>.{3})_.+.geojson$/).groups
+    stats.year = year
+    const spinner = ora({ text: 0, prefixText: dept, spinner: 'growHorizontal'})
+
+    await p
+    spinner.start()
+
+    await pipeline(
+      createReadStream(geofile),
+      parse('features.*', (({properties, geometry}) => {
+        const surface = area(geometry) / 1000
+        const surface_admissible = properties.SURF_ADM
+        const field = properties.BIO === 1 ? 'bio': 'nonBio'
+        let aggregate = stats.aggregates.find(agg => agg.dept === dept)
+
+        if (!aggregate) {
+          aggregate = getBaseRecord({dept})
+          stats.aggregates.push(aggregate)
+        }
+
+        aggregate[field].count += 1
+        aggregate[field].surface += surface
+        aggregate[field].surface_admissible += surface_admissible
+
+        if (field === 'bio') {
+          spinner.text = aggregate[field].surface.toFixed(0).padStart(15) + 'ha'
+        }
+      }))
+    )
+
+    spinner.succeed()
+
+    return stats
   }, Promise.resolve())
 
-  // Compute ndjson
-  // TODO
-  // jq --unbuffered --ascii-output -c '{ dept: input_filename, bio: [.features[] | select(.properties.BIO == 1 and .properties.SURF_ADM > 0)] | { count: .|length, surface: [ .[].properties.SURF_ADM ] | add }, nonBio: [.features[] | select(.properties.BIO == 0  and .properties.SURF_ADM > 0)] | { count: .|length, surface: [ .[].properties.SURF_ADM ] | add }}' SURFACES-2019-PARCELLES-GRAPHIQUES-CONSTATEES_*_*.geojson > stats.ndjson
+  await fs.writeFile(
+    outFile,
+    JSON.stringify({stats}, null, 2)
+  )
 
-  // Assemble stats
-  // TODO
-  // jq --arg year ${year} -s '{ "stats": { year: $year, aggregates: . } }' stats.ndjson > public/stats.json
+  process.exit(0)
 }
 
 run(SOURCE_FILES)

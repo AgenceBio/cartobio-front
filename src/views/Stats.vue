@@ -9,15 +9,16 @@
 
         <v-flex xs12 sm4>
           <v-card v-if="stats">
-            <v-card-title class="d-block">
-                <h2 class="headline mb-0 text-xs-center">
+            <v-card-title class="d-block text-xs-center">
+                <h2 class="headline mb-0">
                   <span class="digits huge">{{ bioSurface | million | round }}</span>
                   millions d'hectares
                 </h2>
+                <p><b>Surfaces en bio</b> connues à ce jour.</p>
             </v-card-title>
 
             <v-card-text class="text-xs-center">
-              <p><b>Surfaces en bio</b> connues à ce jour.</p>
+              <p class="text-xs-center"><small>Soit {{ bioSurfaceRatio }}% de la surface agricole totale.</small></p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -58,11 +59,19 @@ export default {
   },
 
   computed: {
+    bioSurfaceRatio () {
+      return (this.bioSurface / (this.bioSurface + this.nonBioSurface) * 100).toFixed(1)
+    },
     bioSurface () {
       return this.stats.aggregates.reduce((total, aggregate) => {
         return total + aggregate.bio.surface
       }, 0)
-    }
+    },
+    nonBioSurface () {
+      return this.stats.aggregates.reduce((total, aggregate) => {
+        return total + aggregate.nonBio.surface
+      }, 0)
+    },
   },
 
   data() {

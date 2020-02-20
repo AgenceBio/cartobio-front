@@ -52,9 +52,24 @@ $ ogr2ogr -f GeoJSON  \
 }
 ```
 
+## Calculer des statistiques en ligne de commande
+
+```bash
+$ jq --unbuffered --ascii-output --compact \
+  '{ dept: input_filename, bio: [.features[] | select(.properties.BIO == 1 and .properties.SURF_ADM > 0)] | { count: .|length, surface: [ .[].properties.SURF_ADM ] | add }, nonBio: [.features[] | select(.properties.BIO == 0  and .properties.SURF_ADM > 0)] | { count: .|length, surface: [ .[].properties.SURF_ADM ] | add }}' \
+  SURFACES-*.geojson > stats.ndjson
+```
+
+```bash
+$ jq --slurp \
+  --arg year 2019 \
+  '{ "stats": { year: $year, aggregates: . } }' \
+  stats.ndjson > stats.json
+```
+
 ## Superficies
 
-Elles sont exprimées en hectares
+Elles sont exprimées en hectares.
 
 ## Codes cultures
 
