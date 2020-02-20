@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build the Docker image
-      run: docker build --tag agencebio/cartobio-presentation:{{ github.ref }} .
+      run: docker build --tag agencebio/cartobio-presentation:${{ github.ref }} .
       env:
         VUE_APP_API_IGN: ${{ secrets.VUE_APP_API_IGN }}
         VUE_APP_GEOSERVER_PREFIX: ${{ secrets.VUE_APP_GEOSERVER_PREFIX }}
@@ -32,4 +32,4 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Publish on Docker Hub
-      run: docker push agencebio/cartobio-presentation:{{ github.ref }}
+      run: docker push agencebio/cartobio-presentation:${{ github.ref }}
