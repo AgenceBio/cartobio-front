@@ -22,8 +22,8 @@ jobs:
         VUE_APP_GEOSERVER_SUFFIX: ${{ secrets.VUE_APP_GEOSERVER_SUFFIX }}
         VUE_APP_ESPACE_COLLAB_LOGIN: ${{ secrets.VUE_APP_ESPACE_COLLAB_LOGIN }}
         VUE_APP_ESPACE_COLLAB_PASSWORD: ${{ secrets.VUE_APP_ESPACE_COLLAB_PASSWORD }}
-        VUE_APP_NOTIFICATIONS_ENDPOINT: https://back.agencebio.org
-        VUE_APP_COLLABORATIF_ENDPOINT: http://cartobio.org:8000
+        VUE_APP_NOTIFICATIONS_ENDPOINT: http://cartobio.org:8000/notifications
+        VUE_APP_COLLABORATIF_ENDPOINT: http://cartobio.org:8000/espacecollaboratif
 
     - name: Authentify against Docker Hub
       run: docker login --username ${USERNAME} --password ${ACCESS_TOKEN}
