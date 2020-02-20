@@ -54,15 +54,17 @@ parcellaires de l’agriculture biologique
                     <v-flex xs-12>
                       <v-layout>
                         <v-img
+                          contain
+                          aspect-ratio="1"
                           max-height="40px"
-                          max-width="40px"
                           :src="require('../assets/eig.png')"
                         ></v-img>
 
                         <v-icon xs-4 x-large>arrow_forward</v-icon>
 
                         <v-img
-                          style="height: 40px;"
+                          contain
+                          max-height="40px"
                           :src="require('../assets/logo-betagouvfr.svg')"
                         ></v-img>
                       </v-layout>
