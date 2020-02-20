@@ -4,6 +4,8 @@ on:
   push:
     paths-ignore:
     - 'docs/**'
+    branches:
+      - master
     tags:
       - v*
 
