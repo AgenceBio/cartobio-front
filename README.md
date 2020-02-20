@@ -24,10 +24,14 @@ npm test
 
 ### Build Docker image
 
+⚠️ Do you have an `.env.production.local` file? If not, the built app will be unstable.
+
 ```bash
-$ docker build -t agencebio/cartobio-presentation:$(git describe --abbrev=0 | cut -c2-20) .
-$ docker push agencebio/cartobio-presentation:$(git describe --abbrev=0 | cut -c2-20)
+$ docker build -t agencebio/cartobio-presentation .
+$ docker run -ti --rm -p 8080:80 agencebio/cartobio-presentation
 ```
+
+Now open [`localhost:8080`](https://localhost:8080) to see the app running.
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
