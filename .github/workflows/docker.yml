@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: jerray/publish-docker-action@v1
+    - uses: jerray/publish-docker-action@v1.0.3
       env:
         VUE_APP_API_IGN: ${{ secrets.VUE_APP_API_IGN }}
         VUE_APP_GEOSERVER_PREFIX: ${{ secrets.VUE_APP_GEOSERVER_PREFIX }}
