@@ -1,13 +1,14 @@
 <template>
   <v-container grid-list-xl>
-    <h1>Vous êtes :</h1>
+    <h1>Vous êtes</h1>
     <v-layout row wrap justify-center>
       <v-flex xs12 md4>
-        <v-card class="elevation-0 transparent">
+        <v-card class="elevation-3">
+          <v-card-text class="text-xs-center primary-green">
+            <v-icon x-large>how_to_reg</v-icon>
+          </v-card-text>
           <v-card-title primary-title class="layout justify-center">
-            <div>
-              <div class="headline">Controleur Bio ?</div>
-            </div>
+            <div class="title">Controleur Bio ?</div>
           </v-card-title>
           <v-card-text>
             Cette application vous est dédiée pour le moment. Vous pouvez vous connecter en utilisant vos identifiants de
@@ -20,11 +21,12 @@
         </v-card>
       </v-flex>
       <v-flex xs12 md4>
-        <v-card class="elevation-0 transparent">
+        <v-card class="elevation-3">
+          <v-card-text class="text-xs-center primary-green">
+            <v-icon x-large>emoji_nature</v-icon>
+          </v-card-text>
           <v-card-title primary-title class="layout justify-center">
-            <div>
-              <div class="headline">Agriculteur Bio ?</div>
-            </div>
+            <div class="title">Agriculteur Bio ?</div>
           </v-card-title>
           <v-card-text>
             Afin de mieux connaître les surfaces cultivées en agriculture biologique pour mesurer l'impact et mener des politiques publiques plus efficaces,
@@ -35,56 +37,16 @@
         </v-card>
       </v-flex>
       <v-flex xs12 md4>
-        <v-card class="elevation-0 transparent">
+        <v-card class="elevation-3">
+          <v-card-text class="text-xs-center primary-green">
+            <v-icon x-large>public</v-icon>
+          </v-card-text>
           <v-card-title primary-title class="layout justify-center">
-            <div>
-              <div class="headline">Vous recherchez les données des parcelles Bio?</div>
-            </div>
+            <div class="title">Vous recherchez les données des parcelles Bio?</div>
           </v-card-title>
           <v-card-text>
             Les données ne sont pas publiées en open data pour le moment. Si vous êtes une administration et que vous pouvez prétendre à l'obtention de celles-ci, nous vous invitons à nous contacter.
             <br />Sinon, un peu de patience ! :)
-          </v-card-text>
-        </v-card>
-      </v-flex>
-
-      <v-flex xs12 md4 align-content-space-around class="mt-3">
-        <v-card class="elevation-0 transparent mt-4">
-          <v-card-title primary-title class="layout justify-center">
-            <div>
-              <div class="headline">
-                Un projet
-                <a
-                  href="https://entrepreneur-interet-general.etalab.gouv.fr/"
-                  title="Site des Entrepreneurs d'Intérêt Général"
-                  target="_blank"
-                >EIG</a>...
-                <br />Devenu
-                <a
-                  href="https://beta.gouv.fr/"
-                  title="Site des Start Up d'Etat et de Territoires"
-                  target="_blank"
-                >Start Up D'Etat</a> !
-              </div>
-            </div>
-          </v-card-title>
-          <v-card-text>
-            A l'issue du programme Entrepreneurs d'Intérêt Général, nous nous sommes tournés vers beta.gouv afin de nous accompagner sur le déploiment du projet, et en assurer sa pérénnisation.
-            Plus d'information
-            <a
-              href="https://beta.gouv.fr/startups/cartobio.html"
-              title="Page de descriptif de CartoBio sur le site de beta.gouv"
-              target="_blank"
-            >ici</a>
-            <br />
-            <v-btn
-              round
-              title="Contactez nous"
-              color="primary-green"
-              class="mt-3"
-              dark
-              href="mailto:cartobio@beta.gouv.fr"
-            >Contactez nous!</v-btn>
           </v-card-text>
         </v-card>
       </v-flex>
