@@ -18,11 +18,13 @@ export default new Router({
           path: 'title'
         },
         {
-          path: 'objectives'
+          path: 'objectifs'
         }, {
-          path: 'about'
+          path: 'a-propos'
         }, {
-          path: 'partners'
+          path: 'nous-suivre'
+        }, {
+          path: 'partenaires'
         }
       ]
     },
