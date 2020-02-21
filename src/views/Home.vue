@@ -117,8 +117,21 @@ parcellaires de l’agriculture biologique
                   </v-card-title>
                   <v-card-text>
                     Publier le code de l’application sur
-                    <a href target="_blank">GitHub</a> sous MIT, dans un but de transparence et de maintenabilité.
+                    <a
+                      href="https://github.com/entrepreneur-interet-general/CartoBio-Presentation/blob/master/LICENSE"
+                      target="_blank"
+                    >GitHub</a> sous MIT, dans un but de transparence et de maintenabilité.
                     <br />Argent Public = Code Public
+                    <br />
+                    <v-btn
+                      round
+                      title="Lien GitHub"
+                      color="primary-green"
+                      class="mt-3"
+                      dark
+                      target="_blank"
+                      href="https://github.com/entrepreneur-interet-general/CartoBio-Presentation"
+                    >Voir le code</v-btn>
                   </v-card-text>
                 </v-card>
               </v-flex>
