@@ -19,6 +19,16 @@
                   target="_blank"
                 >notification@agencebio.org</a>
                 En cas de soucis, n'hésitez pas à nous contacter. Nous sommes toujours preneurs de retours et il est possible que nous vous contactions dans cet objectif.
+                <br />
+                <router-link to="/map">
+                  <v-btn
+                    round
+                    title="Accès à l'application"
+                    color="primary-green"
+                    class="mt-3"
+                    dark
+                  >Accéder à l'application</v-btn>
+                </router-link>
               </v-card-text>
             </v-card>
           </v-flex>
