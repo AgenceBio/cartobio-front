@@ -8,9 +8,10 @@
     <v-toolbar-items class="hidden-sm-and-down">
       <v-btn flat href="#/title" @click="$vuetify.goTo('#title')">Accueil</v-btn>
       <v-btn flat primary href="#/map">Carte</v-btn>
-      <v-btn flat href="#/objectives" @click="$vuetify.goTo('#objectives')">Objectifs</v-btn>
-      <v-btn flat href="#/about" @click="$vuetify.goTo('#about')">A propos</v-btn>
-      <v-btn flat href="#/partners" @click="$vuetify.goTo('#partners')">Partenaires</v-btn>
+      <v-btn flat href="#/objectifs" @click="$vuetify.goTo('#objectives')">Objectifs</v-btn>
+      <v-btn flat href="#/a-propos" @click="$vuetify.goTo('#about')">A propos</v-btn>
+      <v-btn flat href="#/nous-suivre" @click="$vuetify.goTo('#follow')">Nous Suivre</v-btn>
+      <v-btn flat href="#/partenaires" @click="$vuetify.goTo('#partners')">Partenaires</v-btn>
       <v-btn flat href="#/stats" @click="$vuetify.goTo('#stats')">Stats</v-btn>
     </v-toolbar-items>
   </v-toolbar>
