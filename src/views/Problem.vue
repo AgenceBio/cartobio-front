@@ -26,21 +26,6 @@
               <v-card-text>Faciliter le travail des administrations et des organismes certificateurs en réduisant la charge de l’agriculteur via une plateforme d’échange de données. Cette plateforme repond ainsi au besoin transmi par les professionnels de l’agriculture biologique.</v-card-text>
             </v-card>
           </v-flex>
-          <!-- <v-flex xs12 md4>
-            <v-card class="elevation-3 transparent">
-              <v-card-text class="text-xs-center primary-green">
-                <v-icon x-large>code</v-icon>
-              </v-card-text>
-              <v-card-title primary-title class="layout justify-center">
-                <div class="title text-xs-center">Ouvrir son code</div>
-              </v-card-title>
-              <v-card-text>
-                Publier le code de l’application sur
-                <a href target="_blank">GitHub</a> sous MIT, dans un but de transparence et de maintenabilité.
-                <br />Argent Public = Code Public
-              </v-card-text>
-            </v-card>
-          </v-flex>-->
         </v-layout>
       </v-container>
     </v-flex>
