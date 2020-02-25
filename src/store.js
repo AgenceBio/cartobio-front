@@ -6,6 +6,7 @@ Vue.use(Vuex)
 //init store
 const store =  new Vuex.Store({
     state: {
+        currentYear: 2019,
         userProfile: {},
         currentOperator: {},
         disclaimer: true,
@@ -14,6 +15,7 @@ const store =  new Vuex.Store({
         categories : {admin: "Admin", oc: "OC", agri: "Agri", other: "Autre"}
     },
     getters: {
+        getCurrentYear: state => state.currentYear,
         getProfile: state => state.userProfile,
         getOperator: state => state.currentOperator,
         getDisclaimer: state => state.disclaimer,
@@ -31,7 +33,7 @@ const store =  new Vuex.Store({
         setDisclaimer(state, bool) {
             state.disclaimer = bool;
         },
-        // category: role categories retrieved from the notifications portail API 
+        // category: role categories retrieved from the notifications portail API
         setUserCategory(state, category) {
             let userCat = this.state.categories.other;
             // This allow a simpler change in case of notification API change.

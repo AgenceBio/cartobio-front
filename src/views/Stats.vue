@@ -19,9 +19,9 @@
 
             <v-card-text class="text-xs-center">
               <p class="text-xs-center">
-                <small>Soit {{ bioSurfaceRatio }}% de la surface agricole
-                  subventionnée par la
-                  <abbr title="Politique Agricole Commune">PAC</abbr>.
+                <small>Soit <em>environ</em> {{ bioSurfaceRatioSAU }}% de la
+                  <abbr title="Surface Agricole Utile">SAU</abbr> totale
+                  en {{ getCurrentYear }}.
                 </small>
               </p>
             </v-card-text>
@@ -41,8 +41,12 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex'
 import HomeNavbar from "@/components/HomeNavbar";
 import {get} from "axios";
+
+// SAU en 2019
+const SAU_TOTALE = 29000000;
 
 function million(value) {
   return value / 1000000
@@ -67,6 +71,9 @@ export default {
     bioSurfaceRatio () {
       return (this.bioSurface / (this.bioSurface + this.nonBioSurface) * 100).toFixed(1)
     },
+    bioSurfaceRatioSAU () {
+      return (this.bioSurface / SAU_TOTALE * 100).toFixed(1)
+    },
     bioSurface () {
       return this.stats.aggregates.reduce((total, aggregate) => {
         return total + aggregate.bio.surface
@@ -77,6 +84,10 @@ export default {
         return total + aggregate.nonBio.surface
       }, 0)
     },
+    // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
+    ...mapGetters([
+      'getCurrentYear'
+    ])
   },
 
   data() {
@@ -84,6 +95,7 @@ export default {
       stats: null,
       loading: true,
       errored: false,
+      SAU_TOTALE,
     };
   },
 
