@@ -1,4 +1,5 @@
 # CartoBio-Presentation
+
 Static website presenting CartoBio Project
 
 ## Project setup
@@ -21,6 +22,22 @@ npm run build
 ```
 npm test
 ```
+
+
+## Handbook
+
+### Compute total surfaces
+
+```bash
+$ npm run update-stats path/to/RPG-shapefiles/*.zip
+```
+
+This script will:
+
+1. Convert Shapefiles/Lambert 93 into GeoJSON/WGS84 (~2h)
+2. Compute parcels surface per county boundaries (~18min)
+
+The `public/stats.json` file will be update accordingly.
 
 ### Build Docker image
 
