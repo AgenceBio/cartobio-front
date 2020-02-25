@@ -37,6 +37,10 @@ function getBaseRecord({dept}) {
   }
 }
 
+function sq2ha (surface) {
+  return surface * 0.0001
+}
+
 // A zip file is named as follows
 // SURFACES-<year>-PARCELLES-GRAPHIQUES-CONSTATEES_<dept>_xxx.zip
 async function run (zipFiles) {
@@ -74,7 +78,7 @@ async function run (zipFiles) {
     await pipeline(
       createReadStream(geofile),
       parse('features.*', (({properties, geometry}) => {
-        const surface = area(geometry) / 1000
+        const surface = sq2ha(area(geometry))
         const surface_admissible = properties.SURF_ADM
         const field = properties.BIO === 1 ? 'bio': 'nonBio'
         let aggregate = stats.aggregates.find(agg => agg.dept === dept)

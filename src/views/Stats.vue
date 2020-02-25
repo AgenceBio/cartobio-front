@@ -18,7 +18,12 @@
             </v-card-title>
 
             <v-card-text class="text-xs-center">
-              <p class="text-xs-center"><small>Soit {{ bioSurfaceRatio }}% de la surface agricole totale.</small></p>
+              <p class="text-xs-center">
+                <small>Soit {{ bioSurfaceRatio }}% de la surface agricole
+                  subventionnée par la
+                  <abbr title="Politique Agricole Commune">PAC</abbr>.
+                </small>
+              </p>
             </v-card-text>
           </v-card>
         </v-flex>
