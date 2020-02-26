@@ -44,10 +44,12 @@
                 <div class="title">Cultivez en bio ?</div>
               </v-card-title>
               <v-card-text>
-                Afin de mieux connaître les surfaces cultivées en agriculture biologique pour mesurer l'impact et mener des politiques publiques plus efficaces,
-                de fiabiliser le contrôle et de le rendre plus simple et plus rapide, CartoBio permet aux OC d'avoir accès en amont d'un contrôle aux données de votre déclaration PAC.
-                <br />Pour un agriculteur bio qui ne ferait pas de demande à la PAC, nous souhaitons également connaître la localisation de ses parcelles, afin d'avoir une meilleure connaissance du territoire.
-                Si vous avez des questions, des remarques, n'hésitez pas à nous contacter !
+                Afin de mieux connaître les surfaces cultivées en agriculture biologique, nous souhaitons connaître la localisation de l'ensemble des parcelles bio.
+                <br />CartoBio permet aux OC d'avoir accès en amont d'un contrôle aux données de votre déclaration PAC, ce qui permet de fiabiliser le contrôle et de le rendre plus simple et plus rapide.
+                La connaîssance des parcelles bio permet de mener des politiques publiques plus efficaces, d'améliorer la connaissance du territoire, ou encore de mieux mesurer les impacts de l'agriculture biologique sur notre environnement.
+                <a
+                  href="mailto:cartobio@beta.gouv.fr"
+                >Contactez-nous</a> pour nous poser vos questions.
               </v-card-text>
             </v-card>
           </v-flex>
