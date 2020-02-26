@@ -1,8 +1,9 @@
 <template>
   <v-toolbar app clipped-left color="#b9d065">
-    <a href="#/title" @click="$vuetify.goTo('#title')" title="Retour à l'accueil">
+    <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
       <v-icon flat large>home</v-icon>
-    </a>
+      <v-toolbar-title>CartoBIO</v-toolbar-title>
+    </v-btn>
     <v-toolbar-title>{{title}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
@@ -51,7 +52,7 @@ export default {
       return this.$route.path;
     },
     title() {
-      return this.getOperator.title ? this.getOperator.title : "CartoBIO";
+      return this.getOperator.title ? this.getOperator.title : "";
     }
   }
 };

@@ -11,17 +11,17 @@ parcellaires de l’agriculture biologique
           />
         </v-parallax>
       </section>
-      <section id="objectives" class="blue-grey lighten-5">
+      <section id="objectifs" class="blue-grey lighten-5">
         <v-layout column wrap class="py-5" align-center>
           <Problem />
         </v-layout>
       </section>
-      <section id="about" class="grey lighten-5">
+      <section id="a-propos" class="grey lighten-5">
         <v-layout column wrap class="py-5" align-center>
           <About />
         </v-layout>
       </section>
-      <section id="follow" class="blue-grey lighten-5">
+      <section id="nous-suivre" class="blue-grey lighten-5">
         <v-layout column wrap class="py-5" align-center>
           <v-container grid-list-xl>
             <h1>Suivre le projet</h1>
@@ -140,7 +140,7 @@ parcellaires de l’agriculture biologique
         </v-layout>
       </section>
     </v-content>
-    <v-footer id="partners" height="auto" color="#b9d065">
+    <v-footer id="partenaires" height="auto" color="#b9d065">
       <Partners />
     </v-footer>
   </div>
