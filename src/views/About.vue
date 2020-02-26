@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Vous êtes</h1>
+    <h1>Vous...</h1>
     <v-flex xs12>
       <v-container grid-list-xl>
         <v-layout row wrap justify-center>
@@ -10,7 +10,7 @@
                 <v-icon x-large>how_to_reg</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Vous contrôlez des parcelles en bio&nbsp;?</div>
+                <div class="title">Contrôlez des parcelles en bio&nbsp;?</div>
               </v-card-title>
               <v-card-text>
                 Cette application vous est dédiée pour le moment. Connectez-vous avec vos identifiants du
@@ -18,7 +18,10 @@
                   href="notification@agencebio.org"
                   target="_blank"
                 >portail Notifications de l'Agence Bio</a>
-                En cas de soucis, <a href="mailto:cartobio@beta.gouv.fr">contactez-nous</a>. Nous sommes à l'écoute pour en faire un outil qui vous soit utile.
+                En cas de soucis,
+                <a
+                  href="mailto:cartobio@beta.gouv.fr"
+                >contactez-nous</a>. Nous sommes à l'écoute pour en faire un outil qui vous soit utile.
                 <br />
                 <router-link to="/map">
                   <v-btn
@@ -38,7 +41,7 @@
                 <v-icon x-large>emoji_nature</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Vous cultivez en bio ?</div>
+                <div class="title">Cultivez en bio ?</div>
               </v-card-title>
               <v-card-text>
                 Afin de mieux connaître les surfaces cultivées en agriculture biologique pour mesurer l'impact et mener des politiques publiques plus efficaces,
@@ -54,7 +57,7 @@
                 <v-icon x-large>public</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Vous recherchez les données des parcelles Bio?</div>
+                <div class="title">Recherchez les données des parcelles Bio?</div>
               </v-card-title>
               <v-card-text>
                 Les données ne sont pas publiées en open data pour le moment. Si vous êtes une administration et que vous pouvez prétendre à l'obtention de celles-ci, nous vous invitons à nous contacter.
