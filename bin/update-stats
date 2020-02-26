@@ -1,0 +1,168 @@
+#!/usr/bin/env node
+
+// It expects you have these softwares available on your machine:
+// - gdal
+// - jq
+
+const {promises:fs} = require('fs')
+const {createReadStream, createWriteStream} = require('fs')
+const {promisify} = require('util')
+const exec = promisify(require('child_process').exec)
+const {geometry:area} = require('@mapbox/geojson-area')
+const {parse} = require('JSONStream')
+const pipeline = promisify(require('stream').pipeline)
+const ora = require('ora')
+const {get} = require('axios')
+const centroid = require('@mapbox/polylabel')
+const {default:isInside} = require('@turf/boolean-point-in-polygon')
+const {point} = require('@turf/helpers')
+const {basename, join} = require('path')
+const outFile = join(__dirname, '..', 'public', 'stats.json')
+
+const [,,...SOURCE_FILES] = process.argv
+
+if (!SOURCE_FILES) {
+  console.error('npm run update-stats path/to/rpg-shp/*.zip')
+  process.exit(1)
+}
+
+function getBaseRecord({dept}) {
+  return {
+    dept,
+    bio: {
+      count: 0,
+      surface: 0.0,
+      surface_admissible: 0.0,
+    },
+    nonBio: {
+      count: 0,
+      surface: 0.0,
+      surface_admissible: 0.0,
+    }
+  }
+}
+
+function sq2ha (surface) {
+  return surface * 0.0001
+}
+
+function fetchDepartementsBoundaries() {
+  const FILENAME = 'departements-avec-outre-mer.geojson'
+  const DEST = join(__dirname, '..', 'public', FILENAME)
+  const SOURCE = 'https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/' + FILENAME
+
+  // we pipe the source file to the local filesystem (createWriteStream())
+  // if it does not exist (catch())
+  return fs.stat(DEST)
+    .catch(async () => {
+      const response = await get(SOURCE, {responseType: 'stream'})
+
+      return pipeline(response.data, createWriteStream(DEST))
+    })
+    .catch(error => {
+      fs.unlink(DEST)
+      throw error
+    })
+    .then(() => fs.readFile(DEST, {encoding: 'utf8'}))
+    .then((geojson) => JSON.parse(geojson))
+}
+
+function getLocalBoundaries(boundaries, dept) {
+  return boundaries.features.find(({properties}) => {
+    // so as '26' boundaries code matches IGN's 026
+    // and '971' boundaries code matches IGN's 971
+    return properties.code.padStart(3, '0') === dept
+  })
+}
+
+// A zip file is named as follows
+// SURFACES-<year>-PARCELLES-GRAPHIQUES-CONSTATEES_<dept>_xxx.zip
+async function run (zipFiles) {
+  // Compute geojson (takes ~2h total)
+  const geoFiles = await zipFiles.reduce(async (p, filename) => {
+    const dest = filename.replace(/.zip$/i, '.geojson')
+    const spinner = ora({ text: basename(filename), spinner: 'simpleDotsScrolling'})
+
+    const destFiles = await p
+    spinner.start()
+
+    await fs.stat(dest).catch(() => {
+      return exec(`ogr2ogr -f GeoJSON -s_srs EPSG:2154 -t_srs EPSG:4326 "${dest}" "/vsizip/${filename}"`)
+    })
+
+    spinner.succeed()
+
+    return destFiles.concat(dest)
+  }, Promise.resolve([]))
+
+  // Compute stats.json
+  const stats = {
+    year: null,
+    aggregates: []
+  }
+
+  const spinner = ora({ text: 'Fetch departements.geojson', spinner: 'growVertical'}).start()
+  const allBoundaries = await fetchDepartementsBoundaries()
+  spinner.succeed()
+
+  await geoFiles.reduce(async (p, geofile) => {
+    const {dept, year} = geofile.match(/-(?<year>\d{4})-.+_(?<dept>.{3})_.+.geojson$/).groups
+    stats.year = year
+    const spinner = ora({ text: 0, prefixText: dept, spinner: 'growHorizontal'})
+
+    await p
+    spinner.start()
+
+    const localBoundaries = getLocalBoundaries(allBoundaries, dept)
+
+    await pipeline(
+      createReadStream(geofile),
+      parse('features.*', (({properties, geometry}) => {
+        // Skip the feature if its location is outside of current district boundaries
+        // As stated by RPG Version 2.0 "Descriptif du contenu et de livraison":
+        // > Certains îlots et certaines parcelles sont à cheval sur
+        // > des limites régionales et se retrouvent donc dans
+        // > chaque lot régional concerné.
+        // > Si on charge plusieurs régions limitrophes,
+        // > des doublons exacts peuvent donc apparaître en limite de région.
+        // > Il est aisé de retirer ces doublons du fait de l’unicité
+        // > des identifiants d’îlots et de parcelles.
+        const p = point(centroid(geometry.coordinates))
+        if (isInside(p, localBoundaries) === false) {
+          return
+        }
+
+        const surface = sq2ha(area(geometry))
+        const surface_admissible = properties.SURF_ADM
+        const field = properties.BIO === 1 ? 'bio': 'nonBio'
+        let aggregate = stats.aggregates.find(agg => agg.dept === dept)
+
+        if (!aggregate) {
+          aggregate = getBaseRecord({dept})
+          stats.aggregates.push(aggregate)
+        }
+
+        aggregate[field].count += 1
+        aggregate[field].surface += surface
+        aggregate[field].surface_admissible += surface_admissible
+
+        if (field === 'bio') {
+          spinner.text = aggregate[field].surface.toFixed(0).padStart(15) + 'ha'
+        }
+      }))
+    )
+
+    spinner.succeed()
+
+    return stats
+  }, Promise.resolve())
+
+  await fs.writeFile(
+    outFile,
+    JSON.stringify({stats}, null, 2)
+  )
+
+  process.exit(0)
+}
+
+run(SOURCE_FILES)

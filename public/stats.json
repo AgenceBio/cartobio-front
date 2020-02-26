@@ -1,0 +1,1229 @@
+{
+  "stats": {
+    "year": "2019",
+    "aggregates": [
+      {
+        "dept": "001",
+        "bio": {
+          "count": 6003,
+          "surface": 16496.82096760108,
+          "surface_admissible": 2657.369999999997
+        },
+        "nonBio": {
+          "count": 78591,
+          "surface": 229622.09906742425,
+          "surface_admissible": 40068.83000000001
+        }
+      },
+      {
+        "dept": "002",
+        "bio": {
+          "count": 2075,
+          "surface": 6373.988254744467,
+          "surface_admissible": 857.8999999999993
+        },
+        "nonBio": {
+          "count": 91923,
+          "surface": 464686.05385506095,
+          "surface_admissible": 60294.710000000014
+        }
+      },
+      {
+        "dept": "003",
+        "bio": {
+          "count": 5924,
+          "surface": 21916.57979389783,
+          "surface_admissible": 2525.5600000000013
+        },
+        "nonBio": {
+          "count": 108511,
+          "surface": 443331.70545268024,
+          "surface_admissible": 50317.8299999998
+        }
+      },
+      {
+        "dept": "004",
+        "bio": {
+          "count": 12617,
+          "surface": 36462.85683035575,
+          "surface_admissible": 5267.419999999999
+        },
+        "nonBio": {
+          "count": 57985,
+          "surface": 236032.4276530359,
+          "surface_admissible": 44502.9399999998
+        }
+      },
+      {
+        "dept": "005",
+        "bio": {
+          "count": 13494,
+          "surface": 24555.404522193723,
+          "surface_admissible": 2338.509999999995
+        },
+        "nonBio": {
+          "count": 61437,
+          "surface": 230573.8492433907,
+          "surface_admissible": 76225.42999999977
+        }
+      },
+      {
+        "dept": "006",
+        "bio": {
+          "count": 952,
+          "surface": 2755.357341596708,
+          "surface_admissible": 719.5400000000003
+        },
+        "nonBio": {
+          "count": 4539,
+          "surface": 68550.67241726362,
+          "surface_admissible": 24749.11000000005
+        }
+      },
+      {
+        "dept": "007",
+        "bio": {
+          "count": 16408,
+          "surface": 24780.617608747056,
+          "surface_admissible": 4047.0700000000083
+        },
+        "nonBio": {
+          "count": 71708,
+          "surface": 108048.18631137878,
+          "surface_admissible": 18311.03999999998
+        }
+      },
+      {
+        "dept": "008",
+        "bio": {
+          "count": 3370,
+          "surface": 14928.766592147826,
+          "surface_admissible": 2794.4900000000016
+        },
+        "nonBio": {
+          "count": 59671,
+          "surface": 278180.9948245792,
+          "surface_admissible": 49947.04999999988
+        }
+      },
+      {
+        "dept": "009",
+        "bio": {
+          "count": 10453,
+          "surface": 29435.949250590544,
+          "surface_admissible": 7147.3
+        },
+        "nonBio": {
+          "count": 47312,
+          "surface": 220141.54626110426,
+          "surface_admissible": 28480.89999999996
+        }
+      },
+      {
+        "dept": "010",
+        "bio": {
+          "count": 2180,
+          "surface": 10193.37849883401,
+          "surface_admissible": 1801.7299999999998
+        },
+        "nonBio": {
+          "count": 71598,
+          "surface": 341464.2980681139,
+          "surface_admissible": 92187.0599999993
+        }
+      },
+      {
+        "dept": "011",
+        "bio": {
+          "count": 20182,
+          "surface": 47733.140762685565,
+          "surface_admissible": 10423.110000000026
+        },
+        "nonBio": {
+          "count": 101415,
+          "surface": 190484.4841806814,
+          "surface_admissible": 47657.819999999745
+        }
+      },
+      {
+        "dept": "012",
+        "bio": {
+          "count": 25658,
+          "surface": 67081.41963999975,
+          "surface_admissible": 5811.190000000006
+        },
+        "nonBio": {
+          "count": 202813,
+          "surface": 434328.6913572607,
+          "surface_admissible": 55516.09999999988
+        }
+      },
+      {
+        "dept": "013",
+        "bio": {
+          "count": 8414,
+          "surface": 38027.57514970764,
+          "surface_admissible": 11059.659999999976
+        },
+        "nonBio": {
+          "count": 25084,
+          "surface": 108419.09697391179,
+          "surface_admissible": 32089.879999999986
+        }
+      },
+      {
+        "dept": "014",
+        "bio": {
+          "count": 7385,
+          "surface": 28651.069619865775,
+          "surface_admissible": 8258.880000000005
+        },
+        "nonBio": {
+          "count": 82140,
+          "surface": 328598.16108361055,
+          "surface_admissible": 78464.86999999966
+        }
+      },
+      {
+        "dept": "015",
+        "bio": {
+          "count": 7386,
+          "surface": 21872.9352845882,
+          "surface_admissible": 5313.620000000004
+        },
+        "nonBio": {
+          "count": 102055,
+          "surface": 315631.9310126543,
+          "surface_admissible": 96373.8999999999
+        }
+      },
+      {
+        "dept": "016",
+        "bio": {
+          "count": 6929,
+          "surface": 19005.478810116405,
+          "surface_admissible": 4435.9000000000015
+        },
+        "nonBio": {
+          "count": 147198,
+          "surface": 323505.14964683296,
+          "surface_admissible": 49855.02
+        }
+      },
+      {
+        "dept": "017",
+        "bio": {
+          "count": 5974,
+          "surface": 15671.740367073597,
+          "surface_admissible": 3084.68
+        },
+        "nonBio": {
+          "count": 162781,
+          "surface": 397258.84484700434,
+          "surface_admissible": 87150.80999999955
+        }
+      },
+      {
+        "dept": "018",
+        "bio": {
+          "count": 3640,
+          "surface": 18294.021786440306,
+          "surface_admissible": 4829.390000000006
+        },
+        "nonBio": {
+          "count": 75427,
+          "surface": 394584.9735703864,
+          "surface_admissible": 128088.15999999965
+        }
+      },
+      {
+        "dept": "019",
+        "bio": {
+          "count": 5241,
+          "surface": 11776.557826511877,
+          "surface_admissible": 1393.5100000000002
+        },
+        "nonBio": {
+          "count": 85244,
+          "surface": 208375.97347714295,
+          "surface_admissible": 26811.370000000028
+        }
+      },
+      {
+        "dept": "021",
+        "bio": {
+          "count": 9641,
+          "surface": 36893.094875595925,
+          "surface_admissible": 6677.210000000004
+        },
+        "nonBio": {
+          "count": 93960,
+          "surface": 401336.3848285812,
+          "surface_admissible": 74233.68000000028
+        }
+      },
+      {
+        "dept": "022",
+        "bio": {
+          "count": 18386,
+          "surface": 32767.30224486887,
+          "surface_admissible": 5782.119999999998
+        },
+        "nonBio": {
+          "count": 214313,
+          "surface": 397440.72945571854,
+          "surface_admissible": 60240.80999999986
+        }
+      },
+      {
+        "dept": "023",
+        "bio": {
+          "count": 6272,
+          "surface": 15549.255482846382,
+          "surface_admissible": 1439.8799999999997
+        },
+        "nonBio": {
+          "count": 129825,
+          "surface": 293367.5292610122,
+          "surface_admissible": 19271.190000000035
+        }
+      },
+      {
+        "dept": "024",
+        "bio": {
+          "count": 15895,
+          "surface": 31692.373618721052,
+          "surface_admissible": 7292.990000000008
+        },
+        "nonBio": {
+          "count": 129284,
+          "surface": 256679.1520809837,
+          "surface_admissible": 47863.90000000003
+        }
+      },
+      {
+        "dept": "025",
+        "bio": {
+          "count": 3802,
+          "surface": 12774.264950511893,
+          "surface_admissible": 2368.7799999999997
+        },
+        "nonBio": {
+          "count": 50732,
+          "surface": 206228.09857805193,
+          "surface_admissible": 56012.17999999958
+        }
+      },
+      {
+        "dept": "026",
+        "bio": {
+          "count": 29103,
+          "surface": 46757.76785794287,
+          "surface_admissible": 8268.52000000003
+        },
+        "nonBio": {
+          "count": 106976,
+          "surface": 160647.06079663918,
+          "surface_admissible": 29220.050000000014
+        }
+      },
+      {
+        "dept": "027",
+        "bio": {
+          "count": 1929,
+          "surface": 8197.149149213668,
+          "surface_admissible": 2450.8399999999992
+        },
+        "nonBio": {
+          "count": 69881,
+          "surface": 343116.05251895665,
+          "surface_admissible": 109680.20999999996
+        }
+      },
+      {
+        "dept": "028",
+        "bio": {
+          "count": 1844,
+          "surface": 8988.36465063145,
+          "surface_admissible": 2764.3700000000013
+        },
+        "nonBio": {
+          "count": 79543,
+          "surface": 418174.91390594764,
+          "surface_admissible": 164377.67999999967
+        }
+      },
+      {
+        "dept": "029",
+        "bio": {
+          "count": 16733,
+          "surface": 28730.392735113128,
+          "surface_admissible": 3527.0099999999975
+        },
+        "nonBio": {
+          "count": 173317,
+          "surface": 350128.47376349516,
+          "surface_admissible": 41777.08000000009
+        }
+      },
+      {
+        "dept": "02A",
+        "bio": {
+          "count": 2537,
+          "surface": 12608.657703604686,
+          "surface_admissible": 1853.7099999999975
+        },
+        "nonBio": {
+          "count": 14819,
+          "surface": 101721.15779161656,
+          "surface_admissible": 21785.28000000008
+        }
+      },
+      {
+        "dept": "02B",
+        "bio": {
+          "count": 2851,
+          "surface": 19018.211511429254,
+          "surface_admissible": 2036.8699999999976
+        },
+        "nonBio": {
+          "count": 22587,
+          "surface": 159609.2712552629,
+          "surface_admissible": 32617.119999999966
+        }
+      },
+      {
+        "dept": "030",
+        "bio": {
+          "count": 12762,
+          "surface": 25189.2079597116,
+          "surface_admissible": 4710.960000000011
+        },
+        "nonBio": {
+          "count": 75927,
+          "surface": 139225.98263387583,
+          "surface_admissible": 22124.00999999994
+        }
+      },
+      {
+        "dept": "031",
+        "bio": {
+          "count": 11996,
+          "surface": 37503.61829032948,
+          "surface_admissible": 11484.840000000017
+        },
+        "nonBio": {
+          "count": 114766,
+          "surface": 298986.25040359003,
+          "surface_admissible": 90557.00999999959
+        }
+      },
+      {
+        "dept": "032",
+        "bio": {
+          "count": 24654,
+          "surface": 86910.6612942921,
+          "surface_admissible": 25824.95000000003
+        },
+        "nonBio": {
+          "count": 135949,
+          "surface": 347799.29933307564,
+          "surface_admissible": 91515.28000000016
+        }
+      },
+      {
+        "dept": "033",
+        "bio": {
+          "count": 8426,
+          "surface": 18568.429714524595,
+          "surface_admissible": 4432.999999999991
+        },
+        "nonBio": {
+          "count": 70129,
+          "surface": 177158.0998868719,
+          "surface_admissible": 29369.880000000067
+        }
+      },
+      {
+        "dept": "034",
+        "bio": {
+          "count": 15116,
+          "surface": 23317.031873904627,
+          "surface_admissible": 3275.3899999999994
+        },
+        "nonBio": {
+          "count": 112873,
+          "surface": 155494.07645342825,
+          "surface_admissible": 19573.119999999933
+        }
+      },
+      {
+        "dept": "035",
+        "bio": {
+          "count": 17399,
+          "surface": 34214.90404490153,
+          "surface_admissible": 4374.710000000006
+        },
+        "nonBio": {
+          "count": 192340,
+          "surface": 394870.5849785874,
+          "surface_admissible": 42595.55999999998
+        }
+      },
+      {
+        "dept": "036",
+        "bio": {
+          "count": 4246,
+          "surface": 16821.393786524106,
+          "surface_admissible": 3411.1200000000017
+        },
+        "nonBio": {
+          "count": 105357,
+          "surface": 415501.13336193154,
+          "surface_admissible": 92840.21000000017
+        }
+      },
+      {
+        "dept": "037",
+        "bio": {
+          "count": 6840,
+          "surface": 15362.336534566919,
+          "surface_admissible": 3732.389999999997
+        },
+        "nonBio": {
+          "count": 85510,
+          "surface": 297967.3727143371,
+          "surface_admissible": 76055.92999999947
+        }
+      },
+      {
+        "dept": "038",
+        "bio": {
+          "count": 13846,
+          "surface": 24621.144647086054,
+          "surface_admissible": 3440.020000000002
+        },
+        "nonBio": {
+          "count": 120225,
+          "surface": 255363.0358289081,
+          "surface_admissible": 50826.139999999774
+        }
+      },
+      {
+        "dept": "039",
+        "bio": {
+          "count": 6631,
+          "surface": 21173.77927170821,
+          "surface_admissible": 3066.340000000001
+        },
+        "nonBio": {
+          "count": 51022,
+          "surface": 164480.06264356244,
+          "surface_admissible": 23683.95999999999
+        }
+      },
+      {
+        "dept": "040",
+        "bio": {
+          "count": 3248,
+          "surface": 11307.956340828816,
+          "surface_admissible": 3816.0799999999977
+        },
+        "nonBio": {
+          "count": 75961,
+          "surface": 191713.1319245295,
+          "surface_admissible": 63346.88999999982
+        }
+      },
+      {
+        "dept": "041",
+        "bio": {
+          "count": 2788,
+          "surface": 8708.026589711772,
+          "surface_admissible": 2651.7
+        },
+        "nonBio": {
+          "count": 74739,
+          "surface": 259534.33635736082,
+          "surface_admissible": 81922.9599999995
+        }
+      },
+      {
+        "dept": "042",
+        "bio": {
+          "count": 12316,
+          "surface": 21521.271690810034,
+          "surface_admissible": 1333.2800000000002
+        },
+        "nonBio": {
+          "count": 90295,
+          "surface": 200956.54660771962,
+          "surface_admissible": 26853.91000000008
+        }
+      },
+      {
+        "dept": "043",
+        "bio": {
+          "count": 20860,
+          "surface": 27897.804365238382,
+          "surface_admissible": 3054.3099999999895
+        },
+        "nonBio": {
+          "count": 151778,
+          "surface": 199798.7215669324,
+          "surface_admissible": 23042.849999999966
+        }
+      },
+      {
+        "dept": "044",
+        "bio": {
+          "count": 27675,
+          "surface": 71425.97805310115,
+          "surface_admissible": 5939.149999999991
+        },
+        "nonBio": {
+          "count": 122993,
+          "surface": 326226.2268510115,
+          "surface_admissible": 36410.289999999964
+        }
+      },
+      {
+        "dept": "045",
+        "bio": {
+          "count": 2176,
+          "surface": 7916.9510846644,
+          "surface_admissible": 1752.6299999999987
+        },
+        "nonBio": {
+          "count": 79508,
+          "surface": 324695.3751464201,
+          "surface_admissible": 100862.73000000023
+        }
+      },
+      {
+        "dept": "046",
+        "bio": {
+          "count": 10290,
+          "surface": 18219.7383077353,
+          "surface_admissible": 3086.140000000001
+        },
+        "nonBio": {
+          "count": 120177,
+          "surface": 210815.59602233578,
+          "surface_admissible": 27839.900000000107
+        }
+      },
+      {
+        "dept": "047",
+        "bio": {
+          "count": 11367,
+          "surface": 30583.937368786494,
+          "surface_admissible": 7862.110000000027
+        },
+        "nonBio": {
+          "count": 101460,
+          "surface": 237528.43121014623,
+          "surface_admissible": 47061.84999999978
+        }
+      },
+      {
+        "dept": "048",
+        "bio": {
+          "count": 16805,
+          "surface": 42656.68155858509,
+          "surface_admissible": 2623.42
+        },
+        "nonBio": {
+          "count": 101741,
+          "surface": 247447.82973207024,
+          "surface_admissible": 23013.13000000012
+        }
+      },
+      {
+        "dept": "049",
+        "bio": {
+          "count": 19554,
+          "surface": 45468.56919637311,
+          "surface_admissible": 5051.559999999996
+        },
+        "nonBio": {
+          "count": 152509,
+          "surface": 388282.59775344445,
+          "surface_admissible": 55853.88000000002
+        }
+      },
+      {
+        "dept": "050",
+        "bio": {
+          "count": 11522,
+          "surface": 28951.621559356583,
+          "surface_admissible": 6020.130000000005
+        },
+        "nonBio": {
+          "count": 149054,
+          "surface": 380885.16580401844,
+          "surface_admissible": 57391.44999999991
+        }
+      },
+      {
+        "dept": "051",
+        "bio": {
+          "count": 2288,
+          "surface": 9450.361380205546,
+          "surface_admissible": 3240.150000000002
+        },
+        "nonBio": {
+          "count": 101716,
+          "surface": 503113.6397422681,
+          "surface_admissible": 194557.9199999996
+        }
+      },
+      {
+        "dept": "052",
+        "bio": {
+          "count": 3457,
+          "surface": 19534.788188757037,
+          "surface_admissible": 3075.5700000000006
+        },
+        "nonBio": {
+          "count": 50990,
+          "surface": 280603.4702275122,
+          "surface_admissible": 47782.63999999991
+        }
+      },
+      {
+        "dept": "053",
+        "bio": {
+          "count": 9638,
+          "surface": 25806.914737196203,
+          "surface_admissible": 2670.7300000000027
+        },
+        "nonBio": {
+          "count": 131481,
+          "surface": 350576.34513180493,
+          "surface_admissible": 37416.47999999998
+        }
+      },
+      {
+        "dept": "054",
+        "bio": {
+          "count": 5921,
+          "surface": 21469.655693908997,
+          "surface_admissible": 3040.639999999998
+        },
+        "nonBio": {
+          "count": 59964,
+          "surface": 236940.259191104,
+          "surface_admissible": 36698.57000000017
+        }
+      },
+      {
+        "dept": "055",
+        "bio": {
+          "count": 3401,
+          "surface": 15179.961373404953,
+          "surface_admissible": 1041.3399999999995
+        },
+        "nonBio": {
+          "count": 58400,
+          "surface": 304294.4257976789,
+          "surface_admissible": 24829.670000000067
+        }
+      },
+      {
+        "dept": "056",
+        "bio": {
+          "count": 14398,
+          "surface": 30438.21149146924,
+          "surface_admissible": 5777.329999999994
+        },
+        "nonBio": {
+          "count": 150121,
+          "surface": 329149.7310103855,
+          "surface_admissible": 59165.1499999999
+        }
+      },
+      {
+        "dept": "057",
+        "bio": {
+          "count": 7981,
+          "surface": 24098.718173337336,
+          "surface_admissible": 3352.7400000000007
+        },
+        "nonBio": {
+          "count": 83795,
+          "surface": 284790.32805828756,
+          "surface_admissible": 35670.399999999885
+        }
+      },
+      {
+        "dept": "058",
+        "bio": {
+          "count": 4463,
+          "surface": 19667.559564783336,
+          "surface_admissible": 1480.2699999999998
+        },
+        "nonBio": {
+          "count": 73632,
+          "surface": 336017.5901793591,
+          "surface_admissible": 28692.890000000043
+        }
+      },
+      {
+        "dept": "059",
+        "bio": {
+          "count": 3565,
+          "surface": 11478.189952207338,
+          "surface_admissible": 2502.33
+        },
+        "nonBio": {
+          "count": 104961,
+          "surface": 323349.94482534385,
+          "surface_admissible": 72018.56000000025
+        }
+      },
+      {
+        "dept": "060",
+        "bio": {
+          "count": 2742,
+          "surface": 11109.30367021071,
+          "surface_admissible": 1647.7299999999998
+        },
+        "nonBio": {
+          "count": 73727,
+          "surface": 336956.2847276918,
+          "surface_admissible": 71907.88000000005
+        }
+      },
+      {
+        "dept": "061",
+        "bio": {
+          "count": 7362,
+          "surface": 28012.59925571271,
+          "surface_admissible": 6440.909999999998
+        },
+        "nonBio": {
+          "count": 90228,
+          "surface": 348749.71828494093,
+          "surface_admissible": 71646.4700000003
+        }
+      },
+      {
+        "dept": "062",
+        "bio": {
+          "count": 2144,
+          "surface": 5380.53545429863,
+          "surface_admissible": 1216.03
+        },
+        "nonBio": {
+          "count": 143889,
+          "surface": 434216.8873651389,
+          "surface_admissible": 65358.08999999989
+        }
+      },
+      {
+        "dept": "063",
+        "bio": {
+          "count": 9457,
+          "surface": 21844.124643054038,
+          "surface_admissible": 2516.130000000003
+        },
+        "nonBio": {
+          "count": 145365,
+          "surface": 361497.2465420378,
+          "surface_admissible": 53965.960000000254
+        }
+      },
+      {
+        "dept": "064",
+        "bio": {
+          "count": 7658,
+          "surface": 13586.3036572527,
+          "surface_admissible": 3151.6800000000044
+        },
+        "nonBio": {
+          "count": 176779,
+          "surface": 398998.8770096465,
+          "surface_admissible": 135042.82000000053
+        }
+      },
+      {
+        "dept": "065",
+        "bio": {
+          "count": 4359,
+          "surface": 8175.630404349992,
+          "surface_admissible": 2055.49
+        },
+        "nonBio": {
+          "count": 78214,
+          "surface": 241315.12764591546,
+          "surface_admissible": 31119.329999999987
+        }
+      },
+      {
+        "dept": "066",
+        "bio": {
+          "count": 9925,
+          "surface": 18122.6513159348,
+          "surface_admissible": 3277.34
+        },
+        "nonBio": {
+          "count": 33553,
+          "surface": 131359.6136896965,
+          "surface_admissible": 13096.950000000039
+        }
+      },
+      {
+        "dept": "067",
+        "bio": {
+          "count": 13812,
+          "surface": 17636.92363089953,
+          "surface_admissible": 1815.2700000000004
+        },
+        "nonBio": {
+          "count": 138219,
+          "surface": 171607.5269956458,
+          "surface_admissible": 31268.449999999913
+        }
+      },
+      {
+        "dept": "068",
+        "bio": {
+          "count": 8521,
+          "surface": 7020.049805988152,
+          "surface_admissible": 1195.0900000000006
+        },
+        "nonBio": {
+          "count": 78426,
+          "surface": 122255.41098957241,
+          "surface_admissible": 38501.74000000016
+        }
+      },
+      {
+        "dept": "069",
+        "bio": {
+          "count": 8765,
+          "surface": 13266.225957224668,
+          "surface_admissible": 1555.5199999999975
+        },
+        "nonBio": {
+          "count": 66216,
+          "surface": 105738.52594443748,
+          "surface_admissible": 22199.85999999988
+        }
+      },
+      {
+        "dept": "070",
+        "bio": {
+          "count": 8398,
+          "surface": 29730.236834353385,
+          "surface_admissible": 5782.210000000011
+        },
+        "nonBio": {
+          "count": 50636,
+          "surface": 195895.8172068841,
+          "surface_admissible": 31030.219999999885
+        }
+      },
+      {
+        "dept": "071",
+        "bio": {
+          "count": 5660,
+          "surface": 16250.050383760874,
+          "surface_admissible": 3404.209999999998
+        },
+        "nonBio": {
+          "count": 123991,
+          "surface": 474731.3456452367,
+          "surface_admissible": 76917.27999999918
+        }
+      },
+      {
+        "dept": "072",
+        "bio": {
+          "count": 5820,
+          "surface": 19447.42817299001,
+          "surface_admissible": 5210.449999999997
+        },
+        "nonBio": {
+          "count": 90247,
+          "surface": 331369.83221572015,
+          "surface_admissible": 71383.68999999965
+        }
+      },
+      {
+        "dept": "073",
+        "bio": {
+          "count": 2249,
+          "surface": 4824.863594465123,
+          "surface_admissible": 945.76
+        },
+        "nonBio": {
+          "count": 52728,
+          "surface": 165906.11326350438,
+          "surface_admissible": 37033.75999999997
+        }
+      },
+      {
+        "dept": "074",
+        "bio": {
+          "count": 3313,
+          "surface": 5927.107795726996,
+          "surface_admissible": 1002.6599999999991
+        },
+        "nonBio": {
+          "count": 64640,
+          "surface": 123327.11036960086,
+          "surface_admissible": 20261.090000000007
+        }
+      },
+      {
+        "dept": "076",
+        "bio": {
+          "count": 2305,
+          "surface": 7540.401012442063,
+          "surface_admissible": 1432.4599999999975
+        },
+        "nonBio": {
+          "count": 86272,
+          "surface": 372629.1069711817,
+          "surface_admissible": 45381.150000000074
+        }
+      },
+      {
+        "dept": "077",
+        "bio": {
+          "count": 2752,
+          "surface": 11815.383053472946,
+          "surface_admissible": 3431.680000000001
+        },
+        "nonBio": {
+          "count": 62275,
+          "surface": 307226.67861657584,
+          "surface_admissible": 93903.77999999993
+        }
+      },
+      {
+        "dept": "078",
+        "bio": {
+          "count": 1344,
+          "surface": 5871.150509496146,
+          "surface_admissible": 1138.1199999999997
+        },
+        "nonBio": {
+          "count": 19274,
+          "surface": 73834.28609391827,
+          "surface_admissible": 24894.420000000082
+        }
+      },
+      {
+        "dept": "079",
+        "bio": {
+          "count": 11210,
+          "surface": 32459.35563511264,
+          "surface_admissible": 6712.719999999993
+        },
+        "nonBio": {
+          "count": 128991,
+          "surface": 398620.11412297253,
+          "surface_admissible": 66036.25000000012
+        }
+      },
+      {
+        "dept": "080",
+        "bio": {
+          "count": 1844,
+          "surface": 5889.5177422227325,
+          "surface_admissible": 1110.8099999999988
+        },
+        "nonBio": {
+          "count": 106614,
+          "surface": 434095.6841607178,
+          "surface_admissible": 67952.89000000038
+        }
+      },
+      {
+        "dept": "081",
+        "bio": {
+          "count": 10454,
+          "surface": 25320.512888916364,
+          "surface_admissible": 6700.580000000004
+        },
+        "nonBio": {
+          "count": 122265,
+          "surface": 263705.5734710248,
+          "surface_admissible": 47459.409999999894
+        }
+      },
+      {
+        "dept": "082",
+        "bio": {
+          "count": 8465,
+          "surface": 18381.333449446112,
+          "surface_admissible": 5853.030000000011
+        },
+        "nonBio": {
+          "count": 86718,
+          "surface": 181050.8114583154,
+          "surface_admissible": 54148.93999999984
+        }
+      },
+      {
+        "dept": "083",
+        "bio": {
+          "count": 7565,
+          "surface": 14566.388507964253,
+          "surface_admissible": 2737.5900000000033
+        },
+        "nonBio": {
+          "count": 25856,
+          "surface": 93709.28239110607,
+          "surface_admissible": 12096.430000000031
+        }
+      },
+      {
+        "dept": "084",
+        "bio": {
+          "count": 12724,
+          "surface": 18485.571181092386,
+          "surface_admissible": 3954.2499999999973
+        },
+        "nonBio": {
+          "count": 54937,
+          "surface": 83145.15518343776,
+          "surface_admissible": 14315.449999999966
+        }
+      },
+      {
+        "dept": "085",
+        "bio": {
+          "count": 13951,
+          "surface": 43561.770818647616,
+          "surface_admissible": 7085.180000000007
+        },
+        "nonBio": {
+          "count": 133321,
+          "surface": 414877.1966558098,
+          "surface_admissible": 76138.95999999922
+        }
+      },
+      {
+        "dept": "086",
+        "bio": {
+          "count": 8957,
+          "surface": 34914.146865477174,
+          "surface_admissible": 5516.550000000001
+        },
+        "nonBio": {
+          "count": 112562,
+          "surface": 413243.3811407031,
+          "surface_admissible": 93650.28
+        }
+      },
+      {
+        "dept": "087",
+        "bio": {
+          "count": 8604,
+          "surface": 24482.717435358434,
+          "surface_admissible": 3060.150000000001
+        },
+        "nonBio": {
+          "count": 93963,
+          "surface": 252850.62167286928,
+          "surface_admissible": 22900.159999999934
+        }
+      },
+      {
+        "dept": "088",
+        "bio": {
+          "count": 7273,
+          "surface": 21921.102692480046,
+          "surface_admissible": 3777.440000000002
+        },
+        "nonBio": {
+          "count": 57394,
+          "surface": 187100.14456640137,
+          "surface_admissible": 23616.90000000005
+        }
+      },
+      {
+        "dept": "089",
+        "bio": {
+          "count": 10359,
+          "surface": 43024.5717087457,
+          "surface_admissible": 11916.50000000003
+        },
+        "nonBio": {
+          "count": 91393,
+          "surface": 351766.8391539742,
+          "surface_admissible": 77689.68999999987
+        }
+      },
+      {
+        "dept": "090",
+        "bio": {
+          "count": 514,
+          "surface": 1013.3057971317202,
+          "surface_admissible": 175.49999999999994
+        },
+        "nonBio": {
+          "count": 6936,
+          "surface": 16371.90622186979,
+          "surface_admissible": 3113.4900000000002
+        }
+      },
+      {
+        "dept": "091",
+        "bio": {
+          "count": 1644,
+          "surface": 7546.639081440619,
+          "surface_admissible": 1952.3899999999985
+        },
+        "nonBio": {
+          "count": 15999,
+          "surface": 70959.93721812169,
+          "surface_admissible": 26011.17
+        }
+      },
+      {
+        "dept": "093",
+        "bio": {
+          "count": 23,
+          "surface": 51.1384323341738,
+          "surface_admissible": 0
+        },
+        "nonBio": {
+          "count": 43,
+          "surface": 400.02926420659617,
+          "surface_admissible": 0
+        }
+      },
+      {
+        "dept": "094",
+        "bio": {
+          "count": 25,
+          "surface": 57.29157796817286,
+          "surface_admissible": 32.33
+        },
+        "nonBio": {
+          "count": 140,
+          "surface": 626.8320799395067,
+          "surface_admissible": 223.21000000000004
+        }
+      },
+      {
+        "dept": "095",
+        "bio": {
+          "count": 202,
+          "surface": 719.1349481966947,
+          "surface_admissible": 12.540000000000001
+        },
+        "nonBio": {
+          "count": 10620,
+          "surface": 50496.12289151421,
+          "surface_admissible": 9838.92000000002
+        }
+      }
+    ]
+  }
+}
