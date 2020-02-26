@@ -10,15 +10,15 @@
                 <v-icon x-large>how_to_reg</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Controleur Bio ?</div>
+                <div class="title">Vous contrôlez des parcelles en bio&nbsp;?</div>
               </v-card-title>
               <v-card-text>
-                Cette application vous est dédiée pour le moment. Vous pouvez vous connecter en utilisant vos identifiants de
+                Cette application vous est dédiée pour le moment. Connectez-vous avec vos identifiants du
                 <a
                   href="notification@agencebio.org"
                   target="_blank"
-                >notification@agencebio.org</a>
-                En cas de soucis, n'hésitez pas à nous contacter. Nous sommes toujours preneurs de retours et il est possible que nous vous contactions dans cet objectif.
+                >portail Notifications de l'Agence Bio</a>
+                En cas de soucis, <a href="mailto:cartobio@beta.gouv.fr">contactez-nous</a>. Nous sommes à l'écoute pour en faire un outil qui vous soit utile.
                 <br />
                 <router-link to="/map">
                   <v-btn
@@ -38,7 +38,7 @@
                 <v-icon x-large>emoji_nature</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Agriculteur Bio ?</div>
+                <div class="title">Vous cultivez en bio ?</div>
               </v-card-title>
               <v-card-text>
                 Afin de mieux connaître les surfaces cultivées en agriculture biologique pour mesurer l'impact et mener des politiques publiques plus efficaces,
