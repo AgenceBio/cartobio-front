@@ -87,7 +87,7 @@ parcellaires de l’agriculture biologique
                     </div>
                   </v-card-title>
                   <v-card-text>
-                    A l'issue du programme Entrepreneurs d'Intérêt Général, nous nous sommes tournés vers beta.gouv afin de nous accompagner sur le déploiment du projet, et en assurer sa pérénnisation.
+                    A l'issue du programme Entrepreneurs d'Intérêt Général, nous nous sommes tournés vers l'Incubateur afin de nous accompagner sur le déploiement du projet, et le pérenniser.
                     Plus d'information
                     <a
                       href="https://beta.gouv.fr/startups/cartobio.html"
