@@ -10,6 +10,13 @@
               class="logo mx-2"
             />
           </a>
+          <a href="https://www.inao.gouv.fr/" target="_blank">
+            <img
+              alt="Logo Institut National de l'Origine et de la Qualité"
+              src="../assets/logo_inao.png"
+              class="logo mx-2"
+            />
+          </a>
           <a href="https://www.geoportail.gouv.fr/" target="_blank">
             <img alt="IGN logo" src="../assets/ign.png" class="logo mx-2" />
           </a>
@@ -28,6 +35,9 @@
               src="../assets/logo_investirlavenir.png"
               class="logo mx-2"
             />
+          </a>
+          <a href="http://beta.gouv.fr/" target="_blank">
+            <img alt="Logo bêta.gouv" src="../assets/logo-betagouvfr.svg" class="logo mx-2" />
           </a>
           <v-divider vertical class="mx-3"></v-divider>
           <p class="madewith">Fait avec</p>

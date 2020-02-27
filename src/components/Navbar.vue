@@ -1,24 +1,25 @@
 <template>
   <v-toolbar app clipped-left color="#b9d065">
-    <a href="https://www.agencebio.org/" target="_blank">
-      <img alt="Agence Bio logo" :src="require('../../src/assets/agence-bio.png')" class="logo" />
-    </a>
+    <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
+      <v-icon flat large>home</v-icon>
+      <v-toolbar-title>CartoBIO</v-toolbar-title>
+    </v-btn>
     <v-toolbar-title>{{title}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
-      <router-link to="/" class="navbar-button">
-        <v-btn flat>Accueil</v-btn>
+      <router-link to="/stats" class="navbar-button">
+        <v-btn flat title="Aller à la page de Statistiques">Stats</v-btn>
       </router-link>
       <router-link
         v-if="$store.getters.getUserCategory === $store.getters.getCategories.oc && currentRoute !== '/notifications'"
         to="/notifications"
         class="navbar-button"
       >
-        <v-btn flat class="navbar-button">Exploitations</v-btn>
+        <v-btn flat class="navbar-button" title="Aller à la liste des exploitations">Exploitations</v-btn>
       </router-link>
       <router-link v-if="currentRoute !== '/map'" to="/map" class="navbar-button">
-        <v-btn flat class="navbar-button">Carte</v-btn>
+        <v-btn flat class="navbar-button" title="Aller à la carte">Carte</v-btn>
       </router-link>
       <Login v-if="!getProfile.nom" class="navbar-button"></Login>
       <Profile v-if="getProfile.nom" class="navbar-button"></Profile>
@@ -28,7 +29,6 @@
 <script>
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
-const axios = require("axios");
 
 export default {
   name: "Navbar",
@@ -52,7 +52,7 @@ export default {
       return this.$route.path;
     },
     title() {
-      return this.getOperator.title ? this.getOperator.title : "CartoBIO";
+      return this.getOperator.title ? this.getOperator.title : "";
     }
   }
 };

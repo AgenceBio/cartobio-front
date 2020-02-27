@@ -7,55 +7,140 @@
           <Title
             msg="Ouvrir, enrichir et partager les données
 parcellaires de l’agriculture biologique
-
 "
           />
         </v-parallax>
       </section>
-      <section id="objectives">
-        <v-layout column wrap class="my-5" align-center>
+      <section id="objectifs" class="blue-grey lighten-5">
+        <v-layout column wrap class="py-5" align-center>
           <Problem />
         </v-layout>
       </section>
-      <section id="demo">
-        <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
-          <v-layout align-center column justify-center>
-            <div>
-              <v-card background="transparent">
-                <v-card-title primary-title>
-                  <div>
-                    <div class="headline">Suivre l'avancement du projet</div>
-                    <span
-                      class="grey--text"
-                    >Nous mettons régulièrement à jour ce document avec le déroulement et les avancées du projet</span>
-                  </div>
-                </v-card-title>
-                <v-card-actions>
-                  <v-layout align-center column justify-center>
-                    <v-btn
-                      large
-                      round
-                      outline
-                      flat
-                      href="https://hackmd.io/@lucasbio/cartobio"
-                      target="_blank"
-                    >
-                      <v-icon>file_copy</v-icon>Découvrir notre démarche projet
-                    </v-btn>
-                  </v-layout>
-                </v-card-actions>
-              </v-card>
-            </div>
-          </v-layout>
-        </v-parallax>
-      </section>
-      <section id="about">
-        <v-layout column wrap class="my-5" align-center>
+      <section id="a-propos" class="grey lighten-5">
+        <v-layout column wrap class="py-5" align-center>
           <About />
         </v-layout>
       </section>
+      <section id="nous-suivre" class="blue-grey lighten-5">
+        <v-layout column wrap class="py-5" align-center>
+          <v-container grid-list-xl>
+            <h1>Suivre le projet</h1>
+            <v-layout row wrap justify-center>
+              <v-flex xs12 md4>
+                <v-card class="elevation-3">
+                  <v-card-text class="text-xs-center primary-green">
+                    <v-icon x-large>file_copy</v-icon>
+                  </v-card-text>
+                  <v-card-title primary-title class="layout justify-center">
+                    <div class="title">Suivre l'avancement du projet</div>
+                  </v-card-title>
+                  <v-card-text>
+                    Nous mettons régulièrement à jour ce document avec le déroulement et les avancées du projet
+                    <v-btn
+                      round
+                      title="Découvrir notre démarche projet"
+                      color="primary-green"
+                      class="mt-3"
+                      dark
+                      href="https://hackmd.io/@lucasbio/cartobio"
+                      target="_blank"
+                    >Découvrir notre démarche projet</v-btn>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex xs12 md4>
+                <v-card class="elevation-3">
+                  <v-card-text class="text-xs-center primary-green" flex column>
+                    <v-flex xs-12>
+                      <v-layout>
+                        <v-img
+                          contain
+                          aspect-ratio="1"
+                          max-height="40px"
+                          :src="require('../assets/eig.png')"
+                        ></v-img>
+
+                        <v-icon xs-4 x-large>arrow_forward</v-icon>
+
+                        <v-img
+                          contain
+                          max-height="40px"
+                          :src="require('../assets/logo-betagouvfr.svg')"
+                        ></v-img>
+                      </v-layout>
+                    </v-flex>
+                  </v-card-text>
+                  <v-card-title primary-title class="layout justify-center">
+                    <div class="title">
+                      Un projet
+                      <a
+                        href="https://entrepreneur-interet-general.etalab.gouv.fr/"
+                        title="Site des Entrepreneurs d'Intérêt Général"
+                        target="_blank"
+                      >EIG</a>...
+                      <br />Devenu
+                      <a
+                        href="https://beta.gouv.fr/"
+                        title="Site des Start Up d'Etat et de Territoires"
+                        target="_blank"
+                      >Start Up D'Etat</a> !
+                    </div>
+                  </v-card-title>
+                  <v-card-text>
+                    A l'issue du programme Entrepreneurs d'Intérêt Général, nous nous sommes tournés vers l'Incubateur afin de nous accompagner sur le déploiement du projet, et le pérenniser.
+                    Plus d'information
+                    <a
+                      href="https://beta.gouv.fr/startups/cartobio.html"
+                      title="Page de descriptif de CartoBio sur le site de beta.gouv"
+                      target="_blank"
+                    >ici</a>
+                    <br />
+                    <v-btn
+                      round
+                      title="Contactez nous"
+                      color="primary-green"
+                      class="mt-3"
+                      dark
+                      href="mailto:cartobio@beta.gouv.fr"
+                    >Contactez nous!</v-btn>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+
+              <v-flex xs12 md4>
+                <v-card class="elevation-3">
+                  <v-card-text class="text-xs-center primary-green">
+                    <v-icon x-large>code</v-icon>
+                  </v-card-text>
+                  <v-card-title primary-title class="layout justify-center">
+                    <div class="title text-xs-center">Ouvrir son code</div>
+                  </v-card-title>
+                  <v-card-text>
+                    Publier le code de l’application sur
+                    <a
+                      href="https://github.com/entrepreneur-interet-general/CartoBio-Presentation/blob/master/LICENSE"
+                      target="_blank"
+                    >GitHub</a> sous MIT, dans un but de transparence et de maintenabilité.
+                    <br />Argent Public = Code Public
+                    <br />
+                    <v-btn
+                      round
+                      title="Lien GitHub"
+                      color="primary-green"
+                      class="mt-3"
+                      dark
+                      target="_blank"
+                      href="https://github.com/entrepreneur-interet-general/CartoBio-Presentation"
+                    >Voir le code</v-btn>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-layout>
+      </section>
     </v-content>
-    <v-footer id="partners" height="auto" color="#b9d065">
+    <v-footer id="partenaires" height="auto" color="#b9d065">
       <Partners />
     </v-footer>
   </div>

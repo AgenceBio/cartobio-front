@@ -6,6 +6,7 @@ import Stats from './views/Stats.vue'
 import AgriList from './views/AgriList.vue'
 import AppLayout from './views/AppLayout.vue'
 import store from './store.js'
+import goTo from 'vuetify/lib/components/Vuetify/goTo'
 
 Vue.use(Router)
 
@@ -18,11 +19,13 @@ export default new Router({
           path: 'title'
         },
         {
-          path: 'objectives'
+          path: 'objectifs'
         }, {
-          path: 'about'
+          path: 'a-propos'
         }, {
-          path: 'partners'
+          path: 'nous-suivre'
+        }, {
+          path: 'partenaires'
         }
       ]
     },
@@ -63,5 +66,16 @@ export default new Router({
     //   // which is lazy-loaded when the route is visited.
     //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     // }
-  ]
+  ],
+  scrollBehavior: (to, from, savedPosition) => {
+    let scrollTo = 0
+
+    if (to.hash) {
+      scrollTo = to.hash
+    } else if (savedPosition) {
+      scrollTo = savedPosition.y
+    }
+
+    return goTo(scrollTo)
+  },
 })
