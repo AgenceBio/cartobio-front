@@ -72,18 +72,12 @@ parcellaires de l’agriculture biologique
                   </v-card-text>
                   <v-card-title primary-title class="layout justify-center">
                     <div class="title">
-                      Un projet
-                      <a
-                        href="https://entrepreneur-interet-general.etalab.gouv.fr/"
-                        title="Site des Entrepreneurs d'Intérêt Général"
-                        target="_blank"
-                      >EIG</a>...
-                      <br />Devenu
+                      Le projet est incubé par
                       <a
                         href="https://beta.gouv.fr/"
                         title="Site des Start Up d'Etat et de Territoires"
                         target="_blank"
-                      >Start Up D'Etat</a> !
+                      >l'incubateur des services numériques</a> de l'État (DINUM)
                     </div>
                   </v-card-title>
                   <v-card-text>
@@ -121,7 +115,8 @@ parcellaires de l’agriculture biologique
                       href="https://github.com/entrepreneur-interet-general/CartoBio-Presentation/blob/master/LICENSE"
                       target="_blank"
                     >GitHub</a> sous MIT, dans un but de transparence et de maintenabilité.
-                    <br />Argent Public = Code Public
+                    <br />
+                    <div class="font-weight-bold subheading">Argent Public = Code Public</div>
                     <br />
                     <v-btn
                       round
