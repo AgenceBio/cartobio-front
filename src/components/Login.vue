@@ -48,6 +48,7 @@
 
 <script>
 const axios = require("axios");
+let _paq = window._paq;
 export default {
   name: "Login",
   props: [""],
@@ -107,6 +108,12 @@ export default {
           this.loading = false;
           this.loader = null;
           this.loginFailed = true;
+          _paq.push(['trackEvent',
+            // Name, the name of the variable, for example: Gender, VisitorType
+            "loginFailed",
+            // Value, for example: "Male", "Female" or "new", "engaged", "customer"
+            error
+          ]);
         });
     },
     treatAuthToken: function(token) {
