@@ -48,7 +48,6 @@
 
 <script>
 const axios = require("axios");
-let _paq = window._paq;
 export default {
   name: "Login",
   props: [""],
@@ -77,6 +76,14 @@ export default {
         )
         .then(data => this.treatAuthToken(data.data.token))
         .then(data => {
+          console.log(data);
+           window._paq.push(['trackEvent',
+            // Name, the name of the variable, for example: Gender, VisitorType
+            "login",
+            "Success",
+            // Value, for example: "Male", "Female" or "new", "engaged", "customer"
+            data.organismeCertificateurId
+          ]);
           return axios.get(
             process.env.VUE_APP_NOTIFICATIONS_ENDPOINT +
               "/portail/users/" +
@@ -108,12 +115,15 @@ export default {
           this.loading = false;
           this.loader = null;
           this.loginFailed = true;
-          _paq.push(['trackEvent',
+          window._paq.push(['trackEvent',
             // Name, the name of the variable, for example: Gender, VisitorType
-            "loginFailed",
+            "login",
+            "Failed",
             // Value, for example: "Male", "Female" or "new", "engaged", "customer"
             error
           ]);
+          console.log(_paq);
+          console.log("hello");
         });
     },
     treatAuthToken: function(token) {
