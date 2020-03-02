@@ -76,14 +76,7 @@ export default {
         )
         .then(data => this.treatAuthToken(data.data.token))
         .then(data => {
-          console.log(data);
-           window._paq.push(['trackEvent',
-            // Name, the name of the variable, for example: Gender, VisitorType
-            "login",
-            "Success",
-            // Value, for example: "Male", "Female" or "new", "engaged", "customer"
-            data.organismeCertificateurId
-          ]);
+           
           return axios.get(
             process.env.VUE_APP_NOTIFICATIONS_ENDPOINT +
               "/portail/users/" +
@@ -91,7 +84,15 @@ export default {
           );
         })
         .then(data => {
+
+         
           this.user = data.data;
+           window._paq.push(['trackEvent',
+            "login",
+            "Success",
+            // OC Id : 
+            _.get(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC")
+          ]);
           this.loading = false;
           this.loader = null;
         })
@@ -122,8 +123,6 @@ export default {
             // Value, for example: "Male", "Female" or "new", "engaged", "customer"
             error
           ]);
-          console.log(_paq);
-          console.log("hello");
         });
     },
     treatAuthToken: function(token) {
