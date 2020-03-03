@@ -117,10 +117,8 @@ export default {
           this.loader = null;
           this.loginFailed = true;
           window._paq.push(['trackEvent',
-            // Name, the name of the variable, for example: Gender, VisitorType
             "login",
             "Failed",
-            // Value, for example: "Male", "Female" or "new", "engaged", "customer"
             error
           ]);
         });
