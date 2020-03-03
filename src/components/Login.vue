@@ -88,10 +88,9 @@ export default {
          
           this.user = data.data;
            window._paq.push(['trackEvent',
-            "login",
-            "Success",
-            // OC Id : 
-            _.get(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC")
+            "login", // event category : login
+            "Success", // event Action : success
+            _.get(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
           ]);
           this.loading = false;
           this.loader = null;
