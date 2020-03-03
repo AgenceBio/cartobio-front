@@ -54,17 +54,17 @@ fourni par le paquet [`gdal`][gdal].
 RPG_SUFFIX="_20190603_.zip"
 RPG_PREFIX="SURFACES-2019-PARCELLES-GRAPHIQUES-CONSTATEES_"
 
-for FILE in $(ls d*.zip); do \
-  FILE_WITHOUT_SUFFIX=${FILE%${RPG_SUFFIX}}; \
-  DEPT=${FILE_WITHOUT_SUFFIX#${RPG_PREFIX}}; \
-  echo -n "$DEPT "; \
-  ogr2ogr -append \
-    -f 'ESRI Shapefile' -nln cartobio -nlt POLYGON \
-    -s_srs EPSG:2154 -t_srs EPSG:4326; \
-  cartobio \
-  "/vsizip/$FILE" \
-  -dialect 'SQL' \
-  -sql "SELECT CONCAT(PACAGE, CAST(NUM_ILOT as character(3)), CAST(NUM_PARCEL as character(3))) as gid, OGR_GEOM_AREA as SURF_GEO, * FROM \"${FILE_PREFIX}${DEPT}${FILE_SUFFIX%.zip}\" WHERE BIO=1" \
+rm -rf ./cartobio{,.zip}
+
+for FILE in $(ls *.zip); do
+  FILE_WITHOUT_SUFFIX=${FILE%${RPG_SUFFIX}};
+  DEPT=${FILE_WITHOUT_SUFFIX#${RPG_PREFIX}};
+  echo -n "$DEPT ";
+  ogr2ogr -overwrite -nln cartobio d${DEPT} "/vsizip/${FILE}";
+  ogrinfo "d${DEPT}" -dialect 'SQL' -sql 'CREATE INDEX ON cartobio USING PACAGE';
+  ogr2ogr -overwrite -nln cartobio -s_srs EPSG:2154 -t_srs EPSG:4326 -nlt POLYGON d${DEPT} d${DEPT} \
+    -dialect 'sqlite' -sql "SELECT (PACAGE || CAST(NUM_ILOT as character(3)) || CAST(NUM_PARCEL as character(3))) AS gid, ST_Area(GEOMETRY) AS SURF_GEO, * FROM cartobio WHERE PACAGE IN (SELECT DISTINCT PACAGE FROM cartobio WHERE BIO=1)";
+  ogr2ogr -update -append cartobio d${DEPT};
 done
 
 zip -9 -r cartobio.zip cartobio
