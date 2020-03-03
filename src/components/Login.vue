@@ -76,6 +76,7 @@ export default {
         )
         .then(data => this.treatAuthToken(data.data.token))
         .then(data => {
+           
           return axios.get(
             process.env.VUE_APP_NOTIFICATIONS_ENDPOINT +
               "/portail/users/" +
@@ -83,7 +84,14 @@ export default {
           );
         })
         .then(data => {
+
+         
           this.user = data.data;
+           window._paq.push(['trackEvent',
+            "login", // event category : login
+            "Success", // event Action : success
+            _.get(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
+          ]);
           this.loading = false;
           this.loader = null;
         })
@@ -107,6 +115,11 @@ export default {
           this.loading = false;
           this.loader = null;
           this.loginFailed = true;
+          window._paq.push(['trackEvent',
+            "login",
+            "Failed",
+            error
+          ]);
         });
     },
     treatAuthToken: function(token) {
