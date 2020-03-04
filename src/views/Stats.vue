@@ -32,7 +32,7 @@
               <v-card-title class="d-block text-xs-center">
                   <h2 class="headline mb-0">
                     <span class="digits huge">{{monthlyVisits}}</span>
-                    connexions OC
+                    connexions <abbr title="Organisme de Certification">OC</abbr>
                   </h2>
                   <p><b>depuis le début du mois</b></p>
               </v-card-title>
