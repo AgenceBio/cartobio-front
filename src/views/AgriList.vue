@@ -223,7 +223,7 @@ export default {
         version: "1.1.0",
         request: "GetFeature",
         outputFormat: "GeoJSON",
-        typeName: "rpgbio2019v4",
+        typeName: "rpgbio2020v1",
         srsname: "4326",
         filter: '{"pacage":"' + this.numPacage + '"}'
       };
@@ -234,7 +234,7 @@ export default {
           process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
       );
       this.loadingData = true;
-      // get 2019 parcels from the operator
+      // get 2020 parcels from the operator
       axios
         .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params,

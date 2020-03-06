@@ -6,7 +6,7 @@ Vue.use(Vuex)
 //init store
 const store =  new Vuex.Store({
     state: {
-        currentYear: 2019,
+        currentYear: 2020,
         userProfile: {},
         currentOperator: {},
         disclaimer: true,

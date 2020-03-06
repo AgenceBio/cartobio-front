@@ -31,7 +31,7 @@
 
       <!-- Parcels List -->
       <ParcelsList
-        :parcels.sync="parcelsOperator[2019]"
+        :parcels.sync="parcelsOperator[2020]"
         v-if="drawer && !mini"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
@@ -368,6 +368,7 @@ export default {
       operator: {},
       // operator parcels by year
       parcelsOperator: {
+        2020: geoJsonTemplate,
         2019: geoJsonTemplate,
         2018: geoJsonTemplate,
         2017: geoJsonTemplate
@@ -402,35 +403,51 @@ export default {
       editMode: false,
 
       // misc data
-      filterLabel: { filter: "numerobio", property: "numeroBio" },
+      filterLabel: {
+        // espace collaboratif field name
+        filter: "pacage",
+        // agence bio field name
+        property: "numeroPacage"
+      },
+      // filterLabel: {
+      //   filter: "numerobio",
+      //   property: "numeroBio"
+      // },
       expandLayers: [true],
       displaySurvey: true,
       // new parcel dialog
       setUpParcel: false,
       showLayersCard: false,
       layersVisible: {
+        // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
+        2020: {
+          visibility: false,
+          colorBio: "#62d771",
+          colorNotBio: "#fda8d4"
+        },
         2019: {
           visibility: false,
-          colorBio: "#0B7F88",
-          colorNotBio: "#C86E81"
+          colorBio: "#1fa341",
+          colorNotBio: "#e3659d"
         },
         2018: {
           visibility: false,
-          colorBio: "#0D9BA5",
-          colorNotBio: "#F4869D"
+          colorBio: "#006e1b",
+          colorNotBio: "#b32d64"
         },
         2017: {
           visibility: false,
-          colorBio: "#39ADB5",
-          colorNotBio: "#F69CAE"
+          colorBio: "#003c00",
+          colorNotBio: "#740032"
         },
+        anon2020: { visibility: false, color: "#D0D32E" },
         anon2019: { visibility: false, color: "#D0D32E" },
         anon2018: { visibility: false, color: "#D0D32E" },
         anon2017: { visibility: false, color: "#D0D32E" }
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
-      years: [2019, 2018, 2017]
+      years: [2020, 2019, 2018, 2017]
     };
   },
   // event bus
@@ -446,7 +463,7 @@ export default {
       );
       this.operator.title = "pacage : " + this.operator.pacage;
       this.operator.pacage = '"' + this.operator.pacage + '"';
-      this.filterLabel = { filter: "pacage", property: "pacage" };
+      this.filterLabel = { filter: "pacage", property: "numeroPacage" };
     }
 
     // if there is an operator, show drawer.
@@ -460,13 +477,17 @@ export default {
         version: "1.1.0",
         request: "GetFeature",
         outputFormat: "GeoJSON",
-        typeName: "rpgbio2019v4",
+        typeName: "rpgbio2020v1",
         srsname: "4326",
         filter:
           '{"' +
           this.filterLabel.filter +
           '":' +
-          this.operator[this.filterLabel.property] +
+          // this is intended to work only with numeroPacage
+          // we get them from AgenceBio with 8 or 9 chars,
+          // but RPG data are always with 9 chars.
+          // IDs formated as integer when they are strings...
+          this.operator[this.filterLabel.property].padStart(9, '0') +
           "}"
       };
 
@@ -476,7 +497,7 @@ export default {
           process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
       );
 
-      // get 2019 parcels from the operator
+      // get 2020 parcels from the operator
       axios
         .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params,
@@ -486,6 +507,18 @@ export default {
         })
         .then(data => this.displayOperatorLayer(data.data));
       // .catch(data => this.displayErrorMessage(data));
+
+      // get 2019 parcels from the operator
+      let params2019 = JSON.parse(JSON.stringify(params));
+      params2019.typeName = "rpgbio2019v4";
+      axios
+        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2019,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2019"));
 
       // get 2018 parcels from the operator
       let params2018 = JSON.parse(JSON.stringify(params));
@@ -515,23 +548,29 @@ export default {
       // store the layers
       // maybe in future evolutions: let user choose the color of the layers so we don't have to handle it ourselves for lager set of years.
       // maybe a loop to do it but need to store colors for each
+      this.layersOperator["2020"] = this.getYearLayer(
+        "2020",
+        "#62d771", // bio
+        "#fda8d4", // not bio
+        "#169A39" // outline
+      );
       this.layersOperator["2019"] = this.getYearLayer(
         "2019",
-        "#0B7F88", // bio
-        "#C86E81", // not bio
-        "#004462" // outline
+        "#1fa341", // bio
+        "#e3659d", // not bio
+        "#169A39" // outline
       );
       this.layersOperator["2018"] = this.getYearLayer(
         "2018",
-        "#0D9BA5", // bio
-        "#F4869D", // not bio
-        "#005377" // outline
+        "#006e1b", // bio
+        "#b32d64", // not bio
+        "#169A39" // outline
       );
       this.layersOperator["2017"] = this.getYearLayer(
         "2017",
-        "#39ADB5", // bio
-        "#F69CAE", // not bio
-        "#2E728F" // outline
+        "#003c00", // bio
+        "#740032", // not bio
+        "#169A39" // outline
       );
     }
   },
@@ -590,7 +629,7 @@ export default {
           let features = this.map.queryRenderedFeatures(e.point);
           if (features.length) {
             hoverPopup
-              .trackPointer() 
+              .trackPointer()
               .setHTML(this.setPopupHtml(features))
               .addTo(this.map)
           }
@@ -603,7 +642,7 @@ export default {
       // handle click on layers
       this.map.on(
         "click",
-        "operator-parcels-2019",
+        "operator-parcels-2020",
         function(e) {
           this.selectParcel(e.features[0]);
         }.bind(this)
@@ -615,6 +654,20 @@ export default {
     setPopupHtml(features) {
       return features[0].properties.codecultu;
     },
+
+    updateHash() {
+      const {lat,lng} = this.map.getCenter()
+      const zoom = Math.ceil(this.map.getZoom())
+
+      const {pacageId} = this
+      const latLonZoom = `@${lat},${lng},${zoom}`
+
+      this.$router.replace({
+        name: pacageId ? 'mapWithPacage' : 'map',
+        params: {pacageId, latLonZoom}
+      })
+    },
+
     loadLayers() {
       this.showLayersCard = true;
       _.forEach(
@@ -655,7 +708,7 @@ export default {
         }.bind(this)
       );
 
-      this.toggleLayerAnon(2019, true);
+      this.toggleLayerAnon(2020, true);
 
       if (!this.map.getSource("selected")) {
         this.map.addSource("selected", {
@@ -667,6 +720,12 @@ export default {
         this.map.addSource("highlight", {
           type: "geojson",
           data: this.highlightedParcels
+        });
+      }
+      if (!this.map.getSource("operatorParcels2020")) {
+        this.map.addSource("operatorParcels2020", {
+          type: "geojson",
+          data: this.parcelsOperator[2020]
         });
       }
       if (!this.map.getSource("operatorParcels2019")) {
@@ -763,7 +822,7 @@ export default {
       this.$store.commit("setDisclaimer", false);
     },
     displayOperatorLayer(data) {
-      this.addOperatorData(data, "2019");
+      this.addOperatorData(data, "2020");
       this.bboxOperator = turf.bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
@@ -783,7 +842,11 @@ export default {
     updateArea(e) {
       var data = draw.getAll();
       if (data.features.length > 0) {
+<<<<<<< HEAD
         // var area = turf.area(data);
+=======
+        // var area = area(data);
+>>>>>>> caa32e2... fixup! Add 2020 anon and non-anon layers
         // // restrict to area to 2 decimal points
         // var rounded_area = Math.round(area * 100) / 100;
       } else {
@@ -834,10 +897,8 @@ export default {
         this.displayErrorMessage();
       }
       this.isOperatorOnMap = true;
-      _.forEach(this.years, function(year) {
-        this.map.addLayer(this.layersOperator[year]);
-      }.bind(this));
-      this.toggleLayerOperator("2019", true);
+      this.years.forEach(year => this.map.addLayer(this.layersOperator[year]));
+      this.toggleLayerOperator("2020", true);
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -866,7 +927,7 @@ export default {
       this.map.getSource("highlight").setData(this.highlightedParcels);
     },
     selectParcel(parcel) {
-      let tmp = _.find(this.parcelsOperator[2019].features, function(feature) {
+      let tmp = _.find(this.parcelsOperator[2020].features, function(feature) {
         return feature.id === parcel.id;
       });
       tmp.properties.selected = !tmp.properties.selected;
@@ -885,11 +946,11 @@ export default {
       this.map.getSource("selected").setData(this.selectedParcels);
     },
     selectAllParcels(bool) {
-      _.forEach(this.parcelsOperator[2019].features, function(parcel) {
+      _.forEach(this.parcelsOperator[2020].features, function(parcel) {
         parcel.properties.selected = bool;
       });
       if (bool) {
-        this.selectedParcels.features = this.parcelsOperator[2019].features;
+        this.selectedParcels.features = this.parcelsOperator[2020].features;
       } else {
         this.selectedParcels.features = [];
       }
@@ -897,7 +958,7 @@ export default {
     },
     saveParcel() {
       this.setUpParcel = !this.setUpParcel;
-      this.parcelsOperator[2019].features.push(this.newParcel);
+      this.parcelsOperator[2020].features.push(this.newParcel);
     },
     updateNewParcel(newData) {
       this.newParcel.properties = newData[0];
