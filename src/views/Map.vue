@@ -585,13 +585,13 @@ export default {
       });
 
       this.map.on(
-        "mouseover",
+        "mousemove",
         "bio-tiles-2019",
         function(e) {
           let features = this.map.queryRenderedFeatures(e.point);
-          // let sourceFeatures = this.map.querySourceFeatures("bio-2018"); 
-          console.log(features);
-          // console.log(e);
+          _.forEach(features, function(feature) {
+            return feature.properties;
+          })
           hoverPopup
             .trackPointer() 
             .setHTML(e.features[0].properties.codecultu)
@@ -940,7 +940,6 @@ export default {
       if (typeof visibility === "undefined") {
         visibility = !this.layersVisible["anon" + layerYear].visibility;
       }
-      console.log(visibility)
       this.layersVisible["anon" + layerYear].visibility = visibility;
       // if (this.map) {
       //   if (this.map.getLayer(layer.id)) {
@@ -954,11 +953,9 @@ export default {
     },
     // toggle visibility of layer
     toggleLayer(layer, visibility) {
-      console.log(layer);
       if (this.map && this.map.getLayer(layer)) {
         if (visibility) {
           this.map.setLayoutProperty(layer, 'visibility', 'visible');
-          console.log(this.map.getLayer(layer));
         } else {
           this.map.setLayoutProperty(layer, 'visibility', 'none');
         }
