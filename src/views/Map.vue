@@ -202,10 +202,8 @@
 <script>
 const axios = require("axios");
 const _ = require("lodash");
-const tilebelt = require("tilebelt");
 const turf = require("turf");
 
-import geojsonvt from "geojson-vt";
 
 // mapbox-gl dependencies
 import Mapbox from "mapbox-gl";
@@ -218,11 +216,9 @@ import {
   MglMap,
   MglNavigationControl,
   MglGeolocateControl,
-  MglFullscreenControl,
   MglScaleControl
 } from "vue-mapbox";
 
-import Navbar from "@/components/Navbar";
 import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
@@ -350,14 +346,12 @@ let geoJsonTemplate = { features: [], type: "FeatureCollection" };
 export default {
   name: "Map",
   components: {
-    Navbar,
     ParcelsList,
     SelectedParcelsDetails,
     ParcelDetails,
     Geosearch,
     MglNavigationControl,
     MglGeolocateControl,
-    MglFullscreenControl,
     MglScaleControl,
     MglMap
   },
@@ -599,7 +593,7 @@ export default {
           console.log(features);
           // console.log(e);
           hoverPopup
-            .trackPointer()
+            .trackPointer() 
             .setHTML(e.features[0].properties.codecultu)
             .addTo(this.map)
         }.bind(this));
@@ -607,7 +601,7 @@ export default {
       this.map.on(
         "mouseleave",
         "bio-tiles-2019",
-        function(e) {
+        function() {
           hoverPopup.remove()
         }
       );
@@ -792,9 +786,9 @@ export default {
     updateArea(e) {
       var data = draw.getAll();
       if (data.features.length > 0) {
-        var area = turf.area(data);
-        // restrict to area to 2 decimal points
-        var rounded_area = Math.round(area * 100) / 100;
+        // var area = turf.area(data);
+        // // restrict to area to 2 decimal points
+        // var rounded_area = Math.round(area * 100) / 100;
       } else {
         if (e.type !== "draw.delete")
           alert("Use the draw tools to draw a polygon!");
@@ -860,7 +854,7 @@ export default {
         .setHTML(parcel.properties.codecultu)
         .addTo(this.map);
     },
-    stopHovering(parcel) {
+    stopHovering() {
       this.highlightedParcels = {
         features: [],
         type: "FeatureCollection"
@@ -971,6 +965,7 @@ export default {
       }
     },
     displayErrorMessage(data) {
+      console.error(data);
       alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
@@ -999,7 +994,7 @@ export default {
     }
   },
   watch: {
-    getProfile: function(newProfile, oldProfile) {
+    getProfile: function(newProfile) {
       if (newProfile.active) {
         this.loadLayers();
       } else {
@@ -1012,6 +1007,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+@import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 .map {
   height: 100%;
   width: 100%;

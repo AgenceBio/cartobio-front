@@ -64,6 +64,8 @@ let cancel;
 
 import AgriItem from "@/components/AgriItem";
 import FilterToolbar from "@/components/FilterToolbar";
+import _ from 'lodash';    
+
 export default {
   name: "AgriList",
   components: {
@@ -241,7 +243,7 @@ export default {
           }
         })
         .then(data => this.displayResultSearchPacage(data.data))
-        .catch(data => (this.errorPacage = true));
+        .catch(() => (this.errorPacage = true));
     },
     displayResultSearchPacage: function(data) {
       this.loadingData = false;
