@@ -27,7 +27,7 @@
     "vue-mapbox": "^0.4.1",
     "vue-mdc-adapter": "^0.18.2",
     "vue-router": "^3.1.6",
-    "vuetify": "^2.2.15",
+    "vuetify": "^1.5.24",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
@@ -48,7 +48,6 @@
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-fullpage": "^1.0.2",
-    "vue-cli-plugin-material": "^0.2.3",
     "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.4.3"

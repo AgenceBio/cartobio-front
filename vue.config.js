@@ -4,9 +4,11 @@ module.exports = {
     css: {
         loaderOptions: {
             sass: {
-                includePaths: [
-                    path.resolve(__dirname, './node_modules'),
-                ],
+                sassOptions: {
+                    includePaths: [
+                        path.resolve(__dirname, './node_modules'),
+                    ],
+                },
             },
         },
     },
