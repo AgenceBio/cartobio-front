@@ -142,7 +142,7 @@
                     v-bind:class="{'not-visible': !layersVisible[year].visibility}"
                   >
                     <v-list-tile-action>
-                      <v-btn icon @click="toggleLayer(year)">
+                      <v-btn icon @click="toggleLayerOperator(year)">
                         <v-icon v-if="layersVisible[year].visibility">visibility</v-icon>
                         <v-icon v-if="!layersVisible[year].visibility">visibility_off</v-icon>
                       </v-btn>
@@ -594,11 +594,12 @@ export default {
         "mouseover",
         "bio-tiles-2019",
         function(e) {
-          var features = this.map.queryRenderedFeatures(e.point);
+          let features = this.map.queryRenderedFeatures(e.point);
+          // let sourceFeatures = this.map.querySourceFeatures("bio-2018"); 
           console.log(features);
           // console.log(e);
           hoverPopup
-            .setLngLat(e.lngLat)
+            .trackPointer()
             .setHTML(e.features[0].properties.codecultu)
             .addTo(this.map)
         }.bind(this));
@@ -655,13 +656,15 @@ export default {
               "fill-opacity": 0.6
             },
             tms: true,
-            maxzoom: 24
+            maxzoom: 24,
+            layout: {visibility: 'none'}
           };
           this.anonLayers[year] = bioLayer;
+          this.map.addLayer(this.anonLayers[year]);
         }.bind(this)
       );
 
-      this.toggleLayerAnon(2019);
+      this.toggleLayerAnon(2019, true);
 
       if (!this.map.getSource("selected")) {
         this.map.addSource("selected", {
@@ -840,7 +843,10 @@ export default {
         this.displayErrorMessage();
       }
       this.isOperatorOnMap = true;
-      this.toggleLayer("2019");
+      _.forEach(this.years, function(year) {
+        this.map.addLayer(this.layersOperator[year]);
+      }.bind(this));
+      this.toggleLayerOperator("2019");
       this.$forceUpdate();
     },
     hoverParcel(parcel) {
@@ -919,32 +925,50 @@ export default {
           .setData(this.parcelsOperator[year]);
       }
     },
-    toggleLayer(layerYear) {
+    toggleLayerOperator(layerYear) {
       let layer = this.layersOperator[layerYear];
       this.layersVisible[layerYear].visibility = !this.layersVisible[layerYear]
         .visibility;
-      if (this.map) {
-        if (this.map.getLayer(layer.id)) {
-          this.map.removeLayer(layer.id);
-        } else {
-          this.map.addLayer(layer);
-        }
-      }
+      this.toggleLayer(layer.id, this.layersVisible[layerYear].visibility)
+      // if (this.map && this.map.getLayer(layer.id)) {
+      //   if (this.layersVisible[layerYear].visibility) {
+      //     this.map.setLayoutProperty(layer, 'visibility', 'visible');
+      //   } else {
+      //     this.map.setLayoutProperty(layer, 'visibility', 'none');
+      //   }
+      // }
       this.$forceUpdate();
     },
-    toggleLayerAnon(layerYear) {
+    // layerYear: layer that we want to set the visibility
+    // visibility : boolean. true = layer is visible
+    toggleLayerAnon(layerYear, visibility) {
       let layer = this.anonLayers[layerYear];
-      this.layersVisible["anon" + layerYear].visibility = !this.layersVisible[
-        "anon" + layerYear
-      ].visibility;
-      if (this.map) {
-        if (this.map.getLayer(layer.id)) {
-          this.map.removeLayer(layer.id);
+      if (typeof visibility === "undefined") {
+        visibility = !this.layersVisible["anon" + layerYear].visibility;
+      }
+      console.log(visibility)
+      this.layersVisible["anon" + layerYear].visibility = visibility;
+      // if (this.map) {
+      //   if (this.map.getLayer(layer.id)) {
+      //     this.map.removeLayer(layer.id);
+      //   } else {
+      //     this.map.addLayer(layer);
+      //   }
+      // }
+      this.toggleLayer(layer.id, visibility);
+      this.$forceUpdate();
+    },
+    // toggle visibility of layer
+    toggleLayer(layer, visibility) {
+      console.log(layer);
+      if (this.map && this.map.getLayer(layer)) {
+        if (visibility) {
+          this.map.setLayoutProperty(layer, 'visibility', 'visible');
+          console.log(this.map.getLayer(layer));
         } else {
-          this.map.addLayer(layer);
+          this.map.setLayoutProperty(layer, 'visibility', 'none');
         }
       }
-      this.$forceUpdate();
     },
     displayErrorMessage(data) {
       alert("Impossible de trouver le parcellaire de cet opérateur");
@@ -967,6 +991,9 @@ export default {
           ],
           "fill-outline-color": fillColor,
           "fill-opacity": 0.8
+        },
+        layout : {
+          visibility: "none"
         }
       };
     }
