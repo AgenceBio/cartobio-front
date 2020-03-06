@@ -585,16 +585,31 @@ export default {
       //   }.bind(this)
       // );
 
-      // this.map.on(
-      //   "click",
-      //   "other-tiles",
-      //   function(e) {
-      //     new Mapbox.Popup()
-      //       .setLngLat(e.lngLat)
-      //       .setHTML(e.features[0].properties.code_cultu)
-      //       .addTo(this.map);
-      //   }.bind(this)
-      // );
+      let hoverPopup = new Mapbox.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
+      this.map.on(
+        "mouseover",
+        "bio-tiles-2019",
+        function(e) {
+          var features = this.map.queryRenderedFeatures(e.point);
+          console.log(features);
+          // console.log(e);
+          hoverPopup
+            .setLngLat(e.lngLat)
+            .setHTML(e.features[0].properties.codecultu)
+            .addTo(this.map)
+        }.bind(this));
+
+      this.map.on(
+        "mouseleave",
+        "bio-tiles-2019",
+        function(e) {
+          hoverPopup.remove()
+        }
+      );
 
       // handle click on layers
       this.map.on(
