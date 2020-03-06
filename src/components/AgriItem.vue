@@ -21,7 +21,9 @@
   </tr>
 </template>
 <script>
-const axios = require("axios");
+
+import _ from 'lodash';    
+
 export default {
   name: "AgriItem",
   props: ["agriData", "selectedOperator"],

@@ -42,6 +42,7 @@
 
 <script>
 const axios = require("axios");
+import _ from 'lodash';    
 export default {
   name: "FilterToolbar",
   props: ["filters"],

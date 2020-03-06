@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import _ from 'lodash';    
 const axios = require("axios");
 export default {
   name: "Login",
