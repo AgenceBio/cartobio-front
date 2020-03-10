@@ -588,9 +588,6 @@ export default {
         "mousemove",
         function(e) {
           let features = this.map.queryRenderedFeatures(e.point);
-          _.forEach(features, function(feature) {
-            return feature.properties;
-          })
           if (features.length) {
             hoverPopup
               .trackPointer() 
