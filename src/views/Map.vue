@@ -142,7 +142,7 @@
                     v-bind:class="{'not-visible': !layersVisible[year].visibility}"
                   >
                     <v-list-tile-action>
-                      <v-btn icon @click="toggleLayer(year)">
+                      <v-btn icon @click="toggleLayerOperator(year)">
                         <v-icon v-if="layersVisible[year].visibility">visibility</v-icon>
                         <v-icon v-if="!layersVisible[year].visibility">visibility_off</v-icon>
                       </v-btn>
@@ -202,10 +202,8 @@
 <script>
 const axios = require("axios");
 const _ = require("lodash");
-const tilebelt = require("tilebelt");
 const turf = require("turf");
 
-import geojsonvt from "geojson-vt";
 
 // mapbox-gl dependencies
 import Mapbox from "mapbox-gl";
@@ -218,11 +216,9 @@ import {
   MglMap,
   MglNavigationControl,
   MglGeolocateControl,
-  MglFullscreenControl,
   MglScaleControl
 } from "vue-mapbox";
 
-import Navbar from "@/components/Navbar";
 import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
@@ -350,14 +346,12 @@ let geoJsonTemplate = { features: [], type: "FeatureCollection" };
 export default {
   name: "Map",
   components: {
-    Navbar,
     ParcelsList,
     SelectedParcelsDetails,
     ParcelDetails,
     Geosearch,
     MglNavigationControl,
     MglGeolocateControl,
-    MglFullscreenControl,
     MglScaleControl,
     MglMap
   },
@@ -585,16 +579,26 @@ export default {
       //   }.bind(this)
       // );
 
-      // this.map.on(
-      //   "click",
-      //   "other-tiles",
-      //   function(e) {
-      //     new Mapbox.Popup()
-      //       .setLngLat(e.lngLat)
-      //       .setHTML(e.features[0].properties.code_cultu)
-      //       .addTo(this.map);
-      //   }.bind(this)
-      // );
+      let hoverPopup = new Mapbox.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
+      this.map.on(
+        "mousemove",
+        function(e) {
+          let features = this.map.queryRenderedFeatures(e.point);
+          if (features.length) {
+            hoverPopup
+              .trackPointer() 
+              .setHTML(this.setPopupHtml(features))
+              .addTo(this.map)
+          }
+          else {
+            hoverPopup.remove();
+          }
+        }.bind(this));
+
 
       // handle click on layers
       this.map.on(
@@ -607,6 +611,9 @@ export default {
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
+    },
+    setPopupHtml(features) {
+      return features[0].properties.codecultu;
     },
     loadLayers() {
       this.showLayersCard = true;
@@ -640,13 +647,15 @@ export default {
               "fill-opacity": 0.6
             },
             tms: true,
-            maxzoom: 24
+            maxzoom: 24,
+            layout: {visibility: 'none'}
           };
           this.anonLayers[year] = bioLayer;
+          this.map.addLayer(this.anonLayers[year]);
         }.bind(this)
       );
 
-      this.toggleLayerAnon(2019);
+      this.toggleLayerAnon(2019, true);
 
       if (!this.map.getSource("selected")) {
         this.map.addSource("selected", {
@@ -774,9 +783,9 @@ export default {
     updateArea(e) {
       var data = draw.getAll();
       if (data.features.length > 0) {
-        var area = turf.area(data);
-        // restrict to area to 2 decimal points
-        var rounded_area = Math.round(area * 100) / 100;
+        // var area = turf.area(data);
+        // // restrict to area to 2 decimal points
+        // var rounded_area = Math.round(area * 100) / 100;
       } else {
         if (e.type !== "draw.delete")
           alert("Use the draw tools to draw a polygon!");
@@ -825,8 +834,10 @@ export default {
         this.displayErrorMessage();
       }
       this.isOperatorOnMap = true;
-      this.toggleLayer("2019");
-      this.$forceUpdate();
+      _.forEach(this.years, function(year) {
+        this.map.addLayer(this.layersOperator[year]);
+      }.bind(this));
+      this.toggleLayerOperator("2019", true);
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -839,7 +850,7 @@ export default {
         .setHTML(parcel.properties.codecultu)
         .addTo(this.map);
     },
-    stopHovering(parcel) {
+    stopHovering() {
       this.highlightedParcels = {
         features: [],
         type: "FeatureCollection"
@@ -904,34 +915,36 @@ export default {
           .setData(this.parcelsOperator[year]);
       }
     },
-    toggleLayer(layerYear) {
+    toggleLayerOperator(layerYear, visibility) {
       let layer = this.layersOperator[layerYear];
-      this.layersVisible[layerYear].visibility = !this.layersVisible[layerYear]
-        .visibility;
-      if (this.map) {
-        if (this.map.getLayer(layer.id)) {
-          this.map.removeLayer(layer.id);
-        } else {
-          this.map.addLayer(layer);
-        }
+      if (typeof visibility === "undefined") {
+        visibility = !this.layersVisible[layerYear].visibility;
       }
-      this.$forceUpdate();
+      this.layersVisible[layerYear].visibility = visibility;
+      this.toggleLayer(layer.id, visibility);
     },
-    toggleLayerAnon(layerYear) {
+    // layerYear: layer that we want to set the visibility
+    // visibility : boolean. true = layer is visible
+    toggleLayerAnon(layerYear, visibility) {
       let layer = this.anonLayers[layerYear];
-      this.layersVisible["anon" + layerYear].visibility = !this.layersVisible[
-        "anon" + layerYear
-      ].visibility;
-      if (this.map) {
-        if (this.map.getLayer(layer.id)) {
-          this.map.removeLayer(layer.id);
+      if (typeof visibility === "undefined") {
+        visibility = !this.layersVisible["anon" + layerYear].visibility;
+      }
+      this.layersVisible["anon" + layerYear].visibility = visibility;
+      this.toggleLayer(layer.id, visibility);
+    },
+    // toggle visibility of layer
+    toggleLayer(layer, visibility) {
+      if (this.map && this.map.getLayer(layer)) {
+        if (visibility) {
+          this.map.setLayoutProperty(layer, 'visibility', 'visible');
         } else {
-          this.map.addLayer(layer);
+          this.map.setLayoutProperty(layer, 'visibility', 'none');
         }
       }
-      this.$forceUpdate();
     },
     displayErrorMessage(data) {
+      console.error(data);
       alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
@@ -952,12 +965,15 @@ export default {
           ],
           "fill-outline-color": fillColor,
           "fill-opacity": 0.8
+        },
+        layout : {
+          visibility: "none"
         }
       };
     }
   },
   watch: {
-    getProfile: function(newProfile, oldProfile) {
+    getProfile: function(newProfile) {
       if (newProfile.active) {
         this.loadLayers();
       } else {
@@ -970,6 +986,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+@import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 .map {
   height: 100%;
   width: 100%;

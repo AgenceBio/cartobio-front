@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import _ from 'lodash';    
 export default {
   name: "SelectedParcelsDetails",
   props: {
@@ -102,10 +103,10 @@ export default {
     // from https://stackoverflow.com/a/49950777
     convertToCsvAndDownload(fName, rows) {
       var csv = "";
-      for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
-        for (var j = 0; j < row.length; j++) {
-          var val = row[j] === null ? "" : row[j].toString();
+      for (let i = 0; i < rows.length; i++) {
+        let row = rows[i];
+        for (let j = 0; j < row.length; j++) {
+          let val = row[j] === null ? "" : row[j].toString();
           val = val.replace(/\t/gi, " ");
           if (j > 0) csv += "\t";
           csv += val;
@@ -114,24 +115,24 @@ export default {
       }
 
       // for UTF-16
-      var cCode,
+      let cCode,
         bArr = [];
       bArr.push(255, 254);
-      for (var i = 0; i < csv.length; ++i) {
+      for (let i = 0; i < csv.length; ++i) {
         cCode = csv.charCodeAt(i);
         bArr.push(cCode & 0xff);
         bArr.push((cCode / 256) >>> 0);
       }
 
-      var blob = new Blob([new Uint8Array(bArr)], {
+      let blob = new Blob([new Uint8Array(bArr)], {
         type: "text/csv;charset=UTF-16LE;"
       });
       if (navigator.msSaveBlob) {
         navigator.msSaveBlob(blob, fName);
       } else {
-        var link = document.createElement("a");
+        let link = document.createElement("a");
         if (link.download !== undefined) {
-          var url = window.URL.createObjectURL(blob);
+          let url = window.URL.createObjectURL(blob);
           link.setAttribute("href", url);
           link.setAttribute("download", fName);
           link.style.visibility = "hidden";

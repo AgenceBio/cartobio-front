@@ -109,6 +109,7 @@
   </v-data-table>
 </template>
 <script>
+import _ from 'lodash';    
 export default {
   name: "ParcelDetails",
   props: {
@@ -185,7 +186,7 @@ export default {
     }
   },
   watch: {
-    date(val) {
+    date() {
       this.dateFormatted = this.formatDate(this.date);
       this.parcelData.engagement = this.dateFormatted;
     }
