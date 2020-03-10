@@ -840,7 +840,7 @@ export default {
       _.forEach(this.years, function(year) {
         this.map.addLayer(this.layersOperator[year]);
       }.bind(this));
-      this.toggleLayerOperator("2019");
+      this.toggleLayerOperator("2019", true);
       this.$forceUpdate();
     },
     hoverParcel(parcel) {
@@ -919,18 +919,13 @@ export default {
           .setData(this.parcelsOperator[year]);
       }
     },
-    toggleLayerOperator(layerYear) {
+    toggleLayerOperator(layerYear, visibility) {
       let layer = this.layersOperator[layerYear];
-      this.layersVisible[layerYear].visibility = !this.layersVisible[layerYear]
-        .visibility;
-      this.toggleLayer(layer.id, this.layersVisible[layerYear].visibility)
-      // if (this.map && this.map.getLayer(layer.id)) {
-      //   if (this.layersVisible[layerYear].visibility) {
-      //     this.map.setLayoutProperty(layer, 'visibility', 'visible');
-      //   } else {
-      //     this.map.setLayoutProperty(layer, 'visibility', 'none');
-      //   }
-      // }
+      if (typeof visibility === "undefined") {
+        visibility = !this.layersVisible[layerYear].visibility;
+      }
+      this.layersVisible[layerYear].visibility = visibility;
+      this.toggleLayer(layer.id, visibility);
       this.$forceUpdate();
     },
     // layerYear: layer that we want to set the visibility
@@ -941,13 +936,6 @@ export default {
         visibility = !this.layersVisible["anon" + layerYear].visibility;
       }
       this.layersVisible["anon" + layerYear].visibility = visibility;
-      // if (this.map) {
-      //   if (this.map.getLayer(layer.id)) {
-      //     this.map.removeLayer(layer.id);
-      //   } else {
-      //     this.map.addLayer(layer);
-      //   }
-      // }
       this.toggleLayer(layer.id, visibility);
       this.$forceUpdate();
     },
