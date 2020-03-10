@@ -586,25 +586,22 @@ export default {
 
       this.map.on(
         "mousemove",
-        "bio-tiles-2019",
         function(e) {
           let features = this.map.queryRenderedFeatures(e.point);
           _.forEach(features, function(feature) {
             return feature.properties;
           })
-          hoverPopup
-            .trackPointer() 
-            .setHTML(e.features[0].properties.codecultu)
-            .addTo(this.map)
+          if (features.length) {
+            hoverPopup
+              .trackPointer() 
+              .setHTML(this.setPopupHtml(features))
+              .addTo(this.map)
+          }
+          else {
+            hoverPopup.remove();
+          }
         }.bind(this));
 
-      this.map.on(
-        "mouseleave",
-        "bio-tiles-2019",
-        function() {
-          hoverPopup.remove()
-        }
-      );
 
       // handle click on layers
       this.map.on(
@@ -617,6 +614,9 @@ export default {
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
+    },
+    setPopupHtml(features) {
+      return features[0].properties.codecultu;
     },
     loadLayers() {
       this.showLayersCard = true;
