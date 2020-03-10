@@ -200,13 +200,12 @@
 </template>
 
 <script>
-const axios = require("axios");
-const _ = require("lodash");
-const turf = require("turf");
-
+import {get} from "axios";
+import {fromPairs, get as getObjectValue} from "lodash";
+import {bbox, center, area} from "turf";
 
 // mapbox-gl dependencies
-import Mapbox from "mapbox-gl";
+import {Popup} from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import SphericalMercator from "sphericalmercator";
 import Geosearch from "@/components/Geosearch";
@@ -382,11 +381,11 @@ export default {
       // bbox containing operator parcels
       bboxOperator: [],
       // popup with short parcel infos
-      popupParcel: new Mapbox.Popup({
+      popupParcel: new Popup({
         closeButton: false
       }),
       // popup with agregated parcels infos
-      popupSelectedParcels: new Mapbox.Popup({
+      popupSelectedParcels: new Popup({
         closeButton: true
       }),
       // placeholder for layers for an operator
@@ -456,7 +455,7 @@ export default {
     // get the current operator
     this.operator = this.getOperator;
 
-    if (_.get(this.operator, "pacage") && !_.get(this.operator, "title")) {
+    if (getObjectValue(this.operator, "pacage") && !getObjectValue(this.operator, "title")) {
       alert(
         "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
           "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
@@ -467,9 +466,9 @@ export default {
     }
 
     // if there is an operator, show drawer.
-    this.drawer = _.get(this.$store.getters.getOperator, "title");
+    this.drawer = getObjectValue(this.$store.getters.getOperator, "title");
 
-    if (_.get(this.operator, "numeroBio") || _.get(this.operator, "pacage")) {
+    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "pacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
       let params = {
@@ -498,51 +497,47 @@ export default {
       );
 
       // get 2020 parcels from the operator
-      axios
-        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
-        .then(data => this.displayOperatorLayer(data.data));
+      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+        params: params,
+        headers: {
+          Authorization: "Basic " + tokenCollab
+        }
+      })
+      .then(data => this.displayOperatorLayer(data.data));
       // .catch(data => this.displayErrorMessage(data));
 
       // get 2019 parcels from the operator
       let params2019 = JSON.parse(JSON.stringify(params));
       params2019.typeName = "rpgbio2019v4";
-      axios
-        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2019,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
-        .then(data => this.addOperatorData(data.data, "2019"));
+      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+        params: params2019,
+        headers: {
+          Authorization: "Basic " + tokenCollab
+        }
+      })
+      .then(data => this.addOperatorData(data.data, "2019"));
 
       // get 2018 parcels from the operator
       let params2018 = JSON.parse(JSON.stringify(params));
       params2018.typeName = "rpgbio2018v9";
-      axios
-        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2018,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
-        .then(data => this.addOperatorData(data.data, "2018"));
+      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+        params: params2018,
+        headers: {
+          Authorization: "Basic " + tokenCollab
+        }
+      })
+      .then(data => this.addOperatorData(data.data, "2018"));
 
       // get 2017 parcels from the operator
       let params2017 = JSON.parse(JSON.stringify(params));
       params2017.typeName = "rpgbio2017v7";
-      axios
-        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2017,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
-        .then(data => this.addOperatorData(data.data, "2017"));
+      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+        params: params2017,
+        headers: {
+          Authorization: "Basic " + tokenCollab
+        }
+      })
+      .then(data => this.addOperatorData(data.data, "2017"));
       // }.bind(this)
       // );
       // store the layers
@@ -611,42 +606,36 @@ export default {
       //   "click",
       //   "collabio",
       //   function(e) {
-      //     new Mapbox.Popup()
+      //     new Popup()
       //       .setLngLat(e.lngLat)
       //       .setHTML(e.features[0].properties.code_cultu)
       //       .addTo(this.map);
       //   }.bind(this)
       // );
 
-      let hoverPopup = new Mapbox.Popup({
+      let hoverPopup = new Popup({
         closeButton: false,
         closeOnClick: false
       });
 
-      this.map.on(
-        "mousemove",
-        function(e) {
-          let features = this.map.queryRenderedFeatures(e.point);
-          if (features.length) {
-            hoverPopup
-              .trackPointer()
-              .setHTML(this.setPopupHtml(features))
-              .addTo(this.map)
-          }
-          else {
-            hoverPopup.remove();
-          }
-        }.bind(this));
-
+      this.map.on("mousemove", (e) => {
+        let features = this.map.queryRenderedFeatures(e.point);
+        if (features.length) {
+          hoverPopup
+            .trackPointer()
+            .setHTML(this.setPopupHtml(features))
+            .addTo(this.map)
+        }
+        else {
+          hoverPopup.remove();
+        }
+      });
 
       // handle click on layers
-      this.map.on(
-        "click",
-        "operator-parcels-2020",
-        function(e) {
-          this.selectParcel(e.features[0]);
-        }.bind(this)
-      );
+      this.map.on("click", "operator-parcels-2020", (e) => {
+        this.selectParcel(e.features[0]);
+      });
+
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
@@ -670,43 +659,40 @@ export default {
 
     loadLayers() {
       this.showLayersCard = true;
-      _.forEach(
-        this.years,
-        function(year) {
-          // bio source
-          let bioSource = {
-            type: "vector",
-            scheme: "tms",
-            tiles: [
-              process.env.VUE_APP_GEOSERVER_PREFIX +
-                "" +
-                year +
-                process.env.VUE_APP_GEOSERVER_SUFFIX
-            ]
-          };
-          // security to not trigger map errors
-          if (!this.map.getSource("bio-" + year)) {
-            this.map.addSource("bio-" + year, bioSource);
-          }
-          let bioLayer = {
-            id: "bio-tiles-" + year,
-            type: "fill",
-            source: "bio-" + year,
-            "source-layer": "anon_rpgbio_" + year,
-            minzoom: 0,
-            paint: {
-              "fill-color": "#D0D32E",
-              "fill-outline-color": "#83C2AB",
-              "fill-opacity": 0.6
-            },
-            tms: true,
-            maxzoom: 24,
-            layout: {visibility: 'none'}
-          };
-          this.anonLayers[year] = bioLayer;
-          this.map.addLayer(this.anonLayers[year]);
-        }.bind(this)
-      );
+      this.years.forEach((year) => {
+        // bio source
+        let bioSource = {
+          type: "vector",
+          scheme: "tms",
+          tiles: [
+            process.env.VUE_APP_GEOSERVER_PREFIX +
+              "" +
+              year +
+              process.env.VUE_APP_GEOSERVER_SUFFIX
+          ]
+        };
+        // security to not trigger map errors
+        if (!this.map.getSource("bio-" + year)) {
+          this.map.addSource("bio-" + year, bioSource);
+        }
+        let bioLayer = {
+          id: "bio-tiles-" + year,
+          type: "fill",
+          source: "bio-" + year,
+          "source-layer": "anon_rpgbio_" + year,
+          minzoom: 0,
+          paint: {
+            "fill-color": "#D0D32E",
+            "fill-outline-color": "#b0b22b",
+            "fill-opacity": 0.6
+          },
+          tms: true,
+          maxzoom: 24,
+          layout: {visibility: 'none'}
+        };
+        this.anonLayers[year] = bioLayer;
+        this.map.addLayer(this.anonLayers[year]);
+      });
 
       this.toggleLayerAnon(2020, true);
 
@@ -804,11 +790,11 @@ export default {
         url.startsWith("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio")
       ) {
         let paramArr = [];
-        _.forEach(url.split("&"), function(param) {
+        url.split("&").forEach(function(param) {
           let subparam = param.split("=");
           paramArr.push(subparam);
         });
-        let args = _.fromPairs(paramArr);
+        let args = fromPairs(paramArr);
         let zoom = args.TILEMATRIX; // z
         let row = args.TILEROW; // y
         let col = args.TILECOL; // x
@@ -823,7 +809,7 @@ export default {
     },
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2020");
-      this.bboxOperator = turf.bbox(data);
+      this.bboxOperator = bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
@@ -842,11 +828,7 @@ export default {
     updateArea(e) {
       var data = draw.getAll();
       if (data.features.length > 0) {
-<<<<<<< HEAD
-        // var area = turf.area(data);
-=======
         // var area = area(data);
->>>>>>> caa32e2... fixup! Add 2020 anon and non-anon layers
         // // restrict to area to 2 decimal points
         // var rounded_area = Math.round(area * 100) / 100;
       } else {
@@ -861,7 +843,7 @@ export default {
         "draw.create",
         function(e) {
           let newFeature = e.features[0];
-          let surface = turf.area(newFeature);
+          let surface = area(newFeature);
           surface = Math.round(surface * 100) / 100; // round to 2 decimals
           newFeature.properties.surfgeo = surface;
           this.newParcel = newFeature;
@@ -907,7 +889,7 @@ export default {
       };
       this.map.getSource("highlight").setData(this.highlightedParcels);
       this.popupParcel
-        .setLngLat(turf.center(this.highlightedParcels).geometry.coordinates)
+        .setLngLat(center(this.highlightedParcels).geometry.coordinates)
         .setHTML(parcel.properties.codecultu)
         .addTo(this.map);
     },
@@ -927,7 +909,7 @@ export default {
       this.map.getSource("highlight").setData(this.highlightedParcels);
     },
     selectParcel(parcel) {
-      let tmp = _.find(this.parcelsOperator[2020].features, function(feature) {
+      let tmp = this.parcelsOperator[2020].features.find(function(feature) {
         return feature.id === parcel.id;
       });
       tmp.properties.selected = !tmp.properties.selected;
@@ -936,17 +918,14 @@ export default {
       } else {
         // _.remove doesn't trigger component updates
         // https://stackoverflow.com/questions/42090651/computed-properties-not-updating-when-using-lodash-and-vuejs
-        this.selectedParcels.features = _.filter(
-          this.selectedParcels.features,
-          function(feature) {
-            return feature.id !== tmp.id;
-          }
-        );
+        this.selectedParcels.features = this.selectedParcels.features.filter(function(feature) {
+          return feature.id !== tmp.id;
+        });
       }
       this.map.getSource("selected").setData(this.selectedParcels);
     },
     selectAllParcels(bool) {
-      _.forEach(this.parcelsOperator[2020].features, function(parcel) {
+      this.parcelsOperator[2020].features.forEach(function(parcel) {
         parcel.properties.selected = bool;
       });
       if (bool) {

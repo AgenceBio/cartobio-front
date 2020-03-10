@@ -20,7 +20,6 @@
     "lodash": "^4.17.15",
     "mapbox-gl": "^1.8.1",
     "sphericalmercator": "^1.0.5",
-    "tilebelt": "^1.0.1",
     "turf": "^3.0.14",
     "vue": "^2.6.11",
     "vue-ls": "^3.2.1",
