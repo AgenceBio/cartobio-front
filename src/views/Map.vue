@@ -44,17 +44,6 @@
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
-        <!-- Disclaimer dialog. May be useless once in prod -->
-        <v-dialog v-model="getDisclaimer" persistent max-width="500">
-          <v-card>
-            <v-card-title class="headline"></v-card-title>
-            <v-card-text>Application en cours de développement. Données non exhaustives.</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="green darken-1" flat @click="acknowledgeDisclaimer()">J'ai compris</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
         <v-dialog v-model="setUpParcel" persistent v-if="operator.title">
           <v-card>
             <v-card-title class="headline">Nouvelle Parcelle - {{this.operator.title}}</v-card-title>
@@ -596,10 +585,6 @@ export default {
     getOperator() {
       return this.$store.getters.getOperator;
     },
-    // display disclaimer on load ?
-    getDisclaimer() {
-      return this.$store.getters.getDisclaimer;
-    },
     // map Style
     mapStyle() {
       // To improve
@@ -827,9 +812,6 @@ export default {
         newUrl += "bbox=" + bbox.toString() + ",WGS84";
       }
       return { url: newUrl };
-    },
-    acknowledgeDisclaimer() {
-      this.$store.commit("setDisclaimer", false);
     },
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2020");

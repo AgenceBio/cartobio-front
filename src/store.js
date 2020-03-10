@@ -9,7 +9,6 @@ const store =  new Vuex.Store({
         currentYear: 2020,
         userProfile: {},
         currentOperator: {},
-        disclaimer: true,
         userCategory: {},
         editMode: false,
         categories : {admin: "Admin", oc: "OC", agri: "Agri", other: "Autre"}
@@ -18,7 +17,6 @@ const store =  new Vuex.Store({
         getCurrentYear: state => state.currentYear,
         getProfile: state => state.userProfile,
         getOperator: state => state.currentOperator,
-        getDisclaimer: state => state.disclaimer,
         getUserCategory: state => state.userCategory,
         getEditMode: state => state.editMode,
         getCategories: state => state.categories
@@ -29,9 +27,6 @@ const store =  new Vuex.Store({
         },
         setOperator(state, operator) {
             state.currentOperator = operator;
-        },
-        setDisclaimer(state, bool) {
-            state.disclaimer = bool;
         },
         // category: role categories retrieved from the notifications portail API
         setUserCategory(state, category) {
