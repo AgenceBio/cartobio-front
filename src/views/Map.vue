@@ -358,9 +358,10 @@ export default {
     return {
       // map related data:
       map: undefined,
-      zoom: 12,
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
-      center: [5.150809, 44.688729],
+      zoom: null,
+      center: null,
+
       // anonymous layers
       anonLayers: {},
       // current operator data
@@ -450,8 +451,28 @@ export default {
     };
   },
   // event bus
-  props: ["bus"],
+  props: {
+    bus: {
+      required: true
+    },
+    pacageId: {
+      type: String,
+      default: null
+    },
+    latLonZoom: {
+      type: String,
+      default: '@44.688729,5.150809,12'
+    }
+  },
   created: function() {
+    // map will be available when loaded, in onMapLoaded
+    this.map = null;
+
+    const [, lat, lon, zoom] = this.latLonZoom.match(/@([0-9.-]+),([0-9.-]+),(\d+)/)
+
+    this.zoom = Number(zoom);
+    this.center = [Number(lon), Number(lat)];
+
     // get the current operator
     this.operator = this.getOperator;
 
@@ -478,16 +499,13 @@ export default {
         outputFormat: "GeoJSON",
         typeName: "rpgbio2020v1",
         srsname: "4326",
-        filter:
-          '{"' +
-          this.filterLabel.filter +
-          '":' +
+        filter: JSON.stringify({
           // this is intended to work only with numeroPacage
           // we get them from AgenceBio with 8 or 9 chars,
           // but RPG data are always with 9 chars.
           // IDs formated as integer when they are strings...
-          this.operator[this.filterLabel.property].padStart(9, '0') +
-          "}"
+          [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
+        })
       };
 
       let tokenCollab = btoa(
@@ -597,6 +615,11 @@ export default {
 
     onMapLoaded(event) {
       this.map = event.map;
+
+      this.updateHash()
+      this.map.on('moveend', () => this.updateHash())
+      this.map.on('zoomend', () => this.updateHash())
+
       // add map sources
       // this.map.addSource("bio-tiles", bioSource);
       if (this.getProfile.active) {
@@ -640,6 +663,7 @@ export default {
         this.setUpMapOperator();
       }
     },
+
     setPopupHtml(features) {
       return features[0].properties.codecultu;
     },

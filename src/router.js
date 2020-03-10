@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import Map from './views/Map.vue'
 import Stats from './views/Stats.vue'
-import AgriList from './views/AgriList.vue'
 import AppLayout from './views/AppLayout.vue'
 import store from './store.js'
 import goTo from 'vuetify/lib/components/Vuetify/goTo'
@@ -31,17 +29,24 @@ export default new Router({
     },
     {
       path: '/app',
-      name: 'appHome',
       component: AppLayout,
-      children: [{
-          path: '/map',
+      children: [
+        {
+          path: '/map/pacage/:pacageId:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
+          props: true,
+          name: 'mapWithPacage',
+          component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
+        },
+        {
+          path: '/map:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
+          props: true,
           name: 'map',
-          component: Map
+          component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
         },
         {
           path: '/notifications',
           name: 'notifications',
-          component: AgriList,
+          component: () => import(/* webpackChunkName: "app-notifications" */ './views/AgriList.vue'),
           beforeEnter: (to, from, next) => {
             let userCategory = store.getters.getUserCategory;
             if (userCategory !== store.getters.getCategories.oc) {

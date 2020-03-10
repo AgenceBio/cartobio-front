@@ -13,7 +13,7 @@
     </v-card-text>
   </v-card>-->
   <tr @click="selectOperator()">
-    <td>{{newAgriData.title}}</td>
+    <td><router-link :to="{name: 'mapWithPacage', params: {pacageId: newAgriData.numeroPacage}}" event="none">{{newAgriData.title}}</router-link></td>
     <td class="text-xs-right">{{newAgriData.dateEngagement}}</td>
     <td class="text-xs-right">{{newAgriData.numeroPacage}}</td>
     <td class="text-xs-right">{{newAgriData.numeroBio}}</td>
@@ -30,8 +30,6 @@ export default {
   methods: {
     selectOperator: function() {
       this.$emit("update:selectedOperator", this.newAgriData);
-      // this.selectedOperator = this.agriData;
-      // this.$store.commit("setOperator", this.agriData);
     },
     getOperatorName: agriData => {
       let user = _.find(agriData.utilisateurs, function(u) {
