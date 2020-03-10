@@ -881,8 +881,6 @@ export default {
         this.map.fitBounds(this.bboxOperator, {
           padding: this.mapPadding
         });
-      } else {
-        this.displayErrorMessage();
       }
       this.isOperatorOnMap = true;
       this.years.forEach(year => this.map.addLayer(this.layersOperator[year]));
