@@ -664,6 +664,13 @@ export default {
         name: pacageId ? 'mapWithPacage' : 'map',
         params: {pacageId, latLonZoom}
       })
+      .catch(error => {
+        // we can safely ignore duplicate navigation
+        // as I do not know if I can predict the upcoming url
+        if (error.name !== 'NavigationDuplicated'){
+          console.error(error);
+        }
+      })
     },
 
     loadLayers() {
