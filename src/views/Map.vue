@@ -841,7 +841,6 @@ export default {
         this.map.addLayer(this.layersOperator[year]);
       }.bind(this));
       this.toggleLayerOperator("2019", true);
-      this.$forceUpdate();
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -926,7 +925,6 @@ export default {
       }
       this.layersVisible[layerYear].visibility = visibility;
       this.toggleLayer(layer.id, visibility);
-      this.$forceUpdate();
     },
     // layerYear: layer that we want to set the visibility
     // visibility : boolean. true = layer is visible
@@ -937,7 +935,6 @@ export default {
       }
       this.layersVisible["anon" + layerYear].visibility = visibility;
       this.toggleLayer(layer.id, visibility);
-      this.$forceUpdate();
     },
     // toggle visibility of layer
     toggleLayer(layer, visibility) {
