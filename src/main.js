@@ -22,13 +22,13 @@ router.afterEach((to, from) => {
   }
 })
 
-
 Vue.config.productionTip = false
 
 new Vue({
   store,
   router,
-  render: function (createElement) {
-    return createElement(App)
+  render: (createElement) => createElement(App),
+  created() {
+    this.$store.dispatch('user/getProfile', this.$ls.get('token'))
   }
 }).$mount('#app')

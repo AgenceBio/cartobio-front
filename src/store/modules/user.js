@@ -6,6 +6,10 @@ const state = {
 
 const actions = {
   getProfile ({commit}, token) {
+    if (!token) {
+      return null;
+    }
+
     const {id:userId} = parseJwt(token)
 
     return getUserProfileFromToken({userId, token})
@@ -18,9 +22,9 @@ const actions = {
 };
 
 const getters = {
-  isAuthenticated: (state, getters, rootState) => {
+  isAuthenticated (state, getters, rootState) {
     const {userProfile} = rootState
-    return userProfile && userProfile.id;
+    return Boolean(userProfile && userProfile.id);
   },
 };
 

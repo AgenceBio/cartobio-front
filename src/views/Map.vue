@@ -581,6 +581,7 @@ export default {
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
     ...mapGetters(['getProfile', 'getOperator']),
+    ...mapGetters('user', ['isAuthenticated']),
 
     // map Style
     mapStyle() {
@@ -604,7 +605,7 @@ export default {
 
       // add map sources
       // this.map.addSource("bio-tiles", bioSource);
-      if (this.getProfile.active) {
+      if (this.isAuthenticated) {
         this.loadLayers();
       }
       // this.map.on(
