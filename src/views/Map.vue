@@ -211,6 +211,8 @@ import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 
+import { mapGetters } from 'vuex';
+
 let mercator = new SphericalMercator({
   size: 256
 });
@@ -577,14 +579,9 @@ export default {
     }
   },
   computed: {
-    // user profile
-    getProfile() {
-      return this.$store.getters.getProfile;
-    },
-    // current operator
-    getOperator() {
-      return this.$store.getters.getOperator;
-    },
+    // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
+    ...mapGetters(['getProfile', 'getOperator']),
+
     // map Style
     mapStyle() {
       // To improve
