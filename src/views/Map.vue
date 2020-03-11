@@ -675,6 +675,7 @@ export default {
 
     loadLayers() {
       this.showLayersCard = true;
+
       this.years.forEach((year) => {
         // bio source
         let bioSource = {
@@ -708,6 +709,19 @@ export default {
         };
         this.anonLayers[year] = bioLayer;
         this.map.addLayer(this.anonLayers[year]);
+        this.map.addLayer({
+          id: `bio-tiles-${year}-border`,
+          type: "line",
+          source: "bio-" + year,
+          "source-layer": "anon_rpgbio_" + year,
+          minzoom: 10,
+          paint: {
+            "line-color": "#D0D32E",
+            "line-opacity": 0.9,
+            "line-width": 1
+          },
+          layout: {visibility: 'none'}
+        });
       });
 
       this.toggleLayerAnon(2020, true);
@@ -768,6 +782,16 @@ export default {
           "fill-opacity": 1
         }
       });
+      this.map.addLayer({
+        id: "highlighted-parcels-border",
+        type: "line",
+        source: "highlight",
+        paint: {
+          "line-color": "rgba(100, 200, 240, 1)",
+          "line-width": 2
+        }
+      });
+
       // selected
       this.map.addLayer({
         id: "selected-parcels",
@@ -890,7 +914,19 @@ export default {
         });
       }
       this.isOperatorOnMap = true;
-      this.years.forEach(year => this.map.addLayer(this.layersOperator[year]));
+      this.years.forEach(year => {
+        this.map.addLayer(this.layersOperator[year]);
+        this.map.addLayer({
+          ...this.layersOperator[year],
+          id: this.layersOperator[year].id + "-border",
+          type: "line",
+          paint: {
+            "line-color": "#FFF",
+            "line-opacity": 0.6,
+            "line-width": 1
+          }
+        });
+      });
       this.toggleLayerOperator("2020", true);
     },
     hoverParcel(parcel) {
@@ -989,8 +1025,10 @@ export default {
       if (this.map && this.map.getLayer(layer)) {
         if (visibility) {
           this.map.setLayoutProperty(layer, 'visibility', 'visible');
+          this.map.setLayoutProperty(layer + '-border', 'visibility', 'visible');
         } else {
           this.map.setLayoutProperty(layer, 'visibility', 'none');
+          this.map.setLayoutProperty(layer + '-border', 'visibility', 'none');
         }
       }
     },
