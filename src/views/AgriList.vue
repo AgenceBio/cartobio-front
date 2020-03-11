@@ -9,16 +9,22 @@
           <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
         </template>
       </v-data-table>
+    </v-container>
 
+    <h1 class="mx-5">Recherche par numéro Pacage</h1>
+
+    <v-container fluid>
       <v-card>
+        <form @submit="searchPacage">
         <v-card-text>
           L'opérateur recherché n'est pas dans la liste ?
           Essayez avec un numéro de Pacage:
         </v-card-text>
         <v-card-actions>
           <v-text-field v-model="numPacage" label="numéro pacage" single-line counter></v-text-field>
-          <v-btn flat color="blue" @click="searchPacage">Rechercher</v-btn>
+          <v-btn flat type="submit" color="blue" @click="searchPacage">Rechercher</v-btn>
         </v-card-actions>
+      </form>
       </v-card>
       <v-dialog v-model="loadingData" hide-overlay persistent width="300">
         <v-card color="#b9d065">
@@ -233,8 +239,15 @@ export default {
             Authorization: "Basic " + tokenCollab
           }
         })
-        .then(data => this.displayResultSearchPacage(data.data))
-        .catch(() => (this.errorPacage = true));
+        .then(data => {
+          window._paq.push(['trackEvent', 'pacage', 'search', this.numPacage]);
+          window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.features.length]);
+          this.displayResultSearchPacage(data.data);
+        })
+        .catch((error) => {
+          window._paq.push(['trackEvent', 'pacage', 'error:search', error]);
+          this.errorPacage = true;
+        });
     },
     displayResultSearchPacage: function(data) {
       this.loadingData = false;
