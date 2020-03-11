@@ -18,7 +18,7 @@
       >
         <v-btn flat class="navbar-button" title="Aller à la liste des exploitations">Exploitations</v-btn>
       </router-link>
-      <router-link v-if="currentRoute !== '/map'" to="/map" class="navbar-button">
+      <router-link v-if="!currentRoute.match(/\/map/)" to="/map" class="navbar-button">
         <v-btn flat class="navbar-button" title="Aller à la carte">Carte</v-btn>
       </router-link>
       <Login v-if="!getProfile.nom" class="navbar-button"></Login>

@@ -4,7 +4,7 @@
     <v-divider></v-divider>
     <h1 class="mx-5">Liste des opérateurs</h1>
     <v-container fluid>
-      <v-data-table :headers="headers" :items="notificationList">
+      <v-data-table :headers="headers" :items="notificationList" :rows-per-page-items=rowsPerPageItems>
         <template v-slot:items="props">
           <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
         </template>
@@ -75,8 +75,7 @@ export default {
   props: ["bus"],
   data: function() {
     return {
-      // itemsPerPageOptions: [6, 12, 18],
-      // itemsPerPage: 6,
+      rowsPerPageItems: [20, 50, 100, {text: "Tout", value: -1}],
       notificationList: [],
       loadingData: false,
       displayedNotifications: [],
@@ -107,11 +106,6 @@ export default {
         },
         { text: "Gérant", align: "right", sortable: true, value: "gerant" }
       ],
-      // numDisplayed: 51,
-      // rowsPerPageItems: [6, 12, 18],
-      // pagination: {
-      //   rowsPerPage: 6
-      // },
       filters: {
         name: "",
         pacage: "",
@@ -202,16 +196,13 @@ export default {
         return activite.nom === "Producteur";
       });
     },
-    displayMore: function() {
-      this.numDisplayed += 51;
-      this.displayedNotifications = _.take(
-        this.notificationList,
-        this.numDisplayed
-      );
-    },
     selectOperator: function() {
+      const {numeroPacage:pacageId} = this.selectedOperatorData
       this.$store.commit("setOperator", this.selectedOperatorData);
-      this.$router.push("map");
+      this.$router.push({
+        name: pacageId ? 'mapWithPacage' : 'map',
+        params: {pacageId}
+      });
     },
     cancelSelectOperator: function() {
       this.selectedOperatorData = {};
@@ -223,7 +214,7 @@ export default {
         version: "1.1.0",
         request: "GetFeature",
         outputFormat: "GeoJSON",
-        typeName: "rpgbio2019v4",
+        typeName: "rpgbio2020v1",
         srsname: "4326",
         filter: '{"pacage":"' + this.numPacage + '"}'
       };
@@ -234,7 +225,7 @@ export default {
           process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
       );
       this.loadingData = true;
-      // get 2019 parcels from the operator
+      // get 2020 parcels from the operator
       axios
         .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
           params: params,

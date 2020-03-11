@@ -26,7 +26,7 @@ Puis :
 1. Créer un nouvel attribut, le nommer `numparcel` et lui donner un type	`Integer`
 1. Créer un nouvel attribut, le nommer `codecultu` et lui donner un type	`String`
 1. Créer un nouvel attribut, le nommer `surfadm` et lui donner un type	`Double`
-1. Créer un nouvel attribut, le nommer `bio` et lui donner un type	`Integer`
+1. Créer un nouvel attribut, le nommer `bio` et lui donner un type	`String`
 1. Créer un nouvel attribut, le nommer `engagement` et lui donner un type `String`
 1. Créer un nouvel attribut, le nommer `semence` et lui donner un type `Integer`
 1. Créer un nouvel attribut, le nommer `maraichage` et lui donner un type `Integer`
@@ -51,20 +51,20 @@ Ils peuvent être convertis à l'aide de l'outil [`ogr2ogr`][ogr2ogr],
 fourni par le paquet [`gdal`][gdal].
 
 ```shell
-RPG_SUFFIX="_20190603_.zip"
+RPG_SUFFIX=".zip"
 RPG_PREFIX="SURFACES-2019-PARCELLES-GRAPHIQUES-CONSTATEES_"
 
 rm -rf ./cartobio{,.zip}
 
-for FILE in $(ls *.zip); do
+for FILE in $(ls ${RPG_PREFIX}*.zip); do
   FILE_WITHOUT_SUFFIX=${FILE%${RPG_SUFFIX}};
   DEPT=${FILE_WITHOUT_SUFFIX#${RPG_PREFIX}};
   echo -n "$DEPT ";
   ogr2ogr -overwrite -nln cartobio d${DEPT} "/vsizip/${FILE}";
   ogrinfo "d${DEPT}" -dialect 'SQL' -sql 'CREATE INDEX ON cartobio USING PACAGE';
-  ogr2ogr -overwrite -nln cartobio -s_srs EPSG:2154 -t_srs EPSG:4326 -nlt POLYGON d${DEPT} d${DEPT} \
+  ogr2ogr -overwrite -nln cartobio -s_srs EPSG:2154 -t_srs EPSG:4326 d${DEPT} d${DEPT} \
     -dialect 'sqlite' -sql "SELECT (PACAGE || CAST(NUM_ILOT as character(3)) || CAST(NUM_PARCEL as character(3))) AS gid, ST_Area(GEOMETRY) AS SURF_GEO, * FROM cartobio WHERE PACAGE IN (SELECT DISTINCT PACAGE FROM cartobio WHERE BIO=1)";
-  ogr2ogr -update -append cartobio d${DEPT};
+  ogr2ogr -update -append -nlt POLYGON cartobio d${DEPT} cartobio;
 done
 
 zip -9 -r cartobio.zip cartobio
