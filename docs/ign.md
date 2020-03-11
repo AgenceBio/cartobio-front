@@ -26,7 +26,7 @@ Puis :
 1. Créer un nouvel attribut, le nommer `numparcel` et lui donner un type	`Integer`
 1. Créer un nouvel attribut, le nommer `codecultu` et lui donner un type	`String`
 1. Créer un nouvel attribut, le nommer `surfadm` et lui donner un type	`Double`
-1. Créer un nouvel attribut, le nommer `bio` et lui donner un type	`Integer`
+1. Créer un nouvel attribut, le nommer `bio` et lui donner un type	`String`
 1. Créer un nouvel attribut, le nommer `engagement` et lui donner un type `String`
 1. Créer un nouvel attribut, le nommer `semence` et lui donner un type `Integer`
 1. Créer un nouvel attribut, le nommer `maraichage` et lui donner un type `Integer`
