@@ -9,16 +9,22 @@
           <AgriItem :agriData.sync="props.item" :selectedOperator.sync="selectedOperatorData"></AgriItem>
         </template>
       </v-data-table>
+    </v-container>
 
+    <h1 class="mx-5">Recherche par numéro Pacage</h1>
+
+    <v-container fluid>
       <v-card>
+        <form @submit="searchPacage">
         <v-card-text>
           L'opérateur recherché n'est pas dans la liste ?
           Essayez avec un numéro de Pacage:
         </v-card-text>
         <v-card-actions>
           <v-text-field v-model="numPacage" label="numéro pacage" single-line counter></v-text-field>
-          <v-btn flat color="blue" @click="searchPacage">Rechercher</v-btn>
+          <v-btn flat type="submit" color="blue" @click="searchPacage">Rechercher</v-btn>
         </v-card-actions>
+      </form>
       </v-card>
       <v-dialog v-model="loadingData" hide-overlay persistent width="300">
         <v-card color="#b9d065">
@@ -64,7 +70,7 @@ let cancel;
 
 import AgriItem from "@/components/AgriItem";
 import FilterToolbar from "@/components/FilterToolbar";
-import _ from 'lodash';    
+import _ from 'lodash';
 
 export default {
   name: "AgriList",
@@ -145,24 +151,26 @@ export default {
       if (this.filters.department === 1) {
         this.filters.department = undefined;
       }
-      this.getAgriList();
+
+      this.getAgriList().then(() => {
+        window._paq.push(['trackSiteSearch', JSON.stringify(newFilters), 'operators', this.notificationList.length])
+      })
     },
     getAgriList() {
       this.loadingData = true;
-      this.getNotificationsList()
-        .then(
-          function(data) {
-            this.notificationList = data.data;
-            this.displayedNotifications = _.take(
-              this.notificationList,
-              this.numDisplayed
-            );
-            _.remove(this.notificationList, function(notif) {
-              return !notif.numeroBio;
-            });
-          }.bind(this)
-        )
-        .then(() => (this.loadingData = false));
+
+      return this.getNotificationsList()
+        .then((data) => {
+          this.notificationList = data.data;
+          this.displayedNotifications = _.take(
+            this.notificationList,
+            this.numDisplayed
+          );
+          _.remove(this.notificationList, function(notif) {
+            return !notif.numeroBio;
+          });
+        })
+      .then(() => (this.loadingData = false));
     },
     getNotificationsList: function() {
       let ocId = _.get(this.getProfile, "organismeCertificateurId");
@@ -197,7 +205,10 @@ export default {
       });
     },
     selectOperator: function() {
-      const {numeroPacage:pacageId} = this.selectedOperatorData
+      // event: category, action, value
+      const {numeroBio, numeroPacage:pacageId} = this.selectedOperatorData;
+      window._paq.push(['trackEvent', 'parcels', 'display-on-map', numeroBio]);
+
       this.$store.commit("setOperator", this.selectedOperatorData);
       this.$router.push({
         name: pacageId ? 'mapWithPacage' : 'map',
@@ -205,6 +216,8 @@ export default {
       });
     },
     cancelSelectOperator: function() {
+      // event: category, action, value
+      window._paq.push(['trackEvent', 'parcels', 'cancel:display-on-map']);
       this.selectedOperatorData = {};
       this.$store.commit("setOperator", this.selectedOperatorData);
     },
@@ -233,8 +246,15 @@ export default {
             Authorization: "Basic " + tokenCollab
           }
         })
-        .then(data => this.displayResultSearchPacage(data.data))
-        .catch(() => (this.errorPacage = true));
+        .then(data => {
+          window._paq.push(['trackEvent', 'pacage', 'search', this.numPacage]);
+          window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.features.length]);
+          this.displayResultSearchPacage(data.data);
+        })
+        .catch((error) => {
+          window._paq.push(['trackEvent', 'pacage', 'error:search', error]);
+          this.errorPacage = true;
+        });
     },
     displayResultSearchPacage: function(data) {
       this.loadingData = false;

@@ -93,10 +93,19 @@ export default {
         "surfaceAdmissible",
         "surfaceGeometrique"
       ]);
-      this.convertToCsvAndDownload(
-        this.$store.getters.getOperator.title + ".csv",
-        rows
-      );
+
+      try {
+        const {numeroBio} = this.$store.getters.getOperator;
+        window._paq.push(['trackEvent', 'parcels', 'download', numeroBio]);
+        
+        this.convertToCsvAndDownload(
+          this.$store.getters.getOperator.title + ".csv",
+          rows
+        );
+      }
+      catch (error) {
+        window._paq.push(['trackEvent', 'parcels', 'error:download', error]);
+      }
     },
     createParcelArray(parcel) {
       let prop = parcel.properties;
