@@ -101,7 +101,7 @@
                 <v-list class="pt-0" dense two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
-                    v-for="(year, index) in years"
+                    v-for="(year, index) in sortedYears"
                     :key="index"
                     v-bind:class="{'not-visible': !layersVisible['anon' + year].visibility}"
                   >
@@ -126,7 +126,7 @@
                 <v-list dense class="pt-0" v-if="operator.title" two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
-                    v-for="(year, index) in years"
+                    v-for="(year, index) in sortedYears"
                     :key="index"
                     v-bind:class="{'not-visible': !layersVisible[year].visibility}"
                   >
@@ -438,7 +438,7 @@ export default {
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
-      years: [2020, 2019, 2018, 2017]
+      years: [2017, 2018, 2019, 2020]
     };
   },
   // event bus
@@ -589,6 +589,10 @@ export default {
       // should not be in computed style. computed style should work for displaying/hiding layers already defined and editing their sources.
       let computedMapStyle = mapStyle;
       return computedMapStyle;
+    },
+    sortedYears() {
+      let yearsArr = this.years.slice();
+      return yearsArr.reverse();
     }
   },
   methods: {
@@ -647,6 +651,7 @@ export default {
       }
     },
 
+    // return html code that will display in the popup
     setPopupHtml(features) {
       let hoveredData = {};
       let featureGroups = groupBy(features, function(feature) {
