@@ -101,7 +101,7 @@
                 <v-list class="pt-0" dense two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
-                    v-for="(year, index) in years"
+                    v-for="(year, index) in sortedYears"
                     :key="index"
                     v-bind:class="{'not-visible': !layersVisible['anon' + year].visibility}"
                   >
@@ -126,7 +126,7 @@
                 <v-list dense class="pt-0" v-if="operator.title" two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
-                    v-for="(year, index) in years"
+                    v-for="(year, index) in sortedYears"
                     :key="index"
                     v-bind:class="{'not-visible': !layersVisible[year].visibility}"
                   >
@@ -190,7 +190,7 @@
 
 <script>
 import {get} from "axios";
-import {fromPairs, get as getObjectValue} from "lodash";
+import {fromPairs, get as getObjectValue, groupBy, reduce} from "lodash";
 import {bbox, center, area} from "turf";
 
 // mapbox-gl dependencies
@@ -436,7 +436,7 @@ export default {
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
-      years: [2020, 2019, 2018, 2017]
+      years: [2017, 2018, 2019, 2020]
     };
   },
   // event bus
@@ -591,6 +591,10 @@ export default {
       // should not be in computed style. computed style should work for displaying/hiding layers already defined and editing their sources.
       let computedMapStyle = mapStyle;
       return computedMapStyle;
+    },
+    sortedYears() {
+      let yearsArr = this.years.slice();
+      return yearsArr.reverse();
     }
   },
   methods: {
@@ -649,8 +653,41 @@ export default {
       }
     },
 
+    // return html code that will display in the popup
     setPopupHtml(features) {
-      return features[0].properties.codecultu;
+      let hoveredData = {};
+      let featureGroups = groupBy(features, function(feature) {
+        return feature.layer.id.startsWith("operator") ? "operator" : "anonymous"
+      });
+
+      if (featureGroups.operator) {
+        hoveredData = reduce(featureGroups.operator, function(result, feature) {
+          let featureKey = feature.layer.id.split('-')[2];
+          result[featureKey] = feature.properties;
+          return result;
+        }, {});
+      }
+      // we only replace the data if there is no operator data for the year
+      if (featureGroups.anonymous) {
+        hoveredData = reduce(featureGroups.anonymous, function(result, feature) {
+          let featureKey = feature.layer.id.split('-')[2];
+           result[featureKey] = result[featureKey] ? result[featureKey] : feature.properties;
+          return result;
+        }, hoveredData);
+      }
+      let htmlContent = "";
+      if (getObjectValue(hoveredData, ["2020", "numilot"])) {
+        htmlContent += "<h3>Ilot " + hoveredData["2020"].numilot + " Parcelle " + hoveredData["2020"].numparcel + "</h3>" 
+      }
+      Object.keys(hoveredData).forEach(function(year) {
+        let bioStatus = hoveredData[year].bio == 1 ? "Bio" : "Conventionnel";
+        htmlContent += year + " - " + hoveredData[year].codecultu + " - " + bioStatus + "<br/>";
+      });
+
+      // eslint-disable-next-line no-unused-vars
+      let html = "<div>" + htmlContent +  "</div>";
+      
+      return html;
     },
 
     updateHash() {
