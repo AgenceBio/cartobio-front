@@ -438,6 +438,7 @@ export default {
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
+      // layers display in the order of years : last year in this array on top
       years: [2017, 2018, 2019, 2020]
     };
   },
@@ -590,6 +591,7 @@ export default {
       let computedMapStyle = mapStyle;
       return computedMapStyle;
     },
+    // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
       return yearsArr.reverse();
