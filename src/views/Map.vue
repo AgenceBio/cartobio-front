@@ -316,12 +316,9 @@ let mapStyle = {
 // };
 
 // Mapbox draw control
+// We don't display any control since we want to trigger the modes manually
 let draw = new MapboxDraw({
-  displayControlsDefault: false,
-  controls: {
-    polygon: true,
-    trash: true
-  }
+  displayControlsDefault: false
 });
 
 // template for geoJSON objects
@@ -847,9 +844,11 @@ export default {
           alert("Use the draw tools to draw a polygon!");
       }
     },
-    startParcelCreation() {
-      this.editMode = true;
-      // this.map.addControl(draw, "top-right");
+    initDrawControls() {    
+      
+      // we add empty draw control for further use
+      this.map.addControl(draw);
+
       this.map.on(
         "draw.create",
         function(e) {
@@ -864,21 +863,19 @@ export default {
       this.map.on("draw.delete", this.updateArea);
       this.map.on("draw.update", this.updateArea);
     },
+    startParcelCreation() {
+      this.editMode = true;
+
+      window._paq.push(['trackEvent', 'draw', 'start']);
+
+      // draw.add({type: "Polygon", coordinates: []});
+      draw.changeMode("draw_polygon");
+      
+    },
     setUpMapOperator() {
-      // this.map.addControl(draw, "top-right");
-      // this.map.on(
-      //   "draw.create",
-      //   function(e) {
-      //     let newFeature = e.features[0];
-      //     let surface = turf.area(newFeature);
-      //     surface = Math.round(surface * 100) / 100; // round to 2 decimals
-      //     newFeature.properties.surfgeo = surface;
-      //     this.newParcel = newFeature;
-      //     this.setUpParcel = true;
-      //   }.bind(this)
-      // );
-      // this.map.on("draw.delete", this.updateArea);
-      // this.map.on("draw.update", this.updateArea);
+      // init Draw Controls      
+      this.initDrawControls();
+
       if (
         this.bboxOperator[0] !== undefined &&
         this.bboxOperator[0] !== Infinity
@@ -959,6 +956,9 @@ export default {
     saveParcel() {
       this.setUpParcel = !this.setUpParcel;
       this.parcelsOperator[2020].features.push(this.newParcel);
+      this.updateOperatorData(2020);
+      draw.deleteAll();
+      console.log(this.parcelsOperator[2020]);
     },
     updateNewParcel(newData) {
       this.newParcel.properties = newData[0];
@@ -970,6 +970,9 @@ export default {
     },
     addOperatorData(data, year) {
       this.parcelsOperator[year] = data;
+      this.updateOperatorData(year);
+    },
+    updateOperatorData(year) {
       if (this.map) {
         this.map
           .getSource("operatorParcels" + year)
