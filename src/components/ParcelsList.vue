@@ -7,6 +7,11 @@
       <span>Télécharger Parcelles - csv</span>
     </v-btn>
     <v-divider></v-divider>
+    
+    <v-btn dark color="blue" @click="$emit('start-parcel-creation')">
+      <v-icon dark>add</v-icon>
+      <span>Créer Parcelle</span>
+    </v-btn>
 
     <v-list class="pt-0" dense>
       <v-divider></v-divider>

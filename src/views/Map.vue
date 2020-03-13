@@ -39,6 +39,7 @@
         v-on:stop-hovering-ilot="stopHovering($event)"
         v-on:select-parcel="selectParcel($event)"
         v-on:select-all-parcels="selectAllParcels($event)"
+        v-on:start-parcel-creation="startParcelCreation($event)"
       ></ParcelsList>
     </v-navigation-drawer>
     <v-content app>
@@ -873,22 +874,22 @@ export default {
           alert("Use the draw tools to draw a polygon!");
       }
     },
-    startEditMode() {
+    startParcelCreation() {
       this.editMode = true;
-      this.map.addControl(draw, "top-right");
-      this.map.on(
-        "draw.create",
-        function(e) {
-          let newFeature = e.features[0];
-          let surface = area(newFeature);
-          surface = Math.round(surface * 100) / 100; // round to 2 decimals
-          newFeature.properties.surfgeo = surface;
-          this.newParcel = newFeature;
-          this.setUpParcel = true;
-        }.bind(this)
-      );
-      this.map.on("draw.delete", this.updateArea);
-      this.map.on("draw.update", this.updateArea);
+      // this.map.addControl(draw, "top-right");
+      // this.map.on(
+      //   "draw.create",
+      //   function(e) {
+      //     let newFeature = e.features[0];
+      //     let surface = area(newFeature);
+      //     surface = Math.round(surface * 100) / 100; // round to 2 decimals
+      //     newFeature.properties.surfgeo = surface;
+      //     this.newParcel = newFeature;
+      //     this.setUpParcel = true;
+      //   }.bind(this)
+      // );
+      // this.map.on("draw.delete", this.updateArea);
+      // this.map.on("draw.update", this.updateArea);
     },
     setUpMapOperator() {
       // this.map.addControl(draw, "top-right");
