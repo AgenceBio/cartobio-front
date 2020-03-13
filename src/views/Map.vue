@@ -57,6 +57,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
+              <v-btn color="red darken-1" flat @click="cancelParcelCreation()">Annuler</v-btn>
               <v-btn color="green darken-1" flat @click="saveParcel()">Valider</v-btn>
             </v-card-actions>
           </v-card>
@@ -866,6 +867,13 @@ export default {
     startParcelCreation() {
       this.editMode = true;
 
+      // test API productions (nomenclature CPF)
+      // get(
+      //   process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + 
+      //   "/portail/productions/filterParGroupe/1"
+      // )
+      // .then(data => console.log(data));
+
       window._paq.push(['trackEvent', 'draw', 'start']);
 
       // draw.add({type: "Polygon", coordinates: []});
@@ -958,7 +966,12 @@ export default {
       this.parcelsOperator[2020].features.push(this.newParcel);
       this.updateOperatorData(2020);
       draw.deleteAll();
-      console.log(this.parcelsOperator[2020]);
+      window._paq.push(['trackEvent', 'draw', 'save']);
+    },
+    cancelParcelCreation() {
+      this.setUpParcel = !this.setUpParcel;
+      draw.deleteAll();
+      window._paq.push(['trackEvent', 'draw', 'cancel']);
     },
     updateNewParcel(newData) {
       this.newParcel.properties = newData[0];
