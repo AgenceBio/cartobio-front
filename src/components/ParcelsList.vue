@@ -2,9 +2,9 @@
   <div>
     <!-- download parcels button -->
     <v-divider></v-divider>
-    <v-btn flat color="blue" @click="downloadCSV">
+    <v-btn color="info" block @click="downloadCSV">
       <v-icon>save_alt</v-icon>
-      <span>Télécharger parcellaire - csv</span>
+      <span>Télécharger Parcelles - csv</span>
     </v-btn>
     <v-divider></v-divider>
 
