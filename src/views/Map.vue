@@ -72,7 +72,6 @@
           :maxZoom="24"
           @load="onMapLoaded"
           ref="mapboxDiv"
-          :transformRequest="transformRequest"
         >
           <v-toolbar floating dense class="my-3 toolbar-search">
             <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
@@ -822,28 +821,6 @@ export default {
         center: value.geometry.coordinates,
         zoom: 10 + parseInt(value.importance) // may be improved, difficult to know what importance stands for
       });
-    },
-    // not used currently
-    transformRequest(url, resourceType) {
-      let newUrl = url;
-      if (
-        resourceType === "Tile" &&
-        url.startsWith("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio")
-      ) {
-        let paramArr = [];
-        url.split("&").forEach(function(param) {
-          let subparam = param.split("=");
-          paramArr.push(subparam);
-        });
-        let args = fromPairs(paramArr);
-        let zoom = args.TILEMATRIX; // z
-        let row = args.TILEROW; // y
-        let col = args.TILECOL; // x
-        let bbox = mercator.bbox(col, row, zoom, true, "4326");
-        newUrl = newUrl.split("TILEMATRIX")[0];
-        newUrl += "bbox=" + bbox.toString() + ",WGS84";
-      }
-      return { url: newUrl };
     },
     displayOperatorLayer(data) {
       this.addOperatorData(data, "2020");
