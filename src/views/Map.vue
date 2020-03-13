@@ -190,13 +190,12 @@
 
 <script>
 import {get} from "axios";
-import {fromPairs, get as getObjectValue} from "lodash";
+import {get as getObjectValue} from "lodash";
 import {bbox, center, area} from "turf";
 
 // mapbox-gl dependencies
 import {Popup} from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import SphericalMercator from "sphericalmercator";
 import Geosearch from "@/components/Geosearch";
 
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -211,9 +210,6 @@ import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 
-let mercator = new SphericalMercator({
-  size: 256
-});
 
 // map style.
 let mapStyle = {
@@ -854,19 +850,19 @@ export default {
     startParcelCreation() {
       this.editMode = true;
       // this.map.addControl(draw, "top-right");
-      // this.map.on(
-      //   "draw.create",
-      //   function(e) {
-      //     let newFeature = e.features[0];
-      //     let surface = area(newFeature);
-      //     surface = Math.round(surface * 100) / 100; // round to 2 decimals
-      //     newFeature.properties.surfgeo = surface;
-      //     this.newParcel = newFeature;
-      //     this.setUpParcel = true;
-      //   }.bind(this)
-      // );
-      // this.map.on("draw.delete", this.updateArea);
-      // this.map.on("draw.update", this.updateArea);
+      this.map.on(
+        "draw.create",
+        function(e) {
+          let newFeature = e.features[0];
+          let surface = area(newFeature);
+          surface = Math.round(surface * 100) / 100; // round to 2 decimals
+          newFeature.properties.surfgeo = surface;
+          this.newParcel = newFeature;
+          this.setUpParcel = true;
+        }.bind(this)
+      );
+      this.map.on("draw.delete", this.updateArea);
+      this.map.on("draw.update", this.updateArea);
     },
     setUpMapOperator() {
       // this.map.addControl(draw, "top-right");
