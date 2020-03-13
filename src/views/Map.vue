@@ -211,6 +211,8 @@ import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 
+import { mapGetters } from 'vuex';
+
 let mercator = new SphericalMercator({
   size: 256
 });
@@ -577,14 +579,10 @@ export default {
     }
   },
   computed: {
-    // user profile
-    getProfile() {
-      return this.$store.getters.getProfile;
-    },
-    // current operator
-    getOperator() {
-      return this.$store.getters.getOperator;
-    },
+    // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
+    ...mapGetters(['getProfile', 'getOperator']),
+    ...mapGetters('user', ['isAuthenticated']),
+
     // map Style
     mapStyle() {
       // To improve
@@ -607,7 +605,7 @@ export default {
 
       // add map sources
       // this.map.addSource("bio-tiles", bioSource);
-      if (this.getProfile.active) {
+      if (this.isAuthenticated) {
         this.loadLayers();
       }
       // this.map.on(
