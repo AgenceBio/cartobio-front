@@ -147,7 +147,7 @@ export default {
             : null,
           bio: _.get(this.parcel, ["properties", "bio"])
             ? this.parcel.properties.bio
-            : 0,
+            : "0",
           codecultu: _.get(this.parcel, ["properties", "codecultu"])
             ? this.parcel.properties.codecultu
             : null,
