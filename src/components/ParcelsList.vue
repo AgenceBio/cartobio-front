@@ -8,9 +8,9 @@
     </v-btn>
     <v-divider></v-divider>
     
-    <v-btn dark color="blue" @click="$emit('start-parcel-creation')">
-      <v-icon dark>add</v-icon>
-      <span>Créer Parcelle</span>
+    <v-btn color="info" @click="$emit('start-parcel-creation')">
+      <v-icon>add</v-icon>
+      <span>Créer Nouvelle Parcelle</span>
     </v-btn>
 
     <v-list class="pt-0" dense>
