@@ -8,9 +8,7 @@
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
-      <router-link to="/stats" class="navbar-button">
-        <v-btn flat title="Aller à la page de Statistiques">Stats</v-btn>
-      </router-link>
+
       <router-link
         v-if="$store.getters.getUserCategory === $store.getters.getCategories.oc && currentRoute !== '/notifications'"
         to="/notifications"
@@ -23,18 +21,22 @@
       </router-link>
       <Login v-if="!getProfile.nom" class="navbar-button"></Login>
       <Profile v-if="getProfile.nom" class="navbar-button"></Profile>
+
+      <AboutMenu></AboutMenu>
     </v-toolbar-items>
   </v-toolbar>
 </template>
 <script>
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
+import AboutMenu from '@/components/AboutMenu.vue'
 
 export default {
   name: "Navbar",
   components: {
     Login,
-    Profile
+    Profile,
+    AboutMenu,
   },
   props: ["bus"],
   data: () => ({

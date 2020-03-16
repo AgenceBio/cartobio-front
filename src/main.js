@@ -1,7 +1,7 @@
 import './plugins/vuetify'
 import Vue from 'vue'
 import Storage from 'vue-ls';
-
+import VueMeta from 'vue-meta'
 import Vuetify from 'vuetify/lib'
 import store from './store.js'
 import router from './router'
@@ -15,6 +15,7 @@ let storageOptions = {
 
 Vue.use(Vuetify)
 Vue.use(Storage, storageOptions)
+Vue.use(VueMeta)
 
 router.afterEach((to, from) => {
   if (to.path && to.path !== from.path) {

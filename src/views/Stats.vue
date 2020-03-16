@@ -77,6 +77,11 @@ function round (value) {
 
 export default {
   name: "Stats",
+
+  metaInfo: {
+    title: 'Statistiques et mesures d\'impact',
+  },
+
   components: {
     HomeNavbar,
   },
