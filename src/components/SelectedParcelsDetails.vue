@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import {get as getObjectValue} from 'lodash/core';
+import getObjectValue from 'lodash/get';
 export default {
   name: "SelectedParcelsDetails",
   props: {

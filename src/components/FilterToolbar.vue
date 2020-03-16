@@ -46,7 +46,7 @@
 
 <script>
 import {get} from "axios";
-import {sortBy} from 'lodash/core';
+import sortBy from 'lodash/sortBy';
 export default {
   name: "FilterToolbar",
   props: ["filters"],

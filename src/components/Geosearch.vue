@@ -16,7 +16,7 @@
 </template>
 <script>
 import {get} from "axios";
-import {throttle} from "lodash/core";
+import throttle from "lodash/throttle";
 export default {
   name: "Geosearch",
   data() {

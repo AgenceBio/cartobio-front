@@ -70,7 +70,9 @@ let cancel;
 
 import AgriItem from "@/components/AgriItem";
 import FilterToolbar from "@/components/FilterToolbar";
-import {take, remove, get as getObjectValue} from 'lodash/core';
+import getObjectValue from 'lodash/get';
+import remove from 'lodash/remove';
+import take from 'lodash/take';
 
 export default {
   name: "AgriList",

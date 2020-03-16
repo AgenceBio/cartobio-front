@@ -190,7 +190,9 @@
 
 <script>
 import {get} from "axios";
-import {fromPairs, get as getObjectValue, groupBy} from "lodash/core";
+import fromPairs from "lodash/fromPairs";
+import getObjectValue from "lodash/get";
+import groupBy from "lodash/groupBy";
 import {bbox, center, area} from "turf";
 
 // mapbox-gl dependencies
