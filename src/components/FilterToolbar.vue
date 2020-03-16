@@ -83,7 +83,7 @@ export default {
         pacage: "",
         numeroBio: "",
         numeroClient: "",
-        department: 26,
+        department: 1,
         city: ""
       };
       this.$emit("update-filters", this.tempFilters);
@@ -93,19 +93,14 @@ export default {
       return get(
           process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/departements"
         )
-        .then(
-          function(data) {
-            let departements = data.data;
-            departements.forEach(function(item) {
-              item.label =
-                item.nom + (item.codePostal ? " - " + item.codePostal : "");
-            });
-            this.departmentList = sortBy(departements, "codePostal");
-          }.bind(this),
-          function(error) {
-            console.error(error);
-          }
-        );
+        .then(({data:departements}) => {
+          departements.forEach(function(item) {
+            item.label =
+              item.nom + (item.codePostal ? " - " + item.codePostal : "");
+          });
+          this.departmentList = sortBy(departements, "id");
+        })
+        .catch(console.error);
     }
   }
 };
