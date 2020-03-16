@@ -45,8 +45,8 @@
 </template>
 
 <script>
-const axios = require("axios");
-import _ from 'lodash';    
+import {get} from "axios";
+import {sortBy} from 'lodash/core';
 export default {
   name: "FilterToolbar",
   props: ["filters"],
@@ -90,18 +90,17 @@ export default {
       this.displayFiltersDialog = false;
     },
     getDepartements: function() {
-      return axios
-        .get(
+      return get(
           process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/departements"
         )
         .then(
           function(data) {
             let departements = data.data;
-            _.forEach(departements, function(item) {
+            departements.forEach(function(item) {
               item.label =
                 item.nom + (item.codePostal ? " - " + item.codePostal : "");
             });
-            this.departmentList = _.sortBy(departements, "codePostal");
+            this.departmentList = sortBy(departements, "codePostal");
           }.bind(this),
           function(error) {
             console.error(error);

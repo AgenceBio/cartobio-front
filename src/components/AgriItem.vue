@@ -22,8 +22,6 @@
 </template>
 <script>
 
-import _ from 'lodash';    
-
 export default {
   name: "AgriItem",
   props: ["agriData", "selectedOperator"],
@@ -32,7 +30,7 @@ export default {
       this.$emit("update:selectedOperator", this.newAgriData);
     },
     getOperatorName: agriData => {
-      let user = _.find(agriData.utilisateurs, function(u) {
+      let user = agriData.utilisateurs.find(function(u) {
         return u.nom;
       });
       return user.nom + " " + user.prenom;
