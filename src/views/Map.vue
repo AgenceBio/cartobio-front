@@ -31,7 +31,7 @@
 
       <!-- Parcels List -->
       <ParcelsList
-        :parcels.sync="parcelsOperator[2020]"
+        :parcels.sync="parcelsOperator[this.currentYear]"
         v-if="drawer && !mini"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
@@ -162,27 +162,6 @@
           </v-expansion-panel>
         </v-flex>
 
-        <!--<v-card class="survey" v-show="displaySurvey">
-          <v-btn flat icon color="black" class="close-survey" @click="displaySurvey = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-card-title primary-title>
-            <h3 class="headline mb-0">Donnez nous votre avis !</h3>
-          </v-card-title>
-          <v-card-text>
-            <v-spacer></v-spacer>Un petit questionnaire est prévu pour ça :
-            <v-spacer></v-spacer>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <a href="https://fr.surveymonkey.com/r/339NRFN" target="_blank">
-              <v-btn color="primary">
-                <v-icon>open_in_new</v-icon>questionnaire
-              </v-btn>
-            </a>
-            <v-spacer></v-spacer>
-          </v-card-actions>
-        </v-card>-->
       </div>
     </v-content>
   </v-layout>
@@ -213,7 +192,7 @@ import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 let mercator = new SphericalMercator({
   size: 256
@@ -481,7 +460,7 @@ export default {
     }
 
     // if there is an operator, show drawer.
-    this.drawer = getObjectValue(this.$store.getters.getOperator, "title");
+    this.drawer = getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "pacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
@@ -585,6 +564,7 @@ export default {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
     ...mapGetters(['getProfile', 'getOperator']),
     ...mapGetters('user', ['isAuthenticated']),
+    ...mapState(['currentYear']),
 
     // map Style
     mapStyle() {
@@ -646,7 +626,7 @@ export default {
       });
 
       // handle click on layers
-      this.map.on("click", "operator-parcels-2020", (e) => {
+      this.map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
         this.selectParcel(e.features[0]);
       });
 
@@ -761,7 +741,7 @@ export default {
         });
       });
 
-      this.toggleLayerAnon(2020, true);
+      this.toggleLayerAnon(this.currentYear, true);
 
       if (!this.map.getSource("selected")) {
         this.map.addSource("selected", {
@@ -882,7 +862,7 @@ export default {
       return { url: newUrl };
     },
     displayOperatorLayer(data) {
-      this.addOperatorData(data, "2020");
+      this.addOperatorData(data, this.currentYear);
       this.bboxOperator = bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
@@ -964,7 +944,7 @@ export default {
           }
         });
       });
-      this.toggleLayerOperator("2020", true);
+      this.toggleLayerOperator(this.currentYear, true);
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -993,7 +973,7 @@ export default {
       this.map.getSource("highlight").setData(this.highlightedParcels);
     },
     selectParcel(parcel) {
-      let tmp = this.parcelsOperator[2020].features.find(function(feature) {
+      let tmp = this.parcelsOperator[this.currentYear].features.find(function(feature) {
         return feature.id === parcel.id;
       });
       tmp.properties.selected = !tmp.properties.selected;
@@ -1009,11 +989,11 @@ export default {
       this.map.getSource("selected").setData(this.selectedParcels);
     },
     selectAllParcels(bool) {
-      this.parcelsOperator[2020].features.forEach(function(parcel) {
+      this.parcelsOperator[this.currentYear].features.forEach(function(parcel) {
         parcel.properties.selected = bool;
       });
       if (bool) {
-        this.selectedParcels.features = this.parcelsOperator[2020].features;
+        this.selectedParcels.features = this.parcelsOperator[this.currentYear].features;
       } else {
         this.selectedParcels.features = [];
       }
@@ -1021,7 +1001,7 @@ export default {
     },
     saveParcel() {
       this.setUpParcel = !this.setUpParcel;
-      this.parcelsOperator[2020].features.push(this.newParcel);
+      this.parcelsOperator[this.currentYear].features.push(this.newParcel);
     },
     updateNewParcel(newData) {
       this.newParcel.properties = newData[0];
