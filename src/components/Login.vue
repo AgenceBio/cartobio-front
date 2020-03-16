@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import {get as getObjectValue} from 'lodash/core';
 
 import {mapActions} from 'vuex'
 import {authenticateWithCredentials} from '@/api/user.js'
@@ -83,7 +83,7 @@ export default {
            window._paq.push(['trackEvent',
             "login", // event category : login
             "Success", // event Action : success
-            _.get(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
+            getObjectValue(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
           ]);
           this.loading = false;
           this.loader = null;

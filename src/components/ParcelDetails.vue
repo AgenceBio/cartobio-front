@@ -109,7 +109,7 @@
   </v-data-table>
 </template>
 <script>
-import _ from 'lodash';    
+import {get as getObjectValue} from 'lodash/core';
 export default {
   name: "ParcelDetails",
   props: {
@@ -139,31 +139,31 @@ export default {
     parcelData() {
       return [
         {
-          numerobio: _.get(this.parcel, ["properties", "numerobio"])
+          numerobio: getObjectValue(this.parcel, ["properties", "numerobio"])
             ? this.parcel.properties.numerobio
             : this.operator.numeroBio,
-          agroforest: _.get(this.parcel, ["properties", "agroforest"])
+          agroforest: getObjectValue(this.parcel, ["properties", "agroforest"])
             ? this.parcel.properties.agroforest
             : null,
-          bio: _.get(this.parcel, ["properties", "bio"])
+          bio: getObjectValue(this.parcel, ["properties", "bio"])
             ? this.parcel.properties.bio
             : 0,
-          codecultu: _.get(this.parcel, ["properties", "codecultu"])
+          codecultu: getObjectValue(this.parcel, ["properties", "codecultu"])
             ? this.parcel.properties.codecultu
             : null,
-          engagement: _.get(this.parcel, ["properties", "engagement"])
+          engagement: getObjectValue(this.parcel, ["properties", "engagement"])
             ? this.parcel.properties.engagement
             : this.formatDate(new Date().toISOString().substr(0, 10)),
-          maraichage: _.get(this.parcel, ["properties", "maraichage"])
+          maraichage: getObjectValue(this.parcel, ["properties", "maraichage"])
             ? this.parcel.properties.maraichage
             : null,
-          numilot: _.get(this.parcel, ["properties", "numilot"])
+          numilot: getObjectValue(this.parcel, ["properties", "numilot"])
             ? this.parcel.properties.numilot
             : undefined,
-          numparcel: _.get(this.parcel, ["properties", "numparcel"])
+          numparcel: getObjectValue(this.parcel, ["properties", "numparcel"])
             ? this.parcel.properties.numparcel
             : undefined,
-          surfgeo: _.get(this.parcel, ["properties", "surfgeo"])
+          surfgeo: getObjectValue(this.parcel, ["properties", "surfgeo"])
         }
       ];
     }

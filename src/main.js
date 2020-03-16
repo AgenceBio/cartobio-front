@@ -2,7 +2,7 @@ import './plugins/vuetify'
 import Vue from 'vue'
 import Storage from 'vue-ls';
 
-import Vuetify from 'vuetify'
+import Vuetify from 'vuetify/lib'
 import store from './store.js'
 import router from './router'
 import App from './App.vue'

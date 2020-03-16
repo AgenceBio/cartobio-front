@@ -55,7 +55,7 @@
   </div>
 </template>
 <script>
-import _ from 'lodash';    
+import {get as getObjectValue} from 'lodash/core';
 export default {
   name: "ParcelsList",
   props: {
@@ -78,7 +78,7 @@ export default {
     },
     downloadCSV() {
       // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
-      let rows = _.map(this.parcels.features, this.createParcelArray);
+      let rows = this.parcels.features.map(this.createParcelArray);
       rows.unshift([
         "id",
         "numeroBio",
@@ -97,7 +97,7 @@ export default {
       try {
         const {numeroBio} = this.$store.getters.getOperator;
         window._paq.push(['trackEvent', 'parcels', 'download', numeroBio]);
-        
+
         this.convertToCsvAndDownload(
           this.$store.getters.getOperator.title + ".csv",
           rows
@@ -112,17 +112,17 @@ export default {
       // csv properties order:
       // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
       let parcelArray = [
-        _.get(prop, "id", ""),
+        getObjectValue(prop, "id", ""),
         prop.numerobio,
-        _.get(prop, "pacage", ""),
-        _.get(prop, "maraichage", ""),
+        getObjectValue(prop, "pacage", ""),
+        getObjectValue(prop, "maraichage", ""),
         prop.bio,
         prop.codecultu,
         prop.engagement,
-        _.get(prop, "maraichage", ""),
+        getObjectValue(prop, "maraichage", ""),
         prop.numilot,
         prop.numparcel,
-        _.get(prop, "surfadm", ""),
+        getObjectValue(prop, "surfadm", ""),
         prop.surfgeo
       ];
       return parcelArray;
@@ -185,17 +185,11 @@ export default {
     }
   },
   computed: {
-    // checkbox() {
-    //   return _.every(this.parcels.features, function(parcel) {
-    //     return parcel.properties.selected;
-    //   });
-    // },
     ilots() {
       // first reduce to group parcels by ilots
-      let reduced = _.reduce(
-        this.parcels.features,
+      let reduced = this.parcels.features.reduce(
         function(result, parcel) {
-          let numIlot = _.get(parcel, ["properties", "numilot"]);
+          let numIlot = getObjectValue(parcel, ["properties", "numilot"]);
           result[numIlot]
             ? result[numIlot].push(parcel)
             : (result[numIlot] = [parcel]);
@@ -204,8 +198,7 @@ export default {
         {}
       );
       // then put them into an array with easily accessible ilot number
-      let ilots = _.reduce(
-        reduced,
+      let ilots = reduced.reduce(
         function(result, value, key) {
           result.push({ numIlot: key, parcels: value });
           return result;
@@ -219,4 +212,3 @@ export default {
 </script>
 <style lang="scss" scoped>
 </style>
-

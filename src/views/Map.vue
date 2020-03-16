@@ -190,7 +190,7 @@
 
 <script>
 import {get} from "axios";
-import {fromPairs, get as getObjectValue} from "lodash";
+import {fromPairs, get as getObjectValue, groupBy} from "lodash/core";
 import {bbox, center, area} from "turf";
 
 // mapbox-gl dependencies
@@ -648,7 +648,37 @@ export default {
     },
 
     setPopupHtml(features) {
-      return features[0].properties.codecultu;
+      let hoveredData = {};
+      let featureGroups = groupBy(features, function(feature) {
+        return feature.layer.id.startsWith("operator") ? "operator" : "anonymous"
+      });
+
+      if (featureGroups.operator) {
+        hoveredData = featureGroups.operator.reduce(function(result, feature) {
+          let featureKey = feature.layer.id.split('-')[2];
+          result[featureKey] = feature.properties;
+          return result;
+        }, {});
+      }
+      // we only replace the data if there is no operator data for the year
+      if (featureGroups.anonymous) {
+        hoveredData = featureGroups.anonymous.reduce(function(result, feature) {
+          let featureKey = feature.layer.id.split('-')[2];
+           result[featureKey] = result[featureKey] ? result[featureKey] : feature.properties;
+          return result;
+        }, hoveredData);
+      }
+      let htmlContent = "";
+      if (getObjectValue(hoveredData, ["2020", "numilot"])) {
+        htmlContent += "<h3>Ilot " + hoveredData["2020"].numilot + " Parcelle " + hoveredData["2020"].numparcel + "</h3>"
+      }
+      Object.keys(hoveredData).forEach(function(year) {
+        let bioStatus = hoveredData[year].bio == 1 ? "Bio" : "Conventionnel";
+        htmlContent += year + " - " + hoveredData[year].codecultu + " - " + bioStatus + "<br/>";
+      });
+
+      // eslint-disable-next-line no-unused-vars
+      return "<div>" + htmlContent +  "</div>";
     },
 
     updateHash() {
