@@ -1,6 +1,10 @@
 # CartoBio-Presentation
 
-Static website presenting CartoBio Project
+Static website presenting CartoBio Project.
+
+- [Changelog](CHANGELOG.md)
+- [Documentation](docs)
+- [Quick handbooks](#handbook)
 
 ## Project setup
 ```

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Stats from './views/Stats.vue'
+import Changelog from './views/Changelog.vue'
 import AppLayout from './views/AppLayout.vue'
 import store from './store.js'
 import goTo from 'vuetify/lib/components/Vuetify/goTo'
@@ -62,7 +63,12 @@ export default new Router({
       path: '/stats',
       name: 'stats',
       component: Stats
-    }
+    },
+    {
+      path: '/changelog',
+      name: 'changelog',
+      component: Changelog
+    },
     // {
     //   path: '/about',
     //   name: 'about',
