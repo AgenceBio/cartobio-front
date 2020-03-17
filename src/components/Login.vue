@@ -47,8 +47,11 @@
 </template>
 
 <script>
-import _ from 'lodash';    
-const axios = require("axios");
+import getObjectValue from 'lodash/get';
+
+import {mapActions} from 'vuex'
+import {authenticateWithCredentials} from '@/api/user.js'
+
 export default {
   name: "Login",
   props: [""],
@@ -62,44 +65,31 @@ export default {
     user: {}
   }),
   methods: {
+    ...mapActions('user', ['getProfile']),
     tryLogin: function() {
       this.loader = "loading";
       this.loading = true;
       this.loginFailed = false;
-      let params = {
-        email: this.login,
-        motDePasse: this.password
-      };
-      axios
-        .post(
-          process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/auth/login",
-          params
-        )
-        .then(data => this.treatAuthToken(data.data.token))
-        .then(data => {
-           
-          return axios.get(
-            process.env.VUE_APP_NOTIFICATIONS_ENDPOINT +
-              "/portail/users/" +
-              data.id
-          );
-        })
-        .then(data => {
 
-         
-          this.user = data.data;
+      const {login, password} = this;
+
+      authenticateWithCredentials({login, password})
+        .then(({token, decodedToken}) => {
+          this.$ls.set("token", token, decodedToken.exp);
+          return this.getProfile(token);
+        })
+        .then(userData => {
+          this.user = userData;
            window._paq.push(['trackEvent',
             "login", // event category : login
             "Success", // event Action : success
-            _.get(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
+            getObjectValue(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
           ]);
           this.loading = false;
           this.loader = null;
+
+          return userData
         })
-        .then(() => this.$store.commit("setUser", this.user))
-        .then(() =>
-          this.$store.commit("setUserCategory", this.user.groupes[0].nom)
-        )
         .then(
           () =>
             function() {
@@ -122,26 +112,6 @@ export default {
             error
           ]);
         });
-    },
-    treatAuthToken: function(token) {
-      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-      let decodedToken = this.parseJwt(token);
-      this.$ls.set("token", token, decodedToken.exp);
-      return decodedToken;
-    },
-    parseJwt: function(token) {
-      var base64Url = token.split(".")[1];
-      var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      var jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function(c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-
-      return JSON.parse(jsonPayload);
     }
   }
 };

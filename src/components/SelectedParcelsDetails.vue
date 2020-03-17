@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import _ from 'lodash';    
+import getObjectValue from 'lodash/get';
 export default {
   name: "SelectedParcelsDetails",
   props: {
@@ -44,8 +44,8 @@ export default {
   computed: {
     culturList() {
       let list = {};
-      _.forEach(this.selectedParcels, function(parcel) {
-        let surf = _.get(parcel.properties, "surfadm")
+      this.selectedParcels.forEach(function(parcel) {
+        let surf = parcel.properties.surfadm
           ? parcel.properties.surfadm
           : parcel.properties.surfgeo / 10000;
         list[parcel.properties.codecultu]
@@ -60,7 +60,7 @@ export default {
   methods: {
     downloadCSV() {
       // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
-      let rows = _.map(this.selectedParcels, this.createParcelArray);
+      let rows = this.selectedParcels.map(this.createParcelArray);
       rows.unshift([
         "id",
         "numeroBio",
@@ -85,17 +85,17 @@ export default {
       // csv properties order:
       // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
       let parcelArray = [
-        _.get(prop, "id", ""),
+        getObjectValue(prop, "id", ""),
         prop.numerobio,
-        _.get(prop, "pacage", ""),
-        _.get(prop, "maraichage", ""),
+        getObjectValue(prop, "pacage", ""),
+        getObjectValue(prop, "maraichage", ""),
         prop.bio,
         prop.codecultu,
         prop.engagement,
-        _.get(prop, "maraichage", ""),
+        getObjectValue(prop, "maraichage", ""),
         prop.numilot,
         prop.numparcel,
-        _.get(prop, "surfadm", ""),
+        getObjectValue(prop, "surfadm", ""),
         prop.surfgeo
       ];
       return parcelArray;

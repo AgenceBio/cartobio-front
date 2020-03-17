@@ -2,7 +2,7 @@ import './plugins/vuetify'
 import Vue from 'vue'
 import Storage from 'vue-ls';
 
-import Vuetify from 'vuetify'
+import Vuetify from 'vuetify/lib'
 import store from './store.js'
 import router from './router'
 import App from './App.vue'
@@ -22,13 +22,13 @@ router.afterEach((to, from) => {
   }
 })
 
-
 Vue.config.productionTip = false
 
 new Vue({
   store,
   router,
-  render: function (createElement) {
-    return createElement(App)
+  render: (createElement) => createElement(App),
+  created() {
+    this.$store.dispatch('user/getProfile', this.$ls.get('token'))
   }
 }).$mount('#app')

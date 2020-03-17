@@ -45,8 +45,8 @@
 </template>
 
 <script>
-const axios = require("axios");
-import _ from 'lodash';    
+import {get} from "axios";
+import sortBy from 'lodash/sortBy';
 export default {
   name: "FilterToolbar",
   props: ["filters"],
@@ -83,30 +83,24 @@ export default {
         pacage: "",
         numeroBio: "",
         numeroClient: "",
-        department: 26,
+        department: 1,
         city: ""
       };
       this.$emit("update-filters", this.tempFilters);
       this.displayFiltersDialog = false;
     },
     getDepartements: function() {
-      return axios
-        .get(
+      return get(
           process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/departements"
         )
-        .then(
-          function(data) {
-            let departements = data.data;
-            _.forEach(departements, function(item) {
-              item.label =
-                item.nom + (item.codePostal ? " - " + item.codePostal : "");
-            });
-            this.departmentList = _.sortBy(departements, "codePostal");
-          }.bind(this),
-          function(error) {
-            console.error(error);
-          }
-        );
+        .then(({data:departements}) => {
+          departements.forEach(function(item) {
+            item.label =
+              item.nom + (item.codePostal ? " - " + item.codePostal : "");
+          });
+          this.departmentList = sortBy(departements, "id");
+        })
+        .catch(console.error);
     }
   }
 };

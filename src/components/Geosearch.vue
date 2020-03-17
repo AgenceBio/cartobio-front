@@ -15,8 +15,8 @@
   ></v-autocomplete>
 </template>
 <script>
-const axios = require("axios");
-const _ = require("lodash");
+import {get} from "axios";
+import throttle from "lodash/throttle";
 export default {
   name: "Geosearch",
   data() {
@@ -38,8 +38,7 @@ export default {
           process.env.VUE_APP_API_IGN +
           "/look4/user/search?indices=locating&method=prefix%2Cfuzzy&types=address%2Cposition%2Ctoponyme%2Cw3w&nb=5&match%5Bfulltext%5D=" +
           this.searchText;
-        return axios
-          .get(req)
+        return get(req)
           .then(data => {
             this.results = this.formatListResults(data.data.features);
             window._paq.push(['trackSiteSearch', this.searchText, false, this.results.length])
@@ -51,7 +50,7 @@ export default {
     },
     formatListResults: function(features) {
       // return array of places with their geometry
-      return _.map(features, function(place) {
+      return features.map(function(place) {
         // add geometry to properties for a simpler use
         place.properties.geometry = place.geometry;
         return place.properties;
@@ -60,7 +59,7 @@ export default {
   },
   created: function() {
     // limit search execution to once every 500ms to not flood the API
-    this.throttledSearch = _.throttle(this.search, 500);
+    this.throttledSearch = throttle(this.search, 500);
   },
   watch: {
     searchText(value) {
@@ -80,4 +79,3 @@ export default {
   padding-top: 0;
 }
 </style>
-
