@@ -326,6 +326,11 @@ let geoJsonTemplate = { features: [], type: "FeatureCollection" };
 
 export default {
   name: "Map",
+
+  metaInfo: {
+    title: 'Parcellaire bio',
+  },
+
   components: {
     ParcelsList,
     SelectedParcelsDetails,

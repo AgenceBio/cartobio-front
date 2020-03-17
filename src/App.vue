@@ -7,6 +7,10 @@
 <script>
 export default {
   name: "App",
-  components: {}
+  components: {},
+  metaInfo: {
+    title: 'Ouvrir, enrichir et partager les données parcellaires de l’agriculture biologique',
+    titleTemplate: '%s • CartoBio'
+  }
 };
 </script>

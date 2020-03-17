@@ -12,7 +12,7 @@
         flat
         :to="{name:'home', hash:'#a-propos'}"
         title="Aller à la section 'a propos'"
-      >A propos</v-btn>
+      >Cas d'usage</v-btn>
       <v-btn
         flat
         :to="{name:'home', hash:'#nous-suivre'}"
@@ -23,7 +23,7 @@
         :to="{name:'home', hash:'#partenaires'}"
         title="Aller à la section 'Partenaires'"
       >Partenaires</v-btn>
-      <v-btn flat to="/stats" title="Aller à la page de Statistiques">Stats</v-btn>
+      <AboutMenu></AboutMenu>
     </v-toolbar-items>
     <v-divider vertical inset class="mx-3"></v-divider>
     <a href="https://www.agencebio.org/" target="_blank" d-flex>
@@ -35,7 +35,12 @@
   </v-toolbar>
 </template>
 <script>
+import AboutMenu from '@/components/AboutMenu.vue'
+
 export default {
-  name: "HomeNavbar"
+  name: "HomeNavbar",
+  components: {
+    AboutMenu,
+  }
 };
 </script>
