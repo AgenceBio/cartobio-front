@@ -31,7 +31,6 @@ export default {
       this.$emit("update:selectedOperator", this.newAgriData);
     },
     getOperatorName: agriData => {
-      console.log(agriData);
       let user = getObjectValue(agriData, "utilisateurs", []).find(function(u) {
         return u.nom;
       });
