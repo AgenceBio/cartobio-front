@@ -63,15 +63,13 @@
 
         <!-- Map component -->
         <MglMap
-          :access-token="'noToken'"
-          :mapStyle.sync="mapStyle"
+          :mapStyle="mapStyle"
           :center="center"
           :zoom="zoom"
           :minZoom="0"
           :maxZoom="24"
           @load="onMapLoaded"
           ref="mapboxDiv"
-          :transformRequest="transformRequest"
         >
           <v-toolbar floating dense class="my-3 toolbar-search">
             <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
@@ -188,6 +186,7 @@ import {
   MglScaleControl
 } from "vue-mapbox";
 
+import {cartobio as mapStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
@@ -197,94 +196,6 @@ import { mapGetters, mapState } from 'vuex';
 let mercator = new SphericalMercator({
   size: 256
 });
-
-// map style.
-let mapStyle = {
-  version: 8,
-  sources: {
-    "simple-tiles": {
-      type: "raster",
-      tiles: [
-        "https://wxs.ign.fr/" +
-          process.env.VUE_APP_API_IGN +
-          "/geoportail/wmts?" +
-          "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-          "&STYLE=normal" +
-          "&TILEMATRIXSET=PM" +
-          "&FORMAT=image/jpeg" +
-          "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS" +
-          "&TILEMATRIX={z}" +
-          "&TILEROW={y}" +
-          "&TILECOL={x}"
-      ],
-      opacity: "1",
-      attribution: "IGN-F/Géoportail",
-      tileSize: 256
-    },
-    "other-tiles": {
-      type: "raster",
-      tiles: [
-        "https://wxs.ign.fr/" +
-          process.env.VUE_APP_API_IGN +
-          "/geoportail/wmts?" +
-          "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-          "&STYLE=bdparcellaire" +
-          "&TILEMATRIXSET=PM" +
-          "&FORMAT=image/png" +
-          "&LAYER=CADASTRALPARCELS.PARCELS" +
-          // "&LAYER= CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle" + // WFS not wmts
-          "&TILEMATRIX={z}" +
-          "&TILEROW={y}" +
-          "&TILECOL={x}"
-      ],
-      opacity: "1",
-      attribution: "IGN-F/Géoportail",
-      tileSize: 256
-    },
-    "geographical-names": {
-      type: "raster",
-      tiles: [
-        "https://wxs.ign.fr/" +
-          process.env.VUE_APP_API_IGN +
-          "/geoportail/wmts?" +
-          "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-          "&STYLE=normal" +
-          "&TILEMATRIXSET=PM" +
-          "&FORMAT=image/png" +
-          "&layer=GEOGRAPHICALNAMES.NAMES" +
-          "&TILEMATRIX={z}" +
-          "&TILEROW={y}" +
-          "&TILECOL={x}"
-      ],
-      opacity: "1",
-      attribution: "IGN-F/Géoportail",
-      tileSize: 256
-    }
-  },
-  layers: [
-    {
-      id: "simple-tiles",
-      type: "raster",
-      source: "simple-tiles",
-      minzoom: 0,
-      maxzoom: 24
-    },
-    {
-      id: "other-tiles",
-      type: "raster",
-      source: "other-tiles",
-      minzoom: 0,
-      maxzoom: 24
-    },
-    {
-      id: "geographical-names-tiles",
-      type: "raster",
-      source: "geographical-names",
-      minzoom: 0,
-      maxzoom: 24
-    }
-  ]
-};
 
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
@@ -343,11 +254,13 @@ export default {
   },
   data() {
     return {
-      // map related data:
-      map: undefined,
+      // we place this property in created() to avoid Vue Observability
+      // When observed, the map object is mutated and styles become broken
+      //map: null,
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       zoom: null,
       center: null,
+      mapStyle,
 
       // anonymous layers
       anonLayers: {},
@@ -409,28 +322,28 @@ export default {
         // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
         2020: {
           visibility: false,
-          colorBio: "#62d771",
-          colorNotBio: "#fda8d4"
+          colorBio: "rgba(98, 215, 113, 1)",
+          colorNotBio: "rgba(253, 168, 212, 1)"
         },
         2019: {
           visibility: false,
-          colorBio: "#1fa341",
-          colorNotBio: "#e3659d"
+          colorBio: "rgba(31, 163, 65, 1)",
+          colorNotBio: "rgba(227, 101, 157, 1)"
         },
         2018: {
           visibility: false,
-          colorBio: "#006e1b",
-          colorNotBio: "#b32d64"
+          colorBio: "rgba(0, 110, 27, 1)",
+          colorNotBio: "rgba(179, 45, 100, 1)"
         },
         2017: {
           visibility: false,
-          colorBio: "#003c00",
-          colorNotBio: "#740032"
+          colorBio: "rgba(0, 60, 0, 1)",
+          colorNotBio: "rgba(116, 0, 50, 1)"
         },
-        anon2020: { visibility: false, color: "#D0D32E" },
-        anon2019: { visibility: false, color: "#D0D32E" },
-        anon2018: { visibility: false, color: "#D0D32E" },
-        anon2017: { visibility: false, color: "#D0D32E" }
+        anon2020: { visibility: false, color: "rgba(208, 211, 46, 1)" },
+        anon2019: { visibility: false, color: "rgba(208, 211, 46, 1)" },
+        anon2018: { visibility: false, color: "rgba(208, 211, 46, 1)" },
+        anon2017: { visibility: false, color: "rgba(208, 211, 46, 1)" }
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
@@ -449,12 +362,11 @@ export default {
     },
     latLonZoom: {
       type: String,
-      default: '@44.688729,5.150809,12'
+      default: '@46.874,3.097,5'
     }
   },
   created: function() {
-    // map will be available when loaded, in onMapLoaded
-    this.map = null;
+    this.map = null
 
     const [, lat, lon, zoom] = this.latLonZoom.match(/@([0-9.-]+),([0-9.-]+),(\d+)/)
 
@@ -551,27 +463,27 @@ export default {
       // maybe a loop to do it but need to store colors for each
       this.layersOperator["2020"] = this.getYearLayer(
         "2020",
-        "#62d771", // bio
-        "#fda8d4", // not bio
-        "#169A39" // outline
+        "rgba(98, 215, 113, 1)", // bio
+        "rgba(253, 168, 212, 1)", // not bio
+        "rgba(22, 154, 57, 1)" // outline
       );
       this.layersOperator["2019"] = this.getYearLayer(
         "2019",
-        "#1fa341", // bio
-        "#e3659d", // not bio
-        "#169A39" // outline
+        "rgba(31, 163, 65, 1)", // bio
+        "rgba(227, 101, 157, 1)", // not bio
+        "rgba(22, 154, 57, 1)" // outline
       );
       this.layersOperator["2018"] = this.getYearLayer(
         "2018",
-        "#006e1b", // bio
-        "#b32d64", // not bio
-        "#169A39" // outline
+        "rgba(0, 110, 27, 1)", // bio
+        "rgba(179, 45, 100, 1)", // not bio
+        "rgba(22, 154, 57, 1)" // outline
       );
       this.layersOperator["2017"] = this.getYearLayer(
         "2017",
-        "#003c00", // bio
-        "#740032", // not bio
-        "#169A39" // outline
+        "rgba(0, 60, 0, 1)", // bio
+        "rgba(116, 0, 50, 1)", // not bio
+        "rgba(22, 154, 57, 1)" // outline
       );
     }
   },
@@ -581,13 +493,6 @@ export default {
     ...mapGetters('user', ['isAuthenticated']),
     ...mapState(['currentYear']),
 
-    // map Style
-    mapStyle() {
-      // To improve
-      // should not be in computed style. computed style should work for displaying/hiding layers already defined and editing their sources.
-      let computedMapStyle = mapStyle;
-      return computedMapStyle;
-    },
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
@@ -599,28 +504,19 @@ export default {
       May be usefull to handle promise and avoid the mess it is right now for map init
     */
 
-    onMapLoaded(event) {
-      this.map = event.map;
+    onMapLoaded({map}) {
+      // for future reference in events
+      // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
+      this.map = map
 
-      this.updateHash()
-      this.map.on('moveend', () => this.updateHash())
-      this.map.on('zoomend', () => this.updateHash())
+      this.updateHash(map)
+      map.on('moveend', () => this.updateHash(map))
+      map.on('zoomend', () => this.updateHash(map))
 
       // add map sources
-      // this.map.addSource("bio-tiles", bioSource);
       if (this.isAuthenticated) {
-        this.loadLayers();
+        this.loadLayers(map);
       }
-      // this.map.on(
-      //   "click",
-      //   "collabio",
-      //   function(e) {
-      //     new Popup()
-      //       .setLngLat(e.lngLat)
-      //       .setHTML(e.features[0].properties.code_cultu)
-      //       .addTo(this.map);
-      //   }.bind(this)
-      // );
 
       let hoverPopup = new Popup({
         closeButton: false,
@@ -628,17 +524,20 @@ export default {
         className: 'parcel-details',
       });
 
-      this.map.on("mousemove", ({lngLat, point}) => {
+      map.on("mousemove", ({target:map, lngLat, point}) => {
+        const renderedFeatures = map.queryRenderedFeatures(point)
         let features = {
-          anon: this.map.queryRenderedFeatures(point),
-          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat])
+          // anonymous source layers are named like 'anon_..._20xx'
+          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer.indexOf('anon_') === 0),
+          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
+          cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
         }
 
         if (features.anon.length || Object.keys(features.operator).length) {
           hoverPopup
             .trackPointer()
             .setHTML(this.setPopupHtml(features))
-            .addTo(this.map)
+            .addTo(map)
         }
         else {
           hoverPopup.remove();
@@ -646,7 +545,7 @@ export default {
       });
 
       // handle click on layers
-      this.map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
+      map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
         this.selectParcel(e.features[0]);
       });
 
@@ -656,7 +555,7 @@ export default {
     },
 
     // return html code that will display in the popup
-    setPopupHtml({anon, operator}) {
+    setPopupHtml({anon, operator, cadastre}) {
       let hoveredData = {};
       const YEAR_PATTERN = /-(\d+)$/
 
@@ -679,12 +578,25 @@ export default {
           })
       }
 
+      /* operator data */
       let header = ''
+
       if (hoveredData[ this.currentYear ] && hoveredData[ this.currentYear ].numilot) {
         const {numilot, numparcel} = hoveredData[ this.currentYear ]
         header = `<h3>Ilot ${numilot} Parcelle ${numparcel}</h3>`
       }
 
+      /* cadastre data */
+      let cadastreInfo = ''
+
+      if (cadastre) {
+        /* eslint-disable-next-line no-unused-vars */
+        const {commune, id, numero, prefixe, section} = cadastre.properties
+
+        cadastreInfo = `<p class="cadastre"><b>Parcelle</b> ${section} ${numero}.</p>`
+      }
+
+      /* yearly history */
       const tbody = Object.entries(hoveredData).reduce((html, [year, feature]) => {
         const isBio = Number(feature.bio) === 1
         return html + `<tr class="${isBio ? 'bio' : 'non-bio'}">
@@ -696,6 +608,7 @@ export default {
 
       const htmlContent = `
         ${header}
+        ${cadastreInfo}
         <table class="parcel-yearly-details">
         <thead>
           <tr>
@@ -710,9 +623,9 @@ export default {
       return `<div>${htmlContent}</div>`;
     },
 
-    updateHash() {
-      const {lat,lng} = this.map.getCenter()
-      const zoom = Math.ceil(this.map.getZoom())
+    updateHash(map) {
+      const {lat,lng} = map.getCenter()
+      const zoom = Math.floor(map.getZoom())
 
       const {pacageId} = this
       const latLonZoom = `@${lat},${lng},${zoom}`
@@ -730,7 +643,7 @@ export default {
       })
     },
 
-    loadLayers() {
+    loadLayers(map) {
       this.showLayersCard = true;
 
       this.years.forEach((year) => {
@@ -746,18 +659,18 @@ export default {
           ]
         };
         // security to not trigger map errors
-        if (!this.map.getSource("bio-" + year)) {
-          this.map.addSource("bio-" + year, bioSource);
+        if (!map.getSource("bio-" + year)) {
+          map.addSource("bio-" + year, bioSource);
         }
         let bioLayer = {
           id: "bio-tiles-" + year,
           type: "fill",
           source: "bio-" + year,
           "source-layer": "anon_rpgbio_" + year,
-          minzoom: 0,
+          minzoom: 9,
           paint: {
-            "fill-color": "#D0D32E",
-            "fill-outline-color": "#b0b22b",
+            "fill-color": "rgba(208, 211, 46, 1)",
+            "fill-outline-color": "rgba(176, 178, 43, 1)",
             "fill-opacity": 0.6
           },
           tms: true,
@@ -765,17 +678,17 @@ export default {
           layout: {visibility: 'none'}
         };
         this.anonLayers[year] = bioLayer;
-        this.map.addLayer(this.anonLayers[year]);
-        this.map.addLayer({
+        map.addLayer(this.anonLayers[year]);
+        map.addLayer({
           id: `bio-tiles-${year}-border`,
           type: "line",
           source: "bio-" + year,
           "source-layer": "anon_rpgbio_" + year,
           minzoom: 10,
           paint: {
-            "line-color": "#D0D32E",
-            "line-opacity": 0.9,
-            "line-width": 1
+            "line-color": "rgba(208, 211, 46, 1)",
+            "line-opacity": 1,
+            "line-width": {"stops": [[10, 1.5], [13, 1]]}
           },
           layout: {visibility: 'none'}
         });
@@ -783,45 +696,45 @@ export default {
 
       this.toggleLayerAnon(this.currentYear, true);
 
-      if (!this.map.getSource("selected")) {
-        this.map.addSource("selected", {
+      if (!map.getSource("selected")) {
+        map.addSource("selected", {
           type: "geojson",
           data: this.selectedParcels
         });
       }
-      if (!this.map.getSource("highlight")) {
-        this.map.addSource("highlight", {
+      if (!map.getSource("highlight")) {
+        map.addSource("highlight", {
           type: "geojson",
           data: this.highlightedParcels
         });
       }
-      if (!this.map.getSource("operatorParcels2020")) {
-        this.map.addSource("operatorParcels2020", {
+      if (!map.getSource("operatorParcels2020")) {
+        map.addSource("operatorParcels2020", {
           type: "geojson",
           data: this.parcelsOperator[2020]
         });
       }
-      if (!this.map.getSource("operatorParcels2019")) {
-        this.map.addSource("operatorParcels2019", {
+      if (!map.getSource("operatorParcels2019")) {
+        map.addSource("operatorParcels2019", {
           type: "geojson",
           data: this.parcelsOperator[2019]
         });
       }
 
-      if (!this.map.getSource("operatorParcels2018")) {
-        this.map.addSource("operatorParcels2018", {
+      if (!map.getSource("operatorParcels2018")) {
+        map.addSource("operatorParcels2018", {
           type: "geojson",
           data: this.parcelsOperator[2018]
         });
       }
-      if (!this.map.getSource("operatorParcels2017")) {
-        this.map.addSource("operatorParcels2017", {
+      if (!map.getSource("operatorParcels2017")) {
+        map.addSource("operatorParcels2017", {
           type: "geojson",
           data: this.parcelsOperator[2017]
         });
       }
       // highlight
-      this.map.addLayer({
+      map.addLayer({
         id: "highlighted-parcels",
         type: "fill",
         source: "highlight",
@@ -830,16 +743,16 @@ export default {
             "match",
             ["get", "bio"],
             "0",
-            "#6F3D48",
+            "rgba(111, 61, 72, 1)",
             "1",
-            "#06474B",
+            "rgba(6, 71, 75, 1)",
             "white"
           ],
           "fill-outline-color": "rgba(100, 200, 240, 1)",
           "fill-opacity": 1
         }
       });
-      this.map.addLayer({
+      map.addLayer({
         id: "highlighted-parcels-border",
         type: "line",
         source: "highlight",
@@ -850,7 +763,7 @@ export default {
       });
 
       // selected
-      this.map.addLayer({
+      map.addLayer({
         id: "selected-parcels",
         type: "fill",
         source: "selected",
@@ -859,9 +772,9 @@ export default {
             "match",
             ["get", "bio"],
             "0",
-            "#9C5664",
+            "rgba(156, 86, 100, 1)",
             "1",
-            "#09636A",
+            "rgba(9, 99, 106, 1)",
             "white"
           ],
           "fill-outline-color": "rgba(100, 200, 240, 1)",
@@ -876,28 +789,7 @@ export default {
         zoom: 10 + parseInt(value.importance) // may be improved, difficult to know what importance stands for
       });
     },
-    // not used currently
-    transformRequest(url, resourceType) {
-      let newUrl = url;
-      if (
-        resourceType === "Tile" &&
-        url.startsWith("https://espacecollaboratif.ign.fr/gcms/wfs/cartobio")
-      ) {
-        let paramArr = [];
-        url.split("&").forEach(function(param) {
-          let subparam = param.split("=");
-          paramArr.push(subparam);
-        });
-        let args = fromPairs(paramArr);
-        let zoom = args.TILEMATRIX; // z
-        let row = args.TILEROW; // y
-        let col = args.TILECOL; // x
-        let bbox = mercator.bbox(col, row, zoom, true, "4326");
-        newUrl = newUrl.split("TILEMATRIX")[0];
-        newUrl += "bbox=" + bbox.toString() + ",WGS84";
-      }
-      return { url: newUrl };
-    },
+
     displayOperatorLayer(data) {
       this.addOperatorData(data, this.currentYear);
       this.bboxOperator = bbox(data);
@@ -944,38 +836,27 @@ export default {
       this.map.on("draw.delete", this.updateArea);
       this.map.on("draw.update", this.updateArea);
     },
+
     setUpMapOperator() {
-      // this.map.addControl(draw, "top-right");
-      // this.map.on(
-      //   "draw.create",
-      //   function(e) {
-      //     let newFeature = e.features[0];
-      //     let surface = turf.area(newFeature);
-      //     surface = Math.round(surface * 100) / 100; // round to 2 decimals
-      //     newFeature.properties.surfgeo = surface;
-      //     this.newParcel = newFeature;
-      //     this.setUpParcel = true;
-      //   }.bind(this)
-      // );
-      // this.map.on("draw.delete", this.updateArea);
-      // this.map.on("draw.update", this.updateArea);
+      const {map} = this
+
       if (
         this.bboxOperator[0] !== undefined &&
         this.bboxOperator[0] !== Infinity
       ) {
-        this.map.fitBounds(this.bboxOperator, {
+        map.fitBounds(this.bboxOperator, {
           padding: this.mapPadding
         });
       }
       this.isOperatorOnMap = true;
       this.years.forEach(year => {
-        this.map.addLayer(this.layersOperator[year]);
-        this.map.addLayer({
+        map.addLayer(this.layersOperator[year]);
+        map.addLayer({
           ...this.layersOperator[year],
           id: this.layersOperator[year].id + "-border",
           type: "line",
           paint: {
-            "line-color": "#FFF",
+            "line-color": "rgba(255, 255, 255, 1)",
             "line-opacity": 0.6,
             "line-width": 1
           }
@@ -1076,13 +957,15 @@ export default {
     },
     // toggle visibility of layer
     toggleLayer(layer, visibility) {
-      if (this.map && this.map.getLayer(layer)) {
+      const {map} = this
+
+      if (map && map.getLayer(layer)) {
         if (visibility) {
-          this.map.setLayoutProperty(layer, 'visibility', 'visible');
-          this.map.setLayoutProperty(layer + '-border', 'visibility', 'visible');
+          map.setLayoutProperty(layer, 'visibility', 'visible');
+          map.setLayoutProperty(layer + '-border', 'visibility', 'visible');
         } else {
-          this.map.setLayoutProperty(layer, 'visibility', 'none');
-          this.map.setLayoutProperty(layer + '-border', 'visibility', 'none');
+          map.setLayoutProperty(layer, 'visibility', 'none');
+          map.setLayoutProperty(layer + '-border', 'visibility', 'none');
         }
       }
     },
@@ -1117,8 +1000,10 @@ export default {
   },
   watch: {
     getProfile: function(newProfile) {
-      if (newProfile.active) {
-        this.loadLayers();
+      // if the map is not yet loaded, it will load layers
+      // best would be to populate layers data and make the data react to them
+      if (newProfile.active && this.map) {
+        this.loadLayers(this.map);
       }
     }
   }

@@ -1,0 +1,55 @@
+{
+  "version":8,
+  "sources":{
+    "simple-tiles":{
+      "type":"raster",
+      "tiles":[
+        "https://wxs.ign.fr/{{ VUE_APP_API_IGN }}/geoportail/wmts?&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+      ],
+      "opacity":"1",
+      "attribution":"IGN-F/Géoportail",
+      "tileSize":256
+    },
+    "other-tiles":{
+      "type":"raster",
+      "tiles":[
+        "https://wxs.ign.fr/{{ VUE_APP_API_IGN }}/geoportail/wmts?&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=bdparcellaire&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+      ],
+      "opacity":"1",
+      "attribution":"IGN-F/Géoportail",
+      "tileSize":256
+    },
+    "geographical-names":{
+      "type":"raster",
+      "tiles":[
+        "https://wxs.ign.fr/{{ VUE_APP_API_IGN }}/geoportail/wmts?&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&layer=GEOGRAPHICALNAMES.NAMES&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+      ],
+      "opacity":"1",
+      "attribution":"IGN-F/Géoportail",
+      "tileSize":256
+    }
+  },
+  "layers":[
+    {
+      "id":"simple-tiles",
+      "type":"raster",
+      "source":"simple-tiles",
+      "minzoom":0,
+      "maxzoom":24
+    },
+    {
+      "id":"other-tiles",
+      "type":"raster",
+      "source":"other-tiles",
+      "minzoom":0,
+      "maxzoom":24
+    },
+    {
+      "id":"geographical-names-tiles",
+      "type":"raster",
+      "source":"geographical-names",
+      "minzoom":0,
+      "maxzoom":24
+    }
+  ]
+}
