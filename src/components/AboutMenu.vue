@@ -3,6 +3,7 @@
     <template v-slot:activator="{ on }">
       <v-btn flat v-on="on">
         À propos
+        <v-icon>arrow_drop_down</v-icon>
       </v-btn>
     </template>
     <v-list>
@@ -32,6 +33,6 @@
 
 <script>
 export default {
-  name: "AboutMenu",
+  name: "AboutMenu"
 };
 </script>
