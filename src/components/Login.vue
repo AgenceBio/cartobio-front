@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import {get as getObjectValue} from 'lodash/core';
+import getObjectValue from 'lodash/get';
 
 import {mapActions} from 'vuex'
 import {authenticateWithCredentials} from '@/api/user.js'

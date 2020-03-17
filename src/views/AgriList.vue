@@ -70,7 +70,9 @@ let cancel;
 
 import AgriItem from "@/components/AgriItem";
 import FilterToolbar from "@/components/FilterToolbar";
-import {take, remove, get as getObjectValue} from 'lodash/core';
+import getObjectValue from 'lodash/get';
+import remove from 'lodash/remove';
+import take from 'lodash/take';
 
 export default {
   name: "AgriList",
@@ -117,7 +119,7 @@ export default {
         pacage: "",
         numeroBio: "",
         numeroClient: "",
-        department: "",
+        department: 1,
         city: ""
       },
       numPacage: "",
@@ -137,20 +139,16 @@ export default {
   created: function() {
     this.loadingData = true;
     this.$store.commit("setOperator", {}); // clear selected operator
-
     this.filters.department = getObjectValue(
       this.getProfile,
       ["profile", "departements", "0"],
-      26
+      this.filters.department
     );
     this.getAgriList();
   },
   methods: {
     updateAgriList(newFilters) {
       this.filters = newFilters;
-      if (this.filters.department === 1) {
-        this.filters.department = undefined;
-      }
 
       this.getAgriList().then(() => {
         window._paq.push(['trackSiteSearch', JSON.stringify(newFilters), 'operators', this.notificationList.length])
@@ -178,7 +176,7 @@ export default {
       let params = {
         oc: ocId,
         activites: 1,
-        departementId: filters.department,
+        departementId: filters.department === 1 ? null : filters.department,
         nom: filters.name,
         pacage: filters.pacage,
         ville: filters.city,

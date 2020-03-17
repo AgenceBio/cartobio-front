@@ -55,7 +55,9 @@
   </div>
 </template>
 <script>
-import {get as getObjectValue} from 'lodash/core';
+import getObjectValue from 'lodash/get';
+import reduce from 'lodash/reduce';
+
 export default {
   name: "ParcelsList",
   props: {
@@ -187,7 +189,8 @@ export default {
   computed: {
     ilots() {
       // first reduce to group parcels by ilots
-      let reduced = this.parcels.features.reduce(
+      let reduced = reduce(
+        this.parcels.features,
         function(result, parcel) {
           let numIlot = getObjectValue(parcel, ["properties", "numilot"]);
           result[numIlot]
@@ -198,7 +201,8 @@ export default {
         {}
       );
       // then put them into an array with easily accessible ilot number
-      let ilots = reduced.reduce(
+      let ilots = reduce(
+        reduced,
         function(result, value, key) {
           result.push({ numIlot: key, parcels: value });
           return result;

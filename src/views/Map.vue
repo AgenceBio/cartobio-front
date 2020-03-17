@@ -31,7 +31,7 @@
 
       <!-- Parcels List -->
       <ParcelsList
-        :parcels.sync="parcelsOperator[2020]"
+        :parcels.sync="parcelsOperator[this.currentYear]"
         v-if="drawer && !mini"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
@@ -101,7 +101,7 @@
                 <v-list class="pt-0" dense two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
-                    v-for="(year, index) in years"
+                    v-for="(year, index) in sortedYears"
                     :key="index"
                     v-bind:class="{'not-visible': !layersVisible['anon' + year].visibility}"
                   >
@@ -126,7 +126,7 @@
                 <v-list dense class="pt-0" v-if="operator.title" two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
-                    v-for="(year, index) in years"
+                    v-for="(year, index) in sortedYears"
                     :key="index"
                     v-bind:class="{'not-visible': !layersVisible[year].visibility}"
                   >
@@ -162,27 +162,6 @@
           </v-expansion-panel>
         </v-flex>
 
-        <!--<v-card class="survey" v-show="displaySurvey">
-          <v-btn flat icon color="black" class="close-survey" @click="displaySurvey = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-card-title primary-title>
-            <h3 class="headline mb-0">Donnez nous votre avis !</h3>
-          </v-card-title>
-          <v-card-text>
-            <v-spacer></v-spacer>Un petit questionnaire est prévu pour ça :
-            <v-spacer></v-spacer>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <a href="https://fr.surveymonkey.com/r/339NRFN" target="_blank">
-              <v-btn color="primary">
-                <v-icon>open_in_new</v-icon>questionnaire
-              </v-btn>
-            </a>
-            <v-spacer></v-spacer>
-          </v-card-actions>
-        </v-card>-->
       </div>
     </v-content>
   </v-layout>
@@ -190,8 +169,10 @@
 
 <script>
 import {get} from "axios";
-import {fromPairs, get as getObjectValue, groupBy} from "lodash/core";
-import {bbox, center, area} from "turf";
+import fromPairs from "lodash/fromPairs";
+import getObjectValue from "lodash/get";
+import {bbox, center, area, point} from "turf";
+import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // mapbox-gl dependencies
 import {Popup} from "mapbox-gl";
@@ -211,7 +192,7 @@ import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 let mercator = new SphericalMercator({
   size: 256
@@ -304,6 +285,16 @@ let mapStyle = {
     }
   ]
 };
+
+function queryOperatorParcels (operatorParcels, lngLat) {
+  const p = point(lngLat)
+
+  return Object.entries(operatorParcels).reduce((hashMap, [year, {features}]) => {
+    const foundFeature = features.find(feature => isPointInPolygon(p, feature.geometry))
+
+    return foundFeature ? {...hashMap, [year]: foundFeature} : hashMap
+  }, {})
+}
 
 // // 2019 anonymous bio layer
 // let bioLayer = {
@@ -438,7 +429,8 @@ export default {
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
-      years: [2020, 2019, 2018, 2017]
+      // layers display in the order of years : last year in this array on top
+      years: [2017, 2018, 2019, 2020]
     };
   },
   // event bus
@@ -478,7 +470,7 @@ export default {
     }
 
     // if there is an operator, show drawer.
-    this.drawer = getObjectValue(this.$store.getters.getOperator, "title");
+    this.drawer = getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "pacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
@@ -582,6 +574,7 @@ export default {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
     ...mapGetters(['getProfile', 'getOperator']),
     ...mapGetters('user', ['isAuthenticated']),
+    ...mapState(['currentYear']),
 
     // map Style
     mapStyle() {
@@ -589,6 +582,11 @@ export default {
       // should not be in computed style. computed style should work for displaying/hiding layers already defined and editing their sources.
       let computedMapStyle = mapStyle;
       return computedMapStyle;
+    },
+    // to display the years in right order in the layers panel
+    sortedYears() {
+      let yearsArr = this.years.slice();
+      return yearsArr.reverse();
     }
   },
   methods: {
@@ -621,12 +619,17 @@ export default {
 
       let hoverPopup = new Popup({
         closeButton: false,
-        closeOnClick: false
+        closeOnClick: false,
+        className: 'parcel-details',
       });
 
-      this.map.on("mousemove", (e) => {
-        let features = this.map.queryRenderedFeatures(e.point);
-        if (features.length) {
+      this.map.on("mousemove", ({lngLat, point}) => {
+        let features = {
+          anon: this.map.queryRenderedFeatures(point),
+          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat])
+        }
+
+        if (features.anon.length || Object.keys(features.operator).length) {
           hoverPopup
             .trackPointer()
             .setHTML(this.setPopupHtml(features))
@@ -638,7 +641,7 @@ export default {
       });
 
       // handle click on layers
-      this.map.on("click", "operator-parcels-2020", (e) => {
+      this.map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
         this.selectParcel(e.features[0]);
       });
 
@@ -647,38 +650,59 @@ export default {
       }
     },
 
-    setPopupHtml(features) {
+    // return html code that will display in the popup
+    setPopupHtml({anon, operator}) {
       let hoveredData = {};
-      let featureGroups = groupBy(features, function(feature) {
-        return feature.layer.id.startsWith("operator") ? "operator" : "anonymous"
-      });
+      const YEAR_PATTERN = /-(\d+)$/
 
-      if (featureGroups.operator) {
-        hoveredData = featureGroups.operator.reduce(function(result, feature) {
-          let featureKey = feature.layer.id.split('-')[2];
-          result[featureKey] = feature.properties;
-          return result;
-        }, {});
+      if (Object.keys(operator).length) {
+        Object.entries(operator).forEach(([year, {properties}]) => {
+          hoveredData[ year ] = properties
+        })
       }
+
       // we only replace the data if there is no operator data for the year
-      if (featureGroups.anonymous) {
-        hoveredData = featureGroups.anonymous.reduce(function(result, feature) {
-          let featureKey = feature.layer.id.split('-')[2];
-           result[featureKey] = result[featureKey] ? result[featureKey] : feature.properties;
-          return result;
-        }, hoveredData);
-      }
-      let htmlContent = "";
-      if (getObjectValue(hoveredData, ["2020", "numilot"])) {
-        htmlContent += "<h3>Ilot " + hoveredData["2020"].numilot + " Parcelle " + hoveredData["2020"].numparcel + "</h3>"
-      }
-      Object.keys(hoveredData).forEach(function(year) {
-        let bioStatus = hoveredData[year].bio == 1 ? "Bio" : "Conventionnel";
-        htmlContent += year + " - " + hoveredData[year].codecultu + " - " + bioStatus + "<br/>";
-      });
+      if (anon) {
+        anon
+          .filter(({source}) => YEAR_PATTERN.test(source))
+          .forEach(({properties, source}) => {
+            const [, year] = YEAR_PATTERN.exec(source)
 
-      // eslint-disable-next-line no-unused-vars
-      return "<div>" + htmlContent +  "</div>";
+            if (!hoveredData[year]) {
+              hoveredData[year] = properties
+            }
+          })
+      }
+
+      let header = ''
+      if (hoveredData[ this.currentYear ] && hoveredData[ this.currentYear ].numilot) {
+        const {numilot, numparcel} = hoveredData[ this.currentYear ]
+        header = `<h3>Ilot ${numilot} Parcelle ${numparcel}</h3>`
+      }
+
+      const tbody = Object.entries(hoveredData).reduce((html, [year, feature]) => {
+        const isBio = Number(feature.bio) === 1
+        return html + `<tr class="${isBio ? 'bio' : 'non-bio'}">
+          <th data-year>${year}</th>
+          <td data-culture>${feature.codecultu}</td>
+          <td data-bio><i aria-hidden="true" class="v-icon material-icons theme--light">${isBio ? 'check_circle_outline' : 'close'}</i></td>
+        </tr>`
+      }, '')
+
+      const htmlContent = `
+        ${header}
+        <table class="parcel-yearly-details">
+        <thead>
+          <tr>
+            <th>Année</th>
+            <th>Culture</th>
+            <th data-bio>Bio</th>
+          </tr>
+        </thead>
+        <tbody>${tbody}</tbody>
+        </table>`
+
+      return `<div>${htmlContent}</div>`;
     },
 
     updateHash() {
@@ -752,7 +776,7 @@ export default {
         });
       });
 
-      this.toggleLayerAnon(2020, true);
+      this.toggleLayerAnon(this.currentYear, true);
 
       if (!this.map.getSource("selected")) {
         this.map.addSource("selected", {
@@ -873,7 +897,7 @@ export default {
       return { url: newUrl };
     },
     displayOperatorLayer(data) {
-      this.addOperatorData(data, "2020");
+      this.addOperatorData(data, this.currentYear);
       this.bboxOperator = bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
@@ -955,7 +979,7 @@ export default {
           }
         });
       });
-      this.toggleLayerOperator("2020", true);
+      this.toggleLayerOperator(this.currentYear, true);
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -984,7 +1008,7 @@ export default {
       this.map.getSource("highlight").setData(this.highlightedParcels);
     },
     selectParcel(parcel) {
-      let tmp = this.parcelsOperator[2020].features.find(function(feature) {
+      let tmp = this.parcelsOperator[this.currentYear].features.find(function(feature) {
         return feature.id === parcel.id;
       });
       tmp.properties.selected = !tmp.properties.selected;
@@ -1000,11 +1024,11 @@ export default {
       this.map.getSource("selected").setData(this.selectedParcels);
     },
     selectAllParcels(bool) {
-      this.parcelsOperator[2020].features.forEach(function(parcel) {
+      this.parcelsOperator[this.currentYear].features.forEach(function(parcel) {
         parcel.properties.selected = bool;
       });
       if (bool) {
-        this.selectedParcels.features = this.parcelsOperator[2020].features;
+        this.selectedParcels.features = this.parcelsOperator[this.currentYear].features;
       } else {
         this.selectedParcels.features = [];
       }
@@ -1012,7 +1036,7 @@ export default {
     },
     saveParcel() {
       this.setUpParcel = !this.setUpParcel;
-      this.parcelsOperator[2020].features.push(this.newParcel);
+      this.parcelsOperator[this.currentYear].features.push(this.newParcel);
     },
     updateNewParcel(newData) {
       this.newParcel.properties = newData[0];
@@ -1133,16 +1157,50 @@ export default {
 .expansion-title {
   display: flex;
 }
+</style>
 
-.survey {
-  position: absolute;
-  bottom: 25px;
-  right: 10px;
-  .close-survey {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    margin: 0;
+<style lang="scss">
+/* because they are generated dynamically, styles cannot be scoped */
+.parcel-details {
+  $cell-padding: 5px;
+  width: 300px;
+
+  h3 {
+      padding-left: $cell-padding;
+      padding-right: $cell-padding;
+  }
+
+  .parcel-yearly-details {
+    border-collapse: collapse;
+    width: 100%;
+
+    .bio .v-icon {
+      color: #388E3C; /* green darken-2 */
+    }
+    .non-bio .v-icon {
+      color: #F57C00; /* orange darken-2 */
+    }
+
+    thead th {
+      border-bottom: 1px solid #78909C; /* blue-grey */
+      padding: $cell-padding;
+      vertical-align: bottom;
+    }
+
+    tbody tr:nth-child(2n) {
+      background-color: #ECEFF1;        /* blue-grey lighten-5 */
+    }
+
+    tbody td,
+    tbody th {
+      padding-left: $cell-padding;
+      padding-right: $cell-padding;
+      vertical-align: middle;
+    }
+
+    [data-bio] {
+      text-align: center;
+    }
   }
 }
 </style>

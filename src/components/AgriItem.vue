@@ -21,6 +21,7 @@
   </tr>
 </template>
 <script>
+import getObjectValue from 'lodash/get';
 
 export default {
   name: "AgriItem",
@@ -30,10 +31,10 @@ export default {
       this.$emit("update:selectedOperator", this.newAgriData);
     },
     getOperatorName: agriData => {
-      let user = agriData.utilisateurs.find(function(u) {
+      let user = getObjectValue(agriData, "utilisateurs", []).find(function(u) {
         return u.nom;
       });
-      return user.nom + " " + user.prenom;
+      return getObjectValue(user, "nom", "") + " " + getObjectValue(user, "prenom", "");
     }
   },
   computed: {
