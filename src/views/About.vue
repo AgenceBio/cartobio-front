@@ -15,7 +15,7 @@
               <v-card-text>
                 Cette application vous est dédiée pour le moment. Connectez-vous avec vos identifiants du
                 <a
-                  href="notification@agencebio.org"
+                  href="https://notification.agencebio.org/"
                   target="_blank"
                 >portail Notifications de l'Agence Bio</a>
                 En cas de soucis,
