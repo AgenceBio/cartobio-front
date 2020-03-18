@@ -8,7 +8,7 @@
         <v-card-title>
           <div>
             <h3 class="headline mb-0">Connexion</h3>
-            <div>Connectez vous avec votre compte Agence Bio</div>
+            <div>Connectez vous avec votre compte du <a href="https://notification.agencebio.org/" target="_blank" title="Portail des notifications de l'Agence Bio">portail de notifications de l'Agence Bio</a></div>
           </div>
         </v-card-title>
         <v-card-text>
@@ -26,9 +26,11 @@
               <v-flex xs12>
                 <v-text-field label="Mot de passe*" v-model="password" type="password" required></v-text-field>
               </v-flex>
+              <div><a href="https://notification.agencebio.org/forgotPassword" target="_blank">Mot de passe oublié ?</a></div>
+        
             </v-layout>
           </v-container>
-        </v-card-text>
+          </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" flat @click="dialog = false" :disabled="loading">Annuler</v-btn>
