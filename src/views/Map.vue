@@ -869,9 +869,6 @@ export default {
         }
       });
     },
-    removeLayers() {
-      // TODO
-    },
     handleSearchResult(value) {
       // this.map.panTo(value.geometry.coordinates);
       this.map.easeTo({
@@ -1122,8 +1119,6 @@ export default {
     getProfile: function(newProfile) {
       if (newProfile.active) {
         this.loadLayers();
-      } else {
-        this.removeLayers();
       }
     }
   }
