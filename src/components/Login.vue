@@ -59,7 +59,7 @@ export default {
     loginFailed: false,
     login: "",
     password: "",
-    dialog: false,
+    dialog: true,
     loader: null,
     loading: false,
     user: {}
