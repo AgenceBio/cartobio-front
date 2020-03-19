@@ -15,7 +15,7 @@
           </v-btn>
         </v-toolbar>
         <v-card-text>
-          <v-form lazy-validation="true" ref="form">
+          <v-form :lazy-validation="true" ref="form">
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12>
