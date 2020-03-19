@@ -5,12 +5,15 @@
         <v-btn flat v-on="on">Connexion</v-btn>
       </template>
       <v-card v-on:keyup.enter="tryLogin()">
-        <v-card-title>
-          <div>
-            <h3 class="headline mb-0">Connexion</h3>
-            <div>Connectez vous avec votre compte du <a href="https://notification.agencebio.org/" target="_blank" title="Portail des notifications de l'Agence Bio">portail de notifications de l'Agence Bio</a></div>
-          </div>
-        </v-card-title>
+        <v-toolbar card color="#b9d065">
+          <v-card-title>
+            <h3 class="headline mb-0">Connexion à CartoBio</h3>
+          </v-card-title>
+          <v-spacer />
+          <v-btn icon outline @click="dialog = false">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </v-toolbar>
         <v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
@@ -32,11 +35,10 @@
           </v-container>
           </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
           <v-btn color="blue darken-1" flat @click="dialog = false" :disabled="loading">Annuler</v-btn>
+          <v-spacer></v-spacer>
           <v-btn
-            color="blue darken-1"
-            flat
+            color="primary"
             type="submit"
             @click="tryLogin()"
             :loading="loading"
@@ -114,6 +116,14 @@ export default {
             error
           ]);
         });
+    }
+  },
+
+  watch: {
+    dialog (newValue) {
+      if (newValue === false) {
+        this.$refs.form.reset()
+      }
     }
   }
 };
