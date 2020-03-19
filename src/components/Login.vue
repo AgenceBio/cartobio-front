@@ -15,25 +15,36 @@
           </v-btn>
         </v-toolbar>
         <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12>
-                <p
-                  v-show="loginFailed"
-                  class="red--text text-xs-center"
-                >Email ou mot de passe erroné</p>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field label="Email*" v-model="login" autofocus required></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field label="Mot de passe*" v-model="password" type="password" required></v-text-field>
-              </v-flex>
-              <div><a href="https://notification.agencebio.org/forgotPassword" target="_blank">Mot de passe oublié ?</a></div>
-        
-            </v-layout>
-          </v-container>
-          </v-card-text>
+          <v-form lazy-validation="true" ref="form">
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12>
+                  <p>
+                    Ce service se base sur vos identifiants du
+                    <a href="https://notification.agencebio.org/" target="_blank" title="Portail des notifications de l'Agence Bio">portail de <b>notifications de l'Agence Bio</b></a>.
+                  </p>
+                  <p v-show="loginFailed" class="red--text text-xs-center">
+                    Email ou mot de passe erroné.
+                  </p>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field box label="Email" placeholder="" :rules="[rules.required]" v-model="login" v-if="dialog" autofocus></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field box label="Mot de passe du Portail Notifications" placeholder="" v-model="password" :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword"  :append-icon="showPassword ? 'visibility' : 'visibility_off'" :rules="[rules.required]"></v-text-field>
+                  <p>
+                    <a href="https://notification.agencebio.org/forgotPassword" target="_blank" class="font-weight-bold">
+                      <v-icon small>help_outline</v-icon>
+                      Mot de passe oublié
+                    </a>
+                  </p>
+                </v-flex>
+
+              </v-layout>
+            </v-container>
+        </v-form>
+        </v-card-text>
+        <v-divider class="pt-2"></v-divider>
         <v-card-actions>
           <v-btn color="blue darken-1" flat @click="dialog = false" :disabled="loading">Annuler</v-btn>
           <v-spacer></v-spacer>
@@ -59,15 +70,21 @@ import {authenticateWithCredentials} from '@/api/user.js'
 export default {
   name: "Login",
   props: [""],
+
   data: () => ({
     loginFailed: false,
     login: "",
     password: "",
+    showPassword: false,
     dialog: false,
     loader: null,
     loading: false,
-    user: {}
+    user: {},
+    rules: {
+      required: value => !!value || 'Ce champ est obligatoire.',
+    }
   }),
+
   methods: {
     ...mapActions('user', ['getProfile']),
     tryLogin: function() {
