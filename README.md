@@ -3,8 +3,12 @@
 Static website presenting CartoBio Project.
 
 - [Changelog](CHANGELOG.md)
-- [Documentation](docs)
 - [Quick handbooks](#handbook)
+- [**Documentation**](docs)
+  - [Récupérer les données du parcellaire bio via l'API CartoBio](docs/api.md)
+  - [Utilisation de l'espace collaboratif IGN](docs/ign.md)
+  - [Exploration des fichiers du Registre Parcellaire Graphique (RPG)](docs/rpg.md)
+  - [Mettre à jour le parcellaire bio anonyme sur PostGIS et GeoServer](docs/postgis.md)
 
 ## Project setup
 ```
