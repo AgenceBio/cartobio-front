@@ -1,9 +1,10 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y v-model="menu">
     <template v-slot:activator="{ on }">
       <v-btn flat v-on="on">
         À propos
-        <v-icon>arrow_drop_down</v-icon>
+        <v-icon v-if="!menu">arrow_drop_down</v-icon>
+        <v-icon v-if="menu">arrow_drop_up</v-icon>
       </v-btn>
     </template>
     <v-list>
@@ -33,6 +34,11 @@
 
 <script>
 export default {
-  name: "AboutMenu"
+  name: "AboutMenu",
+  data: () => {
+    return {
+      menu: false
+    }
+  }
 };
 </script>

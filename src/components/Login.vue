@@ -76,7 +76,7 @@ export default {
     login: "",
     password: "",
     showPassword: false,
-    dialog: false,
+    dialog: true,
     loader: null,
     loading: false,
     user: {},
