@@ -2,6 +2,12 @@
 title: Journal d'évolution
 ---
 
+## Vendredi 20 mars
+
+- Refonte de l'invite de connexion : elle s'ouvre si nécessaire,
+  se navigue au clavier, et vous indique comment retrouver votre mot
+  de passe du portail de notifications de l'Agence Bio.
+
 ## Mardi 17 mars
 
 - Ajout de ce journal d'évolution de CartoBio, pour un suivi au jour
@@ -10,7 +16,7 @@ title: Journal d'évolution
 - Le numéro d'ilot et de parcelle s'affiche lorsque — en tant qu'Organisme Certificateur —
   vous accédez au parcellaire d'un·e de vos opérateur·ices.
 
-# Lundi 16 mars
+## Lundi 16 mars
 
 - L'accès au service `cartobio.org` est sécurisée avec le protocole `https`.
   Mots de passe et informations personnelles ne peuvent plus être interceptées
@@ -18,7 +24,7 @@ title: Journal d'évolution
 - Optimisation de l'application, qui ont pour effet de réduire la
   quantité de données nécessaires pour accéder à l'application.
 
-# Vendredi 13 mars
+## Vendredi 13 mars
 
 - L'application mémorise vos informations de connexion pour une durée de 24 heures.
   Elle vous reconnaîtra automatiquement la prochaine fois que vous lui rendez visite,
