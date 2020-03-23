@@ -75,9 +75,6 @@ $ curl https://cartobio.org/api/v1/test
 $ curl https://cartobio.org/api/v1/parcels
 {
   "type": "FeatureCollection",
-  "properties": {
-    "year": 2020
-  },
   "features": [
     {
       "type": "Feature",
@@ -87,7 +84,9 @@ $ curl https://cartobio.org/api/v1/parcels
         "codecultu": "PPH",
         "bio": 1,
         "numilot": 1,
-        "numparcel": 1
+        "numparcel": 1,
+        "meta.year": 2020,
+        "meta.source": "RPG"
       },
       "geometry": {
         "type": "Polygon",
