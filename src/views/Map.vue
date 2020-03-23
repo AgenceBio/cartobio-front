@@ -77,6 +77,7 @@
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
+          <ParcelDetailsPopup :features="hoveredParcelFeatures" :current-year="currentYear" />
         </MglMap>
 
         <!-- Card with Aggregated parcels details - maybe a bit more infography would be awesome -->
@@ -168,11 +169,10 @@
 <script>
 import {get} from "axios";
 import getObjectValue from "lodash/get";
-import {bbox, center, area, point} from "turf";
+import {bbox, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // mapbox-gl dependencies
-import {Popup} from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import Geosearch from "@/components/Geosearch";
 
@@ -181,13 +181,14 @@ import {
   MglMap,
   MglNavigationControl,
   MglGeolocateControl,
-  MglScaleControl
+  MglScaleControl,
 } from "vue-mapbox";
 
 import {cartobio as mapStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
+import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 
 import { mapGetters, mapState } from 'vuex';
 
@@ -240,6 +241,7 @@ export default {
     ParcelsList,
     SelectedParcelsDetails,
     ParcelDetails,
+    ParcelDetailsPopup,
     Geosearch,
     MglNavigationControl,
     MglGeolocateControl,
@@ -275,14 +277,14 @@ export default {
       newParcel: {},
       // bbox containing operator parcels
       bboxOperator: [],
-      // popup with short parcel infos
-      popupParcel: new Popup({
-        closeButton: false
-      }),
-      // popup with agregated parcels infos
-      popupSelectedParcels: new Popup({
-        closeButton: true
-      }),
+
+      // popup data with parcel history
+      hoveredParcelFeatures: {
+        anon: [],
+        operator: {},
+        cadastre: null
+      },
+
       // placeholder for layers for an operator
       layersOperator: {},
 
@@ -512,29 +514,14 @@ export default {
         this.loadLayers(map);
       }
 
-      let hoverPopup = new Popup({
-        closeButton: false,
-        closeOnClick: false,
-        className: 'parcel-details',
-      });
-
       map.on("mousemove", ({target:map, lngLat, point}) => {
         const renderedFeatures = map.queryRenderedFeatures(point)
-        let features = {
+
+        this.hoveredParcelFeatures = {
           // anonymous source layers are named like 'anon_..._20xx'
           anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer.indexOf('anon_') === 0),
           operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
           cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
-        }
-
-        if (features.anon.length || Object.keys(features.operator).length) {
-          hoverPopup
-            .trackPointer()
-            .setHTML(this.setPopupHtml(features))
-            .addTo(map)
-        }
-        else {
-          hoverPopup.remove();
         }
       });
 
@@ -546,75 +533,6 @@ export default {
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
-    },
-
-    // return html code that will display in the popup
-    setPopupHtml({anon, operator, cadastre}) {
-      let hoveredData = {};
-      const YEAR_PATTERN = /-(\d+)$/
-
-      if (Object.keys(operator).length) {
-        Object.entries(operator).forEach(([year, {properties}]) => {
-          hoveredData[ year ] = properties
-        })
-      }
-
-      // we only replace the data if there is no operator data for the year
-      if (anon) {
-        anon
-          .filter(({source}) => YEAR_PATTERN.test(source))
-          .forEach(({properties, source}) => {
-            const [, year] = YEAR_PATTERN.exec(source)
-
-            if (!hoveredData[year]) {
-              hoveredData[year] = properties
-            }
-          })
-      }
-
-      /* operator data */
-      let header = ''
-
-      if (hoveredData[ this.currentYear ] && hoveredData[ this.currentYear ].numilot) {
-        const {numilot, numparcel} = hoveredData[ this.currentYear ]
-        header = `<h3>Ilot ${numilot} Parcelle ${numparcel}</h3>`
-      }
-
-      /* cadastre data */
-      let cadastreInfo = ''
-
-      if (cadastre) {
-        /* eslint-disable-next-line no-unused-vars */
-        const {commune, id, numero, prefixe, section} = cadastre.properties
-
-        cadastreInfo = `<p class="cadastre"><b>Parcelle</b> ${section} ${numero}.</p>`
-      }
-
-      /* yearly history */
-      const tbody = Object.entries(hoveredData).reduce((html, [year, feature]) => {
-        const isBio = Number(feature.bio) === 1
-        return html + `<tr class="${isBio ? 'bio' : 'non-bio'}">
-          <th data-year>${year}</th>
-          <td data-culture>${feature.codecultu}</td>
-          <td data-bio><i aria-hidden="true" class="v-icon material-icons theme--light">${isBio ? 'check_circle_outline' : 'close'}</i></td>
-        </tr>`
-      }, '')
-
-      const htmlContent = `
-        ${header}
-        ${cadastreInfo}
-        <table class="parcel-yearly-details">
-        <thead>
-          <tr>
-            <th>Année</th>
-            <th>Culture</th>
-            <th data-bio>Bio</th>
-          </tr>
-        </thead>
-        <tbody>${tbody}</tbody>
-        </table>`
-
-      return `<div>${htmlContent}</div>`;
     },
 
     updateHash(map) {
@@ -864,10 +782,6 @@ export default {
         type: "FeatureCollection"
       };
       this.map.getSource("highlight").setData(this.highlightedParcels);
-      this.popupParcel
-        .setLngLat(center(this.highlightedParcels).geometry.coordinates)
-        .setHTML(parcel.properties.codecultu)
-        .addTo(this.map);
     },
     stopHovering() {
       this.highlightedParcels = {
@@ -875,7 +789,6 @@ export default {
         type: "FeatureCollection"
       };
       this.map.getSource("highlight").setData(this.highlightedParcels);
-      this.popupParcel.remove();
     },
     hoverIlot(ilot) {
       this.highlightedParcels = {
@@ -1035,51 +948,5 @@ export default {
 }
 .expansion-title {
   display: flex;
-}
-</style>
-
-<style lang="scss">
-/* because they are generated dynamically, styles cannot be scoped */
-.parcel-details {
-  $cell-padding: 5px;
-  width: 300px;
-
-  h3 {
-      padding-left: $cell-padding;
-      padding-right: $cell-padding;
-  }
-
-  .parcel-yearly-details {
-    border-collapse: collapse;
-    width: 100%;
-
-    .bio .v-icon {
-      color: #388E3C; /* green darken-2 */
-    }
-    .non-bio .v-icon {
-      color: #F57C00; /* orange darken-2 */
-    }
-
-    thead th {
-      border-bottom: 1px solid #78909C; /* blue-grey */
-      padding: $cell-padding;
-      vertical-align: bottom;
-    }
-
-    tbody tr:nth-child(2n) {
-      background-color: #ECEFF1;        /* blue-grey lighten-5 */
-    }
-
-    tbody td,
-    tbody th {
-      padding-left: $cell-padding;
-      padding-right: $cell-padding;
-      vertical-align: middle;
-    }
-
-    [data-bio] {
-      text-align: center;
-    }
-  }
 }
 </style>
