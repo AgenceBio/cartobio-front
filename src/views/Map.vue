@@ -77,7 +77,7 @@
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
-          <ParcelDetailsPopup :features="hoveredParcelFeatures" :current-year="currentYear" />
+          <ParcelDetailsPopup :features="hoveredParcelFeatures" />
         </MglMap>
 
         <!-- Card with Aggregated parcels details - maybe a bit more infography would be awesome -->
