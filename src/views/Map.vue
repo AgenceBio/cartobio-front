@@ -167,7 +167,6 @@
 
 <script>
 import {get} from "axios";
-import fromPairs from "lodash/fromPairs";
 import getObjectValue from "lodash/get";
 import {bbox, center, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -175,7 +174,6 @@ import isPointInPolygon from "@turf/boolean-point-in-polygon";
 // mapbox-gl dependencies
 import {Popup} from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import SphericalMercator from "sphericalmercator";
 import Geosearch from "@/components/Geosearch";
 
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -192,10 +190,6 @@ import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 
 import { mapGetters, mapState } from 'vuex';
-
-let mercator = new SphericalMercator({
-  size: 256
-});
 
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
