@@ -75,6 +75,9 @@ $ curl https://cartobio.org/api/v1/test
 $ curl https://cartobio.org/api/v1/parcels
 {
   "type": "FeatureCollection",
+  "properties": {
+    "year": 2020
+  },
   "features": [
     {
       "type": "Feature",
@@ -82,8 +85,6 @@ $ curl https://cartobio.org/api/v1/parcels
         "operator-id": 0,
         "pacage": "026000001",
         "codecultu": "PPH",
-        "codecultu.2020": "PPH",
-        "codecultu.2019": "PPH",
         "bio": 1,
         "numilot": 1,
         "numparcel": 1
