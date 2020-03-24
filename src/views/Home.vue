@@ -2,21 +2,15 @@
   <div>
     <HomeNavbar></HomeNavbar>
     <v-content>
-      <section id="title">
-        <v-parallax :src="require('../../src/assets/coquelicots.jpg')" height="400">
-          <Title
-            msg="Ouvrir, enrichir et partager les données
-parcellaires de l’agriculture biologique
-"
-          />
-        </v-parallax>
+      <section id="title" class="blue-grey lighten-5">
+        <Title />
       </section>
       <section id="objectifs" class="blue-grey lighten-5">
         <v-layout column wrap class="py-5" align-center>
           <Problem />
         </v-layout>
       </section>
-      <section id="a-propos" class="grey lighten-5">
+      <section id="a-propos" class="blue-grey lighten-5">
         <v-layout column wrap class="py-5" align-center>
           <About />
         </v-layout>
@@ -53,20 +47,9 @@ parcellaires de l’agriculture biologique
                   <v-card-text class="text-xs-center primary-green" flex column>
                     <v-flex xs-12>
                       <v-layout>
-                        <v-img
-                          contain
-                          aspect-ratio="1"
-                          max-height="40px"
-                          :src="require('../assets/eig.png')"
-                        ></v-img>
-
-                        <v-icon xs-4 x-large>arrow_forward</v-icon>
-
-                        <v-img
-                          contain
-                          max-height="40px"
-                          :src="require('../assets/logo-betagouvfr.svg')"
-                        ></v-img>
+                        <svg class="logo mx-2">
+                          <use xlink:href="@/assets/logos-sprite.svg#betagouvfr"></use>
+                        </svg>
                       </v-layout>
                     </v-flex>
                   </v-card-text>
@@ -196,12 +179,6 @@ section {
   justify-content: center;
   flex-direction: column;
   align-items: center;
-}
-
-.icon-eig {
-  background-image: url("../../src/assets/eig.png");
-  background-position: center;
-  background-size: 24px;
 }
 
 .v-icon.bio-green.theme--light {
