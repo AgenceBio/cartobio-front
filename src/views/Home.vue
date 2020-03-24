@@ -47,7 +47,7 @@
                   <v-card-text class="text-xs-center primary-green" flex column>
                     <v-flex xs-12>
                       <v-layout>
-                        <svg class="logo mx-2">
+                        <svg class="logo mx-auto">
                           <use xlink:href="@/assets/logos-sprite.svg#betagouvfr"></use>
                         </svg>
                       </v-layout>
@@ -166,10 +166,6 @@ section {
   text-align: center;
 }
 
-.logo {
-  height: 40px;
-}
-
 .section-container {
   height: calc(100% - 70px);
 }
@@ -191,5 +187,11 @@ section {
 }
 .primary-green--text {
   color: #b9d065 !important;
+}
+</style>
+
+<style type="scss" scoped>
+.logo {
+  max-height: 40px;
 }
 </style>

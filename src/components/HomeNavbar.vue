@@ -29,11 +29,12 @@
     <a href="https://www.agencebio.org/" target="_blank" d-flex>
       <v-layout d-flex>
         <img alt="Agence Bio" src="@/assets/agence-bio.png" class="logo" />
-        <v-icon flat>open_in_new</v-icon>
+        <v-icon flat small class="ml-1">open_in_new</v-icon>
       </v-layout>
     </a>
   </v-toolbar>
 </template>
+
 <script>
 import AboutMenu from '@/components/AboutMenu.vue'
 
@@ -44,3 +45,9 @@ export default {
   }
 };
 </script>
+
+<style type="scss" scoped>
+.logo {
+  width: 50px;
+}
+</style>
