@@ -6,43 +6,41 @@
       <v-container>
 
         <h1>Statistiques</h1>
+
         <v-layout flex>
           <v-flex xs12 sm4 ma-3>
             <v-card v-if="stats" >
               <v-card-title class="d-block text-xs-center">
-                  <h2 class="headline mb-0">
+                  <h2 class="headline mb-0 mt-2">
                     <span class="digits huge">{{ bioSurface | million | round }}</span>
                     millions d'hectares
                   </h2>
                   <p><b>Surfaces en bio</b> connues à ce jour.</p>
               </v-card-title>
-
-              <v-card-text class="text-xs-center">
-                <p class="text-xs-center">
-                  <small>Soit <em>environ</em> {{ bioSurfaceRatioSAU }}% de la
-                    <abbr title="Surface Agricole Utile">SAU</abbr> totale
-                    en {{ getCurrentYear }}.
-                  </small>
-                </p>
-              </v-card-text>
             </v-card>
           </v-flex>
+
           <v-flex xs12 sm4 ma-3>
             <v-card v-if="stats">
               <v-card-title class="d-block text-xs-center">
-                  <h2 class="headline mb-0">
-                    <span class="digits huge">{{monthlyVisits}}</span>
+                  <h2 class="headline mb-0 mt-2">
+                    <span class="digits huge">{{monthlyVisits || '-' }}</span>
                     connexions <abbr title="Organisme de Certification">OC</abbr>
                   </h2>
-                  <p><b>depuis le début du mois</b></p>
+                  <p>depuis le début du mois</p>
               </v-card-title>
+            </v-card>
+          </v-flex>
 
-              <v-card-text class="text-xs-center">
-                <p class="text-xs-center">
-                  <small>Soit <em>environ</em> {{averageDailyConnection}} connexions par jour
-                  </small>
-                </p>
-              </v-card-text>
+          <v-flex xs12 sm4 ma-3>
+            <v-card v-if="stats">
+              <v-card-title class="d-block text-xs-center">
+                  <h2 class="headline mb-0 mt-2">
+                    <span class="digits huge">{{dataAccessCount}}</span>
+                    demandes de données
+                  </h2>
+                  <p>par des collectivités et acteurs publics</p>
+              </v-card-title>
             </v-card>
           </v-flex>
         </v-layout>
@@ -82,6 +80,18 @@ export default {
     title: 'Statistiques et mesures d\'impact',
   },
 
+  data() {
+    return {
+      stats: null,
+      dataAccessCount: 3,
+      loading: true,
+      errored: false,
+      SAU_TOTALE,
+      monthlyVisits: null,
+      averageDailyConnection: null,
+    };
+  },
+
   components: {
     HomeNavbar,
   },
@@ -112,17 +122,6 @@ export default {
     ...mapGetters([
       'getCurrentYear'
     ])
-  },
-
-  data() {
-    return {
-      stats: null,
-      loading: true,
-      errored: false,
-      SAU_TOTALE,
-      monthlyVisits: null,
-      averageDailyConnection: null,
-    };
   },
 
   mounted() {
