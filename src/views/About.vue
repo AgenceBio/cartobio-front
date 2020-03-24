@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Vous...</h1>
+    <h1>À qui nous destinons CartoBio</h1>
     <v-flex xs12>
       <v-container grid-list-xl>
         <v-layout row wrap justify-center>
@@ -10,29 +10,26 @@
                 <v-icon x-large>how_to_reg</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Contrôlez des parcelles en bio&nbsp;?</div>
+                <div class="title">Vous contrôlez des parcelles en bio&nbsp;?</div>
               </v-card-title>
               <v-card-text>
-                Cette application vous est dédiée pour le moment. Connectez-vous avec vos identifiants du
-                <a
-                  href="https://notification.agencebio.org/"
-                  target="_blank"
-                >portail Notifications de l'Agence Bio</a>
-                En cas de soucis,
-                <a
-                  href="mailto:cartobio@beta.gouv.fr"
-                >contactez-nous</a>. Nous sommes à l'écoute pour en faire un outil qui vous soit utile.
-                <br />
-                <router-link to="/map">
-                  <v-btn
-                    round
-                    title="Accès à l'application"
-                    color="primary-green"
-                    class="mt-3"
-                    dark
-                  >Accéder à l'application</v-btn>
-                </router-link>
+                <p>
+                  Consultez les parcelles dont votre organisme
+                  assure la certification.
+                  Aidez-nous à compléter les parcelles manquantes et
+                  intégrez-les à votre système d'information géographique.
+                </p>
               </v-card-text>
+              <v-card-actions class="justify-center">
+                <v-btn
+                  round
+                  to="/map"
+                  title="Accès à l'application"
+                  color="primary-green"
+                  class="mt-3"
+                  dark
+                >Accéder à l'application</v-btn>
+              </v-card-actions>
             </v-card>
           </v-flex>
           <v-flex xs12 md4>
@@ -41,16 +38,25 @@
                 <v-icon x-large>emoji_nature</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Cultivez en bio ?</div>
+                <div class="title">Vous cultivez en bio ?</div>
               </v-card-title>
               <v-card-text>
-                Afin de mieux connaître les surfaces cultivées en agriculture biologique, nous souhaitons connaître la localisation de l'ensemble des parcelles bio.
-                <br />CartoBio permet aux OC d'avoir accès en amont d'un contrôle aux données de votre déclaration PAC, ce qui permet de fiabiliser le contrôle et de le rendre plus simple et plus rapide.
-                La connaîssance des parcelles bio permet de mener des politiques publiques plus efficaces, d'améliorer la connaissance du territoire, ou encore de mieux mesurer les impacts de l'agriculture biologique sur notre environnement.
-                <a
-                  href="mailto:cartobio@beta.gouv.fr"
-                >Contactez-nous</a> pour nous poser vos questions.
+                <p>
+                  Visualisez les parcelles et leur historique de cultures
+                  autour de votre exploitation en agriculture biologique.
+                </p>
               </v-card-text>
+
+              <v-card-actions class="justify-center">
+                <v-btn
+                  round
+                  to="/map"
+                  title="Accès à l'application"
+                  color="primary-green"
+                  class="mt-3"
+                  dark
+                >Accéder à l'application</v-btn>
+              </v-card-actions>
             </v-card>
           </v-flex>
           <v-flex xs12 md4>
@@ -59,12 +65,23 @@
                 <v-icon x-large>public</v-icon>
               </v-card-text>
               <v-card-title primary-title class="layout justify-center">
-                <div class="title">Recherchez les données des parcelles Bio?</div>
+                <div class="title">Vous recherchez les données des parcelles bio&nbsp;?</div>
               </v-card-title>
               <v-card-text>
-                Les données ne sont pas publiées en open data pour le moment. Si vous êtes une administration et que vous pouvez prétendre à l'obtention de celles-ci, nous vous invitons à nous contacter.
-                <br />Sinon, un peu de patience ! :)
+                <p>Les données ne sont pas publiées en open data pour le moment.
+                  Si vous êtes une administration publique, contactez-nous pour en obtenir un extrait géolocalisé.
+                </p>
               </v-card-text>
+
+              <v-card-actions class="justify-center">
+                <v-btn
+                  round
+                  href="mailto:cartobio@beta.gouv.fr"
+                  color="primary-green"
+                  class="mt-3"
+                  dark
+                >Contactez-nous</v-btn>
+              </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>

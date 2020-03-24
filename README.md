@@ -48,6 +48,13 @@ This script will:
 
 The `public/stats.json` file will be update accordingly.
 
+### Rebuild Partners Logos SVG Sprite
+
+
+```bash
+$ npx svg-spreact-cli --no-optimize src/assets/logos > src/assets/logos-sprite.svg
+```
+
 ### Build Docker image
 
 ⚠️ Do you have an `.env.production.local` file? If not, the built app will be unstable.
