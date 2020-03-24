@@ -46,6 +46,8 @@
         </v-layout>
       </v-container>
     </v-content>
+
+    <Partners />
   </div>
 </template>
 
@@ -59,8 +61,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import HomeNavbar from "@/components/HomeNavbar";
 import {get} from "axios";
+
+import HomeNavbar from "@/components/HomeNavbar";
+import Partners from "@/components/Partners";
 
 // SAU en 2019
 const SAU_TOTALE = 29000000;
@@ -94,6 +98,7 @@ export default {
 
   components: {
     HomeNavbar,
+    Partners,
   },
 
   filters: {

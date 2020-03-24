@@ -13,7 +13,7 @@
         </p>
 
         <v-layout flex>
-          <v-flex xs12>
+          <v-flex xs12 md7>
             <markdown />
           </v-flex>
         </v-layout>
@@ -22,8 +22,18 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
+h2 {
+  margin-top: 1.5em;
+}
+ul {
+  font-size: 1.1em;
+  margin: .5em 0;
 
+  li {
+    margin-bottom: .5em;
+  }
+}
 </style>
 
 <script>
