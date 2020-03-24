@@ -28,7 +28,9 @@
     <v-divider vertical inset class="mx-3"></v-divider>
     <a href="https://www.agencebio.org/" target="_blank" d-flex>
       <v-layout d-flex>
-        <img alt="Agence Bio" src="@/assets/agence-bio.png" class="logo" />
+        <svg class="logo">
+          <use xlink:href="@/assets/logos-sprite.svg#agence-bio"></use>
+        </svg>
         <v-icon flat small class="ml-1">open_in_new</v-icon>
       </v-layout>
     </a>
