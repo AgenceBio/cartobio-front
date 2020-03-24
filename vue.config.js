@@ -1,6 +1,14 @@
 const Mode = require('frontmatter-markdown-loader/mode')
 const path = require('path');
 
+const markdown = require('markdown-it')
+const mdFootnote = require('markdown-it-footnote')
+const mdPrism = require('markdown-it-prism')
+
+require('prismjs/components/prism-bash')
+require('prismjs/components/prism-javascript')
+require('prismjs/components/prism-json')
+
 module.exports = {
   chainWebpack: config => {
     // inject API Tokens in static JSON files
@@ -31,11 +39,36 @@ module.exports = {
 
       // convert imported .md files as Vue Components
       config.module
+        .rule('json')
+        .test(/assets\/styles\/.+.json$/)
+        .use('string-replace-loader')
+          .loader('string-replace-loader')
+          .tap(() => {
+            return {
+              multiple: [
+                {
+                  search: '{{ VUE_APP_API_IGN }}',
+                  replace: process.env.VUE_APP_API_IGN,
+                  // strict: true,
+                }
+              ]
+            }
+          })
+
+      // cf. https://hmsk.github.io/frontmatter-markdown-loader/options.html#configure-markdown-it
+      const markdownIt = markdown({ linkify: true, html: true })
+        .use(mdFootnote)
+        .use(mdPrism)
+
+      config.module
         .rule('markdown')
         .test(/\.md$/)
         .use('frontmatter-markdown-loader')
           .loader('frontmatter-markdown-loader')
-          .tap(() => ({ mode: [Mode.VUE_COMPONENT] }))
+          .tap(() => ({
+            markdownIt,
+            mode: [Mode.VUE_COMPONENT],
+          }))
   },
 
   css: {

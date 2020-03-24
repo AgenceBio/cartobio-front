@@ -31,16 +31,29 @@ eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.NL050Bt_jMnQ
 
 ## Authentification des requêtes
 
+Illustration du passage du jeton dans une requête vers l'API :
 
-```sh
+```bash
 $ CARTOBIO_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.B7elZEHGsKYwWxDNWalnwU7L1ZkdAjQVeAo0Hi4VsB4"
 
 $ curl -H "Authorization: Bearer ${CARTOBIO_TOKEN}" https://cartobio.org/api/v1/test
+```
+
+**Exemple de réponse** :
+
+```json
 {"test":"OK"}
 ```
 
-```sh
+Et maintenant, en cas d'identification incorrecte :
+
+```bash
 $ curl https://cartobio.org/api/v1/test
+```
+
+**Exemple de réponse** :
+
+```json
 {"error":"We could not verify the provided token."}
 ```
 
@@ -58,10 +71,15 @@ Toutes les requêtes nécessitent un [jeton d'accès](#demander-un-jeton-d’acc
 
 **Chemin** : `/api/v1/test`
 
-**Exemple**
+**Exemple de requête** :
 
-```sh
+```bash
 $ curl https://cartobio.org/api/v1/test
+```
+
+**Exemple de réponse** :
+
+```json
 {"test":"OK"}
 ```
 
@@ -69,10 +87,15 @@ $ curl https://cartobio.org/api/v1/test
 
 **Chemin** : `/api/v1/parcels`
 
-**Exemple**
+**Exemple de requête** :
 
-```sh
+```bash
 $ curl https://cartobio.org/api/v1/parcels
+```
+
+**Exemple de réponse** :
+
+```json
 {
   "type": "FeatureCollection",
   "features": [
@@ -139,6 +162,5 @@ dans un délai raisonnable.
 [ask-token]: mailto:cartobio@beta.gouv.fr?subject=Demande%20%de%jeton%20%pour%20l'API%20CartoBio,%20Merci%20!
 [ask-wip-feature]: mailto:cartobio@beta.gouv.fr?subject=API%20CartoBio%20%3A%20%C3%A0%20propos%20d'une%20future%20fonctionnalit%C3%A9
 
-[^1]:
-  Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
-  Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.
+[^1]: Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
+      Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.
