@@ -22,7 +22,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(feature, year) in history" :key="year" :class="{'bio': Boolean(feature.bio) === true, 'non-bio': Boolean(feature.bio) === false}">
+          <tr v-for="(feature, year) in history" :key="year" :class="{'bio': feature.bio, 'non-bio': !feature.bio}">
             <th data-year>{{year}}</th>
             <td v-if="feature.culture.groupCode" data-culture>
               {{feature.culture.groupLabel}}<br>
@@ -31,7 +31,7 @@
             <td v-if="!feature.culture.groupCode" data-culture>{{feature.culture}}</td>
             <td data-bio>
               <i aria-hidden="true" class="v-icon material-icons theme--light">
-                {{Boolean(feature.bio) ? 'check_circle_outline' : 'close'}}
+                {{feature.bio ? 'check_circle_outline' : 'close'}}
               </i></td>
           </tr>
         </tbody>
@@ -96,6 +96,7 @@ export default {
         Object.entries(operator).forEach(([year, {properties, geometry}]) => {
           hoveredData[ year ] = {
             ...properties,
+            bio: Boolean(parseInt(properties.bio, 10)),
             culture: fromCode(properties.codecultu),
             geometry,
           }
@@ -112,6 +113,7 @@ export default {
             if (!hoveredData[year]) {
               hoveredData[year] = {
                 ...properties,
+                bio: Boolean(parseInt(properties.bio, 10)),
                 culture: fromCode(properties.codecultu),
                 geometry
               }
