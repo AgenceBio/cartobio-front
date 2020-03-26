@@ -2,6 +2,28 @@
 title: Journal d'évolution
 ---
 
+## Jeudi 26 mars
+
+- Le survol d'une parcelle indique sa surface totale,
+  le libellé de culture (au lieu du code culture à 3 lettres),
+  ainsi que le groupe de culture, s'il a lieu.
+- Nous avons ajouté le **nombre de demandes de données** reçues
+  sur la [page Statistiques](#/stats).
+
+## Mardi 24 mars
+
+- Réduction drastique de la quantité de données à charger pour
+  commencer à naviguer dans l'application.
+- Refonte de la page d'accueil, dans l'intention de la rendre
+  plus légère et explicite sur nos objectifs et missions.
+
+## Lundi 23 mars
+
+- Intégration du [registre cadastral](https://cadastre.data.gouv.fr/).
+- Le survol d'une parcelle cultivée indique sa **référence cadastrale**.
+- Amélioration des peformances d'affichage de la carte — elle devrait
+  être bien plus fluide et rapide à charger.
+
 ## Vendredi 20 mars
 
 - Refonte de l'invite de connexion : elle s'ouvre si nécessaire,
