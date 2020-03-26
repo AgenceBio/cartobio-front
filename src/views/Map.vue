@@ -520,7 +520,7 @@ export default {
 
         this.hoveredParcelFeatures = {
           // anonymous source layers are named like 'anon_..._20xx'
-          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer.indexOf('anon_') === 0),
+          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
           operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
           cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
         }
