@@ -2,16 +2,16 @@
   <v-layout justify-center row wrap>
     <v-card flat tile class="text-xs-center transparent">
       <v-card-text class="text-xs-center">
-        <a href="https://www.agencebio.org/" target="_blank">
+        <a class="mx-2" href="https://www.agencebio.org/" target="_blank">
           <svg class="logo">
             <use xlink:href="@/assets/logos-sprite.svg#agence-bio"></use>
           </svg>
         </a>
-        <!--<a href="https://www.inao.gouv.fr/" target="_blank">
+        <a class="mx-2" href="https://www.inao.gouv.fr/" target="_blank">
           <svg class="logo">
             <use xlink:href="@/assets/logos-sprite.svg#inao"></use>
           </svg>
-        </a>-->
+        </a>
         <a href="https://www.agencebio.org/" target="_blank">
           <svg class="logo">
             <use xlink:href="@/assets/logos-sprite.svg#ab"></use>
@@ -22,7 +22,7 @@
             <use xlink:href="@/assets/logos-sprite.svg#ign"></use>
           </svg>
         </a>
-        <a
+        <a class="mx-2"
           href="https://entrepreneur-interet-general.etalab.gouv.fr/defis/2019/cartobio.html"
           target="_blank"
         >
