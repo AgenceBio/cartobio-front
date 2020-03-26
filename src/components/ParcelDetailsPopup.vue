@@ -3,9 +3,15 @@
     <div class="parcel-details">
       <h3 v-if="parcel.numilot">Ilot {{parcel.numilot}} Parcelle {{parcel.numparcel}}</h3>
 
-      <p v-if="cadastre" class="cadastre">
-        <b>Parcelle</b> {{cadastre.properties.section}} {{cadastre.properties.numero}}.
-      </p>
+      <ul v-if="parcel.codecultu" class="metadata">
+        <li data-surface>
+          <b>Surface</b> {{ surface }}<abbr title="hecta">ha</abbr>
+        </li>
+        <li data-cadastre v-if="cadastre">
+          <b>Parcelle</b> {{cadastre.properties.section}} {{cadastre.properties.numero}}
+        </li>
+      </ul>
+
 
       <table class="parcel-yearly-details">
         <thead>
@@ -16,12 +22,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(feature, year) in history" :key="year" :class="{'bio': Boolean(feature.bio) === true, 'non-bio': Boolean(feature.bio) === false}">
+          <tr v-for="(feature, year) in history" :key="year" :class="{'bio': feature.bio, 'non-bio': !feature.bio}">
             <th data-year>{{year}}</th>
-            <td data-culture>{{feature.codecultu}}</td>
+            <td v-if="feature.culture.groupCode" data-culture>
+              {{feature.culture.groupLabel}}<br>
+              <small>{{feature.culture.label}}</small>
+            </td>
+            <td v-if="!feature.culture.groupCode" data-culture>{{feature.culture}}</td>
             <td data-bio>
               <i aria-hidden="true" class="v-icon material-icons theme--light">
-                {{Boolean(feature.bio) ? 'check_circle_outline' : 'close'}}
+                {{feature.bio ? 'check_circle_outline' : 'close'}}
               </i></td>
           </tr>
         </tbody>
@@ -31,14 +41,15 @@
 </template>
 
 <script>
-import {
-  MglPopup,
-} from "vue-mapbox";
+import {MglPopup} from "vue-mapbox"
+import {fromCode} from "@/modules/codes-cultures/pac.js"
+import {geometry as area} from '@mapbox/geojson-area'
 
+const IN_HECTARES = 10000
 
 export default {
   name: "ParcelDetailsPopup",
-  props: ['features', 'currentYear'],
+  props: ['features'],
 
   components: {
     MglPopup
@@ -65,9 +76,15 @@ export default {
     },
 
     parcel () {
-      const {currentYear} = this
+      const mostRecentYear = Object.keys(this.history).sort((a, b) => b-a).pop()
 
-      return this.history[currentYear] || {}
+      return this.history[mostRecentYear] || {}
+    },
+
+    surface () {
+      const {parcel} = this
+
+      return (area(parcel.geometry) / IN_HECTARES).toFixed(2)
     },
 
     history () {
@@ -76,8 +93,13 @@ export default {
       let hoveredData = {}
 
       if (Object.keys(operator).length) {
-        Object.entries(operator).forEach(([year, {properties}]) => {
-          hoveredData[ year ] = properties
+        Object.entries(operator).forEach(([year, {properties, geometry}]) => {
+          hoveredData[ year ] = {
+            ...properties,
+            bio: Boolean(parseInt(properties.bio, 10)),
+            culture: fromCode(properties.codecultu),
+            geometry,
+          }
         })
       }
 
@@ -85,11 +107,16 @@ export default {
       if (anon) {
         anon
           .filter(({source}) => YEAR_PATTERN.test(source))
-          .forEach(({properties, source}) => {
+          .forEach(({properties, source, geometry}) => {
             const [, year] = YEAR_PATTERN.exec(source)
 
             if (!hoveredData[year]) {
-              hoveredData[year] = properties
+              hoveredData[year] = {
+                ...properties,
+                bio: Boolean(parseInt(properties.bio, 10)),
+                culture: fromCode(properties.codecultu),
+                geometry
+              }
             }
           })
       }
@@ -103,11 +130,21 @@ export default {
 <style lang="scss" scoped>
 .parcel-details {
   $cell-padding: 5px;
-  width: 220px;
+  width: 320px;
 
   h3 {
       padding-left: $cell-padding;
       padding-right: $cell-padding;
+  }
+
+  .metadata {
+    list-style: none;
+    margin: .5em $cell-padding;
+    padding: 0;
+
+    &:empty {
+      display: none;
+    }
   }
 
   .parcel-yearly-details {
@@ -135,11 +172,23 @@ export default {
     tbody th {
       padding-left: $cell-padding;
       padding-right: $cell-padding;
-      vertical-align: middle;
+      vertical-align: top;
+    }
+
+    [data-surface] abbr {
+      margin-left: $cell-padding;
+    }
+
+    [data-year] {
+      width: 5em;
     }
 
     [data-bio] {
       text-align: center;
+    }
+
+    [data-culture] {
+      line-height: 1.25;
     }
   }
 }

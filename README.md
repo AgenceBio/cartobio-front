@@ -55,6 +55,28 @@ The `public/stats.json` file will be update accordingly.
 $ npx svg-spreact-cli --no-optimize src/assets/logos > src/assets/logos-sprite.svg
 ```
 
+### Update "Codes Cultures" data file
+
+Once you get a new `.xlsx` file with the update crop codes,
+run the folllowing command:
+
+```sh
+$ in2csv --no-inference /path/to/codes_culture20xx.xlsx \
+  | csvcut --columns '1,2' --delete-empty-rows \
+  | csvjson --indent 2 > src/modules/codes-cultures/data.json
+```
+
+Or, with a more complete CSV file:
+
+```sh
+$ csvjson --encoding latin1 --delimiter ';' --indent 2  --quoting 1 --no-inference \
+  src/modules/codes-cultures/Codification_cultures_principales.csv \
+  > src/modules/codes-cultures/data.json
+```
+
+**Note**: the pipeline relies on [csvkit](https://csvkit.readthedocs.io).
+
+
 ### Build Docker image
 
 ⚠️ Do you have an `.env.production.local` file? If not, the built app will be unstable.
