@@ -27,9 +27,26 @@ jobs:
         VUE_APP_NOTIFICATIONS_ENDPOINT: "https://cartobio.org/api/notifications"
         VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
 
-    - uses: jerray/publish-docker-action@v1.0.3
+    - id: docker
+      uses: jerray/publish-docker-action@v1.0.4
       with:
         repository: agencebio/cartobio-presentation
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         auto_tag: true
+
+    - uses: garygrossgarten/github-action-ssh@v0.4.3
+      if: github.ref == 'refs/heads/master'
+      env:
+        DOCKER_TAG: ${{ steps.docker.outputs.tag }}
+      with:
+        host: ${{ secrets.AGENCEBIO_SSH_HOST }}
+        username: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+        privateKey: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+        command: |
+          docker pull agencebio/cartobio-presentation:${DOCKER_TAG} \
+          && docker stop cartobio \
+          && docker run -d --rm \
+            -p 127.0.0.1:3000:80 \
+            --name cartobio \
+            agencebio/cartobio-presentation:${DOCKER_TAG}
