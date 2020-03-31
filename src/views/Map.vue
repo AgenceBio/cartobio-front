@@ -93,66 +93,40 @@
             <v-expansion-panel-content>
               <template v-slot:header>
                 <div class="expansion-title">
-                  <v-icon>layers</v-icon>Layers
+                  <v-icon class="mr-2">layers</v-icon> Calques
                 </div>
               </template>
               <v-card>
-                <v-list class="pt-0" dense two-line>
-                  <!-- List of years with parcels from the operator -->
-                  <v-list-tile
-                    v-for="(year, index) in sortedYears"
-                    :key="index"
-                    v-bind:class="{'not-visible': !layersVisible['anon' + year].visibility}"
-                  >
-                    <v-list-tile-action>
-                      <v-btn icon @click="toggleLayerAnon(year)">
-                        <v-icon v-if="layersVisible['anon' + year].visibility">visibility</v-icon>
-                        <v-icon v-if="!layersVisible['anon' + year].visibility">visibility_off</v-icon>
-                      </v-btn>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                      Parcelles Bio RPG {{year}}
-                      <v-sheet
-                        class="d-flex"
-                        v-bind:style="{'background-color' : layersVisible['anon' + year].color, 'border-color' : layersVisible['anon' + year].color}"
-                        height="20"
-                        width="20"
-                      ></v-sheet>
-                    </v-list-tile-content>
-                  </v-list-tile>
-                </v-list>
-                <v-divider></v-divider>
                 <v-list dense class="pt-0" v-if="operator.title" two-line>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
                     v-for="(year, index) in sortedYears"
                     :key="index"
-                    v-bind:class="{'not-visible': !layersVisible[year].visibility}"
+                     @click="toggleLayerOperator(year)"
                   >
                     <v-list-tile-action>
-                      <v-btn icon @click="toggleLayerOperator(year)">
-                        <v-icon v-if="layersVisible[year].visibility">visibility</v-icon>
-                        <v-icon v-if="!layersVisible[year].visibility">visibility_off</v-icon>
-                      </v-btn>
+                      <v-switch :color="layersVisible[year].colorBio" v-model="layersVisible[year].visibility" @click="toggleLayerOperator(year)" />
                     </v-list-tile-action>
-                    <v-list-tile-content d-flex>
-                      <span>Parcelles Exploitant {{year}}</span>
-                      <div style="display: flex; flex-direction: row; width: 100%;">
-                        <v-sheet
-                          v-bind:style="{'background-color' : layersVisible[year].colorBio, 'border-color' : layersVisible[year].colorBio}"
-                          height="20"
-                          width="20"
-                        ></v-sheet>
-                        <span class="label-legend">Bio</span>
-                        <v-spacer></v-spacer>
-                        <v-sheet
-                          v-bind:style="{'background-color' : layersVisible[year].colorNotBio, 'border-color' : layersVisible[year].colorNotBio}"
-                          height="20"
-                          width="20"
-                        ></v-sheet>
-                        <span class="label-legend">Conven.</span>
-                        <v-spacer></v-spacer>
-                      </div>
+                    <v-list-tile-content>
+                      Parcelles Exploitant {{year}}
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
+
+                <v-divider></v-divider>
+
+                <v-list class="pt-0" dense two-line>
+                  <!-- List of years with parcels from the operator -->
+                  <v-list-tile
+                    v-for="(year, index) in sortedYears"
+                    :key="index"
+                    @click="toggleLayerAnon(year)"
+                  >
+                    <v-list-tile-action>
+                      <v-switch :color="layersVisible['anon' + year].color" v-model="layersVisible['anon' + year].visibility" @click="toggleLayerAnon(year)"></v-switch>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                      Parcelles Bio RPG {{year}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
@@ -919,8 +893,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-@import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
+@import "~/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+@import "~/mapbox-gl/dist/mapbox-gl.css";
 .map {
   height: 100%;
   width: 100%;
@@ -940,9 +914,6 @@ export default {
   position: absolute;
   top: 20px;
   right: 10px;
-}
-.not-visible {
-  background-color: lightslategrey;
 }
 .label-legend {
   padding-left: 3px;
