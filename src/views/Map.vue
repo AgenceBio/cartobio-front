@@ -97,7 +97,10 @@
                 </div>
               </template>
               <v-card>
-                <v-list dense class="pt-0" v-if="operator.title" two-line>
+                <v-list dense class="pt-0" v-if="operator.title">
+                  <v-list-tile subheader>
+                    <v-subheader>{{ operator.title }}</v-subheader>
+                  </v-list-tile>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
                     v-for="(year, index) in sortedYears"
@@ -108,14 +111,18 @@
                       <v-switch :color="layersVisible[year].colorBio" v-model="layersVisible[year].visibility" @click="toggleLayerOperator(year)" />
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      Parcelles Exploitant {{year}}
+                      {{year}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
 
                 <v-divider></v-divider>
 
-                <v-list class="pt-0" dense two-line>
+                <v-list-tile>
+                  <v-subheader>Registre Parcellaire Graphique Bio</v-subheader>
+                </v-list-tile>
+
+                <v-list class="pt-0" dense>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
                     v-for="(year, index) in sortedYears"
@@ -126,7 +133,7 @@
                       <v-switch :color="layersVisible['anon' + year].color" v-model="layersVisible['anon' + year].visibility" @click="toggleLayerAnon(year)"></v-switch>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      Parcelles Bio RPG {{year}}
+                      {{year}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
