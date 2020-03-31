@@ -505,6 +505,17 @@ export default {
       // for future reference in events
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
       this.map = map
+     
+
+    // get all productions list
+    //  get(process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/productions",
+    //   {
+    //     headers: {
+    //     'Authorization': 'Basic ' + this.$ls.get("token") }
+        
+    //   }
+    //   )
+    //     .then(data => console.log(data));
 
       this.updateHash(map)
       map.on('moveend', () => this.updateHash(map))
