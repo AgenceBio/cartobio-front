@@ -229,7 +229,7 @@ export default {
         srsname: "4326",
         filter: '{"pacage":"' + this.numPacage + '"}'
       };
-      this.selectedOperatorData = { pacage: this.numPacage, nbParcelles: "" };
+      this.selectedOperatorData = { numeroPacage: this.numPacage, nbParcelles: "" };
       let tokenCollab = btoa(
         process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
           ":" +
@@ -246,7 +246,7 @@ export default {
         })
         .then(data => {
           window._paq.push(['trackEvent', 'pacage', 'search', this.numPacage]);
-          window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.features.length]);
+          window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.data.features.length]);
           this.displayResultSearchPacage(data.data);
         })
         .catch((error) => {
