@@ -48,7 +48,7 @@
         <v-card>
           <v-card-text v-if="!errorPacage">
             {{selectedOperatorData.nbParcelles}} parcelles trouvées.
-            Aller au parcellaire correspondant à {{selectedOperatorData.pacage}} ?
+            Aller au parcellaire correspondant à {{selectedOperatorData.numeroPacage}} ?
           </v-card-text>
           <v-card-text v-else-if="errorPacage">
             Une erreur est survenue

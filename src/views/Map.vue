@@ -378,14 +378,13 @@ export default {
           "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
       );
       this.operator.title = "pacage : " + this.operator.numeroPacage;
-      this.operator.pacage = '"' + this.operator.pacage + '"';
       this.filterLabel = { filter: "pacage", property: "numeroPacage" };
     }
 
     // if there is an operator, show drawer.
     this.drawer = getObjectValue(this.getOperator, "title");
 
-    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "pacage")) {
+    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
       let params = {
