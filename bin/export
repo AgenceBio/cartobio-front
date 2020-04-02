@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+
+// It expects you have these softwares available on your machine:
+// - gdal
+
+const {promises:fs} = require('fs')
+const {createReadStream, createWriteStream} = require('fs')
+const {promisify} = require('util')
+const exec = promisify(require('child_process').exec)
+const spawn = promisify(require('child_process').spawn)
+const {geometry:area} = require('@mapbox/geojson-area')
+const pipeline = promisify(require('stream').pipeline)
+const ora = require('ora')
+const {get} = require('axios')
+const gdal = require('gdal-next')
+const {basename, dirname, join, resolve} = require('path')
+const glob = require('globby')
+const argv = require('minimist')(process.argv.slice(2))
+
+const {_:FILTERING_FILES} = argv
+const {shapefiles=true, inLambert93} = argv
+const {from:SOURCE_FILES} = argv
+const {to:DESTINATION_FILE='export.gpgk'} = argv
+
+
+if (!FILTERING_FILES || !SOURCE_FILES) {
+  console.error('npm run export -- --from "../RPG/2019/d011/cartobio.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
+  process.exit(1)
+}
+
+
+function fetchCommunesBoundaries() {
+  const FILENAME = 'communes.geojson'
+  const DEST = join(__dirname, '..', 'public', FILENAME)
+  const SOURCE = 'https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/' + FILENAME
+
+  // we pipe the source file to the local filesystem (createWriteStream())
+  // if it does not exist (catch())
+  return fs.stat(DEST)
+    .catch(async () => {
+      const response = await get(SOURCE, {responseType: 'stream'})
+
+      return pipeline(response.data, createWriteStream(DEST))
+    })
+    .catch(error => {
+      fs.unlink(DEST)
+      throw error
+    })
+    .then(() => fs.readFile(DEST, {encoding: 'utf8'}))
+    .then((geojson) => JSON.parse(geojson))
+}
+
+const noop = () => {}
+
+// A zip file is named as follows
+// SURFACES-<year>-PARCELLES-GRAPHIQUES-CONSTATEES_<dept>_xxx.zip
+async function run (FILTERING_FILES) {
+  const filteringFeatures = []
+  const l93 = gdal.SpatialReference.fromProj4('+init=epsg:2154')
+  const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
+
+  const l93towgs84 = new gdal.CoordinateTransformation(l93, wgs84)
+  const transform = inLambert93 ? feature => feature.transform(l93towgs84) : noop
+  let datasets;
+
+  const filteringFiles = await glob(FILTERING_FILES)
+  const sourceFiles = await glob(SOURCE_FILES)
+
+  // Prepare destination file
+  const dest = gdal.open(DESTINATION_FILE, 'w', 'GPKG')
+  const destLayer = dest.layers.create('cartobio', wgs84, gdal.wkbPolygon)
+  destLayer.fields.fromObject({
+    BIO: 1
+  })
+
+  // 1. Open datasets
+  // shapefiles
+  let spinner = ora({
+    text: `Parsing ${filteringFiles.length} shapefiles`,
+    spinner: 'simpleDotsScrolling'
+  }).start()
+
+  if (shapefiles) {
+    datasets = filteringFiles
+        .map(path => resolve(path))
+        .map(path => gdal.open(path, 'r'))
+  }
+  spinner.succeed(`Parsed ${filteringFiles.length} shapefiles`)
+
+  // 2. Collect all the features from each layer
+  spinner = ora({
+    text: `Parsing features`,
+    spinner: 'simpleDotsScrolling'
+  }).start()
+
+  datasets.forEach(ds => {
+    ds.layers.forEach(layer => {
+      layer.features.forEach(feature => {
+        filteringFeatures.push(feature)
+      })
+    })
+  })
+  spinner.succeed(`Parsed ${filteringFeatures.length} features`)
+
+  // 3. Browse bio/non-bio layers and intersect features
+  sourceFiles.forEach(sourceFile => {
+    let featuresCount = 0
+    const spinner = ora({
+      prefixText: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
+      text: `${featuresCount.toFixed(0).padStart(5)} features`
+    }).start()
+    const ds = gdal.open(sourceFile, 'r')
+    const layer = ds.layers.get(0)
+
+    layer.features.forEach(feature => {
+      const geometry = feature.getGeometry()
+
+      const intersects = filteringFeatures.some(filter => {
+        const filterGeometry = filter.getGeometry()
+        transform(filterGeometry)
+        filterGeometry.transform(l93towgs84)
+
+        return filterGeometry.intersects(geometry) || filterGeometry.contains(geometry)
+      })
+
+      if (intersects) {
+        featuresCount++
+        spinner.text = `${featuresCount.toFixed(0).padStart(5)} features`
+
+        const newFeature = new gdal.Feature(destLayer)
+        newFeature.setFrom(feature)
+        destLayer.features.add(newFeature)
+      }
+    })
+
+    dest.flush()
+    spinner.succeed()
+  })
+
+  // XX. Then close datasets
+  dest.close()
+  datasets.forEach(d => d.close())
+  process.exit(0)
+}
+
+run(FILTERING_FILES)
