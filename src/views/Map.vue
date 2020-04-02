@@ -895,10 +895,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import "~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+</style>
 
+<style lang="scss" scoped>
 .map {
   height: 100%;
   width: 100%;
