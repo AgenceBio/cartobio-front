@@ -154,11 +154,9 @@ import {bbox, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // mapbox-gl dependencies
-import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import Geosearch from "@/components/Geosearch";
 
-// import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   MglMap,
   MglNavigationControl,
@@ -898,8 +896,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "~/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-@import "~/mapbox-gl/dist/mapbox-gl.css";
+@import '~mapbox-gl/dist/mapbox-gl.css';
+@import "~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+
 .map {
   height: 100%;
   width: 100%;
