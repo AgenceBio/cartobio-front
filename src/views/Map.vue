@@ -177,6 +177,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import Geosearch from "@/components/Geosearch";
 
+//test
+import {getAllProductions, getGroupsProduction, getProductionsFromGroup} from '@/api/productions.js';
+
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   MglMap,
@@ -507,16 +510,6 @@ export default {
       this.map = map
      
 
-    // get all productions list
-    //  get(process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/productions",
-    //   {
-    //     headers: {
-    //     'Authorization': 'Basic ' + this.$ls.get("token") }
-        
-    //   }
-    //   )
-    //     .then(data => console.log(data));
-
       this.updateHash(map)
       map.on('moveend', () => this.updateHash(map))
       map.on('zoomend', () => this.updateHash(map))
@@ -569,6 +562,17 @@ export default {
 
     loadLayers(map) {
       this.showLayersCard = true;
+
+      getAllProductions(this.$ls.get("token"))
+      .then(data => console.log(data));
+
+      
+      getGroupsProduction(this.$ls.get("token"))
+      .then(data => console.log(data));
+
+      getProductionsFromGroup(1, this.$ls.get("token"))
+      .then(data => console.log(data));
+
 
       this.years.forEach((year) => {
         // bio source
