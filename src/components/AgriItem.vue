@@ -6,10 +6,15 @@
     <td class="text-xs-right">{{newAgriData.numeroBio}}</td>
     <td class="text-xs-right">{{newAgriData.gerant}}</td>
     <td class="text-xs-right">
-      <v-btn v-if="viewable" @click="selectOperator()" class="primary">
+      <v-btn v-if="newAgriData.numeroPacage && viewable" @click="selectOperator()" class="primary">
         <v-icon left>map</v-icon>
         Aller au parcellaire
       </v-btn>
+
+      <span v-if="newAgriData.numeroPacage && !viewable" class="blue-grey--text lighten-3--text">
+        <v-icon small color="green darken-1">info</v-icon>
+        Parcellaire disponible au <b>15 juillet</b>.
+      </span>
     </td>
   </tr>
 </template>
@@ -71,4 +76,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.help {
+  cursor: help;
+}
 </style>

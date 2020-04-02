@@ -104,7 +104,7 @@ export default {
           value: "numeroBio"
         },
         {
-          text: "Gérant",
+          text: "Gérant·e",
           align: "right",
           sortable: false,
           value: "gerant"
