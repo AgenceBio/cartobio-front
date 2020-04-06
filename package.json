@@ -45,6 +45,7 @@
     "frontmatter-markdown-loader": "^3.2.1",
     "gdal-next": "^1.0.2",
     "globby": "^11.0.0",
+    "listr": "^0.14.3",
     "markdown-it": "^10.0.0",
     "markdown-it-footnote": "^3.0.2",
     "markdown-it-prism": "^2.0.5",
@@ -59,7 +60,8 @@
     "vue-cli-plugin-fullpage": "^1.0.2",
     "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.4.3"
+    "vuetify-loader": "^1.4.3",
+    "worker-farm": "^1.7.0"
   },
   "eslintConfig": {
     "root": true,

@@ -37,13 +37,15 @@ npm test
 ### Export a GeoPackage/GeoJSON, filtered by one or many Shapefiles
 
 ```bash
-$ npm run export -- --from '../RPG/2019/d0{11,09,66}/cartobio.shp' '../reseau11/**/{BAC,AAC}*.shp'
+$ npm run export -- --from '../RPG/2019/d0{11,09,66}/cartobio.shp' '../reseau11/**/*.shp'
 
-✔ Parsed 4 shapefiles
-✔ Parsed 8 features
-d011/cartobio.shp ✔  8157 features
-d009/cartobio.shp ✔   297 features
-d066/cartobio.shp ⠋     0 features
+✔ Parsed 2 features in 1 datasets.
+  ✔ d009/cartobio.shp
+  ⠼ d009/cartononbio.shp
+  ⠼ d011/cartobio.shp
+  ⠼ d011/cartononbio.shp
+  ✔ d066/cartobio.shp
+  ⠼ d066/cartononbio.shp
 ```
 
 ### Compute total surfaces

@@ -4,23 +4,26 @@
 // - gdal
 
 const {promises:fs} = require('fs')
-const {createReadStream, createWriteStream} = require('fs')
+const {createWriteStream} = require('fs')
 const {promisify} = require('util')
-const exec = promisify(require('child_process').exec)
-const spawn = promisify(require('child_process').spawn)
-const {geometry:area} = require('@mapbox/geojson-area')
 const pipeline = promisify(require('stream').pipeline)
 const ora = require('ora')
+const Listr = require('listr')
 const {get} = require('axios')
 const gdal = require('gdal-next')
 const {basename, dirname, join, resolve} = require('path')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2))
 
+const workerFarm = require('worker-farm')
+const {Worker} = require('worker_threads')
+const shapefileWorker = require.resolve('../src/workers/shapefile.js')
+const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
+
 const {_:FILTERING_FILES} = argv
-const {shapefiles=true, inLambert93} = argv
+const {shapefiles=true, inLambert93=true} = argv
 const {from:SOURCE_FILES} = argv
-const {to:DESTINATION_FILE='export.gpgk'} = argv
+const {to:DESTINATION_FILE='export.geojson'} = argv
 
 
 if (!FILTERING_FILES || !SOURCE_FILES) {
@@ -52,28 +55,14 @@ function fetchCommunesBoundaries() {
     .then((geojson) => JSON.parse(geojson))
 }
 
-const noop = () => {}
-
-// A zip file is named as follows
-// SURFACES-<year>-PARCELLES-GRAPHIQUES-CONSTATEES_<dept>_xxx.zip
 async function run (FILTERING_FILES) {
-  const filteringFeatures = []
   const l93 = gdal.SpatialReference.fromProj4('+init=epsg:2154')
   const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
-
   const l93towgs84 = new gdal.CoordinateTransformation(l93, wgs84)
-  const transform = inLambert93 ? feature => feature.transform(l93towgs84) : noop
   let datasets;
 
   const filteringFiles = await glob(FILTERING_FILES)
   const sourceFiles = await glob(SOURCE_FILES)
-
-  // Prepare destination file
-  const dest = gdal.open(DESTINATION_FILE, 'w', 'GPKG')
-  const destLayer = dest.layers.create('cartobio', wgs84, gdal.wkbPolygon)
-  destLayer.fields.fromObject({
-    BIO: 1
-  })
 
   // 1. Open datasets
   // shapefiles
@@ -87,60 +76,72 @@ async function run (FILTERING_FILES) {
         .map(path => resolve(path))
         .map(path => gdal.open(path, 'r'))
   }
-  spinner.succeed(`Parsed ${filteringFiles.length} shapefiles`)
 
   // 2. Collect all the features from each layer
-  spinner = ora({
-    text: `Parsing features`,
-    spinner: 'simpleDotsScrolling'
-  }).start()
-
-  datasets.forEach(ds => {
+  const filteringFeatures = datasets.reduce((features, ds) => {
     ds.layers.forEach(layer => {
-      layer.features.forEach(feature => {
-        filteringFeatures.push(feature)
+      layer.features.forEach((feature, i) => {
+        const geometry = feature.getGeometry()
+        geometry.transform(l93towgs84)
+        features.push({
+          name: layer.name,
+          feature_index: i + 1,
+          geometry: geometry.toObject()
+        })
       })
     })
-  })
-  spinner.succeed(`Parsed ${filteringFeatures.length} features`)
+
+    return features
+  }, [])
+
+  spinner.succeed(`Parsed ${filteringFeatures.length} features in ${filteringFiles.length} datasets.`)
 
   // 3. Browse bio/non-bio layers and intersect features
-  sourceFiles.forEach(sourceFile => {
-    let featuresCount = 0
-    const spinner = ora({
-      prefixText: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
-      text: `${featuresCount.toFixed(0).padStart(5)} features`
-    }).start()
-    const ds = gdal.open(sourceFile, 'r')
-    const layer = ds.layers.get(0)
+  const allFeatures = sourceFiles
+    .map(s => resolve(s))
+    .reduce((matrix, sourceFile) => {
+      return matrix.concat(
+        filteringFeatures.map(filteringFeature => ({
+          ...filteringFeature,
+          sourceFile,
+        }))
+      )
+    }, [])
+    .map(({sourceFile, geometry, name, feature_index}) => ({
+      sourceFile,
+      geometry,
+      name,
+      feature_index,
+      featuresP: extract({sourceFile, filteringFeature: geometry})
+    }))
 
-    layer.features.forEach(feature => {
-      const geometry = feature.getGeometry()
+    // const worker = new Worker(
+    //   shapefileWorker,
+    //   {workerData: {sourceFile, filteringFeatures}}
+    // )
+    //
+    // worker.on('message', () => featuresCount++)
+    // worker.on('error', reject)
 
-      const intersects = filteringFeatures.some(filter => {
-        const filterGeometry = filter.getGeometry()
-        transform(filterGeometry)
-        filterGeometry.transform(l93towgs84)
-
-        return filterGeometry.intersects(geometry) || filterGeometry.contains(geometry)
-      })
-
-      if (intersects) {
-        featuresCount++
-        spinner.text = `${featuresCount.toFixed(0).padStart(5)} features`
-
-        const newFeature = new gdal.Feature(destLayer)
-        newFeature.setFrom(feature)
-        destLayer.features.add(newFeature)
-      }
+  await new Listr(allFeatures.map(({name, feature_index, sourceFile, featuresP}) => ({
+    title: `${basename(dirname(sourceFile))}/${basename(sourceFile)} + ${name}/#${feature_index}`,
+    task: () => featuresP.then(features => {
+      return `${features.length.toFixed(0).padStart(5)} features`
     })
+  })), {concurrent: true}).run()
 
-    dest.flush()
-    spinner.succeed()
-  })
+  // then export
+  const features = await Promise
+    .all(allFeatures.map(({featuresP}) => featuresP))
+    .then(allFeatures => [].concat(...allFeatures))
+
+  // workerFarm.end(extract)
+  await fs.writeFile(DESTINATION_FILE, JSON.stringify({
+    type: 'FeatureCollection',
+    features,
+  }, null, 2))
 
   // XX. Then close datasets
-  dest.close()
   datasets.forEach(d => d.close())
   process.exit(0)
 }
