@@ -8,7 +8,7 @@
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "start": "vue-cli-service serve",
-    "test": "jest",
+    "test": "npm run lint",
     "update-stats": "node bin/update-stats"
   },
   "dependencies": {
