@@ -93,66 +93,47 @@
             <v-expansion-panel-content>
               <template v-slot:header>
                 <div class="expansion-title">
-                  <v-icon>layers</v-icon>Layers
+                  <v-icon class="mr-2">layers</v-icon> Calques
                 </div>
               </template>
               <v-card>
-                <v-list class="pt-0" dense two-line>
+                <v-list dense class="pt-0" v-if="operator.title">
+                  <v-list-tile subheader>
+                    <v-subheader>{{ operator.title }}</v-subheader>
+                  </v-list-tile>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
                     v-for="(year, index) in sortedYears"
                     :key="index"
-                    v-bind:class="{'not-visible': !layersVisible['anon' + year].visibility}"
+                     @click="toggleLayerOperator(year)"
                   >
                     <v-list-tile-action>
-                      <v-btn icon @click="toggleLayerAnon(year)">
-                        <v-icon v-if="layersVisible['anon' + year].visibility">visibility</v-icon>
-                        <v-icon v-if="!layersVisible['anon' + year].visibility">visibility_off</v-icon>
-                      </v-btn>
+                      <v-switch :color="layersVisible[year].colorBio" v-model="layersVisible[year].visibility" @click="toggleLayerOperator(year)" />
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      Parcelles Bio RPG {{year}}
-                      <v-sheet
-                        class="d-flex"
-                        v-bind:style="{'background-color' : layersVisible['anon' + year].color, 'border-color' : layersVisible['anon' + year].color}"
-                        height="20"
-                        width="20"
-                      ></v-sheet>
+                      {{year}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
+
                 <v-divider></v-divider>
-                <v-list dense class="pt-0" v-if="operator.title" two-line>
+
+                <v-list-tile>
+                  <v-subheader>Registre Parcellaire Graphique Bio</v-subheader>
+                </v-list-tile>
+
+                <v-list class="pt-0" dense>
                   <!-- List of years with parcels from the operator -->
                   <v-list-tile
                     v-for="(year, index) in sortedYears"
                     :key="index"
-                    v-bind:class="{'not-visible': !layersVisible[year].visibility}"
+                    @click="toggleLayerAnon(year)"
                   >
                     <v-list-tile-action>
-                      <v-btn icon @click="toggleLayerOperator(year)">
-                        <v-icon v-if="layersVisible[year].visibility">visibility</v-icon>
-                        <v-icon v-if="!layersVisible[year].visibility">visibility_off</v-icon>
-                      </v-btn>
+                      <v-switch :color="layersVisible['anon' + year].color" v-model="layersVisible['anon' + year].visibility" @click="toggleLayerAnon(year)"></v-switch>
                     </v-list-tile-action>
-                    <v-list-tile-content d-flex>
-                      <span>Parcelles Exploitant {{year}}</span>
-                      <div style="display: flex; flex-direction: row; width: 100%;">
-                        <v-sheet
-                          v-bind:style="{'background-color' : layersVisible[year].colorBio, 'border-color' : layersVisible[year].colorBio}"
-                          height="20"
-                          width="20"
-                        ></v-sheet>
-                        <span class="label-legend">Bio</span>
-                        <v-spacer></v-spacer>
-                        <v-sheet
-                          v-bind:style="{'background-color' : layersVisible[year].colorNotBio, 'border-color' : layersVisible[year].colorNotBio}"
-                          height="20"
-                          width="20"
-                        ></v-sheet>
-                        <span class="label-legend">Conven.</span>
-                        <v-spacer></v-spacer>
-                      </div>
+                    <v-list-tile-content>
+                      {{year}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
@@ -173,12 +154,9 @@ import {bbox, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // mapbox-gl dependencies
-import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import Geosearch from "@/components/Geosearch";
 
-
-// import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   MglMap,
   MglNavigationControl,
@@ -373,21 +351,19 @@ export default {
 
     // get the current operator
     this.operator = this.getOperator;
-
-    if (getObjectValue(this.operator, "pacage") && !getObjectValue(this.operator, "title")) {
+    if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
       alert(
         "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
           "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
       );
-      this.operator.title = "pacage : " + this.operator.pacage;
-      this.operator.pacage = '"' + this.operator.pacage + '"';
+      this.operator.title = "pacage : " + this.operator.numeroPacage;
       this.filterLabel = { filter: "pacage", property: "numeroPacage" };
     }
 
     // if there is an operator, show drawer.
     this.drawer = getObjectValue(this.getOperator, "title");
 
-    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "pacage")) {
+    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
       let params = {
@@ -920,9 +896,12 @@ export default {
 };
 </script>
 
+<style lang="scss">
+@import '~mapbox-gl/dist/mapbox-gl.css';
+@import "~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+</style>
+
 <style lang="scss" scoped>
-@import "../../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-@import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 .map {
   height: 100%;
   width: 100%;
@@ -942,9 +921,6 @@ export default {
   position: absolute;
   top: 20px;
   right: 10px;
-}
-.not-visible {
-  background-color: lightslategrey;
 }
 .label-legend {
   padding-left: 3px;
