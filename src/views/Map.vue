@@ -177,8 +177,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import Geosearch from "@/components/Geosearch";
 
-//test
-import {getAllProductions, getGroupsProduction, getProductionsFromGroup} from '@/api/productions.js';
 
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
@@ -366,7 +364,7 @@ export default {
     }
   },
   created: function() {
-    this.map = null
+    this.map = null;
 
     const [, lat, lon, zoom] = this.latLonZoom.match(/@([0-9.-]+),([0-9.-]+),(\d+)/)
 
@@ -562,17 +560,6 @@ export default {
 
     loadLayers(map) {
       this.showLayersCard = true;
-
-      getAllProductions(this.$ls.get("token"))
-      .then(data => console.log(data));
-
-      
-      getGroupsProduction(this.$ls.get("token"))
-      .then(data => console.log(data));
-
-      getProductionsFromGroup(1, this.$ls.get("token"))
-      .then(data => console.log(data));
-
 
       this.years.forEach((year) => {
         // bio source
