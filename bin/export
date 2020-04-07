@@ -80,14 +80,10 @@ async function run (FILTERING_FILES) {
   // 2. Collect all the features from each layer
   const filteringFeatures = datasets.reduce((features, ds) => {
     ds.layers.forEach(layer => {
-      layer.features.forEach((feature, i) => {
+      layer.features.forEach((feature) => {
         const geometry = feature.getGeometry()
         geometry.transform(l93towgs84)
-        features.push({
-          name: layer.name,
-          feature_index: i + 1,
-          geometry: geometry.toObject()
-        })
+        features.push(geometry.toObject())
       })
     })
 
@@ -99,20 +95,9 @@ async function run (FILTERING_FILES) {
   // 3. Browse bio/non-bio layers and intersect features
   const allFeatures = sourceFiles
     .map(s => resolve(s))
-    .reduce((matrix, sourceFile) => {
-      return matrix.concat(
-        filteringFeatures.map(filteringFeature => ({
-          ...filteringFeature,
-          sourceFile,
-        }))
-      )
-    }, [])
-    .map(({sourceFile, geometry, name, feature_index}) => ({
+    .map(sourceFile => ({
       sourceFile,
-      geometry,
-      name,
-      feature_index,
-      featuresP: extract({sourceFile, filteringFeature: geometry})
+      featuresP: extract({sourceFile, filteringFeatures})
     }))
 
     // const worker = new Worker(
@@ -123,8 +108,8 @@ async function run (FILTERING_FILES) {
     // worker.on('message', () => featuresCount++)
     // worker.on('error', reject)
 
-  await new Listr(allFeatures.map(({name, feature_index, sourceFile, featuresP}) => ({
-    title: `${basename(dirname(sourceFile))}/${basename(sourceFile)} + ${name}/#${feature_index}`,
+  await new Listr(allFeatures.map(({sourceFile, featuresP}) => ({
+    title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
     task: () => featuresP.then(features => {
       return `${features.length.toFixed(0).padStart(5)} features`
     })

@@ -4,7 +4,15 @@ const gdal = require('gdal-next')
 // const {sourceFile, filteringFeatures} = workerData
 //
 
-function extractFeatures({sourceFile, filteringFeature}) {
+function extractFeatures({sourceFile, filteringFeatures}) {
+  const filteringFeaturesPolygon = new gdal.MultiPolygon()
+
+  filteringFeatures.forEach(feature => {
+    filteringFeaturesPolygon.children.add(gdal.Geometry.fromGeoJson(feature))
+  })
+
+  const filterGeometry = filteringFeaturesPolygon.unionCascaded()
+
   const features = []
   const ds = gdal.open(sourceFile, 'r')
   const layer = ds.layers.get(0)
@@ -12,8 +20,7 @@ function extractFeatures({sourceFile, filteringFeature}) {
   layer.features.forEach(feature => {
     const geometry = feature.getGeometry()
 
-    const filterGeometry = gdal.Geometry.fromGeoJson(filteringFeature)
-    const intersects = filterGeometry.intersects(geometry) || filterGeometry.contains(geometry)
+    const intersects = filterGeometry.intersects(geometry)
 
     if (intersects) {
       const {BIO, CODE_CULTU} = feature.fields.toObject()
@@ -35,9 +42,9 @@ function extractFeatures({sourceFile, filteringFeature}) {
   return features
 }
 
-module.exports = function ({sourceFile, filteringFeature}, done) {
+module.exports = function ({sourceFile, filteringFeatures}, done) {
   try {
-    done(null, extractFeatures({sourceFile, filteringFeature}))
+    done(null, extractFeatures({sourceFile, filteringFeatures}))
   }
   catch (error) {
     done(error)

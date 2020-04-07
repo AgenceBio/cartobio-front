@@ -3,6 +3,11 @@ node_modules
 /dist
 public/departements-avec-outre-mer.geojson
 
+# Export files
+export.gpkg
+export.geojson
+export.shp
+
 # local env files
 .env.local
 .env.*.local
