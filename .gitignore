@@ -6,7 +6,7 @@ public/departements-avec-outre-mer.geojson
 # Export files
 export.gpkg
 export.geojson
-export.shp
+export.shp.zip
 
 # local env files
 .env.local
