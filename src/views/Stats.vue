@@ -12,10 +12,10 @@
             <v-card v-if="stats" >
               <v-card-title class="d-block text-xs-center">
                   <h2 class="headline mb-0 mt-2">
-                    <span class="digits huge">{{ bioSurface | million | round }}</span>
-                    millions d'hectares
+                    <span class="digits huge">{{ bioSurfaceConnueRatio }}%</span>
+                    des surfaces
                   </h2>
-                  <p><b>Surfaces en bio</b> connues à ce jour.</p>
+                  <p><b>cultivées en bio</b> sont connues à ce jour.</p>
               </v-card-title>
             </v-card>
           </v-flex>
@@ -69,6 +69,9 @@ import Partners from "@/components/Partners";
 // SAU en 2019
 const SAU_TOTALE = 29000000;
 
+// SAU BIO Totale estimée en 2019 (en attente consolidation du chiffre par l'observatoire de l'agriculture biologique)
+const SAU_TOTALE_BIO = 2400000;
+
 function million(value) {
   return value / 1000000
 }
@@ -87,7 +90,7 @@ export default {
   data() {
     return {
       stats: null,
-      dataAccessCount: 3,
+      dataAccessCount: 10,
       loading: true,
       errored: false,
       SAU_TOTALE,
@@ -112,6 +115,9 @@ export default {
     },
     bioSurfaceRatioSAU () {
       return (this.bioSurface / SAU_TOTALE * 100).toFixed(1)
+    },
+    bioSurfaceConnueRatio() {
+      return (this.bioSurface/SAU_TOTALE_BIO * 100).toFixed(1)
     },
     bioSurface () {
       return this.stats.aggregates.reduce((total, aggregate) => {
