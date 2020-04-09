@@ -8,25 +8,12 @@
       hide-overlay
       v-model="drawer"
       :mini-variant.sync="mini"
+      
     >
       <!-- Header -->
-      <v-toolbar flat class="transparent">
-        <v-list class="pa-0">
-          <v-list-tile>
-            <v-icon>view_list</v-icon>
-            <v-btn icon v-if="mini">
-              <v-icon>chevron_right</v-icon>
-            </v-btn>
-            <v-list-tile-content>
-              <v-list-tile-title>Liste des Parcelles</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-btn icon @click.stop="mini = !mini" align-end>
-                <v-icon>chevron_left</v-icon>
-              </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
-        </v-list>
+      <v-toolbar flat color="#00838F">
+        
+    <v-toolbar-title>{{operator.title}}</v-toolbar-title>
       </v-toolbar>
 
       <!-- Parcels List -->
