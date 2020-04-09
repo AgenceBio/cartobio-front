@@ -5,10 +5,9 @@
   "scripts": {
     "serve": "npm start",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
+    "posttest": "vue-cli-service lint",
     "start": "vue-cli-service serve",
-    "test": "npm run lint",
+    "test": "vue-cli-service test:unit",
     "update-stats": "node bin/update-stats"
   },
   "dependencies": {
