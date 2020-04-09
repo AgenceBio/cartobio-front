@@ -102,14 +102,12 @@ $ curl https://cartobio.org/api/v1/parcels
     {
       "type": "Feature",
       "properties": {
-        "operator-id": 0,
         "pacage": "026000001",
         "codecultu": "PPH",
         "bio": 1,
         "numilot": 1,
         "numparcel": 1,
-        "meta.year": 2020,
-        "meta.source": "RPG"
+        "numerobio": 7
       },
       "geometry": {
         "type": "Polygon",
