@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       stats: null,
-      dataAccessCount: 3,
+      dataAccessCount: 10,
       loading: true,
       errored: false,
       SAU_TOTALE,
