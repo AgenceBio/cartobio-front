@@ -1,25 +1,11 @@
 <template>
   <v-layout>
-    <!-- Left drawer for parcels list -->
-    <v-navigation-drawer
-      app
-      clipped
-      stateless
-      hide-overlay
-      v-model="drawer"
-      :mini-variant.sync="mini"
-      
-    >
-      <!-- Header -->
-      <v-toolbar flat color="#00838F">
-        
-    <v-toolbar-title>{{operator.title}}</v-toolbar-title>
-      </v-toolbar>
-
       <!-- Parcels List -->
       <ParcelsList
         :parcels.sync="parcelsOperator[this.currentYear]"
-        v-if="drawer && !mini"
+        v-if="drawer"
+        :drawer.sync="drawer"
+        :operator.sync="operator"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
@@ -27,7 +13,6 @@
         v-on:select-parcel="selectParcel($event)"
         v-on:select-all-parcels="selectAllParcels($event)"
       ></ParcelsList>
-    </v-navigation-drawer>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">

@@ -1,25 +1,22 @@
 <template>
   <div>
-    <!-- download parcels button -->
-    <v-divider></v-divider>
-    <v-btn flat color="blue" @click="downloadCSV">
-      <v-icon>save_alt</v-icon>
-      <span>Télécharger parcellaire - csv</span>
-    </v-btn>
+    <v-navigation-drawer
+      app
+      clipped
+      stateless
+      hide-overlay
+      v-model="drawer"
+      
+    >
+    <!-- Header -->
+    <v-toolbar flat color="#00838F" class="sticky">
+      <v-toolbar-title>{{operator.title}}</v-toolbar-title>
+    </v-toolbar>
+
     <v-divider></v-divider>
 
-    <v-list class="pt-0" dense>
+    <!-- <v-list class="pt-0" dense>
       <v-divider></v-divider>
-      <v-list-tile>
-        <v-list-tile-action>
-          <v-flex>
-            <v-checkbox v-model="allSelected" label="Sélectionner tout"></v-checkbox>
-            <!-- <v-btn flat>
-            <v-icon>delete</v-icon>Abandonner sélection
-            </v-btn>-->
-          </v-flex>
-        </v-list-tile-action>
-      </v-list-tile>
       <v-list-group v-for="(ilot, i) in ilots" :key="i">
         <template v-slot:activator>
           <v-list-tile>
@@ -51,7 +48,49 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list-group>
-    </v-list>
+    </v-list> -->
+
+    <v-expansion-panel v-model="panel"
+      expand>
+      <v-expansion-panel-content
+        v-for="(ilot, i) in ilots"
+        :key="i"
+      >
+      <template v-slot:header>
+          <div>Ilot {{ilot.numIlot}}</div>
+        </template>
+         <v-list class="pt-0" dense>
+           <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
+          <v-list-tile-action
+            @mouseover="$emit('hover-parcel', parcel)"
+            @mouseleave="$emit('stop-hovering', parcel)"
+          >
+            <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
+            <v-icon
+              color="blue"
+              @click="selectParcel(parcel)"
+              v-if="parcel.properties.selected"
+            >star</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content
+            @mouseover="$emit('hover-parcel', parcel)"
+            @mouseleave="$emit('stop-hovering', parcel)"
+          >
+            <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+         </v-list>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    <!-- download parcels button -->
+    <v-footer class="sticky">
+    <v-divider></v-divider>
+    <v-btn flat color="blue" @click="downloadCSV">
+      <v-icon>save_alt</v-icon>
+      <span>Télécharger parcellaire - csv</span>
+    </v-btn></v-footer>
+    
+    </v-navigation-drawer>
   </div>
 </template>
 <script>
@@ -61,7 +100,9 @@ import reduce from 'lodash/reduce';
 export default {
   name: "ParcelsList",
   props: {
-    parcels: Object
+    parcels: Object,
+    drawer: Boolean,
+    operator: Object
   },
   data() {
     return {
@@ -210,9 +251,25 @@ export default {
         []
       );
       return ilots;
+    },
+    panel() {
+      let expandedArr = [];
+      this.ilots.forEach(() => {
+        expandedArr.push(true);
+      });
+      console.log(expandedArr);
+      return expandedArr;
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
 </style>
