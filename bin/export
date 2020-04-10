@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+
+// It expects you have these softwares available on your machine:
+// - gdal
+
+const {promises:fs} = require('fs')
+const {createWriteStream} = require('fs')
+const {promisify} = require('util')
+const pipeline = promisify(require('stream').pipeline)
+const ora = require('ora')
+const Listr = require('listr')
+const {get} = require('axios')
+const gdal = require('gdal-next')
+const {basename, dirname, join, resolve} = require('path')
+const glob = require('globby')
+const argv = require('minimist')(process.argv.slice(2))
+
+const workerFarm = require('worker-farm')
+const {Worker} = require('worker_threads')
+const shapefileWorker = require.resolve('../src/workers/shapefile.js')
+const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
+
+const {_:FILTERING_FILES} = argv
+const {shapefiles=true, inLambert93=true} = argv
+const {from:SOURCE_FILES} = argv
+const {to:DESTINATION_FILE='export.geojson'} = argv
+
+
+if (!FILTERING_FILES || !SOURCE_FILES) {
+  console.error('npm run export -- --from "../RPG/2019/d011/cartobio.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
+  process.exit(1)
+}
+
+
+function fetchCommunesBoundaries() {
+  const FILENAME = 'communes.geojson'
+  const DEST = join(__dirname, '..', 'public', FILENAME)
+  const SOURCE = 'https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/' + FILENAME
+
+  // we pipe the source file to the local filesystem (createWriteStream())
+  // if it does not exist (catch())
+  return fs.stat(DEST)
+    .catch(async () => {
+      const response = await get(SOURCE, {responseType: 'stream'})
+
+      return pipeline(response.data, createWriteStream(DEST))
+    })
+    .catch(error => {
+      fs.unlink(DEST)
+      throw error
+    })
+    .then(() => fs.readFile(DEST, {encoding: 'utf8'}))
+    .then((geojson) => JSON.parse(geojson))
+}
+
+async function run (FILTERING_FILES) {
+  const l93 = gdal.SpatialReference.fromProj4('+init=epsg:2154')
+  const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
+  const l93towgs84 = new gdal.CoordinateTransformation(l93, wgs84)
+  let datasets;
+
+  const filteringFiles = await glob(FILTERING_FILES)
+  const sourceFiles = await glob(SOURCE_FILES)
+
+  // 1. Open datasets
+  // shapefiles
+  let spinner = ora({
+    text: `Parsing ${filteringFiles.length} shapefiles`,
+    spinner: 'simpleDotsScrolling'
+  }).start()
+
+  if (shapefiles) {
+    datasets = filteringFiles
+        .map(path => resolve(path))
+        .map(path => gdal.open(path, 'r'))
+  }
+
+  // 2. Collect all the features from each layer
+  const filteringFeatures = datasets.reduce((features, ds) => {
+    ds.layers.forEach(layer => {
+      layer.features.forEach((feature) => {
+        const geometry = feature.getGeometry()
+        geometry.transform(l93towgs84)
+        features.push(geometry.toObject())
+      })
+    })
+
+    return features
+  }, [])
+
+  spinner.succeed(`Parsed ${filteringFeatures.length} features in ${filteringFiles.length} datasets.`)
+
+  // 3. Browse bio/non-bio layers and intersect features
+  const allFeatures = sourceFiles
+    .map(s => resolve(s))
+    .map(sourceFile => ({
+      sourceFile,
+      featuresP: extract({sourceFile, filteringFeatures})
+    }))
+
+    // const worker = new Worker(
+    //   shapefileWorker,
+    //   {workerData: {sourceFile, filteringFeatures}}
+    // )
+    //
+    // worker.on('message', () => featuresCount++)
+    // worker.on('error', reject)
+
+  await new Listr(allFeatures.map(({sourceFile, featuresP}) => ({
+    title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
+    task: () => featuresP.then(features => {
+      return `${features.length.toFixed(0).padStart(5)} features`
+    })
+  })), {concurrent: true}).run()
+
+  // then export
+  const features = await Promise
+    .all(allFeatures.map(({featuresP}) => featuresP))
+    .then(allFeatures => [].concat(...allFeatures))
+
+  // workerFarm.end(extract)
+  await fs.writeFile(DESTINATION_FILE, JSON.stringify({
+    type: 'FeatureCollection',
+    features,
+  }, null, 2))
+
+  // XX. Then close datasets
+  datasets.forEach(d => d.close())
+  process.exit(0)
+}
+
+run(FILTERING_FILES)

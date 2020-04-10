@@ -34,10 +34,25 @@ npm test
 
 ## Handbook
 
+### Export a GeoPackage/GeoJSON, filtered by one or many Shapefiles
+
+```bash
+$ npm run export -- --from '../RPG/2019/d0{11,09,66}/cartobio.shp' '../reseau11/**/*.shp'
+
+✔ Parsed 9 features in 5 datasets.
+  ✔ d009/cartobio.shp
+  ✔ d009/cartononbio.shp
+  ⠹ d011/cartobio.shp
+  ⠹ d011/cartononbio.shp
+  ✔ d066/cartobio.shp
+  ⠹ d066/cartononbio.shp
+```
+
 ### Compute total surfaces
 
 ```bash
 $ npm run update-stats path/to/RPG-shapefiles/*.zip
+
 ```
 
 This script will:
