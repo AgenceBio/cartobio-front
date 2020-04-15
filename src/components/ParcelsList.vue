@@ -8,87 +8,93 @@
       v-model="drawer"
       
     >
-    <!-- Header -->
-    <v-toolbar flat color="#00838F" class="sticky">
-      <v-toolbar-title>{{operator.title}}</v-toolbar-title>
-    </v-toolbar>
+    <v-layout column fill-height justify-space-between align-space-between>
+      <!-- Header -->
+      <v-toolbar flat color="#00838F" class="sticky sticky-top">
+        <v-toolbar-title>{{operator.title}}</v-toolbar-title>
+      </v-toolbar>
 
-    <v-divider></v-divider>
-
-    <!-- <v-list class="pt-0" dense>
-      <v-divider></v-divider>
-      <v-list-group v-for="(ilot, i) in ilots" :key="i">
-        <template v-slot:activator>
-          <v-list-tile>
-            <v-list-tile-content
-              @mouseover="$emit('hover-ilot', ilot)"
-              @mouseleave="$emit('stop-hovering-ilot', ilot)"
+      <!-- <v-list class="pt-0" dense>
+        <v-divider></v-divider>
+        <v-list-group v-for="(ilot, i) in ilots" :key="i">
+          <template v-slot:activator>
+            <v-list-tile>
+              <v-list-tile-content
+                @mouseover="$emit('hover-ilot', ilot)"
+                @mouseleave="$emit('stop-hovering-ilot', ilot)"
+              >
+                <v-list-tile-title>Ilot {{ilot.numIlot}}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </template>
+          <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
+            <v-list-tile-action
+              @mouseover="$emit('hover-parcel', parcel)"
+              @mouseleave="$emit('stop-hovering', parcel)"
             >
-              <v-list-tile-title>Ilot {{ilot.numIlot}}</v-list-tile-title>
+              <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
+              <v-icon
+                color="blue"
+                @click="selectParcel(parcel)"
+                v-if="parcel.properties.selected"
+              >star</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content
+              @mouseover="$emit('hover-parcel', parcel)"
+              @mouseleave="$emit('stop-hovering', parcel)"
+            >
+              <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-        </template>
-        <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
-          <v-list-tile-action
-            @mouseover="$emit('hover-parcel', parcel)"
-            @mouseleave="$emit('stop-hovering', parcel)"
-          >
-            <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
-            <v-icon
-              color="blue"
-              @click="selectParcel(parcel)"
-              v-if="parcel.properties.selected"
-            >star</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content
-            @mouseover="$emit('hover-parcel', parcel)"
-            @mouseleave="$emit('stop-hovering', parcel)"
-          >
-            <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list-group>
-    </v-list> -->
+        </v-list-group>
+      </v-list> -->
 
-    <v-expansion-panel v-model="panel"
-      expand>
-      <v-expansion-panel-content
-        v-for="(ilot, i) in ilots"
-        :key="i"
-      >
-      <template v-slot:header>
-          <div>Ilot {{ilot.numIlot}}</div>
-        </template>
-         <v-list class="pt-0" dense>
-           <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
-          <v-list-tile-action
-            @mouseover="$emit('hover-parcel', parcel)"
-            @mouseleave="$emit('stop-hovering', parcel)"
-          >
-            <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
-            <v-icon
-              color="blue"
-              @click="selectParcel(parcel)"
-              v-if="parcel.properties.selected"
-            >star</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content
-            @mouseover="$emit('hover-parcel', parcel)"
-            @mouseleave="$emit('stop-hovering', parcel)"
-          >
-            <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-         </v-list>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-    <!-- download parcels button -->
-    <v-footer class="sticky">
-    <v-divider></v-divider>
-    <v-btn flat color="blue" @click="downloadCSV">
-      <v-icon>save_alt</v-icon>
-      <span>Télécharger parcellaire - csv</span>
-    </v-btn></v-footer>
+      <v-expansion-panel v-model="panel" class="justify-self-start overflow"
+        expand>
+        
+      <v-divider></v-divider>
+        <v-expansion-panel-content
+          v-for="(ilot, i) in ilots"
+          :key="i"
+        >
+        <template v-slot:header>
+            <div>Ilot {{ilot.numIlot}}</div>
+          </template>
+          <v-list class="pt-0" dense>
+            <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
+            <v-list-tile-action
+              @mouseover="$emit('hover-parcel', parcel)"
+              @mouseleave="$emit('stop-hovering', parcel)"
+            >
+              <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
+              <v-icon
+                color="blue"
+                @click="selectParcel(parcel)"
+                v-if="parcel.properties.selected"
+              >star</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content
+              @mouseover="$emit('hover-parcel', parcel)"
+              @mouseleave="$emit('stop-hovering', parcel)"
+            >
+              <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          </v-list>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <!-- download parcels button -->
+      <v-flex>
+        <v-card>
+        <v-divider></v-divider>
+        <v-card-subtitle>
+          Export des données parcellaires
+        </v-card-subtitle>
+        <v-btn color="#b9d065" @click="downloadCSV">
+          <span>Télécharger parcellaire</span>
+        </v-btn></v-card>
+      </v-flex>
+    </v-layout>
     
     </v-navigation-drawer>
   </div>
@@ -265,11 +271,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 
-.sticky {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  left: 0;
-  z-index: 2;
+.justify-self-start {
+  margin-bottom: auto;
+  padding-bottom: 10px;
+}
+.overflow {
+  overflow-y: scroll;
 }
 </style>
