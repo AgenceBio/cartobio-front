@@ -90,7 +90,12 @@
           <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
             <span>Télécharger</span>
           </v-btn>
-          <v-btn flat small disabled class="mt-0">Prévisualiser</v-btn>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn flat small v-on="on" color="grey lighten-1" class="mt-0">Prévisualiser</v-btn>
+            </template>
+            <span>Bientôt disponible</span>
+          </v-tooltip>
         </v-layout>
       </div>
     </v-layout>
@@ -278,10 +283,29 @@ export default {
 .justify-self-end {
   margin-top: auto;
 }
-.overflow {
-  overflow-y: auto;
-}
+
 .no-box-shadow {
   box-shadow: unset;
 }
+
+.overflow {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #B0BEC5;
+
+}
+
+.overflow::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.overflow::-webkit-scrollbar-track {
+  background-color: #ECEFF1;
+  border-radius: 10px;
+}
+.overflow::-webkit-scrollbar-thumb {
+  background-color: #B0BEC5;
+  border-radius: 10px;
+}
+
 </style>
