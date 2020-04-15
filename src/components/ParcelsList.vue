@@ -1,111 +1,72 @@
 <template>
   <div>
-    <v-navigation-drawer
-      app
-      clipped
-      stateless
-      hide-overlay
-      v-model="drawer"
-      
-    >
-    <v-layout column fill-height justify-space-between align-space-between>
-      <!-- Header -->
-      <v-toolbar flat color="#00838F" class="sticky sticky-top">
-        <v-toolbar-title>{{operator.title}}</v-toolbar-title>
-      </v-toolbar>
+    <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
+      <v-layout column fill-height justify-space-between align-space-between>
+        <!-- Header -->
+        <v-toolbar flat color="#00838F" class="sticky sticky-top">
+          <v-toolbar-title>{{operator.title}}</v-toolbar-title>
+        </v-toolbar>
 
-      <!-- <v-list class="pt-0" dense>
-        <v-divider></v-divider>
-        <v-list-group v-for="(ilot, i) in ilots" :key="i">
-          <template v-slot:activator>
-            <v-list-tile>
-              <v-list-tile-content
-                @mouseover="$emit('hover-ilot', ilot)"
-                @mouseleave="$emit('stop-hovering-ilot', ilot)"
-              >
-                <v-list-tile-title>Ilot {{ilot.numIlot}}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-          <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
-            <v-list-tile-action
-              @mouseover="$emit('hover-parcel', parcel)"
-              @mouseleave="$emit('stop-hovering', parcel)"
-            >
-              <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
-              <v-icon
-                color="blue"
-                @click="selectParcel(parcel)"
-                v-if="parcel.properties.selected"
-              >star</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content
-              @mouseover="$emit('hover-parcel', parcel)"
-              @mouseleave="$emit('stop-hovering', parcel)"
-            >
-              <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list-group>
-      </v-list> -->
-
-      <v-expansion-panel v-model="panel" elevation-0 class="justify-self-start overflow no-box-shadow"
-        expand>
-        
-      <v-divider></v-divider>
-        <v-expansion-panel-content
-          v-for="(ilot, i) in ilots"
-          :key="i"
+        <v-expansion-panel
+          v-model="panel"
+          elevation-0
+          class="justify-self-start overflow no-box-shadow"
+          expand
         >
-        <template v-slot:header>
-            <div>Ilot {{ilot.numIlot}}</div>
-          </template>
-          <v-list class="pt-0" dense>
-            <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
-            <v-list-tile-action
-              @mouseover="$emit('hover-parcel', parcel)"
-              @mouseleave="$emit('stop-hovering', parcel)"
-            >
-              <v-icon @click="selectParcel(parcel)" v-if="!parcel.properties.selected">star_border</v-icon>
-              <v-icon
-                color="blue"
-                @click="selectParcel(parcel)"
-                v-if="parcel.properties.selected"
-              >star</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content
-              @mouseover="$emit('hover-parcel', parcel)"
-              @mouseleave="$emit('stop-hovering', parcel)"
-            >
-              <v-list-tile-title>Parcelle {{parcel.properties.numparcel}}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          </v-list>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-      <!-- download parcels button -->
-      <div class="justify-self-end">
-        <v-layout column align-center justify-center py-3>
-          <span class="grey--text">Export des données parcellaires</span>
-          <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
-            <span>Télécharger</span>
-          </v-btn>
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn flat small v-on="on" color="grey lighten-1" class="mt-0">Prévisualiser</v-btn>
+          <v-divider></v-divider>
+          <v-expansion-panel-content v-for="(ilot, i) in ilots" :key="i">
+            <template v-slot:header>
+              <div>Ilot {{ilot.numIlot}}</div>
             </template>
-            <span>Bientôt disponible</span>
-          </v-tooltip>
-        </v-layout>
-      </div>
-    </v-layout>
-    
+            <v-list class="pt-0" dense>
+              <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
+                <v-list-tile-content
+                  @mouseover="$emit('hover-parcel', parcel)"
+                  @mouseleave="$emit('stop-hovering', parcel)"
+                >
+                  <v-layout d-flex align-center row style="width: 100%">
+                    <v-flex>
+                      <v-avatar size="24px" color="#b9d065" class="mx-2"></v-avatar>
+                    </v-flex>
+                    <v-flex xs4>
+                      <v-list-tile-title>
+                        <b>Parcelle {{parcel.properties.numparcel}}</b>
+                      </v-list-tile-title>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-list-tile-sub-title>
+                        <b>{{parcel.properties.culture.label}}</b>
+                      </v-list-tile-sub-title>
+                    </v-flex>
+                  </v-layout>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <!-- download parcels button -->
+        <div class="justify-self-end">
+          <v-layout column align-center justify-center py-3>
+            <span class="grey--text">Export des données parcellaires</span>
+            <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
+              <span>Télécharger</span>
+            </v-btn>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn flat small v-on="on" color="grey lighten-1" class="mt-0">Prévisualiser</v-btn>
+              </template>
+              <span>Bientôt disponible</span>
+            </v-tooltip>
+          </v-layout>
+        </div>
+      </v-layout>
     </v-navigation-drawer>
   </div>
 </template>
 <script>
-import getObjectValue from 'lodash/get';
-import reduce from 'lodash/reduce';
+import getObjectValue from "lodash/get";
+import reduce from "lodash/reduce";
+import {fromCode} from "@/modules/codes-cultures/pac.js"
 
 export default {
   name: "ParcelsList",
@@ -239,7 +200,15 @@ export default {
   },
   computed: {
     ilots() {
-      // first reduce to group parcels by ilots
+      // format parcels to retrieve culture name:
+      this.parcels.features.forEach(function(parcel) {    
+        parcel.properties = {
+        ...parcel.properties,
+        bio: Boolean(parseInt(parcel.properties.bio, 10)),
+        culture: fromCode(parcel.properties.codecultu)}
+      })
+      
+      // group parcels by ilots
       let reduced = reduce(
         this.parcels.features,
         function(result, parcel) {
@@ -251,7 +220,7 @@ export default {
         },
         {}
       );
-      // then put them into an array with easily accessible ilot number
+
       let ilots = reduce(
         reduced,
         function(result, value, key) {
@@ -260,6 +229,7 @@ export default {
         },
         []
       );
+      
       return ilots;
     },
     panel() {
@@ -267,14 +237,12 @@ export default {
       this.ilots.forEach(() => {
         expandedArr.push(true);
       });
-      console.log(expandedArr);
       return expandedArr;
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-
 .justify-self-start {
   margin-bottom: auto;
   padding-bottom: 10px;
@@ -291,8 +259,7 @@ export default {
 .overflow {
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #B0BEC5;
-
+  scrollbar-color: #b0bec5;
 }
 
 .overflow::-webkit-scrollbar {
@@ -300,12 +267,11 @@ export default {
   height: 8px;
 }
 .overflow::-webkit-scrollbar-track {
-  background-color: #ECEFF1;
+  background-color: #eceff1;
   border-radius: 10px;
 }
 .overflow::-webkit-scrollbar-thumb {
-  background-color: #B0BEC5;
+  background-color: #b0bec5;
   border-radius: 10px;
 }
-
 </style>
