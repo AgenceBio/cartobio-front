@@ -24,7 +24,7 @@
                   @mouseover="$emit('hover-parcel', parcel)"
                   @mouseleave="$emit('stop-hovering', parcel)"
                 >
-                  <v-layout d-flex align-center row style="width: 100%">
+                  <v-layout align-center row class="full-width">
                     <v-flex>
                       <v-avatar size="24px" color="#b9d065" class="mx-2"></v-avatar>
                     </v-flex>
@@ -273,5 +273,9 @@ export default {
 .overflow::-webkit-scrollbar-thumb {
   background-color: #b0bec5;
   border-radius: 10px;
+}
+
+.full-width {
+  width: 100%;
 }
 </style>
