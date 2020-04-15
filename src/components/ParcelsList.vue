@@ -84,7 +84,7 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
       <!-- download parcels button -->
-      <v-flex>
+      <div class="justify-self-end">
         <v-card>
         <v-divider></v-divider>
         <v-card-subtitle>
@@ -93,7 +93,7 @@
         <v-btn color="#b9d065" @click="downloadCSV">
           <span>Télécharger parcellaire</span>
         </v-btn></v-card>
-      </v-flex>
+      </div>
     </v-layout>
     
     </v-navigation-drawer>
@@ -275,7 +275,11 @@ export default {
   margin-bottom: auto;
   padding-bottom: 10px;
 }
+
+.justify-self-end {
+  margin-top: auto;
+}
 .overflow {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 </style>
