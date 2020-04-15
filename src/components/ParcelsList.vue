@@ -26,7 +26,7 @@
                 >
                   <v-layout align-center row class="full-width">
                     <v-flex>
-                      <v-avatar size="24px" color="#b9d065" class="mx-2"></v-avatar>
+                      <v-avatar size="24px" :color="parcel.properties.bio ? '#b9d065' : '#D32F2F'" class="mx-2"></v-avatar>
                     </v-flex>
                     <v-flex xs4>
                       <v-list-tile-title>
@@ -232,12 +232,17 @@ export default {
       
       return ilots;
     },
-    panel() {
-      let expandedArr = [];
-      this.ilots.forEach(() => {
-        expandedArr.push(true);
-      });
-      return expandedArr;
+    panel : {
+      get : function () {
+        let expandedArr = [];
+        this.ilots.forEach(() => {
+          expandedArr.push(true);
+        });
+        return expandedArr;
+      },
+      // setter prevent error message in console when expanding/collapsing a parcel list
+      set : function() {
+      }
     }
   }
 };
