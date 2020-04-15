@@ -333,7 +333,7 @@ export default {
     }
 
     // if there is an operator, show drawer.
-    this.drawer = getObjectValue(this.getOperator, "title");
+    this.drawer = !!getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
