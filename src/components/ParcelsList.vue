@@ -49,7 +49,7 @@
         </v-list-group>
       </v-list> -->
 
-      <v-expansion-panel v-model="panel" class="justify-self-start overflow"
+      <v-expansion-panel v-model="panel" elevation-0 class="justify-self-start overflow no-box-shadow"
         expand>
         
       <v-divider></v-divider>
@@ -85,14 +85,13 @@
       </v-expansion-panel>
       <!-- download parcels button -->
       <div class="justify-self-end">
-        <v-card>
-        <v-divider></v-divider>
-        <v-card-subtitle>
-          Export des données parcellaires
-        </v-card-subtitle>
-        <v-btn color="#b9d065" @click="downloadCSV">
-          <span>Télécharger parcellaire</span>
-        </v-btn></v-card>
+        <v-layout column align-center justify-center py-3>
+          <span class="grey--text">Export des données parcellaires</span>
+          <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
+            <span>Télécharger</span>
+          </v-btn>
+          <v-btn flat small disabled class="mt-0">Prévisualiser</v-btn>
+        </v-layout>
       </div>
     </v-layout>
     
@@ -281,5 +280,8 @@ export default {
 }
 .overflow {
   overflow-y: auto;
+}
+.no-box-shadow {
+  box-shadow: unset;
 }
 </style>
