@@ -13,23 +13,34 @@ const {get} = require('axios')
 const gdal = require('gdal-next')
 const {basename, dirname, join, resolve} = require('path')
 const glob = require('globby')
-const argv = require('minimist')(process.argv.slice(2))
+const argv = require('minimist')(process.argv.slice(2), {
+  string: ['epci'],
+  boolean: ['in-lambert-93', 'shapefiles'],
+  alias: {
+    inLambert93: 'in-lambert-93'
+  },
+  default: {
+    shapefiles: true,
+    inLambert93: false
+  }
+})
 
 const workerFarm = require('worker-farm')
 const {Worker} = require('worker_threads')
 const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
-const {_:FILTERING_FILES} = argv
-const {shapefiles=true, inLambert93=true} = argv
+const {_:FILTERING_FILES, epci} = argv
+const {shapefiles, inLambert93} = argv
 const {from:SOURCE_FILES} = argv
 const {to:DESTINATION_FILE='export.geojson'} = argv
 
 
 if (!FILTERING_FILES || !SOURCE_FILES) {
-  console.error('npm run export -- --from "../RPG/2019/d011/cartobio.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d064/*.shp" --epci 200067106')
   process.exit(1)
 }
 
@@ -55,23 +66,60 @@ function fetchCommunesBoundaries() {
     .then((geojson) => JSON.parse(geojson))
 }
 
+/**
+ * Return features linked by their Code INSEE
+ *
+ * @param  {[type]} collection [description]
+ * @param  {[type]} codes      [description]
+ * @return {[type]}            [description]
+ */
+async function getFeaturesByINSEECodes ({ collection: featureCollectionP, codes }) {
+  const collection = await featureCollectionP
+
+  return collection.features
+    .filter(({ properties }) => codes.includes(properties.code))
+}
+
 async function run (FILTERING_FILES) {
   const l93 = gdal.SpatialReference.fromProj4('+init=epsg:2154')
   const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
   const l93towgs84 = new gdal.CoordinateTransformation(l93, wgs84)
-  let datasets;
+  let datasets = [];
 
   const filteringFiles = await glob(FILTERING_FILES)
   const sourceFiles = await glob(SOURCE_FILES)
+  const datasetCount = epci ? 1 : filteringFiles.length
 
   // 1. Open datasets
   // shapefiles
   let spinner = ora({
-    text: `Parsing ${filteringFiles.length} shapefiles`,
+    text: `Parsing ${datasetCount} shapefiles`,
     spinner: 'simpleDotsScrolling'
   }).start()
 
-  if (shapefiles) {
+  // Filter by EPCI boundaries
+  if (epci) {
+    const codes = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
+      .then(response => response.data)
+      .then(list => list.find(({ code }) => code === String(epci)))
+      .then(({ membres }) => membres.map(m => m.code))
+
+    const features = await getFeaturesByINSEECodes({ collection: fetchCommunesBoundaries(), codes })
+    const dataset = gdal.open('input.gpkg', 'w', 'GPKG')
+    const layer = dataset.layers.create('communes', wgs84, gdal.wkbPolygon)
+    features.forEach(({ geometry, properties }) => {
+      const feature = new gdal.Feature(layer)
+
+      feature.setGeometry(gdal.Geometry.fromGeoJson(geometry))
+      feature.fields.set(properties)
+
+      layer.features.add(feature)
+    })
+
+    datasets.push(dataset)
+  }
+  // Filter by shapefile
+  else if (shapefiles) {
     datasets = filteringFiles
         .map(path => resolve(path))
         .map(path => gdal.open(path, 'r'))
@@ -82,7 +130,7 @@ async function run (FILTERING_FILES) {
     ds.layers.forEach(layer => {
       layer.features.forEach((feature) => {
         const geometry = feature.getGeometry()
-        geometry.transform(l93towgs84)
+        inLambert93 && geometry.transform(l93towgs84)
         features.push(geometry.toObject())
       })
     })
@@ -90,7 +138,7 @@ async function run (FILTERING_FILES) {
     return features
   }, [])
 
-  spinner.succeed(`Parsed ${filteringFeatures.length} features in ${filteringFiles.length} datasets.`)
+  spinner.succeed(`Parsed ${filteringFeatures.length} features in ${datasetCount} datasets.`)
 
   // 3. Browse bio/non-bio layers and intersect features
   const allFeatures = sourceFiles

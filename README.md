@@ -37,7 +37,7 @@ npm test
 ### Export a GeoPackage/GeoJSON, filtered by one or many Shapefiles
 
 ```bash
-$ npm run export -- --from '../RPG/2019/d0{11,09,66}/cartobio.shp' '../reseau11/**/*.shp'
+$ npm run export -- --from '../RPG/2019/d0{11,09,66}/cartobio.shp' --in-lambert-93 '../reseau11/**/*.shp'
 
 ✔ Parsed 9 features in 5 datasets.
   ✔ d009/cartobio.shp
@@ -46,6 +46,16 @@ $ npm run export -- --from '../RPG/2019/d0{11,09,66}/cartobio.shp' '../reseau11/
   ⠹ d011/cartononbio.shp
   ✔ d066/cartobio.shp
   ⠹ d066/cartononbio.shp
+```
+
+### Export a GeoPackage/GeoJSON, encompassing EPCI boundaries
+
+```bash
+$ npm run export -- --from '../RPG/2019/d064/cartobio.shp' --epci 200067106
+
+✔ Parsed 158 features in 1 datasets.
+  ✔ d064/cartobio.shp
+  ⠹ d064/cartononbio.shp
 ```
 
 ### Compute total surfaces

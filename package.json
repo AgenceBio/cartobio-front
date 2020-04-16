@@ -6,7 +6,7 @@
     "start": "vue-cli-service serve",
     "update-stats": "node bin/update-stats",
     "export": "node bin/export",
-    "postexport": "npm run postexport:shp && postexport:gpkg",
+    "postexport": "npm run postexport:shp && npm run postexport:gpkg",
     "postexport:shp": "cat export.geojson | npx geojson2shp > export.shp.zip",
     "postexport:gpkg": "ogr2ogr -f GPKG -nln cartobio export.gpkg export.geojson",
     "serve": "npm start",
