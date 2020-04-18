@@ -19,6 +19,8 @@
         </v-layout>
       </v-container>
     </v-content>
+
+    <Partners />
   </div>
 </template>
 
@@ -38,13 +40,19 @@ ul {
 
 <script>
 import HomeNavbar from "@/components/HomeNavbar";
+import Partners from "@/components/Partners";
+import {VChip} from "vuetify/lib";
 import {vue, attributes} from "../../CHANGELOG.md";
 
 export default {
   name: "Changelog",
   components: {
     HomeNavbar,
-    markdown: vue.component,
+    Partners,
+    markdown: {
+      extends: vue.component,
+      components: { VChip }
+    },
   },
 
   data () {

@@ -68,6 +68,10 @@ module.exports = {
           .tap(() => ({
             markdownIt,
             mode: [Mode.VUE_COMPONENT],
+            // via https://github.com/hmsk/frontmatter-markdown-loader/issues/104#issuecomment-575329319
+            vue: {
+              root: "markdown-body"
+            }
           }))
   },
 
