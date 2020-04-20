@@ -1,0 +1,46 @@
+{
+  "sources": {
+    "rpg-nonbio-anon": {
+      "type": "vector",
+      "scheme": "tms",
+      "tiles": [
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+      ]
+    }
+  },
+  "layers": [
+    {
+      "id": "rpg-anon-nonbio-2020-area",
+      "type": "fill",
+      "source": "rpg-nonbio-anon",
+      "source-layer": "anon_rpg_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": "#673AB7",
+        "fill-opacity": 0.7
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-nonbio-2020-borders",
+      "type": "line",
+      "source": "rpg-nonbio-anon",
+      "source-layer": "anon_rpg_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "#B39DDB",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[10, 1.5], [13, 1]]
+        }
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    }
+  ]
+}
