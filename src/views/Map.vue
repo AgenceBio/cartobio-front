@@ -150,6 +150,7 @@
 <script>
 import {get} from "axios";
 import getObjectValue from "lodash/get";
+import {all as mergeAll} from "deepmerge";
 import {bbox, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
@@ -164,7 +165,7 @@ import {
   MglScaleControl,
 } from "vue-mapbox";
 
-import {cartobio as mapStyle} from "@/assets/styles/index.js";
+import {baseStyle, rpgNonBioStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
@@ -236,7 +237,7 @@ export default {
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       zoom: null,
       center: null,
-      mapStyle,
+      mapStyle: mergeAll([baseStyle, rpgNonBioStyle]),
 
       // anonymous layers
       anonLayers: {},

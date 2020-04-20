@@ -1,5 +1,4 @@
-import old from './old.json'
-import cartobio from './ortho-vecto.json'
-import vector from './vector.json'
+import baseStyle from './ortho-vecto.json'
+import rpgNonBioStyle from './rpg-anon.json'
 
-export {old, cartobio, vector}
+export {baseStyle, rpgNonBioStyle}
