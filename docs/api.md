@@ -9,8 +9,8 @@ sur CartoBio, dans vos propres applications et outils métiers.
 sur l'accès aux données à travers des exemples techniques.
 
 **À qui s'adresse l'API** ?<br>
-Nous destinons CartoBio et son API aux **Organismes certificateurs**,
-et _prochainement_, aux **Collectivités locales** ainsi qu'aux **Opérateurs**.
+Nous destinons CartoBio et son API aux **Organismes certificateurs**.<br>
+Nous aimerions _ensuite_ la proposer aux **Collectivités locales**.
 
 # Utilisation de l'API CartoBio
 
@@ -19,11 +19,11 @@ et _prochainement_, aux **Collectivités locales** ainsi qu'aux **Opérateurs**.
 Si vous êtes une personne qui a accès au
 [portail de notifications de l'Agence Bio](http://notifications.agencebio.org/),
 ou que vous êtes une collectivité concernée
-par le développement du bio comme levier d'action de santé publique, [demandez-nous un jeton d'accès][ask-token], c'est _gratuit_[^1].
+par le développement du bio comme levier d'action de santé publique, [**demandez-nous un jeton d'accès**][ask-token], c'est _gratuit_[^1].
 
 Le **jeton d'accès ouvre l'accès aux données**.
 
-Un jeton d'accès ressemble à ceci :
+Voici un jeton de test ; il rend fonctionnels les exemples ci-après:
 
 ```
 eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.NL050Bt_jMnQ6WLcqIbmwGJkaDvZ0PIAZdCKTNF_-sSTiTw5cijPGm6TwUSCWEyQUMFvI1_La19TDPXsaemDow

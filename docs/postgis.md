@@ -37,9 +37,17 @@ ogr2ogr --config PG_USE_COPY YES -f PGDump -nln anon_rpgbio_${RPG_YEAR} -nlt GEO
   -dialect 'sqlite' -sql "SELECT CODE_CULTU as codecultu, BIO as bio, GEOMETRY as geom FROM cartobio WHERE BIO=1";
 ```
 
+Ou, par exemple, pour la couche RPG conventionnelle :
+
+```bash
+$ ogr2ogr --config PG_USE_COPY YES -f PGDump -nln anon_rpg_${RPG_YEAR} -nlt GEOMETRY -lco FID=id \
+  anon_rpg_${RPG_YEAR}.sql /vsizip/2019/cartononbio.zip/cartononbio \
+  -dialect 'sqlite' -sql "SELECT CODE_CULTU as codecultu, BIO as bio, GEOMETRY as geom FROM cartononbio WHERE BIO=0";
+```
+
 4. Charger le dump dans PostGis
 
-```sh
+```bashsh
 psql -h localhost -p 65432 -U docker --file=anon_rpgbio_${RPG_YEAR}.sql gis
 ```
 

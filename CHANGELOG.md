@@ -7,7 +7,7 @@ title: Journal d'évolution
 - <v-chip small color="brown lighten-3 brown--text text--darken-4">API</v-chip>
   Mise à disposition de l'adresse `/api/v1/parcels/operator/:numero-bio`, pour
   intégrer le parcellaire bio d'un _opérateur bio_ à une application métier en tant
-  qu'<abbr title="Organismes de Certification">OC</abbr>.
+  qu'<abbr title="Organismes de Certification">OC</abbr> ([lire la documentation](#/api)).
 
 ## Semaine du 6 au 10 avril
 
@@ -17,7 +17,7 @@ title: Journal d'évolution
 - <v-chip small color="brown lighten-3 brown--text text--darken-4">API</v-chip>
   Mise à disposition de l'adresse `/api/v1/parcels`, pour
   intégrer le parcellaire bio à une application métier en tant
-  qu'<abbr title="Organismes de Certification">OC</abbr>.
+  qu'<abbr title="Organismes de Certification">OC</abbr> ([lire la documentation](#/api)).
 
 ## Semaine du 30 mars au 3 avril
 
