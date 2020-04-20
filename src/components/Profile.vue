@@ -17,28 +17,26 @@
 </template>
 
 <script>
-const axios = require("axios");
+import { post } from "axios";
+import { mapGetters } from 'vuex';
+
 export default {
   name: "Profile",
   props: [],
   data: () => ({ login: "", password: "", dialog: false, user: {} }),
   methods: {
     logout: function() {
-      let params = { token: this.$ls.get("token") };
-      axios
-        .post(
-          process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/token",
-          params
-        )
-        .then(() => this.$store.commit("setUser", {}))
-        .then(() => this.$ls.remove("token"))
-        .then(() => this.$router.go(0)); // reload the page. There mush be better way to reinitiate the map
+      post(
+        process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/token",
+        { token: this.$ls.get("token") }
+      )
+      .then(() => this.$store.commit("setUser", {}))
+      .then(() => this.$ls.remove("token"))
+      .then(() => this.$router.go(0)); // reload the page. There mush be better way to reinitiate the map
     }
   },
   computed: {
-    getProfile() {
-      return this.$store.getters.getProfile;
-    }
+    ...mapGetters(['getProfile'])
   }
 };
 </script>
