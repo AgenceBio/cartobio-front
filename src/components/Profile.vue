@@ -32,7 +32,6 @@ export default {
       )
       .then(() => this.$store.commit("setUser", {}))
       .then(() => this.$ls.remove("token"))
-      .then(() => this.$router.go(0)); // reload the page. There mush be better way to reinitiate the map
     }
   },
   computed: {

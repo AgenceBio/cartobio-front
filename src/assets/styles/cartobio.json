@@ -1,0 +1,298 @@
+{
+  "version": 8,
+  "name": "CartoBio, anonymous and operator data",
+  "sources": {
+    "operatorParcels2017": {
+      "type": "geojson",
+      "data": {
+        "features": [],
+        "type": "FeatureCollection"
+      }
+    },
+    "operatorParcels2018": {
+      "type": "geojson",
+      "data": {
+        "features": [],
+        "type": "FeatureCollection"
+      }
+    },
+    "operatorParcels2019": {
+      "type": "geojson",
+      "data": {
+        "features": [],
+        "type": "FeatureCollection"
+      }
+    },
+    "operatorParcels2020": {
+      "type": "geojson",
+      "data": {
+        "features": [],
+        "type": "FeatureCollection"
+      }
+    },
+    "rpg-bio-anon": {
+      "type": "vector",
+      "scheme": "tms",
+      "tiles": [
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpgbio_2017@EPSG:900913@pbf/{z}/{x}/{y}.pbf",
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpgbio_2018@EPSG:900913@pbf/{z}/{x}/{y}.pbf",
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpgbio_2019@EPSG:900913@pbf/{z}/{x}/{y}.pbf",
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpgbio_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+      ]
+    },
+    "rpg-nonbio-anon": {
+      "type": "vector",
+      "scheme": "tms",
+      "tiles": [
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+      ]
+    }
+  },
+  "layers": [
+    {
+      "id": "rpg-anon-bio-2017-area",
+      "type": "fill",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2017",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": "rgba(208, 211, 46, 1)",
+        "fill-opacity": 0.7
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2017-borders",
+      "type": "line",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2017",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "rgba(208, 211, 46, 1)",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[10, 1.5], [13, 1]]
+        }
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2018-area",
+      "type": "fill",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2018",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": "rgba(208, 211, 46, 1)",
+        "fill-opacity": 0.7
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2018-borders",
+      "type": "line",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2018",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "rgba(208, 211, 46, 1)",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[10, 1.5], [13, 1]]
+        }
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2019-area",
+      "type": "fill",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2019",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": "rgba(208, 211, 46, 1)",
+        "fill-opacity": 0.7
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2019-borders",
+      "type": "line",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2019",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "rgba(208, 211, 46, 1)",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[10, 1.5], [13, 1]]
+        }
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2020-area",
+      "type": "fill",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": "rgba(208, 211, 46, 1)",
+        "fill-opacity": 0.7
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-bio-2020-borders",
+      "type": "line",
+      "source": "rpg-bio-anon",
+      "source-layer": "anon_rpgbio_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "rgba(208, 211, 46, 1)",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[10, 1.5], [13, 1]]
+        }
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-nonbio-2020-area",
+      "type": "fill",
+      "source": "rpg-nonbio-anon",
+      "source-layer": "anon_rpg_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": "#673AB7",
+        "fill-opacity": 0.7
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "rpg-anon-nonbio-2020-borders",
+      "type": "line",
+      "source": "rpg-nonbio-anon",
+      "source-layer": "anon_rpg_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "#B39DDB",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[10, 1.5], [13, 1]]
+        }
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "operator-parcels-2017",
+      "type": "fill",
+      "source": "operatorParcels2017",
+      "paint": {
+        "fill-color": [
+          "match",
+          ["get", "bio"],
+          "0",
+          "rgba(116, 0, 50, 1)",
+          "1",
+          "rgba(0, 60, 0, 1)",
+          "white"
+        ],
+        "fill-opacity": 0.8
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "operator-parcels-2018",
+      "type": "fill",
+      "source": "operatorParcels2018",
+      "paint": {
+        "fill-color": [
+          "match",
+          ["get", "bio"],
+          "0",
+          "rgba(179, 45, 100, 1)",
+          "1",
+          "rgba(0, 110, 27, 1)",
+          "white"
+        ],
+        "fill-opacity": 0.8
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "operator-parcels-2019",
+      "type": "fill",
+      "source": "operatorParcels2019",
+      "paint": {
+        "fill-color": [
+          "match",
+          ["get", "bio"],
+          "0",
+          "rgba(227, 101, 157, 1)",
+          "1",
+          "rgba(31, 163, 65, 1)",
+          "white"
+        ],
+        "fill-opacity": 0.8
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "operator-parcels-2020",
+      "type": "fill",
+      "source": "operatorParcels2020",
+      "paint": {
+        "fill-color": [
+          "match",
+          ["get", "bio"],
+          "0",
+          "rgba(253, 168, 212, 1)",
+          "1",
+          "rgba(98, 215, 113, 1)",
+          "white"
+        ],
+        "fill-opacity": 0.8
+      },
+      "layout": {
+        "visibility": "none"
+      }
+    }
+  ]
+}

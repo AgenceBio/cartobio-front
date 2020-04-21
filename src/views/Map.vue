@@ -78,6 +78,20 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
+
+          <MglVectorLayer v-for="(layer) in vectorLayers"
+            :key="layer.id"
+            before="water-name-lakeline"
+            :sourceId="layer.source"
+            :layerId="layer.id"
+            :layer="layer" />
+
+          <MglGeojsonLayer v-for="(layer) in geojsonLayers"
+            :key="layer.id"
+            before="water-name-lakeline"
+            :sourceId="layer.source"
+            :layerId="layer.id"
+            :layer="layer" />
         </MglMap>
 
         <!-- Card with Aggregated parcels details - maybe a bit more infography would be awesome -->
@@ -102,16 +116,12 @@
                     <v-subheader>{{ operator.title }}</v-subheader>
                   </v-list-tile>
                   <!-- List of years with parcels from the operator -->
-                  <v-list-tile
-                    v-for="(year, index) in sortedYears"
-                    :key="index"
-                     @click="toggleLayerOperator(year)"
-                  >
+                  <v-list-tile v-for="(layerName) in operatorLayers" :key="layerName">
                     <v-list-tile-action>
-                      <v-switch :color="layersVisible[year].colorBio" v-model="layersVisible[year].visibility" @click="toggleLayerOperator(year)" />
+                      <v-switch v-model="layersVisibility[layerName]" />
                     </v-list-tile-action>
-                    <v-list-tile-content>
-                      {{year}}
+                    <v-list-tile-content @click.prevent="layersVisibility[layerName] != layersVisibility[layerName]">
+                      {{layerName}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
@@ -124,16 +134,12 @@
 
                 <v-list class="pt-0" dense>
                   <!-- List of years with parcels from the operator -->
-                  <v-list-tile
-                    v-for="(year, index) in sortedYears"
-                    :key="index"
-                    @click="toggleLayerAnon(year)"
-                  >
+                  <v-list-tile v-for="(sourceId) in anonymousSources" :key="sourceId">
                     <v-list-tile-action>
-                      <v-switch :color="layersVisible['anon' + year].color" v-model="layersVisible['anon' + year].visibility" @click="toggleLayerAnon(year)"></v-switch>
+                      <v-switch v-model="sourcesVisibility[sourceId]"></v-switch>
                     </v-list-tile-action>
-                    <v-list-tile-content>
-                      {{year}}
+                    <v-list-tile-content @click.prevent="sourcesVisibility[sourceId] != sourcesVisibility[sourceId]">
+                      {{sourceId}}
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
@@ -163,9 +169,11 @@ import {
   MglNavigationControl,
   MglGeolocateControl,
   MglScaleControl,
+  MglGeojsonLayer,
+  MglVectorLayer,
 } from "vue-mapbox";
 
-import {baseStyle, rpgNonBioStyle} from "@/assets/styles/index.js";
+import {baseStyle, cadastreStyle, infrastructureStyle, labelsStyle, cartobioStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
@@ -182,22 +190,6 @@ function queryOperatorParcels (operatorParcels, lngLat) {
     return foundFeature ? {...hashMap, [year]: foundFeature} : hashMap
   }, {})
 }
-
-// // 2019 anonymous bio layer
-// let bioLayer = {
-//   id: "bio-tiles",
-//   type: "fill",
-//   source: "bio-tiles",
-//   "source-layer": "anon_rpgbio_2019",
-//   minzoom: 0,
-//   paint: {
-//     "fill-color": "#D0D32E",
-//     "fill-outline-color": "#83C2AB",
-//     "fill-opacity": 0.6
-//   },
-//   tms: true,
-//   maxzoom: 24
-// };
 
 // Mapbox draw control
 let draw = new MapboxDraw({
@@ -227,6 +219,8 @@ export default {
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
+    MglVectorLayer,
+    MglGeojsonLayer,
     MglMap
   },
   data() {
@@ -237,13 +231,18 @@ export default {
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       zoom: null,
       center: null,
-      mapStyle: mergeAll([baseStyle, rpgNonBioStyle]),
+      mapStyle: mergeAll([baseStyle, infrastructureStyle, cadastreStyle, cartobioStyle, labelsStyle]),
 
-      // anonymous layers
-      anonLayers: {},
       // current operator data
       operator: {},
-      // operator parcels by year
+
+      operatorParcelSources: [
+        [2020, 'rpgbio2020v1'],
+        [2019, 'rpgbio2019v4'],
+        [2018, 'rpgbio2018v9'],
+        [2017, 'rpgbio2017v7'],
+      ],
+
       parcelsOperator: {
         2020: geoJsonTemplate,
         2019: geoJsonTemplate,
@@ -266,11 +265,6 @@ export default {
         cadastre: null
       },
 
-      // placeholder for layers for an operator
-      layersOperator: {},
-
-      // display related data
-
       // show drawer
       drawer: false,
       // mini drawer display
@@ -278,6 +272,8 @@ export default {
 
       // edit mode
       editMode: false,
+
+      sourcesVisibility: {},
 
       // misc data
       filterLabel: {
@@ -295,33 +291,7 @@ export default {
       // new parcel dialog
       setUpParcel: false,
       showLayersCard: false,
-      layersVisible: {
-        // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
-        2020: {
-          visibility: false,
-          colorBio: "rgba(98, 215, 113, 1)",
-          colorNotBio: "rgba(253, 168, 212, 1)"
-        },
-        2019: {
-          visibility: false,
-          colorBio: "rgba(31, 163, 65, 1)",
-          colorNotBio: "rgba(227, 101, 157, 1)"
-        },
-        2018: {
-          visibility: false,
-          colorBio: "rgba(0, 110, 27, 1)",
-          colorNotBio: "rgba(179, 45, 100, 1)"
-        },
-        2017: {
-          visibility: false,
-          colorBio: "rgba(0, 60, 0, 1)",
-          colorNotBio: "rgba(116, 0, 50, 1)"
-        },
-        anon2020: { visibility: false, color: "rgba(208, 211, 46, 1)" },
-        anon2019: { visibility: false, color: "rgba(208, 211, 46, 1)" },
-        anon2018: { visibility: false, color: "rgba(208, 211, 46, 1)" },
-        anon2017: { visibility: false, color: "rgba(208, 211, 46, 1)" }
-      },
+
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
       // layers display in the order of years : last year in this array on top
@@ -347,6 +317,17 @@ export default {
 
     const [, lat, lon, zoom] = this.latLonZoom.match(/@([0-9.-]+),([0-9.-]+),(\d+)/)
 
+    this.$watch('sourcesVisibility', (sourcesVisibility) => {
+      const { mapStyle } = this
+
+      Object.entries(sourcesVisibility).forEach(([sourceId, isVisible]) => {
+        const layers = mapStyle.layers.filter(layer => layer['source-layer'] === sourceId)
+        const newVisibility = isVisible ? 'visible' : 'none'
+
+        layers.forEach(layer => layer.layout.visibility = newVisibility)
+      })
+    }, { deep: true })
+
     this.zoom = Number(zoom);
     this.center = [Number(lon), Number(lat)];
 
@@ -367,12 +348,12 @@ export default {
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
       // mongoDB filter and not standard WFS filter.
-      let params = {
+      const baseParams = {
         service: "WFS",
         version: "1.1.0",
         request: "GetFeature",
         outputFormat: "GeoJSON",
-        typeName: "rpgbio2020v1",
+        typeName: null,
         srsname: "4326",
         filter: JSON.stringify({
           // this is intended to work only with numeroPacage
@@ -383,83 +364,22 @@ export default {
         })
       };
 
-      let tokenCollab = btoa(
-        process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-          ":" +
-          process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-      );
+      const {VUE_APP_ESPACE_COLLAB_LOGIN: login} = process.env
+      const {VUE_APP_ESPACE_COLLAB_PASSWORD: psswd} = process.env
+      const headers = {
+        Authorization: "Basic " + btoa(`${login}:${psswd}`)
+      }
 
-      // get 2020 parcels from the operator
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.displayOperatorLayer(data.data));
-      // .catch(data => this.displayErrorMessage(data));
+      this.operatorParcelSources.forEach(([year, layerName]) => {
+        const params = JSON.parse(JSON.stringify(baseParams));
+        params.typeName = layerName;
 
-      // get 2019 parcels from the operator
-      let params2019 = JSON.parse(JSON.stringify(params));
-      params2019.typeName = "rpgbio2019v4";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2019,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params,
+          headers
+        })
+        .then(data => this.addOperatorData(data.data, year));
       })
-      .then(data => this.addOperatorData(data.data, "2019"));
-
-      // get 2018 parcels from the operator
-      let params2018 = JSON.parse(JSON.stringify(params));
-      params2018.typeName = "rpgbio2018v9";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2018,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2018"));
-
-      // get 2017 parcels from the operator
-      let params2017 = JSON.parse(JSON.stringify(params));
-      params2017.typeName = "rpgbio2017v7";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2017,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2017"));
-      // }.bind(this)
-      // );
-      // store the layers
-      // maybe in future evolutions: let user choose the color of the layers so we don't have to handle it ourselves for lager set of years.
-      // maybe a loop to do it but need to store colors for each
-      this.layersOperator["2020"] = this.getYearLayer(
-        "2020",
-        "rgba(98, 215, 113, 1)", // bio
-        "rgba(253, 168, 212, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2019"] = this.getYearLayer(
-        "2019",
-        "rgba(31, 163, 65, 1)", // bio
-        "rgba(227, 101, 157, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2018"] = this.getYearLayer(
-        "2018",
-        "rgba(0, 110, 27, 1)", // bio
-        "rgba(179, 45, 100, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2017"] = this.getYearLayer(
-        "2017",
-        "rgba(0, 60, 0, 1)", // bio
-        "rgba(116, 0, 50, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
     }
   },
   computed: {
@@ -468,10 +388,33 @@ export default {
     ...mapGetters('user', ['isAuthenticated']),
     ...mapState(['currentYear']),
 
+    vectorLayers () {
+      return this.mapStyle.layers
+        .filter(({ id }) => id.match(/^rpg-anon-/))
+    },
+
+    geojsonLayers () {
+      return this.mapStyle.layers
+        .filter(({ id }) => id.match(/^operator/))
+    },
+
+    anonymousSources () {
+      return this.mapStyle.layers
+        .filter(({ id }) => id.match(/^rpg-anon-bio-/))
+        .map(layer => layer['source-layer'])
+        .filter((id, i, array) => array.slice(i + 1).includes(id))
+    },
+
+    operatorLayers () {
+      return []/*operatorStyle.layers*/
+        .map(({ id }) => id)
+        .map(id => id.replace(/-[a-z]+$/, ''))
+        .filter((id, i, array) => array.slice(i + 1).includes(id))
+    },
+
     // to display the years in right order in the layers panel
     sortedYears() {
-      let yearsArr = this.years.slice();
-      return yearsArr.reverse();
+      return this.operatorParcelSources.map(([year]) => year).reverse();
     }
   },
   methods: {
@@ -483,6 +426,9 @@ export default {
       // for future reference in events
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
       this.map = map
+
+      this.$set(this.sourcesVisibility, `anon_rpg_${this.currentYear}`, true)
+      this.$set(this.sourcesVisibility, `anon_rpgbio_${this.currentYear}`, true)
 
       this.updateHash(map)
       map.on('moveend', () => this.updateHash(map))
@@ -536,56 +482,7 @@ export default {
 
     loadLayers(map) {
       this.showLayersCard = true;
-
-      this.years.forEach((year) => {
-        // bio source
-        let bioSource = {
-          type: "vector",
-          scheme: "tms",
-          tiles: [
-            process.env.VUE_APP_GEOSERVER_PREFIX +
-              "" +
-              year +
-              process.env.VUE_APP_GEOSERVER_SUFFIX
-          ]
-        };
-        // security to not trigger map errors
-        if (!map.getSource("bio-" + year)) {
-          map.addSource("bio-" + year, bioSource);
-        }
-        let bioLayer = {
-          id: "bio-tiles-" + year,
-          type: "fill",
-          source: "bio-" + year,
-          "source-layer": "anon_rpgbio_" + year,
-          minzoom: 9,
-          paint: {
-            "fill-color": "rgba(208, 211, 46, 1)",
-            "fill-outline-color": "rgba(176, 178, 43, 1)",
-            "fill-opacity": 0.6
-          },
-          tms: true,
-          maxzoom: 24,
-          layout: {visibility: 'none'}
-        };
-        this.anonLayers[year] = bioLayer;
-        map.addLayer(this.anonLayers[year]);
-        map.addLayer({
-          id: `bio-tiles-${year}-border`,
-          type: "line",
-          source: "bio-" + year,
-          "source-layer": "anon_rpgbio_" + year,
-          minzoom: 10,
-          paint: {
-            "line-color": "rgba(208, 211, 46, 1)",
-            "line-opacity": 1,
-            "line-width": {"stops": [[10, 1.5], [13, 1]]}
-          },
-          layout: {visibility: 'none'}
-        });
-      });
-
-      this.toggleLayerAnon(this.currentYear, true);
+      console.log('loadLayers(map)')
 
       if (!map.getSource("selected")) {
         map.addSource("selected", {
@@ -599,32 +496,7 @@ export default {
           data: this.highlightedParcels
         });
       }
-      if (!map.getSource("operatorParcels2020")) {
-        map.addSource("operatorParcels2020", {
-          type: "geojson",
-          data: this.parcelsOperator[2020]
-        });
-      }
-      if (!map.getSource("operatorParcels2019")) {
-        map.addSource("operatorParcels2019", {
-          type: "geojson",
-          data: this.parcelsOperator[2019]
-        });
-      }
 
-      if (!map.getSource("operatorParcels2018")) {
-        map.addSource("operatorParcels2018", {
-          type: "geojson",
-          data: this.parcelsOperator[2018]
-        });
-      }
-      if (!map.getSource("operatorParcels2017")) {
-        map.addSource("operatorParcels2017", {
-          type: "geojson",
-          data: this.parcelsOperator[2017]
-        });
-      }
-      // highlight
       map.addLayer({
         id: "highlighted-parcels",
         type: "fill",
@@ -641,15 +513,6 @@ export default {
           ],
           "fill-outline-color": "rgba(100, 200, 240, 1)",
           "fill-opacity": 1
-        }
-      });
-      map.addLayer({
-        id: "highlighted-parcels-border",
-        type: "line",
-        source: "highlight",
-        paint: {
-          "line-color": "rgba(100, 200, 240, 1)",
-          "line-width": 2
         }
       });
 
@@ -673,6 +536,7 @@ export default {
         }
       });
     },
+
     handleSearchResult(value) {
       // this.map.panTo(value.geometry.coordinates);
       this.map.easeTo({
@@ -683,6 +547,7 @@ export default {
 
     displayOperatorLayer(data) {
       this.addOperatorData(data, this.currentYear);
+
       this.bboxOperator = bbox(data);
       if (this.map && !this.isOperatorOnMap) {
         this.setUpMapOperator();
@@ -739,21 +604,9 @@ export default {
           padding: this.mapPadding
         });
       }
+
       this.isOperatorOnMap = true;
-      this.years.forEach(year => {
-        map.addLayer(this.layersOperator[year]);
-        map.addLayer({
-          ...this.layersOperator[year],
-          id: this.layersOperator[year].id + "-border",
-          type: "line",
-          paint: {
-            "line-color": "rgba(255, 255, 255, 1)",
-            "line-opacity": 0.6,
-            "line-width": 1
-          }
-        });
-      });
-      this.toggleLayerOperator(this.currentYear, true);
+      this.sourcesVisibility[`operator-parcels-${this.currentYear}`] = true
     },
     hoverParcel(parcel) {
       this.highlightedParcels = {
@@ -811,54 +664,21 @@ export default {
       this.newParcel.properties = newData[0];
       this.$forceUpdate();
     },
-    addOperatorLayer(data, year) {
-      this.parcelsOperator[year] = data;
-      this.layersVisible[year] = false;
-    },
+
     addOperatorData(data, year) {
       this.parcelsOperator[year] = data;
       if (this.map) {
         this.map
-          .getSource("operatorParcels" + year)
+          .getSource(`operatorParcels${year}`)
           .setData(this.parcelsOperator[year]);
       }
     },
-    toggleLayerOperator(layerYear, visibility) {
-      let layer = this.layersOperator[layerYear];
-      if (typeof visibility === "undefined") {
-        visibility = !this.layersVisible[layerYear].visibility;
-      }
-      this.layersVisible[layerYear].visibility = visibility;
-      this.toggleLayer(layer.id, visibility);
-    },
-    // layerYear: layer that we want to set the visibility
-    // visibility : boolean. true = layer is visible
-    toggleLayerAnon(layerYear, visibility) {
-      let layer = this.anonLayers[layerYear];
-      if (typeof visibility === "undefined") {
-        visibility = !this.layersVisible["anon" + layerYear].visibility;
-      }
-      this.layersVisible["anon" + layerYear].visibility = visibility;
-      this.toggleLayer(layer.id, visibility);
-    },
-    // toggle visibility of layer
-    toggleLayer(layer, visibility) {
-      const {map} = this
 
-      if (map && map.getLayer(layer)) {
-        if (visibility) {
-          map.setLayoutProperty(layer, 'visibility', 'visible');
-          map.setLayoutProperty(layer + '-border', 'visibility', 'visible');
-        } else {
-          map.setLayoutProperty(layer, 'visibility', 'none');
-          map.setLayoutProperty(layer + '-border', 'visibility', 'none');
-        }
-      }
-    },
     displayErrorMessage(data) {
       console.error(data);
       alert("Impossible de trouver le parcellaire de cet opérateur");
     },
+
     // annual parcel layer
     getYearLayer(layerYear, colorBio, colorNotBio, fillColor) {
       return {
@@ -885,11 +705,16 @@ export default {
     }
   },
   watch: {
-    getProfile: function(newProfile) {
+    getProfile: function(newProfile, oldProfile) {
       // if the map is not yet loaded, it will load layers
       // best would be to populate layers data and make the data react to them
-      if (newProfile.active && this.map) {
+      if (this.map && newProfile.active) {
+        console.log('this.loadLayers(this.map);')
         this.loadLayers(this.map);
+      }
+      // user is being logged out
+      else if (this.map && (!newProfile.active && oldProfile.active)) {
+        this.hideLayers(this.map)
       }
     }
   }
