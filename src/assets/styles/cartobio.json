@@ -29,13 +29,13 @@
       "type": "line",
       "source": "rpg-nonbio-anon",
       "source-layer": "anon_rpg_2020",
-      "minzoom": 9,
+      "minzoom": 10,
       "maxzoom": 24,
       "paint": {
         "line-color": "#B39DDB",
         "line-opacity": 0.9,
         "line-width": {
-          "stops": [[10, 1.5], [13, 1]]
+          "stops": [[9, 0], [12, 1]]
         }
       },
       "layout": {

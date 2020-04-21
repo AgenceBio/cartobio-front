@@ -53,8 +53,7 @@
       "type": "line",
       "source": "decoupage-administratif",
       "source-layer": "communes",
-      "minzoom": 10,
-      "maxzoom": 15,
+      "minzoom": 11,
       "filter": ["all"],
       "layout": {"visibility": "visible"},
       "paint": {
@@ -69,8 +68,19 @@
       "type": "line",
       "source": "decoupage-administratif",
       "source-layer": "departements",
-      "minzoom": 0,
-      "maxzoom": 10,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-color": "rgba(255, 255, 255, 1)",
+        "line-opacity": 0.5,
+        "line-width": 2
+      }
+    },
+    {
+      "id": "regions",
+      "type": "line",
+      "source": "decoupage-administratif",
+      "source-layer": "regions",
+      "maxzoom": 6,
       "layout": {"visibility": "visible"},
       "paint": {
         "line-color": "rgba(255, 255, 255, 1)",

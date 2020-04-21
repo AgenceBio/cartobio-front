@@ -525,7 +525,6 @@ export default {
           minzoom: 9,
           paint: {
             "fill-color": "rgba(208, 211, 46, 1)",
-            "fill-outline-color": "rgba(176, 178, 43, 1)",
             "fill-opacity": 0.6
           },
           tms: true,
@@ -543,7 +542,9 @@ export default {
           paint: {
             "line-color": "rgba(208, 211, 46, 1)",
             "line-opacity": 1,
-            "line-width": {"stops": [[10, 1.5], [13, 1]]}
+            "line-width": {
+              "stops": [[9, 0], [12, 1]]
+            }
           },
           layout: {visibility: 'none'}
         }, 'road_oneway');
@@ -607,7 +608,6 @@ export default {
             "rgba(6, 71, 75, 1)",
             "white"
           ],
-          "fill-outline-color": "rgba(100, 200, 240, 1)",
           "fill-opacity": 1
         }
       }, 'road_oneway');
@@ -636,7 +636,6 @@ export default {
             "rgba(9, 99, 106, 1)",
             "white"
           ],
-          "fill-outline-color": "rgba(100, 200, 240, 1)",
           "fill-opacity": 1
         }
       });
