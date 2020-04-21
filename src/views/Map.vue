@@ -549,6 +549,10 @@ export default {
         }, 'road_oneway');
       });
 
+      // non-bio
+      map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
+      cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
+
       this.toggleLayerAnon(this.currentYear, true);
 
       if (!map.getSource("selected")) {

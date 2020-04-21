@@ -88,7 +88,7 @@ export default {
 
     history () {
       const {operator, anon} = this.features
-      const YEAR_PATTERN = /-(\d+)$/
+      const YEAR_PATTERN = /_(\d+)$/
       let hoveredData = {}
 
       if (Object.keys(operator).length) {
@@ -105,9 +105,9 @@ export default {
       // we only replace the data if there is no operator data for the year
       if (anon) {
         anon
-          .filter(({source}) => YEAR_PATTERN.test(source))
-          .forEach(({properties, source, geometry}) => {
-            const [, year] = YEAR_PATTERN.exec(source)
+          .filter(({sourceLayer}) => YEAR_PATTERN.test(sourceLayer))
+          .forEach(({properties, sourceLayer, geometry}) => {
+            const [, year] = YEAR_PATTERN.exec(sourceLayer)
 
             if (!hoveredData[year]) {
               hoveredData[year] = {
