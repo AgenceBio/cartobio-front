@@ -2,16 +2,14 @@
   <v-layout>
       <!-- Parcels List -->
       <ParcelsList
-        :parcels.sync="parcelsOperator[this.currentYear]"
+        :parcels="parcelsOperator[this.currentYear]"
         v-if="drawer"
-        :drawer.sync="drawer"
-        :operator.sync="operator"
+        :drawer="drawer"
+        :operator="operator"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHovering($event)"
-        v-on:select-parcel="selectParcel($event)"
-        v-on:select-all-parcels="selectAllParcels($event)"
       ></ParcelsList>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
@@ -22,7 +20,7 @@
             <v-card-text>
               <ParcelDetails
                 :operator="operator"
-                :parcel.sync="newParcel"
+                :parcel="newParcel"
                 v-on:parcel-updated="updateNewParcel($event)"
               ></ParcelDetails>
             </v-card-text>
@@ -51,13 +49,6 @@
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
         </MglMap>
-
-        <!-- Card with Aggregated parcels details - maybe a bit more infography would be awesome -->
-        <SelectedParcelsDetails
-          class="data-card"
-          v-if="selectedParcels.features.length"
-          :selectedParcels.sync="selectedParcels.features"
-        ></SelectedParcelsDetails>
 
         <!-- Layers selector -->
         <v-flex class="layers-panel" v-show="showLayersCard">
@@ -138,11 +129,12 @@ import {
 
 import {cartobio as mapStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
-import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 
 import { mapGetters, mapState } from 'vuex';
+
+const centroid = require('@mapbox/polylabel')
 
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
@@ -191,7 +183,6 @@ export default {
 
   components: {
     ParcelsList,
-    SelectedParcelsDetails,
     ParcelDetails,
     ParcelDetailsPopup,
     Geosearch,
@@ -464,15 +455,8 @@ export default {
         this.loadLayers(map);
       }
 
-      map.on("mousemove", ({target:map, lngLat, point}) => {
-        const renderedFeatures = map.queryRenderedFeatures(point)
-
-        this.hoveredParcelFeatures = {
-          // anonymous source layers are named like 'anon_..._20xx'
-          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
-          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
-          cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
-        }
+      map.on("mousemove", ({lngLat, point}) => {
+        this.buildHoveredPopup(lngLat, point);
       });
 
       // handle click on layers
@@ -484,7 +468,15 @@ export default {
         this.setUpMapOperator();
       }
     },
-
+    buildHoveredPopup(lngLat, point) {
+      const renderedFeatures = this.map.queryRenderedFeatures(point)
+        this.hoveredParcelFeatures = {
+          // anonymous source layers are named like 'anon_..._20xx'
+          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
+          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
+          cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
+        }
+    },
     updateHash(map) {
       const {lat,lng} = map.getCenter()
       const zoom = Math.floor(map.getZoom())
@@ -719,26 +711,36 @@ export default {
           type: "line",
           paint: {
             "line-color": "rgba(255, 255, 255, 1)",
-            "line-opacity": 0.6,
-            "line-width": 1
+            "line-opacity": [
+              'case',
+              ['boolean', ['feature-state', 'highlighted'], false],
+              1,
+              0.65
+            ],
+            "line-width":[
+              'case',
+              ['boolean', ['feature-state', 'highlighted'], false],
+               3,
+               1
+            ]
           }
         });
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
     hoverParcel(parcel) {
-      this.highlightedParcels = {
-        features: [parcel],
-        type: "FeatureCollection"
-      };
-      this.map.getSource("highlight").setData(this.highlightedParcels);
+      const p = centroid(parcel.geometry.coordinates)
+      this.buildHoveredPopup(p);
+      this.map.setFeatureState({
+        source: 'operatorParcels2020',
+        id: parcel.id,
+      }, { highlighted: true });
     },
-    stopHovering() {
-      this.highlightedParcels = {
-        features: [],
-        type: "FeatureCollection"
-      };
-      this.map.getSource("highlight").setData(this.highlightedParcels);
+    stopHovering(parcel) {
+      this.map.setFeatureState({
+        source: 'operatorParcels2020',
+        id: parcel.id,
+      }, { highlighted: false });
     },
     hoverIlot(ilot) {
       this.highlightedParcels = {
@@ -831,7 +833,7 @@ export default {
       alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
-    getYearLayer(layerYear, colorBio, colorNotBio, fillColor) {
+    getYearLayer(layerYear, colorBio, colorNotBio) {
       return {
         id: "operator-parcels-" + layerYear,
         type: "fill",
@@ -839,15 +841,19 @@ export default {
         paint: {
           "fill-color": [
             "match",
-            ["get", "bio"],
-            "0",
+            ["to-number", ["get", "bio"]],
+            0,
             colorNotBio,
-            "1",
+            1,
             colorBio,
             "white"
           ],
-          "fill-outline-color": fillColor,
-          "fill-opacity": 0.8
+          "fill-opacity": [
+            'case',
+            ['boolean', ['feature-state', 'highlighted'], false],
+            1,
+            0.6
+          ] 
         },
         layout : {
           visibility: "none"

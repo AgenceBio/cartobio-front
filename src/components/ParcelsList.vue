@@ -3,8 +3,8 @@
     <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
       <v-layout column fill-height justify-space-between align-space-between>
         <!-- Header -->
-        <v-toolbar flat color="#00838F" class="sticky sticky-top">
-          <v-toolbar-title>{{operator.title}}</v-toolbar-title>
+        <v-toolbar flat color="#457382">
+          <v-toolbar-title class="white--text">{{operator.title}}</v-toolbar-title>
         </v-toolbar>
 
         <v-expansion-panel
@@ -16,7 +16,14 @@
           <v-divider></v-divider>
           <v-expansion-panel-content v-for="(ilot, i) in ilots" :key="i">
             <template v-slot:header>
-              <div>Ilot {{ilot.numIlot}}</div>
+              <div class="text-cyan text-uppercase font-weight-medium">
+                Ilot {{ilot.numIlot}}
+              </div>
+              <v-spacer></v-spacer>
+              <!-- <v-btn flat icon small><v-icon color="#457382">my_location</v-icon></v-btn> -->
+            </template>
+            <template v-slot:actions>
+              <v-icon color="#457382">arrow_drop_up</v-icon>
             </template>
             <v-list class="pt-0" dense>
               <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
@@ -26,7 +33,7 @@
                 >
                   <v-layout align-center row class="full-width">
                     <v-flex>
-                      <v-avatar size="24px" :color="parcel.properties.bio ? '#b9d065' : '#D32F2F'" class="mx-2"></v-avatar>
+                      <v-avatar size="24px" :color="parcel.properties.bioboolean ? '#b9d065' : '#D32F2F'" class="mx-2"></v-avatar>
                     </v-flex>
                     <v-flex xs4>
                       <v-list-tile-title>
@@ -35,7 +42,7 @@
                     </v-flex>
                     <v-flex xs6>
                       <v-list-tile-sub-title>
-                        <b>{{parcel.properties.culture.label}}</b>
+                        <span class="text-cyan font-weight-medium">{{parcel.properties.culture.label}}</span>
                       </v-list-tile-sub-title>
                     </v-flex>
                   </v-layout>
@@ -81,6 +88,10 @@ export default {
     };
   },
   methods: {
+    // expandIlot(ilotKey) {
+    //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
+    //   this.panel = this.expandedArr;
+    // },
     selectParcel(parcel) {
       this.$emit("select-parcel", parcel);
       // for some reason, the icon doesn't change so we have to re-render the component
@@ -204,7 +215,7 @@ export default {
       this.parcels.features.forEach(function(parcel) {    
         parcel.properties = {
         ...parcel.properties,
-        bio: Boolean(parseInt(parcel.properties.bio, 10)),
+        bioboolean: Boolean(parseInt(parcel.properties.bio, 10)),
         culture: fromCode(parcel.properties.codecultu)}
       })
       
@@ -280,7 +291,21 @@ export default {
   border-radius: 10px;
 }
 
+.text-cyan {
+  color : #457382;
+}
+
 .full-width {
   width: 100%;
+}
+
+/* forces the v-spacer element to grow */
+.v-expansion-panel__header > .spacer {
+  flex: 1 0 auto !important;
+}
+
+/* makes the line more compact than the "dense" mode */
+.v-list__tile {
+  height: 30px;
 }
 </style>
