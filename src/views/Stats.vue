@@ -16,7 +16,7 @@
                     <span class="digits huge">{{ bioSurfaceConnueRatio }}%</span>
                     des surfaces
                   </h2>
-                  <p><b>cultivées en bio</b> sont connues à ce jour.</p>
+                  <p><b>cultivées en bio</b> sont cartographiées à ce jour.</p>
               </v-card-title>
             </v-card>
           </v-flex>
