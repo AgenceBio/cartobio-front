@@ -9,7 +9,7 @@
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
-        v-on:stop-hovering-ilot="stopHovering($event)"
+        v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
@@ -470,12 +470,12 @@ export default {
     },
     buildHoveredPopup(lngLat, point) {
       const renderedFeatures = this.map.queryRenderedFeatures(point)
-        this.hoveredParcelFeatures = {
-          // anonymous source layers are named like 'anon_..._20xx'
-          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
-          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
-          cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
-        }
+      this.hoveredParcelFeatures = {
+        // anonymous source layers are named like 'anon_..._20xx'
+        anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
+        operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
+        cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
+      }
     },
     updateHash(map) {
       const {lat,lng} = map.getCenter()
@@ -730,7 +730,11 @@ export default {
     },
     hoverParcel(parcel) {
       const p = centroid(parcel.geometry.coordinates)
-      this.buildHoveredPopup(p);
+      let lngLat = {lng: p[0], lat: p[1]};
+      this.buildHoveredPopup(lngLat, this.map.project(lngLat));
+      this.highlightParcel(parcel);
+    },
+    highlightParcel(parcel) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
         id: parcel.id,
@@ -743,11 +747,14 @@ export default {
       }, { highlighted: false });
     },
     hoverIlot(ilot) {
-      this.highlightedParcels = {
-        features: ilot.parcels,
-        type: "FeatureCollection"
-      };
-      this.map.getSource("highlight").setData(this.highlightedParcels);
+      ilot.parcels.forEach((parcel) => {
+        this.highlightParcel(parcel);
+      });
+    },
+    stopHoveringIlot(ilot) {
+      ilot.parcels.forEach((parcel) => {
+        this.stopHovering(parcel);
+      });
     },
     selectParcel(parcel) {
       let tmp = this.parcelsOperator[this.currentYear].features.find(function(feature) {

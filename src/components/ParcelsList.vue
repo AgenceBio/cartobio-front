@@ -15,11 +15,12 @@
         >
           <v-divider></v-divider>
           <v-expansion-panel-content v-for="(ilot, i) in ilots" :key="i">
-            <template v-slot:header>
-              <div class="text-cyan text-uppercase font-weight-medium">
-                Ilot {{ilot.numIlot}}
-              </div>
-              <v-spacer></v-spacer>
+            <template v-slot:header @click.native.stop>
+              <v-flex align-center justify-space-between row fill-height
+                @mouseover="$emit('hover-ilot', ilot)"
+                @mouseleave="$emit('stop-hovering-ilot', ilot)">
+                <span class="text-cyan text-uppercase font-weight-medium">Ilot {{ilot.numIlot}}</span>
+              </v-flex>
               <!-- <v-btn flat icon small><v-icon color="#457382">my_location</v-icon></v-btn> -->
             </template>
             <template v-slot:actions>
