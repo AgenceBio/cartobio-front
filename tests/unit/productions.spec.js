@@ -4,7 +4,7 @@ import {getAllProductions, getGroupsProduction, getProductionsFromGroup, getProd
 describe('productions.js', () => {
   
   it('should reject unauthorized call', async () => {
-    await expect(getAllProductions()).rejects.toThrow("Request failed with status code 500");
+    await expect(getAllProductions()).rejects.toThrow("Network Error");
   });
 
   let token = "";

@@ -9,8 +9,8 @@ sur CartoBio, dans vos propres applications et outils métiers.
 sur l'accès aux données à travers des exemples techniques.
 
 **À qui s'adresse l'API** ?<br>
-Nous destinons CartoBio et son API aux **Organismes certificateurs**,
-et _prochainement_, aux **Collectivités locales** ainsi qu'aux **Opérateurs**.
+Nous destinons CartoBio et son API aux **Organismes certificateurs**.<br>
+Nous aimerions _ensuite_ la proposer aux **Collectivités locales**.
 
 # Utilisation de l'API CartoBio
 
@@ -19,11 +19,11 @@ et _prochainement_, aux **Collectivités locales** ainsi qu'aux **Opérateurs**.
 Si vous êtes une personne qui a accès au
 [portail de notifications de l'Agence Bio](http://notifications.agencebio.org/),
 ou que vous êtes une collectivité concernée
-par le développement du bio comme levier d'action de santé publique, [demandez-nous un jeton d'accès][ask-token], c'est _gratuit_[^1].
+par le développement du bio comme levier d'action de santé publique, [**demandez-nous un jeton d'accès**][ask-token], c'est _gratuit_[^1].
 
 Le **jeton d'accès ouvre l'accès aux données**.
 
-Un jeton d'accès ressemble à ceci :
+Voici un jeton de test ; il rend fonctionnels les exemples ci-après:
 
 ```
 eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.NL050Bt_jMnQ6WLcqIbmwGJkaDvZ0PIAZdCKTNF_-sSTiTw5cijPGm6TwUSCWEyQUMFvI1_La19TDPXsaemDow
@@ -102,38 +102,192 @@ $ curl https://cartobio.org/api/v1/parcels
     {
       "type": "Feature",
       "properties": {
-        "operator-id": 0,
-        "pacage": "026000001",
-        "codecultu": "PPH",
+        "pacage": "026000003",
+        "codecultu": "BTH",
         "bio": 1,
         "numilot": 1,
         "numparcel": 1,
-        "meta.year": 2020,
-        "meta.source": "RPG"
+        "numerobio": 11
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              5.108556747436523,
-              44.74149051605874
+               5.10632514953613,
+               44.7276498788965
             ],
             [
-              5.097227096557617,
-              44.752097396080465
+               5.11610984802246,
+               44.7327109365672
             ],
             [
-              5.094738006591797,
-              44.739661546926556
+               5.11877059936523,
+               44.7366131364681
             ],
             [
-              5.102462768554687,
-              44.73069876185414
+               5.12057304382324,
+               44.7398444464433
             ],
             [
-              5.108556747436523,
-              44.74149051605874
+               5.11739730834961,
+               44.7508173586635
+            ],
+            [
+               5.11516571044922,
+               44.749781117133
+            ],
+            [
+               5.11336326599121,
+               44.746489403153
+            ],
+            [
+               5.11173248291016,
+               44.7452702022555
+            ],
+            [
+               5.11035919189453,
+               44.7426488332508
+            ],
+            [
+               5.108642578125,
+               44.7378325199372
+            ],
+            [
+               5.1075267791748,
+               44.7349059564114
+            ],
+            [
+               5.10503768920898,
+               44.7333816459144
+            ],
+            [
+               5.10443687438965,
+               44.73130851916
+            ],
+            [
+               5.10375022888184,
+               44.7300280213927
+            ],
+            [
+               5.10349273681641,
+               44.7292353180915
+            ],
+            [
+               5.10272026062012,
+               44.7278937954473
+            ],
+            [
+               5.10632514953613,
+               44.7276498788965
+            ]
+          ]
+        ]
+      }
+    },
+
+    ...
+  ]
+}
+```
+
+## Récupérer le parcellaire d'un·e opérateur·ice
+
+**Chemin** : `/api/v1/parcels/operator/:numero-bio`
+
+**Exemple de requête** :
+
+```bash
+$ curl https://cartobio.org/api/v1/parcels/operator/11
+```
+
+**Exemple de réponse** :
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "pacage": "026000003",
+        "codecultu": "BTH",
+        "bio": 1,
+        "numilot": 1,
+        "numparcel": 1,
+        "numerobio": 11
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+               5.10632514953613,
+               44.7276498788965
+            ],
+            [
+               5.11610984802246,
+               44.7327109365672
+            ],
+            [
+               5.11877059936523,
+               44.7366131364681
+            ],
+            [
+               5.12057304382324,
+               44.7398444464433
+            ],
+            [
+               5.11739730834961,
+               44.7508173586635
+            ],
+            [
+               5.11516571044922,
+               44.749781117133
+            ],
+            [
+               5.11336326599121,
+               44.746489403153
+            ],
+            [
+               5.11173248291016,
+               44.7452702022555
+            ],
+            [
+               5.11035919189453,
+               44.7426488332508
+            ],
+            [
+               5.108642578125,
+               44.7378325199372
+            ],
+            [
+               5.1075267791748,
+               44.7349059564114
+            ],
+            [
+               5.10503768920898,
+               44.7333816459144
+            ],
+            [
+               5.10443687438965,
+               44.73130851916
+            ],
+            [
+               5.10375022888184,
+               44.7300280213927
+            ],
+            [
+               5.10349273681641,
+               44.7292353180915
+            ],
+            [
+               5.10272026062012,
+               44.7278937954473
+            ],
+            [
+               5.10632514953613,
+               44.7276498788965
             ]
           ]
         ]

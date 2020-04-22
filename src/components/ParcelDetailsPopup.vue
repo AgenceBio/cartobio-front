@@ -76,8 +76,7 @@ export default {
     },
 
     parcel () {
-      const mostRecentYear = Object.keys(this.history).sort((a, b) => b-a).pop()
-
+      const mostRecentYear = Object.keys(this.history).sort((a, b) => a-b).pop()
       return this.history[mostRecentYear] || {}
     },
 

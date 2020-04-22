@@ -1,0 +1,182 @@
+#!/usr/bin/env node
+
+// It expects you have these softwares available on your machine:
+// - gdal
+
+const {promises:fs} = require('fs')
+const {createWriteStream} = require('fs')
+const {promisify} = require('util')
+const pipeline = promisify(require('stream').pipeline)
+const ora = require('ora')
+const Listr = require('listr')
+const {get} = require('axios')
+const gdal = require('gdal-next')
+const {basename, dirname, join, resolve} = require('path')
+const glob = require('globby')
+const argv = require('minimist')(process.argv.slice(2), {
+  string: ['epci'],
+  boolean: ['in-lambert-93', 'shapefiles'],
+  alias: {
+    inLambert93: 'in-lambert-93'
+  },
+  default: {
+    shapefiles: true,
+    inLambert93: false
+  }
+})
+
+const workerFarm = require('worker-farm')
+const {Worker} = require('worker_threads')
+const shapefileWorker = require.resolve('../src/workers/shapefile.js')
+const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
+
+const {_:FILTERING_FILES, epci} = argv
+const {shapefiles, inLambert93} = argv
+const {from:SOURCE_FILES} = argv
+const {to:DESTINATION_FILE='export.geojson'} = argv
+
+
+if (!FILTERING_FILES || !SOURCE_FILES) {
+  console.error('npm run export -- --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
+  console.error('npm run export -- --from "../RPG/2019/d064/*.shp" --epci 200067106')
+  process.exit(1)
+}
+
+
+function fetchCommunesBoundaries() {
+  const FILENAME = 'communes.geojson'
+  const DEST = join(__dirname, '..', 'public', FILENAME)
+  const SOURCE = 'https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/' + FILENAME
+
+  // we pipe the source file to the local filesystem (createWriteStream())
+  // if it does not exist (catch())
+  return fs.stat(DEST)
+    .catch(async () => {
+      const response = await get(SOURCE, {responseType: 'stream'})
+
+      return pipeline(response.data, createWriteStream(DEST))
+    })
+    .catch(error => {
+      fs.unlink(DEST)
+      throw error
+    })
+    .then(() => fs.readFile(DEST, {encoding: 'utf8'}))
+    .then((geojson) => JSON.parse(geojson))
+}
+
+/**
+ * Return features linked by their Code INSEE
+ *
+ * @param  {[type]} collection [description]
+ * @param  {[type]} codes      [description]
+ * @return {[type]}            [description]
+ */
+async function getFeaturesByINSEECodes ({ collection: featureCollectionP, codes }) {
+  const collection = await featureCollectionP
+
+  return collection.features
+    .filter(({ properties }) => codes.includes(properties.code))
+}
+
+async function run (FILTERING_FILES) {
+  const l93 = gdal.SpatialReference.fromProj4('+init=epsg:2154')
+  const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
+  const l93towgs84 = new gdal.CoordinateTransformation(l93, wgs84)
+  let datasets = [];
+
+  const filteringFiles = await glob(FILTERING_FILES)
+  const sourceFiles = await glob(SOURCE_FILES)
+  const datasetCount = epci ? 1 : filteringFiles.length
+
+  // 1. Open datasets
+  // shapefiles
+  let spinner = ora({
+    text: `Parsing ${datasetCount} shapefiles`,
+    spinner: 'simpleDotsScrolling'
+  }).start()
+
+  // Filter by EPCI boundaries
+  if (epci) {
+    const codes = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
+      .then(response => response.data)
+      .then(list => list.find(({ code }) => code === String(epci)))
+      .then(({ membres }) => membres.map(m => m.code))
+
+    const features = await getFeaturesByINSEECodes({ collection: fetchCommunesBoundaries(), codes })
+    const dataset = gdal.open('input.gpkg', 'w', 'GPKG')
+    const layer = dataset.layers.create('communes', wgs84, gdal.wkbPolygon)
+    features.forEach(({ geometry, properties }) => {
+      const feature = new gdal.Feature(layer)
+
+      feature.setGeometry(gdal.Geometry.fromGeoJson(geometry))
+      feature.fields.set(properties)
+
+      layer.features.add(feature)
+    })
+
+    datasets.push(dataset)
+  }
+  // Filter by shapefile
+  else if (shapefiles) {
+    datasets = filteringFiles
+        .map(path => resolve(path))
+        .map(path => gdal.open(path, 'r'))
+  }
+
+  // 2. Collect all the features from each layer
+  const filteringFeatures = datasets.reduce((features, ds) => {
+    ds.layers.forEach(layer => {
+      layer.features.forEach((feature) => {
+        const geometry = feature.getGeometry()
+        inLambert93 && geometry.transform(l93towgs84)
+        features.push(geometry.toObject())
+      })
+    })
+
+    return features
+  }, [])
+
+  spinner.succeed(`Parsed ${filteringFeatures.length} features in ${datasetCount} datasets.`)
+
+  // 3. Browse bio/non-bio layers and intersect features
+  const allFeatures = sourceFiles
+    .map(s => resolve(s))
+    .map(sourceFile => ({
+      sourceFile,
+      featuresP: extract({sourceFile, filteringFeatures})
+    }))
+
+    // const worker = new Worker(
+    //   shapefileWorker,
+    //   {workerData: {sourceFile, filteringFeatures}}
+    // )
+    //
+    // worker.on('message', () => featuresCount++)
+    // worker.on('error', reject)
+
+  await new Listr(allFeatures.map(({sourceFile, featuresP}) => ({
+    title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
+    task: () => featuresP.then(features => {
+      return `${features.length.toFixed(0).padStart(5)} features`
+    })
+  })), {concurrent: true}).run()
+
+  // then export
+  const features = await Promise
+    .all(allFeatures.map(({featuresP}) => featuresP))
+    .then(allFeatures => [].concat(...allFeatures))
+
+  // workerFarm.end(extract)
+  await fs.writeFile(DESTINATION_FILE, JSON.stringify({
+    type: 'FeatureCollection',
+    features,
+  }, null, 2))
+
+  // XX. Then close datasets
+  datasets.forEach(d => d.close())
+  process.exit(0)
+}
+
+run(FILTERING_FILES)

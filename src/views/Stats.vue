@@ -3,24 +3,25 @@
     <HomeNavbar></HomeNavbar>
 
     <v-content v-bind:class="{errored, loading}">
-      <v-container>
+      <v-container grid-list-xl>
+        <v-layout flex row wrap justify-center  align-content-space-between>
+          <v-flex xs12 mt-4 mb-1>
+            <h1>Statistiques</h1>
+          </v-flex>
 
-        <h1>Statistiques</h1>
-
-        <v-layout flex>
-          <v-flex xs12 sm4 ma-3>
+          <v-flex xs12 sm4 my-2>
             <v-card v-if="stats" >
               <v-card-title class="d-block text-xs-center">
                   <h2 class="headline mb-0 mt-2">
-                    <span class="digits huge">{{ bioSurface | million | round }}</span>
-                    millions d'hectares
+                    <span class="digits huge">{{ bioSurfaceConnueRatio }}%</span>
+                    des surfaces
                   </h2>
-                  <p><b>Surfaces en bio</b> connues à ce jour.</p>
+                  <p><b>cultivées en bio</b> sont connues à ce jour.</p>
               </v-card-title>
             </v-card>
           </v-flex>
 
-          <v-flex xs12 sm4 ma-3>
+          <v-flex xs12 sm4 my-2>
             <v-card v-if="stats">
               <v-card-title class="d-block text-xs-center">
                   <h2 class="headline mb-0 mt-2">
@@ -32,7 +33,7 @@
             </v-card>
           </v-flex>
 
-          <v-flex xs12 sm4 ma-3>
+          <v-flex xs12 sm4 my-2>
             <v-card v-if="stats">
               <v-card-title class="d-block text-xs-center">
                   <h2 class="headline mb-0 mt-2">
@@ -40,6 +41,19 @@
                     demandes de données
                   </h2>
                   <p>par des collectivités et acteurs publics</p>
+              </v-card-title>
+            </v-card>
+          </v-flex>
+
+          <v-flex xs12 sm4 my-2>
+            <v-card v-if="stats">
+              <v-card-title class="d-block text-xs-center">
+                  <h2 class="headline mb-0 mt-2">
+                    <span class="digits huge">{{ apiAccessCount || '-' }}</span>
+                    <abbr title="Organisme de Certification">OC</abbr> utilise{{ apiAccessCount > 1 ? 'nt' : '' }} l'API CartoBio
+                  </h2>
+
+                  <p>{{ apiAccessCallsCount }} requêtes depuis le début du mois</p>
               </v-card-title>
             </v-card>
           </v-flex>
@@ -69,6 +83,9 @@ import Partners from "@/components/Partners";
 // SAU en 2019
 const SAU_TOTALE = 29000000;
 
+// SAU BIO Totale estimée en 2019 (en attente consolidation du chiffre par l'observatoire de l'agriculture biologique)
+const SAU_TOTALE_BIO = 2400000;
+
 function million(value) {
   return value / 1000000
 }
@@ -87,12 +104,13 @@ export default {
   data() {
     return {
       stats: null,
-      dataAccessCount: 3,
+      apiAccessCount: null,
+      apiAccessCallsCount: null,
+      dataAccessCount: 10,
       loading: true,
       errored: false,
       SAU_TOTALE,
       monthlyVisits: null,
-      averageDailyConnection: null,
     };
   },
 
@@ -112,6 +130,9 @@ export default {
     },
     bioSurfaceRatioSAU () {
       return (this.bioSurface / SAU_TOTALE * 100).toFixed(1)
+    },
+    bioSurfaceConnueRatio() {
+      return (this.bioSurface/SAU_TOTALE_BIO * 100).toFixed(1)
     },
     bioSurface () {
       return this.stats.aggregates.reduce((total, aggregate) => {
@@ -151,15 +172,25 @@ export default {
       format: "JSON",
       expanded: "1"
     }
-    get(matomoURL, {params})
-      .then(({data}) => {
-        let success = data.find(function(item){
-          return item.label === "Success";
-        });
-        this.monthlyVisits = success.nb_visits;
-        let day = new Date().getDate();
-        this.averageDailyConnection = (this.monthlyVisits / day).toFixed(2);
-      })
+
+    const requestP = get(matomoURL, {params})
+
+    // we fetch Event Actions which names is associated with a successful login
+    requestP.then(({data}) => {
+      const {nb_visits} = data.find(({label}) => label === "Success")
+      this.monthlyVisits = nb_visits;
+    })
+
+    // we fetch userIds of `/api/v1/parcels` Event Action
+    // oc:0 is the test token
+    requestP.then(({data}) => {
+      const {subtable} = data.find(({label}) => label === "/api/v1/parcels")
+
+      const subtables = subtable.filter(({label}) => label.match(/^oc:/) && label !== 'oc:0');
+
+      this.apiAccessCount = subtables.length
+      this.apiAccessCallsCount = subtables.reduce((total, {nb_events}) => total + nb_events, 0)
+    })
 
   }
 };

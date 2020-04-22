@@ -13,12 +13,14 @@
         </p>
 
         <v-layout flex>
-          <v-flex xs12 md7>
+          <v-flex xs12 md8>
             <markdown />
           </v-flex>
         </v-layout>
       </v-container>
     </v-content>
+
+    <Partners />
   </div>
 </template>
 
@@ -26,9 +28,16 @@
 h2 {
   margin-top: 1.5em;
 }
+
 ul {
   font-size: 1.1em;
+  list-style: none;
   margin: .5em 0;
+  padding-left: 0;
+
+  .v-chip:first-child {
+    margin-left: 0;
+  }
 
   li {
     margin-bottom: .5em;
@@ -38,13 +47,19 @@ ul {
 
 <script>
 import HomeNavbar from "@/components/HomeNavbar";
+import Partners from "@/components/Partners";
+import {VChip} from "vuetify/lib";
 import {vue, attributes} from "../../CHANGELOG.md";
 
 export default {
   name: "Changelog",
   components: {
     HomeNavbar,
-    markdown: vue.component,
+    Partners,
+    markdown: {
+      extends: vue.component,
+      components: { VChip }
+    },
   },
 
   data () {

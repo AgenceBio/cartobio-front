@@ -1,7 +1,13 @@
 .DS_Store
 node_modules
 /dist
-public/departements-avec-outre-mer.geojson
+public/*.geojson
+
+# Export files
+input.gpkg*
+export.gpkg
+export.geojson
+export.shp.zip
 
 # local env files
 .env.local

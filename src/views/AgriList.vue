@@ -34,16 +34,6 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="showConfirmPopup" persistent width="300">
-        <v-card>
-          <v-card-text>Aller au parcellaire de {{selectedOperatorData.title}} ?</v-card-text>
-
-          <v-card-actions>
-            <v-btn @click="cancelSelectOperator()">Annuler</v-btn>
-            <v-btn @click="selectOperator()">Confirmer</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
       <v-dialog v-model="showConfirmPacage" persistent width="300">
         <v-card>
           <v-card-text v-if="!errorPacage">
@@ -55,8 +45,9 @@
             <br />Veuillez vérifier le numéro de Pacage et réessayer svp.
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="showConfirmPacage = false">Annuler</v-btn>
-            <v-btn @click="selectOperator()" v-if="!errorPacage">Confirmer</v-btn>
+            <v-btn flat @click="showConfirmPacage = false">Annuler</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn class="primary" @click="selectOperator()" v-if="!errorPacage">Confirmer</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -112,7 +103,17 @@ export default {
           sortable: true,
           value: "numeroBio"
         },
-        { text: "Gérant", align: "right", sortable: true, value: "gerant" }
+        {
+          text: "Gérant·e",
+          align: "right",
+          sortable: false,
+          value: "gerant"
+        },
+        {
+          text: "Actions",
+          align: "right",
+          sortable: false,
+        }
       ],
       filters: {
         name: "",
@@ -132,9 +133,6 @@ export default {
     getProfile() {
       return this.$store.getters.getProfile;
     },
-    showConfirmPopup() {
-      return !!this.selectedOperatorData.title;
-    }
   },
   created: function() {
     this.loadingData = true;
@@ -266,6 +264,14 @@ export default {
   },
   beforeDestroy: function() {
     cancel("Operation canceled by the user.");
+  },
+
+  watch: {
+    selectedOperatorData (newData, oldData) {
+      if (newData.title && newData.title !== oldData.title) {
+        this.selectOperator()
+      }
+    }
   }
 };
 </script>

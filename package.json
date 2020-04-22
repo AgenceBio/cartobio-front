@@ -3,12 +3,16 @@
   "version": "0.4.0",
   "private": true,
   "scripts": {
+    "start": "vue-cli-service serve",
+    "update-stats": "node bin/update-stats",
+    "export": "node bin/export",
+    "postexport": "npm run postexport:shp && npm run postexport:gpkg",
+    "postexport:shp": "cat export.geojson | npx geojson2shp > export.shp.zip",
+    "postexport:gpkg": "ogr2ogr -f GPKG -nln cartobio export.gpkg export.geojson",
     "serve": "npm start",
     "build": "vue-cli-service build",
     "posttest": "vue-cli-service lint",
-    "start": "vue-cli-service serve",
-    "test": "vue-cli-service test:unit",
-    "update-stats": "node bin/update-stats"
+    "test": "vue-cli-service test:unit"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.1.2",
@@ -42,9 +46,13 @@
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.1",
     "frontmatter-markdown-loader": "^3.2.1",
+    "gdal-next": "^1.0.2",
+    "globby": "^11.0.0",
+    "listr": "^0.14.3",
     "markdown-it": "^10.0.0",
     "markdown-it-footnote": "^3.0.2",
     "markdown-it-prism": "^2.0.5",
+    "minimist": "^1.2.5",
     "node-sass": "^4.13.1",
     "ora": "^4.0.3",
     "prismjs": "^1.19.0",
@@ -55,7 +63,8 @@
     "vue-cli-plugin-fullpage": "^1.0.2",
     "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.4.3"
+    "vuetify-loader": "^1.4.3",
+    "worker-farm": "^1.7.0"
   },
   "eslintConfig": {
     "root": true,
