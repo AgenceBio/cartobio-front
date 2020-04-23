@@ -6,6 +6,7 @@
         v-if="drawer"
         :drawer="drawer"
         :operator="operator"
+        v-on:close-drawer="closeDrawer()"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
@@ -661,6 +662,15 @@ export default {
         }
       }
     },
+
+    closeDrawer () {
+      this.drawer = false
+      this.$store.commit("setOperator", {})
+      this.operator = {}
+      this.$forceUpdate()
+      // todo cleanup operatorParcels
+    },
+
     // function  used by draw features
     updateArea(e) {
       var data = draw.getAll();
@@ -860,7 +870,7 @@ export default {
             ['boolean', ['feature-state', 'highlighted'], false],
             1,
             0.6
-          ] 
+          ]
         },
         layout : {
           visibility: "none"

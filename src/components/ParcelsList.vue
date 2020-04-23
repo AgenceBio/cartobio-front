@@ -3,11 +3,21 @@
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <!-- Header -->
-        <v-toolbar flat prominent color="#457382">
-          <v-toolbar-title class="white--text">
+        <v-toolbar dark flat prominent color="#457382">
+          <v-toolbar-side-icon @click="$emit('close-drawer')">
+            <v-icon>navigate_before</v-icon>
+          </v-toolbar-side-icon>
+          <v-toolbar-title class="ml-0">
             {{operator.title}}
           </v-toolbar-title>
         </v-toolbar>
+
+        <v-flex>
+          <p class="update-info pa-2 ma-0 caption">
+            <v-icon small color="#457382">info</v-icon>
+            Dernière mise à jour le <b>15 juillet 2019</b>.
+          </p>
+        </v-flex>
 
         <v-expansion-panel
           v-model="panel"
@@ -309,6 +319,11 @@ export default {
      }
     }
   }
+}
+
+.update-info {
+  background: #F6F7E2;
+  vertical-align: middle;
 }
 
 .full-width {
