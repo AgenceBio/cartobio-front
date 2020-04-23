@@ -1,10 +1,10 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
+  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer" @transitionend="drawer === false && $emit('close-drawer')">
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <!-- Header -->
         <v-toolbar dark flat prominent color="#457382">
-          <v-toolbar-side-icon @click="$emit('close-drawer')">
+          <v-toolbar-side-icon @click="drawer=false">
             <v-icon>navigate_before</v-icon>
           </v-toolbar-side-icon>
           <v-toolbar-title class="ml-0">

@@ -3,8 +3,7 @@
       <!-- Parcels List -->
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
-        v-if="drawer"
-        :drawer="drawer"
+        :drawer.sync="drawer"
         :operator="operator"
         v-on:close-drawer="closeDrawer()"
         v-on:hover-parcel="hoverParcel($event)"
@@ -666,9 +665,9 @@ export default {
     closeDrawer () {
       this.drawer = false
       this.$store.commit("setOperator", {})
+      this.map.resize()
       this.operator = {}
-      this.$forceUpdate()
-      // todo cleanup operatorParcels
+      this.clearOperatorData()
     },
 
     // function  used by draw features
@@ -813,6 +812,13 @@ export default {
           .setData(this.parcelsOperator[year]);
       }
     },
+
+    clearOperatorData() {
+      this.years.forEach(year => {
+        this.addOperatorData(geoJsonTemplate, year)
+      })
+    },
+
     toggleLayerOperator(layerYear, visibility) {
       let layer = this.layersOperator[layerYear];
       if (typeof visibility === "undefined") {
