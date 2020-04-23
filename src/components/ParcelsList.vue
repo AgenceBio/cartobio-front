@@ -42,22 +42,28 @@
                       </v-list-tile-title>
                     </v-flex>
                     <v-flex xs6>
-                      <v-list-tile-sub-title>
-                        <span class="text-cyan font-weight-medium">{{parcel.properties.culture.label}}</span>
-                      </v-list-tile-sub-title>
+                      <v-tooltip top left dark open-delay=0>
+                        <template v-slot:activator="{ on }">
+                          <v-list-tile-sub-title v-on="on">
+                            <span class="text-cyan">{{parcel.properties.culture.label}}</span>
+                          </v-list-tile-sub-title>
+                        </template>
+                        <span>{{parcel.properties.culture.label}}</span>
+                      </v-tooltip>
                     </v-flex>
                   </v-layout>
+                </v-container>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <!-- download parcels button -->
-        <div class="justify-self-end">
+        <v-flex shrink class="download">
           <v-layout column align-center justify-center py-3>
-            <span class="grey--text">Export des données parcellaires</span>
+            <span class="grey--text text--darken-2">Export des données parcellaires</span>
             <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
-              <span>Télécharger</span>
+              Télécharger
             </v-btn>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
@@ -66,7 +72,7 @@
               <span>Bientôt disponible</span>
             </v-tooltip>
           </v-layout>
-        </div>
+        </v-flex>
       </v-layout>
     </v-navigation-drawer>
   </div>
@@ -85,7 +91,6 @@ export default {
   },
   data() {
     return {
-      allSelected: this.checkbox
     };
   },
   methods: {
@@ -93,15 +98,6 @@ export default {
     //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
     //   this.panel = this.expandedArr;
     // },
-    selectParcel(parcel) {
-      this.$emit("select-parcel", parcel);
-      // for some reason, the icon doesn't change so we have to re-render the component
-      this.$forceUpdate();
-    },
-    selectAll(bool) {
-      this.$emit("select-all-parcels", bool);
-      this.$forceUpdate();
-    },
     downloadCSV() {
       // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
       let rows = this.parcels.features.map(this.createParcelArray);
@@ -308,5 +304,9 @@ export default {
 /* makes the line more compact than the "dense" mode */
 .v-list__tile {
   height: 30px;
+ }
+ 
+.download {
+  background-color: #F6F7E2;
 }
 </style>
