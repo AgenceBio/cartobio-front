@@ -1,10 +1,12 @@
 <template>
-  <div>
-    <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
-      <v-layout column fill-height justify-space-between align-space-between>
+  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
+    <v-container fluid fill-height pa-0>
+      <v-layout column>
         <!-- Header -->
-        <v-toolbar flat color="#457382">
-          <v-toolbar-title class="white--text">{{operator.title}}</v-toolbar-title>
+        <v-toolbar flat prominent color="#457382">
+          <v-toolbar-title class="white--text">
+            {{operator.title}}
+          </v-toolbar-title>
         </v-toolbar>
 
         <v-expansion-panel
@@ -13,8 +15,7 @@
           class="justify-self-start overflow no-box-shadow"
           expand
         >
-          <v-divider></v-divider>
-          <v-expansion-panel-content v-for="(ilot, i) in ilots" :key="i">
+          <v-expansion-panel-content v-for="ilot in ilots" :key="ilot.numIlot">
             <template v-slot:header @click.native.stop>
               <v-flex align-center justify-space-between row fill-height
                 @mouseover="$emit('hover-ilot', ilot)"
@@ -26,36 +27,23 @@
             <template v-slot:actions>
               <v-icon color="#457382">arrow_drop_up</v-icon>
             </template>
-            <v-list class="pt-0" dense>
-              <v-list-tile v-for="(parcel, j) in ilot.parcels" :key="j">
-                <v-list-tile-content
-                  @mouseover="$emit('hover-parcel', parcel)"
-                  @mouseleave="$emit('stop-hovering', parcel)"
-                >
-                  <v-layout align-center row class="full-width">
-                    <v-flex>
-                      <v-avatar size="24px" :color="parcel.properties.bioboolean ? '#b9d065' : '#D32F2F'" class="mx-2"></v-avatar>
-                    </v-flex>
-                    <v-flex xs4>
-                      <v-list-tile-title>
-                        <b>Parcelle {{parcel.properties.numparcel}}</b>
-                      </v-list-tile-title>
-                    </v-flex>
-                    <v-flex xs6>
-                      <v-tooltip top left dark open-delay=0>
-                        <template v-slot:activator="{ on }">
-                          <v-list-tile-sub-title v-on="on">
-                            <span class="text-cyan">{{parcel.properties.culture.label}}</span>
-                          </v-list-tile-sub-title>
-                        </template>
-                        <span>{{parcel.properties.culture.label}}</span>
-                      </v-tooltip>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
+
+            <v-data-table class="parcels" :items="ilot.parcels" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
+              <template v-slot:items="{item:parcel}">
+                <tr @mouseover="$emit('hover-parcel', parcel)" @mouseleave="$emit('stop-hovering', parcel)">
+                  <td class="status"><v-avatar size="24px" :color="parcel.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
+                  <td class="numparcel">Parcelle {{parcel.properties.numparcel}}</td>
+                  <td class="text-cyan cultural-label">
+                    <v-tooltip top left dark open-delay=0>
+                      <template v-slot:activator="{ on }">
+                        <span v-on="on" class="text-truncate d-block">{{parcel.properties.culture.label}}</span>
+                      </template>
+                      <span>{{parcel.properties.culture.label}}</span>
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <!-- download parcels button -->
@@ -74,8 +62,8 @@
           </v-layout>
         </v-flex>
       </v-layout>
-    </v-navigation-drawer>
-  </div>
+    </v-container>
+  </v-navigation-drawer>
 </template>
 <script>
 import getObjectValue from "lodash/get";
@@ -98,6 +86,12 @@ export default {
     //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
     //   this.panel = this.expandedArr;
     // },
+    sortIlots (items) {
+      return items.sort((a, b) => {
+        return Number(a.properties.numparcel) - Number(b.properties.numparcel)
+      })
+    },
+
     downloadCSV() {
       // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
       let rows = this.parcels.features.map(this.createParcelArray);
@@ -199,23 +193,18 @@ export default {
         // console.log(newVal);
       },
       deep: true
-    },
-    allSelected: {
-      handler: function(newVal) {
-        this.selectAll(newVal);
-      }
     }
   },
   computed: {
     ilots() {
       // format parcels to retrieve culture name:
-      this.parcels.features.forEach(function(parcel) {    
+      this.parcels.features.forEach(function(parcel) {
         parcel.properties = {
         ...parcel.properties,
         bioboolean: Boolean(parseInt(parcel.properties.bio, 10)),
         culture: fromCode(parcel.properties.codecultu)}
       })
-      
+
       // group parcels by ilots
       let reduced = reduce(
         this.parcels.features,
@@ -231,13 +220,13 @@ export default {
 
       let ilots = reduce(
         reduced,
-        function(result, value, key) {
-          result.push({ numIlot: key, parcels: value });
+        function(result, parcels, numIlot) {
+          result.push({ numIlot, parcels });
           return result;
         },
         []
       );
-      
+
       return ilots;
     },
     panel : {
@@ -292,20 +281,40 @@ export default {
   color : #457382;
 }
 
+.parcels .v-table {
+  border-collapse: unset;
+
+  tbody {
+    tr:hover {
+      background: #F6F7E2;
+    }
+
+    td, th {
+      height: 38px;
+      padding-right: 0;
+    }
+
+    .numparcel {
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .cultural-label {
+      // force pushes this column so as it looks similar in all groups
+      // even on small label columns
+      width: 50%;
+
+      .text-truncate.d-block {
+       max-width: 120px;
+     }
+    }
+  }
+}
+
 .full-width {
   width: 100%;
 }
 
-/* forces the v-spacer element to grow */
-.v-expansion-panel__header > .spacer {
-  flex: 1 0 auto !important;
-}
-
-/* makes the line more compact than the "dense" mode */
-.v-list__tile {
-  height: 30px;
- }
- 
 .download {
   background-color: #F6F7E2;
 }
