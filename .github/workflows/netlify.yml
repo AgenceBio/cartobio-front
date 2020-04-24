@@ -15,8 +15,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+
       - run: npm ci --no-audit
-      - run: npm run build
+
+      - name: Assign env variables to a .env file
+        run: env | grep VUE_APP > .env.production.local
         env:
           VUE_APP_API_IGN: ${{ secrets.VUE_APP_API_IGN }}
           VUE_APP_GEOSERVER_PREFIX: "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpgbio_"
@@ -26,11 +29,14 @@ jobs:
           VUE_APP_NOTIFICATIONS_ENDPOINT: "https://cartobio.org/api/notifications"
           VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
 
+      - name: Build Vue App
+        run: npm run build
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.0.12
         with:
           publish-dir: './dist'
-          deploy-message: "Voir la _preview_ sur Netlify" 
+          deploy-message: "Voir la _preview_ sur Netlify"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
