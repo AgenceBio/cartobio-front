@@ -27,9 +27,10 @@ jobs:
           VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.0.1
+        uses: nwtgck/actions-netlify@v1.0.12
         with:
           publish-dir: './dist'
+          deploy-message: "Voir la _preview_ sur Netlify" 
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
