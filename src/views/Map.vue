@@ -3,14 +3,16 @@
       <!-- Parcels List -->
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
-        :drawer.sync="drawer"
+        :drawer.sync="showOperatorDetails"
         :operator="operator"
-        v-on:close-drawer="closeDrawer()"
+        v-on:close-drawer="closeOperatorDetailsSidebar()"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
+
+      <SearchSidebar :drawer.sync="showSearch"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -41,9 +43,6 @@
           @load="onMapLoaded"
           ref="mapboxDiv"
         >
-          <v-toolbar floating dense class="my-3 toolbar-search">
-            <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
-          </v-toolbar>
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
@@ -119,7 +118,6 @@ import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import Geosearch from "@/components/Geosearch";
 
 import {
   MglMap,
@@ -132,6 +130,7 @@ import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/as
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
+import SearchSidebar from "@/components/Map/SearchSidebar";
 
 import { mapGetters, mapState } from 'vuex';
 
@@ -186,7 +185,7 @@ export default {
     ParcelsList,
     ParcelDetails,
     ParcelDetailsPopup,
-    Geosearch,
+    SearchSidebar,
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
@@ -234,10 +233,9 @@ export default {
 
       // display related data
 
-      // show drawer
-      drawer: false,
-      // mini drawer display
-      mini: false,
+      // sidebars
+      showOperatorDetails: false,
+      showSearch: true,
 
       // edit mode
       editMode: false,
@@ -326,8 +324,8 @@ export default {
       this.filterLabel = { filter: "pacage", property: "numeroPacage" };
     }
 
-    // if there is an operator, show drawer.
-    this.drawer = !!getObjectValue(this.getOperator, "title");
+    // if there is an operator, show sidebar.
+    this.showOperatorDetails = !!getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
@@ -680,8 +678,8 @@ export default {
       }
     },
 
-    closeDrawer () {
-      this.drawer = false
+    closeOperatorDetailsSidebar () {
+      this.showOperatorDetails = false
       this.$store.commit("setOperator", {})
       this.map.resize()
       this.operator = {}
