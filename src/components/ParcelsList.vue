@@ -19,6 +19,10 @@
           </p>
         </v-flex>
 
+        <v-flex class="grow align-self-center my-5" v-if="ilots.length === 0">
+          <v-progress-circular indeterminate size=64 color="#457382" />
+        </v-flex>
+
         <v-expansion-panel
           v-model="panel"
           elevation-0
