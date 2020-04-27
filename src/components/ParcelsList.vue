@@ -30,15 +30,16 @@
           expand
         >
           <v-expansion-panel-content v-for="ilot in ilots" :key="ilot.numIlot">
-            <template v-slot:header @click.native.stop>
+            <template v-slot:header>
               <v-flex align-center justify-space-between row fill-height
                 @mouseover="$emit('hover-ilot', ilot)"
                 @mouseleave="$emit('stop-hovering-ilot', ilot)">
                 <span class="text-cyan text-uppercase font-weight-medium">Ilot {{ilot.numIlot}}</span>
               </v-flex>
-              <!-- <v-btn flat icon small><v-icon color="#457382">my_location</v-icon></v-btn> -->
+              <!-- <v-btn flat icon small @click.native.stop @click="zoomOnIlot(ilot)"><v-icon color="#457382">my_location</v-icon></v-btn> -->
             </template>
             <template v-slot:actions>
+              <!-- <v-icon color="#457382" @click="console.log('click')">gps_not_fixed</v-icon> -->
               <v-icon color="#457382">arrow_drop_up</v-icon>
             </template>
 
@@ -67,12 +68,12 @@
             <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
               Télécharger
             </v-btn>
-            <v-tooltip top>
+            <v-dialog v-model="dialog">
               <template v-slot:activator="{ on }">
-                <v-btn flat small v-on="on" color="grey lighten-1" class="mt-0">Prévisualiser</v-btn>
+                <v-btn flat small v-on="on" color="grey lighten-1" class="mt-0" >Prévisualiser</v-btn>
               </template>
-              <span>Bientôt disponible</span>
-            </v-tooltip>
+              <ParcelsArray v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :parcelsArray="parcels.features"></ParcelsArray>
+            </v-dialog>
           </v-layout>
         </v-flex>
       </v-layout>
@@ -83,6 +84,7 @@
 import getObjectValue from "lodash/get";
 import reduce from "lodash/reduce";
 import {fromCode} from "@/modules/codes-cultures/pac.js"
+import ParcelsArray from "@/components/ParcelsArray";
 
 export default {
   name: "ParcelsList",
@@ -91,8 +93,13 @@ export default {
     drawer: Boolean,
     operator: Object
   },
+  components: {
+    ParcelsArray
+  },
   data() {
     return {
+      dialog: false,
+      parcelsArray: []
     };
   },
   methods: {
@@ -108,7 +115,7 @@ export default {
 
     downloadCSV() {
       // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
-      let rows = this.parcels.features.map(this.createParcelArray);
+      let rows = this.parcels.features.map(this.createParcelArray)
       rows.unshift([
         "id",
         "numeroBio",
@@ -136,6 +143,11 @@ export default {
       catch (error) {
         window._paq.push(['trackEvent', 'parcels', 'error:download', error]);
       }
+    },
+    getArrayOfParcels() {
+      let arr = this.parcels.features.map((parcel) => {return parcel.properties});
+      console.log(arr);
+      this.parcelsArray = arr;
     },
     createParcelArray(parcel) {
       let prop = parcel.properties;
