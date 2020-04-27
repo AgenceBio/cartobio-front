@@ -57,7 +57,7 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-spacer></v-spacer>
-        <v-flex shrink class="download">
+        <v-flex shrink class="download elevation-1">
           <v-layout column align-center justify-center py-3>
             <span class="grey--text text--darken-2">Export des données parcellaires</span>
             <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
@@ -300,6 +300,7 @@ export default {
     }
 
     td, th {
+      cursor: default;
       height: 38px;
       padding-right: 0;
     }
