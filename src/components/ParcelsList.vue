@@ -44,7 +44,7 @@
                   <td class="status"><v-avatar size="24px" :color="parcel.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
                   <td class="numparcel">Parcelle {{parcel.properties.numparcel}}</td>
                   <td class="text-cyan cultural-label">
-                    <v-tooltip top left dark open-delay=0>
+                    <v-tooltip top left dark open-delay=200>
                       <template v-slot:activator="{ on }">
                         <span v-on="on" class="text-truncate d-block">{{parcel.properties.culture.label}}</span>
                       </template>
