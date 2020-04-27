@@ -12,7 +12,7 @@
           </v-toolbar-title>
         </v-toolbar>
 
-        <v-flex>
+        <v-flex shrink>
           <p class="update-info pa-2 ma-0 caption">
             <v-icon small color="#457382">info</v-icon>
             Dernière mise à jour le <b>15 juillet 2019</b>.
@@ -22,7 +22,7 @@
         <v-expansion-panel
           v-model="panel"
           elevation-0
-          class="justify-self-start overflow no-box-shadow"
+          class="overflow no-box-shadow"
           expand
         >
           <v-expansion-panel-content v-for="ilot in ilots" :key="ilot.numIlot">
@@ -56,7 +56,7 @@
             </v-data-table>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <!-- download parcels button -->
+        <v-spacer></v-spacer>
         <v-flex shrink class="download">
           <v-layout column align-center justify-center py-3>
             <span class="grey--text text--darken-2">Export des données parcellaires</span>
@@ -269,7 +269,7 @@ export default {
 }
 
 .overflow {
-  overflow-y: auto;
+  overflow-y: scroll;
   scrollbar-width: thin;
   scrollbar-color: #b0bec5;
 }
