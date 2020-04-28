@@ -5,7 +5,7 @@
           <h3 class="headline mb-0">Aperçu des données</h3>
         </v-card-title>
         <v-spacer />
-        <v-btn icon outline @click="dialog = false">
+        <v-btn icon outline @click="$emit('close-dialog')">
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
