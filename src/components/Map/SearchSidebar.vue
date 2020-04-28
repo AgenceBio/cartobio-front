@@ -18,7 +18,7 @@
           </v-list-tile>
         </v-list>
 
-        <v-expansion-panel expand expandable v-model="panels" class="search-results elevation-0">
+        <v-expansion-panel expand v-model="panels" class="search-results elevation-0">
           <v-expansion-panel-content v-if="operators.length" key="operators">
             <template v-slot:header>
               <div>Exploitants</div>
@@ -50,13 +50,14 @@
             </template>
 
             <v-list one-line>
-              <v-list-tile  v-for="({lat, lon, label, postcode, key}) in towns"
-                            @click="$emit('flyto', {lat, lon, zoom: 12})"
-                            :key="key">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ postcode }}, {{ label }}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+              <template v-for="({lat, lon, label, postcode, key}, i) in towns">
+                <v-divider v-if="i" :key="i"></v-divider>
+                <v-list-tile :key="key" @click="$emit('flyto', {lat, lon, zoom: 12})">
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ postcode }}, {{ label }}</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
             </v-list>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -75,6 +76,7 @@ export default {
   components: {
     Geosearch,
   },
+
   data() {
     return {
       panels: [true, true],
@@ -82,6 +84,14 @@ export default {
       towns: [],
     };
   },
+
+  watch: {
+    towns (newList) {
+      if (newList.length === 0) {
+        this.panels = [true, true];
+      }
+    }
+  }
 };
 </script>
 
