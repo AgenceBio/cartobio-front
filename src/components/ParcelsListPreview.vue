@@ -16,11 +16,6 @@
             {{ feature.properties[value] }}
           </td>
         </template>
-        <template v-slot:footer>
-          <td v-for="({value}) in headers" :key="value">
-            ...
-          </td>
-        </template>
       </v-data-table>
     </v-card-text>
     <v-divider class="pt-2"></v-divider>
