@@ -13,13 +13,13 @@
               <p class="caption">
                 Saisir une ville, ou un nom d'exploitant.
               </p>
-              <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
+              <Geosearch @towns-received="towns = $event"></Geosearch>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
 
         <v-expansion-panel expand expandable v-model="panels" class="search-results elevation-0">
-          <v-expansion-panel-content key="operators">
+          <v-expansion-panel-content v-if="operators.length" key="operators">
             <template v-slot:header>
               <div>Exploitants</div>
             </template>
@@ -44,21 +44,17 @@
             </v-list>
           </v-expansion-panel-content>
 
-          <v-expansion-panel-content key="cities">
+          <v-expansion-panel-content v-if="towns.length" key="cities">
             <template v-slot:header>
               <div>Communes</div>
             </template>
 
             <v-list one-line>
-              <v-list-tile>
+              <v-list-tile  v-for="({lat, lon, label, postcode, key}) in towns"
+                            @click="$emit('flyto', {lat, lon, zoom: 12})"
+                            :key="key">
                 <v-list-tile-content>
-                  <v-list-tile-title>50360, Etienville</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-divider />
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>42000, Saint-Etienne</v-list-tile-title>
+                  <v-list-tile-title>{{ postcode }}, {{ label }}</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -81,13 +77,11 @@ export default {
   },
   data() {
     return {
-      panels: [true, true]
+      panels: [true, true],
+      operators: [],
+      towns: [],
     };
   },
-  methods: {
-  },
-  computed: {
-  }
 };
 </script>
 

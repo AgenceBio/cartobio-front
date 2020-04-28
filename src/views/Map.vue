@@ -12,7 +12,7 @@
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
 
-      <SearchSidebar :drawer.sync="showSearch"></SearchSidebar>
+      <SearchSidebar :drawer.sync="showSearch" @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -652,11 +652,11 @@ export default {
         }
       });
     },
-    handleSearchResult(value) {
-      // this.map.panTo(value.geometry.coordinates);
-      this.map.easeTo({
-        center: value.geometry.coordinates,
-        zoom: 10 + parseInt(value.importance) // may be improved, difficult to know what importance stands for
+
+    flyTo({lat, lon, zoom}) {
+      this.map.flyTo({
+        center: [lat, lon],
+        zoom,
       });
     },
 
