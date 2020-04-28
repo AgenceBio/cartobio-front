@@ -55,8 +55,7 @@
   </v-layout>
 </template>
 <script>
-const axios = require("axios");
-const CancelToken = axios.CancelToken;
+import { get, CancelToken } from "axios";
 let cancel;
 
 import AgriItem from "@/components/AgriItem";
@@ -182,7 +181,7 @@ export default {
         numeroBio: filters.numeroBio
       };
 
-      return axios.get(
+      return get(
         process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/getOperatorsByOc",
         {
           params: params,
@@ -235,22 +234,21 @@ export default {
       );
       this.loadingData = true;
       // get 2020 parcels from the operator
-      axios
-        .get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
-        .then(data => {
-          window._paq.push(['trackEvent', 'pacage', 'search', this.numPacage]);
-          window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.data.features.length]);
-          this.displayResultSearchPacage(data.data);
-        })
-        .catch((error) => {
-          window._paq.push(['trackEvent', 'pacage', 'error:search', error]);
-          this.errorPacage = true;
-        });
+      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+        params: params,
+        headers: {
+          Authorization: "Basic " + tokenCollab
+        }
+      })
+      .then(data => {
+        window._paq.push(['trackEvent', 'pacage', 'search', this.numPacage]);
+        window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.data.features.length]);
+        this.displayResultSearchPacage(data.data);
+      })
+      .catch((error) => {
+        window._paq.push(['trackEvent', 'pacage', 'error:search', error]);
+        this.errorPacage = true;
+      });
     },
     displayResultSearchPacage: function(data) {
       this.loadingData = false;

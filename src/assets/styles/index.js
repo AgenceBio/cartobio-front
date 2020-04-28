@@ -1,5 +1,11 @@
-import old from './old.json'
-import cartobio from './ortho-vecto.json'
-import vector from './vector.json'
+import baseStyle from './base-vecto.json'
+import cadastreStyle from './cadastre.json'
+import cartobioStyle from './cartobio.json'
+import infrastructureStyle from './infrastructure.json'
 
-export {old, cartobio, vector}
+export {
+  baseStyle,
+  cadastreStyle,
+  cartobioStyle,
+  infrastructureStyle
+}

@@ -113,6 +113,7 @@
 <script>
 import {get} from "axios";
 import getObjectValue from "lodash/get";
+import {all as mergeAll} from "deepmerge";
 import {bbox, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
@@ -127,7 +128,7 @@ import {
   MglScaleControl,
 } from "vue-mapbox";
 
-import {cartobio as mapStyle} from "@/assets/styles/index.js";
+import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
@@ -199,7 +200,7 @@ export default {
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       zoom: null,
       center: null,
-      mapStyle,
+      mapStyle: mergeAll([baseStyle, cadastreStyle, infrastructureStyle]),
 
       // anonymous layers
       anonLayers: {},
@@ -524,7 +525,6 @@ export default {
           minzoom: 9,
           paint: {
             "fill-color": "rgba(208, 211, 46, 1)",
-            "fill-outline-color": "rgba(176, 178, 43, 1)",
             "fill-opacity": 0.6
           },
           tms: true,
@@ -532,7 +532,7 @@ export default {
           layout: {visibility: 'none'}
         };
         this.anonLayers[year] = bioLayer;
-        map.addLayer(this.anonLayers[year]);
+        map.addLayer(this.anonLayers[year], 'road_oneway');
         map.addLayer({
           id: `bio-tiles-${year}-border`,
           type: "line",
@@ -542,11 +542,17 @@ export default {
           paint: {
             "line-color": "rgba(208, 211, 46, 1)",
             "line-opacity": 1,
-            "line-width": {"stops": [[10, 1.5], [13, 1]]}
+            "line-width": {
+              "stops": [[9, 0], [12, 1]]
+            }
           },
           layout: {visibility: 'none'}
-        });
+        }, 'road_oneway');
       });
+
+      // non-bio
+      map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
+      cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
 
       this.toggleLayerAnon(this.currentYear, true);
 
@@ -602,10 +608,9 @@ export default {
             "rgba(6, 71, 75, 1)",
             "white"
           ],
-          "fill-outline-color": "rgba(100, 200, 240, 1)",
           "fill-opacity": 1
         }
-      });
+      }, 'road_oneway');
       map.addLayer({
         id: "highlighted-parcels-border",
         type: "line",
@@ -614,7 +619,7 @@ export default {
           "line-color": "rgba(100, 200, 240, 1)",
           "line-width": 2
         }
-      });
+      }, 'road_oneway');
 
       // selected
       map.addLayer({
@@ -631,7 +636,6 @@ export default {
             "rgba(9, 99, 106, 1)",
             "white"
           ],
-          "fill-outline-color": "rgba(100, 200, 240, 1)",
           "fill-opacity": 1
         }
       });
@@ -713,7 +717,7 @@ export default {
       }
       this.isOperatorOnMap = true;
       this.years.forEach(year => {
-        map.addLayer(this.layersOperator[year]);
+        map.addLayer(this.layersOperator[year], 'road_oneway');
         map.addLayer({
           ...this.layersOperator[year],
           id: this.layersOperator[year].id + "-border",
@@ -733,7 +737,7 @@ export default {
                1
             ]
           }
-        });
+        }, 'road_oneway');
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
