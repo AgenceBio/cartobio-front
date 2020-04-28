@@ -1,6 +1,6 @@
 <template>
   <v-card>
-      <v-toolbar card dark class="color-title">
+      <v-toolbar card dark color="#457382">
         <v-card-title>
           <h3 class="headline mb-0">Aperçu des données</h3>
         </v-card-title>
@@ -49,11 +49,7 @@ export default {
 </script>
 
 <style scoped>
-.color-title {
-    background-color: #457382;
-    color: white;
-}
-
+/* Duplicate from ParcelsList.vue */
 .overflow {
   overflow-y: scroll;
   scrollbar-width: thin;
