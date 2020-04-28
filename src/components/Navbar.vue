@@ -4,7 +4,6 @@
       <v-icon flat large>home</v-icon>
       <v-toolbar-title>CartoBIO</v-toolbar-title>
     </v-btn>
-    <v-toolbar-title>{{title}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
@@ -47,14 +46,8 @@ export default {
     getProfile() {
       return this.$store.getters.getProfile;
     },
-    getOperator() {
-      return this.$store.getters.getOperator;
-    },
     currentRoute() {
       return this.$route.path;
-    },
-    title() {
-      return this.getOperator.title ? this.getOperator.title : "";
     }
   }
 };

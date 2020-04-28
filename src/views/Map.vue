@@ -1,46 +1,16 @@
 <template>
   <v-layout>
-    <!-- Left drawer for parcels list -->
-    <v-navigation-drawer
-      app
-      clipped
-      stateless
-      hide-overlay
-      v-model="drawer"
-      :mini-variant.sync="mini"
-    >
-      <!-- Header -->
-      <v-toolbar flat class="transparent">
-        <v-list class="pa-0">
-          <v-list-tile>
-            <v-icon>view_list</v-icon>
-            <v-btn icon v-if="mini">
-              <v-icon>chevron_right</v-icon>
-            </v-btn>
-            <v-list-tile-content>
-              <v-list-tile-title>Liste des Parcelles</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-btn icon @click.stop="mini = !mini" align-end>
-                <v-icon>chevron_left</v-icon>
-              </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
-        </v-list>
-      </v-toolbar>
-
       <!-- Parcels List -->
       <ParcelsList
-        :parcels.sync="parcelsOperator[this.currentYear]"
-        v-if="drawer && !mini"
+        :parcels="parcelsOperator[this.currentYear]"
+        :drawer.sync="drawer"
+        :operator="operator"
+        v-on:close-drawer="closeDrawer()"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
-        v-on:stop-hovering-ilot="stopHovering($event)"
-        v-on:select-parcel="selectParcel($event)"
-        v-on:select-all-parcels="selectAllParcels($event)"
+        v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
-    </v-navigation-drawer>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -50,7 +20,7 @@
             <v-card-text>
               <ParcelDetails
                 :operator="operator"
-                :parcel.sync="newParcel"
+                :parcel="newParcel"
                 v-on:parcel-updated="updateNewParcel($event)"
               ></ParcelDetails>
             </v-card-text>
@@ -79,13 +49,6 @@
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
         </MglMap>
-
-        <!-- Card with Aggregated parcels details - maybe a bit more infography would be awesome -->
-        <SelectedParcelsDetails
-          class="data-card"
-          v-if="selectedParcels.features.length"
-          :selectedParcels.sync="selectedParcels.features"
-        ></SelectedParcelsDetails>
 
         <!-- Layers selector -->
         <v-flex class="layers-panel" v-show="showLayersCard">
@@ -166,11 +129,12 @@ import {
 
 import {cartobio as mapStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
-import SelectedParcelsDetails from "@/components/SelectedParcelsDetails";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 
 import { mapGetters, mapState } from 'vuex';
+
+const centroid = require('@mapbox/polylabel')
 
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
@@ -219,7 +183,6 @@ export default {
 
   components: {
     ParcelsList,
-    SelectedParcelsDetails,
     ParcelDetails,
     ParcelDetailsPopup,
     Geosearch,
@@ -361,7 +324,7 @@ export default {
     }
 
     // if there is an operator, show drawer.
-    this.drawer = getObjectValue(this.getOperator, "title");
+    this.drawer = !!getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
@@ -492,15 +455,8 @@ export default {
         this.loadLayers(map);
       }
 
-      map.on("mousemove", ({target:map, lngLat, point}) => {
-        const renderedFeatures = map.queryRenderedFeatures(point)
-
-        this.hoveredParcelFeatures = {
-          // anonymous source layers are named like 'anon_..._20xx'
-          anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
-          operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
-          cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
-        }
+      map.on("mousemove", ({lngLat, point}) => {
+        this.buildHoveredPopup(lngLat, point);
       });
 
       // handle click on layers
@@ -512,7 +468,15 @@ export default {
         this.setUpMapOperator();
       }
     },
-
+    buildHoveredPopup(lngLat, point) {
+      const renderedFeatures = this.map.queryRenderedFeatures(point)
+      this.hoveredParcelFeatures = {
+        // anonymous source layers are named like 'anon_..._20xx'
+        anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
+        operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
+        cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
+      }
+    },
     updateHash(map) {
       const {lat,lng} = map.getCenter()
       const zoom = Math.floor(map.getZoom())
@@ -697,6 +661,15 @@ export default {
         }
       }
     },
+
+    closeDrawer () {
+      this.drawer = false
+      this.$store.commit("setOperator", {})
+      this.map.resize()
+      this.operator = {}
+      this.clearOperatorData()
+    },
+
     // function  used by draw features
     updateArea(e) {
       var data = draw.getAll();
@@ -747,33 +720,50 @@ export default {
           type: "line",
           paint: {
             "line-color": "rgba(255, 255, 255, 1)",
-            "line-opacity": 0.6,
-            "line-width": 1
+            "line-opacity": [
+              'case',
+              ['boolean', ['feature-state', 'highlighted'], false],
+              1,
+              0.65
+            ],
+            "line-width":[
+              'case',
+              ['boolean', ['feature-state', 'highlighted'], false],
+               3,
+               1
+            ]
           }
         });
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
     hoverParcel(parcel) {
-      this.highlightedParcels = {
-        features: [parcel],
-        type: "FeatureCollection"
-      };
-      this.map.getSource("highlight").setData(this.highlightedParcels);
+      const p = centroid(parcel.geometry.coordinates)
+      let lngLat = {lng: p[0], lat: p[1]};
+      this.buildHoveredPopup(lngLat, this.map.project(lngLat));
+      this.highlightParcel(parcel);
     },
-    stopHovering() {
-      this.highlightedParcels = {
-        features: [],
-        type: "FeatureCollection"
-      };
-      this.map.getSource("highlight").setData(this.highlightedParcels);
+    highlightParcel(parcel) {
+      this.map.setFeatureState({
+        source: 'operatorParcels2020',
+        id: parcel.id,
+      }, { highlighted: true });
+    },
+    stopHovering(parcel) {
+      this.map.setFeatureState({
+        source: 'operatorParcels2020',
+        id: parcel.id,
+      }, { highlighted: false });
     },
     hoverIlot(ilot) {
-      this.highlightedParcels = {
-        features: ilot.parcels,
-        type: "FeatureCollection"
-      };
-      this.map.getSource("highlight").setData(this.highlightedParcels);
+      ilot.parcels.forEach((parcel) => {
+        this.highlightParcel(parcel);
+      });
+    },
+    stopHoveringIlot(ilot) {
+      ilot.parcels.forEach((parcel) => {
+        this.stopHovering(parcel);
+      });
     },
     selectParcel(parcel) {
       let tmp = this.parcelsOperator[this.currentYear].features.find(function(feature) {
@@ -822,6 +812,13 @@ export default {
           .setData(this.parcelsOperator[year]);
       }
     },
+
+    clearOperatorData() {
+      this.years.forEach(year => {
+        this.addOperatorData(geoJsonTemplate, year)
+      })
+    },
+
     toggleLayerOperator(layerYear, visibility) {
       let layer = this.layersOperator[layerYear];
       if (typeof visibility === "undefined") {
@@ -859,7 +856,7 @@ export default {
       alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
-    getYearLayer(layerYear, colorBio, colorNotBio, fillColor) {
+    getYearLayer(layerYear, colorBio, colorNotBio) {
       return {
         id: "operator-parcels-" + layerYear,
         type: "fill",
@@ -867,15 +864,19 @@ export default {
         paint: {
           "fill-color": [
             "match",
-            ["get", "bio"],
-            "0",
+            ["to-number", ["get", "bio"]],
+            0,
             colorNotBio,
-            "1",
+            1,
             colorBio,
             "white"
           ],
-          "fill-outline-color": fillColor,
-          "fill-opacity": 0.8
+          "fill-opacity": [
+            'case',
+            ['boolean', ['feature-state', 'highlighted'], false],
+            1,
+            0.6
+          ]
         },
         layout : {
           visibility: "none"
