@@ -9,7 +9,7 @@
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text>
+      <v-card-text class="overflow max-height">
         <v-data-table hide-actions :headers="headers" :items="features">
         <template v-slot:items="{ item: feature }">
           <td v-for="({value}) in headers" :key="value">
@@ -49,8 +49,31 @@ export default {
 </script>
 
 <style scoped>
-    .color-title {
-        background-color: #457382;
-        color: white;
-    }
+.color-title {
+    background-color: #457382;
+    color: white;
+}
+
+.overflow {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #b0bec5;
+}
+
+.overflow::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.overflow::-webkit-scrollbar-track {
+  background-color: #eceff1;
+  border-radius: 10px;
+}
+.overflow::-webkit-scrollbar-thumb {
+  background-color: #b0bec5;
+  border-radius: 10px;
+}
+
+.max-height {
+  max-height: 50vh;
+}
 </style>
