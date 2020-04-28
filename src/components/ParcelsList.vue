@@ -19,7 +19,7 @@
           </p>
         </v-flex>
 
-        <v-flex class="grow align-self-center my-5" v-if="ilots.length === 0">
+        <v-flex class="grow align-self-center my-5" v-if="isLoading">
           <v-progress-circular indeterminate size=64 color="#457382" />
         </v-flex>
 
@@ -64,19 +64,20 @@
         <v-spacer></v-spacer>
         <v-flex shrink class="download elevation-1">
           <v-layout column align-center justify-center py-3>
-            <span class="grey--text text--darken-2">Export des données parcellaires</span>
-            <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
-              Télécharger
-            </v-btn>
+            <h3 class="subheading">Export des données parcellaires</h3>
 
             <v-dialog v-model="dialog" max-width=800>
               <template v-slot:activator="{ on }">
-                <v-btn flat small v-on="on" color="grey darken-1" class="mt-0" >Prévisualiser</v-btn>
+                <div class="mt-3">
+                  <v-btn :disabled="isLoading" round outline v-on="on" >Prévisualiser</v-btn>
+
+                  <v-btn :disabled="isLoading" round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
+                </div>
               </template>
 
               <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="parcels.features"></Preview>
             </v-dialog>
-          </v-layout>
+                      </v-layout>
         </v-flex>
       </v-layout>
     </v-container>
@@ -115,8 +116,8 @@ export default {
     },
 
     downloadCSV() {
-      // since map and foreach doesn't guarantee order, we need to guaranty it ourselves:
-      let rows = this.parcels.features.map(this.createParcelArray)
+      let rows = this.parcelsArray
+
       rows.unshift([
         "id",
         "numeroBio",
@@ -133,38 +134,16 @@ export default {
       ]);
 
       try {
-        const {numeroBio} = this.$store.getters.getOperator;
+        const {numeroBio, title='cartobio-export'} = this.$store.getters.getOperator;
         window._paq.push(['trackEvent', 'parcels', 'download', numeroBio]);
 
-        this.convertToCsvAndDownload(
-          this.$store.getters.getOperator.title + ".csv",
-          rows
-        );
+        this.convertToCsvAndDownload(`${title}.csv`, rows);
       }
       catch (error) {
         window._paq.push(['trackEvent', 'parcels', 'error:download', error]);
       }
     },
-    createParcelArray(parcel) {
-      let prop = parcel.properties;
-      // csv properties order:
-      // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
-      let parcelArray = [
-        getObjectValue(prop, "id", ""),
-        prop.numerobio,
-        getObjectValue(prop, "pacage", ""),
-        getObjectValue(prop, "maraichage", ""),
-        prop.bio,
-        prop.codecultu,
-        prop.engagement,
-        getObjectValue(prop, "maraichage", ""),
-        prop.numilot,
-        prop.numparcel,
-        getObjectValue(prop, "surfadm", ""),
-        prop.surfgeo
-      ];
-      return parcelArray;
-    },
+
     // from https://stackoverflow.com/a/49950777
     convertToCsvAndDownload(fName, rows) {
       var csv = "";
@@ -218,6 +197,32 @@ export default {
     }
   },
   computed: {
+    isLoading () {
+      return this.ilots.length === 0
+    },
+
+    parcelsArray () {
+      return this.parcels.features.map(parcel => {
+        let prop = parcel.properties;
+        // csv properties order:
+        // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
+        return [
+          getObjectValue(prop, "id", ""),
+          prop.numerobio,
+          getObjectValue(prop, "pacage", ""),
+          getObjectValue(prop, "maraichage", ""),
+          prop.bio,
+          prop.codecultu,
+          prop.engagement,
+          getObjectValue(prop, "maraichage", ""),
+          prop.numilot,
+          prop.numparcel,
+          getObjectValue(prop, "surfadm", 0) * 1000,
+          prop.surfgeo
+        ];
+      })
+    },
+
     ilots() {
       // format parcels to retrieve culture name:
       this.parcels.features.forEach(function(parcel) {
