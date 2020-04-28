@@ -68,11 +68,13 @@
             <v-btn round color="#b9d065" class="mb-0" @click="downloadCSV">
               Télécharger
             </v-btn>
-            <v-dialog v-model="dialog">
+
+            <v-dialog v-model="dialog" max-width=800>
               <template v-slot:activator="{ on }">
-                <v-btn flat small v-on="on" color="grey lighten-1" class="mt-0" >Prévisualiser</v-btn>
+                <v-btn flat small v-on="on" color="grey darken-1" class="mt-0" >Prévisualiser</v-btn>
               </template>
-              <ParcelsArray v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :parcelsArray="parcels.features"></ParcelsArray>
+
+              <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="parcels.features"></Preview>
             </v-dialog>
           </v-layout>
         </v-flex>
@@ -84,7 +86,7 @@
 import getObjectValue from "lodash/get";
 import reduce from "lodash/reduce";
 import {fromCode} from "@/modules/codes-cultures/pac.js"
-import ParcelsArray from "@/components/ParcelsArray";
+import Preview from "@/components/ParcelsListPreview";
 
 export default {
   name: "ParcelsList",
@@ -94,12 +96,11 @@ export default {
     operator: Object
   },
   components: {
-    ParcelsArray
+    Preview
   },
   data() {
     return {
       dialog: false,
-      parcelsArray: []
     };
   },
   methods: {
@@ -143,11 +144,6 @@ export default {
       catch (error) {
         window._paq.push(['trackEvent', 'parcels', 'error:download', error]);
       }
-    },
-    getArrayOfParcels() {
-      let arr = this.parcels.features.map((parcel) => {return parcel.properties});
-      console.log(arr);
-      this.parcelsArray = arr;
     },
     createParcelArray(parcel) {
       let prop = parcel.properties;
