@@ -1,6 +1,6 @@
 <template>
   <v-card>
-      <v-toolbar card dark class="color-title">
+      <v-toolbar card dark color="#457382">
         <v-card-title>
           <h3 class="headline mb-0">Aperçu des données</h3>
         </v-card-title>
@@ -9,16 +9,11 @@
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text>
+      <v-card-text class="overflow max-height">
         <v-data-table hide-actions :headers="headers" :items="features">
         <template v-slot:items="{ item: feature }">
           <td v-for="({value}) in headers" :key="value">
             {{ feature.properties[value] }}
-          </td>
-        </template>
-        <template v-slot:footer>
-          <td v-for="({value}) in headers" :key="value">
-            ...
           </td>
         </template>
       </v-data-table>
@@ -54,8 +49,27 @@ export default {
 </script>
 
 <style scoped>
-    .color-title {
-        background-color: #457382;
-        color: white;
-    }
+/* Duplicate from ParcelsList.vue */
+.overflow {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #b0bec5;
+}
+
+.overflow::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.overflow::-webkit-scrollbar-track {
+  background-color: #eceff1;
+  border-radius: 10px;
+}
+.overflow::-webkit-scrollbar-thumb {
+  background-color: #b0bec5;
+  border-radius: 10px;
+}
+
+.max-height {
+  max-height: 50vh;
+}
 </style>

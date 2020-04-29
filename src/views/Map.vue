@@ -135,7 +135,7 @@ import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 
 import { mapGetters, mapState } from 'vuex';
 
-const centroid = require('@mapbox/polylabel')
+// const centroid = require('@mapbox/polylabel')
 
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
@@ -258,6 +258,8 @@ export default {
       // new parcel dialog
       setUpParcel: false,
       showLayersCard: false,
+
+      highlightedParcel: null,
       layersVisible: {
         // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
         2020: {
@@ -476,6 +478,18 @@ export default {
         anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
         operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
         cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
+      }
+      
+      // handle hovering effect when moving mouse on map
+      let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
+      if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
+        if (this.highlightedParcel) {
+          this.stopHovering(this.highlightedParcel);
+        }
+        this.highlightParcel(hoveredParcel);
+        this.highlightedParcel = hoveredParcel;
+      } else if (this.highlightedParcel && !hoveredParcel) {
+        this.stopHovering(this.highlightedParcel);
       }
     },
     updateHash(map) {
@@ -742,9 +756,9 @@ export default {
       this.toggleLayerOperator(this.currentYear, true);
     },
     hoverParcel(parcel) {
-      const p = centroid(parcel.geometry.coordinates)
-      let lngLat = {lng: p[0], lat: p[1]};
-      this.buildHoveredPopup(lngLat, this.map.project(lngLat));
+      // const p = centroid(parcel.geometry.coordinates)
+      // let lngLat = {lng: p[0], lat: p[1]};
+      // this.buildHoveredPopup(lngLat, this.map.project(lngLat));
       this.highlightParcel(parcel);
     },
     highlightParcel(parcel) {
