@@ -10,6 +10,7 @@
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
+        v-on:zoom-on-ilot="zoomOnIlot($event)"
       ></ParcelsList>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
@@ -777,6 +778,15 @@ export default {
     stopHoveringIlot(ilot) {
       ilot.parcels.forEach((parcel) => {
         this.stopHovering(parcel);
+      });
+    },
+    zoomOnIlot(ilot) {
+      let bboxIlot = bbox({
+        features : ilot.parcels,
+        type : 'FeatureCollection'
+      });
+      this.map.fitBounds(bboxIlot, {
+        padding: this.mapPadding
       });
     },
     selectParcel(parcel) {

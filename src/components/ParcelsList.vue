@@ -36,7 +36,7 @@
                 @mouseleave="$emit('stop-hovering-ilot', ilot)">
                 <span class="text-cyan text-uppercase font-weight-medium">Ilot {{ilot.numIlot}}</span>
               </v-flex>
-              <!-- <v-btn flat icon small @click.native.stop @click="zoomOnIlot(ilot)"><v-icon color="#457382">my_location</v-icon></v-btn> -->
+              <v-btn flat icon small @click.native.stop @click="$emit('zoom-on-ilot', ilot)"><v-icon color="#457382">my_location</v-icon></v-btn>
             </template>
             <template v-slot:actions>
               <!-- <v-icon color="#457382" @click="console.log('click')">gps_not_fixed</v-icon> -->
