@@ -11,6 +11,7 @@
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
         v-on:zoom-on-ilot="zoomOnIlot($event)"
+        v-on:zoom-on-operator="zoomOnOperator()"
       ></ParcelsList>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
@@ -197,7 +198,7 @@ export default {
       // we place this property in created() to avoid Vue Observability
       // When observed, the map object is mutated and styles become broken
       //map: null,
-      mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
+      mapPadding: { top: 25, bottom: 25, left: 20, right: 20 },
       zoom: null,
       center: null,
       mapStyle,
@@ -670,9 +671,7 @@ export default {
           this.bboxOperator[0] !== undefined &&
           this.bboxOperator[0] !== Infinity
         ) {
-          this.map.fitBounds(this.bboxOperator, {
-            padding: this.mapPadding
-          });
+          this.zoomOnOperator();
         }
       }
     },
@@ -722,9 +721,7 @@ export default {
         this.bboxOperator[0] !== undefined &&
         this.bboxOperator[0] !== Infinity
       ) {
-        map.fitBounds(this.bboxOperator, {
-          padding: this.mapPadding
-        });
+        this.zoomOnOperator();
       }
       this.isOperatorOnMap = true;
       this.years.forEach(year => {
@@ -786,6 +783,11 @@ export default {
         type : 'FeatureCollection'
       });
       this.map.fitBounds(bboxIlot, {
+        padding: this.mapPadding
+      });
+    },
+    zoomOnOperator() {
+      this.map.fitBounds(this.bboxOperator, {
         padding: this.mapPadding
       });
     },

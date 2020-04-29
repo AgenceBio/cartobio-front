@@ -10,6 +10,7 @@
           <v-toolbar-title class="ml-0">
             {{operator.title}}
           </v-toolbar-title>
+          <v-spacer/><v-btn flat icon small @click.native.stop @click="$emit('zoom-on-operator')"><v-icon>my_location</v-icon></v-btn>
         </v-toolbar>
 
         <v-flex shrink>
