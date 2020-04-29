@@ -32,12 +32,12 @@
         >
           <v-expansion-panel-content v-for="ilot in ilots" :key="ilot.numIlot">
             <template v-slot:header>
-              <v-flex align-center justify-space-between row fill-height
+              <v-flex d-flex align-center row fill-height
                 @mouseover="$emit('hover-ilot', ilot)"
                 @mouseleave="$emit('stop-hovering-ilot', ilot)">
                 <span class="text-cyan text-uppercase font-weight-medium">Ilot {{ilot.numIlot}}</span>
+                <v-btn class="smaller-icon-button" icon small @click.native.stop @click="$emit('zoom-on-ilot', ilot)"><v-icon color="#457382">my_location</v-icon></v-btn>
               </v-flex>
-              <v-btn flat icon small @click.native.stop @click="$emit('zoom-on-ilot', ilot)"><v-icon color="#457382">my_location</v-icon></v-btn>
             </template>
             <template v-slot:actions>
               <!-- <v-icon color="#457382" @click="console.log('click')">gps_not_fixed</v-icon> -->
@@ -344,6 +344,10 @@ export default {
   width: 100%;
 }
 
+.smaller-icon-button {
+  max-width: 24px;
+  max-height: 24px;
+}
 .download {
   background-color: #F6F7E2;
 }
