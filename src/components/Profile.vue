@@ -18,7 +18,7 @@
 
 <script>
 import { post } from "axios";
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: "Profile",
@@ -30,10 +30,10 @@ export default {
         process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/token",
         { token: this.$ls.get("token") }
       )
-      .then(() => this.$store.commit("setUser", {}))
+      .then(() => this.resetUser())
       .then(() => this.$ls.remove("token"))
-      .then(() => this.$router.go(0)); // reload the page. There mush be better way to reinitiate the map
-    }
+    },
+    ...mapMutations(['resetUser'])
   },
   computed: {
     ...mapGetters(['getProfile'])
