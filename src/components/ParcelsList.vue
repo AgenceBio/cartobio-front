@@ -1,10 +1,10 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer" @transitionend="drawer === false && $emit('close-drawer')">
+  <v-navigation-drawer app clipped stateless hide-overlay v-model="display" @transitionend="$emit('close-drawer')">
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <!-- Header -->
         <v-toolbar dark flat prominent color="#457382">
-          <v-toolbar-side-icon @click="drawer=false">
+          <v-toolbar-side-icon @click="display=false">
             <v-icon>navigate_before</v-icon>
           </v-toolbar-side-icon>
           <v-toolbar-title class="ml-0">
@@ -77,7 +77,7 @@
 
               <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="parcels.features"></Preview>
             </v-dialog>
-                      </v-layout>
+          </v-layout>
         </v-flex>
       </v-layout>
     </v-container>
@@ -102,6 +102,7 @@ export default {
   data() {
     return {
       dialog: false,
+      display: this.drawer,
     };
   },
   methods: {

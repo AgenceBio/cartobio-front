@@ -3,7 +3,7 @@
       <!-- Parcels List -->
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
-        :drawer.sync="showOperatorDetails"
+        :drawer="showOperatorDetails"
         :operator="operator"
         v-on:close-drawer="closeOperatorDetailsSidebar()"
         v-on:hover-parcel="hoverParcel($event)"
@@ -12,7 +12,7 @@
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
 
-      <SearchSidebar :drawer.sync="showSearch" @flyto="flyTo"></SearchSidebar>
+      <SearchSidebar :drawer="showSearch" @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -50,7 +50,7 @@
         </MglMap>
 
         <!-- Layers selector -->
-        <v-flex class="layers-panel" v-show="showLayersCard">
+        <v-flex class="layers-panel" v-show="isAuthenticated">
           <v-expansion-panel popout expand v-bind:value="expandLayers">
             <v-expansion-panel-content>
               <template v-slot:header>
@@ -203,8 +203,7 @@ export default {
 
       // anonymous layers
       anonLayers: {},
-      // current operator data
-      operator: {},
+
       // operator parcels by year
       parcelsOperator: {
         2020: geoJsonTemplate,
@@ -231,12 +230,6 @@ export default {
       // placeholder for layers for an operator
       layersOperator: {},
 
-      // display related data
-
-      // sidebars
-      showOperatorDetails: false,
-      showSearch: true,
-
       // edit mode
       editMode: false,
 
@@ -255,7 +248,6 @@ export default {
       displaySurvey: true,
       // new parcel dialog
       setUpParcel: false,
-      showLayersCard: false,
 
       highlightedParcel: null,
       layersVisible: {
@@ -314,7 +306,6 @@ export default {
     this.center = [Number(lon), Number(lat)];
 
     // get the current operator
-    this.operator = this.getOperator;
     if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
       alert(
         "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
@@ -323,9 +314,6 @@ export default {
       this.operator.title = "pacage : " + this.operator.numeroPacage;
       this.filterLabel = { filter: "pacage", property: "numeroPacage" };
     }
-
-    // if there is an operator, show sidebar.
-    this.showOperatorDetails = !!getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
@@ -427,9 +415,18 @@ export default {
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
-    ...mapGetters(['getProfile', 'getOperator']),
+    ...mapGetters(['getProfile']),
+    ...mapGetters({ operator: 'getOperator' }),
     ...mapGetters('user', ['isAuthenticated']),
     ...mapState(['currentYear']),
+
+    showOperatorDetails () {
+      return Boolean(this.isAuthenticated && this.operator.id);
+    },
+
+    showSearch () {
+      return Boolean(this.isAuthenticated && !this.operator.id);
+    },
 
     // to display the years in right order in the layers panel
     sortedYears() {
@@ -477,7 +474,7 @@ export default {
         operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
         cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
       }
-      
+
       // handle hovering effect when moving mouse on map
       let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
       if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
@@ -511,8 +508,6 @@ export default {
     },
 
     loadLayers(map) {
-      this.showLayersCard = true;
-
       this.years.forEach((year) => {
         // bio source
         let bioSource = {
@@ -679,10 +674,7 @@ export default {
     },
 
     closeOperatorDetailsSidebar () {
-      this.showOperatorDetails = false
-      this.$store.commit("setOperator", {})
       this.map.resize()
-      this.operator = {}
       this.clearOperatorData()
     },
 
@@ -816,10 +808,12 @@ export default {
       this.newParcel.properties = newData[0];
       this.$forceUpdate();
     },
+
     addOperatorLayer(data, year) {
       this.parcelsOperator[year] = data;
       this.layersVisible[year] = false;
     },
+
     addOperatorData(data, year) {
       this.parcelsOperator[year] = data;
       if (this.map) {
@@ -830,6 +824,8 @@ export default {
     },
 
     clearOperatorData() {
+      this.$store.commit("setOperator", {})
+
       this.years.forEach(year => {
         this.addOperatorData(geoJsonTemplate, year)
       })
