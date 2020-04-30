@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="operator">
+  <v-navigation-drawer app clipped stateless hide-overlay v-model="show">
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <!-- Header -->
@@ -133,7 +133,7 @@ export default {
       ]);
 
       try {
-        const {numeroBio, title='cartobio-export'} = this.$store.getters.getOperator;
+        const {numeroBio, title='cartobio-export'} = this.operator;
         window._paq.push(['trackEvent', 'parcels', 'download', numeroBio]);
 
         this.convertToCsvAndDownload(`${title}.csv`, rows);
@@ -196,6 +196,9 @@ export default {
     }
   },
   computed: {
+    show () {
+      return Boolean(this.operator && this.operator.id)
+    },
     isLoading () {
       return this.ilots.length === 0
     },
