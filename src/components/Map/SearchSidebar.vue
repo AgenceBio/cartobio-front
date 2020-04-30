@@ -11,7 +11,7 @@
           <v-list-tile class="search grow">
             <v-list-tile-content>
               <p class="caption">
-                Saisir une ville, ou un nom d'exploitant.
+                Saisir une ville ou un code postal.
               </p>
               <Geosearch @towns-received="towns = $event"></Geosearch>
             </v-list-tile-content>
