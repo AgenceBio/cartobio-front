@@ -50,6 +50,9 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
+          <MglPopup :showed="!!hoveredIlotName" :close-button="false" :close-on-click="false" :onlyText="true" :coordinates="hoveredIlotCoordinates">
+           {{hoveredIlotName}}
+          </MglPopup>
         </MglMap>
 
         <!-- Layers selector -->
@@ -115,8 +118,10 @@
 <script>
 import {get} from "axios";
 import getObjectValue from "lodash/get";
-import {bbox, area, point} from "turf";
+import {bbox, bboxPolygon, center, area, point, lineString} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
+import polygonToLine from "@turf/polygon-to-line"
+import lineIntersect from "@turf/line-intersect"
 
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -128,6 +133,7 @@ import {
   MglGeolocateControl,
   MglScaleControl,
 } from "vue-mapbox";
+import {MglPopup} from "vue-mapbox"
 
 import {cartobio as mapStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
@@ -191,7 +197,8 @@ export default {
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
-    MglMap
+    MglMap,
+    MglPopup
   },
   data() {
     return {
@@ -261,6 +268,8 @@ export default {
       showLayersCard: false,
 
       highlightedParcel: null,
+      hoveredIlotName: undefined,
+      hoveredIlotCoordinates : [],
       layersVisible: {
         // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
         2020: {
@@ -750,6 +759,7 @@ export default {
       this.toggleLayerOperator(this.currentYear, true);
     },
     hoverParcel(parcel) {
+      
       // const p = centroid(parcel.geometry.coordinates)
       // let lngLat = {lng: p[0], lat: p[1]};
       // this.buildHoveredPopup(lngLat, this.map.project(lngLat));
@@ -771,17 +781,33 @@ export default {
       ilot.parcels.forEach((parcel) => {
         this.highlightParcel(parcel);
       });
+
+      let ilotBbox = bboxPolygon(this.getBboxIlot(ilot));
+      let ilotCenter = center(ilotBbox);
+      let bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
+      let inMap = isPointInPolygon(ilotCenter, bboxMap);
+      if (!inMap) {
+        this.hoveredIlotName = 'Ilot ' + ilot.numIlot;
+        console.log(ilot);
+        this.showIlotLocation(ilotCenter.geometry.coordinates, bboxMap);
+      } 
     },
     stopHoveringIlot(ilot) {
       ilot.parcels.forEach((parcel) => {
         this.stopHovering(parcel);
       });
     },
+    showIlotLocation(ilotCenter, mapBoundsPolygon) {
+      // get the intersection in map bounds towards the ilot
+      let mapCenter = this.map.getCenter().toArray();
+      let mapOuterLine = polygonToLine(mapBoundsPolygon);
+      let line = lineString([mapCenter, ilotCenter]);
+      let intersect = lineIntersect(line, mapOuterLine);
+      console.log(intersect);
+      this.hoveredIlotCoordinates = intersect.features[0].geometry.coordinates;
+    },
     zoomOnIlot(ilot) {
-      let bboxIlot = bbox({
-        features : ilot.parcels,
-        type : 'FeatureCollection'
-      });
+      let bboxIlot = this.getBboxIlot(ilot);
       this.map.fitBounds(bboxIlot, {
         padding: this.mapPadding
       });
@@ -789,6 +815,12 @@ export default {
     zoomOnOperator() {
       this.map.fitBounds(this.bboxOperator, {
         padding: this.mapPadding
+      });
+    },
+    getBboxIlot(ilot) {
+      return bbox({
+        features : ilot.parcels,
+        type : 'FeatureCollection'
       });
     },
     selectParcel(parcel) {
