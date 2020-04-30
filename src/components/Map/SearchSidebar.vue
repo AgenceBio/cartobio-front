@@ -35,7 +35,7 @@
             <v-list two-line>
               <template v-for="(operator, i) in operators">
                 <v-divider v-if="i" :key="i"></v-divider>
-                <v-list-tile :key="operator.id" @click="$emit('setOperator', operator)">
+                <v-list-tile :key="operator.id" :class="{'no-click': !operator.numeroPacage || operator.dateCheck > '2019-05-15'}" @click="(operator.numeroPacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', operator)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{ operator.title }}</v-list-tile-title>
 
@@ -48,20 +48,18 @@
                       Numéro PACAGE inconnu —
                       <a :href="'https://notification.agencebio.org/fiche/' + operator.id" rel="noopener">le renseigner ?</a>
                     </v-list-tile-sub-title>
-                    <v-list-tile-sub-title v-else-if="operator.dateEngagement <= '2019-05-15'" class="caption">
-                      <v-icon small>warning</v-icon>
-                      Données parcellaires inconnues.
-                    </v-list-tile-sub-title>
-                    <v-list-tile-sub-title v-else-if="operator.dateEngagement > '2019-05-15' && operator.dateEngagement <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
+
+                    <v-list-tile-sub-title v-else-if="operator.dateCheck > '2019-05-15' && operator.dateCheck <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
                       <v-icon small>info</v-icon>
                       Les parcelles seront visibles le 15 juillet 2020.
                     </v-list-tile-sub-title>
-                    <v-list-tile-sub-title v-else-if="operator.dateEngagement > '2020-05-15' && dateNow < '2020-07-15'" class="caption">
+                    <v-list-tile-sub-title v-else-if="operator.dateCheck > '2020-05-15' && dateNow < '2020-07-15'" class="caption">
                       <v-icon small>info</v-icon>
                       Les parcelles seront visibles le 15 juillet 2021.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else class="caption">
-                      {{ operator.numeroPacage }}
+                      {{ operator.numeroPacage }},
+                      engagement bio en {{ operator.dateEngagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
@@ -103,6 +101,10 @@ export default {
     Geosearch,
   },
 
+  filters: {
+    dateYear: (dateString) => new Date(dateString).getFullYear(),
+  },
+
   data() {
     return {
       dateNow: new Date().toISOString().split('T')[0],
@@ -131,6 +133,10 @@ export default {
 <style lang="scss" scoped>
 .search .v-list__tile__content {
   height: auto;
+}
+
+.no-click /deep/ .v-list__tile--link {
+  cursor: default;
 }
 
 .v-list {

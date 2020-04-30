@@ -1,10 +1,10 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="display" @transitionend="$emit('close-drawer')">
+  <v-navigation-drawer app clipped stateless hide-overlay v-model="operator">
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <!-- Header -->
         <v-toolbar dark flat prominent color="#457382">
-          <v-toolbar-side-icon @click="display=false">
+          <v-toolbar-side-icon @click="$emit('close-drawer')">
             <v-icon>navigate_before</v-icon>
           </v-toolbar-side-icon>
           <v-toolbar-title class="ml-0">
@@ -93,7 +93,6 @@ export default {
   name: "ParcelsList",
   props: {
     parcels: Object,
-    drawer: Boolean,
     operator: Object
   },
   components: {
@@ -102,7 +101,6 @@ export default {
   data() {
     return {
       dialog: false,
-      display: this.drawer,
     };
   },
   methods: {

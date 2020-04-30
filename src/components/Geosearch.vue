@@ -125,6 +125,7 @@ export default {
       this.isLoading = false
       this._operators = operators.map(operator => ({
         ...operator,
+        dateCheck: operator.dateEngagement || operator.dateMaj,
         title: operator.denominationCourante || operator.nom || operator.gerant || '#'+operator.numeroBio
       }))
     })

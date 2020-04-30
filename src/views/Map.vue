@@ -3,7 +3,6 @@
       <!-- Parcels List -->
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
-        :drawer="showOperatorDetails"
         :operator="operator"
         v-on:close-drawer="closeOperatorDetailsSidebar()"
         v-on:hover-parcel="hoverParcel($event)"
@@ -14,6 +13,7 @@
 
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
+                      @select-operator="setOperator($event)"
                       @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
@@ -306,114 +306,6 @@ export default {
 
     this.zoom = Number(zoom);
     this.center = [Number(lon), Number(lat)];
-
-    // get the current operator
-    if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
-      alert(
-        "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
-          "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
-      );
-      this.operator.title = "pacage : " + this.operator.numeroPacage;
-      this.filterLabel = { filter: "pacage", property: "numeroPacage" };
-    }
-
-    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
-      // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
-      // mongoDB filter and not standard WFS filter.
-      let params = {
-        service: "WFS",
-        version: "1.1.0",
-        request: "GetFeature",
-        outputFormat: "GeoJSON",
-        typeName: "rpgbio2020v1",
-        srsname: "4326",
-        filter: JSON.stringify({
-          // this is intended to work only with numeroPacage
-          // we get them from AgenceBio with 8 or 9 chars,
-          // but RPG data are always with 9 chars.
-          // IDs formated as integer when they are strings...
-          [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
-        })
-      };
-
-      let tokenCollab = btoa(
-        process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-          ":" +
-          process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-      );
-
-      // get 2020 parcels from the operator
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.displayOperatorLayer(data.data));
-      // .catch(data => this.displayErrorMessage(data));
-
-      // get 2019 parcels from the operator
-      let params2019 = JSON.parse(JSON.stringify(params));
-      params2019.typeName = "rpgbio2019v4";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2019,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2019"));
-
-      // get 2018 parcels from the operator
-      let params2018 = JSON.parse(JSON.stringify(params));
-      params2018.typeName = "rpgbio2018v9";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2018,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2018"));
-
-      // get 2017 parcels from the operator
-      let params2017 = JSON.parse(JSON.stringify(params));
-      params2017.typeName = "rpgbio2017v7";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2017,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2017"));
-      // }.bind(this)
-      // );
-      // store the layers
-      // maybe in future evolutions: let user choose the color of the layers so we don't have to handle it ourselves for lager set of years.
-      // maybe a loop to do it but need to store colors for each
-      this.layersOperator["2020"] = this.getYearLayer(
-        "2020",
-        "rgba(98, 215, 113, 1)", // bio
-        "rgba(253, 168, 212, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2019"] = this.getYearLayer(
-        "2019",
-        "rgba(31, 163, 65, 1)", // bio
-        "rgba(227, 101, 157, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2018"] = this.getYearLayer(
-        "2018",
-        "rgba(0, 110, 27, 1)", // bio
-        "rgba(179, 45, 100, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2017"] = this.getYearLayer(
-        "2017",
-        "rgba(0, 60, 0, 1)", // bio
-        "rgba(116, 0, 50, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-    }
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
@@ -526,42 +418,47 @@ export default {
         if (!map.getSource("bio-" + year)) {
           map.addSource("bio-" + year, bioSource);
         }
-        let bioLayer = {
-          id: "bio-tiles-" + year,
-          type: "fill",
-          source: "bio-" + year,
-          "source-layer": "anon_rpgbio_" + year,
-          minzoom: 9,
-          paint: {
-            "fill-color": "rgba(208, 211, 46, 1)",
-            "fill-opacity": 0.6
-          },
-          tms: true,
-          maxzoom: 24,
-          layout: {visibility: 'none'}
-        };
-        this.anonLayers[year] = bioLayer;
-        map.addLayer(this.anonLayers[year], 'road_oneway');
-        map.addLayer({
-          id: `bio-tiles-${year}-border`,
-          type: "line",
-          source: "bio-" + year,
-          "source-layer": "anon_rpgbio_" + year,
-          minzoom: 10,
-          paint: {
-            "line-color": "rgba(208, 211, 46, 1)",
-            "line-opacity": 1,
-            "line-width": {
-              "stops": [[9, 0], [12, 1]]
-            }
-          },
-          layout: {visibility: 'none'}
-        }, 'road_oneway');
+
+        if (!map.getLayer("bio-tiles-" + year)) {
+          let bioLayer = {
+            id: "bio-tiles-" + year,
+            type: "fill",
+            source: "bio-" + year,
+            "source-layer": "anon_rpgbio_" + year,
+            minzoom: 9,
+            paint: {
+              "fill-color": "rgba(208, 211, 46, 1)",
+              "fill-opacity": 0.6
+            },
+            tms: true,
+            maxzoom: 24,
+            layout: {visibility: 'none'}
+          };
+          this.anonLayers[year] = bioLayer;
+          map.addLayer(this.anonLayers[year], 'road_oneway');
+          map.addLayer({
+            id: `bio-tiles-${year}-border`,
+            type: "line",
+            source: "bio-" + year,
+            "source-layer": "anon_rpgbio_" + year,
+            minzoom: 10,
+            paint: {
+              "line-color": "rgba(208, 211, 46, 1)",
+              "line-opacity": 1,
+              "line-width": {
+                "stops": [[9, 0], [12, 1]]
+              }
+            },
+            layout: {visibility: 'none'}
+          }, 'road_oneway');
+        }
       });
 
       // non-bio
-      map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
-      cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
+      if (!map.getSource('rpg-nonbio-anon')) {
+        map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
+        cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
+      }
 
       this.toggleLayerAnon(this.currentYear, true);
 
@@ -571,18 +468,21 @@ export default {
           data: this.selectedParcels
         });
       }
+
       if (!map.getSource("highlight")) {
         map.addSource("highlight", {
           type: "geojson",
           data: this.highlightedParcels
         });
       }
+
       if (!map.getSource("operatorParcels2020")) {
         map.addSource("operatorParcels2020", {
           type: "geojson",
           data: this.parcelsOperator[2020]
         });
       }
+
       if (!map.getSource("operatorParcels2019")) {
         map.addSource("operatorParcels2019", {
           type: "geojson",
@@ -602,52 +502,6 @@ export default {
           data: this.parcelsOperator[2017]
         });
       }
-      // highlight
-      map.addLayer({
-        id: "highlighted-parcels",
-        type: "fill",
-        source: "highlight",
-        paint: {
-          "fill-color": [
-            "match",
-            ["get", "bio"],
-            "0",
-            "rgba(111, 61, 72, 1)",
-            "1",
-            "rgba(6, 71, 75, 1)",
-            "white"
-          ],
-          "fill-opacity": 1
-        }
-      }, 'road_oneway');
-      map.addLayer({
-        id: "highlighted-parcels-border",
-        type: "line",
-        source: "highlight",
-        paint: {
-          "line-color": "rgba(100, 200, 240, 1)",
-          "line-width": 2
-        }
-      }, 'road_oneway');
-
-      // selected
-      map.addLayer({
-        id: "selected-parcels",
-        type: "fill",
-        source: "selected",
-        paint: {
-          "fill-color": [
-            "match",
-            ["get", "bio"],
-            "0",
-            "rgba(156, 86, 100, 1)",
-            "1",
-            "rgba(9, 99, 106, 1)",
-            "white"
-          ],
-          "fill-opacity": 1
-        }
-      });
     },
 
     flyTo({lat, lon, zoom}) {
@@ -655,6 +509,10 @@ export default {
         center: [lat, lon],
         zoom,
       });
+    },
+
+    setOperator (operator) {
+      this.$store.commit("setOperator", operator)
     },
 
     displayOperatorLayer(data) {
@@ -721,7 +579,113 @@ export default {
           padding: this.mapPadding
         });
       }
+      
       this.isOperatorOnMap = true;
+
+      // get the current operator
+      if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
+        alert(
+          "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
+            "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
+        );
+        this.operator.title = "pacage : " + this.operator.numeroPacage;
+        this.filterLabel = { filter: "pacage", property: "numeroPacage" };
+      }
+
+      if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
+        // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
+        // mongoDB filter and not standard WFS filter.
+        let params = {
+          service: "WFS",
+          version: "1.1.0",
+          request: "GetFeature",
+          outputFormat: "GeoJSON",
+          typeName: "rpgbio2020v1",
+          srsname: "4326",
+          filter: JSON.stringify({
+            // this is intended to work only with numeroPacage
+            // we get them from AgenceBio with 8 or 9 chars,
+            // but RPG data are always with 9 chars.
+            // IDs formated as integer when they are strings...
+            [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
+          })
+        };
+
+        let tokenCollab = btoa(
+          process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
+            ":" +
+            process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
+        );
+
+        // get 2020 parcels from the operator
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.displayOperatorLayer(data.data));
+        // .catch(data => this.displayErrorMessage(data));
+
+        // get 2019 parcels from the operator
+        let params2019 = JSON.parse(JSON.stringify(params));
+        params2019.typeName = "rpgbio2019v4";
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2019,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2019"));
+
+        // get 2018 parcels from the operator
+        let params2018 = JSON.parse(JSON.stringify(params));
+        params2018.typeName = "rpgbio2018v9";
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2018,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2018"));
+
+        // get 2017 parcels from the operator
+        let params2017 = JSON.parse(JSON.stringify(params));
+        params2017.typeName = "rpgbio2017v7";
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2017,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2017"));
+
+        this.layersOperator["2020"] = this.getYearLayer(
+          "2020",
+          "rgba(98, 215, 113, 1)", // bio
+          "rgba(253, 168, 212, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+        this.layersOperator["2019"] = this.getYearLayer(
+          "2019",
+          "rgba(31, 163, 65, 1)", // bio
+          "rgba(227, 101, 157, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+        this.layersOperator["2018"] = this.getYearLayer(
+          "2018",
+          "rgba(0, 110, 27, 1)", // bio
+          "rgba(179, 45, 100, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+        this.layersOperator["2017"] = this.getYearLayer(
+          "2017",
+          "rgba(0, 60, 0, 1)", // bio
+          "rgba(116, 0, 50, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+      }
+
       this.years.forEach(year => {
         map.addLayer(this.layersOperator[year], 'road_oneway');
         map.addLayer({
@@ -829,6 +793,8 @@ export default {
       this.$store.commit("setOperator", {})
 
       this.years.forEach(year => {
+        this.map.removeLayer(this.layersOperator[year].id);
+        this.map.removeLayer(this.layersOperator[year].id + '-border');
         this.addOperatorData(geoJsonTemplate, year)
       })
     },
@@ -904,6 +870,12 @@ export default {
       // best would be to populate layers data and make the data react to them
       if (newProfile.active && this.map) {
         this.loadLayers(this.map);
+      }
+    },
+    operator: function(newOperator) {
+      if (this.map && newOperator.id) {
+        this.loadLayers(this.map);
+        this.setUpMapOperator()
       }
     }
   }
