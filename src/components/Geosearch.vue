@@ -1,81 +1,81 @@
 <template>
-  <v-autocomplete
-    v-model="place"
-    :items="results"
-    :loading="loadingPlaces"
-    :search-input.sync="searchText"
-    item-text="city"
-    no-data-text="Pas de résultats"
-    prepend-inner-icon="search"
-    placeholder="Recherche"
-    hide-no-data
-    hide-details
-    clearable
-    return-object
-  ></v-autocomplete>
+  <v-text-field box clearable hide-details
+    v-model="searchText"
+    @click:clear="clear"
+    @input="search"
+    browser-autocomplete="postal-code address-level2"
+    :loading="isLoading"
+    prepend-inner-icon="search">
+  </v-text-field>
 </template>
+
 <script>
-import {get} from "axios";
+import {get as _get} from "axios";
 import throttle from "lodash/throttle";
+
+const get = throttle(_get, 200);
+
 export default {
   name: "Geosearch",
+
   data() {
     return {
-      place: null,
-      results: [],
+      isLoading: false,
       searchText: "",
-      searchResult: {},
-      loadingPlaces: false
     };
   },
   components: {},
   methods: {
+    clear () {
+      this.$emit('towns-received', [])
+    },
+
     search: function() {
-      if (this.searchText.length) {
-        this.loadingPlaces = true;
-        let req =
-          "https://wxs.ign.fr/" +
-          process.env.VUE_APP_API_IGN +
-          "/look4/user/search?indices=locating&method=prefix%2Cfuzzy&types=address%2Cposition%2Ctoponyme%2Cw3w&nb=5&match%5Bfulltext%5D=" +
-          this.searchText;
-        return get(req)
-          .then(data => {
-            this.results = this.formatListResults(data.data.features);
-            window._paq.push(['trackSiteSearch', this.searchText, false, this.results.length])
-          })
-          .finally(() => (this.loadingPlaces = false));
-      } else {
-        this.results = [];
+      const { searchText:q } = this
+
+      if (!q || q.length < 3) {
+        return this.clear()
       }
-    },
-    formatListResults: function(features) {
-      // return array of places with their geometry
-      return features.map(function(place) {
-        // add geometry to properties for a simpler use
-        place.properties.geometry = place.geometry;
-        return place.properties;
-      });
-    }
-  },
-  created: function() {
-    // limit search execution to once every 500ms to not flood the API
-    this.throttledSearch = throttle(this.search, 500);
-  },
-  watch: {
-    searchText(value) {
-      if (!value) {
-        return;
+
+      this.isLoading = true
+
+      const options = {
+        responseType: 'json',
+        params: {
+          autocomplete: 1,
+          type: 'municipality',
+          q,
+        }
       }
-      this.throttledSearch();
+
+      get('https://api-adresse.data.gouv.fr/search/', options)
+        .then(({ data:featureCollection }) => {
+          const towns = featureCollection.features.map(({ properties, geometry }) => ({
+            key: properties.id,
+            postcode: properties.postcode,
+            label: properties.label,
+            lat: geometry.coordinates[0],
+            lon: geometry.coordinates[1],
+          }))
+
+          this.$emit('towns-received', towns)
+        })
+        .catch(console.error)
+        .finally(() => this.isLoading = false)
+
+        //
     },
-    place(value) {
-      this.$emit("searchCompleted", value);
-    }
-  }
+  },
 };
 </script>
+
 <style lang="scss" scoped>
-.v-autocomplete {
-  padding-top: 0;
+.v-text-field--box /deep/ input {
+  margin-top: 12px; // same as .solo… but with box!
+}
+
+.v-text-field /deep/ .v-input__control > .v-input__slot::before {
+  border-color: rgb(185, 208, 101);
+  border-width: 3px 0 0;
 }
 </style>

@@ -3,14 +3,16 @@
       <!-- Parcels List -->
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
-        :drawer.sync="drawer"
+        :drawer="showOperatorDetails"
         :operator="operator"
-        v-on:close-drawer="closeDrawer()"
+        v-on:close-drawer="closeOperatorDetailsSidebar()"
         v-on:hover-parcel="hoverParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
+
+      <SearchSidebar :drawer="showSearch" @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -41,9 +43,6 @@
           @load="onMapLoaded"
           ref="mapboxDiv"
         >
-          <v-toolbar floating dense class="my-3 toolbar-search">
-            <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
-          </v-toolbar>
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
@@ -51,7 +50,7 @@
         </MglMap>
 
         <!-- Layers selector -->
-        <v-flex class="layers-panel" v-show="showLayersCard">
+        <v-flex class="layers-panel" v-show="isAuthenticated">
           <v-expansion-panel popout expand v-bind:value="expandLayers">
             <v-expansion-panel-content>
               <template v-slot:header>
@@ -119,7 +118,6 @@ import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import Geosearch from "@/components/Geosearch";
 
 import {
   MglMap,
@@ -132,6 +130,7 @@ import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/as
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
+import SearchSidebar from "@/components/Map/SearchSidebar";
 
 import { mapGetters, mapState } from 'vuex';
 
@@ -186,7 +185,7 @@ export default {
     ParcelsList,
     ParcelDetails,
     ParcelDetailsPopup,
-    Geosearch,
+    SearchSidebar,
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
@@ -204,8 +203,7 @@ export default {
 
       // anonymous layers
       anonLayers: {},
-      // current operator data
-      operator: {},
+
       // operator parcels by year
       parcelsOperator: {
         2020: geoJsonTemplate,
@@ -232,13 +230,6 @@ export default {
       // placeholder for layers for an operator
       layersOperator: {},
 
-      // display related data
-
-      // show drawer
-      drawer: false,
-      // mini drawer display
-      mini: false,
-
       // edit mode
       editMode: false,
 
@@ -257,7 +248,6 @@ export default {
       displaySurvey: true,
       // new parcel dialog
       setUpParcel: false,
-      showLayersCard: false,
 
       highlightedParcel: null,
       layersVisible: {
@@ -316,7 +306,6 @@ export default {
     this.center = [Number(lon), Number(lat)];
 
     // get the current operator
-    this.operator = this.getOperator;
     if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
       alert(
         "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
@@ -325,9 +314,6 @@ export default {
       this.operator.title = "pacage : " + this.operator.numeroPacage;
       this.filterLabel = { filter: "pacage", property: "numeroPacage" };
     }
-
-    // if there is an operator, show drawer.
-    this.drawer = !!getObjectValue(this.getOperator, "title");
 
     if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
       // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
@@ -429,9 +415,18 @@ export default {
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
-    ...mapGetters(['getProfile', 'getOperator']),
+    ...mapGetters(['getProfile']),
+    ...mapGetters({ operator: 'getOperator' }),
     ...mapGetters('user', ['isAuthenticated']),
     ...mapState(['currentYear']),
+
+    showOperatorDetails () {
+      return Boolean(this.isAuthenticated && this.operator.id);
+    },
+
+    showSearch () {
+      return Boolean(this.isAuthenticated && !this.operator.id);
+    },
 
     // to display the years in right order in the layers panel
     sortedYears() {
@@ -479,7 +474,7 @@ export default {
         operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
         cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
       }
-      
+
       // handle hovering effect when moving mouse on map
       let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
       if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
@@ -513,8 +508,6 @@ export default {
     },
 
     loadLayers(map) {
-      this.showLayersCard = true;
-
       this.years.forEach((year) => {
         // bio source
         let bioSource = {
@@ -654,11 +647,11 @@ export default {
         }
       });
     },
-    handleSearchResult(value) {
-      // this.map.panTo(value.geometry.coordinates);
-      this.map.easeTo({
-        center: value.geometry.coordinates,
-        zoom: 10 + parseInt(value.importance) // may be improved, difficult to know what importance stands for
+
+    flyTo({lat, lon, zoom}) {
+      this.map.flyTo({
+        center: [lat, lon],
+        zoom,
       });
     },
 
@@ -680,11 +673,8 @@ export default {
       }
     },
 
-    closeDrawer () {
-      this.drawer = false
-      this.$store.commit("setOperator", {})
+    closeOperatorDetailsSidebar () {
       this.map.resize()
-      this.operator = {}
       this.clearOperatorData()
     },
 
@@ -818,10 +808,12 @@ export default {
       this.newParcel.properties = newData[0];
       this.$forceUpdate();
     },
+
     addOperatorLayer(data, year) {
       this.parcelsOperator[year] = data;
       this.layersVisible[year] = false;
     },
+
     addOperatorData(data, year) {
       this.parcelsOperator[year] = data;
       if (this.map) {
@@ -832,6 +824,8 @@ export default {
     },
 
     clearOperatorData() {
+      this.$store.commit("setOperator", {})
+
       this.years.forEach(year => {
         this.addOperatorData(geoJsonTemplate, year)
       })
