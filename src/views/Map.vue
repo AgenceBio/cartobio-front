@@ -12,7 +12,9 @@
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
       ></ParcelsList>
 
-      <SearchSidebar :drawer="showSearch" @flyto="flyTo"></SearchSidebar>
+      <SearchSidebar  :drawer="showSearch"
+                      :organismeCertificateur="getProfile.organismeCertificateur"
+                      @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">

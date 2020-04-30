@@ -10,10 +10,18 @@
 
           <v-list-tile class="search grow">
             <v-list-tile-content>
-              <p class="caption">
+              <p class="caption" v-if="organismeCertificateur">
+                Saisir une ville, un code postal
+                ou un nom d'exploitation certifiée par <i>{{ organismeCertificateur.nom }}</i>.
+              </p>
+              <p class="caption" v-else>
                 Saisir une ville ou un code postal.
               </p>
-              <Geosearch @towns-received="towns = $event"></Geosearch>
+
+              <Geosearch  @towns-received="towns = $event"
+                          @operators-received="operators = $event"
+                          :ocId="organismeCertificateur.id">
+              </Geosearch>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -21,26 +29,43 @@
         <v-expansion-panel expand v-model="panels" class="search-results elevation-0">
           <v-expansion-panel-content v-if="operators.length" key="operators">
             <template v-slot:header>
-              <div>Exploitants</div>
+              <div>Exploitations</div>
             </template>
 
             <v-list two-line>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Legrand Etienne</v-list-tile-title>
-                  <v-list-tile-sub-title class="caption">00715216</v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-divider />
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>EARL Etienne Pochon</v-list-tile-title>
-                  <v-list-tile-sub-title class="caption">
-                    <v-icon small>info</v-icon>
-                    Pas de déclaration PAC connue au 15 juillet 2019.
-                  </v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
+              <template v-for="(operator, i) in operators">
+                <v-divider v-if="i" :key="i"></v-divider>
+                <v-list-tile :key="operator.id" @click="$emit('setOperator', operator)">
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ operator.title }}</v-list-tile-title>
+
+                    <v-list-tile-sub-title v-if="!operator.active" class="caption">
+                      <v-icon small>warning</v-icon>
+                      Exploitation considérée inactive par l'Agence Bio.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="!operator.numeroPacage" class="caption">
+                      <v-icon small>warning</v-icon>
+                      Numéro PACAGE inconnu —
+                      <a :href="'https://notification.agencebio.org/fiche/' + operator.id" rel="noopener">le renseigner ?</a>
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="operator.dateEngagement <= '2019-05-15'" class="caption">
+                      <v-icon small>warning</v-icon>
+                      Données parcellaires inconnues.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="operator.dateEngagement > '2019-05-15' && operator.dateEngagement <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
+                      <v-icon small>info</v-icon>
+                      Les parcelles seront visibles le 15 juillet 2020.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="operator.dateEngagement > '2020-05-15' && dateNow < '2020-07-15'" class="caption">
+                      <v-icon small>info</v-icon>
+                      Les parcelles seront visibles le 15 juillet 2021.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else class="caption">
+                      {{ operator.numeroPacage }}
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
             </v-list>
           </v-expansion-panel-content>
 
@@ -72,6 +97,7 @@ export default {
   name: "SearchSidebar",
   props: {
     drawer: Boolean,
+    organismeCertificateur: Object
   },
   components: {
     Geosearch,
@@ -79,6 +105,7 @@ export default {
 
   data() {
     return {
+      dateNow: new Date().toISOString().split('T')[0],
       panels: [true, true],
       operators: [],
       towns: [],
@@ -87,6 +114,12 @@ export default {
 
   watch: {
     towns (newList) {
+      if (newList.length === 0) {
+        this.panels = [true, true];
+      }
+    },
+
+    operators (newList) {
       if (newList.length === 0) {
         this.panels = [true, true];
       }

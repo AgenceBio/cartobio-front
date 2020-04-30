@@ -10,13 +10,74 @@
 </template>
 
 <script>
-import {get as _get} from "axios";
+import {get} from "axios";
 import throttle from "lodash/throttle";
+import _words from "lodash/words";
 
-const get = throttle(_get, 200);
+const OPERATORS_ENDPOINT = process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/getOperatorsByOc"
+
+const searchTowns = throttle((townOrPostcode) => {
+  const options = {
+    responseType: 'json',
+    params: {
+      autocomplete: 1,
+      type: 'municipality',
+      q: townOrPostcode,
+    }
+  }
+
+  return get('https://api-adresse.data.gouv.fr/search/', options)
+    .then(({ data:featureCollection }) => {
+      return featureCollection.features.map(({ properties, geometry }) => ({
+        key: properties.id,
+        postcode: properties.postcode,
+        label: properties.label,
+        lat: geometry.coordinates[0],
+        lon: geometry.coordinates[1],
+      }))
+    })
+}, 200)
+
+const preloadOperators = (oc) => {
+  if (!oc) {
+    return Promise.resolve([])
+  }
+
+  const options = {
+    responseType: 'json',
+    params: {
+      activites: 1,
+      oc,
+    }
+  }
+
+  return get(OPERATORS_ENDPOINT, options)
+    .then(({ data }) => data)
+}
+
+const searchOperators = ({ searchText, operators}) => {
+  return Promise.resolve([])
+    .then(() => {
+      const words = _words(searchText.toLocaleLowerCase().trim())
+
+      return operators
+        .filter(({ title }) => title)
+        .filter(({ title }) => {
+          return words.every(word => title.toLocaleLowerCase().includes(word))
+        })
+        .slice(0, 5)
+    })
+}
 
 export default {
   name: "Geosearch",
+
+  props: {
+    ocId: {
+      type: Number,
+      required: false
+    },
+  },
 
   data() {
     return {
@@ -28,44 +89,47 @@ export default {
   methods: {
     clear () {
       this.$emit('towns-received', [])
+      this.$emit('operators-received', [])
     },
 
     search: function() {
-      const { searchText:q } = this
+      const { searchText } = this
 
-      if (!q || q.length < 3) {
+      if (!searchText || searchText.length < 3) {
         return this.clear()
       }
 
       this.isLoading = true
 
-      const options = {
-        responseType: 'json',
-        params: {
-          autocomplete: 1,
-          type: 'municipality',
-          q,
-        }
-      }
+      const townsP = searchTowns(searchText)
+      const operatorsP = searchOperators({ searchText, operators: this._operators })
 
-      get('https://api-adresse.data.gouv.fr/search/', options)
-        .then(({ data:featureCollection }) => {
-          const towns = featureCollection.features.map(({ properties, geometry }) => ({
-            key: properties.id,
-            postcode: properties.postcode,
-            label: properties.label,
-            lat: geometry.coordinates[0],
-            lon: geometry.coordinates[1],
-          }))
+      // async results
+      townsP.then(towns => this.$emit('towns-received', towns))
+      operatorsP.then(operators => this.$emit('operators-received', operators))
 
-          this.$emit('towns-received', towns)
-        })
+      Promise.allSettled([townsP, operatorsP])
         .catch(console.error)
         .finally(() => this.isLoading = false)
-
-        //
     },
   },
+
+  created () {
+    // it costs too much for Vue.js to watch 30K objects (for large certification bodies)
+    this._operators = []
+    this.isLoading = true
+
+    // we preload the operators list as we have no way
+    // to directly query by OC _and_ setting a limit (like 10 results)
+    preloadOperators(this.ocId).then(operators => {
+      this.isLoading = false
+      this._operators = operators.map(operator => ({
+        ...operator,
+        title: operator.denominationCourante || operator.nom || operator.gerant || '#'+operator.numeroBio
+      }))
+    })
+    .catch(console.error)
+  }
 };
 </script>
 
