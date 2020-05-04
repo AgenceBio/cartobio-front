@@ -45,8 +45,7 @@
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else-if="!operator.numeroPacage" class="caption">
                       <v-icon small>warning</v-icon>
-                      Numéro PACAGE inconnu —
-                      <a :href="'https://notification.agencebio.org/fiche/' + operator.id" rel="noopener">le renseigner ?</a>
+                      Parcellaire inconnu.
                     </v-list-tile-sub-title>
 
                     <v-list-tile-sub-title v-else-if="operator.dateCheck > '2019-05-15' && operator.dateCheck <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
@@ -58,7 +57,7 @@
                       Les parcelles seront visibles le 15 juillet 2021.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else class="caption">
-                      {{ operator.numeroPacage }},
+                      N°&nbsp;PACAGE <code>{{ operator.numeroPacage }}</code>,
                       engagement bio en {{ operator.dateEngagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
@@ -145,6 +144,11 @@ export default {
 
 .v-icon {
   color: #457382;
+}
+
+code {
+  color: inherit;
+  font-weight: normal;
 }
 
 /deep/ .v-expansion-panel__header {
