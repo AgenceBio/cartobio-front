@@ -10,41 +10,64 @@
 
           <v-list-tile class="search grow">
             <v-list-tile-content>
-              <p class="caption">
+              <p class="caption" v-if="organismeCertificateur">
+                Saisir une ville, un code postal
+                ou un nom d'exploitation certifiée par <i>{{ organismeCertificateur.nom }}</i>.
+              </p>
+              <p class="caption" v-else>
                 Saisir une ville ou un code postal.
               </p>
-              <Geosearch @towns-received="towns = $event"></Geosearch>
+
+              <Geosearch  @towns-received="towns = $event"
+                          @operators-received="operators = $event"
+                          :ocId="organismeCertificateur.id">
+              </Geosearch>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
 
         <v-expansion-panel expand v-model="panels" class="search-results elevation-0">
-          <v-expansion-panel-content v-if="operators.length" key="operators">
+          <v-expansion-panel-content :hidden="operators.length === 0" key="operators">
             <template v-slot:header>
-              <div>Exploitants</div>
+              <div>Exploitations</div>
             </template>
 
             <v-list two-line>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Legrand Etienne</v-list-tile-title>
-                  <v-list-tile-sub-title class="caption">00715216</v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-divider />
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>EARL Etienne Pochon</v-list-tile-title>
-                  <v-list-tile-sub-title class="caption">
-                    <v-icon small>info</v-icon>
-                    Pas de déclaration PAC connue au 15 juillet 2019.
-                  </v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
+              <template v-for="(operator, i) in operators">
+                <v-divider v-if="i" :key="i"></v-divider>
+                <v-list-tile :key="operator.id" :class="{'no-click': !operator.numeroPacage || operator.dateCheck > '2019-05-15'}" @click="(operator.numeroPacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', operator)">
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ operator.title }}</v-list-tile-title>
+
+                    <v-list-tile-sub-title v-if="!operator.active" class="caption">
+                      <v-icon small>warning</v-icon>
+                      Exploitation considérée inactive par l'Agence Bio.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="!operator.numeroPacage" class="caption">
+                      <v-icon small>warning</v-icon>
+                      Parcellaire inconnu.
+                    </v-list-tile-sub-title>
+
+                    <v-list-tile-sub-title v-else-if="operator.dateCheck > '2019-05-15' && operator.dateCheck <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
+                      <v-icon small>info_outline</v-icon>
+                      Les parcelles seront visibles le <b>15 juillet 2020</b>.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="operator.dateCheck > '2020-05-15' && dateNow < '2020-07-15'" class="caption">
+                      <v-icon small>info</v-icon>
+                      Les parcelles seront visibles le <b>15 juillet 2021</b>.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else class="caption">
+                      <v-icon small color="green">check_circle_outline</v-icon>
+                      PACAGE <code>{{ operator.numeroPacage }}</code>,
+                      engagement bio en {{ operator.dateEngagement | dateYear }}.
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
             </v-list>
           </v-expansion-panel-content>
 
-          <v-expansion-panel-content v-if="towns.length" key="cities">
+          <v-expansion-panel-content :hidden="towns.length === 0" key="cities">
             <template v-slot:header>
               <div>Communes</div>
             </template>
@@ -72,13 +95,19 @@ export default {
   name: "SearchSidebar",
   props: {
     drawer: Boolean,
+    organismeCertificateur: Object
   },
   components: {
     Geosearch,
   },
 
+  filters: {
+    dateYear: (dateString) => new Date(dateString).getFullYear(),
+  },
+
   data() {
     return {
+      dateNow: new Date().toISOString().split('T')[0],
       panels: [true, true],
       operators: [],
       towns: [],
@@ -87,6 +116,12 @@ export default {
 
   watch: {
     towns (newList) {
+      if (newList.length === 0) {
+        this.panels = [true, true];
+      }
+    },
+
+    operators (newList) {
       if (newList.length === 0) {
         this.panels = [true, true];
       }
@@ -100,12 +135,40 @@ export default {
   height: auto;
 }
 
+[role="listitem"]:not(.no-click) /deep/ .v-list__tile--link:hover,
+[role="listitem"]:not(.no-click):hover + .v-divider {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+[role="listitem"].no-click /deep/ .v-list__tile--link {
+  cursor: default;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+.no-click /deep/ {
+
+  .v-list__tile__content,
+  .v-list__tile__sub-title,
+  .v-icon {
+    color: #90A4AE;
+  }
+}
+
 .v-list {
   padding: 0;
 }
 
 .v-icon {
   color: #457382;
+}
+
+code {
+  color: inherit;
+  font-weight: normal;
 }
 
 /deep/ .v-expansion-panel__header {
