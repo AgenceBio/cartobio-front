@@ -5,7 +5,7 @@
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:close-drawer="closeOperatorDetailsSidebar()"
-        v-on:hover-parcel="hoverParcel($event)"
+        v-on:hover-parcel="highlightParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
@@ -721,22 +721,16 @@ export default {
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
-    hoverParcel(parcel) {
-      // const p = centroid(parcel.geometry.coordinates)
-      // let lngLat = {lng: p[0], lat: p[1]};
-      // this.buildHoveredPopup(lngLat, this.map.project(lngLat));
-      this.highlightParcel(parcel);
-    },
-    highlightParcel(parcel) {
+    highlightParcel({ id }) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
-        id: parcel.id,
+        id,
       }, { highlighted: true });
     },
-    stopHovering(parcel) {
+    stopHovering({ id }) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
-        id: parcel.id,
+        id,
       }, { highlighted: false });
     },
     hoverIlot(ilot) {

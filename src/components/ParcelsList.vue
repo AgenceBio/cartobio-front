@@ -44,16 +44,16 @@
             </template>
 
             <v-data-table class="parcels" :items="ilot.parcels" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
-              <template v-slot:items="{item:parcel}">
-                <tr @mouseover="$emit('hover-parcel', parcel)" @mouseleave="$emit('stop-hovering', parcel)">
-                  <td class="status"><v-avatar size="24px" :color="parcel.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
-                  <td class="numparcel">Parcelle {{parcel.properties.numparcel}}</td>
+              <template v-slot:items="{item:props}">
+                <tr @mouseover="$emit('hover-parcel', props)" @mouseleave="$emit('stop-hovering', props)">
+                  <td class="status"><v-avatar size="24px" :color="props.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
+                  <td class="numparcel">Parcelle {{props.numparcel}}</td>
                   <td class="text-cyan cultural-label">
                     <v-tooltip top left dark open-delay=200>
                       <template v-slot:activator="{ on }">
-                        <span v-on="on" class="text-truncate d-block">{{parcel.properties.culture.label}}</span>
+                        <span v-on="on" class="text-truncate d-block">{{props.culture.label}}</span>
                       </template>
-                      <span>{{parcel.properties.culture.label}}</span>
+                      <span>{{props.culture.label}}</span>
                     </v-tooltip>
                   </td>
                 </tr>
@@ -75,7 +75,7 @@
                 </div>
               </template>
 
-              <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="parcels.features"></Preview>
+              <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="features"></Preview>
             </v-dialog>
           </v-layout>
         </v-flex>
@@ -109,8 +109,10 @@ export default {
     //   this.panel = this.expandedArr;
     // },
     sortIlots (items) {
-      return items.sort((a, b) => {
-        return Number(a.properties.numparcel) - Number(b.properties.numparcel)
+      return items.sort((propsA, propsB) => {
+        const ilotDiff = propsA.numilot - propsB.numilot
+        const parcelDiff = propsA.numparcel - propsB.numparcel
+        return ilotDiff ? ilotDiff : parcelDiff
       })
     },
 
@@ -187,14 +189,6 @@ export default {
       }
     }
   },
-  watch: {
-    "parcels.features": {
-      handler: function() {
-        // console.log(newVal);
-      },
-      deep: true
-    }
-  },
   computed: {
     show: {
       get () {
@@ -209,8 +203,7 @@ export default {
     },
 
     parcelsArray () {
-      return this.parcels.features.map(parcel => {
-        let prop = parcel.properties;
+      return this.features.map(prop => {
         // csv properties order:
         // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
         return [
@@ -224,26 +217,36 @@ export default {
           getObjectValue(prop, "maraichage", ""),
           prop.numilot,
           prop.numparcel,
-          getObjectValue(prop, "surfadm", 0) * 1000,
+          getObjectValue(prop, "surfadm", 0),
           prop.surfgeo
         ];
       })
     },
 
-    ilots() {
-      // format parcels to retrieve culture name:
-      this.parcels.features.forEach(function(parcel) {
-        parcel.properties = {
-        ...parcel.properties,
-        bioboolean: Boolean(parseInt(parcel.properties.bio, 10)),
-        culture: fromCode(parcel.properties.codecultu)}
-      })
+    /**
+     * Clears out types and properties for incoming parcels
+     * @return {Array.<ParcelProperties>}
+     */
+    features () {
+      return this.parcels.features.map(({ id, properties }) => ({
+        id,
+        ...properties,
+        // to enforce proper sort order
+        numilot: parseInt(properties.numilot, 10),
+        numparcel: parseInt(properties.numparcel, 10),
+        // convert to hectares
+        surfgeo: (properties.surfgeo / 10000).toFixed(2),
+        bioboolean: Boolean(parseInt(properties.bio, 10)),
+        culture: fromCode(properties.codecultu),
+      }))
+    },
 
+    ilots() {
       // group parcels by ilots
       let reduced = reduce(
-        this.parcels.features,
+        this.features,
         function(result, parcel) {
-          let numIlot = getObjectValue(parcel, ["properties", "numilot"]);
+          let numIlot = getObjectValue(parcel, ["numilot"]);
           result[numIlot]
             ? result[numIlot].push(parcel)
             : (result[numIlot] = [parcel]);
