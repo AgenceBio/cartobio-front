@@ -12,6 +12,7 @@
 <script>
 import {get} from "axios";
 import throttle from "lodash/throttle";
+import memoize from "lodash/memoize";
 import _words from "lodash/words";
 
 const OPERATORS_ENDPOINT = process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/getOperatorsByOc"
@@ -38,7 +39,7 @@ const searchTowns = throttle((townOrPostcode) => {
     })
 }, 110)
 
-const preloadOperators = (oc) => {
+const preloadOperators = memoize((oc) => {
   if (!oc) {
     return Promise.resolve([])
   }
@@ -53,7 +54,7 @@ const preloadOperators = (oc) => {
 
   return get(OPERATORS_ENDPOINT, options)
     .then(({ data }) => data)
-}
+})
 
 const searchOperators = ({ searchText, operators}) => {
   return Promise.resolve([])
