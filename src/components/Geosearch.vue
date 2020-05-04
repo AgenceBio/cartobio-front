@@ -17,7 +17,7 @@ import _words from "lodash/words";
 
 const OPERATORS_ENDPOINT = process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/getOperatorsByOc"
 
-const searchTowns = throttle((townOrPostcode) => {
+const searchTowns = throttle((townOrPostcode, searchIndex) => {
   const options = {
     responseType: 'json',
     params: {
@@ -37,8 +37,11 @@ const searchTowns = throttle((townOrPostcode) => {
         lon: geometry.coordinates[1],
       }))
     })
+    .then(towns => ({ towns, searchIndex }))
 }, 110, { leading: true, trailing: true })
 
+// we memoize until we can rely on browser cache
+// but so far, Notification API prevents caching, and is damn slow to respond
 const preloadOperators = memoize((oc) => {
   if (!oc) {
     return Promise.resolve([])
@@ -84,6 +87,11 @@ export default {
     return {
       isLoading: false,
       searchText: "",
+      // we use this to prevent overriding the freshest results
+      // it happens when search #2 arrives after search #3
+      // we expect to display search #3 results, and not search #2 if they arrive too late
+      searchIndex: 0,
+      lastSearchIndex: 0,
     };
   },
   components: {},
@@ -101,12 +109,19 @@ export default {
       }
 
       this.isLoading = true
+      this.searchIndex++
 
-      const townsP = searchTowns(searchText)
+      const townsP = searchTowns(searchText, this.searchIndex)
       const operatorsP = searchOperators({ searchText, operators: this._operators })
 
       // async results
-      townsP.then(towns => this.$emit('towns-received', towns))
+      townsP.then(({ towns, searchIndex }) => {
+        if (searchIndex >= this.lastSearchIndex) {
+          this.$emit('towns-received', towns)
+          this.lastSearchIndex = searchIndex
+        }
+      })
+
       operatorsP.then(operators => this.$emit('operators-received', operators))
 
       Promise.allSettled([townsP, operatorsP])
