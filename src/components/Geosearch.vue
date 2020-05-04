@@ -37,7 +37,7 @@ const searchTowns = throttle((townOrPostcode) => {
         lon: geometry.coordinates[1],
       }))
     })
-}, 110)
+}, 110, { leading: true, trailing: true })
 
 const preloadOperators = memoize((oc) => {
   if (!oc) {

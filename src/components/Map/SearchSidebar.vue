@@ -27,7 +27,7 @@
         </v-list>
 
         <v-expansion-panel expand v-model="panels" class="search-results elevation-0">
-          <v-expansion-panel-content v-if="operators.length" key="operators">
+          <v-expansion-panel-content :hidden="operators.length === 0" key="operators">
             <template v-slot:header>
               <div>Exploitations</div>
             </template>
@@ -67,7 +67,7 @@
             </v-list>
           </v-expansion-panel-content>
 
-          <v-expansion-panel-content v-if="towns.length" key="cities">
+          <v-expansion-panel-content :hidden="towns.length === 0" key="cities">
             <template v-slot:header>
               <div>Communes</div>
             </template>
