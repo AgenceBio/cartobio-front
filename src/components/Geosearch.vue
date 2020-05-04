@@ -69,6 +69,11 @@ const searchOperators = ({ searchText, operators}) => {
         .filter(({ title }) => {
           return words.every(word => title.toLocaleLowerCase().includes(word))
         })
+        .sort((a, b) => {
+          const AhasPacage = Number(Boolean(a.numeroPacage))
+          const BhasPacage = Number(Boolean(b.numeroPacage))
+          return BhasPacage - AhasPacage
+        })
         .slice(0, 5)
     })
 }
@@ -119,7 +124,7 @@ export default {
         if (searchIndex >= this.lastSearchIndex) {
           this.lastSearchIndex = searchIndex
           this.$emit('towns-received', towns)
-          
+
           window._paq.push(['trackSiteSearch', this.searchText, 'towns', towns.length])
         }
       })

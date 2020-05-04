@@ -49,15 +49,16 @@
                     </v-list-tile-sub-title>
 
                     <v-list-tile-sub-title v-else-if="operator.dateCheck > '2019-05-15' && operator.dateCheck <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
-                      <v-icon small>info</v-icon>
-                      Les parcelles seront visibles le 15 juillet 2020.
+                      <v-icon small>info_outline</v-icon>
+                      Les parcelles seront visibles le <b>15 juillet 2020</b>.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else-if="operator.dateCheck > '2020-05-15' && dateNow < '2020-07-15'" class="caption">
                       <v-icon small>info</v-icon>
-                      Les parcelles seront visibles le 15 juillet 2021.
+                      Les parcelles seront visibles le <b>15 juillet 2021</b>.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else class="caption">
-                      N°&nbsp;PACAGE <code>{{ operator.numeroPacage }}</code>,
+                      <v-icon small color="green">check_circle_outline</v-icon>
+                      PACAGE <code>{{ operator.numeroPacage }}</code>,
                       engagement bio en {{ operator.dateEngagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
@@ -134,8 +135,27 @@ export default {
   height: auto;
 }
 
-.no-click /deep/ .v-list__tile--link {
+[role="listitem"]:not(.no-click) /deep/ .v-list__tile--link:hover,
+[role="listitem"]:not(.no-click):hover + .v-divider {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+[role="listitem"].no-click /deep/ .v-list__tile--link {
   cursor: default;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+.no-click /deep/ {
+
+  .v-list__tile__content,
+  .v-list__tile__sub-title,
+  .v-icon {
+    color: #90A4AE;
+  }
 }
 
 .v-list {
