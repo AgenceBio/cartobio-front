@@ -196,8 +196,13 @@ export default {
     }
   },
   computed: {
-    show () {
-      return Boolean(this.operator && this.operator.id)
+    show: {
+      get () {
+        return Boolean(this.operator && this.operator.id)
+      },
+      set () {
+        // this is intended to avoid Vue.js warning
+      }
     },
     isLoading () {
       return this.ilots.length === 0

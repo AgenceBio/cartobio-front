@@ -512,7 +512,13 @@ export default {
     },
 
     setOperator (operator) {
+      const { numeroPacage:pacageId } = operator
+
       this.$store.commit("setOperator", operator)
+      this.$router.push({
+        name: 'mapWithPacage',
+        params: {pacageId}
+      });
     },
 
     displayOperatorLayer(data) {
@@ -536,6 +542,10 @@ export default {
     closeOperatorDetailsSidebar () {
       this.map.resize()
       this.clearOperatorData()
+      this.$router.replace({
+        name: 'map',
+        params: {}
+      });
     },
 
     // function  used by draw features
@@ -579,7 +589,7 @@ export default {
           padding: this.mapPadding
         });
       }
-      
+
       this.isOperatorOnMap = true;
 
       // get the current operator
@@ -872,8 +882,9 @@ export default {
         this.loadLayers(this.map);
       }
     },
-    operator: function(newOperator) {
-      if (this.map && newOperator.id) {
+    operator: function(operator) {
+      if (this.map && operator.id) {
+        window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
         this.loadLayers(this.map);
         this.setUpMapOperator()
       }

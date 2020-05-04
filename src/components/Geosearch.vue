@@ -117,12 +117,20 @@ export default {
       // async results
       townsP.then(({ towns, searchIndex }) => {
         if (searchIndex >= this.lastSearchIndex) {
-          this.$emit('towns-received', towns)
           this.lastSearchIndex = searchIndex
+          this.$emit('towns-received', towns)
+          
+          window._paq.push(['trackSiteSearch', this.searchText, 'towns', towns.length])
         }
       })
 
-      operatorsP.then(operators => this.$emit('operators-received', operators))
+      operatorsP.then(operators => {
+        this.$emit('operators-received', operators)
+
+        const operatorsWithNoPacage = operators.filter(({ numeroPacage }) => !numeroPacage)
+        window._paq.push(['trackSiteSearch', this.searchText, 'operators:total', operators.length])
+        window._paq.push(['trackSiteSearch', this.searchText, 'operators:no-pacage', operatorsWithNoPacage.length])
+      })
 
       Promise.allSettled([townsP, operatorsP])
         .catch(console.error)
