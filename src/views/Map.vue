@@ -13,6 +13,7 @@
 
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
+                      :organismeCertificateurId="getProfile.organismeCertificateurId"
                       @select-operator="setOperator($event)"
                       @flyto="flyTo"></SearchSidebar>
     <v-content app>

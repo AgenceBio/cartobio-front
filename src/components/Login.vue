@@ -62,14 +62,11 @@
 </template>
 
 <script>
-import getObjectValue from 'lodash/get';
-
 import {mapActions} from 'vuex'
 import {authenticateWithCredentials} from '@/api/user.js'
 
 export default {
   name: "Login",
-  props: [""],
 
   data: () => ({
     loginFailed: false,
@@ -77,62 +74,45 @@ export default {
     password: "",
     showPassword: false,
     dialog: true,
-    loader: null,
     loading: false,
-    user: {},
     rules: {
       required: value => !!value || 'Ce champ est obligatoire.',
     }
   }),
 
   methods: {
-    ...mapActions('user', ['getProfile']),
+    ...mapActions('user', ['setProfile']),
     tryLogin: function() {
-      this.loader = "loading";
       this.loading = true;
       this.loginFailed = false;
 
       const {login, password} = this;
 
       authenticateWithCredentials({login, password})
-        .then(({token, decodedToken}) => {
+        .then(({ token, decodedToken, cartobioToken }) => {
+
           this.$ls.set("token", token, decodedToken.exp);
-          return this.getProfile(token);
+          this.$ls.set("cartobioToken", cartobioToken, decodedToken.exp);
+
+          return this.setProfile(cartobioToken);
         })
         .then(userData => {
-          this.user = userData;
            window._paq.push(['trackEvent',
             "login", // event category : login
             "Success", // event Action : success
-            getObjectValue(this.user, ["organismeCertificateur", "nom"], "Utilisateur non OC") // event name : name of the OC
+            userData.organismeCertificateurId ? userData.organismeCertificateur.nom : "Utilisateur non OC" // event name : name of the OC
           ]);
-          this.loading = false;
-          this.loader = null;
-
-          return userData
         })
-        .then(
-          () =>
-            function() {
-              if (
-                this.$store.getters.getUserCategory ===
-                this.$store.getters.getCategories.oc
-              ) {
-                this.$router.push("notifications");
-              }
-            }
-        )
         .catch(error => {
           console.error(error);
-          this.loading = false;
-          this.loader = null;
           this.loginFailed = true;
           window._paq.push(['trackEvent',
             "login",
             "Failed",
             error
           ]);
-        });
+        })
+        .finally(() => this.loading = false)
     }
   },
 

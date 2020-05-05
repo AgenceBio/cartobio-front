@@ -4,7 +4,7 @@
       <template v-slot:activator="{ on }">
         <v-btn flat v-on="on">
           <v-icon>person</v-icon>
-          {{getProfile.nom}}
+          {{ user.nom }}
         </v-btn>
       </template>
       <v-list>
@@ -17,26 +17,23 @@
 </template>
 
 <script>
-import { post } from "axios";
 import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: "Profile",
   props: [],
-  data: () => ({ login: "", password: "", dialog: false, user: {} }),
   methods: {
+    ...mapMutations(['resetUser']),
     logout: function() {
-      post(
-        process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/token",
-        { token: this.$ls.get("token") }
-      )
-      .then(() => this.resetUser())
-      .then(() => this.$ls.remove("token"))
+      this.resetUser()
+      this.$ls.remove("token")
+      this.$ls.remove("cartobioToken")
     },
-    ...mapMutations(['resetUser'])
   },
   computed: {
-    ...mapGetters(['getProfile'])
+    ...mapGetters({
+      user: 'getProfile'
+    })
   }
 };
 </script>

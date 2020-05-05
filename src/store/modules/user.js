@@ -1,21 +1,22 @@
-import {parseJwt, getUserProfileFromToken} from '@/api/user.js';
+import {parseJwt} from '@/api/user.js';
 
 const state = {
 
 };
 
 const actions = {
-  getProfile ({commit}, token) {
-    if (!token) {
+  setProfile ({ commit }, cartobioToken) {
+    if (!cartobioToken) {
       return null;
     }
 
-    const {id:userId} = parseJwt(token)
+    console.log(cartobioToken)
 
-    return getUserProfileFromToken({userId, token})
+    return Promise.resolve(cartobioToken)
+      .then(token => parseJwt(token))
       .then(userData => {
         commit("setUser", userData, { root: true })
-        commit("setUserCategory", userData.groupes[0].nom, { root: true })
+        commit("setUserCategory", userData.mainGroup.nom, { root: true })
         return userData
       });
   },

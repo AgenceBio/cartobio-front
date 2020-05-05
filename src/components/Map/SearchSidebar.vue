@@ -10,7 +10,7 @@
 
           <v-list-tile class="search grow">
             <v-list-tile-content>
-              <p class="caption" v-if="organismeCertificateur">
+              <p class="caption" v-if="organismeCertificateurId">
                 Saisir une ville, un code postal
                 ou un nom d'exploitation certifiée par <i>{{ organismeCertificateur.nom }}</i>.
               </p>
@@ -20,7 +20,7 @@
 
               <Geosearch  @towns-received="towns = $event"
                           @operators-received="operators = $event"
-                          :ocId="organismeCertificateur.id">
+                          :ocId="organismeCertificateurId">
               </Geosearch>
             </v-list-tile-content>
           </v-list-tile>
@@ -95,7 +95,8 @@ export default {
   name: "SearchSidebar",
   props: {
     drawer: Boolean,
-    organismeCertificateur: Object
+    organismeCertificateur: Object,
+    organismeCertificateurId: Number
   },
   components: {
     Geosearch,
