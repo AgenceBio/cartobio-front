@@ -57,7 +57,13 @@
             before="water-name-lakeline"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters"
-            :layer="certificationBodyClusters" />
+            :layer="layerStyle('certification-body-clusters')" />
+          <MglGeojsonLayer
+            v-if="getProfile.organismeCertificateurId"
+            before="water-name-lakeline"
+            sourceId="certification-body-operators"
+            layerId="certification-body-clusters-count"
+            :layer="layerStyle('certification-body-clusters-count')" />
         </MglMap>
 
         <!-- Layers selector -->
@@ -219,8 +225,6 @@ export default {
       // anonymous layers
       anonLayers: {},
 
-      certificationBodyClusters: {},
-
       // operator parcels by year
       parcelsOperator: {
         2020: geoJsonTemplate,
@@ -345,10 +349,16 @@ export default {
     }
   },
   methods: {
-    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
-      May be usefull to handle promise and avoid the mess it is right now for map init
-    */
-
+    /**
+     * @param  {String} styleId [description]
+     * @return {Object<Mapbox.Layer>}
+     */
+    layerStyle (styleId) {
+      return cartobioStyle.layers.find(({ id }) => id === styleId);
+    },
+   /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
+     May be usefull to handle promise and avoid the mess it is right now for map init
+   */
     onMapLoaded({map}) {
       // for future reference in events
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
@@ -365,6 +375,40 @@ export default {
 
       map.on("mousemove", ({lngLat, point}) => {
         this.buildHoveredPopup(lngLat, point);
+      });
+
+      // handle summary interactions
+      // because it happens over a cluster, we can count on having 1 feature only
+      let activeCluster = null;
+
+      map.on("click", "certification-body-clusters", (e) => {
+        const { coordinates: center } = e.features[0].geometry
+        const zoom = map.getZoom() + 2
+
+        map.flyTo({ center, zoom })
+      });
+
+      map.on("mousemove", "certification-body-clusters", (e) => {
+        const { id } = e.features[0]
+        const source = 'certification-body-operators'
+        map.getCanvas().style.cursor = 'pointer'
+
+        // sometimes, mouseleave is fired after we hover another cluster
+        if (activeCluster) {
+          map.setFeatureState({ id: activeCluster, source }, { hover: false })
+        }
+
+        map.setFeatureState({ id, source }, { hover: true })
+        activeCluster = id
+      });
+
+      map.on("mouseleave", "certification-body-clusters", () => {
+        const id = activeCluster
+        const source = 'certification-body-operators'
+        map.getCanvas().style.cursor = ''
+
+        map.setFeatureState({ id, source }, { hover: false })
+        activeCluster = null
       });
 
       // handle click on layers
@@ -498,7 +542,7 @@ export default {
           data: `${API_ENDPOINT}/v1/summary?access_token=${this.apiToken}`,
           cluster: true,
           clusterRadius: 50,
-          clusterMaxZoom: 10,
+          clusterMaxZoom: 9,
         });
       }
 
