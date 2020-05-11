@@ -10,6 +10,25 @@ import goTo from 'vuetify/lib/components/Vuetify/goTo'
 
 Vue.use(Router)
 
+function isLoadedAndAuthenticated (to, from, next) {
+  const isLoaded = store.getters['user/isLoaded']
+  const { oc } = store.getters.getCategories;
+
+  function proceed () {
+    const { getUserCategory } = store.getters;
+    getUserCategory === oc ? next() : next('/map')
+  }
+
+  if (isLoaded) {
+    return proceed()
+  }
+
+  store.watch(
+    (state) => state.user.isLoaded,
+    (isLoaded) => isLoaded && proceed()
+  )
+}
+
 export default new Router({
   routes: [{
       path: '/',
@@ -49,14 +68,7 @@ export default new Router({
           path: '/notifications',
           name: 'notifications',
           component: () => import(/* webpackChunkName: "app-notifications" */ './views/AgriList.vue'),
-          beforeEnter: (to, from, next) => {
-            let userCategory = store.getters.getUserCategory;
-            if (userCategory !== store.getters.getCategories.oc) {
-              next('/map');
-            } else {
-              next();
-            }
-          }
+          beforeEnter: isLoadedAndAuthenticated
         }
       ]
     },
