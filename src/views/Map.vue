@@ -54,13 +54,13 @@
 
           <MglGeojsonLayer
             v-if="getProfile.organismeCertificateurId"
-            before="water-name-lakeline"
+            before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters"
             :layer="layerStyle('certification-body-clusters')" />
           <MglGeojsonLayer
             v-if="getProfile.organismeCertificateurId"
-            before="water-name-lakeline"
+            before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-count"
             :layer="layerStyle('certification-body-clusters-count')" />
@@ -537,13 +537,32 @@ export default {
       }
 
       if (!map.getSource("certification-body-operators")) {
-        map.addSource("certification-body-operators", {
+        const id = 'certification-body-operators'
+        map.addSource(id, {
           type: "geojson",
           data: `${API_ENDPOINT}/v1/summary?access_token=${this.apiToken}`,
           cluster: true,
           clusterRadius: 50,
           clusterMaxZoom: 9,
         });
+
+        map.on('data', (event) => {
+          const { dataType, isSourceLoaded, sourceDataType, sourceId } = event
+          if (sourceId === id && sourceDataType !== 'metadata' && dataType === 'source' && isSourceLoaded === true) {
+            console.log(event)
+
+            const source = map.getSource(id)
+            const clusters = map.querySourceFeatures(id).map(({ properties }) => [properties.cluster_id, properties.point_count])
+            const [cluster_id, cluster_point_count] = clusters[0]
+            source.getClusterLeaves(cluster_id, cluster_point_count, 0, (error, features) => {
+              console.log(features)
+            })
+          }
+        })
+      }
+      else {
+        const id = 'certification-body-operators'
+        map.getSource(id).setData(`${API_ENDPOINT}/v1/summary?access_token=${this.apiToken}`);
       }
 
       if (!map.getSource("operatorParcels2020")) {

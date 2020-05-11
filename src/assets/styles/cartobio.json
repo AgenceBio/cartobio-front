@@ -6,6 +6,16 @@
       "tiles": [
         "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
       ]
+    },
+    "certification-body-operators": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [],
+        "cluster": true,
+        "clusterRadius": 50,
+        "clusterMaxZoom": 9
+      }
     }
   },
   "layers": [
@@ -63,7 +73,7 @@
           "interpolate",
           ["exponential", 0.5],
           ["zoom"],
-          6, ["step", ["get", "point_count"], 15, 50, 30, 100, 40, 300, 50],
+          6, ["step", ["get", "point_count"], 12, 50, 20, 100, 30, 200, 40],
           8, ["step", ["get", "point_count"], 30, 100, 50]
         ]
       }
