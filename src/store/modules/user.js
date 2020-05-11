@@ -2,18 +2,22 @@ import {parseJwt} from '@/api/user.js';
 
 const state = {
   // has the first load happened?
-  isLoaded: false
+  isLoaded: false,
+  apiToken: null,
 };
 
 const actions = {
-  setProfile ({ commit }, cartobioToken) {
+  setProfile ({ commit, state }, cartobioToken) {
     if (!cartobioToken) {
+      state.apiToken = null
       return null;
     }
 
     return Promise.resolve(cartobioToken)
       .then(token => parseJwt(token))
       .then(userData => {
+        state.apiToken = cartobioToken
+
         commit("FIRST_LOAD_DONE")
         commit("setUser", userData, { root: true })
         commit("setUserCategory", userData.mainGroup.nom, { root: true })

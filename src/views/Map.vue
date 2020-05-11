@@ -46,10 +46,18 @@
           @load="onMapLoaded"
           ref="mapboxDiv"
         >
+
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
+
+          <MglGeojsonLayer
+            v-if="getProfile.organismeCertificateurId"
+            before="water-name-lakeline"
+            sourceId="certification-body-operators"
+            layerId="certification-body-clusters"
+            :layer="certificationBodyClusters" />
         </MglMap>
 
         <!-- Layers selector -->
@@ -127,6 +135,7 @@ import {
   MglNavigationControl,
   MglGeolocateControl,
   MglScaleControl,
+  MglGeojsonLayer,
 } from "vue-mapbox";
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
@@ -136,6 +145,8 @@ import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
 
 import { mapGetters, mapState } from 'vuex';
+
+const { VUE_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
 
 // const centroid = require('@mapbox/polylabel')
 
@@ -192,6 +203,7 @@ export default {
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
+    MglGeojsonLayer,
     MglMap
   },
   data() {
@@ -206,6 +218,8 @@ export default {
 
       // anonymous layers
       anonLayers: {},
+
+      certificationBodyClusters: {},
 
       // operator parcels by year
       parcelsOperator: {
@@ -313,6 +327,7 @@ export default {
     ...mapGetters(['getProfile']),
     ...mapGetters({ operator: 'getOperator' }),
     ...mapGetters('user', ['isAuthenticated']),
+    ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
 
     showOperatorDetails () {
@@ -474,6 +489,16 @@ export default {
         map.addSource("highlight", {
           type: "geojson",
           data: this.highlightedParcels
+        });
+      }
+
+      if (!map.getSource("certification-body-operators")) {
+        map.addSource("certification-body-operators", {
+          type: "geojson",
+          data: `${API_ENDPOINT}/v1/summary?access_token=${this.apiToken}`,
+          cluster: true,
+          clusterRadius: 50,
+          clusterMaxZoom: 10,
         });
       }
 
