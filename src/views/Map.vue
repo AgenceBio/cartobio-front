@@ -391,9 +391,14 @@ export default {
 
       map.on("click", "certification-body-clusters-area", (e) => {
         const { coordinates: center } = e.features[0].geometry
-        const zoom = map.getZoom() + 2
+        const { cluster_id: id } = e.features[0].properties
 
-        map.flyTo({ center, zoom })
+        // we zoom directly to where the cluster dissolves
+        // if it's a tiny cluster, we will zoom deep (but at max level 10)
+        // if it's a large cluster, we will zoom at a level it splits in at least 2 other clusters
+        map.getSource('certification-body-operators').getClusterExpansionZoom(id, (error, zoom) => {
+          map.flyTo({ center, zoom: Math.min(10, zoom) })
+        })
       });
 
       map.on("mousemove", "certification-body-clusters-area", (e) => {
