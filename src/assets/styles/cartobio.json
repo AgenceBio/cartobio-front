@@ -6,6 +6,16 @@
       "tiles": [
         "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
       ]
+    },
+    "certification-body-operators": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      },
+      "cluster": true,
+      "clusterRadius": 50,
+      "clusterMaxZoom": 9
     }
   },
   "layers": [
@@ -40,6 +50,43 @@
       },
       "layout": {
         "visibility": "none"
+      }
+    },
+    {
+      "id": "certification-body-clusters-area",
+      "type": "circle",
+      "source": "certification-body-operators",
+      "filter": ["has", "point_count"],
+      "paint": {
+        "circle-color": "#B9D065",
+        "circle-stroke-color": [
+          "case",
+          ["boolean",
+            ["feature-state", "hover"],
+            false
+          ],
+          "white",
+          "#B9D065"
+        ],
+        "circle-stroke-width": 4,
+        "circle-radius": [
+          "interpolate",
+          ["exponential", 0.5],
+          ["zoom"],
+          6, ["step", ["get", "point_count"], 12, 50, 20, 100, 30, 200, 40],
+          8, ["step", ["get", "point_count"], 30, 100, 50]
+        ]
+      }
+    },
+    {
+      "id": "certification-body-clusters-count",
+      "type": "symbol",
+      "source": "certification-body-operators",
+      "filter": ["has", "point_count"],
+      "layout": {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": ["Lato Bold", "Noto Sans Regular"],
+        "text-size": 12
       }
     }
   ]

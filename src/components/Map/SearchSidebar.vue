@@ -20,7 +20,8 @@
 
               <Geosearch  @towns-received="towns = $event"
                           @operators-received="operators = $event"
-                          :ocId="organismeCertificateurId">
+                          :ocId="organismeCertificateurId"
+                          :operators="organismeCertificateurOperators">
               </Geosearch>
             </v-list-tile-content>
           </v-list-tile>
@@ -35,15 +36,15 @@
             <v-list two-line>
               <template v-for="(operator, i) in operators">
                 <v-divider v-if="i" :key="i"></v-divider>
-                <v-list-tile :key="operator.id" :class="{'no-click': !operator.numeroPacage || operator.dateCheck > '2019-05-15'}" @click="(operator.numeroPacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', operator)">
+                <v-list-tile :key="operator.numerobio" :class="{'no-click': !operator.pacage || operator.dateCheck > '2019-05-15'}" @click="(operator.pacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', wrapOperator(operator))">
                   <v-list-tile-content>
-                    <v-list-tile-title>{{ operator.title }}</v-list-tile-title>
+                    <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
                     <v-list-tile-sub-title v-if="!operator.active" class="caption">
                       <v-icon small>warning</v-icon>
                       Exploitation considérée inactive par l'Agence Bio.
                     </v-list-tile-sub-title>
-                    <v-list-tile-sub-title v-else-if="!operator.numeroPacage" class="caption">
+                    <v-list-tile-sub-title v-else-if="!operator.pacage" class="caption">
                       <v-icon small>warning</v-icon>
                       Parcellaire inconnu.
                     </v-list-tile-sub-title>
@@ -58,8 +59,8 @@
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else class="caption">
                       <v-icon small color="green">check_circle_outline</v-icon>
-                      PACAGE <code>{{ operator.numeroPacage }}</code>,
-                      engagement bio en {{ operator.dateEngagement | dateYear }}.
+                      PACAGE <code>{{ operator.pacage }}</code>,
+                      engagement bio en {{ operator.date_engagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
@@ -96,10 +97,23 @@ export default {
   props: {
     drawer: Boolean,
     organismeCertificateur: Object,
-    organismeCertificateurId: Number
+    organismeCertificateurId: Number,
+    organismeCertificateurOperators: Object
   },
   components: {
     Geosearch,
+  },
+
+  methods: {
+    // translate GeoJSON structure into a simili-Agence Bio one
+    wrapOperator: operator => ({
+      id: operator.numerobio,
+      dateEngagement: operator.date_engagement,
+      dateMaj: operator.date_maj,
+      numeroPacage: operator.pacage,
+      numeroBio: operator.numerobio,
+      title: operator.nom
+    })
   },
 
   filters: {
