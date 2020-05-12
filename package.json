@@ -22,6 +22,7 @@
     "@turf/line-intersect": "^6.0.2",
     "@turf/polygon-to-line": "^6.0.3",
     "axios": "^0.19.2",
+    "deepmerge": "^4.2.2",
     "geojson-vt": "^3.2.1",
     "lodash": "^4.17.15",
     "mapbox-gl": "^1.8.1",

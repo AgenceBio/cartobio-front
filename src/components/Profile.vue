@@ -4,7 +4,7 @@
       <template v-slot:activator="{ on }">
         <v-btn flat v-on="on">
           <v-icon>person</v-icon>
-          {{getProfile.nom}}
+          {{ user.nom }}
         </v-btn>
       </template>
       <v-list>
@@ -17,28 +17,23 @@
 </template>
 
 <script>
-const axios = require("axios");
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
   name: "Profile",
   props: [],
-  data: () => ({ login: "", password: "", dialog: false, user: {} }),
   methods: {
+    ...mapMutations(['resetUser']),
     logout: function() {
-      let params = { token: this.$ls.get("token") };
-      axios
-        .post(
-          process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/portail/token",
-          params
-        )
-        .then(() => this.$store.commit("setUser", {}))
-        .then(() => this.$ls.remove("token"))
-        .then(() => this.$router.go(0)); // reload the page. There mush be better way to reinitiate the map
-    }
+      this.resetUser()
+      this.$ls.remove("token")
+      this.$ls.remove("cartobioToken")
+    },
   },
   computed: {
-    getProfile() {
-      return this.$store.getters.getProfile;
-    }
+    ...mapGetters({
+      user: 'getProfile'
+    })
   }
 };
 </script>

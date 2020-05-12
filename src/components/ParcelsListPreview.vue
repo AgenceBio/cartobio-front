@@ -10,10 +10,10 @@
         </v-btn>
       </v-toolbar>
       <v-card-text class="overflow max-height">
-        <v-data-table hide-actions :headers="headers" :items="features">
-        <template v-slot:items="{ item: feature }">
+        <v-data-table hide-actions :headers="headers" :items="features" :custom-sort="sortIlots">
+        <template v-slot:items="{ item: props }">
           <td v-for="({value}) in headers" :key="value">
-            {{ feature.properties[value] }}
+            {{ props[value] }}
           </td>
         </template>
       </v-data-table>
@@ -29,10 +29,11 @@
 
 <script>
 export default {
-  name: "ParcelsArray",
+  name: "ParcelsListPreview",
   props: {
     features: Array
   },
+
   data() {
     return {
       headers: [
@@ -40,11 +41,21 @@ export default {
         ['numparcel', 'parcelle'],
         ['bio', 'bio'],
         ['codecultu', 'codeCulture'],
-        ['surfgeo', 'surfaceGeometrique'],
-        ['surfadm', 'surfaceAdmissible']
+        ['surfgeo', 'surfaceParcelle (ha)'],
       ].map(([value, text]) => ({ text, value }))
     };
-  }
+  },
+
+  methods: {
+    // duplicate of ParcelsList.vue
+    sortIlots (items) {
+      return items.sort((propsA, propsB) => {
+        const ilotDiff = propsA.numilot - propsB.numilot
+        const parcelDiff = propsA.numparcel - propsB.numparcel
+        return ilotDiff ? ilotDiff : parcelDiff
+      })
+    },
+  },
 };
 </script>
 

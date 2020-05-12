@@ -1,24 +1,31 @@
-import {parseJwt, getUserProfileFromToken} from '@/api/user.js';
+import {parseJwt} from '@/api/user.js';
 
 const state = {
-
+  // has the first load happened?
+  isLoaded: false
 };
 
 const actions = {
-  getProfile ({commit}, token) {
-    if (!token) {
+  setProfile ({ commit }, cartobioToken) {
+    if (!cartobioToken) {
       return null;
     }
 
-    const {id:userId} = parseJwt(token)
-
-    return getUserProfileFromToken({userId, token})
+    return Promise.resolve(cartobioToken)
+      .then(token => parseJwt(token))
       .then(userData => {
+        commit("FIRST_LOAD_DONE")
         commit("setUser", userData, { root: true })
-        commit("setUserCategory", userData.groupes[0].nom, { root: true })
+        commit("setUserCategory", userData.mainGroup.nom, { root: true })
         return userData
       });
   },
+};
+
+const mutations = {
+  FIRST_LOAD_DONE (state) {
+    state.isLoaded = true
+  }
 };
 
 const getters = {
@@ -26,11 +33,16 @@ const getters = {
     const {userProfile} = rootState
     return Boolean(userProfile && userProfile.id);
   },
+
+  isLoaded (state) {
+    return state.isLoaded
+  }
 };
 
 export default {
   namespaced: true,
   actions,
   getters,
+  mutations,
   state,
 }

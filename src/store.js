@@ -27,6 +27,13 @@ const store =  new Vuex.Store({
         getCategories: state => state.categories
     },
     mutations: {
+        resetUser(state) {
+          state.userProfile = {}
+          state.userCategory = {}
+          state.currentOperator = {}
+          state.editMode = false
+        },
+
         setUser(state, profile) {
             state.userProfile = profile;
         },

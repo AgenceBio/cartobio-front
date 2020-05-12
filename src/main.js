@@ -30,6 +30,6 @@ new Vue({
   router,
   render: (createElement) => createElement(App),
   created() {
-    this.$store.dispatch('user/getProfile', this.$ls.get('token'))
+    this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
   }
 }).$mount('#app')

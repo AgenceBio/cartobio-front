@@ -2,9 +2,23 @@
 title: Journal d'évolution
 ---
 
+## Semaine du 27 au 30 avril
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Prévisualisation des données téléchargeables.
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Refonte de l'affichage de la liste des parcelles : effet visuel au survol,
+  informations supplémentaires, bouton "télécharger" mis en avant.
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Intégration du parcellaire conventionnel, en préparation à de nouvelles
+  fonctionnalités d'affichage.
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Refonte du composant de recherche : elle se fait par ville, par code postal,
+  et par nom d'exploitation.
+
 ## Semaine du 13 au 17 avril
 
-- <v-chip small color="brown lighten-3 brown--text text--darken-4">API</v-chip>
+- <v-chip small color="deep-orange lighten-3 grey--text text--darken-4">API</v-chip>
   Mise à disposition de l'adresse `/api/v1/parcels/operator/:numero-bio`, pour
   intégrer le parcellaire bio d'un _opérateur bio_ à une application métier en tant
   qu'<abbr title="Organismes de Certification">OC</abbr> ([lire la documentation](#/api)).
@@ -14,7 +28,7 @@ title: Journal d'évolution
 - <v-chip small color="purple lighten-3 purple--text text--darken-4">Design</v-chip>
   Clarification de la vue "Exploitations", où il est rendu explicite
   quelles parcelles peuvent être visualisées.
-- <v-chip small color="brown lighten-3 brown--text text--darken-4">API</v-chip>
+- <v-chip small color="deep-orange lighten-3 grey--text text--darken-4">API</v-chip>
   Mise à disposition de l'adresse `/api/v1/parcels`, pour
   intégrer le parcellaire bio à une application métier en tant
   qu'<abbr title="Organismes de Certification">OC</abbr> ([lire la documentation](#/api)).

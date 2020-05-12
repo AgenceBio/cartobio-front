@@ -3,16 +3,21 @@
       <!-- Parcels List -->
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
-        :drawer.sync="drawer"
         :operator="operator"
-        v-on:close-drawer="closeDrawer()"
-        v-on:hover-parcel="hoverParcel($event)"
+        v-on:close-drawer="closeOperatorDetailsSidebar()"
+        v-on:hover-parcel="highlightParcel($event)"
         v-on:stop-hovering="stopHovering($event)"
         v-on:hover-ilot="hoverIlot($event)"
         v-on:stop-hovering-ilot="stopHoveringIlot($event)"
         v-on:zoom-on-ilot="zoomOnIlot($event)"
         v-on:zoom-on-operator="zoomOnOperator()"
       ></ParcelsList>
+
+      <SearchSidebar  :drawer="showSearch"
+                      :organismeCertificateur="getProfile.organismeCertificateur"
+                      :organismeCertificateurId="getProfile.organismeCertificateurId"
+                      @select-operator="setOperator($event)"
+                      @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -43,9 +48,6 @@
           @load="onMapLoaded"
           ref="mapboxDiv"
         >
-          <v-toolbar floating dense class="my-3 toolbar-search">
-            <Geosearch @searchCompleted="handleSearchResult"></Geosearch>
-          </v-toolbar>
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
@@ -56,7 +58,7 @@
         </MglMap>
 
         <!-- Layers selector -->
-        <v-flex class="layers-panel" v-show="showLayersCard">
+        <v-flex class="layers-panel" v-show="isAuthenticated">
           <v-expansion-panel popout expand v-bind:value="expandLayers">
             <v-expansion-panel-content>
               <template v-slot:header>
@@ -119,13 +121,13 @@
 import {get} from "axios";
 import getObjectValue from "lodash/get";
 import {bbox, bboxPolygon, center, area, point, lineString} from "turf";
+import {all as mergeAll} from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 import polygonToLine from "@turf/polygon-to-line"
 import lineIntersect from "@turf/line-intersect"
 
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import Geosearch from "@/components/Geosearch";
 
 import {
   MglMap,
@@ -135,10 +137,11 @@ import {
 } from "vue-mapbox";
 import {MglPopup} from "vue-mapbox"
 
-import {cartobio as mapStyle} from "@/assets/styles/index.js";
+import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
+import SearchSidebar from "@/components/Map/SearchSidebar";
 
 import { mapGetters, mapState } from 'vuex';
 
@@ -193,7 +196,7 @@ export default {
     ParcelsList,
     ParcelDetails,
     ParcelDetailsPopup,
-    Geosearch,
+    SearchSidebar,
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
@@ -208,12 +211,11 @@ export default {
       mapPadding: { top: 25, bottom: 25, left: 20, right: 20 },
       zoom: null,
       center: null,
-      mapStyle,
+      mapStyle: mergeAll([baseStyle, cadastreStyle, infrastructureStyle]),
 
       // anonymous layers
       anonLayers: {},
-      // current operator data
-      operator: {},
+
       // operator parcels by year
       parcelsOperator: {
         2020: geoJsonTemplate,
@@ -240,13 +242,6 @@ export default {
       // placeholder for layers for an operator
       layersOperator: {},
 
-      // display related data
-
-      // show drawer
-      drawer: false,
-      // mini drawer display
-      mini: false,
-
       // edit mode
       editMode: false,
 
@@ -265,7 +260,6 @@ export default {
       displaySurvey: true,
       // new parcel dialog
       setUpParcel: false,
-      showLayersCard: false,
 
       highlightedParcel: null,
       hoveredIlotName: undefined,
@@ -324,124 +318,21 @@ export default {
 
     this.zoom = Number(zoom);
     this.center = [Number(lon), Number(lat)];
-
-    // get the current operator
-    this.operator = this.getOperator;
-    if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
-      alert(
-        "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
-          "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
-      );
-      this.operator.title = "pacage : " + this.operator.numeroPacage;
-      this.filterLabel = { filter: "pacage", property: "numeroPacage" };
-    }
-
-    // if there is an operator, show drawer.
-    this.drawer = !!getObjectValue(this.getOperator, "title");
-
-    if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
-      // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
-      // mongoDB filter and not standard WFS filter.
-      let params = {
-        service: "WFS",
-        version: "1.1.0",
-        request: "GetFeature",
-        outputFormat: "GeoJSON",
-        typeName: "rpgbio2020v1",
-        srsname: "4326",
-        filter: JSON.stringify({
-          // this is intended to work only with numeroPacage
-          // we get them from AgenceBio with 8 or 9 chars,
-          // but RPG data are always with 9 chars.
-          // IDs formated as integer when they are strings...
-          [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
-        })
-      };
-
-      let tokenCollab = btoa(
-        process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-          ":" +
-          process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-      );
-
-      // get 2020 parcels from the operator
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.displayOperatorLayer(data.data));
-      // .catch(data => this.displayErrorMessage(data));
-
-      // get 2019 parcels from the operator
-      let params2019 = JSON.parse(JSON.stringify(params));
-      params2019.typeName = "rpgbio2019v4";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2019,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2019"));
-
-      // get 2018 parcels from the operator
-      let params2018 = JSON.parse(JSON.stringify(params));
-      params2018.typeName = "rpgbio2018v9";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2018,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2018"));
-
-      // get 2017 parcels from the operator
-      let params2017 = JSON.parse(JSON.stringify(params));
-      params2017.typeName = "rpgbio2017v7";
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params2017,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
-      .then(data => this.addOperatorData(data.data, "2017"));
-      // }.bind(this)
-      // );
-      // store the layers
-      // maybe in future evolutions: let user choose the color of the layers so we don't have to handle it ourselves for lager set of years.
-      // maybe a loop to do it but need to store colors for each
-      this.layersOperator["2020"] = this.getYearLayer(
-        "2020",
-        "rgba(98, 215, 113, 1)", // bio
-        "rgba(253, 168, 212, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2019"] = this.getYearLayer(
-        "2019",
-        "rgba(31, 163, 65, 1)", // bio
-        "rgba(227, 101, 157, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2018"] = this.getYearLayer(
-        "2018",
-        "rgba(0, 110, 27, 1)", // bio
-        "rgba(179, 45, 100, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-      this.layersOperator["2017"] = this.getYearLayer(
-        "2017",
-        "rgba(0, 60, 0, 1)", // bio
-        "rgba(116, 0, 50, 1)", // not bio
-        "rgba(22, 154, 57, 1)" // outline
-      );
-    }
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
-    ...mapGetters(['getProfile', 'getOperator']),
+    ...mapGetters(['getProfile']),
+    ...mapGetters({ operator: 'getOperator' }),
     ...mapGetters('user', ['isAuthenticated']),
     ...mapState(['currentYear']),
+
+    showOperatorDetails () {
+      return Boolean(this.isAuthenticated && this.operator.id);
+    },
+
+    showSearch () {
+      return Boolean(this.isAuthenticated && !this.operator.id);
+    },
 
     // to display the years in right order in the layers panel
     sortedYears() {
@@ -489,7 +380,7 @@ export default {
         operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
         cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
       }
-      
+
       // handle hovering effect when moving mouse on map
       let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
       if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
@@ -523,8 +414,6 @@ export default {
     },
 
     loadLayers(map) {
-      this.showLayersCard = true;
-
       this.years.forEach((year) => {
         // bio source
         let bioSource = {
@@ -541,37 +430,47 @@ export default {
         if (!map.getSource("bio-" + year)) {
           map.addSource("bio-" + year, bioSource);
         }
-        let bioLayer = {
-          id: "bio-tiles-" + year,
-          type: "fill",
-          source: "bio-" + year,
-          "source-layer": "anon_rpgbio_" + year,
-          minzoom: 9,
-          paint: {
-            "fill-color": "rgba(208, 211, 46, 1)",
-            "fill-outline-color": "rgba(176, 178, 43, 1)",
-            "fill-opacity": 0.6
-          },
-          tms: true,
-          maxzoom: 24,
-          layout: {visibility: 'none'}
-        };
-        this.anonLayers[year] = bioLayer;
-        map.addLayer(this.anonLayers[year]);
-        map.addLayer({
-          id: `bio-tiles-${year}-border`,
-          type: "line",
-          source: "bio-" + year,
-          "source-layer": "anon_rpgbio_" + year,
-          minzoom: 10,
-          paint: {
-            "line-color": "rgba(208, 211, 46, 1)",
-            "line-opacity": 1,
-            "line-width": {"stops": [[10, 1.5], [13, 1]]}
-          },
-          layout: {visibility: 'none'}
-        });
+
+        if (!map.getLayer("bio-tiles-" + year)) {
+          let bioLayer = {
+            id: "bio-tiles-" + year,
+            type: "fill",
+            source: "bio-" + year,
+            "source-layer": "anon_rpgbio_" + year,
+            minzoom: 9,
+            paint: {
+              "fill-color": "rgba(208, 211, 46, 1)",
+              "fill-opacity": 0.6
+            },
+            tms: true,
+            maxzoom: 24,
+            layout: {visibility: 'none'}
+          };
+          this.anonLayers[year] = bioLayer;
+          map.addLayer(this.anonLayers[year], 'road_oneway');
+          map.addLayer({
+            id: `bio-tiles-${year}-border`,
+            type: "line",
+            source: "bio-" + year,
+            "source-layer": "anon_rpgbio_" + year,
+            minzoom: 10,
+            paint: {
+              "line-color": "rgba(208, 211, 46, 1)",
+              "line-opacity": 1,
+              "line-width": {
+                "stops": [[9, 0], [12, 1]]
+              }
+            },
+            layout: {visibility: 'none'}
+          }, 'road_oneway');
+        }
       });
+
+      // non-bio
+      if (!map.getSource('rpg-nonbio-anon')) {
+        map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
+        cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
+      }
 
       this.toggleLayerAnon(this.currentYear, true);
 
@@ -581,18 +480,21 @@ export default {
           data: this.selectedParcels
         });
       }
+
       if (!map.getSource("highlight")) {
         map.addSource("highlight", {
           type: "geojson",
           data: this.highlightedParcels
         });
       }
+
       if (!map.getSource("operatorParcels2020")) {
         map.addSource("operatorParcels2020", {
           type: "geojson",
           data: this.parcelsOperator[2020]
         });
       }
+
       if (!map.getSource("operatorParcels2019")) {
         map.addSource("operatorParcels2019", {
           type: "geojson",
@@ -612,60 +514,22 @@ export default {
           data: this.parcelsOperator[2017]
         });
       }
-      // highlight
-      map.addLayer({
-        id: "highlighted-parcels",
-        type: "fill",
-        source: "highlight",
-        paint: {
-          "fill-color": [
-            "match",
-            ["get", "bio"],
-            "0",
-            "rgba(111, 61, 72, 1)",
-            "1",
-            "rgba(6, 71, 75, 1)",
-            "white"
-          ],
-          "fill-outline-color": "rgba(100, 200, 240, 1)",
-          "fill-opacity": 1
-        }
-      });
-      map.addLayer({
-        id: "highlighted-parcels-border",
-        type: "line",
-        source: "highlight",
-        paint: {
-          "line-color": "rgba(100, 200, 240, 1)",
-          "line-width": 2
-        }
-      });
+    },
 
-      // selected
-      map.addLayer({
-        id: "selected-parcels",
-        type: "fill",
-        source: "selected",
-        paint: {
-          "fill-color": [
-            "match",
-            ["get", "bio"],
-            "0",
-            "rgba(156, 86, 100, 1)",
-            "1",
-            "rgba(9, 99, 106, 1)",
-            "white"
-          ],
-          "fill-outline-color": "rgba(100, 200, 240, 1)",
-          "fill-opacity": 1
-        }
+    flyTo({lat, lon, zoom}) {
+      this.map.flyTo({
+        center: [lat, lon],
+        zoom,
       });
     },
-    handleSearchResult(value) {
-      // this.map.panTo(value.geometry.coordinates);
-      this.map.easeTo({
-        center: value.geometry.coordinates,
-        zoom: 10 + parseInt(value.importance) // may be improved, difficult to know what importance stands for
+
+    setOperator (operator) {
+      const { numeroPacage:pacageId } = operator
+
+      this.$store.commit("setOperator", operator)
+      this.$router.push({
+        name: 'mapWithPacage',
+        params: {pacageId}
       });
     },
 
@@ -685,12 +549,13 @@ export default {
       }
     },
 
-    closeDrawer () {
-      this.drawer = false
-      this.$store.commit("setOperator", {})
+    closeOperatorDetailsSidebar () {
       this.map.resize()
-      this.operator = {}
       this.clearOperatorData()
+      this.$router.replace({
+        name: 'map',
+        params: {}
+      });
     },
 
     // function  used by draw features
@@ -732,9 +597,115 @@ export default {
       ) {
         this.zoomOnOperator();
       }
+
       this.isOperatorOnMap = true;
+
+      // get the current operator
+      if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
+        alert(
+          "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
+            "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
+        );
+        this.operator.title = "pacage : " + this.operator.numeroPacage;
+        this.filterLabel = { filter: "pacage", property: "numeroPacage" };
+      }
+
+      if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
+        // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
+        // mongoDB filter and not standard WFS filter.
+        let params = {
+          service: "WFS",
+          version: "1.1.0",
+          request: "GetFeature",
+          outputFormat: "GeoJSON",
+          typeName: "rpgbio2020v1",
+          srsname: "4326",
+          filter: JSON.stringify({
+            // this is intended to work only with numeroPacage
+            // we get them from AgenceBio with 8 or 9 chars,
+            // but RPG data are always with 9 chars.
+            // IDs formated as integer when they are strings...
+            [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
+          })
+        };
+
+        let tokenCollab = btoa(
+          process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
+            ":" +
+            process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
+        );
+
+        // get 2020 parcels from the operator
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.displayOperatorLayer(data.data));
+        // .catch(data => this.displayErrorMessage(data));
+
+        // get 2019 parcels from the operator
+        let params2019 = JSON.parse(JSON.stringify(params));
+        params2019.typeName = "rpgbio2019v4";
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2019,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2019"));
+
+        // get 2018 parcels from the operator
+        let params2018 = JSON.parse(JSON.stringify(params));
+        params2018.typeName = "rpgbio2018v9";
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2018,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2018"));
+
+        // get 2017 parcels from the operator
+        let params2017 = JSON.parse(JSON.stringify(params));
+        params2017.typeName = "rpgbio2017v7";
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
+          params: params2017,
+          headers: {
+            Authorization: "Basic " + tokenCollab
+          }
+        })
+        .then(data => this.addOperatorData(data.data, "2017"));
+
+        this.layersOperator["2020"] = this.getYearLayer(
+          "2020",
+          "rgba(98, 215, 113, 1)", // bio
+          "rgba(253, 168, 212, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+        this.layersOperator["2019"] = this.getYearLayer(
+          "2019",
+          "rgba(31, 163, 65, 1)", // bio
+          "rgba(227, 101, 157, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+        this.layersOperator["2018"] = this.getYearLayer(
+          "2018",
+          "rgba(0, 110, 27, 1)", // bio
+          "rgba(179, 45, 100, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+        this.layersOperator["2017"] = this.getYearLayer(
+          "2017",
+          "rgba(0, 60, 0, 1)", // bio
+          "rgba(116, 0, 50, 1)", // not bio
+          "rgba(22, 154, 57, 1)" // outline
+        );
+      }
+
       this.years.forEach(year => {
-        map.addLayer(this.layersOperator[year]);
+        map.addLayer(this.layersOperator[year], 'road_oneway');
         map.addLayer({
           ...this.layersOperator[year],
           id: this.layersOperator[year].id + "-border",
@@ -754,7 +725,7 @@ export default {
                1
             ]
           }
-        });
+        }, 'road_oneway');
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
@@ -763,18 +734,18 @@ export default {
       // const p = centroid(parcel.geometry.coordinates)
       // let lngLat = {lng: p[0], lat: p[1]};
       // this.buildHoveredPopup(lngLat, this.map.project(lngLat));
-      this.highlightParcel(parcel);
+      this.highlightParcel(parcel.id);
     },
-    highlightParcel(parcel) {
+    highlightParcel({ id }) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
-        id: parcel.id,
+        id,
       }, { highlighted: true });
     },
-    stopHovering(parcel) {
+    stopHovering({ id }) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
-        id: parcel.id,
+        id,
       }, { highlighted: false });
     },
     hoverIlot(ilot) {
@@ -858,10 +829,12 @@ export default {
       this.newParcel.properties = newData[0];
       this.$forceUpdate();
     },
+
     addOperatorLayer(data, year) {
       this.parcelsOperator[year] = data;
       this.layersVisible[year] = false;
     },
+
     addOperatorData(data, year) {
       this.parcelsOperator[year] = data;
       if (this.map) {
@@ -872,7 +845,11 @@ export default {
     },
 
     clearOperatorData() {
+      this.$store.commit("setOperator", {})
+
       this.years.forEach(year => {
+        this.map.removeLayer(this.layersOperator[year].id);
+        this.map.removeLayer(this.layersOperator[year].id + '-border');
         this.addOperatorData(geoJsonTemplate, year)
       })
     },
@@ -948,6 +925,13 @@ export default {
       // best would be to populate layers data and make the data react to them
       if (newProfile.active && this.map) {
         this.loadLayers(this.map);
+      }
+    },
+    operator: function(operator) {
+      if (this.map && operator.id) {
+        window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
+        this.loadLayers(this.map);
+        this.setUpMapOperator()
       }
     }
   }
