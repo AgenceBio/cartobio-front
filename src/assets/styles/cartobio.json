@@ -11,11 +11,11 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [],
-        "cluster": true,
-        "clusterRadius": 50,
-        "clusterMaxZoom": 9
-      }
+        "features": []
+      },
+      "cluster": true,
+      "clusterRadius": 50,
+      "clusterMaxZoom": 9
     }
   },
   "layers": [
@@ -53,7 +53,7 @@
       }
     },
     {
-      "id": "certification-body-clusters",
+      "id": "certification-body-clusters-area",
       "type": "circle",
       "source": "certification-body-operators",
       "filter": ["has", "point_count"],

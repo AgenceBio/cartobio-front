@@ -14,6 +14,7 @@
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
+                      :organismeCertificateurOperators="organismeCertificateurOperators"
                       @select-operator="setOperator($event)"
                       @flyto="flyTo"></SearchSidebar>
     <v-content app>
@@ -56,8 +57,8 @@
             v-if="getProfile.organismeCertificateurId"
             before="place-continent"
             sourceId="certification-body-operators"
-            layerId="certification-body-clusters"
-            :layer="layerStyle('certification-body-clusters')" />
+            layerId="certification-body-clusters-area"
+            :layer="layerStyle('certification-body-clusters-area')" />
           <MglGeojsonLayer
             v-if="getProfile.organismeCertificateurId"
             before="place-continent"
@@ -220,10 +221,17 @@ export default {
       mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
       zoom: null,
       center: null,
-      mapStyle: mergeAll([baseStyle, cadastreStyle, infrastructureStyle]),
+      mapStyle: mergeAll([
+        baseStyle,
+        cadastreStyle,
+        infrastructureStyle,
+        { sources: cartobioStyle.sources }
+      ]),
 
       // anonymous layers
       anonLayers: {},
+
+      organismeCertificateurOperators: {},
 
       // operator parcels by year
       parcelsOperator: {
@@ -381,14 +389,14 @@ export default {
       // because it happens over a cluster, we can count on having 1 feature only
       let activeCluster = null;
 
-      map.on("click", "certification-body-clusters", (e) => {
+      map.on("click", "certification-body-clusters-area", (e) => {
         const { coordinates: center } = e.features[0].geometry
         const zoom = map.getZoom() + 2
 
         map.flyTo({ center, zoom })
       });
 
-      map.on("mousemove", "certification-body-clusters", (e) => {
+      map.on("mousemove", "certification-body-clusters-area", (e) => {
         const { id } = e.features[0]
         const source = 'certification-body-operators'
         map.getCanvas().style.cursor = 'pointer'
@@ -402,7 +410,7 @@ export default {
         activeCluster = id
       });
 
-      map.on("mouseleave", "certification-body-clusters", () => {
+      map.on("mouseleave", "certification-body-clusters-area", () => {
         const id = activeCluster
         const source = 'certification-body-operators'
         map.getCanvas().style.cursor = ''
@@ -515,9 +523,13 @@ export default {
       });
 
       // non-bio
-      if (!map.getSource('rpg-nonbio-anon')) {
-        map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
-        cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
+      if (!map.getLayer('rpg-anon-nonbio-2020-area')) {
+        cartobioStyle.layers
+          .filter(({ id }) => id.indexOf('rpg-') === 0)
+          .forEach(layer => map.addLayer({
+            ...layer,
+            layout: { visibility: 'visible'}
+          }, 'road_oneway'));
       }
 
       this.toggleLayerAnon(this.currentYear, true);
@@ -536,33 +548,19 @@ export default {
         });
       }
 
-      if (!map.getSource("certification-body-operators")) {
-        const id = 'certification-body-operators'
-        map.addSource(id, {
-          type: "geojson",
-          data: `${API_ENDPOINT}/v1/summary?access_token=${this.apiToken}`,
-          cluster: true,
-          clusterRadius: 50,
-          clusterMaxZoom: 9,
-        });
-
-        map.on('data', (event) => {
-          const { dataType, isSourceLoaded, sourceDataType, sourceId } = event
-          if (sourceId === id && sourceDataType !== 'metadata' && dataType === 'source' && isSourceLoaded === true) {
-            console.log(event)
-
-            const source = map.getSource(id)
-            const clusters = map.querySourceFeatures(id).map(({ properties }) => [properties.cluster_id, properties.point_count])
-            const [cluster_id, cluster_point_count] = clusters[0]
-            source.getClusterLeaves(cluster_id, cluster_point_count, 0, (error, features) => {
-              console.log(features)
-            })
+      if (this.getProfile.organismeCertificateurId) {
+        get(`${API_ENDPOINT}/v1/summary`, {
+          headers: {
+            Authorization: `Bearer ${this.apiToken}`
           }
+        }).then(({ data }) => {
+          this.organismeCertificateurOperators = data
+          map.getSource("certification-body-operators").setData(data)
         })
       }
       else {
-        const id = 'certification-body-operators'
-        map.getSource(id).setData(`${API_ENDPOINT}/v1/summary?access_token=${this.apiToken}`);
+        this.organismeCertificateurOperators = null
+        map.getSource("certification-body-operators").setData(geoJsonTemplate)
       }
 
       if (!map.getSource("operatorParcels2020")) {
