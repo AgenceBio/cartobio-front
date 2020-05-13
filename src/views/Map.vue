@@ -52,9 +52,17 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
-          <MglPopup :showed="true" :close-button="false" :close-on-click="false" :onlyText="true" :coordinates="hoveredIlotCoordinates">
-           {{hoveredIlotName}}
-          </MglPopup>
+          <MglMarker :coordinates="hoveredIlotCoordinates" :draggable="false" :rotate="45">
+            <div slot="marker" class="flex row pa-3">
+              <div class="text-xs-center">
+                <v-chip>{{hoveredIlotName}}</v-chip>
+              </div>
+              <v-icon class="rotate">near_me</v-icon>
+            </div>
+          </MglMarker>
+          <!-- <MglPopup :showed="true" :close-button="false" :close-on-click="false" :onlyText="true" :coordinates="hoveredIlotCoordinates">
+           <div>{{hoveredIlotName}}</div>
+          </MglPopup> -->
         </MglMap>
 
         <!-- Layers selector -->
@@ -135,7 +143,7 @@ import {
   MglGeolocateControl,
   MglScaleControl,
 } from "vue-mapbox";
-import {MglPopup} from "vue-mapbox"
+import {MglMarker} from "vue-mapbox"
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
@@ -201,7 +209,7 @@ export default {
     MglGeolocateControl,
     MglScaleControl,
     MglMap,
-    MglPopup
+    MglMarker
   },
   data() {
     return {
@@ -262,8 +270,8 @@ export default {
       setUpParcel: false,
 
       highlightedParcel: null,
-      hoveredIlotName: undefined,
-      hoveredIlotCoordinates : [],
+      hoveredIlotName: "Ilot 18",
+      hoveredIlotCoordinates : [0,0],
       layersVisible: {
         // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
         2020: {
@@ -972,5 +980,8 @@ export default {
 }
 .expansion-title {
   display: flex;
+}
+.rotate {
+  transform: rotate(45deg);
 }
 </style>
