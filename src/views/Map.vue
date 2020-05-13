@@ -52,7 +52,7 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
-          <MglPopup :showed="!!hoveredIlotName" :close-button="false" :close-on-click="false" :onlyText="true" :coordinates="hoveredIlotCoordinates">
+          <MglPopup :showed="true" :close-button="false" :close-on-click="false" :onlyText="true" :coordinates="hoveredIlotCoordinates">
            {{hoveredIlotName}}
           </MglPopup>
         </MglMap>
@@ -759,7 +759,6 @@ export default {
       let inMap = isPointInPolygon(ilotCenter, bboxMap);
       if (!inMap) {
         this.hoveredIlotName = 'Ilot ' + ilot.numIlot;
-        console.log(ilot);
         this.showIlotLocation(ilotCenter.geometry.coordinates, bboxMap);
       } 
     },
@@ -774,7 +773,6 @@ export default {
       let mapOuterLine = polygonToLine(mapBoundsPolygon);
       let line = lineString([mapCenter, ilotCenter]);
       let intersect = lineIntersect(line, mapOuterLine);
-      console.log(intersect);
       this.hoveredIlotCoordinates = intersect.features[0].geometry.coordinates;
     },
     zoomOnIlot(ilot) {
@@ -789,8 +787,13 @@ export default {
       });
     },
     getBboxIlot(ilot) {
+      let parcels = ilot.parcels.map(function(parcel) {
+        return this.parcelsOperator[this.currentYear].features.find(function(parcelOp) {
+          return parcelOp.id === parcel.id
+        })
+      }.bind(this))
       return bbox({
-        features : ilot.parcels,
+        features : parcels,
         type : 'FeatureCollection'
       });
     },
