@@ -11,9 +11,9 @@
       </v-toolbar>
       <v-card-text class="overflow max-height">
         <v-data-table hide-actions :headers="headers" :items="features" :custom-sort="sortIlots">
-        <template v-slot:items="{ item: props }">
+        <template v-slot:items="{ item: feature }">
           <td v-for="({value}) in headers" :key="value">
-            {{ props[value] }}
+            {{ feature.properties[value] }}
           </td>
         </template>
       </v-data-table>

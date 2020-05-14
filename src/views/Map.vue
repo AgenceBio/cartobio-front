@@ -4,19 +4,18 @@
       <ParcelsList
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
-        v-on:close-drawer="closeOperatorDetailsSidebar()"
-        v-on:hover-parcel="highlightParcel($event)"
-        v-on:stop-hovering="stopHovering($event)"
-        v-on:hover-ilot="hoverIlot($event)"
-        v-on:stop-hovering-ilot="stopHoveringIlot($event)"
-        v-on:zoom-on-ilot="zoomOnIlot($event)"
-        v-on:zoom-on-operator="zoomOnOperator()"
+        v-on:close-drawer="closeOperatorDetailsSidebar"
+        v-on:hover-parcel="highlightParcel"
+        v-on:stop-hovering="stopHovering"
+        v-on:hover-ilot="hoverIlot"
+        v-on:stop-hovering-ilot="stopHoveringIlot"
+        v-on:zoom-on="zoomOn"
       ></ParcelsList>
 
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
-                      @select-operator="setOperator($event)"
+                      @select-operator="setOperator"
                       @flyto="flyTo"></SearchSidebar>
     <v-content app>
       <!-- Map division so it takes the full width/height left -->
@@ -52,17 +51,8 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
-          <MglMarker :coordinates="hoveredIlotCoordinates" :draggable="false" :rotate="45">
-            <div slot="marker" class="flex row pa-3">
-              <div class="text-xs-center">
-                <v-chip>{{hoveredIlotName}}</v-chip>
-              </div>
-              <v-icon class="rotate">near_me</v-icon>
-            </div>
-          </MglMarker>
-          <!-- <MglPopup :showed="true" :close-button="false" :close-on-click="false" :onlyText="true" :coordinates="hoveredIlotCoordinates">
-           <div>{{hoveredIlotName}}</div>
-          </MglPopup> -->
+          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName">
+          </IlotMarkerDirection>
         </MglMap>
 
         <!-- Layers selector -->
@@ -128,12 +118,9 @@
 <script>
 import {get} from "axios";
 import getObjectValue from "lodash/get";
-import {bbox, bboxPolygon, center, area, point, lineString} from "turf";
+import {bbox, bboxPolygon, center, area, point} from "turf";
 import {all as mergeAll} from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
-import polygonToLine from "@turf/polygon-to-line"
-import lineIntersect from "@turf/line-intersect"
-
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
@@ -143,13 +130,13 @@ import {
   MglGeolocateControl,
   MglScaleControl,
 } from "vue-mapbox";
-import {MglMarker} from "vue-mapbox"
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
+import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 
 import { mapGetters, mapState } from 'vuex';
 
@@ -209,7 +196,7 @@ export default {
     MglGeolocateControl,
     MglScaleControl,
     MglMap,
-    MglMarker
+    IlotMarkerDirection
   },
   data() {
     return {
@@ -270,8 +257,15 @@ export default {
       setUpParcel: false,
 
       highlightedParcel: null,
-      hoveredIlotName: "Ilot 18",
-      hoveredIlotCoordinates : [0,0],
+
+      // hovered ilot direction
+      hoveredIlotName: "",
+      bboxMap: {},
+      mapCenter: [],
+      mapBounds:  {},
+      ilotCenterCoordinates: [],
+      displayIlotDirection: false,
+
       layersVisible: {
         // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
         2020: {
@@ -756,53 +750,38 @@ export default {
         id,
       }, { highlighted: false });
     },
-    hoverIlot(ilot) {
-      ilot.parcels.forEach((parcel) => {
-        this.highlightParcel(parcel);
+    hoverIlot({ numIlot, featureCollection }) {
+      featureCollection.features.forEach(({ properties }) => {
+        this.highlightParcel(properties);
       });
 
-      let ilotBbox = bboxPolygon(this.getBboxIlot(ilot));
+      let ilotBbox = bboxPolygon(bbox(featureCollection));
       let ilotCenter = center(ilotBbox);
       let bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
       let inMap = isPointInPolygon(ilotCenter, bboxMap);
       if (!inMap) {
-        this.hoveredIlotName = 'Ilot ' + ilot.numIlot;
-        this.showIlotLocation(ilotCenter.geometry.coordinates, bboxMap);
+        this.hoveredIlotName = 'Ilot ' + numIlot;
+        this.ilotCenterCoordinates = ilotCenter.geometry.coordinates;
+        this.bboxMap = bboxMap;
+        this.mapBounds = this.map.getBounds();
+        this.mapCenter = this.map.getCenter().toArray();
+        this.displayIlotDirection = true;
       } 
     },
-    stopHoveringIlot(ilot) {
-      ilot.parcels.forEach((parcel) => {
-        this.stopHovering(parcel);
+    stopHoveringIlot({ featureCollection }) {
+      featureCollection.features.forEach(({ properties }) => {
+        this.stopHovering(properties);
       });
+      this.displayIlotDirection = false;
     },
-    showIlotLocation(ilotCenter, mapBoundsPolygon) {
-      // get the intersection in map bounds towards the ilot
-      let mapCenter = this.map.getCenter().toArray();
-      let mapOuterLine = polygonToLine(mapBoundsPolygon);
-      let line = lineString([mapCenter, ilotCenter]);
-      let intersect = lineIntersect(line, mapOuterLine);
-      this.hoveredIlotCoordinates = intersect.features[0].geometry.coordinates;
-    },
-    zoomOnIlot(ilot) {
-      let bboxIlot = this.getBboxIlot(ilot);
-      this.map.fitBounds(bboxIlot, {
+    zoomOn(featureOrfeatureCollection) {
+      this.map.fitBounds(bbox(featureOrfeatureCollection), {
         padding: this.mapPadding
       });
     },
     zoomOnOperator() {
       this.map.fitBounds(this.bboxOperator, {
         padding: this.mapPadding
-      });
-    },
-    getBboxIlot(ilot) {
-      let parcels = ilot.parcels.map(function(parcel) {
-        return this.parcelsOperator[this.currentYear].features.find(function(parcelOp) {
-          return parcelOp.id === parcel.id
-        })
-      }.bind(this))
-      return bbox({
-        features : parcels,
-        type : 'FeatureCollection'
       });
     },
     selectParcel(parcel) {
@@ -980,8 +959,5 @@ export default {
 }
 .expansion-title {
   display: flex;
-}
-.rotate {
-  transform: rotate(45deg);
 }
 </style>

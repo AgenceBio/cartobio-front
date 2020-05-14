@@ -10,7 +10,17 @@
           <v-toolbar-title class="ml-0">
             {{operator.title}}
           </v-toolbar-title>
-          <v-spacer/><v-btn flat icon small @click.native.stop @click="$emit('zoom-on-operator')"><v-icon>my_location</v-icon></v-btn>
+          <v-spacer/>
+
+          <v-btn flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
+            <v-tooltip top left dark open-delay=200>
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on" small>my_location</v-icon>
+              </template>
+
+              Centrer la carte sur l'exploitation
+            </v-tooltip>
+          </v-btn>
         </v-toolbar>
 
         <v-flex shrink>
@@ -29,32 +39,41 @@
           elevation-0
           class="overflow no-box-shadow"
           expand
+          focusable
+          readonly
         >
-          <v-expansion-panel-content v-for="ilot in ilots" :key="ilot.numIlot">
+          <v-expansion-panel-content v-for="({ numIlot, featureCollection }) in ilots" :key="numIlot">
             <template v-slot:header>
-              <v-flex d-flex align-center row fill-height
-                @mouseover="$emit('hover-ilot', ilot)"
-                @mouseleave="$emit('stop-hovering-ilot', ilot)">
-                <span class="text-cyan text-uppercase font-weight-medium">Ilot {{ilot.numIlot}}</span>
-                <v-btn class="smaller-icon-button" icon small @click.native.stop @click="$emit('zoom-on-ilot', ilot)"><v-icon color="#457382">my_location</v-icon></v-btn>
+              <v-flex align-center row fill-height class="parcel-summary"
+                @mouseover="$emit('hover-ilot', { numIlot, featureCollection })"
+                @mouseleave="$emit('stop-hovering-ilot', { featureCollection })">
+                <span class="text-cyan text-uppercase font-weight-medium">Ilot {{numIlot}}</span>
               </v-flex>
             </template>
+
             <template v-slot:actions>
-              <!-- <v-icon color="#457382" @click="console.log('click')">gps_not_fixed</v-icon> -->
-              <v-icon color="#457382">arrow_drop_up</v-icon>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <v-btn icon small v-on="on" @click.native.stop @click="$emit('zoom-on', featureCollection)">
+                    <v-icon small color="#457382">my_location</v-icon>
+                  </v-btn>
+                </template>
+                Centrer la carte sur cet ilot
+              </v-tooltip>
+              
             </template>
 
-            <v-data-table class="parcels" :items="ilot.parcels" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
-              <template v-slot:items="{item:props}">
-                <tr @mouseover="$emit('hover-parcel', props)" @mouseleave="$emit('stop-hovering', props)">
-                  <td class="status"><v-avatar size="24px" :color="props.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
-                  <td class="numparcel">Parcelle {{props.numparcel}}</td>
+            <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
+              <template v-slot:items="{item: feature}">
+                <tr @mouseover="$emit('hover-parcel', feature)" @mouseleave="$emit('stop-hovering', feature)" @click="$emit('zoom-on', feature)">
+                  <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
+                  <td class="numparcel">Parcelle {{feature.properties.numparcel}}</td>
                   <td class="text-cyan cultural-label">
                     <v-tooltip top left dark open-delay=200>
                       <template v-slot:activator="{ on }">
-                        <span v-on="on" class="text-truncate d-block">{{props.culture.label}}</span>
+                        <span v-on="on" class="text-truncate d-block">{{feature.properties.culture.label}}</span>
                       </template>
-                      <span>{{props.culture.label}}</span>
+                      <span>{{feature.properties.culture.label}}</span>
                     </v-tooltip>
                   </td>
                 </tr>
@@ -85,14 +104,29 @@
   </v-navigation-drawer>
 </template>
 <script>
-import getObjectValue from "lodash/get";
-import reduce from "lodash/reduce";
+// import getObjectValue from "lodash/get";
 import {fromCode} from "@/modules/codes-cultures/pac.js"
 import Preview from "@/components/ParcelsListPreview";
+
+/**
+let bboxIlot = this.getBboxIlot(ilot);
+
+    getBboxIlot(ilot) {
+      const features = ilot.parcels.map((parcel) => {
+        return this.parcelsOperator[this.currentYear].features.find(({ id }) => id === parcel.id)
+      })
+
+      return bbox({
+        features,
+        type : 'FeatureCollection'
+      });
+    },
+*/
 
 export default {
   name: "ParcelsList",
   props: {
+    // parcels is a FeatureCollection
     parcels: Object,
     operator: Object
   },
@@ -109,18 +143,16 @@ export default {
     //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
     //   this.panel = this.expandedArr;
     // },
-    sortIlots (items) {
-      return items.sort((propsA, propsB) => {
-        const ilotDiff = propsA.numilot - propsB.numilot
-        const parcelDiff = propsA.numparcel - propsB.numparcel
+    sortIlots (features) {
+      return features.sort((featureA, featureB) => {
+        const ilotDiff = featureA.properties.numilot - featureB.properties.numilot
+        const parcelDiff = featureA.properties.numparcel - featureB.properties.numparcel
         return ilotDiff ? ilotDiff : parcelDiff
       })
     },
 
     downloadCSV() {
-      let rows = this.parcelsArray
-
-      rows.unshift([
+      const rows = [ [
         "id",
         "numeroBio",
         "numeroPacage",
@@ -133,7 +165,23 @@ export default {
         "numeroParcelle",
         "surfaceAdmissible",
         "surfaceGeometrique"
-      ]);
+      ] ]
+
+      this.features.forEach(({ properties }) => rows.push([
+        properties.id,
+        this.operator.numeroBio,
+        properties.pacage,
+        properties.agroforest,
+        properties.bioboolean,
+        properties.codecultu,
+        properties.engagement,
+        properties.maraichage,
+        properties.numilot,
+        properties.numparcelle,
+        properties.surfadm,
+        properties.surfgeo
+      ]))
+
 
       try {
         const {numeroBio, title='cartobio-export'} = this.operator;
@@ -142,6 +190,7 @@ export default {
         this.convertToCsvAndDownload(`${title}.csv`, rows);
       }
       catch (error) {
+        console.error(error)
         window._paq.push(['trackEvent', 'parcels', 'error:download', error]);
       }
     },
@@ -203,77 +252,52 @@ export default {
       return this.ilots.length === 0
     },
 
-    parcelsArray () {
-      return this.features.map(prop => {
-        // csv properties order:
-        // [id, numerobio, pacage, agroforest, bio, codecultu, engagement, maraichage, numilot, numparcel, surfadm, surfgeo]
-        return [
-          getObjectValue(prop, "id", ""),
-          prop.numerobio,
-          getObjectValue(prop, "pacage", ""),
-          getObjectValue(prop, "maraichage", ""),
-          prop.bio,
-          prop.codecultu,
-          prop.engagement,
-          getObjectValue(prop, "maraichage", ""),
-          prop.numilot,
-          prop.numparcel,
-          getObjectValue(prop, "surfadm", 0),
-          prop.surfgeo
-        ];
-      })
-    },
-
     /**
      * Clears out types and properties for incoming parcels
-     * @return {Array.<ParcelProperties>}
+
+     * @return {Array.<Feature>}
      */
     features () {
-      return this.parcels.features.map(({ id, properties }) => ({
-        id,
-        ...properties,
-        // to enforce proper sort order
-        numilot: parseInt(properties.numilot, 10),
-        numparcel: parseInt(properties.numparcel, 10),
-        // convert to hectares
-        surfgeo: (properties.surfgeo / 10000).toFixed(2),
-        bioboolean: Boolean(parseInt(properties.bio, 10)),
-        culture: fromCode(properties.codecultu),
+      return this.parcels.features.map((feature) => ({
+        ...feature,
+        properties: {
+          ...feature.properties,
+          id: feature.id,
+          // to enforce proper sort order
+          numilot: parseInt(feature.properties.numilot, 10),
+          numparcel: parseInt(feature.properties.numparcel, 10),
+          // convert to hectares
+          surfgeo: (feature.properties.surfgeo / 10000).toFixed(2),
+          bioboolean: Boolean(parseInt(feature.properties.bio, 10)),
+          culture: fromCode(feature.properties.codecultu),
+        }
       }))
     },
 
+    /**
+     * Returns a list of FeatureCollection
+     */
     ilots() {
       // group parcels by ilots
-      let reduced = reduce(
-        this.features,
-        function(result, parcel) {
-          let numIlot = getObjectValue(parcel, ["numilot"]);
-          result[numIlot]
-            ? result[numIlot].push(parcel)
-            : (result[numIlot] = [parcel]);
-          return result;
-        },
-        {}
-      );
+      let reduced = this.features.reduce(function(result, feature) {
+        const {numilot: numIlot} = feature.properties;
 
-      let ilots = reduce(
-        reduced,
-        function(result, parcels, numIlot) {
-          result.push({ numIlot, parcels });
-          return result;
-        },
-        []
-      );
+        result[numIlot]
+          ? result[numIlot].push(feature)
+          : (result[numIlot] = [feature]);
+        return result;
+      }, {});
+
+      let ilots = Object.entries(reduced).reduce(function(result, [numIlot, features]) {
+        result.push({ numIlot, featureCollection: { type: 'FeatureCollection', features } });
+        return result;
+      }, []);
 
       return ilots;
     },
     panel : {
-      get : function () {
-        let expandedArr = [];
-        this.ilots.forEach(() => {
-          expandedArr.push(true);
-        });
-        return expandedArr;
+      get () {
+        return this.ilots.map(() => true)
       },
       // setter prevent error message in console when expanding/collapsing a parcel list
       set : function() {
@@ -319,6 +343,11 @@ export default {
   color : #457382;
 }
 
+.v-expansion-panel /deep/ .v-expansion-panel__header {
+  cursor: default;
+  padding: 12px;
+}
+
 .parcels .v-table {
   border-collapse: unset;
 
@@ -328,9 +357,9 @@ export default {
     }
 
     td, th {
-      cursor: default;
+      cursor: pointer;
       height: 38px;
-      padding-right: 0;
+      padding: 0 12px;
     }
 
     .numparcel {
@@ -359,10 +388,10 @@ export default {
   width: 100%;
 }
 
-.smaller-icon-button {
-  max-width: 24px;
-  max-height: 24px;
-}
+// .parcel-summary:hover {
+//   background-color: #719DA8;
+// }
+
 .download {
   background-color: #F6F7E2;
 }
