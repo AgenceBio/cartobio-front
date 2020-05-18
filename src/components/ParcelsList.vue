@@ -345,7 +345,7 @@ export default {
 
 .v-expansion-panel /deep/ .v-expansion-panel__header {
   cursor: default;
-  padding: 12px;
+  padding: 0 12px;
 }
 
 .parcels .v-table {
