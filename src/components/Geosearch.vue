@@ -12,10 +12,7 @@
 <script>
 import {get} from "axios";
 import throttle from "lodash/throttle";
-import memoize from "lodash/memoize";
 import _words from "lodash/words";
-
-const OPERATORS_ENDPOINT = process.env.VUE_APP_NOTIFICATIONS_ENDPOINT + "/api/getOperatorsByOc"
 
 const searchTowns = throttle((townOrPostcode, searchIndex) => {
   const options = {
@@ -40,38 +37,23 @@ const searchTowns = throttle((townOrPostcode, searchIndex) => {
     .then(towns => ({ towns, searchIndex }))
 }, 110, { leading: true, trailing: true })
 
-// we memoize until we can rely on browser cache
-// but so far, Notification API prevents caching, and is damn slow to respond
-const preloadOperators = memoize((oc) => {
-  if (!oc) {
-    return Promise.resolve([])
-  }
-
-  const options = {
-    responseType: 'json',
-    params: {
-      activites: 1,
-      oc,
-    }
-  }
-
-  return get(OPERATORS_ENDPOINT, options)
-    .then(({ data }) => data)
-})
-
 const searchOperators = ({ searchText, operators}) => {
   return Promise.resolve([])
     .then(() => {
       const words = _words(searchText.toLocaleLowerCase().trim())
 
-      return operators
-        .filter(({ title }) => title)
-        .filter(({ title }) => {
-          return words.every(word => title.toLocaleLowerCase().includes(word))
+      return operators.features
+        .map(({ properties }) => ({
+          ...properties,
+          dateCheck: properties.date_engagement || properties.date_maj,
+        }))
+        .filter(({ nom }) => nom)
+        .filter(({ nom }) => {
+          return words.every(word => nom.toLocaleLowerCase().includes(word))
         })
         .sort((a, b) => {
-          const AhasPacage = Number(Boolean(a.numeroPacage))
-          const BhasPacage = Number(Boolean(b.numeroPacage))
+          const AhasPacage = Number(Boolean(a.pacage))
+          const BhasPacage = Number(Boolean(b.pacage))
           return BhasPacage - AhasPacage
         })
         .slice(0, 5)
@@ -86,6 +68,7 @@ export default {
       type: Number,
       required: false
     },
+    operators: Object
   },
 
   data() {
@@ -107,7 +90,7 @@ export default {
     },
 
     search: function() {
-      const { searchText } = this
+      const { searchText, operators } = this
 
       if (!searchText || searchText.length < 3) {
         return this.clear()
@@ -117,7 +100,7 @@ export default {
       this.searchIndex++
 
       const townsP = searchTowns(searchText, this.searchIndex)
-      const operatorsP = searchOperators({ searchText, operators: this._operators })
+      const operatorsP = searchOperators({ searchText, operators })
 
       // async results
       townsP.then(({ towns, searchIndex }) => {
@@ -142,24 +125,6 @@ export default {
         .finally(() => this.isLoading = false)
     },
   },
-
-  created () {
-    // it costs too much for Vue.js to watch 30K objects (for large certification bodies)
-    this._operators = []
-    this.isLoading = true
-
-    // we preload the operators list as we have no way
-    // to directly query by OC _and_ setting a limit (like 10 results)
-    preloadOperators(this.ocId).then(operators => {
-      this.isLoading = false
-      this._operators = operators.map(operator => ({
-        ...operator,
-        dateCheck: operator.dateEngagement || operator.dateMaj,
-        title: operator.denominationCourante || operator.nom || operator.gerant || '#'+operator.numeroBio
-      }))
-    })
-    .catch(console.error)
-  }
 };
 </script>
 

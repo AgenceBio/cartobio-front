@@ -1,8 +1,10 @@
 <template>
   <v-layout>
-      <!-- Parcels List -->
-      <ParcelsList  
-        :drawer="showParcelsList"
+      <!-- Parcels List 
+      v-if ensure the drawer width is well taken into account for v-content display -->
+      <ParcelsList 
+        v-if="showOperatorDetails"
+        :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:close-drawer="closeOperatorDetailsSidebar"
@@ -16,7 +18,8 @@
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
-                      @select-operator="setOperator"
+                      :organismeCertificateurOperators="organismeCertificateurOperators"
+                      @select-operator="setOperator($event)"
                       @flyto="flyTo"></SearchSidebar>
     <v-content>
       <!-- Map division so it takes the full width/height left -->
@@ -48,12 +51,26 @@
           @load="onMapLoaded"
           ref="mapboxDiv"
         >
+
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
           <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName">
           </IlotMarkerDirection>
+
+          <MglGeojsonLayer
+            v-if="getProfile.organismeCertificateurId"
+            before="place-continent"
+            sourceId="certification-body-operators"
+            layerId="certification-body-clusters-area"
+            :layer="layerStyle('certification-body-clusters-area')" />
+          <MglGeojsonLayer
+            v-if="getProfile.organismeCertificateurId"
+            before="place-continent"
+            sourceId="certification-body-operators"
+            layerId="certification-body-clusters-count"
+            :layer="layerStyle('certification-body-clusters-count')" />
         </MglMap>
 
         <!-- Layers selector -->
@@ -130,6 +147,7 @@ import {
   MglNavigationControl,
   MglGeolocateControl,
   MglScaleControl,
+  MglGeojsonLayer,
 } from "vue-mapbox";
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
@@ -140,6 +158,8 @@ import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 
 import { mapGetters, mapState } from 'vuex';
+
+const { VUE_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
 
 // const centroid = require('@mapbox/polylabel')
 
@@ -197,7 +217,8 @@ export default {
     MglGeolocateControl,
     MglScaleControl,
     MglMap,
-    IlotMarkerDirection
+    IlotMarkerDirection,
+    MglGeojsonLayer
   },
   data() {
     return {
@@ -207,10 +228,17 @@ export default {
       mapPadding: { top: 25, bottom: 25, left: 20, right: 20 },
       zoom: null,
       center: null,
-      mapStyle: mergeAll([baseStyle, cadastreStyle, infrastructureStyle]),
+      mapStyle: mergeAll([
+        baseStyle,
+        cadastreStyle,
+        infrastructureStyle,
+        { sources: cartobioStyle.sources }
+      ]),
 
       // anonymous layers
       anonLayers: {},
+
+      organismeCertificateurOperators: {},
 
       // operator parcels by year
       parcelsOperator: {
@@ -327,6 +355,7 @@ export default {
     ...mapGetters(['getProfile']),
     ...mapGetters({ operator: 'getOperator' }),
     ...mapGetters('user', ['isAuthenticated']),
+    ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
 
     showOperatorDetails () {
@@ -336,9 +365,6 @@ export default {
     showSearch () {
       return Boolean(this.isAuthenticated && !this.operator.id);
     },
-    showParcelsList() {
-      return Boolean(this.operator && this.operator.id);
-    },
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
@@ -346,10 +372,16 @@ export default {
     }
   },
   methods: {
-    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
-      May be usefull to handle promise and avoid the mess it is right now for map init
-    */
-
+    /**
+     * @param  {String} styleId [description]
+     * @return {Object<Mapbox.Layer>}
+     */
+    layerStyle (styleId) {
+      return cartobioStyle.layers.find(({ id }) => id === styleId);
+    },
+   /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
+     May be usefull to handle promise and avoid the mess it is right now for map init
+   */
     onMapLoaded({map}) {
       // for future reference in events
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
@@ -366,6 +398,45 @@ export default {
 
       map.on("mousemove", ({lngLat, point}) => {
         this.buildHoveredPopup(lngLat, point);
+      });
+
+      // handle summary interactions
+      // because it happens over a cluster, we can count on having 1 feature only
+      let activeCluster = null;
+
+      map.on("click", "certification-body-clusters-area", (e) => {
+        const { coordinates: center } = e.features[0].geometry
+        const { cluster_id: id } = e.features[0].properties
+
+        // we zoom directly to where the cluster dissolves
+        // if it's a tiny cluster, we will zoom deep (but at max level 10)
+        // if it's a large cluster, we will zoom at a level it splits in at least 2 other clusters
+        map.getSource('certification-body-operators').getClusterExpansionZoom(id, (error, zoom) => {
+          map.flyTo({ center, zoom: Math.min(10, zoom) })
+        })
+      });
+
+      map.on("mousemove", "certification-body-clusters-area", (e) => {
+        const { id } = e.features[0]
+        const source = 'certification-body-operators'
+        map.getCanvas().style.cursor = 'pointer'
+
+        // sometimes, mouseleave is fired after we hover another cluster
+        if (activeCluster) {
+          map.setFeatureState({ id: activeCluster, source }, { hover: false })
+        }
+
+        map.setFeatureState({ id, source }, { hover: true })
+        activeCluster = id
+      });
+
+      map.on("mouseleave", "certification-body-clusters-area", () => {
+        const id = activeCluster
+        const source = 'certification-body-operators'
+        map.getCanvas().style.cursor = ''
+
+        map.setFeatureState({ id, source }, { hover: false })
+        activeCluster = null
       });
 
       // handle click on layers
@@ -472,9 +543,13 @@ export default {
       });
 
       // non-bio
-      if (!map.getSource('rpg-nonbio-anon')) {
-        map.addSource('rpg-nonbio-anon', cartobioStyle.sources['rpg-nonbio-anon']);
-        cartobioStyle.layers.forEach(layer => map.addLayer({ ...layer, layout: { visibility: 'visible'} }, 'road_oneway'));
+      if (!map.getLayer('rpg-anon-nonbio-2020-area')) {
+        cartobioStyle.layers
+          .filter(({ id }) => id.indexOf('rpg-') === 0)
+          .forEach(layer => map.addLayer({
+            ...layer,
+            layout: { visibility: 'visible'}
+          }, 'road_oneway'));
       }
 
       this.toggleLayerAnon(this.currentYear, true);
@@ -491,6 +566,21 @@ export default {
           type: "geojson",
           data: this.highlightedParcels
         });
+      }
+
+      if (this.getProfile.organismeCertificateurId) {
+        get(`${API_ENDPOINT}/v1/summary`, {
+          headers: {
+            Authorization: `Bearer ${this.apiToken}`
+          }
+        }).then(({ data }) => {
+          this.organismeCertificateurOperators = data
+          map.getSource("certification-body-operators").setData(data)
+        })
+      }
+      else {
+        this.organismeCertificateurOperators = null
+        map.getSource("certification-body-operators").setData(geoJsonTemplate)
       }
 
       if (!map.getSource("operatorParcels2020")) {
@@ -562,7 +652,6 @@ export default {
         params: {}
       });
     },
-
     // function  used by draw features
     updateArea(e) {
       var data = draw.getAll();

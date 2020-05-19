@@ -139,6 +139,13 @@ export default {
       dialog: false,
     };
   },
+  watch: {
+
+    drawer: function(newVal) {
+      if (newVal)
+        this.$emit("open-drawer");
+    },
+  },
   methods: {
     // expandIlot(ilotKey) {
     //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
