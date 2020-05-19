@@ -1,7 +1,8 @@
 <template>
   <v-layout>
       <!-- Parcels List -->
-      <ParcelsList
+      <ParcelsList  
+        :drawer="showParcelsList"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:close-drawer="closeOperatorDetailsSidebar"
@@ -17,7 +18,7 @@
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
                       @select-operator="setOperator"
                       @flyto="flyTo"></SearchSidebar>
-    <v-content app>
+    <v-content>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
         <v-dialog v-model="setUpParcel" persistent v-if="operator.title">
@@ -335,7 +336,9 @@ export default {
     showSearch () {
       return Boolean(this.isAuthenticated && !this.operator.id);
     },
-
+    showParcelsList() {
+      return Boolean(this.operator && this.operator.id);
+    },
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();

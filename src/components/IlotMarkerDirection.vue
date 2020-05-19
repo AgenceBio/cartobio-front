@@ -45,7 +45,6 @@ export default {
       this.angleRotationStyle = "transform : rotate(" + rotationAngle + "deg)";
       this.offsetStyle = "transform : translate(" + offset[0] + "px, " + offset[1] + "px);";
       this.flexStyle = "flex-direction : " + flex + ";";
-      console.log(this.offsetStyle, rotationAngle, this.flexStyle );
     },
     // calculates rotation angle, offset, and flex direction to display the marker properly
     /**

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="show">
+  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <!-- Header -->
@@ -128,7 +128,8 @@ export default {
   props: {
     // parcels is a FeatureCollection
     parcels: Object,
-    operator: Object
+    operator: Object,
+    drawer: Boolean
   },
   components: {
     Preview
@@ -240,14 +241,6 @@ export default {
     }
   },
   computed: {
-    show: {
-      get () {
-        return Boolean(this.operator && this.operator.id)
-      },
-      set () {
-        // this is intended to avoid Vue.js warning
-      }
-    },
     isLoading () {
       return this.ilots.length === 0
     },
