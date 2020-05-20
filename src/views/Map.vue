@@ -1,14 +1,18 @@
 <template>
   <v-layout>
-      <!-- Parcels List -->
-      <ParcelsList
+      <!-- Parcels List 
+      v-if ensure the drawer width is well taken into account for v-content display -->
+      <ParcelsList 
+        v-if="showOperatorDetails"
+        :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
-        v-on:close-drawer="closeOperatorDetailsSidebar()"
-        v-on:hover-parcel="highlightParcel($event)"
-        v-on:stop-hovering="stopHovering($event)"
-        v-on:hover-ilot="hoverIlot($event)"
-        v-on:stop-hovering-ilot="stopHoveringIlot($event)"
+        v-on:close-drawer="closeOperatorDetailsSidebar"
+        v-on:hover-parcel="highlightParcel"
+        v-on:stop-hovering="stopHovering"
+        v-on:hover-ilot="hoverIlot"
+        v-on:stop-hovering-ilot="stopHoveringIlot"
+        v-on:zoom-on="zoomOn"
       ></ParcelsList>
 
       <SearchSidebar  :drawer="showSearch"
@@ -17,7 +21,7 @@
                       :organismeCertificateurOperators="organismeCertificateurOperators"
                       @select-operator="setOperator($event)"
                       @flyto="flyTo"></SearchSidebar>
-    <v-content app>
+    <v-content>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
         <v-dialog v-model="setUpParcel" persistent v-if="operator.title">
@@ -52,6 +56,8 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" />
+          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName">
+          </IlotMarkerDirection>
 
           <MglGeojsonLayer
             v-if="getProfile.organismeCertificateurId"
@@ -130,10 +136,9 @@
 <script>
 import {get} from "axios";
 import getObjectValue from "lodash/get";
+import {bbox, bboxPolygon, center, area, point} from "turf";
 import {all as mergeAll} from "deepmerge";
-import {bbox, area, point} from "turf";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
-
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
@@ -150,6 +155,7 @@ import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
+import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 
 import { mapGetters, mapState } from 'vuex';
 
@@ -210,15 +216,16 @@ export default {
     MglNavigationControl,
     MglGeolocateControl,
     MglScaleControl,
-    MglGeojsonLayer,
-    MglMap
+    MglMap,
+    IlotMarkerDirection,
+    MglGeojsonLayer
   },
   data() {
     return {
       // we place this property in created() to avoid Vue Observability
       // When observed, the map object is mutated and styles become broken
       //map: null,
-      mapPadding: { top: 10, bottom: 25, left: 15, right: 5 },
+      mapPadding: { top: 25, bottom: 25, left: 20, right: 20 },
       zoom: null,
       center: null,
       mapStyle: mergeAll([
@@ -279,6 +286,15 @@ export default {
       setUpParcel: false,
 
       highlightedParcel: null,
+
+      // hovered ilot direction
+      hoveredIlotName: "",
+      bboxMap: {},
+      mapCenter: [],
+      mapBounds:  {},
+      ilotCenterCoordinates: [],
+      displayIlotDirection: false,
+
       layersVisible: {
         // https://gka.github.io/palettes/#/9|d|169a39|ac195e|1|1
         2020: {
@@ -349,7 +365,6 @@ export default {
     showSearch () {
       return Boolean(this.isAuthenticated && !this.operator.id);
     },
-
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
@@ -624,9 +639,7 @@ export default {
           this.bboxOperator[0] !== undefined &&
           this.bboxOperator[0] !== Infinity
         ) {
-          this.map.fitBounds(this.bboxOperator, {
-            padding: this.mapPadding
-          });
+          this.zoomOnOperator();
         }
       }
     },
@@ -639,7 +652,6 @@ export default {
         params: {}
       });
     },
-
     // function  used by draw features
     updateArea(e) {
       var data = draw.getAll();
@@ -677,9 +689,7 @@ export default {
         this.bboxOperator[0] !== undefined &&
         this.bboxOperator[0] !== Infinity
       ) {
-        map.fitBounds(this.bboxOperator, {
-          padding: this.mapPadding
-        });
+        this.zoomOnOperator();
       }
 
       this.isOperatorOnMap = true;
@@ -813,6 +823,13 @@ export default {
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
+    hoverParcel(parcel) {
+      
+      // const p = centroid(parcel.geometry.coordinates)
+      // let lngLat = {lng: p[0], lat: p[1]};
+      // this.buildHoveredPopup(lngLat, this.map.project(lngLat));
+      this.highlightParcel(parcel.id);
+    },
     highlightParcel({ id }) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
@@ -825,14 +842,38 @@ export default {
         id,
       }, { highlighted: false });
     },
-    hoverIlot(ilot) {
-      ilot.parcels.forEach((parcel) => {
-        this.highlightParcel(parcel);
+    hoverIlot({ numIlot, featureCollection }) {
+      featureCollection.features.forEach(({ properties }) => {
+        this.highlightParcel(properties);
+      });
+
+      let ilotBbox = bboxPolygon(bbox(featureCollection));
+      let ilotCenter = center(ilotBbox);
+      let bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
+      let inMap = isPointInPolygon(ilotCenter, bboxMap);
+      if (!inMap) {
+        this.hoveredIlotName = 'Ilot ' + numIlot;
+        this.ilotCenterCoordinates = ilotCenter.geometry.coordinates;
+        this.bboxMap = bboxMap;
+        this.mapBounds = this.map.getBounds();
+        this.mapCenter = this.map.getCenter().toArray();
+        this.displayIlotDirection = true;
+      } 
+    },
+    stopHoveringIlot({ featureCollection }) {
+      featureCollection.features.forEach(({ properties }) => {
+        this.stopHovering(properties);
+      });
+      this.displayIlotDirection = false;
+    },
+    zoomOn(featureOrfeatureCollection) {
+      this.map.fitBounds(bbox(featureOrfeatureCollection), {
+        padding: this.mapPadding
       });
     },
-    stopHoveringIlot(ilot) {
-      ilot.parcels.forEach((parcel) => {
-        this.stopHovering(parcel);
+    zoomOnOperator() {
+      this.map.fitBounds(this.bboxOperator, {
+        padding: this.mapPadding
       });
     },
     selectParcel(parcel) {
