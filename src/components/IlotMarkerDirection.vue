@@ -3,8 +3,8 @@
         <div slot="marker" class="flex">
           <v-card color="transparent" flat :style="offsetStyle">
             <v-layout :style="flexStyle" align-center>
-              <v-flex><v-chip color="#b9d065">{{hoveredIlotName}}</v-chip></v-flex>
-              <v-flex><v-icon color="#b9d065" :style="angleRotationStyle">near_me</v-icon></v-flex>
+              <v-flex><v-chip color="#ffffff">{{hoveredIlotName}}</v-chip></v-flex>
+              <v-flex><v-icon color="#ffffff" :style="angleRotationStyle">near_me</v-icon></v-flex>
             </v-layout>
           </v-card>
         </div>
