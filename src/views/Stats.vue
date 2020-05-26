@@ -106,7 +106,7 @@ export default {
       stats: null,
       apiAccessCount: null,
       apiAccessCallsCount: null,
-      dataAccessCount: 10,
+      dataAccessCount: 12,
       loading: true,
       errored: false,
       SAU_TOTALE,
