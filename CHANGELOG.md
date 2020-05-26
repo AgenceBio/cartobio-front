@@ -2,6 +2,16 @@
 title: Journal d'évolution
 ---
 
+## Semaine du 18 au 22 mai
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Ajout d'indicateurs de navigation dans la liste des parcelles d'une exploitation. On peut se diriger vers un ilot, une parcelle ou retourner à une vue d'ensemble de l'exploitation.
+
+## Semaine du 11 au 15 mai
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Affichage du nombre d'exploitations par département.
+
 ## Semaine du 27 au 30 avril
 
 - <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
