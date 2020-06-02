@@ -1,42 +1,60 @@
 <template>
   <MglPopup :showed="!show" :close-button="false" :close-on-click="false" @added="onPopupCreated">
-    <div class="parcel-details">
-      <h3 v-if="parcel.numilot">Ilot {{parcel.numilot}} Parcelle {{parcel.numparcel}}</h3>
+    <article class="parcel-details">
+      <header v-if="parcel" class="d-flex">
+        <span :class="{ status: true, badge: true, 'status--bio': this.currentStatus === true, 'status--nonbio': this.currentStatus === false }"></span>
 
-      <ul v-if="parcel.codecultu" class="metadata">
-        <li data-surface>
-          <b>Surface</b> {{ surface }}<abbr title="hecta">ha</abbr>
-        </li>
-        <li data-cadastre v-if="cadastre">
-          <b>Parcelle</b> {{cadastre.properties.section}} {{cadastre.properties.numero}}
-        </li>
-      </ul>
+        <h2 class="code-culture shrink" v-if="parcel.culture && parcel.culture.groupCode">
+          <span class="group-label">{{parcel.culture.groupLabel}}</span>
+          <span class="culture-label" v-if="parcel.culture.label !== parcel.culture.groupLabel">{{parcel.culture.label}}</span>
+        </h2>
+        <h2 class="code-culture group-label" v-if="parcel.culture && !parcel.culture.groupCode">{{parcel.culture}}</h2>
 
+        <ul v-if="parcel.codecultu" class="metadata">
+          <li data-surface class="font-weight-bold">
+            {{ surface }} HA
+          </li>
+          <li v-if="parcel.numilot" data-ilot class="font-weight-bold grey--text text--darken-3">
+            Ilot {{parcel.numilot}} Parcelle {{parcel.numparcel}}
+          </li>
+          <li data-cadastre v-if="cadastre" class="grey--text text--darken-3">
+            {{cadastre.properties.section}} {{cadastre.properties.numero}}
+          </li>
+        </ul>
+      </header>
 
-      <table class="parcel-yearly-details">
-        <thead>
-          <tr>
-            <th>Année</th>
-            <th>Culture</th>
-            <th data-bio>Bio</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(feature, year) in history" :key="year" :class="{'bio': feature.bio, 'non-bio': !feature.bio}">
-            <th data-year>{{year}}</th>
-            <td v-if="feature.culture.groupCode" data-culture>
-              {{feature.culture.groupLabel}}<br>
-              <small>{{feature.culture.label}}</small>
-            </td>
-            <td v-if="!feature.culture.groupCode" data-culture>{{feature.culture}}</td>
-            <td data-bio>
-              <i aria-hidden="true" class="v-icon material-icons theme--light">
-                {{feature.bio ? 'check_circle_outline' : 'close'}}
-              </i></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <article class="history">
+        <h3 class="grey--text text--darken-1">Historique</h3>
+
+        <table class="parcel-yearly-details">
+          <colgroup>
+            <col width="5%">
+            <col width="13%">
+            <col width="82%">
+          </colgroup>
+          <thead hidden>
+            <tr>
+              <th data-bio>Statut</th>
+              <th>Année</th>
+              <th>Culture</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="{year, feature} in history" :key="year" :class="{'bio': feature.bio === true, 'non-bio': feature.bio === false}">
+              <td data-bio>
+                <v-icon small>lens</v-icon>
+              </td>
+              <th data-year class="grey--text text--darken-2">{{year}}</th>
+              <td v-if="feature.culture.groupCode" data-culture class="blue-grey--text text--darken-2">
+                <span class="group-label">{{feature.culture.groupLabel}}</span>
+                <span class="culture-label" v-if="feature.culture.label !== feature.culture.groupLabel">{{feature.culture.label}}</span>
+              </td>
+              <td v-if="!feature.culture.groupCode" data-culture class="blue-grey--text text--darken-2 group-label">{{feature.culture}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </article>
   </MglPopup>
 </template>
 
@@ -62,7 +80,7 @@ export default {
   methods: {
     onPopupCreated ({ popup }) {
       popup.trackPointer()
-      popup.setMaxWidth('340px')
+      popup.setMaxWidth('380px')
     }
   },
 
@@ -75,9 +93,17 @@ export default {
       return this.features.cadastre
     },
 
+    currentStatus () {
+      return this.parcel && this.parcel.bio
+    },
+
     parcel () {
-      const mostRecentYear = Object.keys(this.history).sort((a, b) => a-b).pop()
-      return this.history[mostRecentYear] || {}
+      if (this.history.length === 0) {
+        return null
+      }
+
+      const {year, feature} = this.history[0]
+      return {...feature, year}
     },
 
     surface () {
@@ -86,6 +112,9 @@ export default {
       return (area(parcel.geometry) / IN_HECTARES).toFixed(2)
     },
 
+    /**
+     * @return {Array<year, featureProperties>} [description]
+     */
     history () {
       const {operator, anon} = this.features
       const YEAR_PATTERN = /_(\d+)$/
@@ -120,74 +149,166 @@ export default {
           })
       }
 
-      return hoveredData
+      return Object.entries(hoveredData)
+        .sort(([yearA], [yearB]) => yearB - yearA)
+        .map(([year, feature]) => ({ year, feature }))
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.parcel-details {
-  $cell-padding: 5px;
-  width: 320px;
+$cell-padding: 10px;
 
-  h3 {
-      padding-left: $cell-padding;
-      padding-right: $cell-padding;
+.parcel-details {
+  width: 360px;
+
+  header {
+    background: #F6F7E2;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin: -10px -10px 0;
+
+    & > * {
+      margin: $cell-padding;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+
+      .culture-label {
+        font-size: .9rem;
+      }
+    }
+  }
+
+  .culture-label {
+    display: block;
+    font-weight: normal;
+    line-height: 1.25;
   }
 
   .metadata {
     list-style: none;
-    margin: .5em $cell-padding;
     padding: 0;
+    text-align: right;
+    white-space: nowrap;
+
+    li {
+      margin: 0;
+    }
 
     &:empty {
       display: none;
     }
   }
 
+  .status {
+    $size: 14px;
+
+    background-color: #ccc;
+    border-radius: 50%;
+    display: inline-block;
+    text-align: center;
+    width: $size;
+    height: $size;
+
+    &:after {
+      content: "";
+      line-height: $size;
+    }
+
+    &.status--bio {
+      background-color: #B9D065;
+      color: #242C37;
+    }
+
+    &.status--nonbio {
+      background-color: #CC4C3C;
+      color: #fff;
+    }
+
+    &.badge {
+      $size: 40px;
+
+      flex: 0 0 $size !important;
+      width: $size;
+      height: $size;
+
+      &:after {
+        line-height: $size;
+      }
+
+      &.status--bio:after {
+        // font-size: 1.25em;
+        content: "Bio";
+      }
+
+      &.status--nonbio:after {
+        content: "Conv.";
+      }
+    }
+  }
+
+  .history tr:not(:last-child) .v-icon:before {
+    content: "";
+    border: 1px solid #ccc;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    margin-top: 17px;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    z-index: 0;
+  }
+
+  .history {
+    h3 {
+      margin: $cell-padding 0;
+      text-transform: uppercase;
+    }
+  }
+
   .parcel-yearly-details {
+    table-layout: fixed;
     border-collapse: collapse;
     width: 100%;
 
     .bio .v-icon {
-      color: #388E3C; /* green darken-2 */
+      color: #B9D065;
     }
     .non-bio .v-icon {
-      color: #F57C00; /* orange darken-2 */
-    }
-
-    thead th {
-      border-bottom: 1px solid #78909C; /* blue-grey */
-      padding: $cell-padding;
-      vertical-align: bottom;
-    }
-
-    tbody tr:nth-child(2n) {
-      background-color: #ECEFF1;        /* blue-grey lighten-5 */
+      color: #CC4C3C;
     }
 
     tbody td,
     tbody th {
       padding-left: $cell-padding;
-      padding-right: $cell-padding;
-      vertical-align: top;
+      padding-right: 0;
+      position: relative;
+      vertical-align: baseline;
     }
 
-    [data-surface] abbr {
-      margin-left: $cell-padding;
+    tbody td[data-bio] {
+      padding: 0;
     }
 
-    [data-year] {
-      width: 5em;
+    tbody th[data-year] {
+      font-size: 1.1em;
     }
 
-    [data-bio] {
-      text-align: center;
-    }
-
-    [data-culture] {
+    tbody td[data-culture] {
       line-height: 1.25;
+      padding-bottom: $cell-padding * 1.5;
+    }
+
+    .group-label {
+      font-weight: bold;
+    }
+
+    .culture-label {
+      font-size: .9em;
     }
   }
 }
