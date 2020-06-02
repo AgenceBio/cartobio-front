@@ -8,8 +8,14 @@ function extractFeatures({sourceFile, filteringFeatures}) {
   const filteringFeaturesPolygon = new gdal.MultiPolygon()
 
   filteringFeatures.forEach(feature => {
-    filteringFeaturesPolygon.children.add(gdal.Geometry.fromGeoJson(feature))
-  })
+    const geometry = gdal.Geometry.fromGeoJson(feature);
+
+    // we loop over MULTIPOLYGON children (POLYGONs), or a POLYGON directly
+    // eslint-disable-next-line no-unexpected-multiline
+    (geometry.name === 'MULTIPOLYGON' ? geometry.children : [geometry]).forEach(g => {
+      filteringFeaturesPolygon.children.add(g);
+    })
+  });
 
   const filterGeometry = filteringFeaturesPolygon.unionCascaded()
 
