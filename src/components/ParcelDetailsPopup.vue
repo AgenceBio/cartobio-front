@@ -1,5 +1,5 @@
 <template>
-  <MglPopup :showed="!show" :close-button="false" :close-on-click="false" @added="onPopupCreated">
+  <MglPopup :showed="!show" :close-button="false" @open="onPopupOpened">
     <article class="parcel-details">
       <header v-if="parcel" class="d-flex">
         <span :class="{ status: true, badge: true, 'status--bio': this.currentStatus === true, 'status--nonbio': this.currentStatus === false }"></span>
@@ -67,20 +67,22 @@ const IN_HECTARES = 10000
 
 export default {
   name: "ParcelDetailsPopup",
-  props: ['features'],
+  props: ['features', 'coordinates'],
 
   components: {
     MglPopup
   },
-  data() {
-    return {
-    }
-  },
 
   methods: {
-    onPopupCreated ({ popup }) {
-      popup.trackPointer()
+    onPopupOpened ({ popup }) {
       popup.setMaxWidth('380px')
+
+      // each time we manually set the coordinates (programmatically),
+      // it disables pointer tracking
+      // so we have to explicitely enable it whenever the popup is opened via mouse/touch interactions
+      this.coordinates === undefined
+        ? popup.trackPointer()
+        : popup.setLngLat(this.coordinates)
     }
   },
 
