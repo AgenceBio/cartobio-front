@@ -1,15 +1,15 @@
 <template>
   <v-layout>
-      <!-- Parcels List 
+      <!-- Parcels List
       v-if ensure the drawer width is well taken into account for v-content display -->
-      <ParcelsList 
+      <ParcelsList
         v-if="showOperatorDetails"
         :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:close-drawer="closeOperatorDetailsSidebar"
-        v-on:hover-parcel="highlightParcel"
-        v-on:stop-hovering="stopHovering"
+        v-on:hover-parcel="hoverParcel"
+        v-on:stop-hovering="stopHoveringParcel"
         v-on:hover-ilot="hoverIlot"
         v-on:stop-hovering-ilot="stopHoveringIlot"
         v-on:zoom-on="zoomOn"
@@ -55,7 +55,7 @@
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
-          <ParcelDetailsPopup :features="hoveredParcelFeatures" />
+          <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="hoveredParcelCoordinates" />
           <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName">
           </IlotMarkerDirection>
 
@@ -139,6 +139,8 @@ import getObjectValue from "lodash/get";
 import {bbox, bboxPolygon, center, area, point} from "turf";
 import {all as mergeAll} from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
+import centroid from '@mapbox/polylabel';
+
 // mapbox-gl dependencies
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
@@ -160,8 +162,6 @@ import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 import { mapGetters, mapState } from 'vuex';
 
 const { VUE_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
-
-// const centroid = require('@mapbox/polylabel')
 
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
@@ -257,6 +257,7 @@ export default {
       bboxOperator: [],
 
       // popup data with parcel history
+      hoveredParcelCoordinates: undefined,
       hoveredParcelFeatures: {
         anon: [],
         operator: {},
@@ -448,6 +449,7 @@ export default {
         this.setUpMapOperator();
       }
     },
+
     buildHoveredPopup(lngLat, point) {
       const renderedFeatures = this.map.queryRenderedFeatures(point)
       this.hoveredParcelFeatures = {
@@ -461,12 +463,12 @@ export default {
       let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
       if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
         if (this.highlightedParcel) {
-          this.stopHovering(this.highlightedParcel);
+          this.stopHighlightingParcel(this.highlightedParcel);
         }
         this.highlightParcel(hoveredParcel);
         this.highlightedParcel = hoveredParcel;
       } else if (this.highlightedParcel && !hoveredParcel) {
-        this.stopHovering(this.highlightedParcel);
+        this.stopHighlightingParcel(this.highlightedParcel);
       }
     },
     updateHash(map) {
@@ -823,28 +825,43 @@ export default {
       });
       this.toggleLayerOperator(this.currentYear, true);
     },
-    hoverParcel(parcel) {
-      
-      // const p = centroid(parcel.geometry.coordinates)
-      // let lngLat = {lng: p[0], lat: p[1]};
-      // this.buildHoveredPopup(lngLat, this.map.project(lngLat));
-      this.highlightParcel(parcel.id);
+
+    hoverParcel (parcel) {
+      const [lng, lat] = centroid(parcel.geometry.coordinates)
+      this.hoveredParcelCoordinates = {lng, lat}
+
+      this.buildHoveredPopup({lng, lat}, this.map.project({lng, lat}));
+      this.highlightParcel(parcel);
     },
-    highlightParcel({ id }) {
+
+    stopHoveringParcel (parcel) {
+      this.stopHighlightingParcel(parcel);
+
+      this.hoveredParcelCoordinates = undefined
+      this.hoveredParcelFeatures = {
+        anon: [],
+        operator: {},
+        cadastre: null,
+      }
+    },
+
+    highlightParcel(parcel) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
-        id,
+        id: parcel.id,
       }, { highlighted: true });
     },
-    stopHovering({ id }) {
+
+    stopHighlightingParcel(parcel) {
       this.map.setFeatureState({
         source: 'operatorParcels2020',
-        id,
+        id: parcel.id,
       }, { highlighted: false });
     },
+
     hoverIlot({ numIlot, featureCollection }) {
-      featureCollection.features.forEach(({ properties }) => {
-        this.highlightParcel(properties);
+      featureCollection.features.forEach((parcel) => {
+        this.highlightParcel(parcel);
       });
 
       let ilotBbox = bboxPolygon(bbox(featureCollection));
@@ -858,14 +875,16 @@ export default {
         this.mapBounds = this.map.getBounds();
         this.mapCenter = this.map.getCenter().toArray();
         this.displayIlotDirection = true;
-      } 
+      }
     },
+
     stopHoveringIlot({ featureCollection }) {
-      featureCollection.features.forEach(({ properties }) => {
-        this.stopHovering(properties);
+      featureCollection.features.forEach((parcel) => {
+        this.stopHighlightingParcel(parcel);
       });
       this.displayIlotDirection = false;
     },
+
     zoomOn(featureOrfeatureCollection) {
       this.map.fitBounds(bbox(featureOrfeatureCollection), {
         padding: this.mapPadding
