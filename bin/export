@@ -88,7 +88,7 @@ async function run (FILTERING_FILES) {
 
   const filteringFiles = await glob(FILTERING_FILES)
   const sourceFiles = await glob(SOURCE_FILES)
-  const datasetCount = epci ? 1 : filteringFiles.length
+  const datasetCount = filteringFiles.length + (epci ? 1 : 0)
 
   // 1. Open datasets
   // shapefiles
@@ -118,11 +118,13 @@ async function run (FILTERING_FILES) {
 
     datasets.push(dataset)
   }
+
   // Filter by shapefile
-  else if (shapefiles) {
-    datasets = filteringFiles
-        .map(path => resolve(path))
-        .map(path => gdal.open(path, 'r'))
+  if (shapefiles) {
+    filteringFiles
+      .map(path => resolve(path))
+      .map(path => gdal.open(path, 'r'))
+      .forEach(dataset => datasets.push(dataset))
   }
 
   // 2. Collect all the features from each layer
