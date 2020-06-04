@@ -95,7 +95,7 @@
                 </div>
               </template>
 
-              <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="features"></Preview>
+              <Preview @download-csv="downloadCSV" @close-dialog="dialog = false" :features="features"></Preview>
             </v-dialog>
           </v-layout>
         </v-flex>
@@ -185,7 +185,7 @@ export default {
         properties.engagement,
         properties.maraichage,
         properties.numilot,
-        properties.numparcelle,
+        properties.numparcel,
         properties.surfadm,
         properties.surfgeo
       ]))
