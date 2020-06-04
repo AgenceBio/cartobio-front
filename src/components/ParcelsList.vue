@@ -293,6 +293,16 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.v-toolbar /deep/ .v-toolbar__content {
+  padding-left: 12px; /* half of what it is supposed to be */
+}
+
+.v-toolbar /deep/ .v-toolbar__title {
+  line-height: 1.1;
+  overflow: auto;
+  white-space: unset;
+}
+
 .justify-self-start {
   margin-bottom: auto;
   padding-bottom: 10px;
