@@ -14,7 +14,7 @@
         "features": []
       },
       "cluster": true,
-      "clusterRadius": 50,
+      "clusterRadius": 55,
       "clusterMaxZoom": 9
     }
   },
@@ -73,8 +73,9 @@
           "interpolate",
           ["exponential", 0.5],
           ["zoom"],
-          6, ["step", ["get", "point_count"], 12, 50, 20, 100, 30, 200, 40],
-          8, ["step", ["get", "point_count"], 30, 100, 50]
+          5, ["step", ["get", "point_count"], 5, 20, 8, 50, 10, 100, 14, 200, 18, 400, 22, 800, 28, 1600, 30],
+          6, ["step", ["get", "point_count"], 5, 20, 10, 50, 16, 200, 22, 400, 30],
+          7, ["step", ["get", "point_count"], 30, 100, 50]
         ]
       }
     },
