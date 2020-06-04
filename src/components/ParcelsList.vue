@@ -60,7 +60,7 @@
                 </template>
                 Centrer la carte sur cet ilot
               </v-tooltip>
-              
+
             </template>
 
             <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
@@ -84,7 +84,7 @@
         <v-spacer></v-spacer>
         <v-flex shrink class="download elevation-1">
           <v-layout column align-center justify-center py-3>
-            <h3 class="subheading">Export des données parcellaires</h3>
+            <h3 class="subheading">Export des données (Excel)</h3>
 
             <v-dialog v-model="dialog" max-width=800>
               <template v-slot:activator="{ on }">
@@ -95,7 +95,7 @@
                 </div>
               </template>
 
-              <Preview v-on:download-csv="downloadCSV()" v-on:close-dialog="dialog = false" :features="features"></Preview>
+              <Preview @download-csv="downloadCSV" @close-dialog="dialog = false" :features="features"></Preview>
             </v-dialog>
           </v-layout>
         </v-flex>
@@ -104,24 +104,8 @@
   </v-navigation-drawer>
 </template>
 <script>
-// import getObjectValue from "lodash/get";
 import {fromCode} from "@/modules/codes-cultures/pac.js"
 import Preview from "@/components/ParcelsListPreview";
-
-/**
-let bboxIlot = this.getBboxIlot(ilot);
-
-    getBboxIlot(ilot) {
-      const features = ilot.parcels.map((parcel) => {
-        return this.parcelsOperator[this.currentYear].features.find(({ id }) => id === parcel.id)
-      })
-
-      return bbox({
-        features,
-        type : 'FeatureCollection'
-      });
-    },
-*/
 
 export default {
   name: "ParcelsList",
@@ -165,8 +149,9 @@ export default {
         "numeroBio",
         "numeroPacage",
         "agroforest",
-        "estBio",
+        "statut",
         "codeCulture",
+        "libelleCulture",
         "engagement",
         "maraichage",
         "numeroIlot",
@@ -180,12 +165,13 @@ export default {
         this.operator.numeroBio,
         properties.pacage,
         properties.agroforest,
-        properties.bioboolean,
+        properties.biolabel,
         properties.codecultu,
+        properties.culture.label,
         properties.engagement,
         properties.maraichage,
         properties.numilot,
-        properties.numparcelle,
+        properties.numparcel,
         properties.surfadm,
         properties.surfgeo
       ]))
@@ -194,7 +180,6 @@ export default {
       try {
         const {numeroBio, title='cartobio-export'} = this.operator;
         window._paq.push(['trackEvent', 'parcels', 'download', numeroBio]);
-
         this.convertToCsvAndDownload(`${title}.csv`, rows);
       }
       catch (error) {
@@ -263,6 +248,7 @@ export default {
         properties: {
           ...feature.properties,
           id: feature.id,
+          biolabel: parseInt(feature.properties.bio, 10) ? 'BIO' : 'CONVENTIONNEL',
           // to enforce proper sort order
           numilot: parseInt(feature.properties.numilot, 10),
           numparcel: parseInt(feature.properties.numparcel, 10),
@@ -307,6 +293,16 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.v-toolbar /deep/ .v-toolbar__content {
+  padding-left: 12px; /* half of what it is supposed to be */
+}
+
+.v-toolbar /deep/ .v-toolbar__title {
+  line-height: 1.1;
+  overflow: auto;
+  white-space: unset;
+}
+
 .justify-self-start {
   margin-bottom: auto;
   padding-bottom: 10px;
@@ -394,5 +390,9 @@ export default {
 
 .download {
   background-color: #F6F7E2;
+
+  h3 {
+    font-weight: bold;
+  }
 }
 </style>
