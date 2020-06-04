@@ -12,8 +12,8 @@
       <v-card-text class="overflow max-height">
         <v-data-table hide-actions :headers="headers" :items="features" :custom-sort="sortIlots">
         <template v-slot:items="{ item: feature }">
-          <td v-for="({value}) in headers" :key="value">
-            {{ feature.properties[value] }}
+          <td v-for="({ value }) in headers" :key="value">
+            {{ getObjectValue(feature.properties, value) }}
           </td>
         </template>
       </v-data-table>
@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import getObjectValue from 'lodash/get'
+
 export default {
   name: "ParcelsListPreview",
   props: {
@@ -37,19 +39,23 @@ export default {
   data() {
     return {
       headers: [
-        ['numilot', 'ilot'],
-        ['numparcel', 'parcelle'],
-        ['bio', 'bio'],
-        ['codecultu', 'codeCulture'],
-        ['surfgeo', 'surfaceParcelle (ha)'],
+        ['numilot', 'Ilot'],
+        ['numparcel', 'Parcelle'],
+        ['biolabel', 'Statut'],
+        ['codecultu', 'Code culture'],
+        ['culture.label', 'Libellé culture'],
+        ['surfgeo', 'Surface graphique (en ha)'],
+        ['surfadm', 'Surface admissible (PAC)'],
       ].map(([value, text]) => ({ text, value }))
     };
   },
 
   methods: {
+    getObjectValue,
+
     // duplicate of ParcelsList.vue
     sortIlots (items) {
-      return items.sort((propsA, propsB) => {
+      return items.sort(({ properties: propsA }, { properties: propsB }) => {
         const ilotDiff = propsA.numilot - propsB.numilot
         const parcelDiff = propsA.numparcel - propsB.numparcel
         return ilotDiff ? ilotDiff : parcelDiff
