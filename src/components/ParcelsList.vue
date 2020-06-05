@@ -98,6 +98,12 @@
               <Preview @download-csv="downloadCSV" @close-dialog="dialog = false" :features="features"></Preview>
             </v-dialog>
           </v-layout>
+
+          <v-snackbar auto-height color="#b9d065" v-model="snackbar" :bottom="true" :left="true">
+            <v-progress-circular indeterminate class="mr-4" color="black"></v-progress-circular>
+
+            Le téléchargement des parcelles a démarré…
+          </v-snackbar>
         </v-flex>
       </v-layout>
     </v-container>
@@ -121,6 +127,7 @@ export default {
   data() {
     return {
       dialog: false,
+      snackbar: false,
     };
   },
   watch: {
@@ -144,6 +151,8 @@ export default {
     },
 
     downloadCSV() {
+      this.snackbar = true;
+
       const rows = [ [
         "id",
         "numeroBio",
@@ -301,6 +310,11 @@ export default {
   line-height: 1.1;
   overflow: auto;
   white-space: unset;
+ }
+
+.v-snack {
+  color: #333;
+  margin: 6px 6px 0;
 }
 
 .justify-self-start {
