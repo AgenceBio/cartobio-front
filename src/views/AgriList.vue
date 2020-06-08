@@ -227,19 +227,9 @@ export default {
         filter: '{"pacage":"' + this.numPacage + '"}'
       };
       this.selectedOperatorData = { numeroPacage: this.numPacage, nbParcelles: "" };
-      let tokenCollab = btoa(
-        process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-          ":" +
-          process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-      );
       this.loadingData = true;
       // get 2020 parcels from the operator
-      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-        params: params,
-        headers: {
-          Authorization: "Basic " + tokenCollab
-        }
-      })
+      get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params })
       .then(data => {
         window._paq.push(['trackEvent', 'pacage', 'search', this.numPacage]);
         window._paq.push(['trackSiteSearch', this.numPacage, 'pacage', data.data.features.length]);

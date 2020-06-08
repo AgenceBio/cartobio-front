@@ -709,12 +709,12 @@ export default {
       if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
         // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
         // mongoDB filter and not standard WFS filter.
-        let params = {
+        const params = {
           service: "WFS",
           version: "1.1.0",
           request: "GetFeature",
           outputFormat: "GeoJSON",
-          typeName: "rpgbio2020v1",
+          typeName: null, // it has to be defined later on to access the correct data source
           srsname: "4326",
           filter: JSON.stringify({
             // this is intended to work only with numeroPacage
@@ -725,53 +725,20 @@ export default {
           })
         };
 
-        let tokenCollab = btoa(
-          process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-            ":" +
-            process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-        );
-
         // get 2020 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2020v1' } })
         .then(data => this.displayOperatorLayer(data.data));
-        // .catch(data => this.displayErrorMessage(data));
 
         // get 2019 parcels from the operator
-        let params2019 = JSON.parse(JSON.stringify(params));
-        params2019.typeName = "rpgbio2019v4";
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2019,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2019v4' }  })
         .then(data => this.addOperatorData(data.data, "2019"));
 
         // get 2018 parcels from the operator
-        let params2018 = JSON.parse(JSON.stringify(params));
-        params2018.typeName = "rpgbio2018v9";
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2018,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2018v9' }  })
         .then(data => this.addOperatorData(data.data, "2018"));
 
         // get 2017 parcels from the operator
-        let params2017 = JSON.parse(JSON.stringify(params));
-        params2017.typeName = "rpgbio2017v7";
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2017,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2017v7' }  })
         .then(data => this.addOperatorData(data.data, "2017"));
 
         this.layersOperator["2020"] = this.getYearLayer(
@@ -986,10 +953,6 @@ export default {
           map.setLayoutProperty(layer + '-border', 'visibility', 'none');
         }
       }
-    },
-    displayErrorMessage(data) {
-      console.error(data);
-      alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
     getYearLayer(layerYear, colorBio, colorNotBio) {
