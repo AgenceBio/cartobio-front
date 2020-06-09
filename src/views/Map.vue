@@ -401,10 +401,6 @@ export default {
         this.buildHoveredPopup(lngLat, point);
       });
 
-      // handle summary interactions
-      // because it happens over a cluster, we can count on having 1 feature only
-      let activeCluster = null;
-
       map.on("click", "certification-body-clusters-area", (e) => {
         const { coordinates: center } = e.features[0].geometry
         const { cluster_id: id } = e.features[0].properties
@@ -417,28 +413,45 @@ export default {
         })
       });
 
-      map.on("mousemove", "certification-body-clusters-area", (e) => {
-        const { id } = e.features[0]
-        const source = 'certification-body-operators'
-        map.getCanvas().style.cursor = 'pointer'
+      function setupHoverFor({ map, source, sourceLayer = null, layer }) {
+        // handle summary interactions
+        // because it happens over a cluster, we can count on having 1 feature only
+        let hoveredFeatureId = null;
 
-        // sometimes, mouseleave is fired after we hover another cluster
-        if (activeCluster) {
-          map.setFeatureState({ id: activeCluster, source }, { hover: false })
-        }
+        map.on("mousemove", layer, (e) => {
+          const { id } = e.features[0]
+          map.getCanvas().style.cursor = 'pointer'
 
-        map.setFeatureState({ id, source }, { hover: true })
-        activeCluster = id
-      });
+          // sometimes, mouseleave is fired after we hover another feature/cluster
+          if (hoveredFeatureId) {
+            map.setFeatureState({ id: hoveredFeatureId, source, sourceLayer }, { hover: false })
+          }
 
-      map.on("mouseleave", "certification-body-clusters-area", () => {
-        const id = activeCluster
-        const source = 'certification-body-operators'
-        map.getCanvas().style.cursor = ''
+          map.setFeatureState({ id, source, sourceLayer }, { hover: true })
+          hoveredFeatureId = id
+        });
 
-        map.setFeatureState({ id, source }, { hover: false })
-        activeCluster = null
-      });
+        map.on("mouseleave", layer, () => {
+          const id = hoveredFeatureId
+          map.getCanvas().style.cursor = ''
+
+          map.setFeatureState({ id, source, sourceLayer }, { hover: false })
+          hoveredFeatureId = null
+        });
+      }
+
+      setupHoverFor({
+        layer: 'certification-body-clusters-area',
+        source: 'certification-body-operators',
+        map
+      })
+
+      setupHoverFor({
+        layer: 'certification-body-parcels-points',
+        source: 'certification-body-parcels',
+        sourceLayer: 'rpgbio_points_2019',
+        map
+      })
 
       // handle click on layers
       map.on("click", `operator-parcels-${this.currentYear}`, (e) => {

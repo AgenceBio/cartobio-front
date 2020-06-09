@@ -15,7 +15,7 @@
       },
       "cluster": true,
       "clusterRadius": 55,
-      "clusterMaxZoom": 9
+      "clusterMaxZoom": 8
     }
   },
   "layers": [
