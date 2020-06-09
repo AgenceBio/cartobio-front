@@ -584,13 +584,59 @@ export default {
       }
 
       if (this.getProfile.organismeCertificateurId) {
-        get(`${API_ENDPOINT}/v1/summary`, {
+        const operatorsP = get(`${API_ENDPOINT}/v1/summary`, {
           headers: {
             Authorization: `Bearer ${this.apiToken}`
           }
-        }).then(({ data }) => {
+        })
+
+        operatorsP.then(({ data }) => {
           this.organismeCertificateurOperators = data
           map.getSource("certification-body-operators").setData(data)
+        })
+
+        operatorsP.then(({ data }) => {
+          const pacageList = data.features.map(({ properties }) => properties.pacage)
+
+          map.addSource('certification-body-parcels', {
+            type: 'vector',
+            scheme: 'tms',
+            minzoom: 9,
+            maxzoom: 12,
+            tiles: [
+              `https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:rpgbio_points_2019@EPSG:900913@pbf/{z}/{x}/{y}.pbf`
+            ]
+          })
+
+          map.addLayer({
+            "id": "certification-body-parcels-points",
+            "type": "circle",
+            "source": "certification-body-parcels",
+            "source-layer": "rpgbio_points_2019",
+            "filter": ["in", "pacage", ...pacageList],
+            "paint": {
+              "circle-color": "#B9D065",
+              "circle-stroke-color": [
+                "case",
+                ["boolean",
+                  ["feature-state", "hover"],
+                  false
+                ],
+                "white",
+                "#B9D065"
+              ],
+              "circle-stroke-width": 1,
+              "circle-radius": [
+                "interpolate",
+                ["exponential", 0.5],
+                ["zoom"],
+                7, 2,
+                10, 4,
+                12, 8,
+                14, 10,
+              ]
+            }
+          }, 'road_oneway')
         })
       }
       else {
