@@ -56,8 +56,8 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="hoveredParcelCoordinates" />
-          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName">
-          </IlotMarkerDirection>
+          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="this.organismeCertificateurOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
+          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
 
           <MglGeojsonLayer
             v-if="getProfile.organismeCertificateurId"
@@ -156,6 +156,7 @@ import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/as
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
+import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 
@@ -200,6 +201,7 @@ let draw = new MapboxDraw({
 
 // template for geoJSON objects
 let geoJsonTemplate = { features: [], type: "FeatureCollection" };
+const noop = function noop() {}
 
 export default {
   name: "Map",
@@ -212,6 +214,7 @@ export default {
     ParcelsList,
     ParcelDetails,
     ParcelDetailsPopup,
+    ExploitationPopup,
     SearchSidebar,
     MglNavigationControl,
     MglGeolocateControl,
@@ -257,6 +260,7 @@ export default {
       bboxOperator: [],
 
       // popup data with parcel history
+      hoveredExploitationFeature: undefined,
       hoveredParcelCoordinates: undefined,
       hoveredParcelFeatures: {
         anon: [],
@@ -372,6 +376,17 @@ export default {
       return yearsArr.reverse();
     }
   },
+
+  filters: {
+    byFeature (geojson, filteringFeature, propertyName) {
+      if (!geojson.features || !filteringFeature) {
+        return null
+      }
+
+      return (geojson.features || []).find(({ properties }) => properties[propertyName] === filteringFeature.properties[propertyName])
+    }
+  },
+
   methods: {
     /**
      * @param  {String} styleId [description]
@@ -413,13 +428,14 @@ export default {
         })
       });
 
-      function setupHoverFor({ map, source, sourceLayer = null, layer }) {
+      function setupHoverFor({ map, source, sourceLayer = null, layer, onHover = noop, onBlur = noop }) {
         // handle summary interactions
         // because it happens over a cluster, we can count on having 1 feature only
         let hoveredFeatureId = null;
 
         map.on("mousemove", layer, (e) => {
           const { id } = e.features[0]
+          onHover({ features: e.features })
           map.getCanvas().style.cursor = 'pointer'
 
           // sometimes, mouseleave is fired after we hover another feature/cluster
@@ -435,6 +451,7 @@ export default {
           const id = hoveredFeatureId
           map.getCanvas().style.cursor = ''
 
+          onBlur()
           map.setFeatureState({ id, source, sourceLayer }, { hover: false })
           hoveredFeatureId = null
         });
@@ -450,6 +467,8 @@ export default {
         layer: 'certification-body-parcels-points',
         source: 'certification-body-parcels',
         sourceLayer: 'rpgbio_points_2019',
+        onHover: ({ features }) => this.hoveredExploitationFeature = features[0],
+        onBlur: () => this.hoveredExploitationFeature = undefined,
         map
       })
 
@@ -598,16 +617,6 @@ export default {
         operatorsP.then(({ data }) => {
           const pacageList = data.features.map(({ properties }) => properties.pacage)
 
-          map.addSource('certification-body-parcels', {
-            type: 'vector',
-            scheme: 'tms',
-            minzoom: 9,
-            maxzoom: 12,
-            tiles: [
-              `https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:rpgbio_points_2019@EPSG:900913@pbf/{z}/{x}/{y}.pbf`
-            ]
-          })
-
           map.addLayer({
             "id": "certification-body-parcels-points",
             "type": "circle",
@@ -631,9 +640,9 @@ export default {
                 ["exponential", 0.5],
                 ["zoom"],
                 7, 2,
-                10, 4,
-                12, 8,
-                14, 10,
+                10, 6,
+                12, 10,
+                14, 12,
               ]
             }
           }, 'road_oneway')

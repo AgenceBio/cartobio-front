@@ -7,6 +7,15 @@
         "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
       ]
     },
+    "certification-body-parcels": {
+      "type": "vector",
+      "scheme": "tms",
+      "minzoom": 8,
+      "maxzoom": 11,
+      "tiles": [
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:rpgbio_points_2019@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+      ]
+    },
     "certification-body-operators": {
       "type": "geojson",
       "data": {
@@ -15,7 +24,7 @@
       },
       "cluster": true,
       "clusterRadius": 55,
-      "clusterMaxZoom": 8
+      "clusterMaxZoom": 7
     }
   },
   "layers": [
@@ -35,7 +44,7 @@
       }
     },
     {
-      "id": "rpg-anon-nonbio-2020-borders",
+      "id": "rpg-anon-nonbio-2020-border",
       "type": "line",
       "source": "rpg-nonbio-anon",
       "source-layer": "anon_rpg_2020",
