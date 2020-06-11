@@ -74,7 +74,7 @@
         </MglMap>
 
         <!-- Layers selector -->
-        <v-flex class="layers-panel" v-show="isAuthenticated">
+        <v-flex class="layers-panel" v-show="isAuthenticated && operator.title">
           <v-expansion-panel popout expand v-bind:value="expandLayers">
             <v-expansion-panel-content>
               <template v-slot:header>
@@ -579,14 +579,9 @@ export default {
       // non-bio
       if (!map.getLayer('rpg-anon-nonbio-2020-area')) {
         cartobioStyle.layers
-          .filter(({ id }) => id.indexOf('rpg-') === 0)
-          .forEach(layer => map.addLayer({
-            ...layer,
-            layout: { visibility: 'visible'}
-          }, 'road_oneway'));
+          .filter(({ id }) => id.indexOf('rpg-anon-nonbio') === 0)
+          .forEach(layer => map.addLayer(layer, 'road_oneway'));
       }
-
-      this.toggleLayerAnon(this.currentYear, true);
 
       if (!map.getSource("selected")) {
         map.addSource("selected", {
@@ -752,6 +747,12 @@ export default {
       this.map.on("draw.update", this.updateArea);
     },
 
+    unsetUpMapOperator () {
+      this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
+      this.toggleLayerAnon(this.currentYear, false);
+      this.toggleLayer('rpg-anon-nonbio-2020', false)
+    },
+
     setUpMapOperator() {
       const {map} = this
 
@@ -858,7 +859,11 @@ export default {
           }
         }, 'road_oneway');
       });
+
+      this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'none')
       this.toggleLayerOperator(this.currentYear, true);
+      this.toggleLayerAnon(this.currentYear, true);
+      this.toggleLayer('rpg-anon-nonbio-2020', true)
     },
 
     hoverParcel (parcel) {
@@ -1058,12 +1063,23 @@ export default {
       if (newProfile.active && this.map) {
         this.loadLayers(this.map);
       }
+      else {
+        this.certificationBodyParcelStyles = {
+          source: null,
+          layers: []
+        }
+      }
     },
     operator: function(operator) {
-      if (this.map && operator.id) {
-        window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
-        this.loadLayers(this.map);
-        this.setUpMapOperator()
+      if (this.map) {
+        if (operator.id) {
+          window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
+          this.loadLayers(this.map);
+          this.setUpMapOperator()
+        }
+        else {
+          this.unsetUpMapOperator()
+        }
       }
     }
   }
