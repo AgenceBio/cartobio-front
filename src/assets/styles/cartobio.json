@@ -62,6 +62,37 @@
       }
     },
     {
+      "id": "certification-body-parcels-points",
+      "type": "circle",
+      "source": "certification-body-parcels",
+      "source-layer": "rpgbio_points_2019",
+      "paint": {
+        "circle-color": "#B9D065",
+        "circle-stroke-color": [
+          "case",
+          ["boolean",
+            ["feature-state", "hover"],
+            false
+          ],
+          "white",
+          "#B9D065"
+        ],
+        "circle-stroke-width": 1,
+        "circle-radius": [
+          "interpolate",
+          ["exponential", 0.5],
+          ["zoom"],
+          7, 2,
+          10, 6,
+          12, 10,
+          14, 12
+        ]
+      },
+      "layout": {
+        "visibility": "visible"
+      }
+    },
+    {
       "id": "certification-body-clusters-area",
       "type": "circle",
       "source": "certification-body-operators",

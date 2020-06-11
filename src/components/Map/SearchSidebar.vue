@@ -36,7 +36,7 @@
             <v-list two-line>
               <template v-for="(operator, i) in operators">
                 <v-divider v-if="i" :key="i"></v-divider>
-                <v-list-tile :key="operator.numerobio" :class="{'no-click': !operator.pacage || operator.dateCheck > '2019-05-15'}" @click="(operator.pacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', wrapOperator(operator))">
+                <v-list-tile :key="operator.numerobio" :class="{'no-click': !operator.pacage || operator.dateCheck > '2019-05-15'}" @click="(operator.pacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', operator)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
@@ -102,18 +102,6 @@ export default {
   },
   components: {
     Geosearch,
-  },
-
-  methods: {
-    // translate GeoJSON structure into a simili-Agence Bio one
-    wrapOperator: operator => ({
-      id: operator.numerobio,
-      dateEngagement: operator.date_engagement,
-      dateMaj: operator.date_maj,
-      numeroPacage: operator.pacage,
-      numeroBio: operator.numerobio,
-      title: operator.nom
-    })
   },
 
   filters: {

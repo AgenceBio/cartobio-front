@@ -19,7 +19,7 @@
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
                       :organismeCertificateurOperators="organismeCertificateurOperators"
-                      @select-operator="setOperator($event)"
+                      @select-operator="setOperator(wrapOperator($event))"
                       @flyto="flyTo"></SearchSidebar>
     <v-content>
       <!-- Map division so it takes the full width/height left -->
@@ -395,6 +395,19 @@ export default {
     layerStyle (styleId) {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
     },
+
+    // translate GeoJSON structure into a simili-Agence Bio one
+    wrapOperator (operator) {
+      return {
+        id: operator.numerobio,
+        dateEngagement: operator.date_engagement,
+        dateMaj: operator.date_maj,
+        numeroPacage: operator.pacage,
+        numeroBio: operator.numerobio,
+        title: operator.nom
+      }
+    },
+
    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
      May be usefull to handle promise and avoid the mess it is right now for map init
    */
@@ -415,6 +428,12 @@ export default {
       map.on("mousemove", ({lngLat, point}) => {
         this.buildHoveredPopup(lngLat, point);
       });
+
+      map.on("click", "certification-body-parcels-points", (e) => {
+        const {pacage} = e.features[0].properties
+        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.pacage = pacage)
+        this.setOperator(this.wrapOperator(operator.properties))
+      })
 
       map.on("click", "certification-body-clusters-area", (e) => {
         const { coordinates: center } = e.features[0].geometry
@@ -583,6 +602,12 @@ export default {
           .forEach(layer => map.addLayer(layer, 'road_oneway'));
       }
 
+      if (!map.getLayer('certification-body-parcels-points')) {
+        cartobioStyle.layers
+          .filter(({ id }) => id === 'certification-body-parcels-points')
+          .forEach(layer => map.addLayer(layer, 'road_oneway'));
+      }
+
       if (!map.getSource("selected")) {
         map.addSource("selected", {
           type: "geojson",
@@ -612,35 +637,8 @@ export default {
         operatorsP.then(({ data }) => {
           const pacageList = data.features.map(({ properties }) => properties.pacage)
 
-          map.addLayer({
-            "id": "certification-body-parcels-points",
-            "type": "circle",
-            "source": "certification-body-parcels",
-            "source-layer": "rpgbio_points_2019",
-            "filter": ["in", "pacage", ...pacageList],
-            "paint": {
-              "circle-color": "#B9D065",
-              "circle-stroke-color": [
-                "case",
-                ["boolean",
-                  ["feature-state", "hover"],
-                  false
-                ],
-                "white",
-                "#B9D065"
-              ],
-              "circle-stroke-width": 1,
-              "circle-radius": [
-                "interpolate",
-                ["exponential", 0.5],
-                ["zoom"],
-                7, 2,
-                10, 6,
-                12, 10,
-                14, 12,
-              ]
-            }
-          }, 'road_oneway')
+          map.setFilter('certification-body-parcels-points', ["in", "pacage", ...pacageList])
+          map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
         })
       }
       else {
@@ -862,8 +860,8 @@ export default {
 
       this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'none')
       this.toggleLayerOperator(this.currentYear, true);
-      this.toggleLayerAnon(this.currentYear, true);
       this.toggleLayer('rpg-anon-nonbio-2020', true)
+      this.toggleLayerAnon(this.currentYear, true);
     },
 
     hoverParcel (parcel) {
@@ -1013,8 +1011,9 @@ export default {
       this.layersVisible["anon" + layerYear].visibility = visibility;
       this.toggleLayer(layer.id, visibility);
     },
+
     // toggle visibility of layer
-    toggleLayer(layer, visibility) {
+    toggleLayer (layer, visibility) {
       const {map} = this
 
       if (map && map.getLayer(layer)) {
@@ -1063,11 +1062,8 @@ export default {
       if (newProfile.active && this.map) {
         this.loadLayers(this.map);
       }
-      else {
-        this.certificationBodyParcelStyles = {
-          source: null,
-          layers: []
-        }
+      else if ((!newProfile || !newProfile.active) && this.map) {
+        this.map.removeLayer('certification-body-parcels-points')
       }
     },
     operator: function(operator) {
