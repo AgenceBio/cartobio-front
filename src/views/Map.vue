@@ -596,7 +596,7 @@ export default {
       });
 
       // non-bio
-      if (!map.getLayer('rpg-anon-nonbio-2020-area')) {
+      if (!map.getLayer('rpg-anon-nonbio-2020')) {
         cartobioStyle.layers
           .filter(({ id }) => id.indexOf('rpg-anon-nonbio') === 0)
           .forEach(layer => map.addLayer(layer, 'road_oneway'));
@@ -637,8 +637,7 @@ export default {
         operatorsP.then(({ data }) => {
           const pacageList = data.features.map(({ properties }) => properties.pacage)
 
-          map.setFilter('certification-body-parcels-points', ["in", "pacage", ...pacageList])
-          map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
+          map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
         })
       }
       else {

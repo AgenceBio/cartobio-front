@@ -29,7 +29,7 @@
   },
   "layers": [
     {
-      "id": "rpg-anon-nonbio-2020-area",
+      "id": "rpg-anon-nonbio-2020",
       "type": "fill",
       "source": "rpg-nonbio-anon",
       "source-layer": "anon_rpg_2020",
@@ -66,6 +66,7 @@
       "type": "circle",
       "source": "certification-body-parcels",
       "source-layer": "rpgbio_points_2019",
+      "filter": ["==", "pacage", "hide-everything-until-filter-is-programmatically-set"],
       "paint": {
         "circle-color": "#B9D065",
         "circle-stroke-color": [
@@ -75,7 +76,7 @@
             false
           ],
           "white",
-          "#B9D065"
+          "rgba(50,50,50,0.7)"
         ],
         "circle-stroke-width": 1,
         "circle-radius": [
