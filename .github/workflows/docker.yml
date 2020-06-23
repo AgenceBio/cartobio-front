@@ -29,14 +29,14 @@ jobs:
         VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
 
     - id: docker
-      uses: jerray/publish-docker-action@v1.0.4
+      uses: jerray/publish-docker-action@v1.0.5
       with:
         repository: agencebio/cartobio-presentation
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         auto_tag: true
 
-    - uses: garygrossgarten/github-action-ssh@v0.4.3
+    - uses: garygrossgarten/github-action-ssh@v0.5.0
       if: github.ref == 'refs/heads/master'
       with:
         host: ${{ secrets.AGENCEBIO_SSH_HOST }}
