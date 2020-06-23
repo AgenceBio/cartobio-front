@@ -4,10 +4,9 @@ on:
   push:
     paths-ignore:
     - 'docs/**'
-    branches:
-      - master
-    tags:
-      - v*
+    - 'bin/**'
+    - 'infrastructure/**'
+    - 'src/workers/**'
 
 jobs:
 
@@ -33,6 +32,7 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         auto_tag: true
+        allow_pull_request: true
 
     - uses: garygrossgarten/github-action-ssh@v0.5.0
       if: github.ref == 'refs/heads/master'
