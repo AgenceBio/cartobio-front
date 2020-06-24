@@ -59,7 +59,7 @@
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else class="caption">
                       <v-icon small color="green">check_circle_outline</v-icon>
-                      PACAGE <code>{{ operator.pacage }}</code>,
+                      PACAGE <b>{{ operator.pacage }}</b>,
                       engagement bio en {{ operator.date_engagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
@@ -167,11 +167,6 @@ export default {
 
 .v-icon {
   color: #457382;
-}
-
-code {
-  color: inherit;
-  font-weight: normal;
 }
 
 /deep/ .v-expansion-panel__header {
