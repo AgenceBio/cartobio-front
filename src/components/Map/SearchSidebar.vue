@@ -36,7 +36,7 @@
             <v-list two-line>
               <template v-for="(operator, i) in operators">
                 <v-divider v-if="i" :key="i"></v-divider>
-                <v-list-tile :key="operator.numerobio" :class="{'no-click': !operator.pacage || operator.dateCheck > '2019-05-15'}" @click="(operator.pacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', wrapOperator(operator))">
+                <v-list-tile :key="operator.numerobio" :class="{'no-click': !operator.pacage || operator.dateCheck > '2019-05-15'}" @click="(operator.pacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', operator)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
@@ -59,7 +59,7 @@
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else class="caption">
                       <v-icon small color="green">check_circle_outline</v-icon>
-                      PACAGE <code>{{ operator.pacage }}</code>,
+                      PACAGE <b>{{ operator.pacage }}</b>,
                       engagement bio en {{ operator.date_engagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
@@ -102,18 +102,6 @@ export default {
   },
   components: {
     Geosearch,
-  },
-
-  methods: {
-    // translate GeoJSON structure into a simili-Agence Bio one
-    wrapOperator: operator => ({
-      id: operator.numerobio,
-      dateEngagement: operator.date_engagement,
-      dateMaj: operator.date_maj,
-      numeroPacage: operator.pacage,
-      numeroBio: operator.numerobio,
-      title: operator.nom
-    })
   },
 
   filters: {
@@ -179,11 +167,6 @@ export default {
 
 .v-icon {
   color: #457382;
-}
-
-code {
-  color: inherit;
-  font-weight: normal;
 }
 
 /deep/ .v-expansion-panel__header {
