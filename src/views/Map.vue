@@ -431,7 +431,7 @@ export default {
 
       map.on("click", "certification-body-parcels-points", (e) => {
         const {pacage} = e.features[0].properties
-        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.pacage = pacage)
+        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.pacage === pacage)
         this.setOperator(this.wrapOperator(operator.properties))
       })
 
