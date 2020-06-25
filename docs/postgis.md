@@ -45,6 +45,14 @@ $ ogr2ogr --config PG_USE_COPY YES -f PGDump -nln anon_rpg_${RPG_YEAR} -nlt GEOM
   -dialect 'sqlite' -sql "SELECT CODE_CULTU as codecultu, BIO as bio, GEOMETRY as geom FROM cartononbio WHERE BIO=0";
 ```
 
+Ou, pour la couche bio, complète :
+
+```
+$ ogr2ogr --config PG_USE_COPY YES -f PGDump -nln rpgbio_${RPG_YEAR} -nlt GEOMETRY -lco FID=id \
+  rpgbio_${RPG_YEAR}.sql /vsizip/${RPG_YEAR}/cartobio.zip/cartobio \
+  -dialect 'sqlite' -sql "SELECT CODE_CULTU as codecultu, BIO as bio, GEOMETRY as geom, ST_centroid(GEOMETRY) as center, gid, SURF_GEO as surfgeo, SURF_ADM as surfadm, PACAGE as pacage, NUM_ILOT as numilot, NUM_PARCEL as numparcel, CODE_CULTU as codecultu, SEMENCE as semence, ENGAGEMENT as engagement, MARAICHAGE as maraichage, AGROFOREST as agroforest FROM cartobio"
+```
+
 4. Charger le dump dans PostGis
 
 ```bashsh

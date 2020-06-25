@@ -19,7 +19,7 @@
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
                       :organismeCertificateurOperators="organismeCertificateurOperators"
-                      @select-operator="setOperator($event)"
+                      @select-operator="setOperator(wrapOperator($event))"
                       @flyto="flyTo"></SearchSidebar>
     <v-content>
       <!-- Map division so it takes the full width/height left -->
@@ -56,8 +56,8 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="hoveredParcelCoordinates" />
-          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName">
-          </IlotMarkerDirection>
+          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="this.organismeCertificateurOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
+          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
 
           <MglGeojsonLayer
             v-if="getProfile.organismeCertificateurId"
@@ -74,7 +74,7 @@
         </MglMap>
 
         <!-- Layers selector -->
-        <LayersPanel v-show="isAuthenticated"></LayersPanel>
+        <LayersPanel v-show="isAuthenticated && operator.title"></LayersPanel>
         
       </div>
     </v-content>
@@ -104,6 +104,7 @@ import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/as
 import ParcelsList from "@/components/ParcelsList";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
+import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 import LayersPanel from "@/components/Map/LayersPanel";
@@ -149,6 +150,7 @@ let draw = new MapboxDraw({
 
 // template for geoJSON objects
 let geoJsonTemplate = { features: [], type: "FeatureCollection" };
+const noop = function noop() {}
 
 export default {
   name: "Map",
@@ -161,6 +163,7 @@ export default {
     ParcelsList,
     ParcelDetails,
     ParcelDetailsPopup,
+    ExploitationPopup,
     SearchSidebar,
     MglNavigationControl,
     MglGeolocateControl,
@@ -207,6 +210,7 @@ export default {
       bboxOperator: [],
 
       // popup data with parcel history
+      hoveredExploitationFeature: undefined,
       hoveredParcelCoordinates: undefined,
       hoveredParcelFeatures: {
         anon: [],
@@ -322,6 +326,17 @@ export default {
       return yearsArr.reverse();
     }
   },
+
+  filters: {
+    byFeature (geojson, filteringFeature, propertyName) {
+      if (!geojson.features || !filteringFeature) {
+        return null
+      }
+
+      return (geojson.features || []).find(({ properties }) => properties[propertyName] === filteringFeature.properties[propertyName])
+    }
+  },
+
   methods: {
     /**
      * @param  {String} styleId [description]
@@ -330,6 +345,19 @@ export default {
     layerStyle (styleId) {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
     },
+
+    // translate GeoJSON structure into a simili-Agence Bio one
+    wrapOperator (operator) {
+      return {
+        id: operator.numerobio,
+        dateEngagement: operator.date_engagement,
+        dateMaj: operator.date_maj,
+        numeroPacage: operator.pacage,
+        numeroBio: operator.numerobio,
+        title: operator.nom
+      }
+    },
+
    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
      May be usefull to handle promise and avoid the mess it is right now for map init
    */
@@ -351,9 +379,11 @@ export default {
         this.buildHoveredPopup(lngLat, point);
       });
 
-      // handle summary interactions
-      // because it happens over a cluster, we can count on having 1 feature only
-      let activeCluster = null;
+      map.on("click", "certification-body-parcels-points", (e) => {
+        const {pacage} = e.features[0].properties
+        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.pacage === pacage)
+        this.setOperator(this.wrapOperator(operator.properties))
+      })
 
       map.on("click", "certification-body-clusters-area", (e) => {
         const { coordinates: center } = e.features[0].geometry
@@ -367,28 +397,49 @@ export default {
         })
       });
 
-      map.on("mousemove", "certification-body-clusters-area", (e) => {
-        const { id } = e.features[0]
-        const source = 'certification-body-operators'
-        map.getCanvas().style.cursor = 'pointer'
+      function setupHoverFor({ map, source, sourceLayer = null, layer, onHover = noop, onBlur = noop }) {
+        // handle summary interactions
+        // because it happens over a cluster, we can count on having 1 feature only
+        let hoveredFeatureId = null;
 
-        // sometimes, mouseleave is fired after we hover another cluster
-        if (activeCluster) {
-          map.setFeatureState({ id: activeCluster, source }, { hover: false })
-        }
+        map.on("mousemove", layer, (e) => {
+          const { id } = e.features[0]
+          onHover({ features: e.features })
+          map.getCanvas().style.cursor = 'pointer'
 
-        map.setFeatureState({ id, source }, { hover: true })
-        activeCluster = id
-      });
+          // sometimes, mouseleave is fired after we hover another feature/cluster
+          if (hoveredFeatureId) {
+            map.setFeatureState({ id: hoveredFeatureId, source, sourceLayer }, { hover: false })
+          }
 
-      map.on("mouseleave", "certification-body-clusters-area", () => {
-        const id = activeCluster
-        const source = 'certification-body-operators'
-        map.getCanvas().style.cursor = ''
+          map.setFeatureState({ id, source, sourceLayer }, { hover: true })
+          hoveredFeatureId = id
+        });
 
-        map.setFeatureState({ id, source }, { hover: false })
-        activeCluster = null
-      });
+        map.on("mouseleave", layer, () => {
+          const id = hoveredFeatureId
+          map.getCanvas().style.cursor = ''
+
+          onBlur()
+          map.setFeatureState({ id, source, sourceLayer }, { hover: false })
+          hoveredFeatureId = null
+        });
+      }
+
+      setupHoverFor({
+        layer: 'certification-body-clusters-area',
+        source: 'certification-body-operators',
+        map
+      })
+
+      setupHoverFor({
+        layer: 'certification-body-parcels-points',
+        source: 'certification-body-parcels',
+        sourceLayer: 'rpgbio_points_2019',
+        onHover: ({ features }) => this.hoveredExploitationFeature = features[0],
+        onBlur: () => this.hoveredExploitationFeature = undefined,
+        map
+      })
 
       // handle click on layers
       map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
@@ -495,16 +546,17 @@ export default {
       });
 
       // non-bio
-      if (!map.getLayer('rpg-anon-nonbio-2020-area')) {
+      if (!map.getLayer('rpg-anon-nonbio-2020')) {
         cartobioStyle.layers
-          .filter(({ id }) => id.indexOf('rpg-') === 0)
-          .forEach(layer => map.addLayer({
-            ...layer,
-            layout: { visibility: 'visible'}
-          }, 'road_oneway'));
+          .filter(({ id }) => id.indexOf('rpg-anon-nonbio') === 0)
+          .forEach(layer => map.addLayer(layer, 'road_oneway'));
       }
 
-      this.toggleLayerAnon(this.currentYear, true);
+      if (!map.getLayer('certification-body-parcels-points')) {
+        cartobioStyle.layers
+          .filter(({ id }) => id === 'certification-body-parcels-points')
+          .forEach(layer => map.addLayer(layer, 'road_oneway'));
+      }
 
       if (!map.getSource("selected")) {
         map.addSource("selected", {
@@ -521,13 +573,21 @@ export default {
       }
 
       if (this.getProfile.organismeCertificateurId) {
-        get(`${API_ENDPOINT}/v1/summary`, {
+        const operatorsP = get(`${API_ENDPOINT}/v1/summary`, {
           headers: {
             Authorization: `Bearer ${this.apiToken}`
           }
-        }).then(({ data }) => {
+        })
+
+        operatorsP.then(({ data }) => {
           this.organismeCertificateurOperators = data
           map.getSource("certification-body-operators").setData(data)
+        })
+
+        operatorsP.then(({ data }) => {
+          const pacageList = data.features.map(({ properties }) => properties.pacage)
+
+          map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
         })
       }
       else {
@@ -634,6 +694,12 @@ export default {
       this.map.on("draw.update", this.updateArea);
     },
 
+    unsetUpMapOperator () {
+      this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
+      this.toggleLayerAnon(this.currentYear, false);
+      this.toggleLayer('rpg-anon-nonbio-2020', false)
+    },
+
     setUpMapOperator() {
       const {map} = this
 
@@ -659,12 +725,12 @@ export default {
       if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
         // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
         // mongoDB filter and not standard WFS filter.
-        let params = {
+        const params = {
           service: "WFS",
           version: "1.1.0",
           request: "GetFeature",
           outputFormat: "GeoJSON",
-          typeName: "rpgbio2020v1",
+          typeName: null, // it has to be defined later on to access the correct data source
           srsname: "4326",
           filter: JSON.stringify({
             // this is intended to work only with numeroPacage
@@ -675,53 +741,20 @@ export default {
           })
         };
 
-        let tokenCollab = btoa(
-          process.env.VUE_APP_ESPACE_COLLAB_LOGIN +
-            ":" +
-            process.env.VUE_APP_ESPACE_COLLAB_PASSWORD
-        );
-
         // get 2020 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2020v1' } })
         .then(data => this.displayOperatorLayer(data.data));
-        // .catch(data => this.displayErrorMessage(data));
 
         // get 2019 parcels from the operator
-        let params2019 = JSON.parse(JSON.stringify(params));
-        params2019.typeName = "rpgbio2019v4";
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2019,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2019v4' }  })
         .then(data => this.addOperatorData(data.data, "2019"));
 
         // get 2018 parcels from the operator
-        let params2018 = JSON.parse(JSON.stringify(params));
-        params2018.typeName = "rpgbio2018v9";
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2018,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2018v9' }  })
         .then(data => this.addOperatorData(data.data, "2018"));
 
         // get 2017 parcels from the operator
-        let params2017 = JSON.parse(JSON.stringify(params));
-        params2017.typeName = "rpgbio2017v7";
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", {
-          params: params2017,
-          headers: {
-            Authorization: "Basic " + tokenCollab
-          }
-        })
+        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2017v7' }  })
         .then(data => this.addOperatorData(data.data, "2017"));
 
         this.layersOperator["2020"] = this.getYearLayer(
@@ -773,7 +806,11 @@ export default {
           }
         }, 'road_oneway');
       });
+
+      this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'none')
       this.toggleLayerOperator(this.currentYear, true);
+      this.toggleLayer('rpg-anon-nonbio-2020', true)
+      this.toggleLayerAnon(this.currentYear, true);
     },
 
     hoverParcel (parcel) {
@@ -923,8 +960,9 @@ export default {
       this.layersVisible["anon" + layerYear].visibility = visibility;
       this.toggleLayer(layer.id, visibility);
     },
+
     // toggle visibility of layer
-    toggleLayer(layer, visibility) {
+    toggleLayer (layer, visibility) {
       const {map} = this
 
       if (map && map.getLayer(layer)) {
@@ -936,10 +974,6 @@ export default {
           map.setLayoutProperty(layer + '-border', 'visibility', 'none');
         }
       }
-    },
-    displayErrorMessage(data) {
-      console.error(data);
-      alert("Impossible de trouver le parcellaire de cet opérateur");
     },
     // annual parcel layer
     getYearLayer(layerYear, colorBio, colorNotBio) {
@@ -977,12 +1011,20 @@ export default {
       if (newProfile.active && this.map) {
         this.loadLayers(this.map);
       }
+      else if ((!newProfile || !newProfile.active) && this.map) {
+        this.map.removeLayer('certification-body-parcels-points')
+      }
     },
     operator: function(operator) {
-      if (this.map && operator.id) {
-        window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
-        this.loadLayers(this.map);
-        this.setUpMapOperator()
+      if (this.map) {
+        if (operator.id) {
+          window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
+          this.loadLayers(this.map);
+          this.setUpMapOperator()
+        }
+        else {
+          this.unsetUpMapOperator()
+        }
       }
     }
   }
