@@ -1,125 +1,94 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
-    <v-container fluid fill-height pa-0>
-      <v-layout column>
-        <!-- Header -->
-        <v-toolbar dark flat prominent color="#457382">
-          <v-toolbar-side-icon @click="$emit('close-drawer')">
-            <v-icon>navigate_before</v-icon>
-          </v-toolbar-side-icon>
-          <v-toolbar-title class="ml-0">
-            {{operator.title}}
-          </v-toolbar-title>
-          <v-spacer/>
+  <section>
+    <v-flex class="grow align-self-center my-5" v-if="isLoading">
+      <v-progress-circular indeterminate size=64 color="#457382" />
+    </v-flex>
 
-          <v-btn flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
-            <v-tooltip top left dark open-delay=200>
-              <template v-slot:activator="{ on }">
-                <v-icon v-on="on" small>my_location</v-icon>
-              </template>
+    <v-expansion-panel v-else
+      v-model="panel"
+      elevation-0
+      class="overflow no-box-shadow"
+      expand
+      focusable
+      readonly
+    >
+      <v-expansion-panel-content v-for="({ numIlot, featureCollection }) in ilots" :key="numIlot">
+        <template v-slot:header>
+          <v-flex align-center row fill-height class="parcel-summary"
+            @mouseover="$emit('hover-ilot', { numIlot, featureCollection })"
+            @mouseleave="$emit('stop-hovering-ilot', { featureCollection })">
+            <span class="text-cyan text-uppercase font-weight-medium">Ilot {{numIlot}}</span>
+          </v-flex>
+        </template>
 
-              Centrer la carte sur l'exploitation
-            </v-tooltip>
-          </v-btn>
-        </v-toolbar>
-
-        <v-flex shrink>
-          <p class="update-info pa-2 ma-0 caption">
-            <v-icon small color="#457382">info</v-icon>
-            Dernière mise à jour le <b>15 juillet 2019</b>.
-          </p>
-        </v-flex>
-
-        <v-flex class="grow align-self-center my-5" v-if="isLoading">
-          <v-progress-circular indeterminate size=64 color="#457382" />
-        </v-flex>
-
-        <v-expansion-panel
-          v-model="panel"
-          elevation-0
-          class="overflow no-box-shadow"
-          expand
-          focusable
-          readonly
-        >
-          <v-expansion-panel-content v-for="({ numIlot, featureCollection }) in ilots" :key="numIlot">
-            <template v-slot:header>
-              <v-flex align-center row fill-height class="parcel-summary"
-                @mouseover="$emit('hover-ilot', { numIlot, featureCollection })"
-                @mouseleave="$emit('stop-hovering-ilot', { featureCollection })">
-                <span class="text-cyan text-uppercase font-weight-medium">Ilot {{numIlot}}</span>
-              </v-flex>
+        <template v-slot:actions>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn icon small v-on="on" @click.native.stop @click="$emit('zoom-on', featureCollection)">
+                <v-icon small color="#457382">my_location</v-icon>
+              </v-btn>
             </template>
+            Centrer la carte sur cet ilot
+          </v-tooltip>
 
-            <template v-slot:actions>
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" @click.native.stop @click="$emit('zoom-on', featureCollection)">
-                    <v-icon small color="#457382">my_location</v-icon>
-                  </v-btn>
-                </template>
-                Centrer la carte sur cet ilot
-              </v-tooltip>
+        </template>
 
-            </template>
+        <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
+          <template v-slot:items="{item: feature}">
+            <tr @mouseover="$emit('hover-parcel', feature)" @mouseleave="$emit('stop-hovering', feature)" @click="$emit('zoom-on', feature)">
+              <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
+              <td class="numparcel">Parcelle {{feature.properties.numparcel}}</td>
+              <td class="text-cyan cultural-label">
+                <v-tooltip top left dark open-delay=200>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="text-truncate d-block">{{feature.properties.culture.label}}</span>
+                  </template>
+                  <span>{{feature.properties.culture.label}}</span>
+                </v-tooltip>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
 
-            <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
-              <template v-slot:items="{item: feature}">
-                <tr @mouseover="$emit('hover-parcel', feature)" @mouseleave="$emit('stop-hovering', feature)" @click="$emit('zoom-on', feature)">
-                  <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
-                  <td class="numparcel">Parcelle {{feature.properties.numparcel}}</td>
-                  <td class="text-cyan cultural-label">
-                    <v-tooltip top left dark open-delay=200>
-                      <template v-slot:activator="{ on }">
-                        <span v-on="on" class="text-truncate d-block">{{feature.properties.culture.label}}</span>
-                      </template>
-                      <span>{{feature.properties.culture.label}}</span>
-                    </v-tooltip>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-spacer></v-spacer>
-        <v-flex shrink class="download elevation-1">
-          <v-layout column align-center justify-center py-3>
-            <h3 class="subheading">Export des données (Excel)</h3>
+    <v-spacer></v-spacer>
 
-            <v-dialog v-model="dialog" max-width=800>
-              <template v-slot:activator="{ on }">
-                <div class="mt-3">
-                  <v-btn :disabled="isLoading" round outline v-on="on" >Prévisualiser</v-btn>
+    <v-flex shrink class="download elevation-1">
+      <v-layout column align-center justify-center py-3>
+        <h3 class="subheading">Export des données (Excel)</h3>
 
-                  <v-btn :disabled="isLoading" round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
-                </div>
-              </template>
+        <v-dialog v-model="dialog" max-width=800>
+          <template v-slot:activator="{ on }">
+            <div class="mt-3">
+              <v-btn :disabled="isLoading" round outline v-on="on" >Prévisualiser</v-btn>
 
-              <Preview @download-csv="downloadCSV" @close-dialog="dialog = false" :features="features"></Preview>
-            </v-dialog>
-          </v-layout>
+              <v-btn :disabled="isLoading" round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
+            </div>
+          </template>
 
-          <v-snackbar auto-height color="#b9d065" v-model="snackbar" :bottom="true" :left="true">
-            <v-progress-circular indeterminate class="mr-4" color="black"></v-progress-circular>
-
-            Le téléchargement des parcelles a démarré…
-          </v-snackbar>
-        </v-flex>
+          <Preview @download-csv="downloadCSV" @close-dialog="dialog = false" :features="features"></Preview>
+        </v-dialog>
       </v-layout>
-    </v-container>
-  </v-navigation-drawer>
+
+      <v-snackbar auto-height color="#b9d065" v-model="snackbar" :bottom="true" :left="true">
+        <v-progress-circular indeterminate class="mr-4" color="black"></v-progress-circular>
+
+        Le téléchargement des parcelles a démarré…
+      </v-snackbar>
+    </v-flex>
+  </section>
 </template>
 <script>
 import {fromCode} from "@/modules/codes-cultures/pac.js"
 import Preview from "@/components/ParcelsListPreview";
 
 export default {
-  name: "ParcelsList",
+  name: "OperatorSidebarParcelsList",
   props: {
     // parcels is a FeatureCollection
     parcels: Object,
-    operator: Object,
-    drawer: Boolean
+    operator: Object
   },
   components: {
     Preview
@@ -130,13 +99,7 @@ export default {
       snackbar: false,
     };
   },
-  watch: {
-
-    drawer: function(newVal) {
-      if (newVal)
-        this.$emit("open-drawer");
-    },
-  },
+  
   methods: {
     // expandIlot(ilotKey) {
     //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];

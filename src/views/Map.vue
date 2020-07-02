@@ -1,8 +1,6 @@
 <template>
   <v-layout>
-      <!-- Parcels List
-      v-if ensure the drawer width is well taken into account for v-content display -->
-      <ParcelsList
+      <OperatorSidebar
         v-if="showOperatorDetails"
         :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
@@ -13,7 +11,7 @@
         v-on:hover-ilot="hoverIlot"
         v-on:stop-hovering-ilot="stopHoveringIlot"
         v-on:zoom-on="zoomOn"
-      ></ParcelsList>
+      ></OperatorSidebar>
 
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
@@ -153,7 +151,7 @@ import {
 } from "vue-mapbox";
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
-import ParcelsList from "@/components/ParcelsList";
+import OperatorSidebar from "@/components/Map/OperatorSidebar";
 import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import ExploitationPopup from "@/components/ExploitationPopup";
@@ -211,7 +209,7 @@ export default {
   },
 
   components: {
-    ParcelsList,
+    OperatorSidebar,
     ParcelDetails,
     ParcelDetailsPopup,
     ExploitationPopup,
@@ -335,7 +333,7 @@ export default {
       required: true
     },
     numeroBio: {
-      type: Number,
+      type: String,
       default: null
     },
     pacageId: {
