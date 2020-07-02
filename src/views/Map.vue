@@ -1016,6 +1016,7 @@ export default {
         this.map.removeLayer('certification-body-parcels-points')
       }
     },
+
     operator: function(operator) {
       if (this.map) {
         if (operator.id) {
@@ -1027,6 +1028,9 @@ export default {
           this.unsetUpMapOperator()
         }
       }
+    },
+    exploitationView: function(newVal) {
+      console.log(this.exploitationView, newVal);
     }
   }
 };

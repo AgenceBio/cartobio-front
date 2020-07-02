@@ -1,29 +1,34 @@
 <template>
   <v-flex class="layers-panel">
-    <v-expansion-panel popout expand>
+    <v-expansion-panel expand>
       <v-expansion-panel-content>
         <template v-slot:header>
           <div class="expansion-title">
-            <v-icon class="mr-2">layers</v-icon>Calques
+            <v-icon class="mr-2">layers</v-icon>Exploitation
           </div>
         </template>
-        <v-card>
-          <v-divider></v-divider>
-          <v-list-tile>
-            <v-subheader>Modes de vues</v-subheader>
-          </v-list-tile>
 
-          <v-list class="pt-0" dense>
-            <v-list-tile
-              v-for="(view, index) in viewsList"
-              :key="index"
-              @click="changeViewMode(view)"
-            >
-              
-              <v-list-tile-content>{{view}}</v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </v-card>
+          <v-divider></v-divider>
+          <v-expansion-panel elevation-0>
+            <v-expansion-panel-content>
+              <template @click="changeViewMode('environment')" v-slot:header>
+                <div>Cultures environnantes</div>
+              </template>
+              <v-card>
+                parcelles bio
+                <br/>
+                parcelles conventionnelles
+              </v-card>
+            </v-expansion-panel-content>
+            <v-expansion-panel-content>
+              <template @click="changeViewMode('historique')" v-slot:header>
+                <div>Historique de conversion</div>
+              </template>
+              <v-card>
+                Récent - depuis plusieurs années
+              </v-card>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-flex>
@@ -38,18 +43,21 @@ export default {
     operator: Object
   },
   data() {
-    return {
-      // ...mapGetters("mapView", ["viewsList"])
-    };
+    return {};
   },
   methods: {
     ...mapActions("exploitationView", ["setExploitationView"]),
     changeViewMode(mode) {
-      this.setExploitationView(mode);
+      if (mode !== this.exploitationView) {
+        this.setExploitationView(mode);
+      } else {
+        this.setExploitationView(this.viewsList.EXPLOITATION);
+      }
     }
   },
   computed: {
-      ...mapGetters("exploitationView", ["viewsList"])
+    ...mapGetters("exploitationView", ["viewsList"]),
+    ...mapGetters("exploitationView", ["exploitationView"])
   }
 };
 </script>
