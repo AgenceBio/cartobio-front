@@ -42,9 +42,9 @@ export default new Router({
       component: AppLayout,
       children: [
         {
-          path: '/map/pacage/:pacageId:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
+          path: '/map/numerobio/:numeroBio:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
           props: true,
-          name: 'mapWithPacage',
+          name: 'mapWithOperator',
           component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
         },
         {

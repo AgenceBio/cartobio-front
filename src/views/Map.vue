@@ -281,10 +281,6 @@ export default {
         // agence bio field name
         property: "numeroPacage"
       },
-      // filterLabel: {
-      //   filter: "numerobio",
-      //   property: "numeroBio"
-      // },
       expandLayers: [true],
       displaySurvey: true,
       // new parcel dialog
@@ -337,6 +333,10 @@ export default {
   props: {
     bus: {
       required: true
+    },
+    numeroBio: {
+      type: Number,
+      default: null
     },
     pacageId: {
       type: String,
@@ -430,8 +430,8 @@ export default {
       });
 
       map.on("click", "certification-body-parcels-points", (e) => {
-        const {pacage} = e.features[0].properties
-        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.pacage === pacage)
+        const {numerobio} = e.features[0].properties
+        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.numerobio === numerobio)
         this.setOperator(this.wrapOperator(operator.properties))
       })
 
@@ -526,12 +526,12 @@ export default {
       const {lat,lng} = map.getCenter()
       const zoom = Math.floor(map.getZoom())
 
-      const {pacageId} = this
+      const {pacageId, numeroBio} = this
       const latLonZoom = `@${lat},${lng},${zoom}`
 
       this.$router.replace({
-        name: pacageId ? 'mapWithPacage' : 'map',
-        params: {pacageId, latLonZoom}
+        name: numeroBio ? 'mapWithOperator' : 'map',
+        params: {pacageId, numeroBio, latLonZoom}
       })
       .catch(error => {
         // we can safely ignore duplicate navigation
@@ -635,7 +635,9 @@ export default {
         })
 
         operatorsP.then(({ data }) => {
-          const pacageList = data.features.map(({ properties }) => properties.pacage)
+          const pacageList = data.features
+            .filter(({ properties }) => properties.pacage)
+            .map(({ properties }) => properties.pacage)
 
           map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
         })
@@ -681,12 +683,13 @@ export default {
     },
 
     setOperator (operator) {
-      const { numeroPacage:pacageId } = operator
+      console.log(operator)
+      const { numeroPacage:pacageId, numeroBio } = operator
 
       this.$store.commit("setOperator", operator)
       this.$router.push({
-        name: 'mapWithPacage',
-        params: {pacageId}
+        name: 'mapWithOperator',
+        params: {numeroBio, pacageId}
       });
     },
 

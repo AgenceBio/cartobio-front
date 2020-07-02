@@ -206,8 +206,8 @@ export default {
 
       this.$store.commit("setOperator", this.selectedOperatorData);
       this.$router.push({
-        name: pacageId ? 'mapWithPacage' : 'map',
-        params: {pacageId}
+        name: pacageId ? 'mapWithOperator' : 'map',
+        params: {pacageId, numeroBio}
       });
     },
     cancelSelectOperator: function() {
