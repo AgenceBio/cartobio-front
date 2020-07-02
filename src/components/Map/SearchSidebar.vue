@@ -36,7 +36,7 @@
             <v-list two-line>
               <template v-for="(operator, i) in operators">
                 <v-divider v-if="i" :key="i"></v-divider>
-                <v-list-tile :key="operator.numerobio" :class="{'no-click': !operator.pacage || operator.dateCheck > '2019-05-15'}" @click="(operator.pacage && operator.dateCheck <= '2019-05-15') && $emit('select-operator', operator)">
+                <v-list-tile :key="operator.numerobio" @click="$emit('select-operator', operator)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
@@ -45,7 +45,7 @@
                       Exploitation considérée inactive par l'Agence Bio.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else-if="!operator.pacage" class="caption">
-                      <v-icon small>warning</v-icon>
+                      <v-icon small>info</v-icon>
                       Parcellaire inconnu.
                     </v-list-tile-sub-title>
 
