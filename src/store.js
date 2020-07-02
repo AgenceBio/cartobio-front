@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import user from '@/store/modules/user.js';
+import exploitationView from '@/store/modules/exploitationView.js';
+
 
 Vue.use(Vuex)
 
@@ -9,6 +11,7 @@ Vue.use(Vuex)
 const store =  new Vuex.Store({
     modules: {
       user,
+      exploitationView
     },
     state: {
         currentYear: 2020,

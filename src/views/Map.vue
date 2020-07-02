@@ -310,6 +310,7 @@ export default {
     ...mapGetters(['getProfile']),
     ...mapGetters({ operator: 'getOperator' }),
     ...mapGetters('user', ['isAuthenticated']),
+    ...mapGetters('exploitationView', ['exploitationView']),
     ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
 
