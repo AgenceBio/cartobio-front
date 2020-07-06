@@ -2,12 +2,14 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import user from '@/store/modules/user.js';
+import operators from '@/store/modules/operators.js';
 
 Vue.use(Vuex)
 
 //init store
 const store =  new Vuex.Store({
     modules: {
+      operators,
       user,
     },
     state: {
