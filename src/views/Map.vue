@@ -16,7 +16,6 @@
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
-                      :organismeCertificateurOperators="organismeCertificateurOperators"
                       @select-operator="setOperator(wrapOperator($event))"
                       @flyto="flyTo"></SearchSidebar>
     <v-content>
@@ -54,7 +53,7 @@
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
           <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="hoveredParcelCoordinates" />
-          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="this.organismeCertificateurOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
+          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="certificationBodyOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
           <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
 
           <MglGeojsonLayer
@@ -160,8 +159,6 @@ import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 
 import { mapGetters, mapState } from 'vuex';
 
-const { VUE_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
-
 function queryOperatorParcels (operatorParcels, lngLat) {
   const p = point(lngLat)
 
@@ -238,8 +235,6 @@ export default {
 
       // anonymous layers
       anonLayers: {},
-
-      organismeCertificateurOperators: {},
 
       // operator parcels by year
       parcelsOperator: {
@@ -360,6 +355,7 @@ export default {
     ...mapGetters('user', ['isAuthenticated']),
     ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
+    ...mapState('operators', ['certificationBodyOperators']),
 
     showOperatorDetails () {
       return Boolean(this.isAuthenticated && this.operator.id);
@@ -621,14 +617,9 @@ export default {
       }
 
       if (this.getProfile.organismeCertificateurId) {
-        const operatorsP = get(`${API_ENDPOINT}/v1/summary`, {
-          headers: {
-            Authorization: `Bearer ${this.apiToken}`
-          }
-        })
+        const operatorsP = this.$store.dispatch('operators/FETCH_OPERATORS')
 
         operatorsP.then(({ data }) => {
-          this.organismeCertificateurOperators = data
           map.getSource("certification-body-operators").setData(data)
         })
 

@@ -11,6 +11,7 @@
 
 <script>
 import {get} from "axios";
+import {mapState} from 'vuex';
 import throttle from "lodash/throttle";
 import _words from "lodash/words";
 
@@ -63,17 +64,21 @@ const searchOperators = ({ searchText, operators}) => {
 export default {
   name: "Geosearch",
 
-  props: {
-    ocId: {
-      type: Number,
-      required: false
-    },
-    operators: Object
+  computed: {
+    ...mapState({
+      operators: state => state.operators.certificationBodyOperators,
+      areOperatorsLoading: state => state.operators.areCertificationBodyParcelsLoading
+    }),
+
+    isLoading () {
+      return Boolean(this.isSearching || this.areOperatorsLoading)
+    }
   },
+
 
   data() {
     return {
-      isLoading: false,
+      isSearching: false,
       searchText: "",
       // we use this to prevent overriding the freshest results
       // it happens when search #2 arrives after search #3
@@ -96,7 +101,7 @@ export default {
         return this.clear()
       }
 
-      this.isLoading = true
+      this.isSearching = true
       this.searchIndex++
 
       const townsP = searchTowns(searchText, this.searchIndex)
@@ -104,6 +109,8 @@ export default {
 
       // async results
       townsP.then(({ towns, searchIndex }) => {
+        this.isSearching = false
+
         if (searchIndex >= this.lastSearchIndex) {
           this.lastSearchIndex = searchIndex
           this.$emit('towns-received', towns)
@@ -122,7 +129,6 @@ export default {
 
       Promise.allSettled([townsP, operatorsP])
         .catch(console.error)
-        .finally(() => this.isLoading = false)
     },
   },
 };

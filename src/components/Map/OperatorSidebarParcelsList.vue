@@ -61,9 +61,9 @@
         <v-dialog v-model="dialog" max-width=800>
           <template v-slot:activator="{ on }">
             <div class="mt-3">
-              <v-btn :disabled="isLoading" round outline v-on="on" >Prévisualiser</v-btn>
+              <v-btn :disabled="!hasData" round outline v-on="on" >Prévisualiser</v-btn>
 
-              <v-btn :disabled="isLoading" round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
+              <v-btn :disabled="!hasData" round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
             </div>
           </template>
 
@@ -80,6 +80,7 @@
   </section>
 </template>
 <script>
+import {mapState} from 'vuex';
 import {fromCode} from "@/modules/codes-cultures/pac.js"
 import Preview from "@/components/ParcelsListPreview";
 
@@ -90,16 +91,18 @@ export default {
     parcels: Object,
     operator: Object
   },
+
   components: {
     Preview
   },
+
   data() {
     return {
       dialog: false,
       snackbar: false,
     };
   },
-  
+
   methods: {
     // expandIlot(ilotKey) {
     //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
@@ -205,8 +208,12 @@ export default {
     }
   },
   computed: {
-    isLoading () {
-      return this.ilots.length === 0
+    ...mapState({
+      isLoading: state => state.operators.areSingleOperatorParcelsLoading
+    }),
+
+    hasData () {
+      return Boolean(!this.isLoading && Array.isArray(this.parcels.features) && this.parcels.features.length)
     },
 
     /**

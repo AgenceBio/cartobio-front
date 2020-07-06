@@ -10,6 +10,7 @@
     <v-form v-model="isValid">
       <v-text-field outline autofocus single-line
                     v-model="newPacage"
+                    :counter="9"
                     :rules="[rules.required, rules.digitsonly, rules.pacagepattern]"
                     clearable full-width
                     browser-autocomplete="off"
@@ -28,10 +29,7 @@
 </template>
 
 <script>
-import {patch} from 'axios'
 import {mapState} from 'vuex';
-
-const {VUE_APP_API_ENDPOINT:endpoint} = process.env;
 
 export default {
   name: "OperatorSidebarPacage",
@@ -42,7 +40,6 @@ export default {
   data () {
     return {
       isValid: false,
-      isLoading: false,
       newPacage: null,
       rules: {
         required: (value) => !!value || 'Champ obligatoire.',
@@ -55,25 +52,17 @@ export default {
   methods: {
     savePacage (newPacage) {
       const {numeroBio} = this.operator
-      const pacage = String(newPacage).trim()
+      const pacage = newPacage ? String(newPacage).trim() : newPacage
 
-      this.isLoading = true;
-
-      const options = {
-        headers: {
-          Authorization: `Bearer ${this.apiToken}`
-        }
-      }
-
-      patch(`${endpoint}/v1/operator/${numeroBio}`, { pacage }, options)
-        .then(console.log)
-        .catch(console.error)
-        .finally(() => this.isLoading = false)
+      this.$store.dispatch('operators/UPDATE_OPERATOR', { numeroBio, pacage })
     }
   },
 
   computed: {
     ...mapState('user', ['apiToken']),
+    ...mapState({
+      isLoading: state => state.operators.isUpdatingOperator,
+    }),
 
     hasPacage () {
       return this.operator.pacage

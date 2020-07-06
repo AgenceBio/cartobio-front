@@ -19,10 +19,8 @@
               </p>
 
               <Geosearch  @towns-received="towns = $event"
-                          @operators-received="operators = $event"
-                          :ocId="organismeCertificateurId"
-                          :operators="organismeCertificateurOperators">
-              </Geosearch>
+                          @operators-received="operators = $event" />
+
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -97,9 +95,9 @@ export default {
   props: {
     drawer: Boolean,
     organismeCertificateur: Object,
-    organismeCertificateurId: Number,
-    organismeCertificateurOperators: Object
+    organismeCertificateurId: Number
   },
+
   components: {
     Geosearch,
   },
