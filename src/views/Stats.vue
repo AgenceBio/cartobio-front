@@ -1,68 +1,62 @@
 <template>
-  <div>
-    <HomeNavbar></HomeNavbar>
+  <v-content v-bind:class="{errored, loading}">
+    <v-container grid-list-xl>
+      <v-layout flex row wrap justify-center  align-content-space-between>
+        <v-flex xs12 mt-4 mb-1>
+          <h1>Statistiques</h1>
+        </v-flex>
 
-    <v-content v-bind:class="{errored, loading}">
-      <v-container grid-list-xl>
-        <v-layout flex row wrap justify-center  align-content-space-between>
-          <v-flex xs12 mt-4 mb-1>
-            <h1>Statistiques</h1>
-          </v-flex>
+        <v-flex xs12 sm4 my-2>
+          <v-card v-if="stats" >
+            <v-card-title class="d-block text-xs-center">
+                <h2 class="headline mb-0 mt-2">
+                  <span class="digits huge">{{ bioSurfaceConnueRatio }}%</span>
+                  des surfaces
+                </h2>
+                <p><b>cultivées en bio</b> sont cartographiées à ce jour.</p>
+            </v-card-title>
+          </v-card>
+        </v-flex>
 
-          <v-flex xs12 sm4 my-2>
-            <v-card v-if="stats" >
-              <v-card-title class="d-block text-xs-center">
-                  <h2 class="headline mb-0 mt-2">
-                    <span class="digits huge">{{ bioSurfaceConnueRatio }}%</span>
-                    des surfaces
-                  </h2>
-                  <p><b>cultivées en bio</b> sont cartographiées à ce jour.</p>
-              </v-card-title>
-            </v-card>
-          </v-flex>
+        <v-flex xs12 sm4 my-2>
+          <v-card v-if="stats">
+            <v-card-title class="d-block text-xs-center">
+                <h2 class="headline mb-0 mt-2">
+                  <span class="digits huge">{{monthlyVisits || '-' }}</span>
+                  connexions <abbr title="Organisme de Certification">OC</abbr>
+                </h2>
+                <p>depuis le début du mois</p>
+            </v-card-title>
+          </v-card>
+        </v-flex>
 
-          <v-flex xs12 sm4 my-2>
-            <v-card v-if="stats">
-              <v-card-title class="d-block text-xs-center">
-                  <h2 class="headline mb-0 mt-2">
-                    <span class="digits huge">{{monthlyVisits || '-' }}</span>
-                    connexions <abbr title="Organisme de Certification">OC</abbr>
-                  </h2>
-                  <p>depuis le début du mois</p>
-              </v-card-title>
-            </v-card>
-          </v-flex>
+        <v-flex xs12 sm4 my-2>
+          <v-card v-if="stats">
+            <v-card-title class="d-block text-xs-center">
+                <h2 class="headline mb-0 mt-2">
+                  <span class="digits huge">{{dataAccessCount}}</span>
+                  demandes de données
+                </h2>
+                <p>par des collectivités et acteurs publics</p>
+            </v-card-title>
+          </v-card>
+        </v-flex>
 
-          <v-flex xs12 sm4 my-2>
-            <v-card v-if="stats">
-              <v-card-title class="d-block text-xs-center">
-                  <h2 class="headline mb-0 mt-2">
-                    <span class="digits huge">{{dataAccessCount}}</span>
-                    demandes de données
-                  </h2>
-                  <p>par des collectivités et acteurs publics</p>
-              </v-card-title>
-            </v-card>
-          </v-flex>
+        <v-flex xs12 sm4 my-2>
+          <v-card v-if="stats">
+            <v-card-title class="d-block text-xs-center">
+                <h2 class="headline mb-0 mt-2">
+                  <span class="digits huge">{{ apiAccessCount || '-' }}</span>
+                  <abbr title="Organisme de Certification">OC</abbr> utilise{{ apiAccessCount > 1 ? 'nt' : '' }} l'API CartoBio
+                </h2>
 
-          <v-flex xs12 sm4 my-2>
-            <v-card v-if="stats">
-              <v-card-title class="d-block text-xs-center">
-                  <h2 class="headline mb-0 mt-2">
-                    <span class="digits huge">{{ apiAccessCount || '-' }}</span>
-                    <abbr title="Organisme de Certification">OC</abbr> utilise{{ apiAccessCount > 1 ? 'nt' : '' }} l'API CartoBio
-                  </h2>
-
-                  <p>{{ apiAccessCallsCount }} requêtes depuis le début du mois</p>
-              </v-card-title>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
-
-    <Partners />
-  </div>
+                <p>{{ apiAccessCallsCount }} requêtes depuis le début du mois</p>
+            </v-card-title>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-content>
 </template>
 
 <style lang="scss" scoped>
@@ -76,9 +70,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import {get} from "axios";
-
-import HomeNavbar from "@/components/HomeNavbar";
-import Partners from "@/components/Partners";
 
 // SAU en 2019
 const SAU_TOTALE = 29000000;
@@ -115,8 +106,6 @@ export default {
   },
 
   components: {
-    HomeNavbar,
-    Partners,
   },
 
   filters: {

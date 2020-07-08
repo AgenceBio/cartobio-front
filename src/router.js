@@ -1,10 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import Home from './views/Home.vue'
 import Stats from './views/Stats.vue'
 import Changelog from './views/Changelog.vue'
 import ApiDocumentation from './views/Api.vue'
+import LandingTerritory from './views/Landing/Territory.vue'
+import LandingCertificationBody from './views/Landing/CertificationBody.vue'
+
 import AppLayout from './views/AppLayout.vue'
+import ContentPagesLayout from './views/ContentPagesLayout.vue'
+
 import store from './store.js'
 import goTo from 'vuetify/lib/components/Vuetify/goTo'
 
@@ -30,24 +36,7 @@ function isLoadedAndAuthenticated (to, from, next) {
 }
 
 export default new Router({
-  routes: [{
-      path: '/',
-      name: 'home',
-      component: Home,
-      children: [{
-          path: 'title'
-        },
-        {
-          path: 'objectifs'
-        }, {
-          path: 'a-propos'
-        }, {
-          path: 'nous-suivre'
-        }, {
-          path: 'partenaires'
-        }
-      ]
-    },
+  routes: [
     {
       path: '/app',
       component: AppLayout,
@@ -73,28 +62,28 @@ export default new Router({
       ]
     },
     {
-      path: '/stats',
-      name: 'stats',
-      component: Stats
+      path: '/',
+      component: ContentPagesLayout,
+      children: [
+        {
+          path: '/',
+          name: 'home',
+          component: Home,
+          children: [
+            { path: 'title' },
+            { path: 'certification' },
+            { path: 'territoire' },
+            { path: 'demarche' },
+            { path: 'contact' },
+          ]
+        },
+        { path: '/stats', name: 'stats', component: Stats },
+        { path: '/changelog', name: 'changelog', component: Changelog },
+        { path: '/api', name: 'api', component: ApiDocumentation },
+        { path: '/organismes-certification-ab', name: 'landing-oc', component: LandingCertificationBody },
+        { path: '/territoires', name: 'landing-territoires', component: LandingTerritory },
+      ]
     },
-    {
-      path: '/changelog',
-      name: 'changelog',
-      component: Changelog
-    },
-    {
-      path: '/api',
-      name: 'api',
-      component: ApiDocumentation
-    },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (about.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    // }
   ],
   scrollBehavior: (to, from, savedPosition) => {
     let scrollTo = 0

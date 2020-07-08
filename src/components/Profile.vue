@@ -1,19 +1,17 @@
 <template>
-  <v-layout row justify-center>
-    <v-menu bottom offset-y>
-      <template v-slot:activator="{ on }">
-        <v-btn flat v-on="on">
-          <v-icon>person</v-icon>
-          {{ user.nom }}
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-tile @click="logout">
-          <v-list-tile-title>Se Déconnecter</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-menu>
-  </v-layout>
+  <v-menu bottom offset-y>
+    <template v-slot:activator="{ on }">
+      <v-btn flat v-on="on"  :data-id="user.id" :data-ocid="user.organismeCertificateurId">
+        <v-icon>person</v-icon>
+        {{ user.nom }}
+      </v-btn>
+    </template>
+    <v-list>
+      <v-list-tile @click="logout">
+        <v-list-tile-title>Se Déconnecter</v-list-tile-title>
+      </v-list-tile>
+    </v-list>
+  </v-menu>
 </template>
 
 <script>
@@ -24,7 +22,11 @@ export default {
   props: [],
   methods: {
     ...mapMutations(['resetUser']),
-    logout: function() {
+    ...mapMutations({
+      resetOperators: 'operators/CLEAR'
+    }),
+
+    logout () {
       this.resetUser()
       this.$ls.remove("token")
       this.$ls.remove("cartobioToken")

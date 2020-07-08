@@ -1,33 +1,23 @@
 <template>
-  <div>
-    <HomeNavbar></HomeNavbar>
+  <v-content>
+    <v-container>
+      <h1>{{ title }}</h1>
 
-    <v-content>
-      <v-container>
-        <h1>{{ title }}</h1>
-
-        <v-layout flex>
-          <v-flex xs12 md9>
-            <markdown />
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
-
-    <Partners />
-  </div>
+      <v-layout flex>
+        <v-flex xs12 md9>
+          <markdown />
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-content>
 </template>
 
 <script>
-import HomeNavbar from "@/components/HomeNavbar";
-import Partners from "@/components/Partners";
 import {vue, attributes} from "../../docs/api.md";
 
 export default {
   name: "Changelog",
   components: {
-    HomeNavbar,
-    Partners,
     markdown: vue.component,
   },
 

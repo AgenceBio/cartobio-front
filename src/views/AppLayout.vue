@@ -1,23 +1,15 @@
 <template>
   <v-layout row wrap>
-    <Navbar :bus="bus"></Navbar>
-    <router-view :bus="bus"></router-view>
+    <AppNavbar />
+    <router-view />
   </v-layout>
 </template>
 <script>
-import Vue from "vue";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 export default {
   name: "AppLayout",
   components: {
-    Navbar
+    AppNavbar
   },
-  data() {
-    return {
-      // this is used to broadcast events.
-      // This Vue instance is passed as a prop to child and event are triggered on this instance.
-      bus: new Vue()
-    };
-  }
 };
 </script>

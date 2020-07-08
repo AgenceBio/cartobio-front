@@ -1,45 +1,31 @@
 <template>
-  <v-toolbar app clipped-left color="#b9d065">
-    <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
-      <svg class="logo">
-        <use xlink:href="@/assets/logos-sprite.svg#cartobio"></use>
-      </svg>
-      <v-toolbar-title>CartoBIO</v-toolbar-title>
-    </v-btn>
-    <v-spacer></v-spacer>
-    <v-spacer></v-spacer>
-    <v-toolbar-items class="hidden-sm-and-down">
+  <v-toolbar color="#b9d065" app>
+    <v-toolbar-title>
+      <router-link :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
+        CartoBio
+      </router-link>
+    </v-toolbar-title>
 
-      <router-link
-        v-if="$store.getters.getUserCategory === $store.getters.getCategories.oc && currentRoute !== '/notifications'"
-        to="/notifications"
-        class="navbar-button"
-      >
-        <v-btn flat class="navbar-button" title="Aller à la liste des exploitations">Exploitations</v-btn>
-      </router-link>
-      <router-link v-if="!currentRoute.match(/\/map/)" to="/map" class="navbar-button">
-        <v-btn flat class="navbar-button" title="Aller à la carte">Carte</v-btn>
-      </router-link>
+    <v-spacer></v-spacer>
+
+    <v-toolbar-items class="hidden-sm-and-down">
       <Login v-if="!getProfile.nom" class="navbar-button"></Login>
       <Profile v-if="getProfile.nom" class="navbar-button"></Profile>
-
-      <AboutMenu></AboutMenu>
+      <v-btn to="about" flat>À propos</v-btn>
+      <v-btn to="contact" flat>Contact</v-btn>
     </v-toolbar-items>
   </v-toolbar>
 </template>
 <script>
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
-import AboutMenu from '@/components/AboutMenu.vue'
 
 export default {
   name: "Navbar",
   components: {
     Login,
     Profile,
-    AboutMenu,
   },
-  props: ["bus"],
   data: () => ({
     user: {},
     login: false
@@ -56,8 +42,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.navbar-button {
-  height: 100%;
+.v-toolbar__title a {
+  color: inherit;
 }
 
 .logo {

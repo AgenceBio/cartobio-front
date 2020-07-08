@@ -1,6 +1,6 @@
 <template>
-  <v-layout justify-center row wrap>
-    <v-card flat tile class="text-xs-center transparent">
+  <v-footer id="partenaires" class="grow" height="auto" color="#b9d065">
+    <v-card flat tile class="text-xs-center transparent" width="100%">
       <v-card-text class="text-xs-center">
         <a class="mx-2" href="https://www.agencebio.org/" target="_blank">
           <svg class="logo">
@@ -44,7 +44,9 @@
           </svg>
         </a>
       </v-card-text>
-      <v-divider></v-divider>
+
+      <v-divider />
+
       <v-card-text>
         <v-layout row wrap justify-center>
           <v-dialog v-model="dialog.activated" width="500">
@@ -58,7 +60,7 @@
         </v-layout>
       </v-card-text>
     </v-card>
-  </v-layout>
+  </v-footer>
 </template>
 
 <script>
