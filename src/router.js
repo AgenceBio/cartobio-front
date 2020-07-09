@@ -80,8 +80,8 @@ export default new Router({
         { path: '/stats', name: 'stats', component: Stats },
         { path: '/changelog', name: 'changelog', component: Changelog },
         { path: '/api', name: 'api', component: ApiDocumentation },
-        { path: '/organismes-certification-ab', name: 'landing-oc', component: LandingCertificationBody },
-        { path: '/territoires', name: 'landing-territoires', component: LandingTerritory },
+        { path: '/features/organismes-certification-bio', name: 'landing-oc', component: LandingCertificationBody },
+        { path: '/features/territoires', name: 'landing-territoires', component: LandingTerritory },
       ]
     },
   ],

@@ -1,10 +1,11 @@
 <template>
   <v-toolbar color="#b9d065" app>
-    <v-toolbar-title>
-      <router-link :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
-        CartoBio
-      </router-link>
-    </v-toolbar-title>
+    <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
+      <svg class="logo">
+        <use xlink:href="@/assets/logos-sprite.svg#cartobio"></use>
+      </svg>
+      <v-toolbar-title>CartoBIO</v-toolbar-title>
+    </v-btn>
 
     <v-spacer></v-spacer>
 
