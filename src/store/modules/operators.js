@@ -83,8 +83,14 @@ const actions = {
 
     const p = patch(`${VUE_APP_API_ENDPOINT}/v1/operator/${numeroBio}`, { pacage }, options)
 
-    p.then(console.log)
-      .catch(console.error)
+    p.then(response => {
+      // very hacky way while 'setOperator' is not a VueX event
+      rootState.currentOperator.numeroPacage = response.data.features[0].properties.pacage
+
+      return commit('MERGE_OPERATOR', response.data)
+    }).catch(console.error)
+
+    p.then(console.log, console.error)
       .finally(() => this.isUpdatingOperator = false)
 
     return p
@@ -92,12 +98,14 @@ const actions = {
 };
 
 const mutations = {
-  MERGE_OPERATOR ({ state }, geojson) {
+  MERGE_OPERATOR (state, featureCollection) {
+    const feature = featureCollection.features[0]
+
     const index = state.certificationBodyOperators.features.findIndex(({ properties }) => {
-      return properties.numerobio === geojson.properties.numerobio
+      return properties.numerobio === feature.properties.numerobio
     })
 
-    state.certificationBodyOperators.features[index] = geojson
+    state.certificationBodyOperators.features[index] = feature
   }
 };
 

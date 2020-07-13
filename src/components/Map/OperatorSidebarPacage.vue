@@ -11,7 +11,7 @@
       <v-text-field outline autofocus single-line
                     v-model="newPacage"
                     :counter="9"
-                    :rules="[rules.required, rules.digitsonly, rules.pacagepattern]"
+                    :rules="[rules.digitsonly, rules.pacagepattern]"
                     clearable full-width
                     browser-autocomplete="off"
                     :loading="isLoading" />
@@ -21,7 +21,7 @@
 
     <v-divider class="my-4" />
 
-    <button class="outline-button" @click="newPacage=null;savePacage(newPacage)">
+    <button class="outline-button" @click="newPacage='';savePacage('none')">
       <v-icon>info</v-icon>
       Cette exploitation ne demande pas d'aides PAC.
     </button>
@@ -42,7 +42,6 @@ export default {
       isValid: false,
       newPacage: null,
       rules: {
-        required: (value) => !!value || 'Champ obligatoire.',
         digitsonly: (value) => /^[ 0-9]+$/.test(value) || 'L\'identifiant PACAGE contient 9 chiffres.',
         pacagepattern: (value) => /[0-9]{9}/.test(value) || `L'identifiant PACAGE contient 9 chiffres (il en manque ${9 - String(value).trim().length}).`
       }

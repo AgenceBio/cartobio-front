@@ -13,6 +13,7 @@ const store =  new Vuex.Store({
       user,
     },
     state: {
+        lastDataUpdate: '2019-05-15',
         currentYear: 2020,
         userProfile: {},
         currentOperator: {},
