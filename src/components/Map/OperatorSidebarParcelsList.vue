@@ -1,10 +1,6 @@
 <template>
   <section>
-    <v-flex class="grow align-self-center my-5" v-if="isLoading">
-      <v-progress-circular indeterminate size=64 color="#457382" />
-    </v-flex>
-
-    <v-expansion-panel v-else
+    <v-expansion-panel
       v-model="panel"
       elevation-0
       class="overflow no-box-shadow"
@@ -61,9 +57,9 @@
         <v-dialog v-model="dialog" max-width=800>
           <template v-slot:activator="{ on }">
             <div class="mt-3">
-              <v-btn :disabled="!hasData" round outline v-on="on" >Prévisualiser</v-btn>
+              <v-btn round outline v-on="on" >Prévisualiser</v-btn>
 
-              <v-btn :disabled="!hasData" round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
+              <v-btn round color="#b9d065" @click="downloadCSV">Télécharger</v-btn>
             </div>
           </template>
 
@@ -80,7 +76,6 @@
   </section>
 </template>
 <script>
-import {mapState} from 'vuex';
 import {fromCode} from "@/modules/codes-cultures/pac.js"
 import Preview from "@/components/ParcelsListPreview";
 
@@ -208,14 +203,6 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      isLoading: state => state.operators.areSingleOperatorParcelsLoading
-    }),
-
-    hasData () {
-      return Boolean(!this.isLoading && Array.isArray(this.parcels.features) && this.parcels.features.length)
-    },
-
     /**
      * Clears out types and properties for incoming parcels
 
