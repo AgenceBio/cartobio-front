@@ -131,7 +131,6 @@
 </template>
 
 <script>
-import {get} from "axios";
 import getObjectValue from "lodash/get";
 import {bbox, bboxPolygon, center, area, point} from "turf";
 import {all as mergeAll} from "deepmerge";
@@ -267,13 +266,6 @@ export default {
       // edit mode
       editMode: false,
 
-      // misc data
-      filterLabel: {
-        // espace collaboratif field name
-        filter: "pacage",
-        // agence bio field name
-        property: "numeroPacage"
-      },
       expandLayers: [true],
       displaySurvey: true,
       // new parcel dialog
@@ -672,7 +664,6 @@ export default {
     },
 
     setOperator (operator) {
-      console.log(operator)
       const { numeroPacage:pacageId, numeroBio } = operator
 
       this.$store.commit("setOperator", operator)
@@ -754,50 +745,21 @@ export default {
 
       this.isOperatorOnMap = true;
 
-      // get the current operator
-      if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
-        alert(
-          "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
-            "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
-        );
-        this.operator.title = "pacage : " + this.operator.numeroPacage;
-        this.filterLabel = { filter: "pacage", property: "numeroPacage" };
-      }
-
       if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
-        // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
-        // mongoDB filter and not standard WFS filter.
+        const {numeroPacage} = this.operator
         const params = {
-          service: "WFS",
-          version: "1.1.0",
-          request: "GetFeature",
-          outputFormat: "GeoJSON",
-          typeName: null, // it has to be defined later on to access the correct data source
-          srsname: "4326",
-          filter: JSON.stringify({
-            // this is intended to work only with numeroPacage
-            // we get them from AgenceBio with 8 or 9 chars,
-            // but RPG data are always with 9 chars.
-            // IDs formated as integer when they are strings...
-            [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
+          numeroPacage,
+          years: [2020, 2019, 2018, 2017]
+        }
+
+        this.$store.dispatch('operators/FETCH_WFS_LAYERS', params)
+          .then(dataPerYear => {
+            dataPerYear.forEach(([year, data]) => {
+              year === this.currentYear
+                ? this.displayOperatorLayer(data)
+                : this.addOperatorData(data, year)
+            })
           })
-        };
-
-        // get 2020 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2020v1' } })
-        .then(data => this.displayOperatorLayer(data.data));
-
-        // get 2019 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2019v4' }  })
-        .then(data => this.addOperatorData(data.data, "2019"));
-
-        // get 2018 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2018v9' }  })
-        .then(data => this.addOperatorData(data.data, "2018"));
-
-        // get 2017 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2017v7' }  })
-        .then(data => this.addOperatorData(data.data, "2017"));
 
         this.layersOperator["2020"] = this.getYearLayer(
           "2020",
