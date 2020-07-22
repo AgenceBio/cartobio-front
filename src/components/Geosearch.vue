@@ -58,15 +58,17 @@ const searchOperators = ({ searchText, operators}) => {
           return BhasPacage - AhasPacage
         })
         .slice(0, 5)
+        .map(({ numerobio }) => numerobio)
     })
 }
 
 export default {
   name: "Geosearch",
 
+  props: ['operators'],
+
   computed: {
     ...mapState({
-      operators: state => state.operators.certificationBodyOperators,
       areOperatorsLoading: state => state.operators.areCertificationBodyParcelsLoading
     }),
 
