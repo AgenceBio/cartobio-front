@@ -26,7 +26,7 @@
         <v-flex shrink>
           <div class="update-info pa-2 ma-0 caption">
             <p v-if="operator.numeroPacage === null">
-              <v-icon small color="green">help_outline</v-icon>
+              <v-icon small color="red darken-3">help_outline</v-icon>
               Statut PAC inconnu,
               engagé bio en {{ operator.dateEngagement | dateYear }}.
             </p>
@@ -41,7 +41,7 @@
               engagé bio en {{ operator.dateEngagement | dateYear }}.
             </p>
 
-            <v-icon small color="#457382">info</v-icon>
+            <v-icon small>info_outline</v-icon>
             Dernière mise à jour le <b>{{ baseDate | formatDate }}</b>.
           </div>
         </v-flex>

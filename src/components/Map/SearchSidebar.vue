@@ -43,9 +43,14 @@
                       <v-icon small>warning</v-icon>
                       Exploitation considérée inactive par l'Agence Bio.
                     </v-list-tile-sub-title>
-                    <v-list-tile-sub-title v-else-if="!operator.pacage" class="caption">
-                      <v-icon small>info</v-icon>
+                    <v-list-tile-sub-title v-else-if="operator.pacage === null" class="caption">
+                      <v-icon small color="red darken-3">help_outline</v-icon>
                       Parcellaire inconnu.
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title v-else-if="operator.pacage === ''" class="caption">
+                      <v-icon small color="green">check_circle_outline</v-icon>
+                      Hors PAC,
+                      engagé bio en {{ operator.date_engagement | dateYear }}.
                     </v-list-tile-sub-title>
 
                     <v-list-tile-sub-title v-else-if="operator.dateCheck > '2019-05-15' && operator.dateCheck <= '2020-05-15' && dateNow < '2020-07-15'" class="caption">
@@ -59,7 +64,7 @@
                     <v-list-tile-sub-title v-else class="caption">
                       <v-icon small color="green">check_circle_outline</v-icon>
                       PACAGE <b>{{ operator.pacage }}</b>,
-                      engagement bio en {{ operator.date_engagement | dateYear }}.
+                      engagé bio en {{ operator.date_engagement | dateYear }}.
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
