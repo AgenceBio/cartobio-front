@@ -1,30 +1,42 @@
 <template>
   <div class="pa-3">
-    <v-subheader class="text--cyan">Numéro de PACAGE</v-subheader>
+    <v-subheader class="text--cyan">Bénéficiaire de la PAC</v-subheader>
 
-    <p class="body-1 grey--text text--darken-2">
-      Renseigner le numéro de PACAGE de l'opérateur&nbsp;bio n°{{ operator.numeroBio }}
-      ({{ operator.title }}) pour afficher les parcelles de l'exploitation.
+    <p class="body-1 grey--text text--darken-3">
+      Renseignez le numéro PACAGE de l'opérateur&nbsp;bio n°{{ operator.numeroBio }}.
+      Nous récupérerons ensuite ses parcelles depuis sa dernière déclaration PAC.
     </p>
 
     <v-form v-model="isValid">
-      <v-text-field outline autofocus single-line
+      <v-text-field outline autofocus
+                    label="Numéro PACAGE"
                     v-model="newPacage"
-                    :counter="9"
-                    :rules="[rules.digitsonly, rules.pacagepattern]"
                     clearable full-width
                     browser-autocomplete="off"
-                    :loading="isLoading" />
+                    :rules="[rules.pacage]"
+                    counter loading>
+        <template v-slot:progress>
+          <v-progress-linear
+            :value="progress"
+            color="red"
+            height="5" />
+        </template>
+      </v-text-field>
 
-      <v-btn round color="#b9d065" @click="savePacage(newPacage)" :disabled="!isValid" :loading="isLoading">Sauvegarder et afficher</v-btn>
+      <v-btn round color="#b9d065" @click="savePacage(newPacage)" :disabled="!newPacage || !isValid" :loading="isLoading">Enregistrer le PACAGE</v-btn>
     </v-form>
 
-    <v-divider class="my-4" />
+    <v-divider class="mt-4 mb-1" />
 
-    <button class="outline-button" @click="newPacage='';savePacage('none')">
-      <v-icon>info</v-icon>
-      Cette exploitation ne demande pas d'aides PAC.
-    </button>
+    <v-subheader class="text--cyan">Exploitation hors PAC</v-subheader>
+
+    <p class="body-1 grey--text text--darken-3">
+      Nous vous inviterons alors à renseigner les parcelles ou zones de ruchers de l'opérateur&nbsp;bio n°{{ operator.numeroBio }}.
+    </p>
+
+    <v-btn round color="#b9d065" @click="newPacage='';savePacage(newPacage)" :disabled="newPacage === ''" :loading="isLoading">
+      {{ newPacage === '' ? 'Enregistré comme hors PAC' : 'Enregistrer comme hors PAC' }}
+    </v-btn>
   </div>
 </template>
 
@@ -42,8 +54,7 @@ export default {
       isValid: false,
       newPacage: null,
       rules: {
-        digitsonly: (value) => /^[ 0-9]+$/.test(value) || 'L\'identifiant PACAGE contient 9 chiffres.',
-        pacagepattern: (value) => /[0-9]{9}/.test(value) || `L'identifiant PACAGE contient 9 chiffres (il en manque ${9 - String(value).trim().length}).`
+        pacage: (value) => /^[0-9]{0,9}$/.test(value) || `L'identifiant PACAGE contient 9 chiffres.`
       }
     }
   },
@@ -51,9 +62,10 @@ export default {
   methods: {
     savePacage (newPacage) {
       const {numeroBio} = this.operator
-      const pacage = newPacage ? String(newPacage).trim() : newPacage
+      const numeroPacage = newPacage ? String(newPacage).trim() : newPacage
 
-      this.$store.dispatch('operators/UPDATE_OPERATOR', { numeroBio, pacage })
+      this.$store.dispatch('operators/UPDATE_OPERATOR', { numeroBio, numeroPacage })
+        .catch(console.error)
     }
   },
 
@@ -62,6 +74,11 @@ export default {
     ...mapState({
       isLoading: state => state.operators.isUpdatingOperator,
     }),
+
+    progress () {
+      const charsNumber = (this.newPacage || '').trim().length
+      return Math.round(charsNumber / 9 * 100)
+    },
 
     hasPacage () {
       return this.operator.pacage
