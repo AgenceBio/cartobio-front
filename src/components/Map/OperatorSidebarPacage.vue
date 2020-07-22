@@ -70,7 +70,6 @@ export default {
   },
 
   computed: {
-    ...mapState('user', ['apiToken']),
     ...mapState({
       isLoading: state => state.operators.isUpdatingOperator,
     }),
