@@ -135,7 +135,7 @@ export default {
   },
   created: function() {
     this.loadingData = true;
-    this.$store.commit("setOperator", {}); // clear selected operator
+    this.$store.commit("operator/CLEAR_CURRENT");
     this.filters.department = getObjectValue(
       this.getProfile,
       ["profile", "departements", "0"],
@@ -204,7 +204,7 @@ export default {
       const {numeroBio, numeroPacage:pacageId} = this.selectedOperatorData;
       window._paq.push(['trackEvent', 'parcels', 'display-on-map', numeroBio]);
 
-      this.$store.commit("setOperator", this.selectedOperatorData);
+      this.$store.commit("operators/SET_CURRENT", numeroBio);
       this.$router.push({
         name: pacageId ? 'mapWithOperator' : 'map',
         params: {pacageId, numeroBio}
@@ -214,7 +214,7 @@ export default {
       // event: category, action, value
       window._paq.push(['trackEvent', 'parcels', 'cancel:display-on-map']);
       this.selectedOperatorData = {};
-      this.$store.commit("setOperator", this.selectedOperatorData);
+      this.$store.commit("operators/CLEAR_CURRENT");
     },
     searchPacage: function() {
       let params = {

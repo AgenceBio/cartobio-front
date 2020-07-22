@@ -16,7 +16,7 @@
       <SearchSidebar  :drawer="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
-                      @select-operator="setOperator(wrapOperator($event))"
+                      @select-operator="setOperator"
                       @flyto="flyTo"></SearchSidebar>
     <v-content>
       <!-- Map division so it takes the full width/height left -->
@@ -57,13 +57,13 @@
           <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
 
           <MglGeojsonLayer
-            v-if="getProfile.organismeCertificateurId"
+            v-if="isCertificationBody"
             before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-area"
             :layer="layerStyle('certification-body-clusters-area')" />
           <MglGeojsonLayer
-            v-if="getProfile.organismeCertificateurId"
+            v-if="isCertificationBody"
             before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-count"
@@ -343,8 +343,10 @@ export default {
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
     ...mapGetters(['getProfile']),
-    ...mapGetters({ operator: 'getOperator' }),
-    ...mapGetters('user', ['isAuthenticated']),
+    ...mapGetters('user', ['isAuthenticated', 'isCertificationBody']),
+    ...mapGetters({
+      'operator': 'operators/currentOperator'
+    }),
     ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
     ...mapState('operators', ['certificationBodyOperators']),
@@ -382,18 +384,6 @@ export default {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
     },
 
-    // translate GeoJSON structure into a simili-Agence Bio one
-    wrapOperator (operator) {
-      return {
-        id: operator.numerobio,
-        dateEngagement: operator.date_engagement,
-        dateMaj: operator.date_maj,
-        numeroPacage: operator.pacage,
-        numeroBio: operator.numerobio,
-        title: operator.nom
-      }
-    },
-
    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
      May be usefull to handle promise and avoid the mess it is right now for map init
    */
@@ -409,6 +399,7 @@ export default {
       // add map sources
       if (this.isAuthenticated) {
         this.loadLayers(map);
+        this.setupCertificationBodyLayers(map)
       }
 
       map.on("mousemove", ({lngLat, point}) => {
@@ -417,8 +408,8 @@ export default {
 
       map.on("click", "certification-body-parcels-points", (e) => {
         const {numerobio} = e.features[0].properties
-        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.numerobio === numerobio)
-        this.setOperator(this.wrapOperator(operator.properties))
+
+        this.setOperator(numerobio)
       })
 
       map.on("click", "certification-body-clusters-area", (e) => {
@@ -608,26 +599,6 @@ export default {
         });
       }
 
-      if (this.getProfile.organismeCertificateurId) {
-        const operatorsP = this.$store.dispatch('operators/FETCH_OPERATORS')
-
-        operatorsP.then(({ data }) => {
-          map.getSource("certification-body-operators").setData(data)
-        })
-
-        operatorsP.then(({ data }) => {
-          const pacageList = data.features
-            .filter(({ properties }) => properties.pacage)
-            .map(({ properties }) => properties.pacage)
-
-          map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
-        })
-      }
-      else {
-        this.organismeCertificateurOperators = null
-        map.getSource("certification-body-operators").setData(geoJsonTemplate)
-      }
-
       if (!map.getSource("operatorParcels2020")) {
         map.addSource("operatorParcels2020", {
           type: "geojson",
@@ -663,13 +634,11 @@ export default {
       });
     },
 
-    setOperator (operator) {
-      const { numeroPacage:pacageId, numeroBio } = operator
-
-      this.$store.commit("setOperator", operator)
+    setOperator (numeroBio) {
+      this.$store.commit("operators/SET_CURRENT", numeroBio)
       this.$router.push({
         name: 'mapWithOperator',
-        params: {numeroBio, pacageId}
+        params: { numeroBio }
       });
     },
 
@@ -731,6 +700,26 @@ export default {
       this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
       this.toggleLayerAnon(this.currentYear, false);
       this.toggleLayer('rpg-anon-nonbio-2020', false)
+    },
+
+    setupCertificationBodyLayers (map) {
+      if (!map || !this.isCertificationBody) {
+        return
+      }
+
+      const operatorsP = this.$store.dispatch('operators/FETCH_OPERATORS')
+
+      operatorsP.then(({ data }) => {
+        map.getSource("certification-body-operators").setData(data)
+      })
+
+      operatorsP.then(({ data }) => {
+        const pacageList = data.features
+          .filter(({ properties }) => properties.pacage)
+          .map(({ properties }) => properties.pacage)
+
+        map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
+      })
     },
 
     setUpMapOperator() {
@@ -937,7 +926,7 @@ export default {
     },
 
     clearOperatorData() {
-      this.$store.commit("setOperator", {})
+      this.$store.commit('operators/CLEAR_CURRENT')
 
       this.years.forEach(year => {
         this.map.removeLayer(this.layersOperator[year].id);
@@ -1009,24 +998,31 @@ export default {
     }
   },
   watch: {
-    getProfile: function(newProfile) {
+    getProfile: function(newProfile, previousProfile) {
       // if the map is not yet loaded, it will load layers
       // best would be to populate layers data and make the data react to them
-      if (newProfile.active && this.map) {
+      if (this.isAuthenticated && this.map) {
         this.loadLayers(this.map);
+        this.setupCertificationBodyLayers(this.map)
       }
+      // user logs out
       else if ((!newProfile || !newProfile.active) && this.map) {
         this.map.removeLayer('certification-body-parcels-points')
+
+        // user logs out, and is part of a certification body
+        if (previousProfile.organismeCertificateurId) {
+          this.map.getSource("certification-body-operators").setData(geoJsonTemplate)
+        }
       }
     },
-    operator: function(operator) {
+    operator (operator, previousOperator) {
       if (this.map) {
-        if (operator.id) {
+        if (operator.id && operator.id !== previousOperator.id) {
           window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
           this.loadLayers(this.map);
           this.setUpMapOperator()
         }
-        else {
+        else if (!operator.id) {
           this.unsetUpMapOperator()
         }
       }

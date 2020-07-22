@@ -18,7 +18,8 @@
                 Saisir une ville ou un code postal.
               </p>
 
-              <Geosearch  @towns-received="towns = $event"
+              <Geosearch  :operators="_certificationBodyOperators"
+                          @towns-received="towns = $event"
                           @operators-received="operators = $event" />
 
             </v-list-tile-content>
@@ -32,9 +33,9 @@
             </template>
 
             <v-list two-line>
-              <template v-for="(operator, i) in operators">
+              <template v-for="(operator, i) in foundOperators">
                 <v-divider v-if="i" :key="i"></v-divider>
-                <v-list-tile :key="operator.numerobio" @click="$emit('select-operator', operator)">
+                <v-list-tile :key="operator.numerobio" @click="$emit('select-operator', operator.numerobio)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
@@ -88,6 +89,7 @@
   </v-navigation-drawer>
 </template>
 <script>
+import {mapState} from 'vuex';
 import Geosearch from "@/components/Geosearch";
 
 export default {
@@ -113,6 +115,20 @@ export default {
       operators: [],
       towns: [],
     };
+  },
+
+  computed: {
+    ...mapState({
+      _certificationBodyOperators: state => state.operators.certificationBodyOperators,
+    }),
+
+    foundOperators () {
+      return this.operators.map(numerobio => {
+        return this._certificationBodyOperators.features.find(feature => {
+          return feature.properties.numerobio === numerobio
+        }).properties
+      })
+    }
   },
 
   watch: {

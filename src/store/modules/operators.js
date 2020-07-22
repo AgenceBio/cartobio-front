@@ -1,3 +1,4 @@
+import Vue from "vue";
 import {get, patch} from "axios";
 
 const { VUE_APP_API_ENDPOINT, VUE_APP_COLLABORATIF_ENDPOINT } = process.env;
@@ -24,8 +25,28 @@ const state = {
     [2017, 'rpgbio2017v7'],
   ]),
 
+  currentOperatorId: null,
   certificationBodyOperators: [],
 };
+
+/**
+ * Translates GeoJSON feature into a simili-Agence Bio one.
+ *
+ * This is because initially, the displayed data were taken from AgenceBio API
+ * whereas now, data are taken from our own API, which mimics… our GeoPortail data structure 🙃
+ * @param  {[type]} properties [description]
+ * @return {[type]}            [description]
+ */
+function wrapOperator ({ properties }) {
+  return {
+    id: properties.numerobio,
+    dateEngagement: properties.date_engagement,
+    dateMaj: properties.date_maj,
+    numeroPacage: properties.pacage,
+    numeroBio: properties.numerobio,
+    title: properties.nom
+  }
+}
 
 const actions = {
   FETCH_OPERATORS ({ state, rootState }) {
@@ -71,7 +92,7 @@ const actions = {
     return p
   },
 
-  UPDATE_OPERATOR ({ state, commit, rootState }, { numeroBio, pacage }) {
+  UPDATE_OPERATOR ({ state, commit, rootState }, { numeroBio, numeroPacage }) {
     const {apiToken} = rootState.user
     const options = {
       headers: {
@@ -81,23 +102,30 @@ const actions = {
 
     state.isUpdatingOperator = true
 
-    const p = patch(`${VUE_APP_API_ENDPOINT}/v1/operator/${numeroBio}`, { pacage }, options)
+    const p = patch(`${VUE_APP_API_ENDPOINT}/v1/operator/${numeroBio}`, { numeroPacage }, options)
 
-    p.then(response => {
-      // very hacky way while 'setOperator' is not a VueX event
-      rootState.currentOperator.numeroPacage = response.data.features[0].properties.pacage
+    p.then(({ data }) => commit('MERGE_OPERATOR', data))
+      .catch(console.error)
 
-      return commit('MERGE_OPERATOR', response.data)
-    }).catch(console.error)
-
-    p.then(console.log, console.error)
-      .finally(() => this.isUpdatingOperator = false)
+    p.finally(() => state.isUpdatingOperator = false)
 
     return p
   }
 };
 
 const mutations = {
+  CLEAR (state) {
+    state.currentOperatorId = null
+    state.certificationBodyOperators = []
+  },
+  CLEAR_CURRENT (state) {
+    state.currentOperatorId = null
+  },
+
+  SET_CURRENT (state, numeroBio) {
+    state.currentOperatorId = numeroBio
+  },
+
   MERGE_OPERATOR (state, featureCollection) {
     const feature = featureCollection.features[0]
 
@@ -105,13 +133,21 @@ const mutations = {
       return properties.numerobio === feature.properties.numerobio
     })
 
-    state.certificationBodyOperators.features[index] = feature
+    Vue.set(state.certificationBodyOperators.features, index, feature)
   }
 };
 
 const getters = {
   isLoaded (state) {
     return state.isLoaded
+  },
+
+  currentOperator (state) {
+    const feature = (state.certificationBodyOperators?.features ?? []).find(({ properties }) => {
+      return properties.numerobio === state.currentOperatorId
+    })
+
+    return feature ? wrapOperator(feature) : {}
   }
 };
 
