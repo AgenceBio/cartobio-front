@@ -59,4 +59,8 @@ export default {
 .navbar-button {
   height: 100%;
 }
+
+.logo {
+  width: 50%;
+}
 </style>
