@@ -9,23 +9,23 @@
         </template>
 
           <v-divider></v-divider>
-          <v-expansion-panel elevation-0>
-            <v-expansion-panel-content>
-              <template @click="changeViewMode('environment')" v-slot:header>
+          <v-expansion-panel :value="expansionValue">
+            <v-expansion-panel-content @click="changeViewMode('environment')" >
+              <template v-slot:header>
                 <div>Cultures environnantes</div>
               </template>
               <v-card>
-                parcelles bio
+                <v-card-text>parcelles bio
                 <br/>
-                parcelles conventionnelles
+                parcelles conventionnelles</v-card-text>
               </v-card>
             </v-expansion-panel-content>
-            <v-expansion-panel-content>
-              <template @click="changeViewMode('historique')" v-slot:header>
+            <v-expansion-panel-content @click="changeViewMode('historique')">
+              <template v-slot:header>
                 <div>Historique de conversion</div>
               </template>
               <v-card>
-                Récent - depuis plusieurs années
+                <v-card-text>Récent - depuis plusieurs années</v-card-text>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -43,11 +43,14 @@ export default {
     operator: Object
   },
   data() {
-    return {};
+    return {
+      expansionValue: 0
+    };
   },
   methods: {
     ...mapActions("exploitationView", ["setExploitationView"]),
     changeViewMode(mode) {
+      console.log("hey hey");
       if (mode !== this.exploitationView) {
         this.setExploitationView(mode);
       } else {
@@ -58,9 +61,18 @@ export default {
   computed: {
     ...mapGetters("exploitationView", ["viewsList"]),
     ...mapGetters("exploitationView", ["exploitationView"])
+  },
+  watch: {
+    expansionValue: function(newVal) {
+      console.log(newVal);
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+// prevent side effect of default style
+ul, li {
+  margin: 0;
+}
 </style>
