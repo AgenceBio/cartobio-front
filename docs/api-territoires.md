@@ -18,6 +18,19 @@ Nous destinons l'API Territoires de CartoBio aux **acteurs des territoires**.<br
 - [GeoJSON](https://geojson.org/)
 - [ESRI Shapefile](https://fr.wikipedia.org/wiki/Shapefile)
 
+**Exemple de requête pour récupérer du GeoJSON :
+
+```bash
+$ curl https://cartobio.org/api/v1/territoires/test
+$ curl -H 'Accept: application/json' https://cartobio.org/api/v1/territoires/test
+```
+
+**Exemple de requête pour récupérer du ESRI Shapefile :
+
+```bash
+$ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.org/api/v1/territoires/test
+```
+
 # Référence de l'API (`v1` • beta)
 
 ## Récupérer le parcellaire bio anonyme pour mon EPCI
@@ -27,7 +40,7 @@ Nous destinons l'API Territoires de CartoBio aux **acteurs des territoires**.<br
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/territoires/epci/200067106`
+$ curl https://cartobio.org/api/v1/territoires/epci/200067106
 ```
 
 <details>
@@ -38,8 +51,11 @@ $ curl https://cartobio.org/api/v1/territoires/epci/200067106`
     {
       "type": "Feature",
       "properties": {
-        "codecultu": "BTH",
+        "codeculture": "BTH",
+        "labelculture": "Blé tendre d'hiver"
+        "groupeculture": "Blé tendre"
         "bio": 1,
+        "millesime": 2019
       },
       "geometry": {
         "type": "Polygon",
@@ -129,7 +145,7 @@ $ curl https://cartobio.org/api/v1/territoires/epci/200067106`
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/territoires/epci/64102`
+$ curl https://cartobio.org/api/v1/territoires/epci/64102
 ```
 
 <details>
@@ -140,12 +156,11 @@ $ curl https://cartobio.org/api/v1/territoires/epci/64102`
     {
       "type": "Feature",
       "properties": {
-        "pacage": "026000003",
-        "codecultu": "BTH",
+        "codeculture": "BTH",
+        "labelculture": "Blé tendre d'hiver"
+        "groupeculture": "Blé tendre"
         "bio": 1,
-        "numilot": 1,
-        "numparcel": 1,
-        "numerobio": 11
+        "millesime": 2019
       },
       "geometry": {
         "type": "Polygon",
@@ -240,8 +255,8 @@ $ curl https://cartobio.org/api/v1/territoires/epci/64102`
 **Exemple de requête** :
 
 ```bash
-$ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?espg=4171`
-$ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?crs=RFG93`
+$ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?espg=4171
+$ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?crs=RFG93
 ```
 
 <details>
@@ -252,12 +267,11 @@ $ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?crs=RFG9
     {
       "type": "Feature",
       "properties": {
-        "pacage": "026000003",
-        "codecultu": "BTH",
+        "codeculture": "BTH",
+        "labelculture": "Blé tendre d'hiver"
+        "groupeculture": "Blé tendre"
         "bio": 1,
-        "numilot": 1,
-        "numparcel": 1,
-        "numerobio": 11
+        "millesime": 2019
       },
       "geometry": {
         "type": "Polygon",

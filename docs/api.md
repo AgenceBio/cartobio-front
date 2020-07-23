@@ -60,8 +60,6 @@ $ curl https://cartobio.org/api/v1/test
 ## Formats de réponse
 
 - [GeoJSON](https://geojson.org/)
-- (Prochainement) [GeoPackage](http://www.geopackage.org/guidance/getting-started.html)
-- (Prochainement) [GeoBuf](https://github.com/mapbox/geobuf#geobuf)
 
 # Référence de l'API (`v1` • beta)
 
@@ -77,11 +75,11 @@ Toutes les requêtes nécessitent un [jeton d'accès](#demander-un-jeton-d’acc
 $ curl https://cartobio.org/api/v1/test
 ```
 
-**Exemple de réponse** :
-
-```json
+<details>
+  <summary>Exemple de réponse</summary>
+  <pre class="language-json"><code>
 {"test":"OK"}
-```
+</code></pre></details>
 
 ## Récupérer le parcellaire bio de mon organisme certificateur
 
@@ -93,10 +91,9 @@ $ curl https://cartobio.org/api/v1/test
 $ curl https://cartobio.org/api/v1/parcels
 ```
 
-**Exemple de réponse** :
-
-```json
-{
+<details>
+  <summary>Exemple de réponse</summary>
+  <pre class="language-json"><code>{
   "type": "FeatureCollection",
   "features": [
     {
@@ -188,8 +185,7 @@ $ curl https://cartobio.org/api/v1/parcels
 
     ...
   ]
-}
-```
+}</pre></code></details>
 
 ## Récupérer le parcellaire d'un·e opérateur·ice
 
@@ -201,10 +197,9 @@ $ curl https://cartobio.org/api/v1/parcels
 $ curl https://cartobio.org/api/v1/parcels/operator/11
 ```
 
-**Exemple de réponse** :
-
-```json
-{
+<details>
+  <summary>Exemple de réponse</summary>
+  <pre class="language-json"><code>{
   "type": "FeatureCollection",
   "features": [
     {
@@ -296,8 +291,7 @@ $ curl https://cartobio.org/api/v1/parcels/operator/11
 
     ...
   ]
-}
-```
+}</pre></code></details>
 
 ## Récupérer le parcellaire bio anonymisé
 
