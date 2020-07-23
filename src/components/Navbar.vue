@@ -61,6 +61,6 @@ export default {
 }
 
 .logo {
-  width: 50%;
+  width: 50px;
 }
 </style>
