@@ -1,7 +1,9 @@
 <template>
   <v-toolbar app color="#b9d065">
     <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
-      <v-icon flat large>home</v-icon>
+      <svg class="logo">
+        <use xlink:href="@/assets/logos-sprite.svg#cartobio"></use>
+      </svg>
       <v-toolbar-title>CartoBIO</v-toolbar-title>
     </v-btn>
     <v-spacer></v-spacer>
