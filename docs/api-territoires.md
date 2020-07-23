@@ -255,8 +255,8 @@ $ curl https://cartobio.org/api/v1/territoires/epci/64102
 **Exemple de requête** :
 
 ```bash
-$ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?espg=4171
-$ curl -X PUT -d '@contour.shp' https://cartobio.org/api/v1/territoires?crs=RFG93
+$ curl -X PUT --upload-file contour.shp https://cartobio.org/api/v1/territoires?espg=4171
+$ curl -X PUT --upload-file contour.shp https://cartobio.org/api/v1/territoires?crs=RFG93
 ```
 
 <details>
