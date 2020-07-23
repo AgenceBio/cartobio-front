@@ -44,7 +44,7 @@
                       Exploitation considérée inactive par l'Agence Bio.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else-if="operator.pacage === null" class="caption">
-                      <v-icon small color="red darken-3">help_outline</v-icon>
+                      <v-icon small>help_outline</v-icon>
                       Parcellaire inconnu.
                     </v-list-tile-sub-title>
                     <v-list-tile-sub-title v-else-if="operator.pacage === ''" class="caption">
@@ -171,21 +171,8 @@ export default {
   }
 }
 
-.no-click /deep/ {
-
-  .v-list__tile__content,
-  .v-list__tile__sub-title,
-  .v-icon {
-    color: #90A4AE;
-  }
-}
-
 .v-list {
   padding: 0;
-}
-
-.v-icon {
-  color: #457382;
 }
 
 /deep/ .v-expansion-panel__header {

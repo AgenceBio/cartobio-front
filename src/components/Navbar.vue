@@ -64,4 +64,8 @@ export default {
   position: absolute;
   width: 100%;
 }
+
+.logo {
+  width: 50px;
+}
 </style>
