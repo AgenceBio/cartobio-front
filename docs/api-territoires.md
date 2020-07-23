@@ -35,7 +35,8 @@ $ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.org/api/v1
 
 ## Récupérer le parcellaire bio anonyme pour mon EPCI
 
-**Chemin** : `/api/v1/territoires/epci/:epciId`
+**Chemin** : `/api/v1/territoires/epci/:epciId`<br>
+**Verbe** : `GET`
 
 **Exemple de requête** :
 
@@ -140,7 +141,8 @@ $ curl https://cartobio.org/api/v1/territoires/epci/200067106
 
 ## Récupérer le parcellaire bio anonyme pour ma commune
 
-**Chemin** : `/api/v1/territoires/insee/:codeInsee`
+**Chemin** : `/api/v1/territoires/insee/:codeInsee`<br>
+**Verbe** : `GET`
 
 **Exemple de requête** :
 
@@ -245,7 +247,8 @@ $ curl https://cartobio.org/api/v1/territoires/epci/64102
 
 ## Récupérer le parcellaire bio anonyme pour un contour géographique
 
-**Chemin** : `/api/v1/territoires`
+**Chemin** : `/api/v1/territoires`<br>
+**Verbe** : `PUT`
 
 **Paramètres optionnels** :
 
@@ -255,8 +258,8 @@ $ curl https://cartobio.org/api/v1/territoires/epci/64102
 **Exemple de requête** :
 
 ```bash
-$ curl -X PUT --upload-file contour.shp https://cartobio.org/api/v1/territoires?espg=4171
-$ curl -X PUT --upload-file contour.shp https://cartobio.org/api/v1/territoires?crs=RFG93
+$ curl -X PUT --upload-file -H 'Content-Type: application/vnd.shp+octet-stream' contour.shp https://cartobio.org/api/v1/territoires?espg=4171
+$ curl -X PUT --upload-file -H 'Content-Type: application/json' contour.geojson https://cartobio.org/api/v1/territoires?crs=RFG93
 ```
 
 <details>
