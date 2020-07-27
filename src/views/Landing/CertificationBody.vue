@@ -66,6 +66,15 @@
       </v-layout>
     </v-container>
 
+    <v-layout column align-center justify-space-between my-4>
+      <p>
+        <v-btn to="/features/territoires" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">email</v-icon>
+          Contactez-nous
+        </v-btn>
+      </p>
+    </v-layout>
+
   </v-content>
 </template>
 
@@ -84,26 +93,25 @@ export default {
     return {
       elements: [
         {
-          title: 'Montez sur la fiabilité du contrôle AB',
-          text: `Blah blah`
-        },
-        {
-          title: 'Un outil en ligne, et à intégrer',
-          text: `Accessible avec un navigateur, ou une API pour créer une carte dans votre outil métier`
-        },
-        {
-          title: 'Co-construit avec 10 organismes de certification français',
-          text: `Blah blah`
-        },
-        {
-          title: 'Accompagement technique',
-          text: `On vous aide à intégrer notre API dans votre application métier`
+          title: `Concentrez-vous sur votre métier d'organisme de certification`,
+          text: `Suivez l'évolution d'une parcelle dans le temps — y compris la rotation des assolements et les risques environnants, même en cas de reprise d'exploitation.`
         },
         {
           title: 'Identifiez rapidement les parcelles à risque',
-          text: `Blah blah`
+          text: `Visualisez les parcelles alentours d'une exploitation, ainsi que leur nature (caractère bio, type de culture).`
         },
-
+        {
+          title: 'Une démarche de co-construction avec 10 organismes de certification',
+          text: `Nous utilisons une approche itérative avec les organismes de certification, l'Agence Bio, l'INAO et le Ministère de l'Agriculture pour les enrichir, et les mettre en commun.`
+        },
+        {
+          title: 'Un outil en ligne, ou à intégrer à votre outil métier',
+          text: `Accédez à CartoBio via un simple navigateur. Le/la développeuse ou le SI de votre organisation peut se brancher aux données via une API (en lecture, et en écriture).`
+        },
+        {
+          title: 'Accompagnement technique',
+          text: `Demandez-nous une clé d'API personnalisée et on se fera un plaisir de vous aider à tout moment.`
+        },
       ]
     }
   }
