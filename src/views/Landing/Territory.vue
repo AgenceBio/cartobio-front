@@ -56,15 +56,24 @@
         <v-flex v-for="({title, text}, i) in elements" v-bind:key="title" xs7 v-bind:offset-xs4="i%2">
           <v-card flat :class="{orange: i%2, white: !(i%2), 'lighten-5': i%2}">
             <v-card-title>
-              <h2 class="title">{{ title }}</h2>
+              <h2 class="title" v-html="title"></h2>
             </v-card-title>
             <v-card-text>
-              <p>{{ text }}</p>
+              <p v-html="text"></p>
             </v-card-text>
           </v-card>
         </v-flex>
       </v-layout>
     </v-container>
+
+    <v-layout column align-center justify-space-between my-4>
+      <p>
+        <v-btn to="/features/territoires" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">email</v-icon>
+          Contactez-nous
+        </v-btn>
+      </p>
+    </v-layout>
 
   </v-content>
 </template>
@@ -97,32 +106,33 @@ export default {
       serviceIndex: 0,
       services: [
         'de la reconquête de l\'eau',
-        'des plans d\'action territoriaux (PAT)'
+        'des Plans Alimentaires Territoriaux (PAT)',
+        'des thèses et des projets de recherche',
       ],
       elements: [
         {
+          title: `Ce qu'il y a dans les données CartoBio`,
+          text: `Vous accédez — pour chaque parcelle connue — à son code culture, à son contour géographique et à son caractère bio. Nous vous les transmettons au format Shapefile, GeoPackage ou GeoJSON.`
+        },
+        {
+          title: 'Données initialisées avec le <a href="https://geoservices.ign.fr/blog/2020/02/21/Nouvelles_ressources_RPG.html" target="_blank">RPG Bio</a>',
+          text: `Accédez aux données du Registre Parcellaire Graphique — il comprend le caractère bio, et est complété par les organismes de certification sur le terrain.`
+        },
+        {
           title: 'Des partenaires de confiance',
-          text: `Blah blah`
+          text: `Nous utilisons une approche itérative avec les organismes de certification, l'Agence Bio, l'INAO et le Ministère de l'Agriculture pour les enrichir, et les mettre en commun.`
         },
         {
           title: 'Respect du RPGD',
-          text: `Blah blah`
-        },
-        {
-          title: 'Données initialisées avec le RPG Bio',
-          text: `Blah blah`
+          text: `Vous récupérez des couches géographiques anonymisées, pour une réutilisation facilitée.`
         },
         {
           title: 'Accompagement technique',
-          text: `Des données et de leur intégration dans vos outils.`
-        },
-        {
-          title: 'Code culture et contour géographique',
-          text: `Données Shapefile, GeoPackage et GeoJSON qui contiennent le code culture, le caractère bio et le contour géographique des parcelles.`
+          text: `Contactez-nous si vous rencontrez un problème, ou si avez un doute sur un élément de la convention de partage de données.`
         },
         {
           title: 'C\'est gratuit',
-          text: `Considéré comme échange de données entre administrations, sur signature de convention.`
+          text: `Signez la convention de partage de données pour nous autoriser leur distribution. Nous avons aussi pour objectif de les distribuer sous <a href="https://www.data.gouv.fr/fr/licences" target="_blank">licence open data (ODbl-1.0)</a>, à un horizon 2021/2022.`
         },
 
       ]

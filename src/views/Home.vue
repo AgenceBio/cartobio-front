@@ -30,7 +30,7 @@
       </v-card>
     </v-layout>
 
-    <section class="green py-5">
+    <section class="blue lighten-4 py-5">
       <v-card flat to="/features/organismes-certification-bio" color="transparent" max-width="840" class="mx-auto">
         <v-layout row wrap justify-space-between align-center>
           <v-flex xs6>
@@ -66,7 +66,7 @@
       </v-card>
     </section>
 
-    <section class="blue py-5">
+    <section class="green lighten-4 py-5">
       <v-card flat to="/features/territoires" color="transparent" max-width="840" class="mx-auto">
         <v-layout row wrap justify-space-between align-center>
           <v-flex xs6 order-xs2>
