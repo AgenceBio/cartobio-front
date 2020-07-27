@@ -1,8 +1,8 @@
 <template>
   <v-content class="blue-grey lighten-5">
     <v-layout id="title" column align-center justify-space-between my-4 py-5>
-      <h1 class="display-2 mb-3">
-        Les données de l'Agriculture Biologique en France
+      <h1 class="display-2 mb-3 text-xs-center">
+        Les données géographiques<br>de l'Agriculture Biologique en France
       </h1>
 
       <span>
@@ -39,13 +39,12 @@
             </v-card-title>
 
             <v-card-text>
-              <p>
-                En 2018, la restauration hors foyer a acheté pour 550 millions
-                d’euros de produits bio hors taxe. La restauration collective
-                à caractère social enregistre une croissance record de +28 %
-                vs 2017 qui fait écho aux annonces de la loi EGalim et aux
-                attentes des consommateurs.
-              </p>
+              <ul>
+                <li>fiabiliser les contrôles via une approche graphique</li>
+                <li>un outil prêt-à-l'emploi pour les auditeurs et les responsables de certification</li>
+                <li>une aide pour l'analyse des risques environnants</li>
+                <li>ajouter la fonction carto et nos données géographiques à votre outil métier en quelques lignes de code</li>
+              </ul>
             </v-card-text>
 
             <v-card-actions>
@@ -60,9 +59,8 @@
             </v-card-actions>
           </v-flex>
 
-          <v-flex xs4>
-            <v-img min-height="160" max-height="240" alt=""
-              src="https://www.agencebio.org/wp-content/uploads/2019/06/Lancement-Printemps-BIO-28-mai-2014-Paris-La-Villette-Cr%C3%A9dit-Anthony-Voisin-9.jpg" />
+          <v-flex xs5 offset1>
+            <v-img min-height="160" src="@/assets/screenshot-operateur.jpg" alt="" />
           </v-flex>
         </v-layout>
       </v-card>
@@ -77,13 +75,10 @@
             </v-card-title>
 
             <v-card-text>
-              <p>
-                En 2018, la restauration hors foyer a acheté pour 550 millions
-                d’euros de produits bio hors taxe. La restauration collective
-                à caractère social enregistre une croissance record de +28 %
-                vs 2017 qui fait écho aux annonces de la loi EGalim et aux
-                attentes des consommateurs.
-              </p>
+              <ul>
+                <li>simplification de l'accès à ces données</li>
+                <li>des données utiles pour mener une politique publique de qualité, sur des enjeux importants (biodiversité, alimentation)</li>
+              </ul>
             </v-card-text>
 
             <v-card-actions>
@@ -98,9 +93,8 @@
             </v-card-actions>
           </v-flex>
 
-          <v-flex xs4 order-xs1>
-            <v-img min-height="160" max-height="240" alt=""
-              src="https://www.agencebio.org/wp-content/uploads/2019/06/Lancement-Printemps-BIO-28-mai-2014-Paris-La-Villette-Cr%C3%A9dit-Anthony-Voisin-9.jpg" />
+          <v-flex xs5 order-xs1>
+            <v-img min-height="160" alt="" src="@/assets/landing/Screenshot 2020-03-23 at 09.50.06.png" />
           </v-flex>
         </v-layout>
       </v-card>
@@ -115,13 +109,14 @@
             </v-card-title>
 
             <v-card-text>
-              <p>
-                En 2018, la restauration hors foyer a acheté pour 550 millions
-                d’euros de produits bio hors taxe. La restauration collective
-                à caractère social enregistre une croissance record de +28 %
-                vs 2017 qui fait écho aux annonces de la loi EGalim et aux
-                attentes des consommateurs.
-              </p>
+              <ul>
+                <li>on va sur le terrain pour observer le fonctionnement et les relations entre agriculteurs et organismes de certification</li>
+                <li>on fait dialoguer les acteurs de la bio ensemble</li>
+                <li>on répond à chacune des demandes</li>
+                <li>parce qu'on voit l'ensemble, on est à même de proposer un parcours administratif plus simple pour tout le monde</li>
+                <li>approche expérimentale (on essaie, on rate, on tente autre chose)</li>
+                <li>bénéficie de l'infrastructure et des méthodes telles que proposées par l'incubateur des services numériques</li>
+              </ul>
             </v-card-text>
 
             <v-card-actions>
