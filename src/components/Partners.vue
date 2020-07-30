@@ -80,16 +80,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style type="scss" scoped>
+.v-footer {
+  flex: 1 0 auto !important;
+}
 .logo {
   height: 70px;
   max-width: 100px;
 }
-.madewith {
-  height: 100%;
-  margin-top: calc(20px - 0.5em);
-  margin-bottom: 0;
-}
+
 .legal {
   color: black;
   text-decoration: underline;

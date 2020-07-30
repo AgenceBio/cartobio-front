@@ -149,6 +149,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.v-content {
+  flex: 1 0 100% !important;
+}
+
 html {
   overflow-y: auto;
 }
