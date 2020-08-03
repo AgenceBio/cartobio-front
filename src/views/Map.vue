@@ -345,7 +345,8 @@ export default {
     ...mapGetters(['getProfile']),
     ...mapGetters('user', ['isAuthenticated', 'isCertificationBody']),
     ...mapGetters({
-      'operator': 'operators/currentOperator'
+      'operator': 'operators/currentOperator',
+      'findOperatorByPacage': 'operators/findByPacage',
     }),
     ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
@@ -407,9 +408,10 @@ export default {
       });
 
       map.on("click", "certification-body-parcels-points", (e) => {
-        const {numerobio} = e.features[0].properties
+        const {pacage} = e.features[0].properties
+        const operator = this.findOperatorByPacage(pacage)
 
-        this.setOperator(numerobio)
+        this.setOperator(operator.properties.numerobio)
       })
 
       map.on("click", "certification-body-clusters-area", (e) => {

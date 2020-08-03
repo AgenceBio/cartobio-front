@@ -26,6 +26,8 @@ const state = {
   ]),
 
   currentOperatorId: null,
+
+  // This layers is loaded via api/v1/summary; it has numeroPacage and numeroBio
   certificationBodyOperators: [],
 };
 
@@ -140,6 +142,20 @@ const mutations = {
 const getters = {
   isLoaded (state) {
     return state.isLoaded
+  },
+
+  /**
+   * Useful to link with a numeroBio when the source layer contains only a PACAGE
+   * This is typically the case when the layer is taken out of the RPG/IGN
+   * @param {Pacage} pacage
+   * @return {AgenceBioGeoJson}
+   */
+  findByPacage (state) {
+    const { features } = state.certificationBodyOperators
+    
+    return (pacage) => features.find(({ properties }) => {
+      return properties.pacage === pacage
+    })
   },
 
   currentOperator (state) {
