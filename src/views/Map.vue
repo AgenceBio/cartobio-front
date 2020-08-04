@@ -478,6 +478,13 @@ export default {
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
+
+      // we force reload operator layers when it gets assigned a new PACAGE
+      this.$store.subscribe((mutation) => {
+        if (mutation.type === 'operators/MERGE_OPERATOR') {
+          this.setUpMapOperator();
+        }
+      })
     },
 
     buildHoveredPopup(lngLat, point) {
