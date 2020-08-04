@@ -7,23 +7,31 @@
       Nous récupérerons ensuite ses parcelles depuis sa dernière déclaration PAC.
     </p>
 
-    <v-form v-model="isValid">
+    <v-form @submit.prevent="validateAndSave">
       <v-text-field outline autofocus
                     label="Numéro PACAGE"
                     v-model="newPacage"
                     clearable full-width
                     browser-autocomplete="off"
-                    :rules="[rules.pacage]"
+                    :error="Boolean(currentErrors.length)"
+                    :error-count="currentErrors.length"
+                    :error-messages="currentErrors"
+                    type="number"
+                    class="pacage"
+                    hint="L'identifiant PACAGE contient 9 chiffres"
                     counter loading>
+
         <template v-slot:progress>
           <v-progress-linear
             :value="progress"
-            color="red"
+            color="green"
             height="5" />
         </template>
       </v-text-field>
 
-      <v-btn round color="#b9d065" @click="savePacage(newPacage)" :disabled="!newPacage || !isValid" :loading="isLoading">Enregistrer le PACAGE</v-btn>
+      <v-btn round color="#b9d065" type="submit" :disabled="!isValid || currentError !== ''" :loading="isLoading">
+        Enregistrer le PACAGE
+      </v-btn>
     </v-form>
 
     <v-divider class="mt-4 mb-1" />
@@ -31,11 +39,11 @@
     <v-subheader class="text--cyan">Exploitation hors PAC</v-subheader>
 
     <p class="body-1 grey--text text--darken-3">
-      Nous vous inviterons alors à renseigner les parcelles ou zones de ruchers de l'opérateur&nbsp;bio n°{{ operator.numeroBio }}.
+      Nous vous inviterons ensuite à renseigner les parcelles ou zones de ruchers de l'opérateur&nbsp;bio n°{{ operator.numeroBio }}.
     </p>
 
-    <v-btn round color="#b9d065" @click="newPacage='';savePacage(newPacage)" :disabled="newPacage === ''" :loading="isLoading">
-      {{ newPacage === '' ? 'Enregistré comme hors PAC' : 'Enregistrer comme hors PAC' }}
+    <v-btn round color="#b9d065" @click="savePacage('')" :disabled="isLoading" :loading="isLoading">
+      Enregistrer comme hors PAC
     </v-btn>
   </div>
 </template>
@@ -51,28 +59,51 @@ export default {
 
   data () {
     return {
-      isValid: false,
-      newPacage: null,
-      rules: {
-        pacage: (value) => /^[0-9]{0,9}$/.test(value) || `L'identifiant PACAGE contient 9 chiffres.`
-      }
+      currentError: '',
+      newPacage: '',
     }
   },
 
   methods: {
+    async validateAndSave () {
+      try {
+        await this.verifyPacage(this.newPacage)
+        this.savePacage(this.newPacage)
+      }
+      catch (error) {
+        this.currentError = error.message
+      }
+    },
+    
+    async verifyPacage (numeroPacage) {
+      const { numeroBio } = await this.$store.dispatch('pacage/VERIFY', { numeroPacage })
+      
+      if (numeroBio) {
+        throw new Error(`Ce numéro PACAGE est déjà assigné à l'opérateur bio n°${numeroBio}).`)
+      }
+    },
+
     savePacage (newPacage) {
       const {numeroBio} = this.operator
       const numeroPacage = newPacage ? String(newPacage).trim() : newPacage
 
       this.$store.dispatch('operators/UPDATE_OPERATOR', { numeroBio, numeroPacage })
-        .catch(console.error)
+        .catch(error => this.currentError = error.message)
     }
   },
 
   computed: {
     ...mapState({
-      isLoading: state => state.operators.isUpdatingOperator,
+      isLoading: state => state.operators.isUpdatingOperator || state.pacage.isValidating,
     }),
+
+    currentErrors () {
+      return [this.currentError].filter(value => value)
+    },
+
+    isValid () {
+      return /^[0-9]{9}$/.test(this.newPacage)
+    },
 
     progress () {
       const charsNumber = (this.newPacage || '').trim().length
@@ -87,6 +118,15 @@ export default {
     },
     isPacageUnknown () {
       return this.operator.pacage === null
+    }
+  },
+
+  watch: {
+    // We reset the error state when the input has changed
+    newPacage (newValue, previousValue) {
+      if (newValue !== previousValue) {
+        this.currentError = ''
+      }
     }
   }
 };
@@ -103,6 +143,16 @@ export default {
 
 .v-btn {
   margin: 0;
+}
+
+.pacage /deep/ input[type="number"] {
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
 }
 
 .outline-button {

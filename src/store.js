@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import user from '@/store/modules/user.js';
 import operators from '@/store/modules/operators.js';
+import pacage from '@/store/modules/pacage.js';
 
 Vue.use(Vuex)
 
@@ -10,6 +11,7 @@ Vue.use(Vuex)
 const store =  new Vuex.Store({
     modules: {
       operators,
+      pacage,
       user,
     },
     state: {

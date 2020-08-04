@@ -83,7 +83,8 @@ export default {
 
         reader.addEventListener('load', () => {
           resolve({
-            content: reader.result,
+            // we are interested by the content stripped of its data URI prefix
+            content: reader.result.replace(/^data:.+;base64,/, ''),
             size: file.size,
             type: file.type,
             filename: file.name,
