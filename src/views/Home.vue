@@ -64,7 +64,7 @@
           </v-flex>
 
           <v-flex xs5 offset1>
-            <v-img min-height="160" src="@/assets/screenshot-operateur.jpg" alt="" />
+            <v-img min-height="160" src="@/assets/screenshot-operateur.jpg" alt="" class="elevation-4" />
           </v-flex>
         </v-layout>
       </v-card>
@@ -98,7 +98,7 @@
           </v-flex>
 
           <v-flex xs5 order-xs1>
-            <v-img min-height="160" alt="" src="@/assets/landing/Screenshot 2020-03-23 at 09.50.06.png" />
+            <v-img min-height="160" alt="" src="@/assets/landing/Screenshot 2020-03-23 at 09.50.06.png" class="elevation-4" />
           </v-flex>
         </v-layout>
       </v-card>
@@ -137,7 +137,7 @@
 
           <v-flex xs4>
             <v-img min-height="160" max-height="240" alt=""
-              src="https://www.agencebio.org/wp-content/uploads/2019/06/Lancement-Printemps-BIO-28-mai-2014-Paris-La-Villette-Cr%C3%A9dit-Anthony-Voisin-9.jpg" />
+              src="@/assets/landing/cartobio-world-cafe.jpg" class="elevation-4" />
           </v-flex>
         </v-layout>
       </v-card>
