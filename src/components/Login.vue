@@ -1,15 +1,12 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
-    <template v-slot:activator="{ on }">
-      <v-btn flat v-on="on">Connexion</v-btn>
-    </template>
+  <v-dialog v-model="show" persistent max-width="600px">
     <v-card v-on:keyup.enter="tryLogin()">
       <v-toolbar card color="#b9d065">
         <v-card-title>
           <h3 class="headline mb-0">Connexion à CartoBio</h3>
         </v-card-title>
         <v-spacer />
-        <v-btn icon outline @click="dialog = false">
+        <v-btn icon outline @click="close">
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
@@ -27,7 +24,7 @@
                 </p>
               </v-flex>
               <v-flex xs12>
-                <v-text-field box label="Email" placeholder="" :rules="[rules.required]" v-model="login" v-if="dialog" autofocus></v-text-field>
+                <v-text-field box label="Email" placeholder="" :rules="[rules.required]" v-model="login" autofocus></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-text-field box label="Mot de passe du Portail Notifications" placeholder="" v-model="password" :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword"  :append-icon="showPassword ? 'visibility' : 'visibility_off'" :rules="[rules.required]"></v-text-field>
@@ -45,7 +42,7 @@
       </v-card-text>
       <v-divider class="pt-2"></v-divider>
       <v-card-actions>
-        <v-btn color="blue darken-1" flat @click="dialog = false" :disabled="loading">Annuler</v-btn>
+        <v-btn color="blue darken-1" flat @click="close" :disabled="loading">Annuler</v-btn>
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
@@ -60,18 +57,21 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import {mapActions, mapMutations} from 'vuex'
 import {authenticateWithCredentials} from '@/api/user.js'
 
 export default {
   name: "Login",
+
+  props: {
+    show: Boolean
+  },
 
   data: () => ({
     loginFailed: false,
     login: "",
     password: "",
     showPassword: false,
-    dialog: false,
     loading: false,
     rules: {
       required: value => !!value || 'Ce champ est obligatoire.',
@@ -80,6 +80,18 @@ export default {
 
   methods: {
     ...mapActions('user', ['setProfile']),
+    ...mapMutations({
+      userLogout: 'user/LOGOUT'
+    }),
+
+    close () {
+      this.userLogout()
+      this.$refs.form.reset()
+      this.login = ''
+      this.password = ''
+      this.loginFailed = false
+    },
+
     tryLogin: function() {
       this.loading = true;
       this.loginFailed = false;
@@ -111,14 +123,6 @@ export default {
           ]);
         })
         .finally(() => this.loading = false)
-    }
-  },
-
-  watch: {
-    dialog (newValue) {
-      if (newValue === false) {
-        this.$refs.form.reset()
-      }
     }
   }
 };

@@ -10,14 +10,20 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items class="hidden-sm-and-down">
-      <Login v-if="!getProfile.nom" class="navbar-button"></Login>
-      <Profile v-if="getProfile.nom" class="navbar-button"></Profile>
+      <v-btn v-if="isAuthenticated" to="map" flat>Carte</v-btn>
+      <Profile v-if="isAuthenticated" class="navbar-button" />
+      <v-btn v-else flat @click="startLogin">Connexion</v-btn>
       <v-btn to="about" flat>À propos</v-btn>
       <v-btn to="contact" flat>Contact</v-btn>
     </v-toolbar-items>
+
+
+    <Login :show="isAuthenticating" class="navbar-button" />
   </v-toolbar>
 </template>
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
 
@@ -31,13 +37,15 @@ export default {
     user: {},
     login: false
   }),
+
   computed: {
-    getProfile() {
-      return this.$store.getters.getProfile;
-    },
-    currentRoute() {
-      return this.$route.path;
-    }
+    ...mapGetters('user', ['isAuthenticated', 'isAuthenticating'])
+  },
+
+  methods: {
+    ...mapMutations({
+      startLogin: 'user/LOGIN'
+    })
   }
 };
 </script>

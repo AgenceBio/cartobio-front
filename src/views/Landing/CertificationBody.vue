@@ -10,8 +10,12 @@
       <p>
 
       <p>
-        <v-btn to="/features/territoires" large outline round color="primary" class="mb-5 mt-4">
-          <v-icon>lock_open</v-icon>
+        <v-btn v-if="isAuthenticated" to="/map" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">public</v-icon>
+          J'accède à l'outil en ligne CartoBio
+        </v-btn>
+        <v-btn v-else @click="startLogin" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">lock_open</v-icon>
           Je me connecte avec mon compte Agence Bio
         </v-btn>
       </p>
@@ -79,6 +83,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: "LandingCertificationBody",
@@ -114,6 +119,16 @@ export default {
         },
       ]
     }
+  },
+
+  computed: {
+    ...mapGetters('user', ['isAuthenticated']),
+  },
+
+  methods: {
+    ...mapMutations({
+      startLogin: 'user/LOGIN'
+    })
   }
 };
 </script>

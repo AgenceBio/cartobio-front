@@ -23,11 +23,15 @@ export default {
   methods: {
     ...mapMutations(['resetUser']),
     ...mapMutations({
-      resetOperators: 'operators/CLEAR'
+      resetOperators: 'operators/CLEAR',
+      userLogout: 'user/LOGOUT'
     }),
 
     logout () {
       this.resetUser()
+      this.userLogout()
+      this.resetOperators()
+
       this.$ls.remove("token")
       this.$ls.remove("cartobioToken")
     },

@@ -52,7 +52,11 @@
                 <v-icon class="mr-1">chevron_right</v-icon>
                 En savoir plus
               </v-btn>
-              <v-btn to="/features/territoires#choose" round outline>
+              <v-btn v-if="isAuthenticated" to="/map" round outline>
+                <v-icon class="mr-2">public</v-icon>
+                Accès à la carte
+              </v-btn>
+              <v-btn v-else @click.prevent="startLogin" round outline>
                 <v-icon class="mr-2">lock_open</v-icon>
                 Je me connecte
               </v-btn>
@@ -143,8 +147,20 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
   name: "Home",
+
+  computed: {
+    ...mapGetters('user', ['isAuthenticated']),
+  },
+
+  methods: {
+    ...mapMutations({
+      startLogin: 'user/LOGIN'
+    })
+  }
 };
 </script>
 

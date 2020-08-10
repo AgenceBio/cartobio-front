@@ -17,14 +17,19 @@
       <router-link v-if="!currentRoute.match(/\/map/)" to="/map" class="navbar-button">
         <v-btn flat class="navbar-button" title="Aller à la carte">Carte</v-btn>
       </router-link>
-      <Login v-if="!getProfile.nom" class="navbar-button"></Login>
-      <Profile v-if="getProfile.nom" class="navbar-button"></Profile>
+
+      <Profile v-if="isAuthenticated" class="navbar-button" />
+      <v-btn v-else flat @click="startLogin">Connexion</v-btn>
 
       <AboutMenu></AboutMenu>
     </v-toolbar-items>
+
+    <Login :show="isAuthenticating" class="navbar-button" />
   </v-toolbar>
 </template>
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
 import AboutMenu from '@/components/AboutMenu.vue'
@@ -36,18 +41,27 @@ export default {
     Profile,
     AboutMenu,
   },
-  props: ["bus"],
+
   data: () => ({
     user: {},
     login: false
   }),
+
   computed: {
+    ...mapGetters('user', ['isAuthenticated', 'isAuthenticating']),
+
     getProfile() {
       return this.$store.getters.getProfile;
     },
     currentRoute() {
       return this.$route.path;
     }
+  },
+
+  methods: {
+    ...mapMutations({
+      startLogin: 'user/LOGIN'
+    })
   }
 };
 </script>
