@@ -33,7 +33,7 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
       const {BIO, CODE_CULTU} = feature.fields.toObject()
       const {label: LABEL_CULTU, groupLabel: GROUPE_CULTU} = fromCode(CODE_CULTU)
       const geometry = feature.getGeometry().toObject()
-      const SURFACE = (area(geometry) / IN_HECTARES).toFixed(2)
+      const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
 
       features.push({
         type: 'Feature',
@@ -43,7 +43,7 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
           CODE_CULTU,
           LABEL_CULTU,
           GROUPE_CULTU,
-          SURFACE,
+          SURFACE_HA,
           MILLESIME
         }
       })
