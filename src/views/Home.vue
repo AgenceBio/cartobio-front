@@ -81,7 +81,7 @@
 
             <v-card-text>
               <p>Nous simplifions l'accès à la donnée géographique agricole&nbsp;bio.</p>
-              <p>Nosu vous transmettons des données uitles pour pour mener une
+              <p>Nous vous transmettons des données uitles pour pour mener une
                 politique publique de qualité, sur des enjeux critiques
                 (dont la biodiversité et l'alimentation).</p>
             </v-card-text>
