@@ -39,7 +39,7 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
         type: 'Feature',
         geometry,
         properties: {
-          BIO,
+          BIO: parseInt(BIO, 10),
           CODE_CULTU,
           LABEL_CULTU,
           GROUPE_CULTU,
@@ -60,9 +60,9 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
   return features
 }
 
-module.exports = function ({sourceFile, filteringFeatures}, done) {
+module.exports = function ({sourceFile, filteringFeatures, millesime}, done) {
   try {
-    done(null, extractFeatures({sourceFile, filteringFeatures}))
+    done(null, extractFeatures({sourceFile, filteringFeatures, millesime}))
   }
   catch (error) {
     done(error)
