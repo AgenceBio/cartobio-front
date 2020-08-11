@@ -1,17 +1,21 @@
 <template>
   <v-layout column align-center justify-space-between py-5>
-    <h1 class="parallax-title">
-      Ouvrir, enrichir et partager
-      <br />les données
-      parcellaires de l’agriculture biologique
+    <h1>
+      Les données de l'Agriculture Biologique en France
     </h1>
 
-    <v-btn to="/map" large outline round color="primary" class="mb-5 mt-4">
-      Accéder à l'application
-    </v-btn>
+    <span>
+      <v-btn to="/features/organismes-certification-bio" large outline round color="primary" class="mb-5 mt-4">
+        Pour mon organisme de certification
+      </v-btn>
+
+      <v-btn to="/features/territoires" large outline round color="primary" class="mb-5 mt-4">
+        Sur mon territoire
+      </v-btn>
+    </span>
 
     <v-card>
-      <v-img contain lazy-src="@/assets/cartobio-screenshot.jpg" src="@/assets/cartobio-screenshot.jpg" aspect-ratio="1.92" width="640"></v-img>
+      <v-img contain src="@/assets/cartobio-screenshot.jpg?lazy" aspect-ratio="1.92" width="640"></v-img>
     </v-card>
   </v-layout>
 </template>
@@ -24,7 +28,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parallax-title {
+h1 {
   font-size: 36px;
 }
 </style>
