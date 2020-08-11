@@ -14,7 +14,7 @@ const gdal = require('gdal-next')
 const {basename, dirname, join, resolve} = require('path')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['epci'],
+  string: ['epci', 'millesime'],
   boolean: ['in-lambert-93', 'shapefiles'],
   alias: {
     inLambert93: 'in-lambert-93'
@@ -30,17 +30,17 @@ const {Worker} = require('worker_threads')
 const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
-const {_:FILTERING_FILES, epci} = argv
+const {_:FILTERING_FILES, epci, millesime} = argv
 const {shapefiles, inLambert93} = argv
 const {from:SOURCE_FILES} = argv
 const {to:DESTINATION_FILE='export.geojson'} = argv
 
 
-if (!FILTERING_FILES || !SOURCE_FILES) {
-  console.error('npm run export -- --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
-  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
-  console.error('npm run export -- --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
-  console.error('npm run export -- --from "../RPG/2019/d064/*.shp" --epci 200067106')
+if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d064/*.shp" --epci 200067106')
   process.exit(1)
 }
 
@@ -147,7 +147,7 @@ async function run (FILTERING_FILES) {
     .map(s => resolve(s))
     .map(sourceFile => ({
       sourceFile,
-      featuresP: extract({sourceFile, filteringFeatures})
+      featuresP: extract({sourceFile, filteringFeatures, millesime})
     }))
 
     // const worker = new Worker(
