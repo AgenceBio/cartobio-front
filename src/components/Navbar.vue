@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar color="#b9d065" app>
+  <v-toolbar color="#b9d065" clipped-left app>
     <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
       <svg class="logo">
         <use xlink:href="@/assets/logos-sprite.svg#cartobio"></use>
@@ -10,11 +10,10 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn v-if="isAuthenticated" to="map" flat>Carte</v-btn>
+      <v-btn v-if="isAuthenticated" active-class="active" to="map" flat>Carte</v-btn>
       <Profile v-if="isAuthenticated" class="navbar-button" />
       <v-btn v-else flat @click="startLogin">Connexion</v-btn>
-      <v-btn to="about" flat>À propos</v-btn>
-      <v-btn to="contact" flat>Contact</v-btn>
+      <AboutMenu />
     </v-toolbar-items>
 
 
@@ -24,19 +23,17 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 
+import AboutMenu from "@/components/AboutMenu";
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
 
 export default {
   name: "Navbar",
   components: {
+    AboutMenu,
     Login,
     Profile,
   },
-  data: () => ({
-    user: {},
-    login: false
-  }),
 
   computed: {
     ...mapGetters('user', ['isAuthenticated', 'isAuthenticating'])
@@ -57,5 +54,14 @@ export default {
 
 .logo {
   width: 50px;
+}
+
+.active::after {
+  border-bottom: 4px solid #24449C;
+  bottom: 0;
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
 }
 </style>

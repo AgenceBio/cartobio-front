@@ -1,15 +1,15 @@
 <template>
   <v-layout row wrap>
-    <AppNavbar />
+    <Navbar />
     <router-view />
   </v-layout>
 </template>
 <script>
-import AppNavbar from "@/components/AppNavbar";
+import Navbar from "@/components/Navbar";
 export default {
   name: "AppLayout",
   components: {
-    AppNavbar
+    Navbar
   },
 };
 </script>
