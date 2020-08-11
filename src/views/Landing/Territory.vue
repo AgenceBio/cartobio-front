@@ -1,8 +1,8 @@
 <template>
   <v-content class="blue-grey lighten-5">
     <v-layout id="title" column align-center justify-space-between my-4 py-5>
-      <h1 class="display-2 mb-3">
-        Accédez aux données de l'Agriculture Biologique de votre territoire
+      <h1 class="display-2 mb-3 text-xs-center">
+        Accédez aux données de l'Agriculture Biologique<br>de votre territoire
       </h1>
 
       <p class="headline mb-3">
@@ -10,15 +10,19 @@
       <p>
 
       <p>
-        <v-btn large outline round color="primary" class="mb-5 mt-4">
+        <!-- <v-btn large outline round color="primary" class="mb-5 mt-4">
           <v-icon>arrow_drop_down</v-icon>
           Choisissez vos données
+        </v-btn> -->
+        <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">email</v-icon>
+          Demandez les données de votre territoire
         </v-btn>
       </p>
     </v-layout>
 
     <v-container fluid>
-      <v-layout row justify-space-around>
+      <v-layout row justify-space-around class="features">
         <v-flex xs3>
           <v-card>
             <v-card-title>
@@ -68,7 +72,7 @@
 
     <v-layout column align-center justify-space-between my-4>
       <p>
-        <v-btn to="/features/territoires" large outline round color="primary" class="mb-5 mt-4">
+        <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">email</v-icon>
           Contactez-nous
         </v-btn>
@@ -104,6 +108,7 @@ export default {
     return {
       timerId: null,
       serviceIndex: 0,
+      mailto: 'mailto:cartobio@beta.gouv.fr?subject=Demande%20de%20données%20pour%20mon%20territoire',
       services: [
         'de la reconquête de l\'eau',
         'des Plans Alimentaires Territoriaux (PAT)',
@@ -142,8 +147,15 @@ export default {
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-card h2 {
   margin: 0;
+}
+
+.features .v-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
 }
 </style>

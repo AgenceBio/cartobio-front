@@ -35,24 +35,25 @@
         <v-layout row wrap justify-space-between align-center>
           <v-flex xs6>
             <v-card-title>
-              <h2>Support à la certification Bio</h2>
+              <h2 class="headline">Support à la certification Bio</h2>
             </v-card-title>
 
             <v-card-text>
-              <ul>
-                <li>fiabiliser les contrôles via une approche graphique</li>
-                <li>un outil prêt-à-l'emploi pour les auditeurs et les responsables de certification</li>
-                <li>une aide pour l'analyse des risques environnants</li>
-                <li>ajouter la fonction carto et nos données géographiques à votre outil métier en quelques lignes de code</li>
-              </ul>
+              <p>Fiabilisez vos contrôles terrain via une approche graphique
+                grâce à un outil prêt-à-l'emploi, que ce soit pour les auditeur·ices ou les responsables de certification.
+              </p>
+
+              <p>Nous vous proposons une aide pour l'analyse des risques environnants,
+                ainsi qu'une couche de données et une API qui s'intègrent à votre outil métier.
+              </p>
             </v-card-text>
 
             <v-card-actions>
-              <v-btn to="/features/territoires" round outline>
+              <v-btn to="/features/organismes-certification-bio" round outline>
                 <v-icon class="mr-1">chevron_right</v-icon>
                 En savoir plus
               </v-btn>
-              <v-btn v-if="isAuthenticated" to="/map" round outline>
+              <v-btn v-if="isAuthenticated" to="map" round outline>
                 <v-icon class="mr-2">public</v-icon>
                 Accès à la carte
               </v-btn>
@@ -75,14 +76,14 @@
         <v-layout row wrap justify-space-between align-center>
           <v-flex xs6 order-xs2>
             <v-card-title>
-              <h2>Les données de mon territoire</h2>
+              <h2 class="headline">Les données de mon territoire</h2>
             </v-card-title>
 
             <v-card-text>
-              <ul>
-                <li>simplification de l'accès à ces données</li>
-                <li>des données utiles pour mener une politique publique de qualité, sur des enjeux importants (biodiversité, alimentation)</li>
-              </ul>
+              <p>Nous simplifions l'accès à la donnée géographique agricole&nbsp;bio.</p>
+              <p>Nosu vous transmettons des données uitles pour pour mener une
+                politique publique de qualité, sur des enjeux critiques
+                (dont la biodiversité et l'alimentation).</p>
             </v-card-text>
 
             <v-card-actions>
@@ -90,10 +91,10 @@
                 <v-icon class="mr-1">chevron_right</v-icon>
                 En savoir plus
               </v-btn>
-              <v-btn to="/features/territoires#choose" round outline>
+              <!-- <v-btn to="/features/territoires#choose" round outline>
                 <v-icon class="mr-2">playlist_add</v-icon>
                 Choisir mes données
-              </v-btn>
+              </v-btn> -->
             </v-card-actions>
           </v-flex>
 
@@ -105,30 +106,31 @@
     </section>
 
     <section class="py-5">
-      <v-card flat color="transparent" max-width="840" class="mx-auto">
+      <v-card flat to="stats" color="transparent" max-width="840" class="mx-auto">
         <v-layout row wrap justify-space-between align-center>
           <v-flex xs6>
             <v-card-title>
-              <h2>La démarche projet</h2>
+              <h2 class="headline">La démarche projet</h2>
             </v-card-title>
 
             <v-card-text>
-              <ul>
-                <li>on va sur le terrain pour observer le fonctionnement et les relations entre agriculteurs et organismes de certification</li>
-                <li>on fait dialoguer les acteurs de la bio ensemble</li>
-                <li>on répond à chacune des demandes</li>
-                <li>parce qu'on voit l'ensemble, on est à même de proposer un parcours administratif plus simple pour tout le monde</li>
-                <li>approche expérimentale (on essaie, on rate, on tente autre chose)</li>
-                <li>bénéficie de l'infrastructure et des méthodes telles que proposées par l'incubateur des services numériques</li>
-              </ul>
+              <p>
+                Nous sommes une équipe pluridisciplinaire intégrée à l'Incubateur des Services Numériques de l'État (<abbr title="Direction du Numérique">DINUM</abbr>).
+                On se rend sur le terrain pour observer les interactions entre agriculteur·ices, organismes de certification et la <abbr title="Politique Agricole Commune">PAC</abbr>.
+              </p>
+
+              <p>
+                Nous visons à proposer un parcours administratif simplifié, en faisant dialoguer tous les acteurs ensemble.
+                On essaie, on rate, et on ajuste nos objectifs en expérimentant.
+              </p>
             </v-card-text>
 
             <v-card-actions>
-              <v-btn to="/about" round outline>
-                <v-icon class="mr-1">chevron_right</v-icon>
-                En savoir plus
+              <v-btn to="stats" round outline>
+                <v-icon class="mr-1">bar_chart</v-icon>
+                Nos métriques de réussite
               </v-btn>
-              <v-btn href="https://beta.gouv.fr/approche/manifeste" target="_blank" round outline>
+              <v-btn @click.stop href="https://beta.gouv.fr/approche/manifeste" target="_blank" round outline>
                 <v-icon small class="mr-2">open_in_new</v-icon>
                 Le manifeste beta.gouv.fr
               </v-btn>

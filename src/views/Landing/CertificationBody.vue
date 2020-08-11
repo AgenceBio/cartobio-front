@@ -1,7 +1,7 @@
 <template>
   <v-content class="blue-grey lighten-5">
     <v-layout id="title" column align-center justify-space-between my-4 py-5>
-      <h1 class="display-2 mb-3">
+      <h1 class="display-2 mb-3 text-xs-center">
         Une vision géographique de la certification Bio
       </h1>
 
@@ -22,7 +22,7 @@
     </v-layout>
 
     <v-container fluid>
-      <v-layout row justify-space-around>
+      <v-layout row justify-space-around class="features">
         <v-flex xs3>
           <v-card>
             <v-card-title>
@@ -134,8 +134,15 @@ export default {
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-card h2 {
   margin: 0;
+}
+
+.features .v-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
 }
 </style>

@@ -3,7 +3,13 @@
     <v-container grid-list-xl>
       <v-layout flex row wrap justify-center  align-content-space-between>
         <v-flex xs12 mt-4 mb-1>
-          <h1>Statistiques</h1>
+          <h1 class="display-3">Métriques de réussite</h1>
+
+          <p class="headline">Quelques indicateurs pour suivre l'ouverture des données géographiques de l'agriculture biologique.</p>
+
+          <p>Nous avons choisi ces indicateurs pour mesurer la progression de la création de données, et observer l'utilité de nos efforts.
+            Nous révisons notre trajectoire tous les 6 mois, entre autre pour savoir si nous avançons toujours dans la bonne direction.
+          </p>
         </v-flex>
 
         <v-flex xs12 sm4 my-2>
@@ -97,7 +103,7 @@ export default {
       stats: null,
       apiAccessCount: null,
       apiAccessCallsCount: null,
-      dataAccessCount: 14,
+      dataAccessCount: 30,
       loading: true,
       errored: false,
       SAU_TOTALE,
