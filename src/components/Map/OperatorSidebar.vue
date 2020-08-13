@@ -1,64 +1,62 @@
 <template>
-  <v-navigation-drawer app clipped stateless hide-overlay v-model="drawer">
-    <v-container fluid fill-height pa-0>
-      <v-layout column>
-        <v-toolbar dark flat prominent color="#457382">
-          <v-toolbar-side-icon @click="clearOperator">
-            <v-icon>navigate_before</v-icon>
-          </v-toolbar-side-icon>
-          <v-toolbar-title class="ml-0">
-            {{ operator.title }}
-          </v-toolbar-title>
+  <v-container fluid fill-height pa-0>
+    <v-layout column>
+      <v-toolbar dark flat prominent color="#457382">
+        <v-toolbar-side-icon @click="clearOperator">
+          <v-icon>navigate_before</v-icon>
+        </v-toolbar-side-icon>
+        <v-toolbar-title class="ml-0">
+          {{ operator.title }}
+        </v-toolbar-title>
 
-          <v-spacer/>
+        <v-spacer/>
 
-          <v-btn v-if="hasData" flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
-            <v-tooltip top left dark open-delay=200>
-              <template v-slot:activator="{ on }">
-                <v-icon v-on="on" small>my_location</v-icon>
-              </template>
+        <v-btn v-if="hasData" flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
+          <v-tooltip top left dark open-delay=200>
+            <template v-slot:activator="{ on }">
+              <v-icon v-on="on" small>my_location</v-icon>
+            </template>
 
-              Centrer la carte sur l'exploitation
-            </v-tooltip>
-          </v-btn>
-        </v-toolbar>
+            Centrer la carte sur l'exploitation
+          </v-tooltip>
+        </v-btn>
+      </v-toolbar>
 
-        <v-flex shrink>
-          <div class="update-info pa-2 ma-0 caption">
-            <p v-if="operator.numeroPacage === null">
-              <v-icon small>help_outline</v-icon>
-              Statut PAC inconnu,
-              engagé bio en {{ operator.dateEngagement | dateYear }}.
-            </p>
-            <p v-else-if="operator.numeroPacage === ''">
-              <v-icon small color="green">check_circle_outline</v-icon>
-              Hors PAC,
-              engagé bio en {{ operator.dateEngagement | dateYear }}.
-            </p>
-            <p v-else>
-              <v-icon small color="green">check_circle_outline</v-icon>
-              PACAGE <b>{{ operator.numeroPacage }}</b>,
-              engagé bio en {{ operator.dateEngagement | dateYear }}.
-            </p>
+      <v-flex shrink>
+        <div class="update-info pa-2 ma-0 caption">
+          <p v-if="operator.numeroPacage === null">
+            <v-icon small>help_outline</v-icon>
+            Statut PAC inconnu,
+            engagé bio en {{ operator.dateEngagement | dateYear }}.
+          </p>
+          <p v-else-if="operator.numeroPacage === ''">
+            <v-icon small color="green">check_circle_outline</v-icon>
+            Hors PAC,
+            engagé bio en {{ operator.dateEngagement | dateYear }}.
+          </p>
+          <p v-else>
+            <v-icon small color="green">check_circle_outline</v-icon>
+            PACAGE <b>{{ operator.numeroPacage }}</b>,
+            engagé bio en {{ operator.dateEngagement | dateYear }}.
+          </p>
 
-            <v-icon small>info_outline</v-icon>
-            Dernière mise à jour le <b>{{ baseDate | formatDate }}</b>.
-          </div>
-        </v-flex>
+          <v-icon small>info_outline</v-icon>
+          Dernière mise à jour le <b>{{ baseDate | formatDate }}</b>.
+        </div>
+      </v-flex>
 
 
-        <pacage-flow v-if="operator.numeroPacage === null" :operator="operator" />
-        <v-flex class="grow text-sm-center my-5" v-else-if="isLoading">
-          <v-progress-circular indeterminate size=64 color="#457382" />
+      <pacage-flow v-if="operator.numeroPacage === null" :operator="operator" />
+      <v-flex class="grow text-sm-center my-5" v-else-if="isLoading">
+        <v-progress-circular indeterminate size=64 color="#457382" />
 
-          <p class="my-3">Chargement des parcelles.</p>
-        </v-flex>
-        <parcels-list v-else-if="isLoaded && hasData" :parcels="parcels" :operator="operator" />
-        <parcels-submit v-else-if="isLoaded && !hasData" :operator="operator" />
+        <p class="my-3">Chargement des parcelles.</p>
+      </v-flex>
+      <parcels-list v-else-if="isLoaded && hasData" :parcels="parcels" :operator="operator" />
+      <parcels-submit v-else-if="isLoaded && !hasData" :operator="operator" />
 
-      </v-layout>
-    </v-container>
-  </v-navigation-drawer>
+    </v-layout>
+  </v-container>
 </template>
 <script>
 import {mapState, mapMutations} from 'vuex';
@@ -80,7 +78,6 @@ export default {
     // parcels is a FeatureCollection
     parcels: Object,
     operator: Object,
-    drawer: Boolean
   },
 
   data() {

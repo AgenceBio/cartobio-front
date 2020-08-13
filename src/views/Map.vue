@@ -1,8 +1,8 @@
 <template>
   <v-layout>
+    <v-navigation-drawer app clipped stateless hide-overlay v-model="showSidebar">
       <OperatorSidebar
         v-if="showOperatorDetails"
-        :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:hover-parcel="hoverParcel"
@@ -12,11 +12,13 @@
         v-on:zoom-on="zoomOn"
       ></OperatorSidebar>
 
-      <SearchSidebar  :drawer="showSearch"
+      <SearchSidebar  v-if="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
                       @select-operator="setOperator"
                       @flyto="flyTo"></SearchSidebar>
+    </v-navigation-drawer>
+
     <v-content>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
@@ -347,6 +349,10 @@ export default {
     ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
     ...mapState('operators', ['certificationBodyOperators']),
+
+    showSidebar () {
+      return this.showOperatorDetails || this.showSearch
+    },
 
     showOperatorDetails () {
       return Boolean(this.isAuthenticated && this.operator.id);
