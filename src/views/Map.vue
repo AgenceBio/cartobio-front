@@ -22,23 +22,6 @@
     <v-content>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
-        <v-dialog v-model="setUpParcel" persistent v-if="operator.title">
-          <v-card>
-            <v-card-title class="headline">Nouvelle Parcelle - {{this.operator.title}}</v-card-title>
-            <v-card-text>
-              <ParcelDetails
-                :operator="operator"
-                :parcel="newParcel"
-                v-on:parcel-updated="updateNewParcel($event)"
-              ></ParcelDetails>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="green darken-1" flat @click="saveParcel()">Valider</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
         <!-- Map component -->
         <MglMap
           :mapStyle="mapStyle"
@@ -138,9 +121,6 @@ import {all as mergeAll} from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 import centroid from '@mapbox/polylabel';
 
-// mapbox-gl dependencies
-import MapboxDraw from "@mapbox/mapbox-gl-draw";
-
 import {
   MglMap,
   MglNavigationControl,
@@ -151,7 +131,6 @@ import {
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
 import OperatorSidebar from "@/components/Map/OperatorSidebar";
-import ParcelDetails from "@/components/ParcelDetails";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
@@ -185,15 +164,6 @@ function queryOperatorParcels (operatorParcels, lngLat) {
 //   maxzoom: 24
 // };
 
-// Mapbox draw control
-let draw = new MapboxDraw({
-  displayControlsDefault: false,
-  controls: {
-    polygon: true,
-    trash: true
-  }
-});
-
 // template for geoJSON objects
 let geoJsonTemplate = { features: [], type: "FeatureCollection" };
 const noop = function noop() {}
@@ -207,7 +177,6 @@ export default {
 
   components: {
     OperatorSidebar,
-    ParcelDetails,
     ParcelDetailsPopup,
     ExploitationPopup,
     SearchSidebar,
@@ -247,8 +216,6 @@ export default {
       highlightedParcels: geoJsonTemplate,
       // selected parcels
       selectedParcels: geoJsonTemplate,
-      // placeholder for newly drawn parcel
-      newParcel: {},
       // bbox containing operator parcels
       bboxOperator: [],
 
@@ -265,8 +232,6 @@ export default {
       layersOperator: {},
 
       // edit mode
-      editMode: false,
-
       expandLayers: [true],
       displaySurvey: true,
       // new parcel dialog
@@ -473,10 +438,6 @@ export default {
       })
 
       // handle click on layers
-      map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
-        this.selectParcel(e.features[0]);
-      });
-
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
@@ -684,36 +645,6 @@ export default {
       });
     },
 
-    // function  used by draw features
-    updateArea(e) {
-      var data = draw.getAll();
-      if (data.features.length > 0) {
-        // var area = area(data);
-        // // restrict to area to 2 decimal points
-        // var rounded_area = Math.round(area * 100) / 100;
-      } else {
-        if (e.type !== "draw.delete")
-          alert("Use the draw tools to draw a polygon!");
-      }
-    },
-    startEditMode() {
-      this.editMode = true;
-      this.map.addControl(draw, "top-right");
-      this.map.on(
-        "draw.create",
-        function(e) {
-          let newFeature = e.features[0];
-          let surface = area(newFeature);
-          surface = Math.round(surface * 100) / 100; // round to 2 decimals
-          newFeature.properties.surfgeo = surface;
-          this.newParcel = newFeature;
-          this.setUpParcel = true;
-        }.bind(this)
-      );
-      this.map.on("draw.delete", this.updateArea);
-      this.map.on("draw.update", this.updateArea);
-    },
-
     unsetUpMapOperator () {
       this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
       this.toggleLayerAnon(this.currentYear, false);
@@ -888,45 +819,14 @@ export default {
         padding: this.mapPadding
       });
     },
+
+    /**
+     * @todo remove it, and replace it with the more generic `zoomOn()` method
+     */
     zoomOnOperator() {
       this.map.fitBounds(this.bboxOperator, {
         padding: this.mapPadding
       });
-    },
-    selectParcel(parcel) {
-      let tmp = this.parcelsOperator[this.currentYear].features.find(function(feature) {
-        return feature.id === parcel.id;
-      });
-      tmp.properties.selected = !tmp.properties.selected;
-      if (tmp.properties.selected) {
-        this.selectedParcels.features.push(tmp);
-      } else {
-        // _.remove doesn't trigger component updates
-        // https://stackoverflow.com/questions/42090651/computed-properties-not-updating-when-using-lodash-and-vuejs
-        this.selectedParcels.features = this.selectedParcels.features.filter(function(feature) {
-          return feature.id !== tmp.id;
-        });
-      }
-      this.map.getSource("selected").setData(this.selectedParcels);
-    },
-    selectAllParcels(bool) {
-      this.parcelsOperator[this.currentYear].features.forEach(function(parcel) {
-        parcel.properties.selected = bool;
-      });
-      if (bool) {
-        this.selectedParcels.features = this.parcelsOperator[this.currentYear].features;
-      } else {
-        this.selectedParcels.features = [];
-      }
-      this.map.getSource("selected").setData(this.selectedParcels);
-    },
-    saveParcel() {
-      this.setUpParcel = !this.setUpParcel;
-      this.parcelsOperator[this.currentYear].features.push(this.newParcel);
-    },
-    updateNewParcel(newData) {
-      this.newParcel.properties = newData[0];
-      this.$forceUpdate();
     },
 
     addOperatorLayer(data, year) {
@@ -1042,7 +942,6 @@ export default {
 
 <style lang="scss">
 @import '~mapbox-gl/dist/mapbox-gl.css';
-@import "~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 </style>
 
 <style lang="scss" scoped>
