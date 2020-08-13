@@ -1,60 +1,67 @@
 <template>
-  <v-toolbar app clipped-left color="#b9d065">
+  <v-toolbar color="#b9d065" clipped-left app>
     <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
-      <v-icon flat large>home</v-icon>
+      <svg class="logo">
+        <use xlink:href="@/assets/logos-sprite.svg#cartobio"></use>
+      </svg>
       <v-toolbar-title>CartoBIO</v-toolbar-title>
     </v-btn>
+
     <v-spacer></v-spacer>
-    <v-spacer></v-spacer>
+
     <v-toolbar-items class="hidden-sm-and-down">
-
-      <router-link
-        v-if="$store.getters.getUserCategory === $store.getters.getCategories.oc && currentRoute !== '/notifications'"
-        to="/notifications"
-        class="navbar-button"
-      >
-        <v-btn flat class="navbar-button" title="Aller à la liste des exploitations">Exploitations</v-btn>
-      </router-link>
-      <router-link v-if="!currentRoute.match(/\/map/)" to="/map" class="navbar-button">
-        <v-btn flat class="navbar-button" title="Aller à la carte">Carte</v-btn>
-      </router-link>
-      <Login v-if="!getProfile.nom" class="navbar-button"></Login>
-      <Profile v-if="getProfile.nom" class="navbar-button"></Profile>
-
-      <AboutMenu></AboutMenu>
+      <v-btn v-if="isAuthenticated" active-class="active" to="map" flat>Carte</v-btn>
+      <Profile v-if="isAuthenticated" class="navbar-button" />
+      <v-btn v-else flat @click="startLogin">Connexion</v-btn>
+      <AboutMenu />
     </v-toolbar-items>
+
+
+    <Login :show="isAuthenticating" class="navbar-button" />
   </v-toolbar>
 </template>
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
+import AboutMenu from "@/components/AboutMenu";
 import Login from "@/components/Login";
 import Profile from "@/components/Profile";
-import AboutMenu from '@/components/AboutMenu.vue'
 
 export default {
   name: "Navbar",
   components: {
+    AboutMenu,
     Login,
     Profile,
-    AboutMenu,
   },
-  props: ["bus"],
-  data: () => ({
-    user: {},
-    login: false
-  }),
+
   computed: {
-    getProfile() {
-      return this.$store.getters.getProfile;
-    },
-    currentRoute() {
-      return this.$route.path;
-    }
+    ...mapGetters('user', ['isAuthenticated', 'isAuthenticating'])
+  },
+
+  methods: {
+    ...mapMutations({
+      startLogin: 'user/LOGIN'
+    })
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.navbar-button {
-  height: 100%;
+.v-toolbar__title a {
+  color: inherit;
+}
+
+.logo {
+  width: 50px;
+}
+
+.active::after {
+  border-bottom: 4px solid #24449C;
+  bottom: 0;
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
 }
 </style>

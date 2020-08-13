@@ -1,94 +1,47 @@
 ---
-title: Récupérer les données du parcellaire bio via l'API CartoBio
+title: Données géographiques des parcelles bio pour les territoires, collectivités, et organismes à vocation environnementale
 ---
 
-L'**API CartoBio** est un moyen d'intégrer les données affichées
-sur CartoBio, dans vos propres applications et outils métiers.
+L'**API Territoires de CartoBio** est un moyen de récupérer des données de
+l'agriculture biologique au niveau d'une commune, d'une EPCI ou d'un contour géographique de votre choix.
 
-**Intention** : ce document va vous guider dans l'accès à l'API,
+**Intention** : ce document va vous guider dans l'accès à l'API Territoires de CartoBio,
 sur l'accès aux données à travers des exemples techniques.
 
-**À qui s'adresse l'API** ?<br>
-Nous destinons CartoBio et son API aux **Organismes certificateurs**.<br>
-Nous aimerions _ensuite_ la proposer aux **Collectivités locales**.
+**À qui s'adresse l'API Territoires** ?<br>
+Nous destinons l'API Territoires de CartoBio aux **acteurs des territoires**.<br>
 
-# Utilisation de l'API CartoBio
-
-## Demander un jeton d'accès
-
-Si vous êtes une personne qui a accès au
-[portail de notifications de l'Agence Bio](http://notifications.agencebio.org/),
-ou que vous êtes une collectivité concernée
-par le développement du bio comme levier d'action de santé publique, [**demandez-nous un jeton d'accès**][ask-token], c'est _gratuit_[^1].
-
-Le **jeton d'accès ouvre l'accès aux données**.
-
-Voici un jeton de test ; il rend fonctionnels les exemples ci-après:
-
-```
-eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.NL050Bt_jMnQ6WLcqIbmwGJkaDvZ0PIAZdCKTNF_-sSTiTw5cijPGm6TwUSCWEyQUMFvI1_La19TDPXsaemDow
-```
-
-## Authentification des requêtes
-
-Illustration du passage du jeton dans une requête vers l'API :
-
-```bash
-$ CARTOBIO_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.B7elZEHGsKYwWxDNWalnwU7L1ZkdAjQVeAo0Hi4VsB4"
-
-$ curl -H "Authorization: Bearer ${CARTOBIO_TOKEN}" https://cartobio.org/api/v1/test
-```
-
-**Exemple de réponse** :
-
-```json
-{"test":"OK"}
-```
-
-Et maintenant, en cas d'identification incorrecte :
-
-```bash
-$ curl https://cartobio.org/api/v1/test
-```
-
-**Exemple de réponse** :
-
-```json
-{"error":"We could not verify the provided token."}
-```
+# Utilisation de l'API Territoires de CartoBio
 
 ## Formats de réponse
 
 - [GeoJSON](https://geojson.org/)
+- [ESRI Shapefile](https://fr.wikipedia.org/wiki/Shapefile)
+
+**Exemple de requête pour récupérer du GeoJSON :
+
+```bash
+$ curl https://cartobio.org/api/v1/territoires/test
+$ curl -H 'Accept: application/json' https://cartobio.org/api/v1/territoires/test
+```
+
+**Exemple de requête pour récupérer du ESRI Shapefile :
+
+```bash
+$ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.org/api/v1/territoires/test
+```
 
 # Référence de l'API (`v1` • beta)
 
-Toutes les requêtes nécessitent un [jeton d'accès](#demander-un-jeton-d’accès), passé dans l'entête HTTP `Authorize`.
+## Récupérer le parcellaire bio anonyme pour mon EPCI
 
-## Tester la connectivité
-
-**Chemin** : `/api/v1/test`
-
-**Exemple de requête** :
-
-```bash
-$ curl https://cartobio.org/api/v1/test
-```
-
-<details>
-  <summary>Exemple de réponse</summary>
-  <pre class="language-json"><code>
-{"test":"OK"}
-</code></pre></details>
-
-## Récupérer le parcellaire bio de mon organisme certificateur
-
-**Chemin** : `/api/v1/parcels`
+**Chemin** : `/api/v1/territoires/epci/:epciId`<br>
+**Verbe** : `GET`
 
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/parcels
+$ curl https://cartobio.org/api/v1/territoires/epci/200067106
 ```
 
 <details>
@@ -99,12 +52,11 @@ $ curl https://cartobio.org/api/v1/parcels
     {
       "type": "Feature",
       "properties": {
-        "pacage": "026000003",
-        "codecultu": "BTH",
+        "codeculture": "BTH",
+        "labelculture": "Blé tendre d'hiver"
+        "groupeculture": "Blé tendre"
         "bio": 1,
-        "numilot": 1,
-        "numparcel": 1,
-        "numerobio": 11
+        "millesime": 2019
       },
       "geometry": {
         "type": "Polygon",
@@ -185,16 +137,17 @@ $ curl https://cartobio.org/api/v1/parcels
 
     ...
   ]
-}</pre></code></details>
+}</code></pre></details>
 
-## Récupérer le parcellaire d'un·e opérateur·ice
+## Récupérer le parcellaire bio anonyme pour ma commune
 
-**Chemin** : `/api/v1/parcels/operator/:numero-bio`
+**Chemin** : `/api/v1/territoires/insee/:codeInsee`<br>
+**Verbe** : `GET`
 
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/parcels/operator/11
+$ curl https://cartobio.org/api/v1/territoires/epci/64102
 ```
 
 <details>
@@ -205,12 +158,11 @@ $ curl https://cartobio.org/api/v1/parcels/operator/11
     {
       "type": "Feature",
       "properties": {
-        "pacage": "026000003",
-        "codecultu": "BTH",
+        "codeculture": "BTH",
+        "labelculture": "Blé tendre d'hiver"
+        "groupeculture": "Blé tendre"
         "bio": 1,
-        "numilot": 1,
-        "numparcel": 1,
-        "numerobio": 11
+        "millesime": 2019
       },
       "geometry": {
         "type": "Polygon",
@@ -291,11 +243,119 @@ $ curl https://cartobio.org/api/v1/parcels/operator/11
 
     ...
   ]
-}</pre></code></details>
+}</code></pre></details>
 
-## Récupérer le parcellaire bio anonymisé
+## Récupérer le parcellaire bio anonyme pour un contour géographique
 
-🚧 Prochainement. [Ces données vous intéressent ?][ask-wip-feature]
+**Chemin** : `/api/v1/territoires`<br>
+**Verbe** : `PUT`
+
+**Paramètres optionnels** :
+
+- `epsg` : explicite la projection géographique des données envoyées au [format **EPSG**](https://epsg.io)
+- `crs` : explicite la projection géographique des données envoyées au format **CRS**.
+
+**Exemple de requête** :
+
+```bash
+$ curl -X PUT --upload-file -H 'Content-Type: application/vnd.shp+octet-stream' contour.shp https://cartobio.org/api/v1/territoires?espg=4171
+$ curl -X PUT --upload-file -H 'Content-Type: application/json' contour.geojson https://cartobio.org/api/v1/territoires?crs=RFG93
+```
+
+<details>
+  <summary>Exemple de réponse</summary>
+  <pre class="language-json"><code>{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "codeculture": "BTH",
+        "labelculture": "Blé tendre d'hiver"
+        "groupeculture": "Blé tendre"
+        "bio": 1,
+        "millesime": 2019
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+               5.10632514953613,
+               44.7276498788965
+            ],
+            [
+               5.11610984802246,
+               44.7327109365672
+            ],
+            [
+               5.11877059936523,
+               44.7366131364681
+            ],
+            [
+               5.12057304382324,
+               44.7398444464433
+            ],
+            [
+               5.11739730834961,
+               44.7508173586635
+            ],
+            [
+               5.11516571044922,
+               44.749781117133
+            ],
+            [
+               5.11336326599121,
+               44.746489403153
+            ],
+            [
+               5.11173248291016,
+               44.7452702022555
+            ],
+            [
+               5.11035919189453,
+               44.7426488332508
+            ],
+            [
+               5.108642578125,
+               44.7378325199372
+            ],
+            [
+               5.1075267791748,
+               44.7349059564114
+            ],
+            [
+               5.10503768920898,
+               44.7333816459144
+            ],
+            [
+               5.10443687438965,
+               44.73130851916
+            ],
+            [
+               5.10375022888184,
+               44.7300280213927
+            ],
+            [
+               5.10349273681641,
+               44.7292353180915
+            ],
+            [
+               5.10272026062012,
+               44.7278937954473
+            ],
+            [
+               5.10632514953613,
+               44.7276498788965
+            ]
+          ]
+        ]
+      }
+    },
+
+    ...
+  ]
+}</code></pre></details>
 
 # Une question ? Un problème ? Besoin d'aide ?
 

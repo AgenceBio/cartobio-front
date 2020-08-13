@@ -29,6 +29,13 @@ module.exports = {
           }
         })
 
+      // vuetify helpers
+      config.plugin('VuetifyLoaderPlugin').tap(() => [{
+        progressiveImages: true,
+        resourceQuery: /lazy\?vuetify-preload/,
+        sharp: true
+      }])
+
       // preserve whitespace in a smarter way
       // via https://github.com/vuejs/vue/issues/9208#issuecomment-450012518
       config.module
