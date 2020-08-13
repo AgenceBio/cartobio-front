@@ -1,9 +1,8 @@
 <template>
-  <section>
+  <Fragment>
     <v-expansion-panel
       v-model="panel"
-      elevation-0
-      class="overflow no-box-shadow"
+      class="overflow-x-hidden no-box-shadow elevation-0"
       expand
       focusable
       readonly
@@ -52,9 +51,9 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
 
-    <v-spacer></v-spacer>
+    <v-spacer />
 
-    <v-flex shrink class="download elevation-1">
+    <v-flex class="download elevation-1">
       <v-layout column align-center justify-center py-3>
         <h3 class="subheading">Export des données (Excel)</h3>
 
@@ -77,10 +76,11 @@
         Le téléchargement des parcelles a démarré…
       </v-snackbar>
     </v-flex>
-  </section>
+  </Fragment>
 </template>
 <script>
 import {mapActions, mapMutations} from "vuex"
+import {Fragment} from 'vue-fragment'
 import {fromCode} from "@/modules/codes-cultures/pac.js"
 import Preview from "@/components/ParcelsListPreview"
 
@@ -93,6 +93,7 @@ export default {
   },
 
   components: {
+    Fragment,
     Preview
   },
 
@@ -268,6 +269,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+section {
+  flex-direction: column;
+  height: 100%;
+}
+
 .v-toolbar /deep/ .v-toolbar__content {
   padding-left: 12px; /* half of what it is supposed to be */
 }
@@ -317,6 +323,10 @@ export default {
 
 .text-cyan {
   color : #457382;
+}
+
+.v-expansion-panel /deep/ {
+  align-content: flex-start;
 }
 
 .v-expansion-panel /deep/ .v-expansion-panel__header {
@@ -375,6 +385,7 @@ export default {
 
 .download {
   background-color: #F6F7E2;
+  flex: 0 0 auto !important;
 
   h3 {
     font-weight: bold;
