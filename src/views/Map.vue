@@ -5,7 +5,6 @@
         :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
-        v-on:close-drawer="closeOperatorDetailsSidebar"
         v-on:hover-parcel="hoverParcel"
         v-on:stop-hovering="stopHoveringParcel"
         v-on:hover-ilot="hoverIlot"
@@ -316,9 +315,6 @@ export default {
   },
   // event bus
   props: {
-    bus: {
-      required: true
-    },
     numeroBio: {
       type: String,
       default: null
@@ -669,12 +665,19 @@ export default {
 
     closeOperatorDetailsSidebar () {
       this.map.resize()
-      this.clearOperatorData()
+
+      this.years.forEach(year => {
+        this.map.removeLayer(this.layersOperator[year].id);
+        this.map.removeLayer(this.layersOperator[year].id + '-border');
+        this.addOperatorData(geoJsonTemplate, year)
+      })
+
       this.$router.replace({
         name: 'map',
         params: {}
       });
     },
+
     // function  used by draw features
     updateArea(e) {
       var data = draw.getAll();
@@ -934,16 +937,6 @@ export default {
       }
     },
 
-    clearOperatorData() {
-      this.$store.commit('operators/CLEAR_CURRENT')
-
-      this.years.forEach(year => {
-        this.map.removeLayer(this.layersOperator[year].id);
-        this.map.removeLayer(this.layersOperator[year].id + '-border');
-        this.addOperatorData(geoJsonTemplate, year)
-      })
-    },
-
     toggleLayerOperator(layerYear, visibility) {
       let layer = this.layersOperator[layerYear];
       if (typeof visibility === "undefined") {
@@ -1031,8 +1024,9 @@ export default {
           this.loadLayers(this.map);
           this.setUpMapOperator()
         }
-        else if (!operator.id) {
+        else if (!operator.id && previousOperator.id) {
           this.unsetUpMapOperator()
+          this.closeOperatorDetailsSidebar()
         }
       }
     }

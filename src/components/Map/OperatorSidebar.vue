@@ -3,7 +3,7 @@
     <v-container fluid fill-height pa-0>
       <v-layout column>
         <v-toolbar dark flat prominent color="#457382">
-          <v-toolbar-side-icon @click="$emit('close-drawer')">
+          <v-toolbar-side-icon @click="clearOperator">
             <v-icon>navigate_before</v-icon>
           </v-toolbar-side-icon>
           <v-toolbar-title class="ml-0">
@@ -12,7 +12,7 @@
 
           <v-spacer/>
 
-          <v-btn v-if="parcels.length" flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
+          <v-btn v-if="hasData" flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
             <v-tooltip top left dark open-delay=200>
               <template v-slot:activator="{ on }">
                 <v-icon v-on="on" small>my_location</v-icon>
@@ -61,7 +61,7 @@
   </v-navigation-drawer>
 </template>
 <script>
-import {mapState} from 'vuex';
+import {mapState, mapMutations} from 'vuex';
 
 import PacageFlow from './OperatorSidebarPacage.vue'
 import ParcelsList from './OperatorSidebarParcelsList.vue'
@@ -113,16 +113,17 @@ export default {
     },
   },
 
+  methods: {
+    ...mapMutations({
+      clearOperator: 'operators/CLEAR_CURRENT'
+    })
+  },
+
   watch: {
     isLoading (newValue, oldValue) {
       if (newValue === false && oldValue === true) {
         this.isLoaded = true
       }
-    },
-
-    drawer (newVal) {
-      if (newVal)
-        this.$emit("open-drawer");
     },
   }
 };
