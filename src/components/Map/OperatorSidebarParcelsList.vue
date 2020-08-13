@@ -11,8 +11,8 @@
       <v-expansion-panel-content v-for="({ numIlot, featureCollection }) in ilots" :key="numIlot">
         <template v-slot:header>
           <v-flex align-center row fill-height class="parcel-summary"
-            @mouseover="$emit('hover-ilot', { numIlot, featureCollection })"
-            @mouseleave="$emit('stop-hovering-ilot', { featureCollection })">
+            @mouseover="setActiveParcels({ numIlot, featureCollection })"
+            @mouseleave="clearActiveParcel">
             <span class="text-cyan text-uppercase font-weight-medium">Ilot {{numIlot}}</span>
           </v-flex>
         </template>
@@ -20,7 +20,11 @@
         <template v-slot:actions>
           <v-tooltip top>
             <template v-slot:activator="{ on }">
-              <v-btn icon small v-on="on" @click.native.stop @click="$emit('zoom-on', featureCollection)">
+              <v-btn icon small v-on="on"
+                @mouseover="setActiveParcels({ numIlot, featureCollection })"
+                @mouseleave="clearActiveParcel"
+                @click.native.stop
+                @click="zoomOn(featureCollection)">
                 <v-icon small color="#457382">my_location</v-icon>
               </v-btn>
             </template>
@@ -31,7 +35,7 @@
 
         <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
           <template v-slot:items="{item: feature}">
-            <tr @mouseover="$emit('hover-parcel', feature)" @mouseleave="$emit('stop-hovering', feature)" @click="$emit('zoom-on', feature)">
+            <tr @mouseover="setActiveParcel({ feature, centroid: true })" @mouseleave="clearActiveParcel" @click="zoomOn(feature)">
               <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
               <td class="numparcel">Parcelle {{feature.properties.numparcel}}</td>
               <td class="text-cyan cultural-label">
@@ -76,8 +80,9 @@
   </section>
 </template>
 <script>
+import {mapActions, mapMutations} from "vuex"
 import {fromCode} from "@/modules/codes-cultures/pac.js"
-import Preview from "@/components/ParcelsListPreview";
+import Preview from "@/components/ParcelsListPreview"
 
 export default {
   name: "OperatorSidebarParcelsList",
@@ -99,10 +104,14 @@ export default {
   },
 
   methods: {
-    // expandIlot(ilotKey) {
-    //   this.expandedArr[ilotKey] = !this.expandedArr[ilotKey];
-    //   this.panel = this.expandedArr;
-    // },
+    ...mapMutations({
+      clearActiveParcel: 'map/CLEAR_HOVERED_FEATURE',
+      setActiveParcel: 'map/HOVERED_FEATURE',
+      setActiveParcels: 'map/HOVERED_FEATURE_COLLECTION',
+    }),
+
+    ...mapActions('map', ['zoomOn']),
+
     sortIlots (features) {
       return features.sort((featureA, featureB) => {
         const ilotDiff = featureA.properties.numilot - featureB.properties.numilot
@@ -315,16 +324,21 @@ export default {
   padding: 0 12px;
 }
 
+.v-expansion-panel /deep/ .v-expansion-panel__header:hover,
+.parcels .v-table td:hover {
+  background: #F6F7E2;
+}
+
 .parcels .v-table {
   border-collapse: unset;
 
   tbody {
     tr:hover {
       background: #F6F7E2;
+      cursor: pointer;
     }
 
     td, th {
-      cursor: pointer;
       height: 38px;
       padding: 0 12px;
     }

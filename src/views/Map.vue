@@ -5,10 +5,6 @@
         v-if="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
-        v-on:hover-parcel="hoverParcel"
-        v-on:stop-hovering="stopHoveringParcel"
-        v-on:hover-ilot="hoverIlot"
-        v-on:stop-hovering-ilot="stopHoveringIlot"
         v-on:zoom-on="zoomOn"
       ></OperatorSidebar>
 
@@ -36,7 +32,7 @@
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
-          <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="hoveredParcelCoordinates" />
+          <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="activeFeature && !activeFeature.trackPointer ? activeFeature.lngLat : undefined" />
           <ExploitationPopup :feature="hoveredExploitationFeature" :operator="certificationBodyOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
           <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
 
@@ -116,10 +112,9 @@
 
 <script>
 import getObjectValue from "lodash/get";
-import {bbox, bboxPolygon, center, area, point} from "turf";
+import {bbox, bboxPolygon, center, point, featureCollection} from "turf";
 import {all as mergeAll} from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
-import centroid from '@mapbox/polylabel';
 
 import {
   MglMap,
@@ -136,10 +131,10 @@ import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapMutations } from 'vuex';
 
-function queryOperatorParcels (operatorParcels, lngLat) {
-  const p = point(lngLat)
+function queryOperatorParcels (operatorParcels, [lng, lat]) {
+  const p = point([lng, lat])
 
   return Object.entries(operatorParcels).reduce((hashMap, [year, {features}]) => {
     const foundFeature = features.find(feature => isPointInPolygon(p, feature.geometry))
@@ -165,7 +160,7 @@ function queryOperatorParcels (operatorParcels, lngLat) {
 // };
 
 // template for geoJSON objects
-let geoJsonTemplate = { features: [], type: "FeatureCollection" };
+let geoJsonTemplate = featureCollection([])
 const noop = function noop() {}
 
 export default {
@@ -221,7 +216,6 @@ export default {
 
       // popup data with parcel history
       hoveredExploitationFeature: undefined,
-      hoveredParcelCoordinates: undefined,
       hoveredParcelFeatures: {
         anon: [],
         operator: {},
@@ -307,6 +301,7 @@ export default {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
     ...mapGetters(['getProfile']),
     ...mapGetters('user', ['isAuthenticated', 'isCertificationBody']),
+    ...mapGetters('map', ['activeFeature', 'activeFeatures']),
     ...mapGetters({
       'operator': 'operators/currentOperator',
       'findOperatorByPacage': 'operators/findByPacage',
@@ -344,6 +339,11 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      clearActiveParcel: 'map/CLEAR_HOVERED_FEATURE',
+      setActiveParcel: 'map/HOVERED_FEATURE',
+    }),
+
     /**
      * @param  {String} styleId [description]
      * @return {Object<Mapbox.Layer>}
@@ -370,8 +370,19 @@ export default {
         this.setupCertificationBodyLayers(map)
       }
 
-      map.on("mousemove", ({lngLat, point}) => {
-        this.buildHoveredPopup(lngLat, point);
+      map.on("mousemove", ({ lngLat }) => {
+        const { currentYear, activeFeature } = this
+        const { lng, lat } = lngLat
+        const { [currentYear]: feature } = queryOperatorParcels({ [currentYear]:  this.parcelsOperator[currentYear] }, [lng, lat])
+
+        // it is a bit ugly, but it avoids overloading the store with events
+        // maybe we should consider throttling the function instead?
+        if (feature && feature.id !== activeFeature?.feature.id) {
+          this.setActiveParcel({feature, lngLat, trackPointer: true})
+        }
+        else if (!feature && activeFeature?.feature.id) {
+          this.clearActiveParcel()
+        }
       });
 
       map.on("click", "certification-body-parcels-points", (e) => {
@@ -448,29 +459,27 @@ export default {
           this.setUpMapOperator();
         }
       })
+
+      // a components asks to zoom on a Feature or on a FeatureCollection
+      this.$store.subscribeAction((action) => {
+        if (action.type === 'map/zoomOn') {
+          this.zoomOn(action.payload)
+        }
+      })
     },
 
-    buildHoveredPopup(lngLat, point) {
+    computeParcelHistoryFromLngLat({ lngLat }) {
+      const point = this.map.project(lngLat)
       const renderedFeatures = this.map.queryRenderedFeatures(point)
+
       this.hoveredParcelFeatures = {
         // anonymous source layers are named like 'anon_..._20xx'
         anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
-        operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
+        operator: queryOperatorParcels(this.parcelsOperator, lngLat),
         cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
       }
-
-      // handle hovering effect when moving mouse on map
-      let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
-      if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
-        if (this.highlightedParcel) {
-          this.stopHighlightingParcel(this.highlightedParcel);
-        }
-        this.highlightParcel(hoveredParcel);
-        this.highlightedParcel = hoveredParcel;
-      } else if (this.highlightedParcel && !hoveredParcel) {
-        this.stopHighlightingParcel(this.highlightedParcel);
-      }
     },
+
     updateHash(map) {
       const {lat,lng} = map.getCenter()
       const zoom = Math.floor(map.getZoom())
@@ -755,63 +764,34 @@ export default {
       this.toggleLayerAnon(this.currentYear, true);
     },
 
-    hoverParcel (parcel) {
-      const [lng, lat] = centroid(parcel.geometry.coordinates)
-      this.hoveredParcelCoordinates = {lng, lat}
+    /**
+     * Set the Mapbox feature state for a featureCollection
+     *
+     * @param {FeatureCollection} featureCollection
+     * @param {{ highlighted: boolean }} state
+     */
+    setFeatureState(featureCollection, state) {
+      const source = `operatorParcels${this.currentYear}`
 
-      this.buildHoveredPopup({lng, lat}, this.map.project({lng, lat}));
-      this.highlightParcel(parcel);
+      featureCollection.features.forEach(({ id }) => {
+        this.map.setFeatureState({source, id}, state)
+      })
     },
 
-    stopHoveringParcel (parcel) {
-      this.stopHighlightingParcel(parcel);
+    setupIlotDirection({ numIlot, featureCollection }) {
+      const ilotBbox = bboxPolygon(bbox(featureCollection));
+      const ilotCenter = center(ilotBbox);
+      const bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
+      const inMap = isPointInPolygon(ilotCenter, bboxMap);
 
-      this.hoveredParcelCoordinates = undefined
-      this.hoveredParcelFeatures = {
-        anon: [],
-        operator: {},
-        cadastre: null,
-      }
-    },
-
-    highlightParcel(parcel) {
-      this.map.setFeatureState({
-        source: 'operatorParcels2020',
-        id: parcel.id,
-      }, { highlighted: true });
-    },
-
-    stopHighlightingParcel(parcel) {
-      this.map.setFeatureState({
-        source: 'operatorParcels2020',
-        id: parcel.id,
-      }, { highlighted: false });
-    },
-
-    hoverIlot({ numIlot, featureCollection }) {
-      featureCollection.features.forEach((parcel) => {
-        this.highlightParcel(parcel);
-      });
-
-      let ilotBbox = bboxPolygon(bbox(featureCollection));
-      let ilotCenter = center(ilotBbox);
-      let bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
-      let inMap = isPointInPolygon(ilotCenter, bboxMap);
       if (!inMap) {
-        this.hoveredIlotName = 'Ilot ' + numIlot;
+        this.hoveredIlotName = `Ilot ${numIlot}`;
         this.ilotCenterCoordinates = ilotCenter.geometry.coordinates;
         this.bboxMap = bboxMap;
         this.mapBounds = this.map.getBounds();
         this.mapCenter = this.map.getCenter().toArray();
         this.displayIlotDirection = true;
       }
-    },
-
-    stopHoveringIlot({ featureCollection }) {
-      featureCollection.features.forEach((parcel) => {
-        this.stopHighlightingParcel(parcel);
-      });
-      this.displayIlotDirection = false;
     },
 
     zoomOn(featureOrfeatureCollection) {
@@ -934,6 +914,40 @@ export default {
           this.unsetUpMapOperator()
           this.closeOperatorDetailsSidebar()
         }
+      }
+    },
+
+    activeFeature (activeFeature, previousFeature) {
+      if (activeFeature) {
+        const {feature, lngLat} = activeFeature
+
+        if (previousFeature && previousFeature.feature.id !== feature.id) {
+          this.setFeatureState(featureCollection([previousFeature.feature]), { highlighted: false })
+        }
+
+        this.setFeatureState(featureCollection([feature]), { highlighted: true })
+        this.computeParcelHistoryFromLngLat({ lngLat })
+      }
+      else if (!activeFeature && previousFeature) {
+        this.setFeatureState(featureCollection([previousFeature.feature]), { highlighted: false })
+        this.hoveredParcelFeatures = {
+          anon: [],
+          operator: {},
+          cadastre: null,
+        }
+      }
+    },
+
+    activeFeatures (activeFeatures, previousFeatures) {
+      if (activeFeatures) {
+        const { featureCollection, numIlot } = activeFeatures
+        this.setFeatureState(featureCollection, { highlighted: true })
+        this.setupIlotDirection({ featureCollection, numIlot })
+      }
+      else if (previousFeatures) {
+        const { featureCollection } = previousFeatures
+        this.setFeatureState(featureCollection, { highlighted: false })
+        this.displayIlotDirection = false;
       }
     }
   }

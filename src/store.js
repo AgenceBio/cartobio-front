@@ -1,18 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import user from '@/store/modules/user.js';
+import map from '@/store/modules/map.js';
 import operators from '@/store/modules/operators.js';
 import pacage from '@/store/modules/pacage.js';
+import user from '@/store/modules/user.js';
 
 Vue.use(Vuex)
 
 //init store
 const store =  new Vuex.Store({
     modules: {
-      operators,
-      pacage,
-      user,
+        map,
+        operators,
+        pacage,
+        user,
     },
     state: {
         lastDataUpdate: '2019-05-15',

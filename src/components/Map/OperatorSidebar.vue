@@ -11,7 +11,7 @@
 
         <v-spacer/>
 
-        <v-btn v-if="hasData" flat icon small @click.native.stop @click="$emit('zoom-on', parcels)">
+        <v-btn v-if="hasData" flat icon small @click.native.stop @click="zoomOn(parcels)">
           <v-tooltip top left dark open-delay=200>
             <template v-slot:activator="{ on }">
               <v-icon v-on="on" small>my_location</v-icon>
@@ -59,7 +59,7 @@
   </v-container>
 </template>
 <script>
-import {mapState, mapMutations} from 'vuex';
+import {mapActions, mapMutations, mapState} from 'vuex';
 
 import PacageFlow from './OperatorSidebarPacage.vue'
 import ParcelsList from './OperatorSidebarParcelsList.vue'
@@ -113,7 +113,9 @@ export default {
   methods: {
     ...mapMutations({
       clearOperator: 'operators/CLEAR_CURRENT'
-    })
+    }),
+
+    ...mapActions('map', ['zoomOn']),
   },
 
   watch: {
