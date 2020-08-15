@@ -373,7 +373,16 @@ export default {
       map.on("mousemove", ({ lngLat }) => {
         const { currentYear, activeFeature } = this
         const { lng, lat } = lngLat
-        const { [currentYear]: feature } = queryOperatorParcels({ [currentYear]:  this.parcelsOperator[currentYear] }, [lng, lat])
+
+        // @todo this is possibly an issue if we hover a feature, which exists in the past, but not on currentYear
+        let { [currentYear]: feature } = queryOperatorParcels({ [currentYear]:  this.parcelsOperator[currentYear] }, [lng, lat])
+
+        // we go for anonymous layers if there was no operator features found
+        if (!feature) {
+          const point = this.map.project(lngLat)
+          const renderedFeatures = this.map.queryRenderedFeatures(point)
+          feature = renderedFeatures.filter(({sourceLayer, layer}) => layer.type === 'fill' && sourceLayer && sourceLayer.indexOf('anon_') === 0)[0]
+        }
 
         // it is a bit ugly, but it avoids overloading the store with events
         // maybe we should consider throttling the function instead?
