@@ -1,9 +1,9 @@
-import codes from './data.json'
+const codes = require('./data.json')
 
 const KEY_CODE_CULTURE = 'Code Culture';
 const KEY_CODE = 'Code'
 
-export function fromCode (code){
+function fromCode (code){
   const found = codes.find((row) => row[KEY_CODE_CULTURE] === code || row[row[KEY_CODE]] === code)
 
   const label = found['Libellé'] || found['Libellé Culture'] || 'Non Connu'
@@ -16,3 +16,5 @@ export function fromCode (code){
 
   return {label, groupCode, groupLabel}
 }
+
+module.exports = { fromCode }
