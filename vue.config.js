@@ -5,6 +5,8 @@ const markdown = require('markdown-it')
 const mdFootnote = require('markdown-it-footnote')
 const mdPrism = require('markdown-it-prism')
 
+process.env.VUE_APP_VERSION = require('./package.json').version
+
 require('prismjs/components/prism-bash')
 require('prismjs/components/prism-javascript')
 require('prismjs/components/prism-json')
