@@ -2,6 +2,37 @@
 title: Journal d'évolution
 ---
 
+## Semaine du 10 au 14 août
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Affichage des exploitations bio hors-PAC dans les résultats de recherche.
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Lorsque le numéro PACAGE d'une exploitation est inconnu, nous proposons de le renseigner, ou de déclarer l'exploitation comme étant hors-PAC.
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Quand nous ne connaissons pas les parcelles d'une exploitation, nous vous proposons de nous les indiquer manuellement — via des indications textuelles, ou téléversement de fichiers.<br>
+  Nous améliorerons cet écran en fonction de vos usages, et de vos retours.
+- <v-chip small color="deep-orange lighten-3 grey--text text--darken-4">API</v-chip>
+  Une [documentation interactive (Swagger)](https://api.gouv.fr/documentation/api_cartobio_territoires) complète notre [guide d'utilisation](#/api).
+- <v-chip small color="deep-orange lighten-3 grey--text text--darken-4">API</v-chip>
+  Nous faisons désormais partie du [catalogue des API du service public](https://api.gouv.fr/les-api/api_cartobio_territoires), en vue de créer un guichet simplifié d'accès aux données.
+
+## Semaine du 3 au 7 août
+
+- <v-chip small color="purple lighten-3 purple--text text--darken-4">Design</v-chip>
+  Clarification de la page d'accueil, et création de deux nouvelles pages
+  à destination des [organismes de certification](/#/features/organismes-certification-bio), et de [personnes/entités morales actives sur leur territoire](/#/features/territoires).
+
+## Semaine du 22 au 26 juin
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Nous avons ajouté la sélection d'une exploitation peut se faire directement depuis la carte, en plus du moteur de recherche.
+
+## Semaine du 1er au 5 juin
+
+- <v-chip small color="purple lighten-3 blue--text text--darken-4">Design</v-chip>
+  Clarification de l'historique d'une parcelle, avec l'intention de la rendre
+  plus lisible et explicite.
+
 ## Semaine du 18 au 22 mai
 
 - <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
