@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "start": "vue-cli-service serve",
@@ -29,6 +29,7 @@
     "mapbox-gl": "^1.11.1",
     "turf": "^3.0.14",
     "vue": "^2.6.11",
+    "vue-fragment": "^1.5.1",
     "vue-ls": "^3.2.1",
     "vue-mapbox": "^0.4.1",
     "vue-mdc-adapter": "^0.18.2",

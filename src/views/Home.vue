@@ -18,13 +18,13 @@
       <v-card>
         <v-carousel height="auto" cycle>
           <v-carousel-item>
-            <v-img contain src="@/assets/screenshot-oc-overview.jpg?lazy" aspect-ratio="1.87" width="630"></v-img>
+            <v-img contain src="@/assets/screenshot-oc-overview.jpg" aspect-ratio="1.87" width="630"></v-img>
           </v-carousel-item>
           <v-carousel-item>
             <v-img contain src="@/assets/screenshot-operateur.jpg" aspect-ratio="1.87" width="630"></v-img>
           </v-carousel-item>
           <v-carousel-item>
-            <v-img contain src="@/assets/screenshot-download.jpg?lazy" aspect-ratio="1.87" width="630"></v-img>
+            <v-img contain src="@/assets/screenshot-download.jpg" aspect-ratio="1.87" width="630"></v-img>
           </v-carousel-item>
         </v-carousel>
       </v-card>

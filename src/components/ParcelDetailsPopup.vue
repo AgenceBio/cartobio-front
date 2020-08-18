@@ -80,7 +80,7 @@ export default {
       // each time we manually set the coordinates (programmatically),
       // it disables pointer tracking
       // so we have to explicitely enable it whenever the popup is opened via mouse/touch interactions
-      this.coordinates === undefined
+      !this.coordinates
         ? popup.trackPointer()
         : popup.setLngLat(this.coordinates)
     }

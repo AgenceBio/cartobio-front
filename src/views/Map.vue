@@ -1,46 +1,23 @@
 <template>
   <v-layout>
-      <!-- Parcels List
-      v-if ensure the drawer width is well taken into account for v-content display -->
-      <ParcelsList
+    <v-navigation-drawer app clipped stateless hide-overlay v-model="showSidebar">
+      <OperatorSidebar
         v-if="showOperatorDetails"
-        :drawer="showOperatorDetails"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
-        v-on:close-drawer="closeOperatorDetailsSidebar"
-        v-on:hover-parcel="hoverParcel"
-        v-on:stop-hovering="stopHoveringParcel"
-        v-on:hover-ilot="hoverIlot"
-        v-on:stop-hovering-ilot="stopHoveringIlot"
         v-on:zoom-on="zoomOn"
-      ></ParcelsList>
+      ></OperatorSidebar>
 
-      <SearchSidebar  :drawer="showSearch"
+      <SearchSidebar  v-if="showSearch"
                       :organismeCertificateur="getProfile.organismeCertificateur"
                       :organismeCertificateurId="getProfile.organismeCertificateurId"
-                      :organismeCertificateurOperators="organismeCertificateurOperators"
-                      @select-operator="setOperator(wrapOperator($event))"
+                      @select-operator="setOperator"
                       @flyto="flyTo"></SearchSidebar>
+    </v-navigation-drawer>
+
     <v-content>
       <!-- Map division so it takes the full width/height left -->
       <div class="map">
-        <v-dialog v-model="setUpParcel" persistent v-if="operator.title">
-          <v-card>
-            <v-card-title class="headline">Nouvelle Parcelle - {{this.operator.title}}</v-card-title>
-            <v-card-text>
-              <ParcelDetails
-                :operator="operator"
-                :parcel="newParcel"
-                v-on:parcel-updated="updateNewParcel($event)"
-              ></ParcelDetails>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="green darken-1" flat @click="saveParcel()">Valider</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
         <!-- Map component -->
         <MglMap
           :mapStyle="mapStyle"
@@ -55,18 +32,18 @@
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
-          <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="hoveredParcelCoordinates" />
-          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="this.organismeCertificateurOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
+          <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="activeFeature && !activeFeature.trackPointer ? activeFeature.lngLat : undefined" />
+          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="certificationBodyOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
           <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
 
           <MglGeojsonLayer
-            v-if="getProfile.organismeCertificateurId"
+            v-if="isCertificationBody"
             before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-area"
             :layer="layerStyle('certification-body-clusters-area')" />
           <MglGeojsonLayer
-            v-if="getProfile.organismeCertificateurId"
+            v-if="isCertificationBody"
             before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-count"
@@ -82,15 +59,10 @@
 </template>
 
 <script>
-import {get} from "axios";
 import getObjectValue from "lodash/get";
-import {bbox, bboxPolygon, center, area, point} from "turf";
+import {bbox, bboxPolygon, center, point, featureCollection} from "turf";
 import {all as mergeAll} from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
-import centroid from '@mapbox/polylabel';
-
-// mapbox-gl dependencies
-import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 import {
   MglMap,
@@ -101,20 +73,17 @@ import {
 } from "vue-mapbox";
 
 import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
-import ParcelsList from "@/components/ParcelsList";
-import ParcelDetails from "@/components/ParcelDetails";
+import OperatorSidebar from "@/components/Map/OperatorSidebar";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 import LayersPanel from "@/components/Map/LayersPanel";
 
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapMutations } from 'vuex';
 
-const { VUE_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
-
-function queryOperatorParcels (operatorParcels, lngLat) {
-  const p = point(lngLat)
+function queryOperatorParcels (operatorParcels, [lng, lat]) {
+  const p = point([lng, lat])
 
   return Object.entries(operatorParcels).reduce((hashMap, [year, {features}]) => {
     const foundFeature = features.find(feature => isPointInPolygon(p, feature.geometry))
@@ -139,17 +108,8 @@ function queryOperatorParcels (operatorParcels, lngLat) {
 //   maxzoom: 24
 // };
 
-// Mapbox draw control
-let draw = new MapboxDraw({
-  displayControlsDefault: false,
-  controls: {
-    polygon: true,
-    trash: true
-  }
-});
-
 // template for geoJSON objects
-let geoJsonTemplate = { features: [], type: "FeatureCollection" };
+let geoJsonTemplate = featureCollection([])
 const noop = function noop() {}
 
 export default {
@@ -160,8 +120,7 @@ export default {
   },
 
   components: {
-    ParcelsList,
-    ParcelDetails,
+    OperatorSidebar,
     ParcelDetailsPopup,
     ExploitationPopup,
     SearchSidebar,
@@ -191,8 +150,6 @@ export default {
       // anonymous layers
       anonLayers: {},
 
-      organismeCertificateurOperators: {},
-
       // operator parcels by year
       parcelsOperator: {
         2020: geoJsonTemplate,
@@ -204,14 +161,11 @@ export default {
       highlightedParcels: geoJsonTemplate,
       // selected parcels
       selectedParcels: geoJsonTemplate,
-      // placeholder for newly drawn parcel
-      newParcel: {},
       // bbox containing operator parcels
       bboxOperator: [],
 
       // popup data with parcel history
       hoveredExploitationFeature: undefined,
-      hoveredParcelCoordinates: undefined,
       hoveredParcelFeatures: {
         anon: [],
         operator: {},
@@ -222,19 +176,6 @@ export default {
       layersOperator: {},
 
       // edit mode
-      editMode: false,
-
-      // misc data
-      filterLabel: {
-        // espace collaboratif field name
-        filter: "pacage",
-        // agence bio field name
-        property: "numeroPacage"
-      },
-      // filterLabel: {
-      //   filter: "numerobio",
-      //   property: "numeroBio"
-      // },
       expandLayers: [true],
       displaySurvey: true,
       // new parcel dialog
@@ -285,8 +226,9 @@ export default {
   },
   // event bus
   props: {
-    bus: {
-      required: true
+    numeroBio: {
+      type: String,
+      default: null
     },
     pacageId: {
       type: String,
@@ -308,11 +250,19 @@ export default {
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
     ...mapGetters(['getProfile']),
-    ...mapGetters({ operator: 'getOperator' }),
-    ...mapGetters('user', ['isAuthenticated']),
-    ...mapGetters('exploitationView', ['exploitationView']),
+    ...mapGetters('user', ['isAuthenticated', 'isCertificationBody']),
+    ...mapGetters('map', ['activeFeature', 'activeFeatures']),
+    ...mapGetters({
+      'operator': 'operators/currentOperator',
+      'findOperatorByPacage': 'operators/findByPacage',
+    }),
     ...mapState('user', ['apiToken']),
     ...mapState(['currentYear']),
+    ...mapState('operators', ['certificationBodyOperators']),
+
+    showSidebar () {
+      return this.showOperatorDetails || this.showSearch
+    },
 
     showOperatorDetails () {
       return Boolean(this.isAuthenticated && this.operator.id);
@@ -339,24 +289,17 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      clearActiveParcel: 'map/CLEAR_HOVERED_FEATURE',
+      setActiveParcel: 'map/HOVERED_FEATURE',
+    }),
+
     /**
      * @param  {String} styleId [description]
      * @return {Object<Mapbox.Layer>}
      */
     layerStyle (styleId) {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
-    },
-
-    // translate GeoJSON structure into a simili-Agence Bio one
-    wrapOperator (operator) {
-      return {
-        id: operator.numerobio,
-        dateEngagement: operator.date_engagement,
-        dateMaj: operator.date_maj,
-        numeroPacage: operator.pacage,
-        numeroBio: operator.numerobio,
-        title: operator.nom
-      }
     },
 
    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
@@ -374,16 +317,38 @@ export default {
       // add map sources
       if (this.isAuthenticated) {
         this.loadLayers(map);
+        this.setupCertificationBodyLayers(map)
       }
 
-      map.on("mousemove", ({lngLat, point}) => {
-        this.buildHoveredPopup(lngLat, point);
+      map.on("mousemove", ({ lngLat }) => {
+        const { currentYear, activeFeature } = this
+        const { lng, lat } = lngLat
+
+        // @todo this is possibly an issue if we hover a feature, which exists in the past, but not on currentYear
+        let { [currentYear]: feature } = queryOperatorParcels({ [currentYear]:  this.parcelsOperator[currentYear] }, [lng, lat])
+
+        // we go for anonymous layers if there was no operator features found
+        if (!feature) {
+          const point = this.map.project(lngLat)
+          const renderedFeatures = this.map.queryRenderedFeatures(point)
+          feature = renderedFeatures.filter(({sourceLayer, layer}) => layer.type === 'fill' && sourceLayer && sourceLayer.indexOf('anon_') === 0)[0]
+        }
+
+        // it is a bit ugly, but it avoids overloading the store with events
+        // maybe we should consider throttling the function instead?
+        if (feature && feature.id !== activeFeature?.feature.id) {
+          this.setActiveParcel({feature, lngLat, trackPointer: true})
+        }
+        else if (!feature && activeFeature?.feature.id) {
+          this.clearActiveParcel()
+        }
       });
 
       map.on("click", "certification-body-parcels-points", (e) => {
         const {pacage} = e.features[0].properties
-        const operator = this.organismeCertificateurOperators.features.find(({ properties }) => properties.pacage === pacage)
-        this.setOperator(this.wrapOperator(operator.properties))
+        const operator = this.findOperatorByPacage(pacage)
+
+        this.setOperator(operator.properties.numerobio)
       })
 
       map.on("click", "certification-body-clusters-area", (e) => {
@@ -443,46 +408,47 @@ export default {
       })
 
       // handle click on layers
-      map.on("click", `operator-parcels-${this.currentYear}`, (e) => {
-        this.selectParcel(e.features[0]);
-      });
-
       if (this.operator.title && !this.isOperatorOnMap) {
         this.setUpMapOperator();
       }
+
+      // we force reload operator layers when it gets assigned a new PACAGE
+      this.$store.subscribe((mutation) => {
+        if (mutation.type === 'operators/MERGE_OPERATOR') {
+          this.setUpMapOperator();
+        }
+      })
+
+      // a components asks to zoom on a Feature or on a FeatureCollection
+      this.$store.subscribeAction((action) => {
+        if (action.type === 'map/zoomOn') {
+          this.zoomOn(action.payload)
+        }
+      })
     },
 
-    buildHoveredPopup(lngLat, point) {
+    computeParcelHistoryFromLngLat({ lngLat }) {
+      const point = this.map.project(lngLat)
       const renderedFeatures = this.map.queryRenderedFeatures(point)
+
       this.hoveredParcelFeatures = {
         // anonymous source layers are named like 'anon_..._20xx'
         anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
-        operator: queryOperatorParcels(this.parcelsOperator, [lngLat.lng, lngLat.lat]),
+        operator: queryOperatorParcels(this.parcelsOperator, lngLat),
         cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
       }
-
-      // handle hovering effect when moving mouse on map
-      let hoveredParcel = getObjectValue(this.hoveredParcelFeatures, ['operator', '2020']);
-      if(hoveredParcel && this.highlightedParcel !== hoveredParcel) {
-        if (this.highlightedParcel) {
-          this.stopHighlightingParcel(this.highlightedParcel);
-        }
-        this.highlightParcel(hoveredParcel);
-        this.highlightedParcel = hoveredParcel;
-      } else if (this.highlightedParcel && !hoveredParcel) {
-        this.stopHighlightingParcel(this.highlightedParcel);
-      }
     },
+
     updateHash(map) {
       const {lat,lng} = map.getCenter()
       const zoom = Math.floor(map.getZoom())
 
-      const {pacageId} = this
+      const {pacageId, numeroBio} = this
       const latLonZoom = `@${lat},${lng},${zoom}`
 
       this.$router.replace({
-        name: pacageId ? 'mapWithPacage' : 'map',
-        params: {pacageId, latLonZoom}
+        name: numeroBio ? 'mapWithOperator' : 'map',
+        params: {pacageId, numeroBio, latLonZoom}
       })
       .catch(error => {
         // we can safely ignore duplicate navigation
@@ -573,29 +539,6 @@ export default {
         });
       }
 
-      if (this.getProfile.organismeCertificateurId) {
-        const operatorsP = get(`${API_ENDPOINT}/v1/summary`, {
-          headers: {
-            Authorization: `Bearer ${this.apiToken}`
-          }
-        })
-
-        operatorsP.then(({ data }) => {
-          this.organismeCertificateurOperators = data
-          map.getSource("certification-body-operators").setData(data)
-        })
-
-        operatorsP.then(({ data }) => {
-          const pacageList = data.features.map(({ properties }) => properties.pacage)
-
-          map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
-        })
-      }
-      else {
-        this.organismeCertificateurOperators = null
-        map.getSource("certification-body-operators").setData(geoJsonTemplate)
-      }
-
       if (!map.getSource("operatorParcels2020")) {
         map.addSource("operatorParcels2020", {
           type: "geojson",
@@ -631,13 +574,11 @@ export default {
       });
     },
 
-    setOperator (operator) {
-      const { numeroPacage:pacageId } = operator
-
-      this.$store.commit("setOperator", operator)
+    setOperator (numeroBio) {
+      this.$store.commit("operators/SET_CURRENT", numeroBio)
       this.$router.push({
-        name: 'mapWithPacage',
-        params: {pacageId}
+        name: 'mapWithOperator',
+        params: { numeroBio }
       });
     },
 
@@ -659,46 +600,43 @@ export default {
 
     closeOperatorDetailsSidebar () {
       this.map.resize()
-      this.clearOperatorData()
+
+      this.years.forEach(year => {
+        this.map.removeLayer(this.layersOperator[year].id);
+        this.map.removeLayer(this.layersOperator[year].id + '-border');
+        this.addOperatorData(geoJsonTemplate, year)
+      })
+
       this.$router.replace({
         name: 'map',
         params: {}
       });
-    },
-    // function  used by draw features
-    updateArea(e) {
-      var data = draw.getAll();
-      if (data.features.length > 0) {
-        // var area = area(data);
-        // // restrict to area to 2 decimal points
-        // var rounded_area = Math.round(area * 100) / 100;
-      } else {
-        if (e.type !== "draw.delete")
-          alert("Use the draw tools to draw a polygon!");
-      }
-    },
-    startEditMode() {
-      this.editMode = true;
-      this.map.addControl(draw, "top-right");
-      this.map.on(
-        "draw.create",
-        function(e) {
-          let newFeature = e.features[0];
-          let surface = area(newFeature);
-          surface = Math.round(surface * 100) / 100; // round to 2 decimals
-          newFeature.properties.surfgeo = surface;
-          this.newParcel = newFeature;
-          this.setUpParcel = true;
-        }.bind(this)
-      );
-      this.map.on("draw.delete", this.updateArea);
-      this.map.on("draw.update", this.updateArea);
     },
 
     unsetUpMapOperator () {
       this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
       this.toggleLayerAnon(this.currentYear, false);
       this.toggleLayer('rpg-anon-nonbio-2020', false)
+    },
+
+    setupCertificationBodyLayers (map) {
+      if (!map || !this.isCertificationBody) {
+        return
+      }
+
+      const operatorsP = this.$store.dispatch('operators/FETCH_OPERATORS')
+
+      operatorsP.then(({ data }) => {
+        map.getSource("certification-body-operators").setData(data)
+      })
+
+      operatorsP.then(({ data }) => {
+        const pacageList = data.features
+          .filter(({ properties }) => properties.pacage)
+          .map(({ properties }) => properties.pacage)
+
+        map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
+      })
     },
 
     setUpMapOperator() {
@@ -713,50 +651,21 @@ export default {
 
       this.isOperatorOnMap = true;
 
-      // get the current operator
-      if (getObjectValue(this.operator, "numeroPacage") && !getObjectValue(this.operator, "title")) {
-        alert(
-          "Le numéro de Pacage n'est pas pour le moment rattaché à un opérateur." +
-            "Merci de faire la mise à jour du numéro pacage de l'opérateur sur le site https://notification.agencebio.org/"
-        );
-        this.operator.title = "pacage : " + this.operator.numeroPacage;
-        this.filterLabel = { filter: "pacage", property: "numeroPacage" };
-      }
-
       if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
-        // Doc : https://espacecollaboratif.ign.fr/api/doc/transaction
-        // mongoDB filter and not standard WFS filter.
+        const {numeroPacage} = this.operator
         const params = {
-          service: "WFS",
-          version: "1.1.0",
-          request: "GetFeature",
-          outputFormat: "GeoJSON",
-          typeName: null, // it has to be defined later on to access the correct data source
-          srsname: "4326",
-          filter: JSON.stringify({
-            // this is intended to work only with numeroPacage
-            // we get them from AgenceBio with 8 or 9 chars,
-            // but RPG data are always with 9 chars.
-            // IDs formated as integer when they are strings...
-            [this.filterLabel.filter]: String(this.operator[this.filterLabel.property]).padStart(9, '0')
+          numeroPacage,
+          years: [2020, 2019, 2018, 2017]
+        }
+
+        this.$store.dispatch('operators/FETCH_WFS_LAYERS', params)
+          .then(dataPerYear => {
+            dataPerYear.forEach(([year, data]) => {
+              year === this.currentYear
+                ? this.displayOperatorLayer(data)
+                : this.addOperatorData(data, year)
+            })
           })
-        };
-
-        // get 2020 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2020v1' } })
-        .then(data => this.displayOperatorLayer(data.data));
-
-        // get 2019 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2019v4' }  })
-        .then(data => this.addOperatorData(data.data, "2019"));
-
-        // get 2018 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2018v9' }  })
-        .then(data => this.addOperatorData(data.data, "2018"));
-
-        // get 2017 parcels from the operator
-        get(process.env.VUE_APP_COLLABORATIF_ENDPOINT + "/gcms/wfs/cartobio", { params: {...params, typeName: 'rpgbio2017v7' }  })
-        .then(data => this.addOperatorData(data.data, "2017"));
 
         this.layersOperator["2020"] = this.getYearLayer(
           "2020",
@@ -814,50 +723,28 @@ export default {
       this.toggleLayerAnon(this.currentYear, true);
     },
 
-    hoverParcel (parcel) {
-      const [lng, lat] = centroid(parcel.geometry.coordinates)
-      this.hoveredParcelCoordinates = {lng, lat}
+    /**
+     * Set the Mapbox feature state for a featureCollection
+     *
+     * @param {FeatureCollection} featureCollection
+     * @param {{ highlighted: boolean }} state
+     */
+    setFeatureState(featureCollection, state) {
+      const source = `operatorParcels${this.currentYear}`
 
-      this.buildHoveredPopup({lng, lat}, this.map.project({lng, lat}));
-      this.highlightParcel(parcel);
+      featureCollection.features.forEach(({ id }) => {
+        this.map.setFeatureState({source, id}, state)
+      })
     },
 
-    stopHoveringParcel (parcel) {
-      this.stopHighlightingParcel(parcel);
+    setupIlotDirection({ numIlot, featureCollection }) {
+      const ilotBbox = bboxPolygon(bbox(featureCollection));
+      const ilotCenter = center(ilotBbox);
+      const bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
+      const inMap = isPointInPolygon(ilotCenter, bboxMap);
 
-      this.hoveredParcelCoordinates = undefined
-      this.hoveredParcelFeatures = {
-        anon: [],
-        operator: {},
-        cadastre: null,
-      }
-    },
-
-    highlightParcel(parcel) {
-      this.map.setFeatureState({
-        source: 'operatorParcels2020',
-        id: parcel.id,
-      }, { highlighted: true });
-    },
-
-    stopHighlightingParcel(parcel) {
-      this.map.setFeatureState({
-        source: 'operatorParcels2020',
-        id: parcel.id,
-      }, { highlighted: false });
-    },
-
-    hoverIlot({ numIlot, featureCollection }) {
-      featureCollection.features.forEach((parcel) => {
-        this.highlightParcel(parcel);
-      });
-
-      let ilotBbox = bboxPolygon(bbox(featureCollection));
-      let ilotCenter = center(ilotBbox);
-      let bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
-      let inMap = isPointInPolygon(ilotCenter, bboxMap);
       if (!inMap) {
-        this.hoveredIlotName = 'Ilot ' + numIlot;
+        this.hoveredIlotName = `Ilot ${numIlot}`;
         this.ilotCenterCoordinates = ilotCenter.geometry.coordinates;
         this.bboxMap = bboxMap;
         this.mapBounds = this.map.getBounds();
@@ -866,57 +753,19 @@ export default {
       }
     },
 
-    stopHoveringIlot({ featureCollection }) {
-      featureCollection.features.forEach((parcel) => {
-        this.stopHighlightingParcel(parcel);
-      });
-      this.displayIlotDirection = false;
-    },
-
     zoomOn(featureOrfeatureCollection) {
       this.map.fitBounds(bbox(featureOrfeatureCollection), {
         padding: this.mapPadding
       });
     },
+
+    /**
+     * @todo remove it, and replace it with the more generic `zoomOn()` method
+     */
     zoomOnOperator() {
       this.map.fitBounds(this.bboxOperator, {
         padding: this.mapPadding
       });
-    },
-    selectParcel(parcel) {
-      let tmp = this.parcelsOperator[this.currentYear].features.find(function(feature) {
-        return feature.id === parcel.id;
-      });
-      tmp.properties.selected = !tmp.properties.selected;
-      if (tmp.properties.selected) {
-        this.selectedParcels.features.push(tmp);
-      } else {
-        // _.remove doesn't trigger component updates
-        // https://stackoverflow.com/questions/42090651/computed-properties-not-updating-when-using-lodash-and-vuejs
-        this.selectedParcels.features = this.selectedParcels.features.filter(function(feature) {
-          return feature.id !== tmp.id;
-        });
-      }
-      this.map.getSource("selected").setData(this.selectedParcels);
-    },
-    selectAllParcels(bool) {
-      this.parcelsOperator[this.currentYear].features.forEach(function(parcel) {
-        parcel.properties.selected = bool;
-      });
-      if (bool) {
-        this.selectedParcels.features = this.parcelsOperator[this.currentYear].features;
-      } else {
-        this.selectedParcels.features = [];
-      }
-      this.map.getSource("selected").setData(this.selectedParcels);
-    },
-    saveParcel() {
-      this.setUpParcel = !this.setUpParcel;
-      this.parcelsOperator[this.currentYear].features.push(this.newParcel);
-    },
-    updateNewParcel(newData) {
-      this.newParcel.properties = newData[0];
-      this.$forceUpdate();
     },
 
     addOperatorLayer(data, year) {
@@ -931,16 +780,6 @@ export default {
           .getSource("operatorParcels" + year)
           .setData(this.parcelsOperator[year]);
       }
-    },
-
-    clearOperatorData() {
-      this.$store.commit("setOperator", {})
-
-      this.years.forEach(year => {
-        this.map.removeLayer(this.layersOperator[year].id);
-        this.map.removeLayer(this.layersOperator[year].id + '-border');
-        this.addOperatorData(geoJsonTemplate, year)
-      })
     },
 
     toggleLayerOperator(layerYear, visibility) {
@@ -1006,31 +845,79 @@ export default {
     }
   },
   watch: {
-    getProfile: function(newProfile) {
+    getProfile: function(newProfile, previousProfile) {
       // if the map is not yet loaded, it will load layers
       // best would be to populate layers data and make the data react to them
-      if (newProfile.active && this.map) {
+      if (this.isAuthenticated && this.map) {
         this.loadLayers(this.map);
+        this.setupCertificationBodyLayers(this.map)
       }
+      // user logs out
       else if ((!newProfile || !newProfile.active) && this.map) {
         this.map.removeLayer('certification-body-parcels-points')
+
+        // user logs out, and is part of a certification body
+        if (previousProfile.organismeCertificateurId) {
+          this.map.getSource("certification-body-operators").setData(geoJsonTemplate)
+        }
       }
     },
+<<<<<<< HEAD
 
     operator: function(operator) {
+=======
+    operator (operator, previousOperator) {
+>>>>>>> master
       if (this.map) {
-        if (operator.id) {
+        if (operator.id && operator.id !== previousOperator.id) {
           window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
           this.loadLayers(this.map);
           this.setUpMapOperator()
         }
-        else {
+        else if (!operator.id && previousOperator.id) {
           this.unsetUpMapOperator()
+          this.closeOperatorDetailsSidebar()
         }
       }
     },
+
+    activeFeature (activeFeature, previousFeature) {
+      if (activeFeature) {
+        const {feature, lngLat} = activeFeature
+
+        if (previousFeature && previousFeature.feature.id !== feature.id) {
+          this.setFeatureState(featureCollection([previousFeature.feature]), { highlighted: false })
+        }
+
+        this.setFeatureState(featureCollection([feature]), { highlighted: true })
+        this.computeParcelHistoryFromLngLat({ lngLat })
+      }
+      else if (!activeFeature && previousFeature) {
+        this.setFeatureState(featureCollection([previousFeature.feature]), { highlighted: false })
+        this.hoveredParcelFeatures = {
+          anon: [],
+          operator: {},
+          cadastre: null,
+        }
+      }
+    },
+<<<<<<< HEAD
     exploitationView: function(newVal) {
       console.log(this.exploitationView, newVal);
+=======
+
+    activeFeatures (activeFeatures, previousFeatures) {
+      if (activeFeatures) {
+        const { featureCollection, numIlot } = activeFeatures
+        this.setFeatureState(featureCollection, { highlighted: true })
+        this.setupIlotDirection({ featureCollection, numIlot })
+      }
+      else if (previousFeatures) {
+        const { featureCollection } = previousFeatures
+        this.setFeatureState(featureCollection, { highlighted: false })
+        this.displayIlotDirection = false;
+      }
+>>>>>>> master
     }
   }
 };
@@ -1038,7 +925,6 @@ export default {
 
 <style lang="scss">
 @import '~mapbox-gl/dist/mapbox-gl.css';
-@import "~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 </style>
 
 <style lang="scss" scoped>
