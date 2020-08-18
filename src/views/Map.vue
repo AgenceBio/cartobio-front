@@ -862,12 +862,7 @@ export default {
         }
       }
     },
-<<<<<<< HEAD
-
-    operator: function(operator) {
-=======
     operator (operator, previousOperator) {
->>>>>>> master
       if (this.map) {
         if (operator.id && operator.id !== previousOperator.id) {
           window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
@@ -901,11 +896,9 @@ export default {
         }
       }
     },
-<<<<<<< HEAD
     exploitationView: function(newVal) {
       console.log(this.exploitationView, newVal);
-=======
-
+    },
     activeFeatures (activeFeatures, previousFeatures) {
       if (activeFeatures) {
         const { featureCollection, numIlot } = activeFeatures
@@ -917,7 +910,6 @@ export default {
         this.setFeatureState(featureCollection, { highlighted: false })
         this.displayIlotDirection = false;
       }
->>>>>>> master
     }
   }
 };
