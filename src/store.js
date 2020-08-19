@@ -17,6 +17,7 @@ const store =  new Vuex.Store({
         operators,
         pacage,
         user,
+        exploitationView
     },
     state: {
         lastDataUpdate: '2019-05-15',
@@ -54,6 +55,7 @@ const store =  new Vuex.Store({
                     break;
                 case "Admin":
                     userCat = this.state.categories.admin;
+                    break;
             }
             state.userCategory = userCat;
         },
