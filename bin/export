@@ -11,17 +11,20 @@ const ora = require('ora')
 const Listr = require('listr')
 const {get} = require('axios')
 const gdal = require('gdal-next')
+const {convert} = require('geojson2shp')
 const {basename, dirname, join, resolve} = require('path')
+const { featureCollection } = require('@turf/helpers')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['epci', 'millesime'],
+  string: ['epci', 'millesime', 'name'],
   boolean: ['in-lambert-93', 'shapefiles'],
   alias: {
     inLambert93: 'in-lambert-93'
   },
   default: {
     shapefiles: true,
-    inLambert93: false
+    inLambert93: false,
+    name: undefined
   }
 })
 
@@ -33,7 +36,10 @@ const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries
 const {_:FILTERING_FILES, epci, millesime} = argv
 const {shapefiles, inLambert93} = argv
 const {from:SOURCE_FILES} = argv
-const {to:DESTINATION_FILE='export.geojson'} = argv
+const {name='export'} = argv
+const WGS_84 = 4326
+
+let DESTINATION_FILE = ''
 
 
 if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
@@ -44,6 +50,7 @@ if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
   process.exit(1)
 }
 
+const uploadDir = (file) => join(__dirname, '..', 'exports', file)
 
 function fetchCommunesBoundaries() {
   const FILENAME = 'communes.geojson'
@@ -90,6 +97,9 @@ async function run (FILTERING_FILES) {
   const sourceFiles = await glob(SOURCE_FILES)
   const datasetCount = filteringFiles.length + (epci ? 1 : 0)
 
+  // X. Create export directory if needed
+  await fs.mkdir(uploadDir(''), { recursive: true })
+
   // 1. Open datasets
   // shapefiles
   let spinner = ora({
@@ -97,7 +107,7 @@ async function run (FILTERING_FILES) {
     spinner: 'simpleDotsScrolling'
   }).start()
 
-  // Filter by EPCI boundaries
+  // 1.a Filter by EPCI boundaries
   if (epci) {
     const codes = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
       .then(response => response.data)
@@ -105,7 +115,7 @@ async function run (FILTERING_FILES) {
       .then(({ membres }) => membres.map(m => m.code))
 
     const features = await getFeaturesByINSEECodes({ collection: fetchCommunesBoundaries(), codes })
-    const dataset = gdal.open('input.gpkg', 'w', 'GPKG')
+    const dataset = gdal.open(uploadDir('input.gpkg'), 'w', 'GPKG')
     const layer = dataset.layers.create('communes', wgs84, gdal.wkbPolygon)
     features.forEach(({ geometry, properties }) => {
       const feature = new gdal.Feature(layer)
@@ -117,14 +127,18 @@ async function run (FILTERING_FILES) {
     })
 
     datasets.push(dataset)
+
+    DESTINATION_FILE = `export-epci-${epci}-${millesime}`
   }
 
-  // Filter by shapefile
+  // 1.b Or, filter by shapefile
   if (shapefiles) {
     filteringFiles
       .map(path => resolve(path))
       .map(path => gdal.open(path, 'r'))
       .forEach(dataset => datasets.push(dataset))
+
+    DESTINATION_FILE = `${name}-${millesime}`
   }
 
   // 2. Collect all the features from each layer
@@ -158,26 +172,59 @@ async function run (FILTERING_FILES) {
     // worker.on('message', () => featuresCount++)
     // worker.on('error', reject)
 
-  await new Listr(allFeatures.map(({sourceFile, featuresP}) => ({
-    title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
-    task: () => featuresP.then(features => {
-      return `${features.length.toFixed(0).padStart(5)} features`
-    })
-  })), {concurrent: true}).run()
+  const tasks = new Listr([
+    {
+      title: 'Filtering features',
+      task: () => new Listr(
+        allFeatures.map(({sourceFile, featuresP}) => ({
+          title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
+          task: () => featuresP.then(features => {
+            return `${features.length.toFixed(0).padStart(5)} features`
+          })
+        })),
+        { concurrent: true }
+      )
+    }
+  ])
 
-  // then export
-  const features = await Promise
-    .all(allFeatures.map(({featuresP}) => featuresP))
-    .then(allFeatures => [].concat(...allFeatures))
+  tasks.add({
+    title: `Exporting as ${DESTINATION_FILE}.geojson`,
+    task: (ctx) => {
+      // 4.1 Convert/Intersect features and aggregate them into the `features` collection
+      return Promise
+          .all(allFeatures.map(({featuresP}) => featuresP))
+          .then(allFeatures => [].concat(...allFeatures))
+          .then(features => {
+            ctx.features = features
+            return fs.writeFile(uploadDir(`${DESTINATION_FILE}.geojson`), JSON.stringify(
+              featureCollection(features),
+              null,
+              2))
+            })
+    }
+  })
 
-  // workerFarm.end(extract)
-  await fs.writeFile(DESTINATION_FILE, JSON.stringify({
-    type: 'FeatureCollection',
-    features,
-  }, null, 2))
+  // XX. … and close datasets
+  tasks.add({
+    title: 'Cleanup',
+    task: () => {
+      datasets.forEach(d => d.close())
+      return fs.unlink(uploadDir('input.gpkg'))
+    }
+  })
 
-  // XX. Then close datasets
-  datasets.forEach(d => d.close())
+  // 6. Converts as an ESRI Shapefile
+  tasks.add({
+    title: `Exporting as ${DESTINATION_FILE}.shp.zip`,
+    task: (ctx) => {
+      return convert(featureCollection(ctx.features), uploadDir(`${DESTINATION_FILE}.shp.zip`), {
+        layer: DESTINATION_FILE,
+        targetCrs: WGS_84
+      })
+    }
+  })
+
+  await tasks.run()
   process.exit(0)
 }
 

@@ -6,9 +6,6 @@
     "start": "vue-cli-service serve",
     "update-stats": "node bin/update-stats",
     "export": "node bin/export",
-    "postexport": "npm run postexport:shp && npm run postexport:gpkg",
-    "postexport:shp": "cat export.geojson | npx geojson2shp > export.shp.zip",
-    "postexport:gpkg": "ogr2ogr -f GPKG -nln cartobio export.gpkg export.geojson",
     "serve": "npm start",
     "build": "vue-cli-service build",
     "test": "npm run lint",
@@ -70,7 +67,8 @@
     "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0",
-    "worker-farm": "^1.7.0"
+    "worker-farm": "^1.7.0",
+    "geojson2shp": "^0.3.2"
   },
   "eslintConfig": {
     "root": true,

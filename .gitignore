@@ -4,9 +4,7 @@ node_modules
 public/*.geojson
 
 # Export files
-*.gpkg
-*.geojson
-*.zip
+exports
 
 # local env files
 .env.local
