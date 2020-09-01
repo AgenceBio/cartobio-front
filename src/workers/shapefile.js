@@ -30,8 +30,8 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
     const intersects = filterGeometry.intersects(geometry)
 
     if (intersects) {
-      const {BIO, CODE_CULTU} = feature.fields.toObject()
-      const {label: LABEL_CULTU, groupLabel: GROUPE_CULTU} = fromCode(CODE_CULTU)
+      const {BIO, bio, CODE_CULTU, codecultu} = feature.fields.toObject()
+      const {label: LBL_CULTU, groupLabel: GRP_CULTU} = fromCode(CODE_CULTU ?? codecultu)
       const geometry = feature.getGeometry().toObject()
       const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
 
@@ -39,10 +39,10 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
         type: 'Feature',
         geometry,
         properties: {
-          BIO: parseInt(BIO, 10),
-          CODE_CULTU,
-          LABEL_CULTU,
-          GROUPE_CULTU,
+          BIO: parseInt(BIO ?? bio, 10),
+          CODE_CULTU: CODE_CULTU ?? codecultu,
+          LBL_CULTU,
+          GRP_CULTU,
           SURFACE_HA,
           MILLESIME
         }
