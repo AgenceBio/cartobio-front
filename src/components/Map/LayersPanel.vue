@@ -11,7 +11,7 @@
         <v-divider></v-divider>
         <v-expansion-panel v-model="expansionValue">
           <v-layout column>
-            <v-flex grow @click="changeViewMode()">
+            <v-flex grow>
               <v-expansion-panel-content>
                 <template v-slot:header>
                   <div>Cultures environnantes</div>
@@ -24,7 +24,7 @@
                 </v-card>
               </v-expansion-panel-content>
             </v-flex>
-            <v-flex grow @click="changeViewMode()">
+            <v-flex grow>
               <v-expansion-panel-content>
                 <template v-slot:header>
                   <div>Historique de conversion</div>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapMutations } from "vuex";
 
 export default {
   name: "LayersPanel",
@@ -55,14 +55,13 @@ export default {
     };
   },
   methods: {
-    ...mapActions("exploitationView", ["setExploitationView"]),
-    changeViewMode() {
-      this.setExploitationView(this.expansionValue);
-    },
+    ...mapMutations("exploitationView", ["changeViewMode"]),
   },
-  computed: {
-    ...mapGetters("exploitationView", ["exploitationView"]),
-  },
+  watch : {
+    expansionValue(newVal) {
+      this.changeViewMode(newVal);
+    }
+  }
 };
 </script>
 

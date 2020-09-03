@@ -8,11 +8,13 @@
         v-on:zoom-on="zoomOn"
       ></OperatorSidebar>
 
-      <SearchSidebar  v-if="showSearch"
-                      :organismeCertificateur="getProfile.organismeCertificateur"
-                      :organismeCertificateurId="getProfile.organismeCertificateurId"
-                      @select-operator="setOperator"
-                      @flyto="flyTo"></SearchSidebar>
+      <SearchSidebar
+        v-if="showSearch"
+        :organismeCertificateur="getProfile.organismeCertificateur"
+        :organismeCertificateurId="getProfile.organismeCertificateurId"
+        @select-operator="setOperator"
+        @flyto="flyTo"
+      ></SearchSidebar>
     </v-navigation-drawer>
 
     <v-content>
@@ -28,31 +30,44 @@
           @load="onMapLoaded"
           ref="mapboxDiv"
         >
-
           <MglNavigationControl position="top-left" :showCompass="false" />
           <MglGeolocateControl position="top-left" />
           <MglScaleControl position="bottom-left" unit="metric" />
-          <ParcelDetailsPopup :features="hoveredParcelFeatures" :coordinates="activeFeature && !activeFeature.trackPointer ? activeFeature.lngLat : undefined" />
-          <ExploitationPopup :feature="hoveredExploitationFeature" :operator="certificationBodyOperators | byFeature(hoveredExploitationFeature, 'pacage')" />
-          <IlotMarkerDirection v-if="displayIlotDirection" :ilotCenterCoordinates="ilotCenterCoordinates" :mapBounds="mapBounds" :bboxMap="bboxMap" :mapCenter="mapCenter" :hoveredIlotName="hoveredIlotName" />
+          <ParcelDetailsPopup
+            :features="hoveredParcelFeatures"
+            :coordinates="activeFeature && !activeFeature.trackPointer ? activeFeature.lngLat : undefined"
+          />
+          <ExploitationPopup
+            :feature="hoveredExploitationFeature"
+            :operator="certificationBodyOperators | byFeature(hoveredExploitationFeature, 'pacage')"
+          />
+          <IlotMarkerDirection
+            v-if="displayIlotDirection"
+            :ilotCenterCoordinates="ilotCenterCoordinates"
+            :mapBounds="mapBounds"
+            :bboxMap="bboxMap"
+            :mapCenter="mapCenter"
+            :hoveredIlotName="hoveredIlotName"
+          />
 
           <MglGeojsonLayer
             v-if="isCertificationBody"
             before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-area"
-            :layer="layerStyle('certification-body-clusters-area')" />
+            :layer="layerStyle('certification-body-clusters-area')"
+          />
           <MglGeojsonLayer
             v-if="isCertificationBody"
             before="place-continent"
             sourceId="certification-body-operators"
             layerId="certification-body-clusters-count"
-            :layer="layerStyle('certification-body-clusters-count')" />
+            :layer="layerStyle('certification-body-clusters-count')"
+          />
         </MglMap>
 
         <!-- Layers selector -->
         <LayersPanel v-show="isAuthenticated && operator.title"></LayersPanel>
-        
       </div>
     </v-content>
   </v-layout>
@@ -60,8 +75,8 @@
 
 <script>
 import getObjectValue from "lodash/get";
-import {bbox, bboxPolygon, center, point, featureCollection} from "turf";
-import {all as mergeAll} from "deepmerge";
+import { bbox, bboxPolygon, center, point, featureCollection } from "turf";
+import { all as mergeAll } from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
 import {
@@ -72,7 +87,12 @@ import {
   MglGeojsonLayer,
 } from "vue-mapbox";
 
-import {baseStyle, cadastreStyle, cartobioStyle, infrastructureStyle} from "@/assets/styles/index.js";
+import {
+  baseStyle,
+  cadastreStyle,
+  cartobioStyle,
+  infrastructureStyle,
+} from "@/assets/styles/index.js";
 import OperatorSidebar from "@/components/Map/OperatorSidebar";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import ExploitationPopup from "@/components/ExploitationPopup";
@@ -80,16 +100,21 @@ import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 import LayersPanel from "@/components/Map/LayersPanel";
 
-import { mapGetters, mapState, mapMutations } from 'vuex';
+import { mapGetters, mapState, mapMutations } from "vuex";
 
-function queryOperatorParcels (operatorParcels, [lng, lat]) {
-  const p = point([lng, lat])
+function queryOperatorParcels(operatorParcels, [lng, lat]) {
+  const p = point([lng, lat]);
 
-  return Object.entries(operatorParcels).reduce((hashMap, [year, {features}]) => {
-    const foundFeature = features.find(feature => isPointInPolygon(p, feature.geometry))
+  return Object.entries(operatorParcels).reduce(
+    (hashMap, [year, { features }]) => {
+      const foundFeature = features.find((feature) =>
+        isPointInPolygon(p, feature.geometry)
+      );
 
-    return foundFeature ? {...hashMap, [year]: foundFeature} : hashMap
-  }, {})
+      return foundFeature ? { ...hashMap, [year]: foundFeature } : hashMap;
+    },
+    {}
+  );
 }
 
 // // 2019 anonymous bio layer
@@ -109,14 +134,14 @@ function queryOperatorParcels (operatorParcels, [lng, lat]) {
 // };
 
 // template for geoJSON objects
-let geoJsonTemplate = featureCollection([])
-const noop = function noop() {}
+let geoJsonTemplate = featureCollection([]);
+const noop = function noop() {};
 
 export default {
   name: "Map",
 
   metaInfo: {
-    title: 'Parcellaire bio',
+    title: "Parcellaire bio",
   },
 
   components: {
@@ -130,7 +155,7 @@ export default {
     MglMap,
     IlotMarkerDirection,
     LayersPanel,
-    MglGeojsonLayer
+    MglGeojsonLayer,
   },
   data() {
     return {
@@ -144,7 +169,7 @@ export default {
         baseStyle,
         cadastreStyle,
         infrastructureStyle,
-        { sources: cartobioStyle.sources }
+        { sources: cartobioStyle.sources },
       ]),
 
       // anonymous layers
@@ -155,7 +180,7 @@ export default {
         2020: geoJsonTemplate,
         2019: geoJsonTemplate,
         2018: geoJsonTemplate,
-        2017: geoJsonTemplate
+        2017: geoJsonTemplate,
       },
       // highlighted parcels (hovered in list)
       highlightedParcels: geoJsonTemplate,
@@ -169,7 +194,7 @@ export default {
       hoveredParcelFeatures: {
         anon: [],
         operator: {},
-        cadastre: null
+        cadastre: null,
       },
 
       // placeholder for layers for an operator
@@ -187,7 +212,7 @@ export default {
       hoveredIlotName: "",
       bboxMap: {},
       mapCenter: [],
-      mapBounds:  {},
+      mapBounds: {},
       ilotCenterCoordinates: [],
       displayIlotDirection: false,
 
@@ -196,216 +221,243 @@ export default {
         2020: {
           visibility: false,
           colorBio: "rgba(98, 215, 113, 1)",
-          colorNotBio: "rgba(253, 168, 212, 1)"
+          colorNotBio: "rgba(253, 168, 212, 1)",
         },
         2019: {
           visibility: false,
           colorBio: "rgba(31, 163, 65, 1)",
-          colorNotBio: "rgba(227, 101, 157, 1)"
+          colorNotBio: "rgba(227, 101, 157, 1)",
         },
         2018: {
           visibility: false,
           colorBio: "rgba(0, 110, 27, 1)",
-          colorNotBio: "rgba(179, 45, 100, 1)"
+          colorNotBio: "rgba(179, 45, 100, 1)",
         },
         2017: {
           visibility: false,
           colorBio: "rgba(0, 60, 0, 1)",
-          colorNotBio: "rgba(116, 0, 50, 1)"
+          colorNotBio: "rgba(116, 0, 50, 1)",
         },
         anon2020: { visibility: false, color: "rgba(208, 211, 46, 1)" },
         anon2019: { visibility: false, color: "rgba(208, 211, 46, 1)" },
         anon2018: { visibility: false, color: "rgba(208, 211, 46, 1)" },
-        anon2017: { visibility: false, color: "rgba(208, 211, 46, 1)" }
+        anon2017: { visibility: false, color: "rgba(208, 211, 46, 1)" },
       },
       // list of years in CartoBio. Need to find a more automated way to get this for the future.
       // Also indirect impact on layersVisible and parcelsOperator
       // layers display in the order of years : last year in this array on top
-      years: [2017, 2018, 2019, 2020]
+      years: [2017, 2018, 2019, 2020],
     };
   },
   // event bus
   props: {
     numeroBio: {
       type: String,
-      default: null
+      default: null,
     },
     pacageId: {
       type: String,
-      default: null
+      default: null,
     },
     latLonZoom: {
       type: String,
-      default: '@46.874,3.097,5'
-    }
+      default: "@46.874,3.097,5",
+    },
   },
-  created: function() {
-    this.map = null
+  created: function () {
+    this.map = null;
 
-    const [, lat, lon, zoom] = this.latLonZoom.match(/@([0-9.-]+),([0-9.-]+),(\d+)/)
+    const [, lat, lon, zoom] = this.latLonZoom.match(
+      /@([0-9.-]+),([0-9.-]+),(\d+)/
+    );
 
     this.zoom = Number(zoom);
     this.center = [Number(lon), Number(lat)];
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
-    ...mapGetters(['getProfile']),
-    ...mapGetters('user', ['isAuthenticated', 'isCertificationBody']),
-    ...mapGetters('map', ['activeFeature', 'activeFeatures']),
+    ...mapGetters(["getProfile"]),
+    ...mapGetters("user", ["isAuthenticated", "isCertificationBody"]),
+    ...mapGetters("map", ["activeFeature", "activeFeatures"]),
     ...mapGetters({
-      'operator': 'operators/currentOperator',
-      'findOperatorByPacage': 'operators/findByPacage',
+      operator: "operators/currentOperator",
+      findOperatorByPacage: "operators/findByPacage",
     }),
-    ...mapState('user', ['apiToken']),
-    ...mapState(['currentYear']),
-    ...mapState('operators', ['certificationBodyOperators']),
+    // ...mapGetters("exploitationView", ["exploitationView"]),
+    ...mapState("exploitationView", ["exploitationView"]),
+    ...mapState("user", ["apiToken"]),
+    ...mapState(["currentYear"]),
+    ...mapState("operators", ["certificationBodyOperators"]),
 
-    showSidebar () {
-      return this.showOperatorDetails || this.showSearch
+    showSidebar() {
+      return this.showOperatorDetails || this.showSearch;
     },
 
-    showOperatorDetails () {
+    showOperatorDetails() {
       return Boolean(this.isAuthenticated && this.operator.id);
     },
 
-    showSearch () {
+    showSearch() {
       return Boolean(this.isAuthenticated && !this.operator.id);
     },
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
       return yearsArr.reverse();
-    }
+    },
   },
 
   filters: {
-    byFeature (geojson, filteringFeature, propertyName) {
+    byFeature(geojson, filteringFeature, propertyName) {
       if (!geojson.features || !filteringFeature) {
-        return null
+        return null;
       }
 
-      return (geojson.features || []).find(({ properties }) => properties[propertyName] === filteringFeature.properties[propertyName])
-    }
+      return (geojson.features || []).find(
+        ({ properties }) =>
+          properties[propertyName] === filteringFeature.properties[propertyName]
+      );
+    },
   },
 
   methods: {
     ...mapMutations({
-      clearActiveParcel: 'map/CLEAR_HOVERED_FEATURE',
-      setActiveParcel: 'map/HOVERED_FEATURE',
+      clearActiveParcel: "map/CLEAR_HOVERED_FEATURE",
+      setActiveParcel: "map/HOVERED_FEATURE",
     }),
 
     /**
      * @param  {String} styleId [description]
      * @return {Object<Mapbox.Layer>}
      */
-    layerStyle (styleId) {
+    layerStyle(styleId) {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
     },
 
-   /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
+    /*https://soal.github.io/vue-mapbox/guide/basemap.html#map-actions
      May be usefull to handle promise and avoid the mess it is right now for map init
    */
-    onMapLoaded({map}) {
+    onMapLoaded({ map }) {
       // for future reference in events
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
-      this.map = map
+      this.map = map;
 
-      this.updateHash(map)
-      map.on('moveend', () => this.updateHash(map))
-      map.on('zoomend', () => this.updateHash(map))
+      this.updateHash(map);
+      map.on("moveend", () => this.updateHash(map));
+      map.on("zoomend", () => this.updateHash(map));
 
       // add map sources
       if (this.isAuthenticated) {
         this.loadLayers(map);
-        this.setupCertificationBodyLayers(map)
+        this.setupCertificationBodyLayers(map);
       }
 
       map.on("mousemove", ({ lngLat }) => {
-        const { currentYear, activeFeature } = this
-        const { lng, lat } = lngLat
+        const { currentYear, activeFeature } = this;
+        const { lng, lat } = lngLat;
 
         // @todo this is possibly an issue if we hover a feature, which exists in the past, but not on currentYear
-        let { [currentYear]: feature } = queryOperatorParcels({ [currentYear]:  this.parcelsOperator[currentYear] }, [lng, lat])
+        let { [currentYear]: feature } = queryOperatorParcels(
+          { [currentYear]: this.parcelsOperator[currentYear] },
+          [lng, lat]
+        );
 
         // we go for anonymous layers if there was no operator features found
         if (!feature) {
-          const point = this.map.project(lngLat)
-          const renderedFeatures = this.map.queryRenderedFeatures(point)
-          feature = renderedFeatures.filter(({sourceLayer, layer}) => layer.type === 'fill' && sourceLayer && sourceLayer.indexOf('anon_') === 0)[0]
+          const point = this.map.project(lngLat);
+          const renderedFeatures = this.map.queryRenderedFeatures(point);
+          feature = renderedFeatures.filter(
+            ({ sourceLayer, layer }) =>
+              layer.type === "fill" &&
+              sourceLayer &&
+              sourceLayer.indexOf("anon_") === 0
+          )[0];
         }
 
         // it is a bit ugly, but it avoids overloading the store with events
         // maybe we should consider throttling the function instead?
         if (feature && feature.id !== activeFeature?.feature.id) {
-          this.setActiveParcel({feature, lngLat, trackPointer: true})
-        }
-        else if (!feature && activeFeature?.feature.id) {
-          this.clearActiveParcel()
+          this.setActiveParcel({ feature, lngLat, trackPointer: true });
+        } else if (!feature && activeFeature?.feature.id) {
+          this.clearActiveParcel();
         }
       });
 
       map.on("click", "certification-body-parcels-points", (e) => {
-        const {pacage} = e.features[0].properties
-        const operator = this.findOperatorByPacage(pacage)
+        const { pacage } = e.features[0].properties;
+        const operator = this.findOperatorByPacage(pacage);
 
-        this.setOperator(operator.properties.numerobio)
-      })
+        this.setOperator(operator.properties.numerobio);
+      });
 
       map.on("click", "certification-body-clusters-area", (e) => {
-        const { coordinates: center } = e.features[0].geometry
-        const { cluster_id: id } = e.features[0].properties
+        const { coordinates: center } = e.features[0].geometry;
+        const { cluster_id: id } = e.features[0].properties;
 
         // we zoom directly to where the cluster dissolves
         // if it's a tiny cluster, we will zoom deep (but at max level 10)
         // if it's a large cluster, we will zoom at a level it splits in at least 2 other clusters
-        map.getSource('certification-body-operators').getClusterExpansionZoom(id, (error, zoom) => {
-          map.flyTo({ center, zoom: Math.min(10, zoom) })
-        })
+        map
+          .getSource("certification-body-operators")
+          .getClusterExpansionZoom(id, (error, zoom) => {
+            map.flyTo({ center, zoom: Math.min(10, zoom) });
+          });
       });
 
-      function setupHoverFor({ map, source, sourceLayer = null, layer, onHover = noop, onBlur = noop }) {
+      function setupHoverFor({
+        map,
+        source,
+        sourceLayer = null,
+        layer,
+        onHover = noop,
+        onBlur = noop,
+      }) {
         // handle summary interactions
         // because it happens over a cluster, we can count on having 1 feature only
         let hoveredFeatureId = null;
 
         map.on("mousemove", layer, (e) => {
-          const { id } = e.features[0]
-          onHover({ features: e.features })
-          map.getCanvas().style.cursor = 'pointer'
+          const { id } = e.features[0];
+          onHover({ features: e.features });
+          map.getCanvas().style.cursor = "pointer";
 
           // sometimes, mouseleave is fired after we hover another feature/cluster
           if (hoveredFeatureId) {
-            map.setFeatureState({ id: hoveredFeatureId, source, sourceLayer }, { hover: false })
+            map.setFeatureState(
+              { id: hoveredFeatureId, source, sourceLayer },
+              { hover: false }
+            );
           }
 
-          map.setFeatureState({ id, source, sourceLayer }, { hover: true })
-          hoveredFeatureId = id
+          map.setFeatureState({ id, source, sourceLayer }, { hover: true });
+          hoveredFeatureId = id;
         });
 
         map.on("mouseleave", layer, () => {
-          const id = hoveredFeatureId
-          map.getCanvas().style.cursor = ''
+          const id = hoveredFeatureId;
+          map.getCanvas().style.cursor = "";
 
-          onBlur()
-          map.setFeatureState({ id, source, sourceLayer }, { hover: false })
-          hoveredFeatureId = null
+          onBlur();
+          map.setFeatureState({ id, source, sourceLayer }, { hover: false });
+          hoveredFeatureId = null;
         });
       }
 
       setupHoverFor({
-        layer: 'certification-body-clusters-area',
-        source: 'certification-body-operators',
-        map
-      })
+        layer: "certification-body-clusters-area",
+        source: "certification-body-operators",
+        map,
+      });
 
       setupHoverFor({
-        layer: 'certification-body-parcels-points',
-        source: 'certification-body-parcels',
-        sourceLayer: 'rpgbio_points_2019',
-        onHover: ({ features }) => this.hoveredExploitationFeature = features[0],
-        onBlur: () => this.hoveredExploitationFeature = undefined,
-        map
-      })
+        layer: "certification-body-parcels-points",
+        source: "certification-body-parcels",
+        sourceLayer: "rpgbio_points_2019",
+        onHover: ({ features }) =>
+          (this.hoveredExploitationFeature = features[0]),
+        onBlur: () => (this.hoveredExploitationFeature = undefined),
+        map,
+      });
 
       // handle click on layers
       if (this.operator.title && !this.isOperatorOnMap) {
@@ -414,49 +466,54 @@ export default {
 
       // we force reload operator layers when it gets assigned a new PACAGE
       this.$store.subscribe((mutation) => {
-        if (mutation.type === 'operators/MERGE_OPERATOR') {
+        if (mutation.type === "operators/MERGE_OPERATOR") {
           this.setUpMapOperator();
         }
-      })
+      });
 
       // a components asks to zoom on a Feature or on a FeatureCollection
       this.$store.subscribeAction((action) => {
-        if (action.type === 'map/zoomOn') {
-          this.zoomOn(action.payload)
+        if (action.type === "map/zoomOn") {
+          this.zoomOn(action.payload);
         }
-      })
+      });
     },
 
     computeParcelHistoryFromLngLat({ lngLat }) {
-      const point = this.map.project(lngLat)
-      const renderedFeatures = this.map.queryRenderedFeatures(point)
+      const point = this.map.project(lngLat);
+      const renderedFeatures = this.map.queryRenderedFeatures(point);
 
       this.hoveredParcelFeatures = {
         // anonymous source layers are named like 'anon_..._20xx'
-        anon: renderedFeatures.filter(({sourceLayer}) => sourceLayer && sourceLayer.indexOf('anon_') === 0),
+        anon: renderedFeatures.filter(
+          ({ sourceLayer }) => sourceLayer && sourceLayer.indexOf("anon_") === 0
+        ),
         operator: queryOperatorParcels(this.parcelsOperator, lngLat),
-        cadastre: renderedFeatures.find(({source, layer}) => layer.type === 'fill' && source === 'cadastre')
-      }
+        cadastre: renderedFeatures.find(
+          ({ source, layer }) => layer.type === "fill" && source === "cadastre"
+        ),
+      };
     },
 
     updateHash(map) {
-      const {lat,lng} = map.getCenter()
-      const zoom = Math.floor(map.getZoom())
+      const { lat, lng } = map.getCenter();
+      const zoom = Math.floor(map.getZoom());
 
-      const {pacageId, numeroBio} = this
-      const latLonZoom = `@${lat},${lng},${zoom}`
+      const { pacageId, numeroBio } = this;
+      const latLonZoom = `@${lat},${lng},${zoom}`;
 
-      this.$router.replace({
-        name: numeroBio ? 'mapWithOperator' : 'map',
-        params: {pacageId, numeroBio, latLonZoom}
-      })
-      .catch(error => {
-        // we can safely ignore duplicate navigation
-        // as I do not know if I can predict the upcoming url
-        if (error.name !== 'NavigationDuplicated'){
-          console.error(error);
-        }
-      })
+      this.$router
+        .replace({
+          name: numeroBio ? "mapWithOperator" : "map",
+          params: { pacageId, numeroBio, latLonZoom },
+        })
+        .catch((error) => {
+          // we can safely ignore duplicate navigation
+          // as I do not know if I can predict the upcoming url
+          if (error.name !== "NavigationDuplicated") {
+            console.error(error);
+          }
+        });
     },
 
     loadLayers(map) {
@@ -469,8 +526,8 @@ export default {
             process.env.VUE_APP_GEOSERVER_PREFIX +
               "" +
               year +
-              process.env.VUE_APP_GEOSERVER_SUFFIX
-          ]
+              process.env.VUE_APP_GEOSERVER_SUFFIX,
+          ],
         };
         // security to not trigger map errors
         if (!map.getSource("bio-" + year)) {
@@ -486,99 +543,105 @@ export default {
             minzoom: 9,
             paint: {
               "fill-color": "rgba(208, 211, 46, 1)",
-              "fill-opacity": 0.6
+              "fill-opacity": 0.6,
             },
             tms: true,
             maxzoom: 24,
-            layout: {visibility: 'none'}
+            layout: { visibility: "none" },
           };
           this.anonLayers[year] = bioLayer;
-          map.addLayer(this.anonLayers[year], 'road_oneway');
-          map.addLayer({
-            id: `bio-tiles-${year}-border`,
-            type: "line",
-            source: "bio-" + year,
-            "source-layer": "anon_rpgbio_" + year,
-            minzoom: 10,
-            paint: {
-              "line-color": "rgba(208, 211, 46, 1)",
-              "line-opacity": 1,
-              "line-width": {
-                "stops": [[9, 0], [12, 1]]
-              }
+          map.addLayer(this.anonLayers[year], "road_oneway");
+          map.addLayer(
+            {
+              id: `bio-tiles-${year}-border`,
+              type: "line",
+              source: "bio-" + year,
+              "source-layer": "anon_rpgbio_" + year,
+              minzoom: 10,
+              paint: {
+                "line-color": "rgba(208, 211, 46, 1)",
+                "line-opacity": 1,
+                "line-width": {
+                  stops: [
+                    [9, 0],
+                    [12, 1],
+                  ],
+                },
+              },
+              layout: { visibility: "none" },
             },
-            layout: {visibility: 'none'}
-          }, 'road_oneway');
+            "road_oneway"
+          );
         }
       });
 
       // non-bio
-      if (!map.getLayer('rpg-anon-nonbio-2020')) {
+      if (!map.getLayer("rpg-anon-nonbio-2020")) {
         cartobioStyle.layers
-          .filter(({ id }) => id.indexOf('rpg-anon-nonbio') === 0)
-          .forEach(layer => map.addLayer(layer, 'road_oneway'));
+          .filter(({ id }) => id.indexOf("rpg-anon-nonbio") === 0)
+          .forEach((layer) => map.addLayer(layer, "road_oneway"));
       }
 
-      if (!map.getLayer('certification-body-parcels-points')) {
+      if (!map.getLayer("certification-body-parcels-points")) {
         cartobioStyle.layers
-          .filter(({ id }) => id === 'certification-body-parcels-points')
-          .forEach(layer => map.addLayer(layer, 'road_oneway'));
+          .filter(({ id }) => id === "certification-body-parcels-points")
+          .forEach((layer) => map.addLayer(layer, "road_oneway"));
       }
 
       if (!map.getSource("selected")) {
         map.addSource("selected", {
           type: "geojson",
-          data: this.selectedParcels
+          data: this.selectedParcels,
         });
       }
 
       if (!map.getSource("highlight")) {
         map.addSource("highlight", {
           type: "geojson",
-          data: this.highlightedParcels
+          data: this.highlightedParcels,
         });
       }
 
       if (!map.getSource("operatorParcels2020")) {
         map.addSource("operatorParcels2020", {
           type: "geojson",
-          data: this.parcelsOperator[2020]
+          data: this.parcelsOperator[2020],
         });
       }
 
       if (!map.getSource("operatorParcels2019")) {
         map.addSource("operatorParcels2019", {
           type: "geojson",
-          data: this.parcelsOperator[2019]
+          data: this.parcelsOperator[2019],
         });
       }
 
       if (!map.getSource("operatorParcels2018")) {
         map.addSource("operatorParcels2018", {
           type: "geojson",
-          data: this.parcelsOperator[2018]
+          data: this.parcelsOperator[2018],
         });
       }
       if (!map.getSource("operatorParcels2017")) {
         map.addSource("operatorParcels2017", {
           type: "geojson",
-          data: this.parcelsOperator[2017]
+          data: this.parcelsOperator[2017],
         });
       }
     },
 
-    flyTo({lat, lon, zoom}) {
+    flyTo({ lat, lon, zoom }) {
       this.map.flyTo({
         center: [lat, lon],
         zoom,
       });
     },
 
-    setOperator (numeroBio) {
-      this.$store.commit("operators/SET_CURRENT", numeroBio)
+    setOperator(numeroBio) {
+      this.$store.commit("operators/SET_CURRENT", numeroBio);
       this.$router.push({
-        name: 'mapWithOperator',
-        params: { numeroBio }
+        name: "mapWithOperator",
+        params: { numeroBio },
       });
     },
 
@@ -598,49 +661,56 @@ export default {
       }
     },
 
-    closeOperatorDetailsSidebar () {
-      this.map.resize()
+    closeOperatorDetailsSidebar() {
+      this.map.resize();
 
-      this.years.forEach(year => {
+      this.years.forEach((year) => {
         this.map.removeLayer(this.layersOperator[year].id);
-        this.map.removeLayer(this.layersOperator[year].id + '-border');
-        this.addOperatorData(geoJsonTemplate, year)
-      })
+        this.map.removeLayer(this.layersOperator[year].id + "-border");
+        this.addOperatorData(geoJsonTemplate, year);
+      });
 
       this.$router.replace({
-        name: 'map',
-        params: {}
+        name: "map",
+        params: {},
       });
     },
 
-    unsetUpMapOperator () {
-      this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'visible')
-      this.toggleLayerAnon(this.currentYear, false);
-      this.toggleLayer('rpg-anon-nonbio-2020', false)
+    unsetUpMapOperator() {
+      this.map.setLayoutProperty(
+        "certification-body-parcels-points",
+        "visibility",
+        "visible"
+      );
     },
 
-    setupCertificationBodyLayers (map) {
+    setupCertificationBodyLayers(map) {
       if (!map || !this.isCertificationBody) {
-        return
+        return;
       }
 
-      const operatorsP = this.$store.dispatch('operators/FETCH_OPERATORS')
+      const operatorsP = this.$store.dispatch("operators/FETCH_OPERATORS");
 
       operatorsP.then(({ data }) => {
-        map.getSource("certification-body-operators").setData(data)
-      })
+        map.getSource("certification-body-operators").setData(data);
+      });
 
       operatorsP.then(({ data }) => {
         const pacageList = data.features
           .filter(({ properties }) => properties.pacage)
-          .map(({ properties }) => properties.pacage)
+          .map(({ properties }) => properties.pacage);
 
-        map.setFilter('certification-body-parcels-points', ['in', 'pacage', ...pacageList])
-      })
+        map.setFilter("certification-body-parcels-points", [
+          "in",
+          "pacage",
+          ...pacageList,
+        ]);
+      });
     },
 
     setUpMapOperator() {
-      const {map} = this
+      const { map } = this;
+      console.log(this.exploitationView);
 
       if (
         this.bboxOperator[0] !== undefined &&
@@ -651,21 +721,25 @@ export default {
 
       this.isOperatorOnMap = true;
 
-      if (getObjectValue(this.operator, "numeroBio") || getObjectValue(this.operator, "numeroPacage")) {
-        const {numeroPacage} = this.operator
+      if (
+        getObjectValue(this.operator, "numeroBio") ||
+        getObjectValue(this.operator, "numeroPacage")
+      ) {
+        const { numeroPacage } = this.operator;
         const params = {
           numeroPacage,
-          years: [2020, 2019, 2018, 2017]
-        }
+          years: [2020, 2019, 2018, 2017],
+        };
 
-        this.$store.dispatch('operators/FETCH_WFS_LAYERS', params)
-          .then(dataPerYear => {
+        this.$store
+          .dispatch("operators/FETCH_WFS_LAYERS", params)
+          .then((dataPerYear) => {
             dataPerYear.forEach(([year, data]) => {
               year === this.currentYear
                 ? this.displayOperatorLayer(data)
-                : this.addOperatorData(data, year)
-            })
-          })
+                : this.addOperatorData(data, year);
+            });
+          });
 
         this.layersOperator["2020"] = this.getYearLayer(
           "2020",
@@ -693,34 +767,40 @@ export default {
         );
       }
 
-      this.years.forEach(year => {
-        map.addLayer(this.layersOperator[year], 'road_oneway');
-        map.addLayer({
-          ...this.layersOperator[year],
-          id: this.layersOperator[year].id + "-border",
-          type: "line",
-          paint: {
-            "line-color": "rgba(255, 255, 255, 1)",
-            "line-opacity": [
-              'case',
-              ['boolean', ['feature-state', 'highlighted'], false],
-              1,
-              0.65
-            ],
-            "line-width":[
-              'case',
-              ['boolean', ['feature-state', 'highlighted'], false],
-               3,
-               1
-            ]
-          }
-        }, 'road_oneway');
+      this.years.forEach((year) => {
+        map.addLayer(this.layersOperator[year], "road_oneway");
+        map.addLayer(
+          {
+            ...this.layersOperator[year],
+            id: this.layersOperator[year].id + "-border",
+            type: "line",
+            paint: {
+              "line-color": "rgba(255, 255, 255, 1)",
+              "line-opacity": [
+                "case",
+                ["boolean", ["feature-state", "highlighted"], false],
+                1,
+                0.65,
+              ],
+              "line-width": [
+                "case",
+                ["boolean", ["feature-state", "highlighted"], false],
+                3,
+                1,
+              ],
+            },
+          },
+          "road_oneway"
+        );
       });
 
-      this.map.setLayoutProperty('certification-body-parcels-points', 'visibility', 'none')
+      this.map.setLayoutProperty(
+        "certification-body-parcels-points",
+        "visibility",
+        "none"
+      );
+
       this.toggleLayerOperator(this.currentYear, true);
-      this.toggleLayer('rpg-anon-nonbio-2020', true)
-      this.toggleLayerAnon(this.currentYear, true);
     },
 
     /**
@@ -730,11 +810,11 @@ export default {
      * @param {{ highlighted: boolean }} state
      */
     setFeatureState(featureCollection, state) {
-      const source = `operatorParcels${this.currentYear}`
+      const source = `operatorParcels${this.currentYear}`;
 
       featureCollection.features.forEach(({ id }) => {
-        this.map.setFeatureState({source, id}, state)
-      })
+        this.map.setFeatureState({ source, id }, state);
+      });
     },
 
     setupIlotDirection({ numIlot, featureCollection }) {
@@ -755,7 +835,7 @@ export default {
 
     zoomOn(featureOrfeatureCollection) {
       this.map.fitBounds(bbox(featureOrfeatureCollection), {
-        padding: this.mapPadding
+        padding: this.mapPadding,
       });
     },
 
@@ -764,7 +844,7 @@ export default {
      */
     zoomOnOperator() {
       this.map.fitBounds(this.bboxOperator, {
-        padding: this.mapPadding
+        padding: this.mapPadding,
       });
     },
 
@@ -802,16 +882,16 @@ export default {
     },
 
     // toggle visibility of layer
-    toggleLayer (layer, visibility) {
-      const {map} = this
+    toggleLayer(layer, visibility) {
+      const { map } = this;
 
       if (map && map.getLayer(layer)) {
         if (visibility) {
-          map.setLayoutProperty(layer, 'visibility', 'visible');
-          map.setLayoutProperty(layer + '-border', 'visibility', 'visible');
+          map.setLayoutProperty(layer, "visibility", "visible");
+          map.setLayoutProperty(layer + "-border", "visibility", "visible");
         } else {
-          map.setLayoutProperty(layer, 'visibility', 'none');
-          map.setLayoutProperty(layer + '-border', 'visibility', 'none');
+          map.setLayoutProperty(layer, "visibility", "none");
+          map.setLayoutProperty(layer + "-border", "visibility", "none");
         }
       }
     },
@@ -829,94 +909,111 @@ export default {
             colorNotBio,
             1,
             colorBio,
-            "white"
+            "white",
           ],
           "fill-opacity": [
-            'case',
-            ['boolean', ['feature-state', 'highlighted'], false],
+            "case",
+            ["boolean", ["feature-state", "highlighted"], false],
             1,
-            0.6
-          ]
+            0.6,
+          ],
         },
-        layout : {
-          visibility: "none"
-        }
+        layout: {
+          visibility: "none",
+        },
       };
-    }
+    },
   },
   watch: {
-    getProfile: function(newProfile, previousProfile) {
+    getProfile: function (newProfile, previousProfile) {
       // if the map is not yet loaded, it will load layers
       // best would be to populate layers data and make the data react to them
       if (this.isAuthenticated && this.map) {
         this.loadLayers(this.map);
-        this.setupCertificationBodyLayers(this.map)
+        this.setupCertificationBodyLayers(this.map);
       }
       // user logs out
       else if ((!newProfile || !newProfile.active) && this.map) {
-        this.map.removeLayer('certification-body-parcels-points')
+        this.map.removeLayer("certification-body-parcels-points");
 
         // user logs out, and is part of a certification body
         if (previousProfile.organismeCertificateurId) {
-          this.map.getSource("certification-body-operators").setData(geoJsonTemplate)
+          this.map
+            .getSource("certification-body-operators")
+            .setData(geoJsonTemplate);
         }
       }
     },
-    operator (operator, previousOperator) {
+    operator(operator, previousOperator) {
       if (this.map) {
         if (operator.id && operator.id !== previousOperator.id) {
-          window._paq.push(['trackEvent', 'parcels', 'display-on-map', operator.numeroBio]);
+          window._paq.push([
+            "trackEvent",
+            "parcels",
+            "display-on-map",
+            operator.numeroBio,
+          ]);
           this.loadLayers(this.map);
-          this.setUpMapOperator()
-        }
-        else if (!operator.id && previousOperator.id) {
-          this.unsetUpMapOperator()
-          this.closeOperatorDetailsSidebar()
+          this.setUpMapOperator();
+        } else if (!operator.id && previousOperator.id) {
+          this.unsetUpMapOperator();
+          this.closeOperatorDetailsSidebar();
         }
       }
     },
 
-    activeFeature (activeFeature, previousFeature) {
+    activeFeature(activeFeature, previousFeature) {
       if (activeFeature) {
-        const {feature, lngLat} = activeFeature
+        const { feature, lngLat } = activeFeature;
 
         if (previousFeature && previousFeature.feature.id !== feature.id) {
-          this.setFeatureState(featureCollection([previousFeature.feature]), { highlighted: false })
+          this.setFeatureState(featureCollection([previousFeature.feature]), {
+            highlighted: false,
+          });
         }
 
-        this.setFeatureState(featureCollection([feature]), { highlighted: true })
-        this.computeParcelHistoryFromLngLat({ lngLat })
-      }
-      else if (!activeFeature && previousFeature) {
-        this.setFeatureState(featureCollection([previousFeature.feature]), { highlighted: false })
+        this.setFeatureState(featureCollection([feature]), {
+          highlighted: true,
+        });
+        this.computeParcelHistoryFromLngLat({ lngLat });
+      } else if (!activeFeature && previousFeature) {
+        this.setFeatureState(featureCollection([previousFeature.feature]), {
+          highlighted: false,
+        });
         this.hoveredParcelFeatures = {
           anon: [],
           operator: {},
           cadastre: null,
+        };
+      }
+    },
+    exploitationView: function (newView) {
+      console.log(this.exploitationView, newView);
+      this.toggleLayerAnon(this.currentYear, newView === 0);
+      this.toggleLayer("rpg-anon-nonbio-2020", newView === 0);
+      this.years.forEach((year) => {
+        if (year !== this.currentYear) {
+          this.toggleLayerOperator(year, newView === 1);
         }
-      }
+      })
     },
-    exploitationView: function(newVal) {
-      console.log(this.exploitationView, newVal);
-    },
-    activeFeatures (activeFeatures, previousFeatures) {
+    activeFeatures(activeFeatures, previousFeatures) {
       if (activeFeatures) {
-        const { featureCollection, numIlot } = activeFeatures
-        this.setFeatureState(featureCollection, { highlighted: true })
-        this.setupIlotDirection({ featureCollection, numIlot })
-      }
-      else if (previousFeatures) {
-        const { featureCollection } = previousFeatures
-        this.setFeatureState(featureCollection, { highlighted: false })
+        const { featureCollection, numIlot } = activeFeatures;
+        this.setFeatureState(featureCollection, { highlighted: true });
+        this.setupIlotDirection({ featureCollection, numIlot });
+      } else if (previousFeatures) {
+        const { featureCollection } = previousFeatures;
+        this.setFeatureState(featureCollection, { highlighted: false });
         this.displayIlotDirection = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss">
-@import '~mapbox-gl/dist/mapbox-gl.css';
+@import "~mapbox-gl/dist/mapbox-gl.css";
 </style>
 
 <style lang="scss" scoped>
