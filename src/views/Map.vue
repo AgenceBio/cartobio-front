@@ -238,7 +238,7 @@ export default {
           colorBio: "rgba(0, 60, 0, 1)",
           colorNotBio: "rgba(116, 0, 50, 1)",
         },
-        anon2020: { visibility: false, color: "rgba(208, 211, 46, 1)" },
+        anon2020: { visibility: false, color: "#A6DC9A" },
         anon2019: { visibility: false, color: "rgba(208, 211, 46, 1)" },
         anon2018: { visibility: false, color: "rgba(208, 211, 46, 1)" },
         anon2017: { visibility: false, color: "rgba(208, 211, 46, 1)" },
@@ -343,16 +343,17 @@ export default {
       this.map = map;
 
       this.updateHash(map);
-      map.on("moveend", () => this.updateHash(map));
-      map.on("zoomend", () => this.updateHash(map));
+      // map.on("moveend", () => this.updateHash(map));
+      // map.on("zoomend", () => this.updateHash(map));
 
       // add map sources
+      console.log('onMapLoaded', this.isAuthenticated, this.numeroBio)
       if (this.isAuthenticated) {
         this.loadLayers(map);
         this.setupCertificationBodyLayers(map);
-        
+
         if (this.numeroBio) {
-          this.setOperator(this.numeroBio);
+          this.$store.commit("operators/SET_CURRENT", parseInt(this.numeroBio));
         }
       }
 
@@ -546,7 +547,7 @@ export default {
             "source-layer": "anon_rpgbio_" + year,
             minzoom: 9,
             paint: {
-              "fill-color": "rgba(208, 211, 46, 1)",
+              "fill-color": "#A6DC9A",
               "fill-opacity": 0.6,
             },
             tms: true,
@@ -563,7 +564,7 @@ export default {
               "source-layer": "anon_rpgbio_" + year,
               minzoom: 10,
               paint: {
-                "line-color": "rgba(208, 211, 46, 1)",
+                "line-color": "#A6DC9A",
                 "line-opacity": 1,
                 "line-width": {
                   stops: [
@@ -747,8 +748,8 @@ export default {
 
         this.layersOperator["2020"] = this.getYearLayer(
           "2020",
-          "rgba(98, 215, 113, 1)", // bio
-          "rgba(253, 168, 212, 1)", // not bio
+          "#B9D065", // bio
+          "#47718A", // not bio
           "rgba(22, 154, 57, 1)" // outline
         );
         this.layersOperator["2019"] = this.getYearLayer(
@@ -779,19 +780,14 @@ export default {
             id: this.layersOperator[year].id + "-border",
             type: "line",
             paint: {
-              "line-color": "rgba(255, 255, 255, 1)",
-              "line-opacity": [
+              "line-color": [
                 "case",
                 ["boolean", ["feature-state", "highlighted"], false],
-                1,
-                0.65,
+                "rgba(0, 204, 255, 1)",
+                "rgba(255, 255, 255, 1)",
               ],
-              "line-width": [
-                "case",
-                ["boolean", ["feature-state", "highlighted"], false],
-                3,
-                1,
-              ],
+              "line-opacity": 1,
+              "line-width": 3,
             },
           },
           "road_oneway"
@@ -915,12 +911,7 @@ export default {
             colorBio,
             "white",
           ],
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "highlighted"], false],
-            1,
-            0.6,
-          ],
+          "fill-opacity": 1,
         },
         layout: {
           visibility: "none",
@@ -994,7 +985,7 @@ export default {
     exploitationView (newView) {
       this.toggleLayerAnon(this.currentYear, newView === 0);
       this.toggleLayer("rpg-anon-nonbio-2020", newView === 0);
-      
+
       this.years.forEach((year) => {
         if (year !== this.currentYear) {
           this.toggleLayerOperator(year, newView === 1);

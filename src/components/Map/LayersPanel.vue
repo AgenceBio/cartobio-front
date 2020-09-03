@@ -35,8 +35,12 @@
                     Culture bio
                   </li>
                   <li>
+                    <span class="legend-color layer-surroundings-non-bio-lowrisk"></span>
+                    Pâtures et estives
+                  </li>
+                  <li>
                     <span class="legend-color layer-surroundings-non-bio"></span>
-                    Culture conventionnelle à faible risque
+                    Culture conventionnelle
                   </li>
                   <li>
                     <span class="legend-color layer-surroundings-non-bio-risky"></span>
@@ -50,9 +54,12 @@
                 <template v-slot:header>
                   <h3 class="subheading font-weight-medium">Historique de conversion</h3>
                 </template>
-                <v-card>
-                  <v-card-text>Récent - depuis plusieurs années</v-card-text>
-                </v-card>
+                <ul class="legend mx-4 mb-4 body-1">
+                  <li>
+                    <span class="legend-color layer-surroundings-bio"></span>
+                    Récent - depuis plusieurs années
+                  </li>
+                </ul>
               </v-expansion-panel-content>
             </v-flex>
           </v-layout>
@@ -111,9 +118,12 @@ ul, li {
     background-color: #B9D065;
   }
   &.layer-operator-non-bio {
-    background-color: #457382;
+    background-color: #47718A;
   }
   &.layer-surroundings-bio {
+    background-color: #7BD97B;
+  }
+  &.layer-surroundings-non-bio-lowrisk {
     background-color: #F2C94C;
   }
   &.layer-surroundings-non-bio {
