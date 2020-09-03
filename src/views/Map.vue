@@ -67,7 +67,7 @@
         </MglMap>
 
         <!-- Layers selector -->
-        <LayersPanel v-show="isAuthenticated && operator.title"></LayersPanel>
+        <LayersPanel v-if="isAuthenticated && operator.title"></LayersPanel>
       </div>
     </v-content>
   </v-layout>
@@ -350,6 +350,10 @@ export default {
       if (this.isAuthenticated) {
         this.loadLayers(map);
         this.setupCertificationBodyLayers(map);
+        
+        if (this.numeroBio) {
+          this.setOperator(this.numeroBio);
+        }
       }
 
       map.on("mousemove", ({ lngLat }) => {
@@ -682,6 +686,7 @@ export default {
         "visibility",
         "visible"
       );
+
     },
 
     setupCertificationBodyLayers(map) {
@@ -710,7 +715,6 @@ export default {
 
     setUpMapOperator() {
       const { map } = this;
-      console.log(this.exploitationView);
 
       if (
         this.bboxOperator[0] !== undefined &&
@@ -987,10 +991,10 @@ export default {
         };
       }
     },
-    exploitationView: function (newView) {
-      console.log(this.exploitationView, newView);
+    exploitationView (newView) {
       this.toggleLayerAnon(this.currentYear, newView === 0);
       this.toggleLayer("rpg-anon-nonbio-2020", newView === 0);
+      
       this.years.forEach((year) => {
         if (year !== this.currentYear) {
           this.toggleLayerOperator(year, newView === 1);
