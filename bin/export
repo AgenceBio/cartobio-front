@@ -16,7 +16,7 @@ const {basename, dirname, join, resolve} = require('path')
 const { featureCollection } = require('@turf/helpers')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['epci', 'millesime', 'name'],
+  string: ['epci', 'insee', 'millesime', 'name'],
   boolean: ['in-lambert-93', 'shapefiles'],
   alias: {
     inLambert93: 'in-lambert-93'
@@ -24,7 +24,8 @@ const argv = require('minimist')(process.argv.slice(2), {
   default: {
     shapefiles: true,
     inLambert93: false,
-    name: undefined
+    name: '',
+    insee: ''
   }
 })
 
@@ -33,13 +34,14 @@ const {Worker} = require('worker_threads')
 const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
-const {_:FILTERING_FILES, epci, millesime} = argv
+const {_:FILTERING_FILES, epci, insee, millesime} = argv
 const {shapefiles, inLambert93} = argv
 const {from:SOURCE_FILES} = argv
-const {name='export'} = argv
+const {name} = argv
+
 const WGS_84 = 4326
 
-let DESTINATION_FILE = ''
+let DESTINATION_FILE = null
 
 
 if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
@@ -47,6 +49,7 @@ if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d064/*.shp" --epci 200067106')
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d026/*.shp" --insee 26108,26011,26289')
   process.exit(1)
 }
 
@@ -95,7 +98,7 @@ async function run (FILTERING_FILES) {
 
   const filteringFiles = await glob(FILTERING_FILES)
   const sourceFiles = await glob(SOURCE_FILES)
-  const datasetCount = filteringFiles.length + (epci ? 1 : 0)
+  const datasetCount = filteringFiles.length + (epci ? 1 : 0) + (insee.split(',').length)
 
   // X. Create export directory if needed
   await fs.mkdir(uploadDir(''), { recursive: true })
@@ -107,12 +110,23 @@ async function run (FILTERING_FILES) {
     spinner: 'simpleDotsScrolling'
   }).start()
 
-  // 1.a Filter by EPCI boundaries
-  if (epci) {
-    const codes = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
-      .then(response => response.data)
-      .then(list => list.find(({ code }) => code === String(epci)))
-      .then(({ membres }) => membres.map(m => m.code))
+  // 1.a Filter by EPCI or Insee Code boundaries
+  if (epci || insee) {
+    let codes = []
+
+    if (epci) {
+      codes = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
+        .then(response => response.data)
+        .then(list => list.find(({ code }) => code === String(epci)))
+        .then(({ membres }) => membres.map(m => m.code))
+
+      DESTINATION_FILE = DESTINATION_FILE ?? `export-${name || `epci-${epci}`}-${millesime}`
+    }
+    else if (insee) {
+      const inseeCodes = insee.split(',').map(code => code.trim())
+      codes.push(...inseeCodes)
+      DESTINATION_FILE = DESTINATION_FILE ?? `export-${name || `insee-${inseeCodes.join(',')}`}-${millesime}`
+    }
 
     const features = await getFeaturesByINSEECodes({ collection: fetchCommunesBoundaries(), codes })
     const dataset = gdal.open(uploadDir('input.gpkg'), 'w', 'GPKG')
@@ -127,18 +141,18 @@ async function run (FILTERING_FILES) {
     })
 
     datasets.push(dataset)
-
-    DESTINATION_FILE = `export-epci-${epci}-${millesime}`
   }
 
   // 1.b Or, filter by shapefile
-  if (shapefiles) {
+  if (shapefiles && filteringFiles.length) {
+    const firstFile = basename(filteringFiles[0]).toLocaleLowerCase()
+
     filteringFiles
       .map(path => resolve(path))
       .map(path => gdal.open(path, 'r'))
       .forEach(dataset => datasets.push(dataset))
 
-    DESTINATION_FILE = `${name}-${millesime}`
+    DESTINATION_FILE = DESTINATION_FILE ?? `export-${name || firstFile}-${millesime}`
   }
 
   // 2. Collect all the features from each layer

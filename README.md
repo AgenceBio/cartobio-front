@@ -58,6 +58,19 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d064/cartobio.shp' --ep
   ⠹ d064/cartononbio.shp
 ```
 
+### Export a GeoPackage/GeoJSON, encompassing Insee codes boundaries
+
+```bash
+$ npm run export -- --millesime 2019 --from '../RPG/2019/d026/cartobio.shp' --insee "26108,26011,26289"
+
+✔ Parsed 3 features in 3 datasets.
+  ❯ Filtering features
+    ⠴ 2017/rpgbio2017v6.shp
+    Exporting as export-insee-26108,26011,26289-2017.geojson
+    Cleanup
+    Exporting as export-insee-26108,26011,26289-2017.shp.zip
+```
+
 ### Compute total surfaces
 
 ```bash
