@@ -7,6 +7,7 @@ const {promises:fs} = require('fs')
 const {createWriteStream} = require('fs')
 const {promisify} = require('util')
 const pipeline = promisify(require('stream').pipeline)
+const slugify = require('@sindresorhus/slugify')
 const ora = require('ora')
 const Listr = require('listr')
 const {get} = require('axios')
@@ -115,17 +116,18 @@ async function run (FILTERING_FILES) {
     let codes = []
 
     if (epci) {
-      codes = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
+      const { nom, codes:inseeCodes } = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
         .then(response => response.data)
         .then(list => list.find(({ code }) => code === String(epci)))
-        .then(({ membres }) => membres.map(m => m.code))
+        .then(({ nom, membres }) => ({ nom, codes: membres.map(m => m.code) }))
+      codes.push(...inseeCodes)
 
-      DESTINATION_FILE = DESTINATION_FILE ?? `export-${name || `epci-${epci}`}-${millesime}`
+      DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(nom) || `epci-${epci}`}-${millesime}`
     }
     else if (insee) {
       const inseeCodes = insee.split(',').map(code => code.trim())
       codes.push(...inseeCodes)
-      DESTINATION_FILE = DESTINATION_FILE ?? `export-${name || `insee-${inseeCodes.join(',')}`}-${millesime}`
+      DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(name) || `insee-${inseeCodes.join(',')}`}-${millesime}`
     }
 
     const features = await getFeaturesByINSEECodes({ collection: fetchCommunesBoundaries(), codes })
@@ -152,7 +154,7 @@ async function run (FILTERING_FILES) {
       .map(path => gdal.open(path, 'r'))
       .forEach(dataset => datasets.push(dataset))
 
-    DESTINATION_FILE = DESTINATION_FILE ?? `export-${name || firstFile}-${millesime}`
+    DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(name || firstFile)}-${millesime}`
   }
 
   // 2. Collect all the features from each layer
@@ -223,7 +225,7 @@ async function run (FILTERING_FILES) {
     title: 'Cleanup',
     task: () => {
       datasets.forEach(d => d.close())
-      return fs.unlink(uploadDir('input.gpkg'))
+      // return fs.unlink(uploadDir('input.gpkg'))
     }
   })
 

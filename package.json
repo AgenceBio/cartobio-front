@@ -68,7 +68,8 @@
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0",
     "worker-farm": "^1.7.0",
-    "geojson2shp": "^0.3.2"
+    "geojson2shp": "^0.3.2",
+    "@sindresorhus/slugify": "^1.1.0"
   },
   "eslintConfig": {
     "root": true,
