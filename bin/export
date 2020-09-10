@@ -18,13 +18,9 @@ const { featureCollection } = require('@turf/helpers')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['epci', 'departement', 'insee', 'millesime', 'name'],
-  boolean: ['in-lambert-93', 'shapefiles'],
-  alias: {
-    inLambert93: 'in-lambert-93'
-  },
+  boolean: ['shapefiles'],
   default: {
-    shapefiles: true,
-    inLambert93: false,
+    shapefiles: false,
     name: '',
     insee: '',
     departement: ''
@@ -37,22 +33,20 @@ const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
 const {_:FILTERING_FILES, epci, departement: departements, insee, millesime} = argv
-const {shapefiles, inLambert93} = argv
+const {shapefiles} = argv
 const {from:SOURCE_FILES} = argv
 const {name} = argv
 
-const WGS_84 = 4326
-
+const LAMBERT_93 = 2154
 let DESTINATION_FILE = null
 
 
 if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
-  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d064/*.shp" --epci 200067106')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d026/*.shp" --insee 26108,26011,26289')
-  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/{d026,d007}/*.shp" --departement 26,07')
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/{d026,d007}/*.shp" --departement 26,7')
   process.exit(1)
 }
 
@@ -110,15 +104,28 @@ async function getFeaturesByProperty ({ collection: featureCollectionP, comparis
     .filter(({ properties }) => comparisonFn(properties))
 }
 
+/**
+ * 1. Source files: RPG Bio Shapefile to be filtered on
+ * 2. Filtering files: Provided by user, or administrative boundaries guessed from identifiers
+ *
+ * The processing logic is the following:
+ * 1. Aquire filtering features
+ * 2. We reproject filtering features to match source files projection
+ * 3. We fetch source files features within the filtering boundaries
+ * 4. We have a list of features projected according to the source files projection
+ *
+ * We then export as:
+ * 1. WGS84 GeoJSON
+ * 2. User provided files projection, or Lambert93 otherwise
+ */
 async function run (FILTERING_FILES) {
-  const l93 = gdal.SpatialReference.fromProj4('+init=epsg:2154')
   const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
-  const l93towgs84 = new gdal.CoordinateTransformation(l93, wgs84)
+
   let datasets = [];
 
   const filteringFiles = await glob(FILTERING_FILES)
   const sourceFiles = await glob(SOURCE_FILES)
-  const datasetCount = filteringFiles.length + (epci ? 1 : 0) + (insee.split(',').length)
+  const datasetCount = filteringFiles.length + (epci ? 1 : 0) + insee.split(',').length + departements.split(',').length
 
   // X. Create export directory if needed
   await fs.mkdir(uploadDir(''), { recursive: true })
@@ -182,12 +189,25 @@ async function run (FILTERING_FILES) {
     DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(name || firstFile)}-${millesime}`
   }
 
-  // 2. Collect all the features from each layer
+  // 2.a Collect source files projection
+  const firstSourceFile = gdal.open(sourceFiles[0], 'r')
+  const {srs: sourceProjection} = firstSourceFile.layers.get(0)
+  const {srs: exportProjection} = datasets[0].layers.get(0)
+
+
+  // 2.b Collect all the features from each layer
   const filteringFeatures = datasets.reduce((features, ds) => {
     ds.layers.forEach(layer => {
+      const dsProjection = layer.srs
+      let reprojectFn
+
+      if (!dsProjection.isSame(sourceProjection)) {
+        reprojectFn = new gdal.CoordinateTransformation(dsProjection, sourceProjection)
+      }
+
       layer.features.forEach((feature) => {
         const geometry = feature.getGeometry()
-        inLambert93 && geometry.transform(l93towgs84)
+        reprojectFn && geometry.transform(reprojectFn)
         features.push(geometry.toObject())
       })
     })
@@ -260,7 +280,7 @@ async function run (FILTERING_FILES) {
     task: (ctx) => {
       return convert(featureCollection(ctx.features), uploadDir(`${DESTINATION_FILE}.shp.zip`), {
         layer: DESTINATION_FILE,
-        targetCrs: WGS_84
+        targetCrs: exportProjection.getAuthorityCode() || LAMBERT_93
       })
     }
   })

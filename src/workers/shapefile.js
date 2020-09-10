@@ -3,7 +3,9 @@
 const gdal = require('gdal-next')
 const { fromCode } = require('../modules/codes-cultures/pac.js')
 const { geometry: area } = require('@mapbox/geojson-area')
+
 const IN_HECTARES = 10000
+const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
 
 function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) {
   const filteringFeaturesPolygon = new gdal.MultiPolygon()
@@ -24,6 +26,16 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
   const ds = gdal.open(sourceFile, 'r')
   const layer = ds.layers.get(0)
 
+  const getWGS84Geometry = (function getWGS84GeometryFactory(layer) {
+    return layer.srs.isSame(wgs84)
+      ? (feature) => feature.getGeometry().toObject()
+      : (feature) => {
+        const geometry = feature.getGeometry().clone()
+        geometry.transformTo(wgs84)
+        return geometry.toObject()
+      }
+  })(layer)
+
   layer.features.forEach(feature => {
     const geometry = feature.getGeometry()
 
@@ -32,7 +44,8 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
     if (intersects) {
       const {BIO, bio, CODE_CULTU, codecultu} = feature.fields.toObject()
       const {label: LBL_CULTU, groupLabel: GRP_CULTU} = fromCode(CODE_CULTU ?? codecultu)
-      const geometry = feature.getGeometry().toObject()
+
+      const geometry = getWGS84Geometry(feature)
       const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
 
       features.push({

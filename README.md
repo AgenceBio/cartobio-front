@@ -37,7 +37,7 @@ npm test
 ### Export a GeoJSON/Shapefile, filtered by one or many Shapefiles
 
 ```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/d0{11,09,66}/cartobio.shp' --in-lambert-93 '../reseau11/**/*.shp'
+$ npm run export -- --millesime 2019 --from '../RPG/2019/d0{11,09,66}/cartobio.shp' '../reseau11/**/*.shp'
 
 ✔ Parsed 9 features in 5 datasets.
   ✔ d009/cartobio.shp
