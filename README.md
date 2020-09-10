@@ -34,7 +34,7 @@ npm test
 
 ## Handbook
 
-### Export a GeoPackage/GeoJSON, filtered by one or many Shapefiles
+### Export a GeoJSON/Shapefile, filtered by one or many Shapefiles
 
 ```bash
 $ npm run export -- --millesime 2019 --from '../RPG/2019/d0{11,09,66}/cartobio.shp' --in-lambert-93 '../reseau11/**/*.shp'
@@ -48,7 +48,7 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d0{11,09,66}/cartobio.s
   ⠹ d066/cartononbio.shp
 ```
 
-### Export a GeoPackage/GeoJSON, encompassing EPCI boundaries
+### Export a GeoJSON/Shapefile, encompassing EPCI boundaries
 
 ```bash
 $ npm run export -- --millesime 2019 --from '../RPG/2019/d064/cartobio.shp' --epci 200067106
@@ -58,7 +58,7 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d064/cartobio.shp' --ep
   ⠹ d064/cartononbio.shp
 ```
 
-### Export a GeoPackage/GeoJSON, encompassing Insee codes boundaries
+### Export a GeoJSON/Shapefile, encompassing Insee codes boundaries
 
 ```bash
 $ npm run export -- --millesime 2019 --from '../RPG/2019/d026/cartobio.shp' --insee "26108,26011,26289"
@@ -70,6 +70,21 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d026/cartobio.shp' --in
     Cleanup
     Exporting as export-insee-26108,26011,26289-2017.shp.zip
 ```
+
+### Export a GeoJSON/Shapefile, encompassing two departments
+
+```bash
+$ npm run export -- --millesime 2019 --from '../RPG/2019/{d026,d007}/*.shp' --departement 7,26
+
+✔ Parsed 2 features in 1 datasets.
+  ❯ Filtering features
+    ✔ d007/cartobio.shp
+    ✔ d007/cartononbio.shp
+    ⠏ d026/cartobio.shp
+    ⠏ d026/cartononbio.shp
+    Exporting as export-d07,d26-2019.geojson
+    Cleanup
+    Exporting as export-d07,d26-2019.shp.zip
 
 ### Compute total surfaces
 

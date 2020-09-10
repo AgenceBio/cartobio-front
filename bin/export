@@ -17,7 +17,7 @@ const {basename, dirname, join, resolve} = require('path')
 const { featureCollection } = require('@turf/helpers')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['epci', 'insee', 'millesime', 'name'],
+  string: ['epci', 'departement', 'insee', 'millesime', 'name'],
   boolean: ['in-lambert-93', 'shapefiles'],
   alias: {
     inLambert93: 'in-lambert-93'
@@ -26,7 +26,8 @@ const argv = require('minimist')(process.argv.slice(2), {
     shapefiles: true,
     inLambert93: false,
     name: '',
-    insee: ''
+    insee: '',
+    departement: ''
   }
 })
 
@@ -35,7 +36,7 @@ const {Worker} = require('worker_threads')
 const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
-const {_:FILTERING_FILES, epci, insee, millesime} = argv
+const {_:FILTERING_FILES, epci, departement: departements, insee, millesime} = argv
 const {shapefiles, inLambert93} = argv
 const {from:SOURCE_FILES} = argv
 const {name} = argv
@@ -51,21 +52,39 @@ if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles --in-lambert-93 path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d064/*.shp" --epci 200067106')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d026/*.shp" --insee 26108,26011,26289')
+  console.error('npm run export -- --millesime 2019 --from "../RPG/2019/{d026,d007}/*.shp" --departement 26,07')
   process.exit(1)
 }
 
 const uploadDir = (file) => join(__dirname, '..', 'exports', file)
 
-function fetchCommunesBoundaries() {
-  const FILENAME = 'communes.geojson'
+const splitCliArg = (arg) => String(arg).split(',').map(code => code.trim())
+
+function pushFeaturesIntoDataset({ features, crs, datasets }) {
+  const dataset = gdal.open(uploadDir('input.gpkg'), 'w', 'GPKG')
+
+  const layer = dataset.layers.create('communes', crs, gdal.wkbPolygon)
+  features.forEach(({ geometry, properties }) => {
+    const feature = new gdal.Feature(layer)
+
+    feature.setGeometry(gdal.Geometry.fromGeoJson(geometry))
+    feature.fields.set(properties)
+
+    layer.features.add(feature)
+  })
+
+  datasets.push(dataset)
+}
+
+function fetchJSON(url) {
+  const FILENAME = basename(url)
   const DEST = join(__dirname, '..', 'public', FILENAME)
-  const SOURCE = 'https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/' + FILENAME
 
   // we pipe the source file to the local filesystem (createWriteStream())
   // if it does not exist (catch())
   return fs.stat(DEST)
     .catch(async () => {
-      const response = await get(SOURCE, {responseType: 'stream'})
+      const response = await get(url, {responseType: 'stream'})
 
       return pipeline(response.data, createWriteStream(DEST))
     })
@@ -84,11 +103,11 @@ function fetchCommunesBoundaries() {
  * @param  {[type]} codes      [description]
  * @return {[type]}            [description]
  */
-async function getFeaturesByINSEECodes ({ collection: featureCollectionP, codes }) {
+async function getFeaturesByProperty ({ collection: featureCollectionP, comparisonFn }) {
   const collection = await featureCollectionP
 
   return collection.features
-    .filter(({ properties }) => codes.includes(properties.code))
+    .filter(({ properties }) => comparisonFn(properties))
 }
 
 async function run (FILTERING_FILES) {
@@ -116,7 +135,7 @@ async function run (FILTERING_FILES) {
     let codes = []
 
     if (epci) {
-      const { nom, codes:inseeCodes } = await get('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
+      const { nom, codes:inseeCodes } = await fetchJSON('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
         .then(response => response.data)
         .then(list => list.find(({ code }) => code === String(epci)))
         .then(({ nom, membres }) => ({ nom, codes: membres.map(m => m.code) }))
@@ -125,27 +144,33 @@ async function run (FILTERING_FILES) {
       DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(nom) || `epci-${epci}`}-${millesime}`
     }
     else if (insee) {
-      const inseeCodes = insee.split(',').map(code => code.trim())
+      const inseeCodes = splitCliArg(insee)
       codes.push(...inseeCodes)
       DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(name) || `insee-${inseeCodes.join(',')}`}-${millesime}`
     }
 
-    const features = await getFeaturesByINSEECodes({ collection: fetchCommunesBoundaries(), codes })
-    const dataset = gdal.open(uploadDir('input.gpkg'), 'w', 'GPKG')
-    const layer = dataset.layers.create('communes', wgs84, gdal.wkbPolygon)
-    features.forEach(({ geometry, properties }) => {
-      const feature = new gdal.Feature(layer)
-
-      feature.setGeometry(gdal.Geometry.fromGeoJson(geometry))
-      feature.fields.set(properties)
-
-      layer.features.add(feature)
+    const features = await getFeaturesByProperty({
+      collection: fetchJSON('https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/communes.geojson'),
+      comparisonFn: (properties) => codes.includes(properties.code)
     })
 
-    datasets.push(dataset)
+    pushFeaturesIntoDataset({ features, datasets, crs: wgs84 })
   }
 
-  // 1.b Or, filter by shapefile
+  // 1.b Or, filter by departement
+  if (departements) {
+    const codes = splitCliArg(departements).map(d => d.padStart(2, '0'))
+
+    const features = await getFeaturesByProperty({
+      collection: fetchJSON('https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/departements-avec-outre-mer.geojson'),
+      comparisonFn: (properties) => codes.includes(properties.code)
+    })
+
+    pushFeaturesIntoDataset({ features, datasets, crs: wgs84 })
+    DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(name) || codes.map(code => `d${code}`).join(',')}-${millesime}`
+  }
+
+  // 1.c Or, filter by shapefile
   if (shapefiles && filteringFiles.length) {
     const firstFile = basename(filteringFiles[0]).toLocaleLowerCase()
 
