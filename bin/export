@@ -142,10 +142,10 @@ async function run (FILTERING_FILES) {
     let codes = []
 
     if (epci) {
-      const { nom, codes:inseeCodes } = await fetchJSON('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
-        .then(response => response.data)
-        .then(list => list.find(({ code }) => code === String(epci)))
-        .then(({ nom, membres }) => ({ nom, codes: membres.map(m => m.code) }))
+      const list = await fetchJSON('https://unpkg.com/@etalab/decoupage-administratif@0.8.0/data/epci.json')
+
+      const { nom, membres } = list.find(({ code }) => code === String(epci))
+      const inseeCodes = membres.map(m => m.code)
       codes.push(...inseeCodes)
 
       DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(nom) || `epci-${epci}`}-${millesime}`

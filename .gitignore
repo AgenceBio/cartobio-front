@@ -2,6 +2,7 @@
 node_modules
 /dist
 public/*.geojson
+public/epci.json
 
 # Export files
 exports
