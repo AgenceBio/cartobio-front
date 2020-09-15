@@ -15,15 +15,18 @@ const gdal = require('gdal-next')
 const {convert} = require('geojson2shp')
 const {basename, dirname, join, resolve} = require('path')
 const { featureCollection } = require('@turf/helpers')
+const { default: circle } = require('@turf/circle')
+const { center: centroid } = require('turf')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['epci', 'departement', 'insee', 'millesime', 'name'],
+  string: ['epci', 'departement', 'insee', 'radius', 'millesime', 'name'],
   boolean: ['shapefiles'],
   default: {
     shapefiles: false,
     name: '',
     insee: '',
-    departement: ''
+    departement: '',
+    radius: null
   }
 })
 
@@ -33,7 +36,7 @@ const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
 const {_:FILTERING_FILES, epci, departement: departements, insee, millesime} = argv
-const {shapefiles} = argv
+const {shapefiles, radius} = argv
 const {from:SOURCE_FILES} = argv
 const {name} = argv
 
@@ -41,7 +44,7 @@ const LAMBERT_93 = 2154
 let DESTINATION_FILE = null
 
 
-if (!FILTERING_FILES || !SOURCE_FILES || !millesime) {
+if (!FILTERING_FILES || !SOURCE_FILES || !millesime || (!insee && !epci && !departements)) {
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d064/*.shp" --epci 200067106')
@@ -156,10 +159,23 @@ async function run (FILTERING_FILES) {
       DESTINATION_FILE = DESTINATION_FILE ?? `export-${slugify(name) || `insee-${inseeCodes.join(',')}`}-${millesime}`
     }
 
-    const features = await getFeaturesByProperty({
+    let features = await getFeaturesByProperty({
       collection: fetchJSON('https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/communes.geojson'),
       comparisonFn: (properties) => codes.includes(properties.code)
     })
+
+    // with --radius 100, we extend each the center of each entity by their radius
+    if (isNaN(parseInt(radius, 10)) === false) {
+      DESTINATION_FILE = DESTINATION_FILE.replace(`-${millesime}`, `+${radius}km-${millesime}`)
+
+      features = features.map(feature => {
+        return circle(
+          centroid(feature),
+          parseInt(radius, 10),
+          { units: 'kilometers' }
+        )
+      })
+    }
 
     pushFeaturesIntoDataset({ features, datasets, crs: wgs84 })
   }
