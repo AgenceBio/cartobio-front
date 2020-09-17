@@ -103,7 +103,7 @@ export default {
       stats: null,
       apiAccessCount: null,
       apiAccessCallsCount: null,
-      dataAccessCount: 30,
+      dataAccessCount: 57,
       loading: true,
       errored: false,
       SAU_TOTALE,
