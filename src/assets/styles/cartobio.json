@@ -36,7 +36,15 @@
       "minzoom": 9,
       "maxzoom": 24,
       "paint": {
-        "fill-color": "#673AB7",
+        "fill-color": [
+          "match",
+          ["to-string", ["get", "codecultu"]],
+          ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"],
+          "#EB5757",
+          ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"],
+          "#F2C94C",
+          "#F2994A"
+        ],
         "fill-opacity": 0.7
       },
       "layout": {
