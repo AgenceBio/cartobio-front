@@ -200,12 +200,6 @@ export default {
       // placeholder for layers for an operator
       layersOperator: {},
 
-      // edit mode
-      expandLayers: [true],
-      displaySurvey: true,
-      // new parcel dialog
-      setUpParcel: false,
-
       highlightedParcel: null,
 
       // hovered ilot direction

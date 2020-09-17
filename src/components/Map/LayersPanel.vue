@@ -1,7 +1,7 @@
 <template>
   <v-flex class="layers-panel">
-    <v-expansion-panel expand>
-      <v-expansion-panel-content>
+    <v-expansion-panel expand :readonly="true" value="[true]">
+      <v-expansion-panel-content hide-actions>
         <template v-slot:header>
           <h2 class="expansion-title font-weight-medium">
             <v-icon class="mr-2">layers</v-icon>Exploitation
@@ -21,7 +21,7 @@
 
         <v-divider></v-divider>
 
-        <v-expansion-panel v-model="expansionValue">
+        <v-expansion-panel v-model="expansionValue" focusable>
           <v-layout column>
             <v-flex grow>
               <v-expansion-panel-content>
