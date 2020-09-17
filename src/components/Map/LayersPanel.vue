@@ -57,7 +57,7 @@
                 <ul class="legend mx-4 mb-4 body-1">
                   <li>
                     <span class="legend-color layer-surroundings-bio"></span>
-                    Récent - depuis plusieurs années
+                    Disponible prochainement
                   </li>
                 </ul>
               </v-expansion-panel-content>
