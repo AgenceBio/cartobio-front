@@ -347,7 +347,6 @@ export default {
       // map.on("zoomend", () => this.updateHash(map));
 
       // add map sources
-      console.log('onMapLoaded', this.isAuthenticated, this.numeroBio)
       if (this.isAuthenticated) {
         this.loadLayers(map);
         this.setupCertificationBodyLayers(map);
