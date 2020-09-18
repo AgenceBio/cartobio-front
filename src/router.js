@@ -11,29 +11,29 @@ import LandingCertificationBody from './views/Landing/CertificationBody.vue'
 import AppLayout from './views/AppLayout.vue'
 import ContentPagesLayout from './views/ContentPagesLayout.vue'
 
-import store from './store.js'
+// import store from './store.js'
 import goTo from 'vuetify/lib/components/Vuetify/goTo'
 
 Vue.use(Router)
 
-function isLoadedAndAuthenticated (to, from, next) {
-  const isLoaded = store.getters['user/isLoaded']
-  const { oc } = store.getters.getCategories;
+// function isLoadedAndAuthenticated (to, from, next) {
+//   const isLoaded = store.getters['user/isLoaded']
+//   const { oc } = store.getters.getCategories;
 
-  function proceed () {
-    const { getUserCategory } = store.getters;
-    getUserCategory === oc ? next() : next('/map')
-  }
+//   function proceed () {
+//     const { getUserCategory } = store.getters;
+//     getUserCategory === oc ? next() : next('/')
+//   }
 
-  if (isLoaded) {
-    return proceed()
-  }
+//   if (isLoaded) {
+//     return proceed()
+//   }
 
-  store.watch(
-    (state) => state.user.isLoaded,
-    (isLoaded) => isLoaded && proceed()
-  )
-}
+//   store.watch(
+//     (state) => state.user.isLoaded,
+//     (isLoaded) => isLoaded && proceed()
+//   )
+// }
 
 export default new Router({
   routes: [
@@ -46,18 +46,15 @@ export default new Router({
           props: true,
           name: 'mapWithOperator',
           component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
+          // beforeEnter: isLoadedAndAuthenticated
+
         },
         {
           path: '/map:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
           props: true,
           name: 'map',
           component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
-        },
-        {
-          path: '/notifications',
-          name: 'notifications',
-          component: () => import(/* webpackChunkName: "app-notifications" */ './views/AgriList.vue'),
-          beforeEnter: isLoadedAndAuthenticated
+          // beforeEnter: isLoadedAndAuthenticated
         }
       ]
     },
