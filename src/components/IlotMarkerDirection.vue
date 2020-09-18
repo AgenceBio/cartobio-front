@@ -15,7 +15,7 @@ import {MglMarker} from "vue-mapbox"
 import polygonToLine from "@turf/polygon-to-line"
 import lineIntersect from "@turf/line-intersect"
 import calcAngle from "@turf/angle"
-import {lineString} from "turf"
+import {lineString} from "@turf/helpers"
 
 export default {
   name: "IlotMarkerDirection",
@@ -49,7 +49,7 @@ export default {
     // calculates rotation angle, offset, and flex direction to display the marker properly
     /**
      * @param {Array} mapCenter center of the map
-     * @param {Array} intersectionPoint intersection point between the map bounding box and the line between map center and ilot center 
+     * @param {Array} intersectionPoint intersection point between the map bounding box and the line between map center and ilot center
      * @returns {Number} rotationAngle : the rotation angle to apply to the directional arrow
      * @returns {Array} offset : the offset in pixels to apply to the marker
      * @returns {String} flex : the flex-direction property to apply to the marker
@@ -69,7 +69,7 @@ export default {
 
       // offset of the marker
       let offset = [0,0];
-      
+
       // flex-direction attribute value (row, column, reverse?)
       let flex = '';
 
@@ -80,7 +80,7 @@ export default {
         angleCorrection += 180;
         explementary = true;
         flex = 'row';
-      } 
+      }
       // ilot is above the map
       else if (intersectionPoint[1] === bounds._ne.lat) {
         corner = bounds._ne.toArray();
@@ -93,13 +93,13 @@ export default {
         } else {
           explementary = false;
         }
-      } 
-      // ilot is on the left of the map 
+      }
+      // ilot is on the left of the map
       else if (intersectionPoint[0] === bounds._sw.lng) {
         offset = [60, 0];
         corner = bounds._sw.toArray();
         flex = 'row-reverse';
-      } 
+      }
       // ilot is under the map
       else if (intersectionPoint[1] === bounds._sw.lat) {
         offset = [0, -40];

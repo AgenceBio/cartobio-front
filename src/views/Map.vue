@@ -75,7 +75,10 @@
 
 <script>
 import getObjectValue from "lodash/get";
-import { bbox, bboxPolygon, center, point, featureCollection } from "turf";
+import { point, featureCollection } from "@turf/helpers";
+import bboxPolygon from "@turf/bbox-polygon";
+import bbox from "@turf/bbox";
+import centroid from "@turf/centroid";
 import { all as mergeAll } from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
 
@@ -812,7 +815,7 @@ export default {
 
     setupIlotDirection({ numIlot, featureCollection }) {
       const ilotBbox = bboxPolygon(bbox(featureCollection));
-      const ilotCenter = center(ilotBbox);
+      const ilotCenter = centroid(ilotBbox);
       const bboxMap = bboxPolygon(this.map.getBounds().toArray().flat());
       const inMap = isPointInPolygon(ilotCenter, bboxMap);
 

@@ -1,4 +1,4 @@
-import getCentroid from '@mapbox/polylabel'
+import getCentroid from '@turf/centroid'
 import { featureCollection } from '@turf/helpers';
 
 const state = {
@@ -45,10 +45,10 @@ const mutations = {
    */
   HOVERED_FEATURE (state, { feature, trackPointer, lngLat, centroid }) {
     state.hoveredParcels = [feature]
-    state.trackPointer = trackPointer ?? false
+    state.trackPointer = trackPointer ? true : false
 
-    if (centroid) {
-      const [lng, lat] = getCentroid(feature.geometry.coordinates)
+    if (centroid === true) {
+      const [lng, lat] = getCentroid(feature.geometry).geometry.coordinates
       state.hoveredCoordinates = [lng, lat]
     }
     else {
