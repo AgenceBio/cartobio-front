@@ -2,6 +2,15 @@
 title: Journal d'évolution
 ---
 
+## Semaine du 14 au 18 septembre
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Sur une vue "exploitation agricole", les parcelles environnantes sont désormais affichées à la demande, et avec une palette de couleur suggérant leur risque de contamination.<br>
+  Ce risque est établi en fonction du type de culture conventionnelle, selon le rapport annuel
+  [des pratiques culturales Graph'Agri](https://agreste.agriculture.gouv.fr/agreste-web/disaron/GraFraChap3.1/detail/) de la [cellule Agreste](https://agreste.agriculture.gouv.fr/).
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Et on a retiré du code qui n'était plus utilisé. Ça ne change rien, si ce n'est quelques kilo-octets en moins à charger de votre côté.
+
 ## Semaine du 10 au 14 août
 
 - <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
