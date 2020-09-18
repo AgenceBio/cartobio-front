@@ -161,6 +161,9 @@ export default {
 
 <style lang="scss" scoped>
 $cell-padding: 10px;
+$color-status-unknown: #ccc;
+$color-status-bio: #B9D065;
+$color-status-non-bio: #47718A;
 
 .parcel-details {
   width: 360px;
@@ -208,7 +211,7 @@ $cell-padding: 10px;
   .status {
     $size: 14px;
 
-    background-color: #ccc;
+    background-color: $color-status-unknown;
     border-radius: 50%;
     display: inline-block;
     text-align: center;
@@ -221,12 +224,12 @@ $cell-padding: 10px;
     }
 
     &.status--bio {
-      background-color: #B9D065;
+      background-color: $color-status-bio;
       color: #242C37;
     }
 
     &.status--nonbio {
-      background-color: #CC4C3C;
+      background-color: $color-status-non-bio;
       color: #fff;
     }
 
@@ -254,7 +257,7 @@ $cell-padding: 10px;
 
   .history tr:not(:last-child) .v-icon:before {
     content: "";
-    border: 1px solid #ccc;
+    border: 1px solid $color-status-unknown;
     border-left: none;
     border-top: none;
     border-bottom: none;
@@ -278,10 +281,10 @@ $cell-padding: 10px;
     width: 100%;
 
     .bio .v-icon {
-      color: #B9D065;
+      color: $color-status-bio;
     }
     .non-bio .v-icon {
-      color: #CC4C3C;
+      color: $color-status-non-bio;
     }
 
     tbody td,

@@ -35,7 +35,7 @@
         <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
           <template v-slot:items="{item: feature}">
             <tr @mouseover="setActiveParcel({ feature, centroid: true })" @mouseleave="clearActiveParcel" @click="zoomOn(feature)">
-              <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#b9d065' : '#D32F2F'"></v-avatar></td>
+              <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#B9D065' : '#47718A'"></v-avatar></td>
               <td class="numparcel">Parcelle {{feature.properties.numparcel}}</td>
               <td class="text-cyan cultural-label">
                 <v-tooltip top left dark open-delay=200>
