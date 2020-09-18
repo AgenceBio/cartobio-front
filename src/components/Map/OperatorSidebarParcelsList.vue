@@ -10,7 +10,7 @@
       <v-expansion-panel-content v-for="({ numIlot, featureCollection }) in ilots" :key="numIlot">
         <template v-slot:header>
           <v-flex align-center row fill-height class="parcel-summary"
-            @mouseover="setActiveParcels({ numIlot, featureCollection })"
+            @mouseover="setActiveIlot({ numIlot, featureCollection })"
             @mouseleave="clearActiveParcel">
             <span class="text-cyan text-uppercase font-weight-medium">Ilot {{numIlot}}</span>
           </v-flex>
@@ -20,7 +20,7 @@
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-btn icon small v-on="on"
-                @mouseover="setActiveParcels({ numIlot, featureCollection })"
+                @mouseover="setActiveIlot({ numIlot, featureCollection })"
                 @mouseleave="clearActiveParcel"
                 @click.native.stop
                 @click="zoomOn(featureCollection)">
@@ -108,7 +108,7 @@ export default {
     ...mapMutations({
       clearActiveParcel: 'map/CLEAR_HOVERED_FEATURE',
       setActiveParcel: 'map/HOVERED_FEATURE',
-      setActiveParcels: 'map/HOVERED_FEATURE_COLLECTION',
+      setActiveIlot: 'map/HOVERED_FEATURE_COLLECTION'
     }),
 
     ...mapActions('map', ['zoomOn']),

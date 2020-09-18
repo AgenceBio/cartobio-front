@@ -16,7 +16,8 @@ const state = {
 };
 
 const actions = {
-  zoomOn (featureOrfeatureCollection) {
+  /* eslint-disable-next-line no-unused-vars */
+  zoomOn (_, featureOrfeatureCollection) {
     return featureOrfeatureCollection
   }
 };
@@ -77,7 +78,7 @@ const getters = {
   },
 
   activeFeatures (state) {
-    if (state.hoveredParcels.length < 2) {
+    if (state.hoveredParcels.length === 0) {
       return null
     }
 

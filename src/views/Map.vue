@@ -966,7 +966,10 @@ export default {
         this.setFeatureState(featureCollection([feature]), {
           highlighted: true,
         });
-        this.computeParcelHistoryFromLngLat({ lngLat });
+
+        if (lngLat) {
+          this.computeParcelHistoryFromLngLat({ lngLat });
+        }
       } else if (!activeFeature && previousFeature) {
         this.setFeatureState(featureCollection([previousFeature.feature]), {
           highlighted: false,
