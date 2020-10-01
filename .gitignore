@@ -2,11 +2,10 @@
 node_modules
 /dist
 public/*.geojson
+public/epci.json
 
 # Export files
-*.gpkg
-*.geojson
-*.zip
+exports
 
 # local env files
 .env.local
