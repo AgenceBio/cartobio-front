@@ -4,34 +4,41 @@
 // - gdal
 
 const {promises:fs} = require('fs')
-const {createWriteStream} = require('fs')
+const {createReadStream, createWriteStream} = require('fs')
 const {promisify} = require('util')
 const pipeline = promisify(require('stream').pipeline)
+const {PassThrough} = require('stream')
 const slugify = require('@sindresorhus/slugify')
+const {stringify: stringifyGeoJSON} = require('geojson-stream')
 const ora = require('ora')
 const Listr = require('listr')
 const {get} = require('axios')
 const gdal = require('gdal-next')
 const {convert} = require('geojson2shp')
 const {basename, dirname, join, resolve} = require('path')
-const { featureCollection } = require('@turf/helpers')
 const { default: circle } = require('@turf/circle')
 const { center: centroid } = require('turf')
+const {createGzip, createGunzip, Z_SYNC_FLUSH} = require('zlib')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['epci', 'departement', 'insee', 'radius', 'millesime', 'name'],
+  string: ['epci', 'departement', 'departements', 'insee', 'commune', 'communes', 'name'],
   boolean: ['shapefiles'],
+  alias: {
+    commune: ['insee'],
+    communes: ['insee'],
+    departements: ['departement']
+  },
   default: {
     shapefiles: false,
     name: '',
     insee: '',
     departement: '',
-    radius: null
+    radius: null,
+    millesime: null
   }
 })
 
 const workerFarm = require('worker-farm')
-const {Worker} = require('worker_threads')
 const shapefileWorker = require.resolve('../src/workers/shapefile.js')
 const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
 
@@ -43,8 +50,7 @@ const {name} = argv
 const LAMBERT_93 = 2154
 let DESTINATION_FILE = null
 
-
-if (!FILTERING_FILES || !SOURCE_FILES || !millesime || (!insee && !epci && !departements)) {
+if (!SOURCE_FILES || (!Number.isInteger(millesime) || millesime < 2017) || (!(Array.isArray(FILTERING_FILES) && FILTERING_FILES.length) && !insee && !epci && !departements)) {
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d011/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d*/*.shp" --shapefiles path/to/*.shp')
   console.error('npm run export -- --millesime 2019 --from "../RPG/2019/d064/*.shp" --epci 200067106')
@@ -165,13 +171,13 @@ async function run (FILTERING_FILES) {
     })
 
     // with --radius 100, we extend each the center of each entity by their radius
-    if (isNaN(parseInt(radius, 10)) === false) {
+    if (Number.isFinite(radius) && radius > 0) {
       DESTINATION_FILE = DESTINATION_FILE.replace(`-${millesime}`, `+${radius}km-${millesime}`)
 
       features = features.map(feature => {
         return circle(
           centroid(feature),
-          parseInt(radius, 10),
+          radius,
           { units: 'kilometers' }
         )
       })
@@ -234,51 +240,33 @@ async function run (FILTERING_FILES) {
   spinner.succeed(`Parsed ${filteringFeatures.length} features in ${datasetCount} datasets.`)
 
   // 3. Browse bio/non-bio layers and intersect features
-  const allFeatures = sourceFiles
-    .map(s => resolve(s))
-    .map(sourceFile => ({
-      sourceFile,
-      featuresP: extract({sourceFile, filteringFeatures, millesime})
-    }))
-
-    // const worker = new Worker(
-    //   shapefileWorker,
-    //   {workerData: {sourceFile, filteringFeatures}}
-    // )
-    //
-    // worker.on('message', () => featuresCount++)
-    // worker.on('error', reject)
+  const EXPORT_FILEPATH = `${DESTINATION_FILE}.geojson.gz`
+  const pump = new PassThrough({ objectMode: true })
+  const exportStream = pipeline([
+    pump,
+    stringifyGeoJSON(),
+    createGzip({flush: Z_SYNC_FLUSH}),
+    createWriteStream(uploadDir(EXPORT_FILEPATH))
+  ])
 
   const tasks = new Listr([
     {
       title: 'Filtering features',
       task: () => new Listr(
-        allFeatures.map(({sourceFile, featuresP}) => ({
+        sourceFiles.map(sourceFile => ({
           title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
-          task: () => featuresP.then(features => {
-            return `${features.length.toFixed(0).padStart(5)} features`
+          task: () => extract({ sourceFile, filteringFeatures, millesime }).then(features => {
+              features.forEach(feature => pump.push(feature))
+              return `${features.length.toFixed(0).padStart(5)} features`
           })
-        })),
-        { concurrent: true }
+        }))
       )
     }
   ])
 
   tasks.add({
-    title: `Exporting as ${DESTINATION_FILE}.geojson`,
-    task: (ctx) => {
-      // 4.1 Convert/Intersect features and aggregate them into the `features` collection
-      return Promise
-          .all(allFeatures.map(({featuresP}) => featuresP))
-          .then(allFeatures => [].concat(...allFeatures))
-          .then(features => {
-            ctx.features = features
-            return fs.writeFile(uploadDir(`${DESTINATION_FILE}.geojson`), JSON.stringify(
-              featureCollection(features),
-              null,
-              2))
-            })
-    }
+    title: `Exporting as ${DESTINATION_FILE}.geojson.gz`,
+    task: () => pump.end() && exportStream
   })
 
   // XX. … and close datasets
@@ -293,15 +281,18 @@ async function run (FILTERING_FILES) {
   // 6. Converts as an ESRI Shapefile
   tasks.add({
     title: `Exporting as ${DESTINATION_FILE}.shp.zip`,
-    task: (ctx) => {
-      return convert(featureCollection(ctx.features), uploadDir(`${DESTINATION_FILE}.shp.zip`), {
+    task: () => {
+      const inFile = createReadStream(uploadDir(EXPORT_FILEPATH))
+        .pipe(createGunzip())
+
+      return convert(inFile, uploadDir(`${DESTINATION_FILE}.shp.zip`), {
         layer: DESTINATION_FILE,
         targetCrs: exportProjection.getAuthorityCode() || LAMBERT_93
       })
     }
   })
 
-  await tasks.run()
+  await tasks.run().catch(console.error)
   process.exit(0)
 }
 
