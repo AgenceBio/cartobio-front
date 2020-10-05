@@ -14,7 +14,7 @@
           <v-icon>arrow_drop_down</v-icon>
           Choisissez vos données
         </v-btn> -->
-        <v-btn :href="signupUrl" large outline round color="primary" class="mb-5 mt-4">
+        <v-btn :href="signupUrl" target="_blank" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">contact_mail</v-icon>
           Demandez les données de votre territoire
         </v-btn>
