@@ -2,6 +2,7 @@
   <v-menu offset-y v-model="menu">
     <template v-slot:activator="{ on }">
       <v-btn flat v-on="on">
+        <v-icon class="mr-2">help_outline</v-icon>
         À propos
         <v-icon v-if="!menu">arrow_drop_down</v-icon>
         <v-icon v-if="menu">arrow_drop_up</v-icon>

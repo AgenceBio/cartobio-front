@@ -72,7 +72,7 @@
 
     <v-layout column align-center justify-space-between my-4>
       <p>
-        <v-btn to="/features/territoires" large outline round color="primary" class="mb-5 mt-4">
+        <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">email</v-icon>
           Contactez-nous
         </v-btn>
@@ -96,6 +96,7 @@ export default {
 
   data () {
     return {
+      mailto: 'mailto:cartobio@beta.gouv.fr',
       elements: [
         {
           title: `Concentrez-vous sur votre métier d'organisme de certification`,

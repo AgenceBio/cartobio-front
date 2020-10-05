@@ -10,9 +10,15 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn v-if="isAuthenticated" active-class="active" to="map" flat>Carte</v-btn>
+      <v-btn v-if="isAuthenticated" active-class="active" to="map" flat>
+        <v-icon class="mr-2">public</v-icon>
+        Carte des exploitations
+      </v-btn>
       <Profile v-if="isAuthenticated" class="navbar-button" />
-      <v-btn v-else flat @click="startLogin">Connexion</v-btn>
+      <v-btn v-else flat @click="startLogin">
+        <v-icon class="mr-2">lock_open</v-icon>
+        Connexion
+      </v-btn>
       <AboutMenu />
     </v-toolbar-items>
 
