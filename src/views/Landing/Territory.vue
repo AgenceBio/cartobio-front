@@ -14,8 +14,8 @@
           <v-icon>arrow_drop_down</v-icon>
           Choisissez vos données
         </v-btn> -->
-        <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
-          <v-icon class="mr-2">email</v-icon>
+        <v-btn :href="signupUrl" target="_blank" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">contact_mail</v-icon>
           Demandez les données de votre territoire
         </v-btn>
       </p>
@@ -72,9 +72,14 @@
 
     <v-layout column align-center justify-space-between my-4>
       <p>
+        <v-btn :href="signupUrl" target="_blank" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">contact_mail</v-icon>
+          Remplir une demande de données
+        </v-btn>
+
         <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">email</v-icon>
-          Contactez-nous
+          Un doute, une question ?
         </v-btn>
       </p>
     </v-layout>
@@ -108,7 +113,8 @@ export default {
     return {
       timerId: null,
       serviceIndex: 0,
-      mailto: 'mailto:cartobio@beta.gouv.fr?subject=Demande%20de%20données%20pour%20mon%20territoire',
+      mailto: 'mailto:cartobio@beta.gouv.fr?subject=J\'ai%20une%20question%20%C3%A0%20propos%20des%20donn%C3%A9es%20de%20mon%20territoire',
+      signupUrl: 'https://signup.api.gouv.fr/cartobio',
       services: [
         'de la reconquête de l\'eau',
         'des Plans Alimentaires Territoriaux (PAT)',

@@ -91,10 +91,10 @@
                 <v-icon class="mr-1">chevron_right</v-icon>
                 En savoir plus
               </v-btn>
-              <!-- <v-btn to="/features/territoires#choose" round outline>
-                <v-icon class="mr-2">playlist_add</v-icon>
-                Choisir mes données
-              </v-btn> -->
+              <v-btn :href="signupUrl" target="_blank" @click.stop round outline>
+                <v-icon class="mr-2">contact_mail</v-icon>
+                Je demande des données
+              </v-btn>
             </v-card-actions>
           </v-flex>
 
@@ -153,6 +153,12 @@ import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: "Home",
+
+  data () {
+    return {
+      signupUrl: 'https://signup.api.gouv.fr/cartobio',
+    }
+  },
 
   computed: {
     ...mapGetters('user', ['isAuthenticated']),
