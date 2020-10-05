@@ -39,9 +39,10 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
+const CPU_COUNT = require('os').cpus().length
 const workerFarm = require('worker-farm')
 const shapefileWorker = require.resolve('../src/workers/shapefile.js')
-const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: 1, maxRetries: 0}, shapefileWorker))
+const extract = promisify(workerFarm({maxConcurrentCallsPerWorker: CPU_COUNT, maxRetries: 0}, shapefileWorker))
 
 const {_:FILTERING_FILES, epci, departement: departements, insee, millesime} = argv
 const {shapefiles, radius} = argv
@@ -250,7 +251,7 @@ async function run (FILTERING_FILES) {
 
   const tasks = new Listr([
     {
-      title: 'Filtering features',
+      title: `Filtering features (with ${CPU_COUNT} CPUs)`,
       task: () => new Listr(
         sourceFiles.map(sourceFile => ({
           title: `${basename(dirname(sourceFile))}/${basename(sourceFile)}`,
@@ -259,7 +260,7 @@ async function run (FILTERING_FILES) {
               return `${features.length.toFixed(0).padStart(5)} features`
           })
         }))
-      )
+      , { concurrent: CPU_COUNT })
     }
   ])
 
