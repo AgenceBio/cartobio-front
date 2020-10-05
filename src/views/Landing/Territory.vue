@@ -72,7 +72,7 @@
 
     <v-layout column align-center justify-space-between my-4>
       <p>
-        <v-btn :href="signupUrl" large outline round color="primary" class="mb-5 mt-4">
+        <v-btn :href="signupUrl" target="_blank" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">contact_mail</v-icon>
           Remplir une demande de données
         </v-btn>
