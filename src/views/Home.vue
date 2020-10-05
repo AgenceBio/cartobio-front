@@ -91,7 +91,7 @@
                 <v-icon class="mr-1">chevron_right</v-icon>
                 En savoir plus
               </v-btn>
-              <v-btn :href="signupUrl" @click.stop round outline>
+              <v-btn :href="signupUrl" target="_blank" @click.stop round outline>
                 <v-icon class="mr-2">contact_mail</v-icon>
                 Je demande des données
               </v-btn>
