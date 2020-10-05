@@ -17,7 +17,8 @@ const gdal = require('gdal-next')
 const {convert} = require('geojson2shp')
 const {basename, dirname, join, resolve} = require('path')
 const { default: circle } = require('@turf/circle')
-const { center: centroid } = require('turf')
+const { default: centroid } = require('@turf/centroid')
+const { featureCollection } = require('@turf/helpers')
 const {createGzip, createGunzip, Z_SYNC_FLUSH} = require('zlib')
 const glob = require('globby')
 const argv = require('minimist')(process.argv.slice(2), {
@@ -174,13 +175,11 @@ async function run (FILTERING_FILES) {
     if (Number.isFinite(radius) && radius > 0) {
       DESTINATION_FILE = DESTINATION_FILE.replace(`-${millesime}`, `+${radius}km-${millesime}`)
 
-      features = features.map(feature => {
-        return circle(
-          centroid(feature),
-          radius,
-          { units: 'kilometers' }
-        )
-      })
+      features = [circle(
+        centroid(featureCollection(features)),
+        radius,
+        { units: 'kilometers' }
+      )]
     }
 
     pushFeaturesIntoDataset({ features, datasets, crs: wgs84 })
