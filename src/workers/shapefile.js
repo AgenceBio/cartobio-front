@@ -39,39 +39,35 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
       }
   })(layer)
 
-  layer.features.forEach(feature => {
-    const geometry = feature.getGeometry()
+  let feature = null
+  /* eslint-disable-next-line no-cond-assign */
+  while (feature = layer.features.next()) {
+    const {BIO, bio, CODE_CULTU, codecultu} = feature.fields.toObject()
+    const {label: LBL_CULTU, groupLabel: GRP_CULTU} = fromCode(CODE_CULTU ?? codecultu)
 
-    const intersects = filterGeometry.intersects(geometry)
+    const geometry = getWGS84Geometry(feature)
+    const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
 
-    if (intersects) {
-      const {BIO, bio, CODE_CULTU, codecultu} = feature.fields.toObject()
-      const {label: LBL_CULTU, groupLabel: GRP_CULTU} = fromCode(CODE_CULTU ?? codecultu)
-
-      const geometry = getWGS84Geometry(feature)
-      const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
-
-      features.push({
-        type: 'Feature',
-        geometry,
-        properties: {
-          BIO: parseInt(BIO ?? bio, 10),
-          CODE_CULTU: CODE_CULTU ?? codecultu,
-          LBL_CULTU,
-          GRP_CULTU,
-          SURFACE_HA,
-          MILLESIME
-        }
-      })
-      // parentPort.postMessage({
-      //   type: 'Feature',
-      //   properties: {
-      //     BIO: feature.fields.get('BIO')
-      //   },
-      //   geometry: feature.getGeometry().toObject()
-      // })
-    }
-  })
+    features.push({
+      type: 'Feature',
+      geometry,
+      properties: {
+        BIO: parseInt(BIO ?? bio, 10),
+        CODE_CULTU: CODE_CULTU ?? codecultu,
+        LBL_CULTU,
+        GRP_CULTU,
+        SURFACE_HA,
+        MILLESIME
+      }
+    })
+    // parentPort.postMessage({
+    //   type: 'Feature',
+    //   properties: {
+    //     BIO: feature.fields.get('BIO')
+    //   },
+    //   geometry: feature.getGeometry().toObject()
+    // })
+  }
 
   return features
 }
