@@ -23,8 +23,11 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
   const filterGeometry = filteringFeaturesPolygon.unionCascaded()
 
   const features = []
+
+  // Downsize the source dataset to match the boundaries of the filteringFeatures
   const ds = gdal.open(sourceFile, 'r')
   const layer = ds.layers.get(0)
+  layer.setSpatialFilter(filterGeometry)
 
   const getWGS84Geometry = (function getWGS84GeometryFactory(layer) {
     return layer.srs.isSame(wgs84)
