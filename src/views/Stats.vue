@@ -156,6 +156,9 @@ export default {
       })
       .finally(() => this.loading = false)
 
+    get('https://back.datapass.api.gouv.fr/api/stats?target_api=cartobio')
+      .then((response) => this.dataAccessCount += response.data.validated_enrollment_count)
+
     // get Matomo stats for connexion events
     let matomoURL = "https://stats.data.gouv.fr/index.php"
     let params = {
@@ -169,6 +172,8 @@ export default {
     }
 
     const requestP = get(matomoURL, {params})
+
+    requestP.catch(console.error)
 
     // we fetch Event Actions which names is associated with a successful login
     requestP.then(({data}) => {
@@ -186,7 +191,6 @@ export default {
       this.apiAccessCount = subtables.length
       this.apiAccessCallsCount = subtables.reduce((total, {nb_events}) => total + nb_events, 0)
     })
-
   }
 };
 </script>
