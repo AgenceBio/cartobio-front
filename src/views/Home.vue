@@ -156,7 +156,7 @@ export default {
 
   data () {
     return {
-      signupUrl: 'https://signup.api.gouv.fr/cartobio',
+      signupUrl: 'https://api.gouv.fr/les-api/api_cartobio_territoires/demande-acces',
     }
   },
 

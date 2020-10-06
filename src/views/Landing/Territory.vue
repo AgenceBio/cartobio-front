@@ -114,7 +114,7 @@ export default {
       timerId: null,
       serviceIndex: 0,
       mailto: 'mailto:cartobio@beta.gouv.fr?subject=J\'ai%20une%20question%20%C3%A0%20propos%20des%20donn%C3%A9es%20de%20mon%20territoire',
-      signupUrl: 'https://signup.api.gouv.fr/cartobio',
+      signupUrl: 'https://api.gouv.fr/les-api/api_cartobio_territoires/demande-acces',
       services: [
         'de la reconquête de l\'eau',
         'des Plans Alimentaires Territoriaux (PAT)',
