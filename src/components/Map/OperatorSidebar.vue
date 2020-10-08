@@ -45,6 +45,13 @@
         </div>
       </v-flex>
 
+      <div class="text-md-center">
+        <v-btn :to="{ name: 'new-parcel', params: { numeroBio: operator.numeroBio } }" class="mh-auto mt-3 mb-4" small round color="#b9d065">
+          <v-icon dark>add</v-icon>
+          Ajouter une parcelle
+        </v-btn>
+      </div>
+
 
       <pacage-flow v-if="operator.numeroPacage === null" :operator="operator" />
       <v-flex class="grow text-sm-center my-5" v-else-if="isLoading">

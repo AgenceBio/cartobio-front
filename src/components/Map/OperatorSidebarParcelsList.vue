@@ -1,55 +1,24 @@
 <template>
   <Fragment>
-    <v-expansion-panel
-      v-model="panel"
-      class="overflow-x-hidden no-box-shadow elevation-0"
-      expand
-      focusable
-      readonly
-    >
-      <v-expansion-panel-content v-for="({ numIlot, featureCollection }) in ilots" :key="numIlot">
-        <template v-slot:header>
-          <v-flex align-center row fill-height class="parcel-summary"
-            @mouseover="setActiveIlot({ numIlot, featureCollection })"
-            @mouseleave="clearActiveParcel">
-            <span class="text-cyan text-uppercase font-weight-medium">Ilot {{numIlot}}</span>
-          </v-flex>
-        </template>
-
-        <template v-slot:actions>
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn icon small v-on="on"
-                @mouseover="setActiveIlot({ numIlot, featureCollection })"
-                @mouseleave="clearActiveParcel"
-                @click.native.stop
-                @click="zoomOn(featureCollection)">
-                <v-icon small color="#457382">my_location</v-icon>
-              </v-btn>
-            </template>
-            Centrer la carte sur cet ilot
-          </v-tooltip>
-
-        </template>
-
-        <v-data-table class="parcels" :items="featureCollection.features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
-          <template v-slot:items="{item: feature}">
-            <tr @mouseover="setActiveParcel({ feature, centroid: true })" @mouseleave="clearActiveParcel" @click="zoomOn(feature)">
-              <td class="status"><v-avatar size="24px" :color="feature.properties.bioboolean ? '#B9D065' : '#47718A'"></v-avatar></td>
-              <td class="numparcel">Parcelle {{feature.properties.numparcel}}</td>
-              <td class="text-cyan cultural-label">
-                <v-tooltip top left dark open-delay=200>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on" class="text-truncate d-block">{{feature.properties.culture.label}}</span>
-                  </template>
-                  <span>{{feature.properties.culture.label}}</span>
-                </v-tooltip>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+    <v-data-table class="parcels mb-4" :items="features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
+      <template v-slot:items="{item: feature, index}">
+        <tr role="separator" aria-hidden v-if="features[index-1] && feature.properties.numilot !== features[index-1].properties.numilot">
+          <td colspan="3"></td>
+        </tr>
+        <tr :data-ilot="feature.properties.numilot" @mouseover="setActiveParcel({ feature, centroid: true })" @mouseleave="clearActiveParcel" @click="zoomOn(feature)">
+          <td class="status"><v-avatar size="16px" :color="feature.properties.bioboolean ? '#B9D065' : '#47718A'"></v-avatar></td>
+          <td class="numparcel">Ilot {{feature.properties.numilot}}.{{feature.properties.numparcel}}</td>
+          <td class="text-cyan cultural-label">
+            <v-tooltip top left dark open-delay=200>
+              <template v-slot:activator="{ on }">
+                <span v-on="on" class="text-truncate d-block">{{feature.properties.culture.label}}</span>
+              </template>
+              <span>{{feature.properties.culture.label}}</span>
+            </v-tooltip>
+          </td>
+        </tr>
+      </template>
+    </v-data-table>
 
     <v-spacer />
 
@@ -234,36 +203,6 @@ export default {
           culture: fromCode(feature.properties.codecultu),
         }
       }))
-    },
-
-    /**
-     * Returns a list of FeatureCollection
-     */
-    ilots() {
-      // group parcels by ilots
-      let reduced = this.features.reduce(function(result, feature) {
-        const {numilot: numIlot} = feature.properties;
-
-        result[numIlot]
-          ? result[numIlot].push(feature)
-          : (result[numIlot] = [feature]);
-        return result;
-      }, {});
-
-      let ilots = Object.entries(reduced).reduce(function(result, [numIlot, features]) {
-        result.push({ numIlot, featureCollection: { type: 'FeatureCollection', features } });
-        return result;
-      }, []);
-
-      return ilots;
-    },
-    panel : {
-      get () {
-        return this.ilots.map(() => true)
-      },
-      // setter prevent error message in console when expanding/collapsing a parcel list
-      set : function() {
-      }
     }
   }
 };
@@ -334,37 +273,49 @@ section {
   padding: 0 12px;
 }
 
-.v-expansion-panel /deep/ .v-expansion-panel__header:hover,
-.parcels .v-table td:hover {
-  background: #F6F7E2;
-}
-
-.parcels .v-table {
-  border-collapse: unset;
-
+.parcels /deep/ .v-table {
   tbody {
     tr:hover {
       background: #F6F7E2;
       cursor: pointer;
     }
 
+    tr[role="separator"] {
+      border-top: none;
+      height: 1em;
+
+      &:hover{
+        background: transparent !important;
+        cursor: inherit;
+      }
+
+      td {
+        padding: 0;
+      }
+    }
+
     td, th {
-      height: 38px;
+      height: 34px;
       padding: 0 12px;
     }
 
-    .numparcel {
+    td.status {
+      width: 16px;
+    }
+
+    td.numparcel {
       font-weight: bold;
+      width: auto;
       white-space: nowrap;
     }
 
     .cultural-label {
       // force pushes this column so as it looks similar in all groups
       // even on small label columns
-      width: 50%;
+      // width: 50%;
 
       .text-truncate.d-block {
-       max-width: 120px;
+       max-width: 180px;
      }
     }
   }

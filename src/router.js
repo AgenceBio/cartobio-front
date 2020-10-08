@@ -47,6 +47,12 @@ export default new Router({
           name: 'mapWithOperator',
           component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
           // beforeEnter: isLoadedAndAuthenticated
+          children: [
+            {
+              path: 'parcels/new',
+              name: 'new-parcel'
+            }
+          ]
 
         },
         {
