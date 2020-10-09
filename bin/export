@@ -14,7 +14,7 @@ const ora = require('ora')
 const Listr = require('listr')
 const {get} = require('axios')
 const gdal = require('gdal-next')
-const {convert} = require('geojson2shp')
+const {createConvertStream:convert} = require('geojson2shp')
 const {basename, dirname, join, resolve} = require('path')
 const { default: circle } = require('@turf/circle')
 const { default: centroid } = require('@turf/centroid')
@@ -153,6 +153,7 @@ class filterIncomingFeatures extends Transform {
  * 2. User provided files projection, or Lambert93 otherwise
  */
 async function run (FILTERING_FILES) {
+  const start = process.hrtime.bigint()
   const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
 
   let datasets = [];
@@ -262,17 +263,29 @@ async function run (FILTERING_FILES) {
 
   spinner.succeed(`Parsed ${filteringFeatures.length} features in ${datasetCount} datasets.`)
 
-  // 3. Browse bio/non-bio layers and intersect features
+
+  // 3.1 Create streamable export interfaces
   const EXPORT_FILEPATH = `${DESTINATION_FILE}.geojson.gz`
   const pump = new PassThrough({ objectMode: true })
-  const exportStream = pipeline([
-    pump,
-    new filterIncomingFeatures(),
+  const featureStream = pump.pipe(new filterIncomingFeatures())
+
+  const exportToGeoJSON = pipeline([
+    featureStream,
     stringifyGeoJSON(),
     createGzip({flush: Z_SYNC_FLUSH}),
     createWriteStream(uploadDir(EXPORT_FILEPATH))
   ])
 
+  const exportToShapefile = pipeline([
+    featureStream,
+    convert({
+      layer: DESTINATION_FILE,
+      targetCrs: Number(exportProjection.getAuthorityCode() || LAMBERT_93)
+    }),
+    createWriteStream(uploadDir(`${DESTINATION_FILE}.shp.zip`))
+  ])
+
+  // 3.2 Browse bio/non-bio layers and intersect features
   const tasks = new Listr([
     {
       title: `Filtering features (with ${CPU_COUNT} CPUs)`,
@@ -289,30 +302,20 @@ async function run (FILTERING_FILES) {
   ])
 
   tasks.add({
-    title: `Exporting as ${DESTINATION_FILE}.geojson.gz`,
-    task: () => pump.end() && exportStream
+    title: `Exporting as ${DESTINATION_FILE}.geojson.gz and ${DESTINATION_FILE}.shp.zip`,
+    task: () => pump.end() && Promise.all([ exportToShapefile, exportToGeoJSON ])
   })
 
   // XX. … and close datasets
   tasks.add({
     title: 'Cleanup',
-    task: () => {
+    task: (ctx, task) => {
       datasets.forEach(d => d.close())
+      const timediff = process.hrtime.bigint() - start
+      const time = new Intl.NumberFormat('en-EN', { style: 'unit', unit: 'minute' }).format(timediff / BigInt(1e9) / BigInt(60))
+
+      task.title = `Export performed in ${time}`
       // return fs.unlink(uploadDir('input.gpkg'))
-    }
-  })
-
-  // 6. Converts as an ESRI Shapefile
-  tasks.add({
-    title: `Exporting as ${DESTINATION_FILE}.shp.zip`,
-    task: () => {
-      const inFile = createReadStream(uploadDir(EXPORT_FILEPATH))
-        .pipe(createGunzip())
-
-      return convert(inFile, uploadDir(`${DESTINATION_FILE}.shp.zip`), {
-        layer: DESTINATION_FILE,
-        targetCrs: Number(exportProjection.getAuthorityCode() || LAMBERT_93)
-      })
     }
   })
 
