@@ -51,7 +51,7 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d0{11,09,66}/cartobio.s
 ### Export a GeoJSON/Shapefile, encompassing EPCI boundaries
 
 ```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/d064/cartobio.shp' --epci 200067106
+$ npm run export -- --millesime 2019 --from '../RPG/2019/**/*.shp' --epci 200067106
 
 ✔ Parsed 158 features in 1 datasets.
   ✔ d064/cartobio.shp
@@ -61,7 +61,7 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d064/cartobio.shp' --ep
 ### Export a GeoJSON/Shapefile, encompassing Insee codes boundaries
 
 ```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/d026/cartobio.shp' --insee "26108,26011,26289"
+$ npm run export -- --millesime 2019 --from '../RPG/2019/**/*.shp' --insee "26108,26011,26289"
 
 ✔ Parsed 3 features in 3 datasets.
   ❯ Filtering features
@@ -74,7 +74,7 @@ $ npm run export -- --millesime 2019 --from '../RPG/2019/d026/cartobio.shp' --in
 ### Export a GeoJSON/Shapefile, encompassing two departments
 
 ```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/{d026,d007}/*.shp' --departement 7,26
+$ npm run export -- --millesime 2019 --from '../RPG/2019/**/*.shp' --departement 7,26
 
 ✔ Parsed 2 features in 1 datasets.
   ❯ Filtering features
