@@ -7,7 +7,7 @@ const {promises:fs} = require('fs')
 const {createReadStream, createWriteStream} = require('fs')
 const {promisify} = require('util')
 const pipeline = promisify(require('stream').pipeline)
-const {PassThrough} = require('stream')
+const {PassThrough, Transform} = require('stream')
 const slugify = require('@sindresorhus/slugify')
 const {stringify: stringifyGeoJSON} = require('geojson-stream')
 const ora = require('ora')
@@ -114,6 +114,29 @@ async function getFeaturesByProperty ({ collection: featureCollectionP, comparis
   return collection.features
     .filter(({ properties }) => comparisonFn(properties))
 }
+
+class filterIncomingFeatures extends Transform {
+  constructor (options = {}) {
+    options.readableObjectMode = true
+    options.writableObjectMode = true
+
+    super(options)
+
+    this._cache = new Set()
+  }
+
+  _transform (feature, encoding, done) {
+    // drop the feature if it already exists
+    if (!this._cache.has(feature.id)) {
+      this._cache.add(feature.id)
+      this.push(feature)
+    }
+
+    done()
+  }
+}
+
+
 
 /**
  * 1. Source files: RPG Bio Shapefile to be filtered on
@@ -244,6 +267,7 @@ async function run (FILTERING_FILES) {
   const pump = new PassThrough({ objectMode: true })
   const exportStream = pipeline([
     pump,
+    new filterIncomingFeatures(),
     stringifyGeoJSON(),
     createGzip({flush: Z_SYNC_FLUSH}),
     createWriteStream(uploadDir(EXPORT_FILEPATH))
