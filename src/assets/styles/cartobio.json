@@ -138,6 +138,26 @@
         "text-font": ["Lato Bold", "Noto Sans Regular"],
         "text-size": 12
       }
+    },
+    {
+      "id": "selectable-cadastral-parcels",
+      "type": "line",
+      "source": "cadastre",
+      "source-layer": "parcelles",
+      "minzoom": 11,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": [
+          "case",
+          ["boolean", ["feature-state", "hover"], false],
+          "green",
+          ["boolean", ["feature-state", "selected"], false],
+          "blue",
+          "white"
+        ],
+        "line-opacity": 1,
+        "line-width": 3
+      }
     }
   ]
 }

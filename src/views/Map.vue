@@ -6,7 +6,8 @@
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:zoom-on="zoomOn"
-      ></OperatorSidebar>
+      >
+      </OperatorSidebar>
 
       <SearchSidebar
         v-if="showSearch"
@@ -64,6 +65,14 @@
             layerId="certification-body-clusters-count"
             :layer="layerStyle('certification-body-clusters-count')"
           />
+          <MglVectorLayer
+            v-if="isCadastreLayerSelectable"
+            before="place-continent"
+            sourceId="cadastre"
+            layerId="selectable-cadastral-parcels"
+            :layer="layerStyle('selectable-cadastral-parcels')"
+            @mousemove="hoverFeature"
+            @click="toggleFeatureSelection" />
         </MglMap>
 
         <!-- Layers selector -->
@@ -88,6 +97,7 @@ import {
   MglGeolocateControl,
   MglScaleControl,
   MglGeojsonLayer,
+  MglVectorLayer,
 } from "vue-mapbox";
 
 import {
@@ -159,6 +169,7 @@ export default {
     IlotMarkerDirection,
     LayersPanel,
     MglGeojsonLayer,
+    MglVectorLayer
   },
   data() {
     return {
@@ -285,6 +296,7 @@ export default {
     ...mapState("user", ["apiToken"]),
     ...mapState(["currentYear"]),
     ...mapState("operators", ["certificationBodyOperators"]),
+    ...mapState("map", ["isCadastreLayerSelectable"]),
 
     showSidebar() {
       return this.showOperatorDetails || this.showSearch;
@@ -339,7 +351,7 @@ export default {
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
       this.map = map;
 
-      this.updateHash(map);
+      // this.updateHash(map);
       // map.on("moveend", () => this.updateHash(map));
       // map.on("zoomend", () => this.updateHash(map));
 
@@ -478,6 +490,25 @@ export default {
           this.zoomOn(action.payload);
         }
       });
+    },
+
+    blurFeature ({ component }) {
+      component.setFeatureState(1, { 'hover': false })
+    },
+
+    hoverFeature ({ component, mapboxEvent }) {
+      const {point} = mapboxEvent
+
+      component.getRenderedFeatures(point).forEach(feature => {
+        // buggy as of https://github.com/soal/vue-mapbox/pull/209
+        // will need a workaround by calling map.setFeatureState() directly
+        component.setFeatureState(feature.id, { 'hover': true })
+      })
+    },
+
+    toggleFeatureSelection ({ component, layerId }) {
+      component.setFeatureState(1, { 'selected': true })
+      console.log(component, layerId)
     },
 
     computeParcelHistoryFromLngLat({ lngLat }) {
