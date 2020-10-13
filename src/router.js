@@ -38,19 +38,28 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/app',
+      path: '/map',
       component: AppLayout,
       children: [
         {
-          path: '/map/exploitation/:numeroBio:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
+          path: '/map/exploitation/:numeroBio',
           props: true,
           name: 'mapWithOperator',
           component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
           // beforeEnter: isLoadedAndAuthenticated
           children: [
             {
+              path: '',
+              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsList.vue')
+            },
+            {
+              path: 'pacage',
+              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarPacage.vue')
+            },
+            {
               path: 'parcels/new',
-              name: 'new-parcel'
+              name: 'new-parcel',
+              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsSubmit.vue')
             }
           ]
 

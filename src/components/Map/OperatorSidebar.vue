@@ -46,40 +46,27 @@
       </v-flex>
 
       <div class="text-md-center">
-        <v-btn :to="{ name: 'new-parcel', params: { numeroBio: operator.numeroBio } }" class="mh-auto mt-3 mb-4" small round color="#b9d065">
+        <v-btn v-if="$route.name !== 'new-parcel'" :to="{ name: 'new-parcel', params: { numeroBio: operator.numeroBio } }" class="mh-auto mt-3 mb-4" small round color="#b9d065">
           <v-icon dark>add</v-icon>
           Ajouter une parcelle
         </v-btn>
       </div>
 
-
-      <pacage-flow v-if="operator.numeroPacage === null" :operator="operator" />
-      <v-flex class="grow text-sm-center my-5" v-else-if="isLoading">
+      <v-flex v-if="isLoading" class="grow text-sm-center my-5">
         <v-progress-circular indeterminate size=64 color="#457382" />
 
         <p class="my-3">Chargement des parcelles.</p>
       </v-flex>
-      <parcels-list v-else-if="isLoaded && hasData" :parcels="parcels" :operator="operator" />
-      <parcels-submit v-else-if="isLoaded && !hasData" :operator="operator" />
 
+      <router-view v-else :isLoaded="isLoaded" :parcels="parcels" :operator="operator"></router-view>
     </v-layout>
   </v-container>
 </template>
 <script>
 import {mapActions, mapMutations, mapState} from 'vuex';
 
-import PacageFlow from './OperatorSidebarPacage.vue'
-import ParcelsList from './OperatorSidebarParcelsList.vue'
-import ParcelsSubmit from './OperatorSidebarParcelsSubmit.vue'
-
 export default {
   name: "OperatorSidebar",
-
-  components: {
-    PacageFlow,
-    ParcelsList,
-    ParcelsSubmit
-  },
 
   props: {
     // parcels is a FeatureCollection
@@ -191,6 +178,7 @@ export default {
   cursor: default;
   padding: 0 12px;
 }
+
 
 .update-info {
   background: #F6F7E2;

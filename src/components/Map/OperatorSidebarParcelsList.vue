@@ -1,6 +1,6 @@
 <template>
   <Fragment>
-    <v-data-table class="parcels mb-4" :items="features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
+    <v-data-table class="overflow-x-hidden parcels mb-4" :items="features" item-key="id" :custom-sort="sortIlots" hide-actions hide-headers>
       <template v-slot:items="{item: feature, index}">
         <tr role="separator" aria-hidden v-if="features[index-1] && feature.properties.numilot !== features[index-1].properties.numilot">
           <td colspan="3"></td>
@@ -271,6 +271,11 @@ section {
 .v-expansion-panel /deep/ .v-expansion-panel__header {
   cursor: default;
   padding: 0 12px;
+}
+
+
+.parcels /deep/ .v-table__overflow {
+  overflow-x: hidden;
 }
 
 .parcels /deep/ .v-table {
