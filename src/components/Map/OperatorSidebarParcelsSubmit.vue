@@ -1,64 +1,39 @@
 <template>
-  <div class="py-3">
-    <section class="px-3">
-      <p class="d-flex red--text text--darken-3 font-weight-bold" v-if="isSupposedToHaveParcels">
-        <v-icon color="red darken-3" class="mr-3">warning</v-icon>
-        Désolé, nous n'avons pas trouvé de parcelles en {{ baseYear }}
-        pour cet opérateur.
-      </p>
-      <p class="d-flex font-weight-bold" v-else-if="operator.numeroPacage">
-        <v-icon class="mr-3">help_outline</v-icon>
-        Les parcelles de cet opérateur ne nous ont pas été communiquées.
-      </p>
+  <v-form class="px-3">
+    <h2 class="subheading text--cyan">Ajouter une parcelle</h2>
 
-      <v-subheader class="text--cyan">Renseigner le parcellaire</v-subheader>
+    <h3 class="body-2 mt-2">Culture</h3>
 
-      <p class="body-1 grey--text text--darken-2">
-        Renseignez le parcellaire de l'opérateur&nbsp;bio n°{{ operator.numeroBio }}
-        ({{ operator.title }}), et nous les intégrerons à CartoBio.
-      </p>
-    </section>
+    <v-autocomplete dense :items="knownCultures" label="Type de culture" prepend-icon="search" item-text="Libellé Culture" item-value="Code Culture" v-model="parcel.culturalCode" />
+    <v-select :items="conversionStatuses" prepend-icon="list" label="Statut de la conversion" v-model="parcel.conversionStatus" />
+    <v-text-field label="Année de début de conversion" prepend-icon="event" v-model="parcel.conversionDate" />
 
-    <v-expansion-panel elevation-0>
-      <v-expansion-panel-content>
-        <template v-slot:header>
-          <h3 class="subheading">Saisie libre</h3>
-        </template>
+    <v-text-field v-model="parcel.observationDate" label="Informations relevées en date du…" prepend-icon="event" />
 
-        <v-form class="pa-3">
-          <v-textarea v-model="freeText" outline full-width counter rows="10" />
+    <h3 class="body-2 mt-2">Cadastre</h3>
 
-          <v-btn round color="#b9d065" @click="sendEmail" :disabled="!freeText || isProcessing" :loading="isProcessing">
-            Transmettre
-          </v-btn>
-        </v-form>
-      </v-expansion-panel-content>
+    <p class="body-1 grey--text text--darken-2">
+      Sélectionnez les parcelles cadastrales concernées sur la carte.
+    </p>
 
+    <h3 class="body-2">Commentaire libre</h3>
 
-        <v-expansion-panel-content>
-          <template v-slot:header>
-            <h3 class="subheading">Téléchargement de fichier</h3>
-          </template>
+    <v-textarea v-model="freeText" outline full-width counter rows="5" />
 
-          <v-form class="pa-3">
-            <v-input prepend-icon="attach_file" :messages="uploadMessages">
-              <input type="file" ref="uploads" @change="processFiles" multiple>
-            </v-input>
+    <v-input prepend-icon="attach_file" :messages="uploadMessages">
+      <input type="file" ref="uploads" @change="processFiles" multiple>
+    </v-input>
 
-
-            <v-btn round color="#b9d065" @click="sendEmail" :disabled="uploads.length === 0 || isProcessing" :loading="isProcessing">
-              Transmettre
-            </v-btn>
-          </v-form>
-        </v-expansion-panel-content>
-    </v-expansion-panel>
-  </div>
+    <v-btn round color="#b9d065" @click="sendEmail" :disabled="uploads.length === 0 || isProcessing" :loading="isProcessing">
+      Transmettre
+    </v-btn>
+  </v-form>
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import {post} from 'axios';
-
+import {codes} from '@/modules/codes-cultures/pac.js'
 const {VUE_APP_API_ENDPOINT} = process.env;
 
 export default {
@@ -69,14 +44,38 @@ export default {
 
   data () {
     return {
+      parcel: {
+        conversionStatus: null,
+        culturalCode: null,
+        conversionDate: null,
+        observationDate: null,
+        cadastralReferences: []
+      },
       isValid: false,
       isProcessing: false,
+      conversionStatuses: [
+        { value: 'CONV',  text: 'Conventionnel' },
+        { value: 'C1',    text: 'Conversion 1ère année' },
+        { value: 'C2',    text: 'Conversion 2ème année' },
+        { value: 'C3',    text: 'Conversion 3ème année' },
+        { value: 'BIO',   text: 'Certifié AB' },
+      ],
+      knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
       freeText: '',
       uploads: []
     }
   },
 
+  mounted () {
+    this.makeCadastreSelectable()
+  },
+
+  beforeDestroy() {
+    this.makeCadastreUnselectable()
+  },
+
   methods: {
+    ...mapMutations('map', ['makeCadastreSelectable', 'makeCadastreUnselectable']),
     processFiles () {
       const uploadsP = Array.from(this.$refs.uploads.files).map(file => new Promise((resolve) => {
         const reader = new FileReader()
@@ -148,13 +147,6 @@ export default {
         ? [`Total à envoyer : ${(stats.filesize / 1024 / 1024).toFixed(2)}Mo`]
         : []
     },
-
-    isSupposedToHaveParcels () {
-      const baseDate = new Date(this.baseDate)
-      const referenceDate = new Date(this.operator.dateEngagement || this.operator.dateMaj)
-
-      return this.operator.numeroPacage && (baseDate >= referenceDate)
-    }
   }
 };
 </script>

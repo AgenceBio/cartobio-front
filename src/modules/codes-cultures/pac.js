@@ -21,4 +21,4 @@ function fromCode (code){
   return {label, groupCode, groupLabel}
 }
 
-module.exports = { fromCode }
+module.exports = { fromCode, codes }
