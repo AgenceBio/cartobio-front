@@ -70,7 +70,13 @@
             before="place-continent"
             sourceId="cadastre"
             layerId="selectable-cadastral-parcels"
-            :layer="layerStyle('selectable-cadastral-parcels')"
+            :layer="layerStyle('selectable-cadastral-parcels')" />
+          <MglVectorLayer
+            v-if="isCadastreLayerSelectable"
+            before="selectable-cadastral-parcels"
+            sourceId="cadastre"
+            layerId="selectable-cadastral-parcels-area"
+            :layer="layerStyle('selectable-cadastral-parcels-area')"
             @mousemove="hoverFeature"
             @click="toggleFeatureSelection" />
         </MglMap>
@@ -84,6 +90,7 @@
 
 <script>
 import getObjectValue from "lodash/get";
+import differenceBy from "lodash/differenceBy";
 import { point, featureCollection } from "@turf/helpers";
 import bboxPolygon from "@turf/bbox-polygon";
 import bbox from "@turf/bbox";
@@ -492,23 +499,44 @@ export default {
       });
     },
 
-    blurFeature ({ component }) {
-      component.setFeatureState(1, { 'hover': false })
-    },
-
-    hoverFeature ({ component, mapboxEvent }) {
+    hoverFeature ({ component, map, mapboxEvent }) {
       const {point} = mapboxEvent
+      const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
 
-      component.getRenderedFeatures(point).forEach(feature => {
+      const currentlyHoveredFeatures = component.getRenderedFeatures().filter(({ state }) => state.hover === true)
+      const hoveredFeatures = component.getRenderedFeatures(point)
+
+      // we "blur" other
+      differenceBy(currentlyHoveredFeatures, hoveredFeatures, 'id').forEach(({ id }) => {
+        map.setFeatureState({ source, sourceLayer, id }, { 'hover': false })
+      })
+
+      hoveredFeatures.forEach(({ id, state }) => {
+        if (state.selected === true) {
+          map.getCanvas().style.cursor = 'not-allowed'
+        }
+        else {
+          map.getCanvas().style.cursor = 'copy'
+        }
+
         // buggy as of https://github.com/soal/vue-mapbox/pull/209
         // will need a workaround by calling map.setFeatureState() directly
-        component.setFeatureState(feature.id, { 'hover': true })
+        // component.setFeatureState(feature.id, { 'hover': true })
+        map.setFeatureState({ source, sourceLayer, id }, { 'hover': true })
       })
     },
 
-    toggleFeatureSelection ({ component, layerId }) {
-      component.setFeatureState(1, { 'selected': true })
-      console.log(component, layerId)
+    toggleFeatureSelection ({ component, map, mapboxEvent }) {
+      const {point} = mapboxEvent
+
+      component.getRenderedFeatures(point).forEach(feature => {
+        const { id, state } = feature
+        const selected = !state.selected
+        const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
+
+        map.setFeatureState({ source, sourceLayer, id }, { selected })
+        this.$store.commit('map/FEATURE_TOGGLE', { state: { selected }, feature, source, sourceLayer })
+      })
     },
 
     computeParcelHistoryFromLngLat({ lngLat }) {

@@ -44,6 +44,10 @@ const mutations = {
 
   // },
 
+  // eslint-disable-next-line no-unused-vars
+  FEATURE_TOGGLE(state, { state:featureState, feature }) {
+  },
+
   HOVERED_FEATURE_COLLECTION(state, { numIlot, featureCollection }) {
     state.hoveredParcels = featureCollection.features.slice(0)
     state.hoveredIlotId = numIlot
