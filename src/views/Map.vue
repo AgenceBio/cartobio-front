@@ -535,7 +535,12 @@ export default {
         const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
 
         map.setFeatureState({ source, sourceLayer, id }, { selected })
-        this.$store.commit('map/FEATURE_TOGGLE', { state: { selected }, feature, source, sourceLayer })
+        this.$store.commit('map/FEATURE_TOGGLE', {
+          state: { selected },
+          feature: JSON.parse(JSON.stringify(feature)),
+          source,
+          sourceLayer
+        })
       })
     },
 

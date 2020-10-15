@@ -49,10 +49,6 @@ export default new Router({
           // beforeEnter: isLoadedAndAuthenticated
           children: [
             {
-              path: '',
-              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsList.vue')
-            },
-            {
               path: 'pacage',
               component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarPacage.vue')
             },
@@ -60,6 +56,10 @@ export default new Router({
               path: 'parcels/new',
               name: 'new-parcel',
               component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsSubmit.vue')
+            },
+            {
+              path: '',
+              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsList.vue')
             }
           ]
 

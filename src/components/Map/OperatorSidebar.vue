@@ -45,7 +45,7 @@
         </div>
       </v-flex>
 
-      <div class="text-md-center">
+      <div v-if="!isLoading" class="text-md-center">
         <v-btn v-if="$route.name !== 'new-parcel'" :to="{ name: 'new-parcel', params: { numeroBio: operator.numeroBio } }" class="mh-auto mt-3 mb-4" small round color="#b9d065">
           <v-icon dark>add</v-icon>
           Ajouter une parcelle

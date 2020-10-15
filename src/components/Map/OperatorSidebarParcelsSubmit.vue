@@ -1,32 +1,55 @@
 <template>
-  <v-form class="px-3">
+  <v-form class="px-3" v-model="isFormValid">
     <h2 class="subheading text--cyan">Ajouter une parcelle</h2>
 
-    <h3 class="body-2 mt-2">Cadastre</h3>
+    <h3 class="body-2 mt-2">1. Références cadastrales</h3>
 
     <p class="body-1" v-if="!hasCadastralReferences">
-      Sélectionnez les parcelles cadastrales concernées sur la carte.
+      Sélectionnez une ou plusieurs parcelles cadastrales sur la carte.
     </p>
     <p class="body-1 grey--text text--darken-2" v-else>
       Continuez à sélectionner des sections cadastrales, ou renseignez les informations de culture.
     </p>
 
-    <ul v-if="hasCadastralReferences">
+    <ul class="parcels-list pl-3 py-2" v-if="hasCadastralReferences">
       <li v-for="feature in parcel.cadastralReferences" :key="feature.id">
-        Section&nbsp;{{ feature.properties.section }}, parcelle&nbsp;{{ feature.properties.numero }} ({{ beautifyNumber(feature.properties.contenance / 10000) }}ha)
+        Section&nbsp;<strong>{{ feature.properties.section }}</strong>, parcelle&nbsp;<strong>{{ feature.properties.numero }}</strong>
+        <span class="pl-1 grey--text text--darken-1">({{ beautifyNumber(feature.properties.contenance / 10000) }}ha)</span>
       </li>
     </ul>
 
-    <section v-if="hasCadastralReferences">
-      <h3 class="body-2 mt-2">Culture</h3>
+    <section>
+      <h3 class="body-2 mt-2">2. Culture</h3>
 
-      <v-autocomplete dense :items="knownCultures" label="Type de culture" prepend-icon="search" item-text="Libellé Culture" item-value="Code Culture" v-model="parcel.culturalCode" />
-      <v-select :items="conversionStatuses" prepend-icon="list" label="Statut de la conversion" v-model="parcel.conversionStatus" />
-      <v-text-field label="Année de début de conversion" prepend-icon="event" v-model="parcel.conversionDate" />
+      <p class="body-1 grey--text text--darken-2" v-if="!hasCadastralReferences">
+        <v-icon small color="grey--text text--darken-2">info</v-icon>
+        Les champs suivants seront modifiables après sélection d'au moins une référence cadastrale.
+      </p>
 
-      <v-text-field v-model="parcel.observationDate" label="Informations relevées en date du…" prepend-icon="event" />
+      <v-autocomplete :rules="[rules.required]" :disabled="!hasCadastralReferences" dense :items="knownCultures" label="Type de culture" prepend-icon="search" item-text="Libellé Culture" item-value="Code Culture" v-model="parcel.culturalCode" />
+      <v-select :rules="[rules.required]" :disabled="!hasCadastralReferences" :items="conversionStatuses" prepend-icon="list" label="Statut de la conversion" v-model="parcel.conversionStatus" />
+      <v-text-field :disabled="!hasCadastralReferences" label="Année de début de conversion" prepend-icon="event" v-model="parcel.conversionDate" />
 
-      <h3 class="body-2">Commentaire libre</h3>
+      <v-menu v-model="observationDateMenu"
+        :nudge-right="40"
+        lazy
+        transition="scale-transition"
+        offset-y
+        full-width
+        max-width="320px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field :rules="[rules.required]" v-on="on" readonly :disabled="!hasCadastralReferences" v-model="parcel.observationDate" label="Informations relevées en date du…" prepend-icon="event" />
+        </template>
+        <v-date-picker @input="observationDateMenu = false" v-model="parcel.observationDate" show-current locale="fr-FR" />
+      </v-menu>
+
+
+      <h3 class="body-2">3. Commentaire libre</h3>
+
+      <p class="body-1 grey--text text--darken-2">
+        Ce contenu sera relu et pris en compte par l'équipe CartoBio.
+      </p>
 
       <v-textarea v-model="freeText" outline full-width counter rows="5" />
 
@@ -35,7 +58,7 @@
       </v-input>
     </section>
 
-    <v-btn round color="#b9d065" @click="sendEmail" :disabled="uploads.length === 0 || isProcessing" :loading="isProcessing">
+    <v-btn round class="mx-auto" color="#b9d065" @click="sendEmail" :disabled="!isFormValid || !hasCadastralReferences || isProcessing" :loading="isProcessing">
       Transmettre
     </v-btn>
   </v-form>
@@ -44,8 +67,10 @@
 <script>
 import Vue from 'vue'
 import {mapMutations, mapState} from 'vuex';
+import union from '@turf/union';
+import {featureCollection} from '@turf/helpers';
 import {post} from 'axios';
-import {codes} from '@/modules/codes-cultures/pac.js'
+import {codes} from '@/modules/codes-cultures/pac.js';
 const {VUE_APP_API_ENDPOINT} = process.env;
 
 export default {
@@ -56,6 +81,14 @@ export default {
 
   data () {
     return {
+      conversionDateMenu: false,
+      observationDateMenu: false,
+      isFormValid: false,
+
+      rules: {
+        required: value => !!value || 'Ce champ est obligatoire.'
+      },
+
       parcel: {
         conversionStatus: null,
         culturalCode: null,
@@ -66,15 +99,17 @@ export default {
       isValid: false,
       isProcessing: false,
       conversionStatuses: [
-        { value: 'CONV',  text: 'Conventionnel' },
-        { value: 'C1',    text: 'Conversion 1ère année' },
-        { value: 'C2',    text: 'Conversion 2ème année' },
-        { value: 'C3',    text: 'Conversion 3ème année' },
-        { value: 'BIO',   text: 'Certifié AB' },
+        { value: '0',  text: 'Conventionnel' },
+        { value: 'C1', text: 'Conversion 1ère année' },
+        { value: 'C2', text: 'Conversion 2ème année' },
+        { value: 'C3', text: 'Conversion 3ème année' },
+        { value: '1',   text: 'Certifié AB' },
       ],
-      knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
       freeText: '',
-      uploads: []
+      uploads: [],
+
+      // eslint-disable-next-line vue/no-reserved-keys
+      knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture']))
     }
   },
 
@@ -85,7 +120,7 @@ export default {
         const foundIndex = this.parcel.cadastralReferences.findIndex(({id}) => id === mutation.payload.feature.id)
 
         if (foundIndex === -1) {
-          this.parcel.cadastralReferences.push(mutation.payload.feature)
+          this.parcel.cadastralReferences.push(Object.freeze(mutation.payload.feature))
         }
         else {
           Vue.set(this.parcel, 'cadastralReferences', this.parcel.cadastralReferences.filter((feature, index) => index !== foundIndex))
@@ -143,7 +178,10 @@ export default {
       this.isProcessing = true
 
       post(`${VUE_APP_API_ENDPOINT}/v1/parcels/operator/${numeroBio}`, {
-        text: this.freeText,
+        text: [
+          this.freeText,
+          '```json\n' + JSON.stringify(this.featureCollection, null, 2) + '\n```'
+        ].join("\n\n"),
         uploads: this.uploads,
         sender: {
           userId,
@@ -173,6 +211,26 @@ export default {
       return this.parcel.cadastralReferences.length > 0
     },
 
+    /**
+     * Transform the form into a GeoJSON FeatureCollection
+     */
+    featureCollection () {
+      if (!this.hasCadastralReferences) {
+        return null
+      }
+
+      const mergedFeature = union(...this.parcel.cadastralReferences)
+
+      mergedFeature.properties = {
+        BIO: this.parcel.conversionStatus,
+        CODE_CULTU: this.parcel.culturalCode,
+        DATE_CONV: this.parcel.conversionDate,
+        DATE_MAJ: this.observationDate
+      }
+
+      return featureCollection([mergedFeature])
+    },
+
     uploadMessages () {
       const stats = this.uploads.reduce((total, attachment) => {
         total.count++
@@ -191,6 +249,10 @@ export default {
 /deep/ .v-subheader {
   padding-left: 0;
   text-transform: uppercase;
+}
+
+.parcels-list {
+  list-style: decimal;
 }
 
 .subheading {
