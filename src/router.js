@@ -8,11 +8,7 @@ import ApiDocumentation from './views/Api.vue'
 import LandingTerritory from './views/Landing/Territory.vue'
 import LandingCertificationBody from './views/Landing/CertificationBody.vue'
 
-import AppLayout from './views/AppLayout.vue'
 import ContentPagesLayout from './views/ContentPagesLayout.vue'
-
-// import store from './store.js'
-import goTo from 'vuetify/lib/components/Vuetify/goTo'
 
 Vue.use(Router)
 
@@ -38,15 +34,16 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/map',
-      component: AppLayout,
+      path: '/map:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
+      props: true,
+      name: 'map',
+      component: () => import(/* webpackChunkName: "map" */ './views/AppLayout.vue'),
       children: [
         {
           path: '/map/exploitation/:numeroBio',
           props: true,
-          name: 'mapWithOperator',
-          component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
-          // beforeEnter: isLoadedAndAuthenticated
+          name: 'operator',
+          component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebar.vue'),
           children: [
             {
               path: 'pacage',
@@ -59,17 +56,10 @@ export default new Router({
             },
             {
               path: '',
-              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsList.vue')
+              component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsList.vue'),
             }
-          ]
-
-        },
-        {
-          path: '/map:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
-          props: true,
-          name: 'map',
-          component: () => import(/* webpackChunkName: "app-map" */ './views/Map.vue'),
-          // beforeEnter: isLoadedAndAuthenticated
+          ],
+          pathToRegexOptions: { strict: true }
         }
       ]
     },
@@ -96,16 +86,5 @@ export default new Router({
         { path: '/features/territoires', name: 'landing-territoires', component: LandingTerritory },
       ]
     },
-  ],
-  scrollBehavior: (to, from, savedPosition) => {
-    let scrollTo = 0
-
-    if (to.hash) {
-      scrollTo = to.hash
-    } else if (savedPosition) {
-      scrollTo = savedPosition.y
-    }
-
-    return goTo(scrollTo)
-  },
+  ]
 })

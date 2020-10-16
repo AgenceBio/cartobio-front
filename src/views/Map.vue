@@ -1,21 +1,17 @@
 <template>
   <v-layout>
     <v-navigation-drawer app clipped stateless hide-overlay v-model="showSidebar">
-      <OperatorSidebar
-        v-if="showOperatorDetails"
+      <router-view v-if="showOperator"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:zoom-on="zoomOn"
-      >
-      </OperatorSidebar>
+      />
 
-      <SearchSidebar
-        v-if="showSearch"
+      <SearchSidebar v-else-if="showSearch"
         :organismeCertificateur="getProfile.organismeCertificateur"
         :organismeCertificateurId="getProfile.organismeCertificateurId"
-        @select-operator="setOperator"
         @flyto="flyTo"
-      ></SearchSidebar>
+      />
     </v-navigation-drawer>
 
     <v-content>
@@ -113,7 +109,6 @@ import {
   cartobioStyle,
   infrastructureStyle,
 } from "@/assets/styles/index.js";
-import OperatorSidebar from "@/components/Map/OperatorSidebar";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
@@ -165,7 +160,6 @@ export default {
   },
 
   components: {
-    OperatorSidebar,
     ParcelDetailsPopup,
     ExploitationPopup,
     SearchSidebar,
@@ -192,6 +186,8 @@ export default {
         infrastructureStyle,
         { sources: cartobioStyle.sources },
       ]),
+
+      showSidebar: true,
 
       // anonymous layers
       anonLayers: {},
@@ -267,11 +263,7 @@ export default {
   // event bus
   props: {
     numeroBio: {
-      type: String,
-      default: null,
-    },
-    pacageId: {
-      type: String,
+      type: Number,
       default: null,
     },
     latLonZoom: {
@@ -305,17 +297,14 @@ export default {
     ...mapState("operators", ["certificationBodyOperators"]),
     ...mapState("map", ["isCadastreLayerSelectable"]),
 
-    showSidebar() {
-      return this.showOperatorDetails || this.showSearch;
-    },
-
-    showOperatorDetails() {
+    showOperator() {
       return Boolean(this.isAuthenticated && this.operator.id);
     },
 
     showSearch() {
       return Boolean(this.isAuthenticated && !this.operator.id);
     },
+
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
@@ -406,8 +395,10 @@ export default {
       map.on("click", "certification-body-parcels-points", (e) => {
         const { pacage } = e.features[0].properties;
         const operator = this.findOperatorByPacage(pacage);
+        const {numerobio:numeroBio} = operator.properties;
 
-        this.setOperator(operator.properties.numerobio);
+        this.$store.commit("operators/SET_CURRENT", numeroBio);
+        this.$router.push({ path: `/map/exploitation/${numeroBio}` })
       });
 
       map.on("click", "certification-body-clusters-area", (e) => {
@@ -564,13 +555,13 @@ export default {
       const { lat, lng } = map.getCenter();
       const zoom = Math.floor(map.getZoom());
 
-      const { pacageId, numeroBio } = this;
+      const { numeroBio } = this;
       const latLonZoom = `@${lat},${lng},${zoom}`;
 
       this.$router
         .replace({
-          name: numeroBio ? "mapWithOperator" : "map",
-          params: { pacageId, numeroBio, latLonZoom },
+          name: "map",
+          params: { numeroBio, latLonZoom },
         })
         .catch((error) => {
           // we can safely ignore duplicate navigation
@@ -699,14 +690,6 @@ export default {
       this.map.flyTo({
         center: [lat, lon],
         zoom,
-      });
-    },
-
-    setOperator(numeroBio) {
-      this.$store.commit("operators/SET_CURRENT", numeroBio);
-      this.$router.push({
-        name: "mapWithOperator",
-        params: { numeroBio },
       });
     },
 

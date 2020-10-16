@@ -2,7 +2,7 @@
   <v-container fluid fill-height pa-0>
     <v-layout column>
       <v-toolbar dark flat prominent color="#457382">
-        <v-toolbar-side-icon @click="clearOperator">
+        <v-toolbar-side-icon :to="{ path: parentPath }">
           <v-icon>navigate_before</v-icon>
         </v-toolbar-side-icon>
         <v-toolbar-title class="ml-0">
@@ -58,7 +58,7 @@
         <p class="my-3">Chargement des parcelles.</p>
       </v-flex>
 
-      <router-view v-else :isLoaded="isLoaded" :parcels="parcels" :operator="operator"></router-view>
+      <router-view v-else :isLoaded="isLoaded" :parcels="parcels" :operator="operator" />
     </v-layout>
   </v-container>
 </template>
@@ -69,6 +69,7 @@ export default {
   name: "OperatorSidebar",
 
   props: {
+    numeroBio: Number,
     // parcels is a FeatureCollection
     parcels: Object,
     operator: Object,
@@ -77,7 +78,7 @@ export default {
   data() {
     return {
       dialog: false,
-      isLoaded: true
+      isLoaded: true,
     };
   },
 
@@ -97,6 +98,7 @@ export default {
     ...mapState({
       isLoading: state => state.operators.areSingleOperatorParcelsLoading,
       baseDate: state => state.lastDataUpdate,
+      parentRoute: () => 'map'
     }),
 
     hasData () {
@@ -110,6 +112,14 @@ export default {
     }),
 
     ...mapActions('map', ['zoomOn']),
+  },
+
+  created () {
+    this.$store.commit("operators/SET_CURRENT", Number(this.numeroBio))
+  },
+
+  beforeDestroy () {
+    this.clearOperator();
   },
 
   watch: {

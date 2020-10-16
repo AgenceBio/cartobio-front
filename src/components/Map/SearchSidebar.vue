@@ -33,7 +33,7 @@
           <v-list two-line>
             <template v-for="(operator, i) in foundOperators">
               <v-divider v-if="i" :key="i"></v-divider>
-              <v-list-tile :key="operator.numerobio" @click="$emit('select-operator', operator.numerobio)">
+              <v-list-tile :key="operator.numerobio" @click="setOperator(operator.numerobio)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
@@ -123,12 +123,23 @@ export default {
       _certificationBodyOperators: state => state.operators.certificationBodyOperators,
     }),
 
+    numeroBio () {
+      return this.operator.numerobio
+    },
+
     foundOperators () {
       return this.operators.map(numerobio => {
         return this._certificationBodyOperators.features.find(feature => {
           return feature.properties.numerobio === numerobio
         }).properties
       })
+    }
+  },
+
+  methods: {
+    setOperator (numeroBio) {
+      this.$store.commit("operators/SET_CURRENT", parseInt(numeroBio));
+      this.$router.push({ path: `/map/exploitation/${numeroBio}` });
     }
   },
 
