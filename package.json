@@ -23,7 +23,6 @@
     "@turf/combine": "^6.0.1",
     "@turf/line-intersect": "^6.0.2",
     "@turf/polygon-to-line": "^6.0.3",
-    "@turf/union": "^6.0.3",
     "axios": "^0.19.2",
     "deepmerge": "^4.2.2",
     "geojson-vt": "^3.2.1",
@@ -35,7 +34,7 @@
     "vue-mapbox": "^0.4.1",
     "vue-mdc-adapter": "^0.18.2",
     "vue-meta": "^2.4.0",
-    "vue-router": "^3.4.3",
+    "vue-router": "^3.4.7",
     "vuetify": "^1.5.24",
     "vuex": "^3.5.1"
   },
