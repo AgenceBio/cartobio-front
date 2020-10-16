@@ -1,11 +1,17 @@
 // const { parentPort, workerData, millesime } = require('worker_threads');
 // const {sourceFile, filteringFeatures} = workerData
 const gdal = require('gdal-next')
+const { createHash } = require('crypto')
 const { fromCode } = require('../modules/codes-cultures/pac.js')
 const { geometry: area } = require('@mapbox/geojson-area')
 
 const IN_HECTARES = 10000
 const wgs84 = gdal.SpatialReference.fromProj4('+init=epsg:4326')
+
+function createIdFromHash(object) {
+  const buffer = Buffer.from(JSON.stringify(object))
+  return createHash('sha256').update(buffer).digest('hex')
+}
 
 function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) {
   const filteringFeaturesPolygon = new gdal.MultiPolygon()
@@ -42,31 +48,34 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
   let feature = null
   /* eslint-disable-next-line no-cond-assign */
   while (feature = layer.features.next()) {
-    const {BIO, bio, CODE_CULTU, codecultu} = feature.fields.toObject()
+    const fields = feature.fields.toObject()
+    const {BIO, bio, CODE_CULTU, codecultu} = fields
     const {label: LBL_CULTU, groupLabel: GRP_CULTU} = fromCode(CODE_CULTU ?? codecultu)
 
     const geometry = getWGS84Geometry(feature)
     const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
 
+    const properties = {
+      BIO: parseInt(BIO ?? bio, 10),
+      CODE_CULTU: CODE_CULTU ?? codecultu,
+      LBL_CULTU,
+      GRP_CULTU,
+      SURFACE_HA,
+      MILLESIME
+    }
+
+    const privateProperties = {
+      PACAGE: fields.pacage ?? fields.PACAGE,
+      NUM_ILOT: fields.numilot ?? fields.NUM_ILOT,
+      NUM_PARCEL: fields.numparcel ?? fields.NUM_PARCEL
+    }
+
     features.push({
       type: 'Feature',
+      id: createIdFromHash({ ...properties, ...privateProperties }),
       geometry,
-      properties: {
-        BIO: parseInt(BIO ?? bio, 10),
-        CODE_CULTU: CODE_CULTU ?? codecultu,
-        LBL_CULTU,
-        GRP_CULTU,
-        SURFACE_HA,
-        MILLESIME
-      }
+      properties
     })
-    // parentPort.postMessage({
-    //   type: 'Feature',
-    //   properties: {
-    //     BIO: feature.fields.get('BIO')
-    //   },
-    //   geometry: feature.getGeometry().toObject()
-    // })
   }
 
   return features
