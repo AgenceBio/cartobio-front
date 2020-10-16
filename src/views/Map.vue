@@ -280,6 +280,8 @@ export default {
 
     this.zoom = Number(zoom);
     this.center = [Number(lon), Number(lat)];
+
+    this._operatorsP = this.$store.dispatch("operators/FETCH_OPERATORS")
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
@@ -738,7 +740,7 @@ export default {
         return;
       }
 
-      const operatorsP = this.$store.dispatch("operators/FETCH_OPERATORS");
+      const operatorsP = this._operatorsP
 
       operatorsP.then(({ data }) => {
         map.getSource("certification-body-operators").setData(data);
