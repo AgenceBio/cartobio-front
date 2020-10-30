@@ -19,10 +19,15 @@
             <Geosearch  :operators="_certificationBodyOperators"
                         @towns-received="towns = $event"
                         @operators-received="operators = $event" />
-
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+
+      <v-flex v-if="isLoading" class="grow text-sm-center my-5">
+        <v-progress-circular indeterminate size=64 color="#457382" />
+
+        <p class="my-3">Chargement des opérateurs <i>{{ organismeCertificateur.nom }}</i>.</p>
+      </v-flex>
 
       <v-expansion-panel expand v-model="panels" class="search-results elevation-0">
         <v-expansion-panel-content :hidden="operators.length === 0" key="operators">
@@ -118,8 +123,9 @@ export default {
     };
   },
 
-  computed: {
+computed: {
     ...mapState({
+      isLoading: state => state.operators.areCertificationBodyParcelsLoading,
       _certificationBodyOperators: state => state.operators.certificationBodyOperators,
     }),
 
