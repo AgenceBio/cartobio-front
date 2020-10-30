@@ -2,7 +2,7 @@
   <v-container fluid fill-height pa-0>
     <v-layout column>
       <v-toolbar dark flat prominent color="#457382">
-        <v-toolbar-side-icon :to="{ path: parentPath }">
+        <v-toolbar-side-icon :to="{ name: parentRoute }">
           <v-icon>navigate_before</v-icon>
         </v-toolbar-side-icon>
         <v-toolbar-title class="ml-0">
@@ -98,8 +98,19 @@ export default {
     ...mapState({
       isLoading: state => state.operators.areSingleOperatorParcelsLoading,
       baseDate: state => state.lastDataUpdate,
-      parentRoute: () => 'map'
     }),
+    
+    parentRoute () {
+      // Both are same level routes, so we can't use history.matched property
+      let parentName;
+      if (this.$route.name === 'parcels-list') {
+        parentName = 'map';
+      }
+      else {
+        parentName = 'parcels-list'
+      }
+      return parentName;
+    },
 
     hasData () {
       return Boolean(!this.isLoading && Array.isArray(this.parcels.features) && this.parcels.features.length)

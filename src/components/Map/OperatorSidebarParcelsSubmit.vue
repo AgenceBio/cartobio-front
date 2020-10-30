@@ -1,8 +1,5 @@
 <template>
   <v-form class="px-3" ref="form" v-model="isValid">
-    <v-btn fab flat fixed right top small :to="{ path: `/map/exploitation/${operator.numeroBio}` }">
-      <v-icon >close</v-icon>
-    </v-btn>
     <h2 class="subheading text--cyan">Ajouter une parcelle</h2>
 
     <h3 class="body-2 mt-2">1. Références cadastrales</h3>
@@ -60,9 +57,6 @@
         </template>
         <v-date-picker @input="observationDateMenu = false" v-model="parcel.observationDate" show-current locale="fr-FR" />
       </v-menu>
-
-      {{ $route.matched.map((route) => Object.keys(route) )}}
-
 
       <h3 class="body-2">3. Commentaire libre</h3>
 

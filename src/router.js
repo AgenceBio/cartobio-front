@@ -47,6 +47,7 @@ export default new Router({
           children: [
             {
               path: 'pacage',
+              name: 'pacage',
               component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarPacage.vue')
             },
             {
@@ -56,6 +57,7 @@ export default new Router({
             },
             {
               path: '',
+              name: 'parcels-list',
               component: () => import(/* webpackChunkName: "operator" */ './components/Map/OperatorSidebarParcelsList.vue'),
             }
           ],
