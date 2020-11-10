@@ -93,6 +93,9 @@ import bbox from "@turf/bbox";
 import centroid from "@turf/centroid";
 import { all as mergeAll } from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
+import intersect from '@turf/intersect';
+import combine from '@turf/combine';
+import difference from '@turf/difference';
 
 import {
   MglMap,
@@ -528,9 +531,18 @@ export default {
         const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
 
         map.setFeatureState({ source, sourceLayer, id }, { selected })
+
+        // prevent selection of cadastral parcel overlapping with operator parcel
+        let diff = null;
+        let intersection = null;
+
+        let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
+        intersection = intersect(combinedFeatures.features[0], feature);
+        console.log(intersection)
+        diff = difference(feature, combinedFeatures);
         this.$store.commit('map/FEATURE_TOGGLE', {
           state: { selected },
-          feature: JSON.parse(JSON.stringify(feature)),
+          feature: JSON.parse(JSON.stringify(diff)),
           source,
           sourceLayer
         })
