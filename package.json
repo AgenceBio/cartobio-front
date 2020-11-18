@@ -9,8 +9,7 @@
     "serve": "vue-cli-service serve --host localhost",
     "build": "vue-cli-service build",
     "test": "npm run lint",
-    "lint": "vue-cli-service lint",
-    "preinstall": "npx npm-force-resolutions"
+    "lint": "vue-cli-service lint"
   },
   "engines": {
     "node": "12.x.x"
@@ -22,8 +21,6 @@
     "@turf/centroid": "^6.0.2",
     "@turf/circle": "^6.0.1",
     "@turf/combine": "^6.0.1",
-    "@turf/difference": "^6.0.1",
-    "@turf/intersect": "^6.1.3",
     "@turf/line-intersect": "^6.0.2",
     "@turf/polygon-to-line": "^6.0.3",
     "axios": "^0.19.2",
@@ -40,9 +37,6 @@
     "vue-router": "^3.4.7",
     "vuetify": "^1.5.24",
     "vuex": "^3.5.1"
-  },
-  "resolutions": {
-    "@turf/difference": "6.0.1"
   },
   "devDependencies": {
     "@mapbox/geojson-area": "^0.2.2",
