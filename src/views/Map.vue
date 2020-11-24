@@ -551,6 +551,22 @@ export default {
         intersection = intersect(combinedFeatures.features[0], feature);
         console.log(intersection)
         diff = difference(feature, combinedFeatures);
+        this.map.addLayer
+        console.log(diff);
+        this.map.getSource('parcels-to-add').setData({
+          'type': 'geojson',
+          'data': JSON.parse(JSON.stringify(diff)),
+        });
+        this.map.addLayer({
+          'id': 'new-parcels',
+          'type': 'fill',
+          'source': 'parcels-to-add',
+          'layout': {},
+          'paint': {
+            'fill-color': '#088',
+            'fill-opacity': 0.8
+            }
+        })
         this.$store.commit('map/FEATURE_TOGGLE', {
           state: { selected },
           feature: JSON.parse(JSON.stringify(diff)),
@@ -675,7 +691,12 @@ export default {
           data: this.selectedParcels,
         });
       }
-
+      if (!map.getSource("parcels-to-add")) {
+        map.addSource("parcels-to-add", {
+          type: "geojson",
+          data : geoJsonTemplate
+        });
+      }
       if (!map.getSource("highlight")) {
         map.addSource("highlight", {
           type: "geojson",
