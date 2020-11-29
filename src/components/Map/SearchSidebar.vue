@@ -19,10 +19,15 @@
             <Geosearch  :operators="_certificationBodyOperators"
                         @towns-received="towns = $event"
                         @operators-received="operators = $event" />
-
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+
+      <v-flex v-if="isLoading" class="grow text-sm-center my-5">
+        <v-progress-circular indeterminate size=64 color="#457382" />
+
+        <p class="my-3">Chargement des opérateurs <i>{{ organismeCertificateur.nom }}</i>.</p>
+      </v-flex>
 
       <v-expansion-panel expand v-model="panels" class="search-results elevation-0">
         <v-expansion-panel-content :hidden="operators.length === 0" key="operators">
@@ -33,7 +38,7 @@
           <v-list two-line>
             <template v-for="(operator, i) in foundOperators">
               <v-divider v-if="i" :key="i"></v-divider>
-              <v-list-tile :key="operator.numerobio" @click="$emit('select-operator', operator.numerobio)">
+              <v-list-tile :key="operator.numerobio" @click="setOperator(operator.numerobio)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ operator.nom }}</v-list-tile-title>
 
@@ -118,10 +123,15 @@ export default {
     };
   },
 
-  computed: {
+computed: {
     ...mapState({
+      isLoading: state => state.operators.areCertificationBodyParcelsLoading,
       _certificationBodyOperators: state => state.operators.certificationBodyOperators,
     }),
+
+    numeroBio () {
+      return this.operator.numerobio
+    },
 
     foundOperators () {
       return this.operators.map(numerobio => {
@@ -129,6 +139,13 @@ export default {
           return feature.properties.numerobio === numerobio
         }).properties
       })
+    }
+  },
+
+  methods: {
+    setOperator (numeroBio) {
+      this.$store.commit("operators/SET_CURRENT", parseInt(numeroBio));
+      this.$router.push({ path: `/map/exploitation/${numeroBio}` });
     }
   },
 

@@ -1,20 +1,17 @@
 <template>
   <v-layout>
     <v-navigation-drawer app clipped stateless hide-overlay v-model="showSidebar">
-      <OperatorSidebar
-        v-if="showOperatorDetails"
+      <router-view v-if="showOperator"
         :parcels="parcelsOperator[this.currentYear]"
         :operator="operator"
         v-on:zoom-on="zoomOn"
-      ></OperatorSidebar>
+      />
 
-      <SearchSidebar
-        v-if="showSearch"
+      <SearchSidebar v-else-if="showSearch"
         :organismeCertificateur="getProfile.organismeCertificateur"
         :organismeCertificateurId="getProfile.organismeCertificateurId"
-        @select-operator="setOperator"
         @flyto="flyTo"
-      ></SearchSidebar>
+      />
     </v-navigation-drawer>
 
     <v-content>
@@ -64,6 +61,20 @@
             layerId="certification-body-clusters-count"
             :layer="layerStyle('certification-body-clusters-count')"
           />
+          <MglVectorLayer
+            v-if="isCadastreLayerSelectable"
+            before="place-continent"
+            sourceId="cadastre"
+            layerId="selectable-cadastral-parcels"
+            :layer="layerStyle('selectable-cadastral-parcels')" />
+          <MglVectorLayer
+            v-if="isCadastreLayerSelectable"
+            before="selectable-cadastral-parcels"
+            sourceId="cadastre"
+            layerId="selectable-cadastral-parcels-area"
+            :layer="layerStyle('selectable-cadastral-parcels-area')"
+            @mousemove="hoverFeature"
+            @click="toggleFeatureSelection" />
         </MglMap>
 
         <!-- Layers selector -->
@@ -75,6 +86,7 @@
 
 <script>
 import getObjectValue from "lodash/get";
+import differenceBy from "lodash/differenceBy";
 import { point, featureCollection } from "@turf/helpers";
 import bboxPolygon from "@turf/bbox-polygon";
 import bbox from "@turf/bbox";
@@ -88,6 +100,7 @@ import {
   MglGeolocateControl,
   MglScaleControl,
   MglGeojsonLayer,
+  MglVectorLayer,
 } from "vue-mapbox";
 
 import {
@@ -96,7 +109,6 @@ import {
   cartobioStyle,
   infrastructureStyle,
 } from "@/assets/styles/index.js";
-import OperatorSidebar from "@/components/Map/OperatorSidebar";
 import ParcelDetailsPopup from "@/components/ParcelDetailsPopup";
 import ExploitationPopup from "@/components/ExploitationPopup";
 import SearchSidebar from "@/components/Map/SearchSidebar";
@@ -148,7 +160,6 @@ export default {
   },
 
   components: {
-    OperatorSidebar,
     ParcelDetailsPopup,
     ExploitationPopup,
     SearchSidebar,
@@ -159,6 +170,7 @@ export default {
     IlotMarkerDirection,
     LayersPanel,
     MglGeojsonLayer,
+    MglVectorLayer
   },
   data() {
     return {
@@ -174,6 +186,8 @@ export default {
         infrastructureStyle,
         { sources: cartobioStyle.sources },
       ]),
+
+      showSidebar: true,
 
       // anonymous layers
       anonLayers: {},
@@ -249,11 +263,7 @@ export default {
   // event bus
   props: {
     numeroBio: {
-      type: String,
-      default: null,
-    },
-    pacageId: {
-      type: String,
+      type: Number,
       default: null,
     },
     latLonZoom: {
@@ -270,6 +280,8 @@ export default {
 
     this.zoom = Number(zoom);
     this.center = [Number(lon), Number(lat)];
+
+    this._operatorsP = this.$store.dispatch("operators/FETCH_OPERATORS")
   },
   computed: {
     // @see https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper
@@ -285,18 +297,16 @@ export default {
     ...mapState("user", ["apiToken"]),
     ...mapState(["currentYear"]),
     ...mapState("operators", ["certificationBodyOperators"]),
+    ...mapState("map", ["isCadastreLayerSelectable"]),
 
-    showSidebar() {
-      return this.showOperatorDetails || this.showSearch;
-    },
-
-    showOperatorDetails() {
+    showOperator() {
       return Boolean(this.isAuthenticated && this.operator.id);
     },
 
     showSearch() {
       return Boolean(this.isAuthenticated && !this.operator.id);
     },
+
     // to display the years in right order in the layers panel
     sortedYears() {
       let yearsArr = this.years.slice();
@@ -339,7 +349,7 @@ export default {
       // ideally, it would be ideal to stop referencing `this.map` and deal with a pure component instead
       this.map = map;
 
-      this.updateHash(map);
+      // this.updateHash(map);
       // map.on("moveend", () => this.updateHash(map));
       // map.on("zoomend", () => this.updateHash(map));
 
@@ -387,8 +397,10 @@ export default {
       map.on("click", "certification-body-parcels-points", (e) => {
         const { pacage } = e.features[0].properties;
         const operator = this.findOperatorByPacage(pacage);
+        const {numerobio:numeroBio} = operator.properties;
 
-        this.setOperator(operator.properties.numerobio);
+        this.$store.commit("operators/SET_CURRENT", numeroBio);
+        this.$router.push({ path: `/map/exploitation/${numeroBio}` })
       });
 
       map.on("click", "certification-body-clusters-area", (e) => {
@@ -480,6 +492,51 @@ export default {
       });
     },
 
+    hoverFeature ({ component, map, mapboxEvent }) {
+      const {point} = mapboxEvent
+      const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
+
+      const currentlyHoveredFeatures = component.getRenderedFeatures().filter(({ state }) => state.hover === true)
+      const hoveredFeatures = component.getRenderedFeatures(point)
+
+      // we "blur" other
+      differenceBy(currentlyHoveredFeatures, hoveredFeatures, 'id').forEach(({ id }) => {
+        map.setFeatureState({ source, sourceLayer, id }, { 'hover': false })
+      })
+
+      hoveredFeatures.forEach(({ id, state }) => {
+        if (state.selected === true) {
+          map.getCanvas().style.cursor = 'not-allowed'
+        }
+        else {
+          map.getCanvas().style.cursor = 'copy'
+        }
+
+        // buggy as of https://github.com/soal/vue-mapbox/pull/209
+        // will need a workaround by calling map.setFeatureState() directly
+        // component.setFeatureState(feature.id, { 'hover': true })
+        map.setFeatureState({ source, sourceLayer, id }, { 'hover': true })
+      })
+    },
+
+    toggleFeatureSelection ({ component, map, mapboxEvent }) {
+      const {point} = mapboxEvent
+
+      component.getRenderedFeatures(point).forEach(feature => {
+        const { id, state } = feature
+        const selected = !state.selected
+        const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
+
+        map.setFeatureState({ source, sourceLayer, id }, { selected })
+        this.$store.commit('map/FEATURE_TOGGLE', {
+          state: { selected },
+          feature: JSON.parse(JSON.stringify(feature)),
+          source,
+          sourceLayer
+        })
+      })
+    },
+
     computeParcelHistoryFromLngLat({ lngLat }) {
       const point = this.map.project(lngLat);
       const renderedFeatures = this.map.queryRenderedFeatures(point);
@@ -500,13 +557,13 @@ export default {
       const { lat, lng } = map.getCenter();
       const zoom = Math.floor(map.getZoom());
 
-      const { pacageId, numeroBio } = this;
+      const { numeroBio } = this;
       const latLonZoom = `@${lat},${lng},${zoom}`;
 
       this.$router
         .replace({
-          name: numeroBio ? "mapWithOperator" : "map",
-          params: { pacageId, numeroBio, latLonZoom },
+          name: "map",
+          params: { numeroBio, latLonZoom },
         })
         .catch((error) => {
           // we can safely ignore duplicate navigation
@@ -638,14 +695,6 @@ export default {
       });
     },
 
-    setOperator(numeroBio) {
-      this.$store.commit("operators/SET_CURRENT", numeroBio);
-      this.$router.push({
-        name: "mapWithOperator",
-        params: { numeroBio },
-      });
-    },
-
     displayOperatorLayer(data) {
       this.addOperatorData(data, this.currentYear);
       this.bboxOperator = bbox(data);
@@ -691,7 +740,7 @@ export default {
         return;
       }
 
-      const operatorsP = this.$store.dispatch("operators/FETCH_OPERATORS");
+      const operatorsP = this._operatorsP
 
       operatorsP.then(({ data }) => {
         map.getSource("certification-body-operators").setData(data);

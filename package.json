@@ -6,7 +6,7 @@
     "start": "vue-cli-service serve",
     "update-stats": "node bin/update-stats",
     "export": "node bin/export",
-    "serve": "npm start",
+    "serve": "vue-cli-service serve --host localhost",
     "build": "vue-cli-service build",
     "test": "npm run lint",
     "lint": "vue-cli-service lint"
@@ -20,6 +20,7 @@
     "@turf/bbox-polygon": "^6.0.1",
     "@turf/centroid": "^6.0.2",
     "@turf/circle": "^6.0.1",
+    "@turf/combine": "^6.0.1",
     "@turf/line-intersect": "^6.0.2",
     "@turf/polygon-to-line": "^6.0.3",
     "axios": "^0.19.2",
@@ -33,7 +34,7 @@
     "vue-mapbox": "^0.4.1",
     "vue-mdc-adapter": "^0.18.2",
     "vue-meta": "^2.4.0",
-    "vue-router": "^3.4.3",
+    "vue-router": "^3.4.7",
     "vuetify": "^1.5.24",
     "vuex": "^3.5.1"
   },

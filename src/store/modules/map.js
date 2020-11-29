@@ -5,6 +5,8 @@ const state = {
   center: [],
   zoomLevel: 0,
 
+  isCadastreLayerSelectable: false,
+
   // this is then reflected on the map with a reactive style state
   hoveredParcels: [],
   hoveredIlotId: null,
@@ -23,6 +25,14 @@ const actions = {
 };
 
 const mutations = {
+  makeCadastreSelectable (state) {
+    state.isCadastreLayerSelectable = true
+  },
+
+  makeCadastreUnselectable (state) {
+    state.isCadastreLayerSelectable = false
+  },
+
   CLEAR_HOVERED_FEATURE (state) {
     state.hoveredParcels = []
     state.hoveredCoordinates = null
@@ -33,6 +43,10 @@ const mutations = {
   // DERIVE_CENTER_FROM_FEATURE (state, featureOrFeatureCollection) {
 
   // },
+
+  // eslint-disable-next-line no-unused-vars
+  FEATURE_TOGGLE(state, { state:featureState, feature }) {
+  },
 
   HOVERED_FEATURE_COLLECTION(state, { numIlot, featureCollection }) {
     state.hoveredParcels = featureCollection.features.slice(0)

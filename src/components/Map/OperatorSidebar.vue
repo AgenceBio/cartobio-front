@@ -2,7 +2,7 @@
   <v-container fluid fill-height pa-0>
     <v-layout column>
       <v-toolbar dark flat prominent color="#457382">
-        <v-toolbar-side-icon @click="clearOperator">
+        <v-toolbar-side-icon :to="{ name: parentRoute }">
           <v-icon>navigate_before</v-icon>
         </v-toolbar-side-icon>
         <v-toolbar-title class="ml-0">
@@ -45,36 +45,31 @@
         </div>
       </v-flex>
 
+      <div v-if="!isLoading" class="text-md-center">
+        <v-btn v-if="$route.name !== 'new-parcel'" :to="{ name: 'new-parcel', params: { numeroBio: operator.numeroBio } }" class="mh-auto mt-3 mb-4" small round color="#b9d065">
+          <v-icon dark>add</v-icon>
+          Ajouter une parcelle
+        </v-btn>
+      </div>
 
-      <pacage-flow v-if="operator.numeroPacage === null" :operator="operator" />
-      <v-flex class="grow text-sm-center my-5" v-else-if="isLoading">
+      <v-flex v-if="isLoading" class="grow text-sm-center my-5">
         <v-progress-circular indeterminate size=64 color="#457382" />
 
         <p class="my-3">Chargement des parcelles.</p>
       </v-flex>
-      <parcels-list v-else-if="isLoaded && hasData" :parcels="parcels" :operator="operator" />
-      <parcels-submit v-else-if="isLoaded && !hasData" :operator="operator" />
 
+      <router-view v-else :isLoaded="isLoaded" :parcels="parcels" :operator="operator" />
     </v-layout>
   </v-container>
 </template>
 <script>
 import {mapActions, mapMutations, mapState} from 'vuex';
 
-import PacageFlow from './OperatorSidebarPacage.vue'
-import ParcelsList from './OperatorSidebarParcelsList.vue'
-import ParcelsSubmit from './OperatorSidebarParcelsSubmit.vue'
-
 export default {
   name: "OperatorSidebar",
 
-  components: {
-    PacageFlow,
-    ParcelsList,
-    ParcelsSubmit
-  },
-
   props: {
+    numeroBio: Number,
     // parcels is a FeatureCollection
     parcels: Object,
     operator: Object,
@@ -83,7 +78,7 @@ export default {
   data() {
     return {
       dialog: false,
-      isLoaded: true
+      isLoaded: true,
     };
   },
 
@@ -104,6 +99,18 @@ export default {
       isLoading: state => state.operators.areSingleOperatorParcelsLoading,
       baseDate: state => state.lastDataUpdate,
     }),
+    
+    parentRoute () {
+      // Both are same level routes, so we can't use history.matched property
+      let parentName;
+      if (this.$route.name === 'parcels-list') {
+        parentName = 'map';
+      }
+      else {
+        parentName = 'parcels-list'
+      }
+      return parentName;
+    },
 
     hasData () {
       return Boolean(!this.isLoading && Array.isArray(this.parcels.features) && this.parcels.features.length)
@@ -116,6 +123,14 @@ export default {
     }),
 
     ...mapActions('map', ['zoomOn']),
+  },
+
+  created () {
+    this.$store.commit("operators/SET_CURRENT", Number(this.numeroBio))
+  },
+
+  beforeDestroy () {
+    this.clearOperator();
   },
 
   watch: {
@@ -184,6 +199,7 @@ export default {
   cursor: default;
   padding: 0 12px;
 }
+
 
 .update-info {
   background: #F6F7E2;
