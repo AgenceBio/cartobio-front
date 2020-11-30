@@ -160,7 +160,7 @@ export default {
       .then((response) => this.dataAccessCount += response.data.validated_enrollment_count)
 
     // get Matomo stats for connexion events
-    let matomoURL = "https://stats.data.gouv.fr/index.php"
+    let matomoURL = "https://cartobio.org/s/api"
     let params = {
       module : "API",
       method : "Events.getAction",
