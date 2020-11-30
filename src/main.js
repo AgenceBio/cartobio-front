@@ -17,19 +17,27 @@ Vue.use(Vuetify)
 Vue.use(Storage, storageOptions)
 Vue.use(VueMeta)
 
-router.afterEach((to, from) => {
-  if (to.path && to.path !== from.path) {
-    window._paq.push(['trackPageView', to.name])
-  }
-})
-
 Vue.config.productionTip = false
 
 new Vue({
   store,
   router,
   render: (createElement) => createElement(App),
-  created() {
+  created () {
     this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
+  },
+  beforeCreated () {
+    // skip if not in production, or user is part of the demo users
+    if (window.location.hostname === 'cartobio.org' && this.$store.getters['user/isDemoAccount'] === false) {
+      router.afterEach((to, from) => {
+        if (to.path && (to.path === '/' || to.path !== from.path)) {
+          window._paq.push(['setCustomUrl', to.path])
+          window._paq.push(['setReferrerUrl', from.path])
+          window._paq.push(['enableLinkTracking'])
+          window._paq.push(['trackPageView'])
+        }
+      })
+    }
+
   }
 }).$mount('#app')
