@@ -26,7 +26,7 @@ new Vue({
   created () {
     this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
   },
-  beforeCreated () {
+  beforeCreate () {
     // skip if not in production, or user is part of the demo users
     if (window.location.hostname === 'cartobio.org' && this.$store.getters['user/isDemoAccount'] === false) {
       router.afterEach((to, from) => {
