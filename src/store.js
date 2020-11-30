@@ -23,9 +23,9 @@ const store =  new Vuex.Store({
         lastDataUpdate: '2019-05-15',
         currentYear: 2020,
         userProfile: {},
-        userCategory: {},
+        userCategory: 'Invitée',
         editMode: false,
-        categories : {admin: "Admin", oc: "OC", agri: "Agri", other: "Autre"}
+        categories : {admin: "Admin", oc: "OC", agri: "Agri", other: "Autre", guest: "Invitée"}
     },
     getters: {
         getCurrentYear: state => state.currentYear,
@@ -37,7 +37,7 @@ const store =  new Vuex.Store({
     mutations: {
         resetUser(state) {
           state.userProfile = {}
-          state.userCategory = {}
+          state.userCategory = 'Invitée'
           state.editMode = false
         },
 
