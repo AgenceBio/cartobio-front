@@ -1,9 +1,10 @@
 <template>
   <v-menu bottom offset-y>
     <template v-slot:activator="{ on }">
-      <v-btn flat v-on="on"  :data-id="user.id" :data-ocid="user.organismeCertificateurId">
-        <v-icon>person</v-icon>
+      <v-btn flat v-on="on" :data-id="user.id" :data-ocid="user.organismeCertificateurId">
+        <v-icon class="mr-2">person</v-icon>
         {{ user.nom }}
+        <span class="ml-1" v-if="isDemoAccount">(démo)</span>
       </v-btn>
     </template>
     <v-list>
@@ -20,6 +21,7 @@ import { mapGetters, mapMutations } from 'vuex';
 export default {
   name: "Profile",
   props: [],
+
   methods: {
     ...mapMutations(['resetUser']),
     ...mapMutations({
@@ -37,9 +39,8 @@ export default {
     },
   },
   computed: {
-    ...mapGetters({
-      user: 'getProfile'
-    })
+    ...mapGetters({ user: 'getProfile' }),
+    ...mapGetters('user', ['isDemoAccount'])
   }
 };
 </script>

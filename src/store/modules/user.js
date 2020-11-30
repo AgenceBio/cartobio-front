@@ -4,6 +4,21 @@ const USER_STATE_ANONYMOUS = 'ANONYMOUS'
 const USER_STATE_AUTHENTICATED = 'AUTHENTICATED'
 const USER_STATE_AUTHENTICATING = 'AUTHENTICATING'
 
+const DEMO_GROUPS = [
+  'Admin'
+]
+
+const DEMO_DOMAINS = [
+  '@beta.gouv.fr',
+  '@agencebio.org',
+  '@agriculture.gouv.fr',
+  '@yopmail.com'
+]
+
+const DEMO_EMAILS = [
+  'lucasbchini@gmail.com'
+]
+
 const state = {
   // has the first load happened?
   isLoaded: false,
@@ -52,6 +67,28 @@ const getters = {
   isAuthenticated (state, getters, rootState) {
     const {userProfile} = rootState
     return userProfile?.id ? true : false;
+  },
+
+  isDemoAccount (state, getters, rootState) {
+    const {userProfile, userCategory} = rootState
+
+    if (!userProfile?.id) {
+      return false
+    }
+
+    if (DEMO_GROUPS.includes(userCategory)) {
+      return true
+    }
+
+    if (DEMO_DOMAINS.some(suffix => String(userProfile.email).trim().endsWith(suffix))) {
+      return true
+    }
+
+    if (DEMO_EMAILS.includes(userProfile.email)) {
+      return true
+    }
+
+    return false
   },
 
   isAuthenticating (state) {
