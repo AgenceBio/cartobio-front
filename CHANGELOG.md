@@ -2,6 +2,13 @@
 title: Journal d'évolution
 ---
 
+## Semaine du 30 novembre au 4 décembre 2020
+
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  Une parcelle d'une exploitation manque à l'appel ? Ajoutez-là graphiquement depuis l'interface.
+- <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
+  La recherche se fait désormais à la fois sur le nom de l'exploitation, et le nom de la personne gérante déclarée sur le [portail de notification de l'Agence Bio][portail-notifs].
+
 ## Semaine du 14 au 18 septembre
 
 - <v-chip small color="blue lighten-3 blue--text text--darken-4">Carto</v-chip>
@@ -139,3 +146,5 @@ title: Journal d'évolution
   L'application mémorise vos informations de connexion pour une durée de 24 heures.
   Elle vous reconnaîtra automatiquement la prochaine fois que vous lui rendez visite,
   si vos informations de connexion n'ont pas expiré entre temps.
+
+[portail-notifs]: https://notification.agencebio.org/
