@@ -41,23 +41,26 @@ const searchTowns = throttle((townOrPostcode, searchIndex) => {
 const searchOperators = ({ searchText, operators}) => {
   return Promise.resolve([])
     .then(() => {
-      const words = _words(searchText.toLocaleLowerCase().trim())
+      const searchedWords = _words(searchText.toLocaleLowerCase().trim())
 
       return operators.features
         .map(({ properties }) => ({
           ...properties,
           dateCheck: properties.date_engagement || properties.date_maj,
         }))
-        .filter(({ nom }) => nom)
-        .filter(({ nom }) => {
-          return words.every(word => nom.toLocaleLowerCase().includes(word))
+        // we expect every searched words to be included in operator .name/.identity.gerant
+        // next improvement would be to use npm's talisman/metrics/{sift4,jaro-winkler} algorithm to get a score and sort on that
+        .filter(({ nom, identity }) => {
+          return searchedWords.every(word => {
+            return nom.toLocaleLowerCase().includes(word) || String(identity.gerant).toLocaleLowerCase().includes(word)
+          })
         })
         .sort((a, b) => {
           const AhasPacage = Number(Boolean(a.pacage))
           const BhasPacage = Number(Boolean(b.pacage))
           return BhasPacage - AhasPacage
         })
-        .slice(0, 5)
+        .slice(0, 10)
         .map(({ numerobio }) => numerobio)
     })
 }
