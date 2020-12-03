@@ -155,8 +155,10 @@ const noop = function noop() {};
 export default {
   name: "Map",
 
-  metaInfo: {
-    title: "Parcellaire bio",
+  metaInfo () {
+    return {
+      title: `Parcellaire bio ${this.getProfile?.organismeCertificateur.nom}`
+    }
   },
 
   components: {

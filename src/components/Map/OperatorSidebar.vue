@@ -75,6 +75,12 @@ export default {
     operator: Object,
   },
 
+  metaInfo () {
+    return {
+      title: `${this.operator.title} (numéro bio #${this.numeroBio})`
+    }
+  },
+
   data() {
     return {
       dialog: false,
@@ -99,7 +105,7 @@ export default {
       isLoading: state => state.operators.areSingleOperatorParcelsLoading,
       baseDate: state => state.lastDataUpdate,
     }),
-    
+
     parentRoute () {
       // Both are same level routes, so we can't use history.matched property
       let parentName;
