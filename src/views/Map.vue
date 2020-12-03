@@ -93,9 +93,11 @@ import bbox from "@turf/bbox";
 import centroid from "@turf/centroid";
 import { all as mergeAll } from "deepmerge";
 import isPointInPolygon from "@turf/boolean-point-in-polygon";
-import intersect from '@turf/intersect';
+// import intersect from '@turf/intersect';
 import combine from '@turf/combine';
 import difference from '@turf/difference';
+import union from '@turf/union';
+import {featureEach} from "@turf/meta";
 
 import {
   MglMap,
@@ -533,6 +535,11 @@ export default {
       })
     },
 
+    sameFeatureId(featureA, featureB) {
+      console.log(featureA.properties.id);
+      console.log(featureB);
+      return featureA.properties.id === featureB.properties.id
+    },
     toggleFeatureSelection ({ component, map, mapboxEvent }) {
       const {point} = mapboxEvent
 
@@ -546,32 +553,40 @@ export default {
         // prevent selection of cadastral parcel overlapping with operator parcel
         let diff = null;
         let intersection = null;
-
-        let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
-        intersection = intersect(combinedFeatures.features[0], feature);
-        console.log(intersection)
-        diff = difference(feature, combinedFeatures);
-        this.map.addLayer
-        console.log(diff);
-        this.map.getSource('parcels-to-add').setData({
-          'type': 'geojson',
-          'data': JSON.parse(JSON.stringify(diff)),
+        let allFeaturesIds = map.querySourceFeatures(source, {sourceLayer : sourceLayer, filter : ['==', 'id', feature.properties.id]});
+        let cadastralFeature = allFeaturesIds[0];
+        
+        featureEach({type : 'FeatureCollection', features : allFeaturesIds}, function(currentFeature, featureIndex) {
+          if (featureIndex > 0) {
+            cadastralFeature = union(cadastralFeature, currentFeature);
+          }
         });
-        this.map.addLayer({
-          'id': 'new-parcels',
-          'type': 'fill',
-          'source': 'parcels-to-add',
-          'layout': {},
-          'paint': {
-            'fill-color': '#088',
-            'fill-opacity': 0.8
-            }
-        })
+        console.log(cadastralFeature);
+        // intersection = intersect();
+
+        console.log(intersection);
+        let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
+        diff = difference(cadastralFeature, combinedFeatures.features[0]);
+        // this.map.addLayer
+        
+        map.getSource('parcels-to-add').setData(diff);
+        if (!this.map.getLayer('new-parcels')) {
+          this.map.addLayer({
+            'id': 'new-parcels',
+            'type': 'fill',
+            'source': 'parcels-to-add',
+            'layout': {},
+            'paint': {
+              'fill-color': '#088',
+              'fill-opacity': 0.8
+              }
+          })
+        }
         this.$store.commit('map/FEATURE_TOGGLE', {
           state: { selected },
           feature: JSON.parse(JSON.stringify(diff)),
-          source,
-          sourceLayer
+          source : 'parcels-to-add',
+          layer : 'new-parcels'
         })
       })
     },
