@@ -72,7 +72,7 @@
 
     <v-layout column align-center justify-space-between my-4>
       <p>
-        <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
+        <v-btn :href="mailto" @click="trackEvent(['mailto', 'landing-oc:question', 'bottom'])" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">email</v-icon>
           Contactez-nous
         </v-btn>
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
   name: "LandingCertificationBody",
@@ -127,6 +127,7 @@ export default {
   },
 
   methods: {
+    ...mapActions("user", ["trackEvent"]),
     ...mapMutations({
       startLogin: 'user/LOGIN'
     })

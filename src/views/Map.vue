@@ -115,7 +115,7 @@ import SearchSidebar from "@/components/Map/SearchSidebar";
 import IlotMarkerDirection from "@/components/IlotMarkerDirection";
 import LayersPanel from "@/components/Map/LayersPanel";
 
-import { mapGetters, mapState, mapMutations } from "vuex";
+import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
 
 function queryOperatorParcels(operatorParcels, [lng, lat]) {
   const p = point([lng, lat]);
@@ -335,6 +335,8 @@ export default {
       setActiveParcel: "map/HOVERED_FEATURE",
     }),
 
+    ...mapActions("user", ["trackEvent"]),
+
     /**
      * @param  {String} styleId [description]
      * @return {Object<Mapbox.Layer>}
@@ -352,7 +354,7 @@ export default {
       this.map = map;
 
       // this.updateHash(map);
-      // map.on("moveend", () => this.updateHash(map));
+      map.on("moveend", () => this.trackEvent(["map", "move"]));
       // map.on("zoomend", () => this.updateHash(map));
 
       // add map sources
@@ -361,6 +363,7 @@ export default {
         this.setupCertificationBodyLayers(map);
 
         if (this.numeroBio) {
+          this.trackEvent(["operator", "select", "via:refresh"])
           this.$store.commit("operators/SET_CURRENT", parseInt(this.numeroBio));
         }
       }
@@ -401,6 +404,7 @@ export default {
         const operator = this.findOperatorByPacage(pacage);
         const {numerobio:numeroBio} = operator.properties;
 
+        this.trackEvent(["operator", "select", "via:map"])
         this.$store.commit("operators/SET_CURRENT", numeroBio);
         this.$router.push({ path: `/map/exploitation/${numeroBio}` })
       });
@@ -414,8 +418,11 @@ export default {
         // if it's a large cluster, we will zoom at a level it splits in at least 2 other clusters
         map
           .getSource("certification-body-operators")
-          .getClusterExpansionZoom(id, (error, zoom) => {
-            map.flyTo({ center, zoom: Math.min(10, zoom) });
+          .getClusterExpansionZoom(id, (error, newZoom) => {
+            const zoom = Math.min(10, newZoom)
+
+            this.trackEvent(["map", "cluster-zoom", zoom])
+            map.flyTo({ center, zoom });
           });
       });
 
@@ -444,6 +451,7 @@ export default {
             );
           }
 
+          this.trackEvent(["map", `${source}-hover`])
           map.setFeatureState({ id, source, sourceLayer }, { hover: true });
           hoveredFeatureId = id;
         });
@@ -489,6 +497,7 @@ export default {
       // a components asks to zoom on a Feature or on a FeatureCollection
       this.$store.subscribeAction((action) => {
         if (action.type === "map/zoomOn") {
+          this.trackEvent(["operator", "view-parcel", "via:zoom-icon"])
           this.zoomOn(action.payload);
         }
       });
@@ -989,12 +998,6 @@ export default {
     operator(operator, previousOperator) {
       if (this.map) {
         if (operator.id && operator.id !== previousOperator.id) {
-          window._paq.push([
-            "trackEvent",
-            "parcels",
-            "display-on-map",
-            operator.numeroBio,
-          ]);
           this.loadLayers(this.map);
           this.setUpMapOperator();
         } else if (!operator.id && previousOperator.id) {

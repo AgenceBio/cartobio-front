@@ -1,6 +1,6 @@
 <template>
   <v-flex class="layers-panel">
-    <v-expansion-panel expand :readonly="true" value="[true]">
+    <v-expansion-panel expand :readonly="true" :value="[true]">
       <v-expansion-panel-content hide-actions>
         <template v-slot:header>
           <h2 class="expansion-title font-weight-medium">
@@ -24,6 +24,7 @@
         <v-expansion-panel v-model="expansionValue" focusable>
           <v-layout column>
             <v-flex grow>
+              <!-- LAYER_MODES === 0 -->
               <v-expansion-panel-content>
                 <template v-slot:header>
                   <h3 class="subheading font-weight-medium ">Cultures environnantes</h3>
@@ -49,6 +50,7 @@
                 </ul>
               </v-expansion-panel-content>
             </v-flex>
+            <!-- LAYER_MODES === 1 -->
             <v-flex grow>
               <v-expansion-panel-content>
                 <template v-slot:header>
@@ -70,7 +72,13 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
+
+const LAYER_MODES = new Map([
+  [null, 'Aucun'],
+  [0, 'Cultures environnantes'],
+  [1, 'Historique de conversion']
+])
 
 export default {
   name: "LayersPanel",
@@ -84,10 +92,14 @@ export default {
   },
   methods: {
     ...mapMutations("exploitationView", ["changeViewMode"]),
+    ...mapActions("user", ["trackEvent"])
   },
   watch : {
     expansionValue(newVal) {
-      this.changeViewMode(newVal);
+      this.changeViewMode(newVal)
+
+      const layerMode = LAYER_MODES.get(newVal)
+      this.trackEvent(["operator", "layer-mode", layerMode])
     }
   },
   destroyed() {

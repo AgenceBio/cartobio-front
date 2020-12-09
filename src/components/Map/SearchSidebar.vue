@@ -96,7 +96,7 @@
   </v-container>
 </template>
 <script>
-import {mapState} from 'vuex';
+import {mapState, mapActions} from 'vuex';
 import Geosearch from "@/components/Geosearch";
 
 export default {
@@ -143,7 +143,10 @@ computed: {
   },
 
   methods: {
+    ...mapActions("user", ["trackEvent"]),
+
     setOperator (numeroBio) {
+      this.trackEvent(["operator", "select", "via:search"])
       this.$store.commit("operators/SET_CURRENT", parseInt(numeroBio));
       this.$router.push({ path: `/map/exploitation/${numeroBio}` });
     }

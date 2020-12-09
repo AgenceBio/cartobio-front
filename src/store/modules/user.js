@@ -46,6 +46,22 @@ const actions = {
         return userData
       });
   },
+
+  trackEvent ({ getters }, categoryActionName) {
+    const { isAuthenticated, isDemoAccount } = getters
+
+    if (isAuthenticated && isDemoAccount === false) {
+      window._paq.push(['trackEvent', ...categoryActionName])
+    }
+  },
+
+  trackSiteSearch ({ getters }, searchData) {
+    const { isAuthenticated, isDemoAccount } = getters
+
+    if (isAuthenticated && isDemoAccount === false) {
+      window._paq.push(['trackEvent', ...searchData])
+    }
+  },
 };
 
 const mutations = {

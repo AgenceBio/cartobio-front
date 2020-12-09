@@ -21,11 +21,11 @@
         <v-list-tile-action><v-icon>code</v-icon></v-list-tile-action>
         <v-list-tile-title>Code source ouvert</v-list-tile-title>
       </v-list-tile>
-      <v-list-tile href="mailto:cartobio@beta.gouv.fr?subject=Je%20rencontre%20un%20problème">
+      <v-list-tile @click="trackEvent(['mailto', 'about:problem'])" href="mailto:cartobio@beta.gouv.fr?subject=Je%20rencontre%20un%20problème">
         <v-list-tile-action><v-icon>mail</v-icon></v-list-tile-action>
         <v-list-tile-title>Vous rencontrez un problème ?</v-list-tile-title>
       </v-list-tile>
-      <v-list-tile href="mailto:cartobio@beta.gouv.fr">
+      <v-list-tile @click="trackEvent(['mailto', 'about:email'])" href="mailto:cartobio@beta.gouv.fr">
         <v-list-tile-action><v-icon>mail</v-icon></v-list-tile-action>
         <v-list-tile-title>Contactez-nous</v-list-tile-title>
       </v-list-tile>
@@ -34,12 +34,18 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
   name: "AboutMenu",
+
   data: () => {
     return {
       menu: false
     }
+  },
+
+  methods: {
+    ...mapActions("user", ["trackEvent"]),
   }
 };
 </script>

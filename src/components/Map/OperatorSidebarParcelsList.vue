@@ -81,6 +81,7 @@ export default {
     }),
 
     ...mapActions('map', ['zoomOn']),
+    ...mapActions("user", ["trackEvent"]),
 
     sortIlots (features) {
       return features.sort((featureA, featureB) => {
@@ -91,6 +92,8 @@ export default {
     },
 
     downloadCSV() {
+      this.trackEvent(["operator", "csv-download"])
+
       this.snackbar = true;
 
       const rows = [ [
@@ -127,13 +130,12 @@ export default {
 
 
       try {
-        const {numeroBio, title='cartobio-export'} = this.operator;
-        window._paq.push(['trackEvent', 'parcels', 'download', numeroBio]);
+        const {title='cartobio-export'} = this.operator;
         this.convertToCsvAndDownload(`${title}.csv`, rows);
       }
       catch (error) {
         console.error(error)
-        window._paq.push(['trackEvent', 'parcels', 'error:download', error]);
+        this.trackEvent(['operator', 'csv-download:error']);
       }
     },
 

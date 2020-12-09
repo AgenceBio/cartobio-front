@@ -79,7 +79,7 @@ export default {
   }),
 
   methods: {
-    ...mapActions('user', ['setProfile']),
+    ...mapActions('user', ['setProfile', 'trackEvent']),
     ...mapMutations({
       userLogout: 'user/LOGOUT'
     }),
@@ -106,23 +106,16 @@ export default {
           return this.setProfile(cartobioToken);
         })
         .then(userData => {
-           window._paq.push(['trackEvent',
-            "login", // event category : login
-            "Success", // event Action : success
-            userData.organismeCertificateurId ? userData.organismeCertificateur.nom : "Utilisateur non OC" // event name : name of the OC
-          ]);
             window._paq.push(['setUserId', userData.userId])
             window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
             window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
+
+            this.trackEvent(["login", "Success", userData.organismeCertificateurId ? userData.organismeCertificateur.nom : "Utilisateur non OC"]);
         })
         .catch(error => {
           console.error(error);
           this.loginFailed = true;
-          window._paq.push(['trackEvent',
-            "login",
-            "Failed",
-            error
-          ]);
+          this.trackEvent(["login", "Failed", error]);
         })
         .finally(() => this.loading = false)
     }
