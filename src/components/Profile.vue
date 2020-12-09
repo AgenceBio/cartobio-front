@@ -34,6 +34,11 @@ export default {
       this.userLogout()
       this.resetOperators()
 
+      window._paq.push(['resetUserId'])
+      window._paq.push(['deleteCustomVariable', 1, "visit"])
+      window._paq.push(['deleteCustomVariable', 2, "visit"])
+      window._paq.push(['appendToTrackingUrl', ''])
+
       this.$ls.remove("token")
       this.$ls.remove("cartobioToken")
     },
