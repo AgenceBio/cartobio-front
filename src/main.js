@@ -15,7 +15,9 @@ let storageOptions = {
 
 Vue.use(Vuetify)
 Vue.use(Storage, storageOptions)
-Vue.use(VueMeta)
+Vue.use(VueMeta, {
+  refreshOnceOnNavigation: true
+})
 
 Vue.config.productionTip = false
 
@@ -31,6 +33,15 @@ new Vue({
     if (window.location.hostname === 'cartobio.org' && this.$store.getters['user/isDemoAccount'] === false) {
       router.afterEach((to, from) => {
         if (to.path && (to.path === '/' || to.path !== from.path)) {
+          const {userProfile: userData} = this.$store.state
+
+          if (userData.userId) {
+            window._paq.push(['setUserId', userData.userId])
+            window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
+            window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
+          }
+
+          window._paq.push(['setDocumentTitle', to.name])
           window._paq.push(['setCustomUrl', to.path])
           window._paq.push(['setReferrerUrl', from.path])
           window._paq.push(['enableLinkTracking'])

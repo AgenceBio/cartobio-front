@@ -77,7 +77,7 @@
           Remplir une demande de données
         </v-btn>
 
-        <v-btn :href="mailto" large outline round color="primary" class="mb-5 mt-4">
+        <v-btn :href="mailto" @click="trackEvent(['mailto', 'landing-territory:question', 'bottom'])" large outline round color="primary" class="mb-5 mt-4">
           <v-icon class="mr-2">email</v-icon>
           Un doute, une question ?
         </v-btn>
@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 
 export default {
   name: "LandingCertificationBody",
@@ -148,6 +149,10 @@ export default {
 
       ]
     }
+  },
+
+  methods: {
+    ...mapActions("user", ["trackEvent"]),
   }
 };
 </script>

@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
+import {mapMutations, mapState, mapActions} from 'vuex';
 import combine from '@turf/combine';
 import {post} from 'axios';
 import {codes} from '@/modules/codes-cultures/pac.js';
@@ -153,6 +153,8 @@ export default {
 
   mounted () {
     this.makeCadastreSelectable()
+    this.trackEvent(["operator", "add-parcel", "state:start"])
+
     this._unsubscribeFromStore = this.$store.subscribe((mutation) => {
       if (mutation.type === 'map/FEATURE_TOGGLE' && mutation.payload.source === 'cadastre') {
         const foundIndex = this.parcel.cadastralReferences.findIndex(({id}) => id === mutation.payload.feature.id)
@@ -175,6 +177,7 @@ export default {
 
   methods: {
     ...mapMutations('map', ['makeCadastreSelectable', 'makeCadastreUnselectable']),
+    ...mapActions("user", ["trackEvent"]),
 
     beautifyNumber (number) {
       return number.toLocaleString('fr', {
@@ -222,6 +225,7 @@ export default {
         this.unsetFeatures()
         this.$refs.form.reset()
         this.isSaved = true
+        this.trackEvent(["operator", "add-parcel", "state:added"])
       }, console.error).finally(() => {
         this.isProcessing = false
       })

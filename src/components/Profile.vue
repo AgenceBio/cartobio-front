@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
   name: "Profile",
@@ -28,11 +28,19 @@ export default {
       resetOperators: 'operators/CLEAR',
       userLogout: 'user/LOGOUT'
     }),
+    ...mapActions("user", ["trackEvent"]),
 
     logout () {
       this.resetUser()
       this.userLogout()
       this.resetOperators()
+
+      this.trackAction(['logout'])
+
+      window._paq.push(['resetUserId'])
+      window._paq.push(['deleteCustomVariable', 1, "visit"])
+      window._paq.push(['deleteCustomVariable', 2, "visit"])
+      window._paq.push(['appendToTrackingUrl', ''])
 
       this.$ls.remove("token")
       this.$ls.remove("cartobioToken")

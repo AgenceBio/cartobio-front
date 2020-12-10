@@ -11,7 +11,7 @@
 
 <script>
 import {get} from "axios";
-import {mapState} from 'vuex';
+import {mapState, mapActions} from 'vuex';
 import throttle from "lodash/throttle";
 import _words from "lodash/words";
 
@@ -94,6 +94,8 @@ export default {
   },
   components: {},
   methods: {
+    ...mapActions("user", ["trackSiteSearch"]),
+
     clear () {
       this.$emit('towns-received', [])
       this.$emit('operators-received', [])
@@ -120,7 +122,7 @@ export default {
           this.lastSearchIndex = searchIndex
           this.$emit('towns-received', towns)
 
-          window._paq.push(['trackSiteSearch', this.searchText, 'towns', towns.length])
+          this.trackSiteSearch([this.searchText, 'towns', towns.length])
         }
       })
 
@@ -128,8 +130,8 @@ export default {
         this.$emit('operators-received', operators)
 
         const operatorsWithNoPacage = operators.filter(({ numeroPacage }) => !numeroPacage)
-        window._paq.push(['trackSiteSearch', this.searchText, 'operators:total', operators.length])
-        window._paq.push(['trackSiteSearch', this.searchText, 'operators:no-pacage', operatorsWithNoPacage.length])
+        this.trackSiteSearch([this.searchText, 'operators:total', operators.length])
+        this.trackSiteSearch([this.searchText, 'operators:no-pacage', operatorsWithNoPacage.length])
       })
 
       Promise.allSettled([townsP, operatorsP])

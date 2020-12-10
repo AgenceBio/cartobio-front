@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 import getObjectValue from 'lodash/get'
 
 export default {
@@ -50,8 +51,13 @@ export default {
     };
   },
 
+  mounted () {
+    this.trackEvent(["operator", "csv-preview"])
+  },
+
   methods: {
     getObjectValue,
+    ...mapActions("user", ["trackEvent"]),
 
     // duplicate of ParcelsList.vue
     sortIlots (items) {
