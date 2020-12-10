@@ -35,7 +35,7 @@ export default {
       this.userLogout()
       this.resetOperators()
 
-      this.trackAction(['logout'])
+      this.trackEvent(['logout'])
 
       window._paq.push(['resetUserId'])
       window._paq.push(['deleteCustomVariable', 1, "visit"])
