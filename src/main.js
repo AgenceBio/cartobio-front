@@ -26,29 +26,27 @@ new Vue({
   router,
   render: (createElement) => createElement(App),
   created () {
-    this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
-  },
-  beforeCreate () {
-    // skip if not in production, or user is part of the demo users
-    if (window.location.hostname === 'cartobio.org' && this.$store.getters['user/isDemoAccount'] === false) {
-      router.afterEach((to, from) => {
-        if (to.path && (to.path === '/' || to.path !== from.path)) {
-          const {userProfile: userData} = this.$store.state
+    this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken')).then(userData => {
+      const isDemoAccount = this.$store.getters['user/isDemoAccount']
+      const isProduction = window.location.hostname === 'cartobio.org'
 
-          if (userData.userId) {
-            window._paq.push(['setUserId', userData.userId])
-            window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
-            window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
-          }
+      if (userData.userId) {
+        window._paq.push(['setUserId', userData.userId])
+        window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
+        window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
+      }
 
-          window._paq.push(['setDocumentTitle', to.name])
-          window._paq.push(['setCustomUrl', to.path])
-          window._paq.push(['setReferrerUrl', from.path])
-          window._paq.push(['enableLinkTracking'])
-          window._paq.push(['trackPageView'])
-        }
-      })
-    }
+      // skip if not in production, or user is part of the demo users
+      const logRoute = !isProduction || isDemoAccount ? () => {} : (to) => {
+        window._paq.push(['setDocumentTitle', to.name])
+        window._paq.push(['setCustomUrl', to.path])
+        window._paq.push(['enableLinkTracking'])
+        window._paq.push(['trackPageView'])
+      }
 
+      // we log the initial rendering, and subsequent navigations
+      logRoute(this.$route)
+      router.afterEach((to) => logRoute(to))
+    })
   }
 }).$mount('#app')
