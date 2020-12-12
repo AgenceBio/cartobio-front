@@ -11,7 +11,7 @@
     <v-list>
       <v-list-tile to="/changelog">
         <v-list-tile-action><v-icon>star</v-icon></v-list-tile-action>
-        <v-list-tile-title>Nouveautés</v-list-tile-title>
+        <v-list-tile-title>Nouveautés (version {{version}})</v-list-tile-title>
       </v-list-tile>
       <v-list-tile to="/stats">
         <v-list-tile-action><v-icon>bar_chart</v-icon></v-list-tile-action>
@@ -35,12 +35,15 @@
 
 <script>
 import {mapActions} from 'vuex'
+import {version} from '../../package.json'
+
 export default {
   name: "AboutMenu",
 
   data: () => {
     return {
-      menu: false
+      menu: false,
+      version
     }
   },
 
