@@ -29,11 +29,11 @@ new Vue({
     const p = this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
 
     p.then(userData => {
-      console.log(userData)
+      console.log(userData, this.$store.getters)
       const isDemoAccount = this.$store.getters['user/isDemoAccount']
       const isProduction = document.location.hostname === 'cartobio.org'
 
-      if (isDemoAccount === false) {
+      if (userData?.userId && isDemoAccount === false) {
         window._paq.push(['setUserId', userData.userId])
         window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
         window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
