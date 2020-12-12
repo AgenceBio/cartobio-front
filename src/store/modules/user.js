@@ -59,7 +59,7 @@ const actions = {
     const { isAuthenticated, isDemoAccount } = getters
 
     if (isAuthenticated && isDemoAccount === false) {
-      window._paq.push(['trackEvent', ...searchData])
+      window._paq.push(['trackSiteSearch', ...searchData])
     }
   },
 };
