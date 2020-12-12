@@ -30,14 +30,14 @@ new Vue({
       const isDemoAccount = this.$store.getters['user/isDemoAccount']
       const isProduction = window.location.hostname === 'cartobio.org'
 
-      if (userData.userId) {
+      if (userData?.userId) {
         window._paq.push(['setUserId', userData.userId])
         window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
         window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
       }
 
       // skip if not in production, or user is part of the demo users
-      const logRoute = !isProduction || isDemoAccount ? () => {} : (to) => {
+      const logRoute = (!isProduction || isDemoAccount) ? () => {} : (to) => {
         window._paq.push(['setDocumentTitle', to.name])
         window._paq.push(['setCustomUrl', to.path])
         window._paq.push(['enableLinkTracking'])
