@@ -29,7 +29,9 @@ new Vue({
     const p = this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
 
     p.then(userData => {
+      console.log(userData)
       const isDemoAccount = this.$store.getters['user/isDemoAccount']
+      const isProduction = document.location.hostname === 'cartobio.org'
 
       if (isDemoAccount === false) {
         window._paq.push(['setUserId', userData.userId])
@@ -38,7 +40,7 @@ new Vue({
       }
 
       // skip if not in production, or user is part of the demo users
-      if (isDemoAccount === false) {
+      if (isProduction && isDemoAccount === false) {
         const logRoute = (to) => {
           window._paq.push(['setDocumentTitle', to.name])
           window._paq.push(['setCustomUrl', to.path])

@@ -30,10 +30,10 @@ const state = {
 
 const actions = {
   setProfile ({ commit, state }, cartobioToken) {
-    // to be taken out, and promote 'user/LOGOUT' mutation
     if (!cartobioToken) {
       state.apiToken = null
-      return null;
+
+      return Promise.resolve(null);
     }
 
     return Promise.resolve(cartobioToken)
