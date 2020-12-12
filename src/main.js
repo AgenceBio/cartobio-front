@@ -26,17 +26,19 @@ new Vue({
   router,
   render: (createElement) => createElement(App),
   created () {
-    this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken')).then(userData => {
+    const p = this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
+
+    p.then(userData => {
       const isDemoAccount = this.$store.getters['user/isDemoAccount']
 
-      if (userData?.userId) {
+      if (isDemoAccount === false) {
         window._paq.push(['setUserId', userData.userId])
         window._paq.push(['setCustomVariable', 1, "oc", userData.organismeCertificateur?.nom ?? "", "visit"])
         window._paq.push(['setCustomVariable', 2, "group", userData.mainGroup?.nom ?? "", "visit"])
       }
 
       // skip if not in production, or user is part of the demo users
-      if (!isDemoAccount) {
+      if (isDemoAccount === false) {
         const logRoute = (to) => {
           window._paq.push(['setDocumentTitle', to.name])
           window._paq.push(['setCustomUrl', to.path])
