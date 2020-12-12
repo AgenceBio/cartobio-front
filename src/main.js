@@ -28,7 +28,6 @@ new Vue({
   created () {
     this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken')).then(userData => {
       const isDemoAccount = this.$store.getters['user/isDemoAccount']
-      const isProduction = window.location.hostname === 'cartobio.org'
 
       if (userData?.userId) {
         window._paq.push(['setUserId', userData.userId])
@@ -37,16 +36,17 @@ new Vue({
       }
 
       // skip if not in production, or user is part of the demo users
-      const logRoute = (!isProduction || isDemoAccount) ? () => {} : (to) => {
-        window._paq.push(['setDocumentTitle', to.name])
-        window._paq.push(['setCustomUrl', to.path])
-        window._paq.push(['enableLinkTracking'])
-        window._paq.push(['trackPageView'])
-      }
+      if (!isDemoAccount) {
+        const logRoute = (to) => {
+          window._paq.push(['setDocumentTitle', to.name])
+          window._paq.push(['setCustomUrl', to.path])
+          window._paq.push(['trackPageView'])
+        }
 
-      // we log the initial rendering, and subsequent navigations
-      logRoute(this.$route)
-      router.afterEach((to) => logRoute(to))
+        // we log the initial rendering, and subsequent navigations
+        logRoute(this.$route)
+        router.afterEach((to) => logRoute(to))
+      }
     })
   }
 }).$mount('#app')

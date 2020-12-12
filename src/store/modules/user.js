@@ -1,5 +1,7 @@
 import {parseJwt} from '@/api/user.js';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+
 const USER_STATE_ANONYMOUS = 'ANONYMOUS'
 const USER_STATE_AUTHENTICATED = 'AUTHENTICATED'
 const USER_STATE_AUTHENTICATING = 'AUTHENTICATING'
@@ -50,7 +52,7 @@ const actions = {
   trackEvent ({ getters }, categoryActionName) {
     const { isAuthenticated, isDemoAccount } = getters
 
-    if (isAuthenticated && isDemoAccount === false) {
+    if (IS_PRODUCTION && isAuthenticated && !isDemoAccount) {
       window._paq.push(['trackEvent', ...categoryActionName])
     }
   },
@@ -58,7 +60,7 @@ const actions = {
   trackSiteSearch ({ getters }, searchData) {
     const { isAuthenticated, isDemoAccount } = getters
 
-    if (isAuthenticated && isDemoAccount === false) {
+    if (IS_PRODUCTION && isAuthenticated && !isDemoAccount) {
       window._paq.push(['trackSiteSearch', ...searchData])
     }
   },
