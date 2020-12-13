@@ -29,7 +29,6 @@ new Vue({
     const p = this.$store.dispatch('user/setProfile', this.$ls.get('cartobioToken'))
 
     p.then(userData => {
-      console.log(userData, this.$store.getters)
       const isDemoAccount = this.$store.getters['user/isDemoAccount']
       const isProduction = document.location.hostname === 'cartobio.org'
 
