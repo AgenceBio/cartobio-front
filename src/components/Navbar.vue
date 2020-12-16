@@ -1,6 +1,6 @@
 <template>
   <v-toolbar color="#b9d065" clipped-left app>
-    <v-btn flat :to="{name:'home'}" title="Retour à l'accueil" active-class="none">
+    <v-btn flat to="/" title="Retour à l'accueil" active-class="none">
       <svg class="logo">
         <use xlink:href="@/assets/logos-sprite.svg#cartobio"></use>
       </svg>
@@ -10,7 +10,7 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn v-if="isAuthenticated" active-class="active" to="map" flat>
+      <v-btn v-if="isAuthenticated" active-class="active" to="/map" flat>
         <v-icon class="mr-2">public</v-icon>
         Carte des exploitations
       </v-btn>
