@@ -4,7 +4,9 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Stats from './views/Stats.vue'
 import Changelog from './views/Changelog.vue'
+import PageNotFound from './views/PageNotFound.vue'
 import ApiDocumentation from './views/Api.vue'
+
 import LandingTerritory from './views/Landing/Territory.vue'
 import LandingCertificationBody from './views/Landing/CertificationBody.vue'
 
@@ -34,7 +36,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/map:latLonZoom(@[0-9.-]+,[0-9.-]+,[0-9]+)?',
+      path: '/map',
       props: true,
       name: 'map',
       component: () => import(/* webpackChunkName: "map" */ './views/AppLayout.vue'),
@@ -86,6 +88,7 @@ export default new Router({
         { path: '/api', name: 'api', component: ApiDocumentation },
         { path: '/features/organismes-certification-bio', name: 'landing-oc', component: LandingCertificationBody },
         { path: '/features/territoires', name: 'landing-territoires', component: LandingTerritory },
+        { path: '*', name: '404', component: PageNotFound }
       ]
     },
   ]
