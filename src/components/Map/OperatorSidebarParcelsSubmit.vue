@@ -156,7 +156,7 @@ export default {
     this.trackEvent(["operator", "add-parcel", "state:start"])
 
     this._unsubscribeFromStore = this.$store.subscribe((mutation) => {
-      if (mutation.type === 'map/FEATURE_TOGGLE' && mutation.payload.source === 'cadastre') {
+      if (mutation.type === 'map/FEATURE_TOGGLE' && mutation.payload.source === 'parcels-to-add') {
         const foundIndex = this.parcel.cadastralReferences.findIndex(({id}) => id === mutation.payload.feature.id)
 
         if (foundIndex === -1) {
@@ -165,6 +165,7 @@ export default {
         else {
           this.$set(this.parcel, 'cadastralReferences', this.parcel.cadastralReferences.filter((feature, index) => index !== foundIndex))
         }
+        console.log(this.parcel);
       }
     })
   },
@@ -245,6 +246,7 @@ export default {
     },
 
     hasCadastralReferences () {
+      console.log(this.parcel);
       return this.parcel.cadastralReferences.length > 0
     },
 

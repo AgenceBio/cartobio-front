@@ -568,9 +568,7 @@ export default {
         let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
         diff = difference(cadastralFeature, combinedFeatures.features[0]);
         let data = map.getSource('parcels-to-add')._data;
-        console.log(data);
         data.features.push(diff);
-        console.log(diff);
         map.getSource('parcels-to-add').setData(data);
         if (!this.map.getLayer('new-parcels')) {
           this.map.addLayer({
