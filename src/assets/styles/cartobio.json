@@ -149,16 +149,12 @@
       "paint": {
         "line-color": [
           "case",
-          ["boolean", ["feature-state", "selected"], false],
-          "lightgreen",
           ["boolean", ["feature-state", "hover"], false],
           "lightblue",
           "white"
         ],
         "line-opacity": [
           "case",
-          ["boolean", ["feature-state", "selected"], false],
-          1,
           ["boolean", ["feature-state", "hover"], false],
           0.8,
           0.5
@@ -181,16 +177,12 @@
       "paint": {
         "fill-color": [
           "case",
-          ["boolean", ["feature-state", "selected"], false],
-          "lightgreen",
           ["boolean", ["feature-state", "hover"], false],
           "lightblue",
           "transparent"
         ],
         "fill-opacity": [
           "case",
-          ["boolean", ["feature-state", "selected"], false],
-          1,
           ["boolean", ["feature-state", "hover"], false],
           0.8,
           0.5
@@ -201,7 +193,6 @@
       "id": "new-parcels",
       "type": "line",
       "source": "parcels-to-add",
-      "source-layer": "parcelles",
       "minzoom": 11,
       "maxzoom": 24,
       "paint": {
@@ -209,16 +200,12 @@
           "case",
           ["boolean", ["feature-state", "selected"], false],
           "lightgreen",
-          ["boolean", ["feature-state", "hover"], false],
-          "lightblue",
-          "white"
+          "transparent"
         ],
         "line-opacity": [
           "case",
           ["boolean", ["feature-state", "selected"], false],
           1,
-          ["boolean", ["feature-state", "hover"], false],
-          0.8,
           0.5
         ],
         "line-width": [
@@ -233,7 +220,6 @@
       "id": "new-parcels-area",
       "type": "fill",
       "source": "parcels-to-add",
-      "source-layer": "parcelles",
       "minzoom": 11,
       "maxzoom": 24,
       "paint": {
@@ -241,16 +227,12 @@
           "case",
           ["boolean", ["feature-state", "selected"], false],
           "lightgreen",
-          ["boolean", ["feature-state", "hover"], false],
-          "lightblue",
           "transparent"
         ],
         "fill-opacity": [
           "case",
           ["boolean", ["feature-state", "selected"], false],
           1,
-          ["boolean", ["feature-state", "hover"], false],
-          0.8,
           0.5
         ]
       }

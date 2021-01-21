@@ -75,6 +75,18 @@
             :layer="layerStyle('selectable-cadastral-parcels-area')"
             @mousemove="hoverFeature"
             @click="toggleFeatureSelection" />
+          <MglVectorLayer
+            v-if="isCadastreLayerSelectable"
+            before="place-continent"
+            sourceId="parcels-to-add"
+            layerId="new-parcels"
+            :layer="layerStyle('new-parcels')" />
+          <MglVectorLayer
+            v-if="isCadastreLayerSelectable"
+            before="new-parcels"
+            sourceId="parcels-to-add"
+            layerId="new-parcels-area"
+            :layer="layerStyle('new-parcels-area')" />
         </MglMap>
 
         <!-- Layers selector -->
@@ -547,41 +559,33 @@ export default {
         const { id, state } = feature
         const selected = !state.selected
         const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
-
         map.setFeatureState({ source, sourceLayer, id }, { selected })
-
         // prevent selection of cadastral parcel overlapping with operator parcel
         let diff = null;
         let intersection = null;
         let allFeaturesIds = map.querySourceFeatures(source, {sourceLayer : sourceLayer, filter : ['==', 'id', feature.properties.id]});
         let cadastralFeature = allFeaturesIds[0];
-        
+        let properties = allFeaturesIds[0].properties;
+
         featureEach({type : 'FeatureCollection', features : allFeaturesIds}, function(currentFeature, featureIndex) {
           if (featureIndex > 0) {
             cadastralFeature = union(cadastralFeature, currentFeature);
           }
         });
-        console.log(cadastralFeature);
-        // intersection = intersect();
+        // ensure cadastralFeature have properties
+        cadastralFeature.properties = properties;
 
-        console.log(intersection);
         let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
         diff = difference(cadastralFeature, combinedFeatures.features[0]);
         let data = map.getSource('parcels-to-add')._data;
-        data.features.push(diff);
-        map.getSource('parcels-to-add').setData(data);
-        if (!this.map.getLayer('new-parcels')) {
-          this.map.addLayer({
-            'id': 'new-parcels',
-            'type': 'fill',
-            'source': 'parcels-to-add',
-            'layout': {},
-            'paint': {
-              'fill-color': '#088',
-              'fill-opacity': 0.8
-              }
-          })
+        diff.id = diff.properties.id;
+        if (!data.features.find(el => el.id === diff.id)) {
+          data.features.push(diff);
+          map.getSource('parcels-to-add').setData(data);
         }
+
+        map.setFeatureState({ source: 'parcels-to-add', id: diff.id }, { selected : selected })
+        
         this.$store.commit('map/FEATURE_TOGGLE', {
           state: { selected },
           feature: JSON.parse(JSON.stringify(diff)),

@@ -165,7 +165,6 @@ export default {
         else {
           this.$set(this.parcel, 'cadastralReferences', this.parcel.cadastralReferences.filter((feature, index) => index !== foundIndex))
         }
-        console.log(this.parcel);
       }
     })
   },
@@ -246,7 +245,6 @@ export default {
     },
 
     hasCadastralReferences () {
-      console.log(this.parcel);
       return this.parcel.cadastralReferences.length > 0
     },
 
