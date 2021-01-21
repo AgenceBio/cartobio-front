@@ -149,18 +149,24 @@
       "paint": {
         "line-color": [
           "case",
+          ["boolean", ["feature-state", "selected"], false],
+          "lightgreen",
           ["boolean", ["feature-state", "hover"], false],
           "lightblue",
           "white"
         ],
         "line-opacity": [
           "case",
+          ["boolean", ["feature-state", "selected"], false],
+          1,
           ["boolean", ["feature-state", "hover"], false],
           0.8,
           0.5
         ],
         "line-width": [
           "case",
+          ["boolean", ["feature-state", "selected"], false],
+          3,
           ["boolean", ["feature-state", "selected"], false],
           3,
           1
@@ -177,12 +183,16 @@
       "paint": {
         "fill-color": [
           "case",
+          ["boolean", ["feature-state", "selected"], false],
+          "lightgreen",
           ["boolean", ["feature-state", "hover"], false],
           "lightblue",
           "transparent"
         ],
         "fill-opacity": [
           "case",
+          ["boolean", ["feature-state", "selected"], false],
+          1,
           ["boolean", ["feature-state", "hover"], false],
           0.8,
           0.5

@@ -548,50 +548,52 @@ export default {
     },
 
     sameFeatureId(featureA, featureB) {
-      console.log(featureA.properties.id);
-      console.log(featureB);
       return featureA.properties.id === featureB.properties.id
     },
     toggleFeatureSelection ({ component, map, mapboxEvent }) {
       const {point} = mapboxEvent
 
       component.getRenderedFeatures(point).forEach(feature => {
-        const { id, state } = feature
-        const selected = !state.selected
-        const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
-        map.setFeatureState({ source, sourceLayer, id }, { selected })
-        // prevent selection of cadastral parcel overlapping with operator parcel
-        let diff = null;
-        let intersection = null;
-        let allFeaturesIds = map.querySourceFeatures(source, {sourceLayer : sourceLayer, filter : ['==', 'id', feature.properties.id]});
-        let cadastralFeature = allFeaturesIds[0];
-        let properties = allFeaturesIds[0].properties;
+          const { id, state } = feature
+          const selected = !state.selected
+          const [source, sourceLayer]= [component.layer.source, component.layer['source-layer']]
+        if (source === "cadastre") {
+          
+          map.setFeatureState({ source, sourceLayer, id }, { selected })
+          // prevent selection of cadastral parcel overlapping with operator parcel
+          let diff = null;
+          let allFeaturesIds = map.querySourceFeatures(source, {sourceLayer : sourceLayer, filter : ['==', 'id', feature.properties.id]});
+          let cadastralFeature = allFeaturesIds[0];
+          let properties = allFeaturesIds[0].properties;
 
-        featureEach({type : 'FeatureCollection', features : allFeaturesIds}, function(currentFeature, featureIndex) {
-          if (featureIndex > 0) {
-            cadastralFeature = union(cadastralFeature, currentFeature);
+          featureEach({type : 'FeatureCollection', features : allFeaturesIds}, function(currentFeature, featureIndex) {
+            if (featureIndex > 0) {
+              cadastralFeature = union(cadastralFeature, currentFeature);
+            }
+          });
+
+          // ensure cadastralFeature have properties
+          cadastralFeature.properties = properties;
+
+          let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
+          diff = difference(cadastralFeature, combinedFeatures.features[0]);
+          let features = map.querySourceFeatures('parcels-to-add');
+          diff.id = diff.properties.id;
+          
+          if (!features.find(el => el.properties.id === diff.properties.id)) {
+            features.push(diff);
+            map.getSource('parcels-to-add').setData(featureCollection(features));
           }
-        });
-        // ensure cadastralFeature have properties
-        cadastralFeature.properties = properties;
 
-        let combinedFeatures = combine(this.parcelsOperator[this.currentYear]);
-        diff = difference(cadastralFeature, combinedFeatures.features[0]);
-        let data = map.getSource('parcels-to-add')._data;
-        diff.id = diff.properties.id;
-        if (!data.features.find(el => el.id === diff.id)) {
-          data.features.push(diff);
-          map.getSource('parcels-to-add').setData(data);
+          map.setFeatureState({ source: 'parcels-to-add', id: diff.properties.id }, { selected : selected });
+
+          this.$store.commit('map/FEATURE_TOGGLE', {
+            state: { selected },
+            feature: JSON.parse(JSON.stringify(diff)),
+            source : 'parcels-to-add',
+            layer : 'new-parcels'
+          })
         }
-
-        map.setFeatureState({ source: 'parcels-to-add', id: diff.id }, { selected : selected })
-        
-        this.$store.commit('map/FEATURE_TOGGLE', {
-          state: { selected },
-          feature: JSON.parse(JSON.stringify(diff)),
-          source : 'parcels-to-add',
-          layer : 'new-parcels'
-        })
       })
     },
 
