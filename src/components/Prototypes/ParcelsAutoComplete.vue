@@ -21,31 +21,36 @@
     <v-btn color="info" @click="addPlot">Ajouter une parcelle</v-btn>
 
     <hr class="my-4" />
+    <v-expansion-panel>
+      <v-expansion-panel-content>
+        <template v-slot:header>
+          <h2>Vue tabulaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+        </template>
 
-    <h2>Vue tabulaire <v-btn color="info" @click="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
-
-    <table class="summary">
-      <thead>
-        <tr>
-          <td>Parcelle</td>
-          <td>Production végétale</td>
-          <td>Date engagement</td>
-          <td>Réf cadastrale</td>
-          <td>Classement</td>
-          <td>Surface</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="plot in structuredPlots" :key="plot.plot_id + plot.cadastre_id">
-          <td>{{ plot.plot_id }}</td>
-          <td>{{ plot.culture_type }}</td>
-          <td>{{ plot.engagement_date }}</td>
-          <td><a :href="'https://cadastre.data.gouv.fr/map?style=ortho&amp;parcelleId=' + plot.cadastre_id" target="cadastre">{{ plot.cadastre_id }}</a></td>
-          <td>{{ plot.niveau_conversion }}</td>
-          <td>{{ plot.surface === null ? '?' : `${plot.surface}ha`}}</td>
-        </tr>
-      </tbody>
-    </table>
+        <table class="summary">
+          <thead>
+            <tr>
+              <td>Parcelle</td>
+              <td>Production végétale</td>
+              <td>Date engagement</td>
+              <td>Réf cadastrale</td>
+              <td>Classement</td>
+              <td>Surface</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="plot in structuredPlots" :key="plot.plot_id + plot.cadastre_id">
+              <td>{{ plot.plot_id }}</td>
+              <td>{{ plot.culture_type }}</td>
+              <td>{{ plot.engagement_date }}</td>
+              <td><a :href="'https://cadastre.data.gouv.fr/map?style=ortho&amp;parcelleId=' + plot.cadastre_id" target="cadastre">{{ plot.cadastre_id }}</a></td>
+              <td>{{ plot.niveau_conversion }}</td>
+              <td>{{ plot.surface === null ? '?' : `${plot.surface}ha`}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
   </v-form>
 </template>
 
@@ -211,7 +216,8 @@ export default {
 
   table {
     border-collapse: collapse;
-
+    margin-left: 10px;
+    
     thead {
       background: #dfdfdf;
       font-weight: bold;
@@ -226,4 +232,8 @@ export default {
       padding: 0.5rem;
     }
   }
+
+  h2 {
+    margin-top : 0;
+  } 
 </style>
