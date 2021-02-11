@@ -21,7 +21,7 @@
     <v-btn color="info" @click="addPlot">Ajouter une parcelle</v-btn>
 
     <hr class="my-4" />
-    <v-expansion-panel>
+    <v-expansion-panel expand>
       <v-expansion-panel-content>
         <template v-slot:header>
           <h2>Vue tabulaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
@@ -50,6 +50,30 @@
           </tbody>
         </table>
       </v-expansion-panel-content>
+      
+      <v-expansion-panel-content>
+      <template v-slot:header>
+          <h2>Vue Map <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+        </template>
+        <div class="map">
+          <MglMap
+          :mapStyle="mapStyle"
+          :bounds.sync="mapBounds"
+          @load="onMapLoaded"
+          ref="mapboxDiv"
+          >
+          <MglGeojsonLayer
+            sourceId="plots"
+            :layer="layerStyle('operator-parcels')"
+            layerId="operator-parcels"/>
+          <MglVectorLayer
+              before="place-continent"
+              sourceId="cadastre"
+              :layer="layerStyle('selectable-cadastral-parcels')"
+              layerId="parcelles"/>
+          </MglMap>
+        </div>
+      </v-expansion-panel-content>
     </v-expansion-panel>
   </v-form>
 </template>
@@ -59,6 +83,22 @@ import {get} from 'axios'
 import communes from '@/api/insee/communes.json'
 import {codes} from '@/modules/codes-cultures/pac.js'
 import {geometry as area} from '@mapbox/geojson-area'
+import { all as mergeAll } from "deepmerge";
+import bbox from "@turf/bbox";
+import bboxPolygon from "@turf/bbox-polygon";
+import { featureCollection } from "@turf/helpers";
+
+import {
+  baseStyle,
+  cadastreStyle,
+  cartobioStyle
+} from "@/assets/styles/index.js";
+
+import {
+  MglMap,
+  MglGeojsonLayer,
+  MglVectorLayer
+} from "vue-mapbox";
 
 const IN_HECTARES = 10000
 
@@ -100,15 +140,32 @@ export default {
         const suffixes = (row.cadastre_suffixes ?? '').split(',')
         plots.push(...suffixes.map(suffix => prepareRow({ ...row, cadastre_suffix: suffix}, this.cadastre_plots)))
       })
-
+      if(this.map)
+        this.map.resize();
       return plots
+    },
+    plotsGeoJson () {
+      let fc = featureCollection(Object.entries(this.cadastre_plots).map(([, value]) => value));
+      if(this.map)
+        this.map.getSource("plots").setData(fc);
+      return fc;
+    },
+    mapBounds() {
+      let bounds = bboxPolygon(bbox(this.plotsGeoJson)).bbox;
+      if (this.map)
+        this.map.fitBounds(bounds);
+      return bounds;
     }
   },
 
+  components: {
+    MglMap,
+    MglGeojsonLayer,
+    MglVectorLayer
+  },
 
   data () {
     return {
-
       valid: false,
       loading: false,
 
@@ -139,7 +196,11 @@ export default {
         }
       ],
 
-      cadastre_plots: {}
+      cadastre_plots: {},
+      mapStyle: mergeAll([
+        baseStyle,
+        cadastreStyle,
+        cartobioStyle])
     };
   },
 
@@ -194,8 +255,20 @@ export default {
       Promise.all(callsP).finally(() => this.loading = false)
     },
 
+    /**
+     * @param  {String} styleId [description]
+     * @return {Object<Mapbox.Layer>}
+     */
+    layerStyle(styleId) {
+      return cartobioStyle.layers.find(({ id }) => id === styleId);
+    },
+
     itemText ({ com, libelle }) {
       return `${libelle} (${com})`
+    },
+
+    onMapLoaded({ map }) {
+        this.map = map;
     }
   },
 };
@@ -217,7 +290,7 @@ export default {
   table {
     border-collapse: collapse;
     margin-left: 10px;
-    
+
     thead {
       background: #dfdfdf;
       font-weight: bold;
@@ -235,5 +308,11 @@ export default {
 
   h2 {
     margin-top : 0;
-  } 
+  }
+  .map { 
+    position: relative; 
+    width: 100%;
+    height: 500px;
+  }
+  
 </style>

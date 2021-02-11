@@ -25,6 +25,13 @@
       "cluster": true,
       "clusterRadius": 55,
       "clusterMaxZoom": 7
+    },
+    "plots": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      }
     }
   },
   "layers": [
@@ -196,6 +203,23 @@
           0.5
         ]
       }
-    }
+    },
+    {
+      "id": "operator-parcels",
+        "type": "fill",
+        "source": "plots",
+        "paint": {
+          "fill-color": [
+            "match",
+            ["to-number", ["get", "bio"]],
+            0,
+            "rgba(227, 101, 157, 1)",
+            1,
+            "rgba(31, 163, 65, 1)",
+            "white"
+          ],
+          "fill-opacity": 0.95
+        }
+      }
   ]
 }
