@@ -14,6 +14,7 @@
 
         <v-date-picker outline @input="plot.conversionDateMenu = false" type="month" v-model="plot.engagement_date" show-current locale="fr-FR" />
       </v-menu>
+       <v-btn flat icon large @click="$delete(plots, index)"><v-icon large>delete</v-icon></v-btn> 
     </v-flex>
 
     <v-btn color="info" @click="addPlot">Ajouter une parcelle</v-btn>
