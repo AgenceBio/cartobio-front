@@ -7,12 +7,12 @@
       <v-text-field label="Id cadastral" hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" />
       <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" v-model="plot.culture_type" />
       <v-select label="Statut conversion" outline v-model="plot.niveau_conversion" :items="conversion_levels" />
-      <v-menu v-model="conversionDateMenu" lazy transition="scale-transition" offset-y full-width max-width="320px">
+      <v-menu v-model="plot.conversionDateMenu" lazy transition="scale-transition" offset-y full-width max-width="320px">
         <template v-slot:activator="{ on }">
           <v-text-field outline label="Date de conversion" v-on="on" readonly :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date" />
         </template>
 
-        <v-date-picker outline @input="conversionDateMenu = false" type="month" v-model="plot.engagement_date" show-current locale="fr-FR" />
+        <v-date-picker outline @input="plot.conversionDateMenu = false" type="month" v-model="plot.engagement_date" show-current locale="fr-FR" />
       </v-menu>
     </v-flex>
 
@@ -101,7 +101,6 @@ export default {
 
   data () {
     return {
-      conversionDateMenu: false,
 
       valid: false,
       loading: false,
