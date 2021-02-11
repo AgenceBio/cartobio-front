@@ -2,9 +2,7 @@
   <v-form v-model="valid">
     <h2>Saisie du parcellaire</h2>
 
-    <v-flex class="row xs12 d-flex" v-for="plot in plots" :key="plot.ilot + plot.parcelle + plot.com">
-      <v-text-field label="Ilot" clearable outline v-model="plot.ilot" />
-      <v-text-field label="Parcelle" clearable outline v-model="plot.parcelle" />
+    <v-flex class="row xs12 d-flex" v-for="(plot, index) in plots" :key="index">
       <v-autocomplete label="Commune" clearable outline v-model="plot.com" :item-text="itemText" item-value="com" :items="_communes" />
       <v-text-field label="Id cadastral" hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" />
       <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" v-model="plot.culture_type" />
@@ -59,12 +57,13 @@ const IN_HECTARES = 10000
 
 function prepareRow (row, cadastre_plots = {}) {
   const {culture_type, com, engagement_date, niveau_conversion} = row
-  const plot_id = `${row.ilot}.${row.parcelle}`
+  
 
 
   // 26108000AN0100
   const [, prefixe, section, parcelle] = row.cadastre_suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
   const cadastre_id = section ? `${row.com}${prefixe || '000'}${section}${parcelle.padStart(4, 0)}` : ''
+  const plot_id = cadastre_id;
 
   let surface = null
 
@@ -119,8 +118,6 @@ export default {
 
       plots: [
         {
-          "ilot": 1,
-          "parcelle": 1,
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
           "culture_type": 'AIL',
@@ -128,8 +125,6 @@ export default {
           "engagement_date": "2017-02-03"
         },
         {
-          "ilot": 1,
-          "parcelle": 2,
           "com": "26108",
           "cadastre_suffixes": 'AM17',
           "culture_type": 'SOJ',
@@ -163,9 +158,9 @@ export default {
   methods: {
     addPlot () {
       const lastLine = this.plots[ this.plots.length - 1 ] ?? {}
-      const { com, ilot, parcelle, engagement_date } = lastLine
+      const { com, engagement_date } = lastLine
 
-      this.plots.push({ com, ilot, parcelle: parcelle+1, engagement_date })
+      this.plots.push({ com, engagement_date })
     },
 
     fetchCadastreSheets () {
