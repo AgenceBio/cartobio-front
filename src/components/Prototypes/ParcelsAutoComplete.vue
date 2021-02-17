@@ -174,7 +174,8 @@ export default {
         { value: "C2", text: "C2" },
         { value: "C3", text: "C3" },
         { value: "BIO", text: "Bio" },
-        { value: "CONV", text: "Conventionnel" }
+        { value: "CONV", text: "Conventionnel" },
+        { value: "null", text: "Inconnu" }
       ],
 
       knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
