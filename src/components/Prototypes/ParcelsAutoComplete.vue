@@ -1,6 +1,16 @@
 <template>
   <v-form v-model="valid">
+    <h1>Vos parcelles</h1>
+    <p><i>Cette section est actuellement en phase de test</i>
+    </p>
+    <p>
+      En renseignant votre parcellaire vous participez à faciliter votre contrôle AB et l’instruction de vos aides PAC si vous les demandez.<br/>
+Les données renseignées seront uniquement communiquées à votre Organisme Certificateur en l’état. Vos données anonymisées permettront également d’améliorer
+ la connaissance des parcelles bio en France. 
+
+    </p>
     <h2>Saisie du parcellaire</h2>
+
 
     <v-flex class="row xs12 d-flex" v-for="(plot, index) in plots" :key="index">
       <v-autocomplete label="Commune" hint="Nom de la commune (Code INSEE)" persistent-hint clearable outline v-model="plot.com" :item-text="itemText" item-value="com" :items="_communes" />
@@ -21,10 +31,11 @@
     <v-btn color="info" @click="addPlot">Ajouter une parcelle</v-btn>
 
     <hr class="my-4" />
+    <h2>Visualisation du parcellaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
     <v-expansion-panel expand>
       <v-expansion-panel-content>
         <template v-slot:header>
-          <h2>Vue tabulaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+          <h2>Vue tabulaire </h2>
         </template>
 
         <table class="summary">
@@ -53,7 +64,7 @@
       
       <v-expansion-panel-content>
       <template v-slot:header>
-          <h2>Vue Map <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+          <h2>Vue Map</h2>
         </template>
         <div class="map">
           <MglMap
