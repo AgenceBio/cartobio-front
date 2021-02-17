@@ -15,7 +15,7 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
     <v-flex class="row xs12 d-flex" v-for="(plot, index) in plots" :key="index">
       <v-autocomplete label="Commune" hint="Nom de la commune (Code INSEE)" persistent-hint clearable outline v-model="plot.com" :item-text="itemText" item-value="com" :items="_communes" />
       <v-text-field label="Numéro cadastral" hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" />
-      <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" v-model="plot.culture_type" />
+      <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" />
       <v-select label="Statut conversion" outline v-model="plot.niveau_conversion" :items="conversion_levels" />
       <v-menu v-model="plot.conversionDateMenu" lazy transition="scale-transition" offset-y full-width max-width="320px">
         <template v-slot:activator="{ on }">
@@ -195,14 +195,14 @@ export default {
         {
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
-          "culture_type": 'AIL',
+          "culture_type": ['AIL'],
           "niveau_conversion": 'BIO',
           "engagement_date": "2017-02-03"
         },
         {
           "com": "26108",
           "cadastre_suffixes": 'AM17',
-          "culture_type": 'SOJ',
+          "culture_type": ['SOJ'],
           "niveau_conversion": 'C2',
           "engagement_date": "2017-02-03"
         }
