@@ -32,7 +32,7 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
 
     <hr class="my-4" />
     <h2>Visualisation du parcellaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
-    <v-expansion-panel expand>
+    <v-expansion-panel expand :value="[true, true]">
       <v-expansion-panel-content>
         <template v-slot:header>
           <h2>Vue tabulaire </h2>
