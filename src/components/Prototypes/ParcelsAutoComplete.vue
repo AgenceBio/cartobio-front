@@ -9,7 +9,7 @@
       <v-select label="Statut conversion" outline v-model="plot.niveau_conversion" :items="conversion_levels" />
       <v-menu v-model="plot.conversionDateMenu" lazy transition="scale-transition" offset-y full-width max-width="320px">
         <template v-slot:activator="{ on }">
-          <v-text-field outline label="Date de conversion" v-on="on" readonly :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date" />
+          <v-text-field outline label="Date de conversion" v-on="on" hint="Si inconnue, donner la date de conversion prévue" persistent-hint readonly :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date" />
         </template>
 
         <v-date-picker outline @input="plot.conversionDateMenu = false" type="month" v-model="plot.engagement_date" show-current locale="fr-FR" />
