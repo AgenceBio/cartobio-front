@@ -1,15 +1,25 @@
 <template>
   <v-form v-model="valid">
+    <h1>Vos parcelles</h1>
+    <p><i>Cette section est actuellement en phase de test</i>
+    </p>
+    <p>
+      En renseignant votre parcellaire vous participez à faciliter votre contrôle AB et l’instruction de vos aides PAC si vous les demandez.<br/>
+Les données renseignées seront uniquement communiquées à votre Organisme Certificateur en l’état. Vos données anonymisées permettront également d’améliorer
+ la connaissance des parcelles bio en France. 
+
+    </p>
     <h2>Saisie du parcellaire</h2>
 
+
     <v-flex class="row xs12 d-flex" v-for="(plot, index) in plots" :key="index">
-      <v-autocomplete label="Commune" clearable outline v-model="plot.com" :item-text="itemText" item-value="com" :items="_communes" />
-      <v-text-field label="Id cadastral" hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" />
-      <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" v-model="plot.culture_type" />
+      <v-autocomplete label="Commune" hint="Nom de la commune (Code INSEE)" persistent-hint clearable outline v-model="plot.com" :item-text="itemText" item-value="com" :items="_communes" />
+      <v-text-field label="Numéro cadastral" hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" />
+      <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" />
       <v-select label="Statut conversion" outline v-model="plot.niveau_conversion" :items="conversion_levels" />
       <v-menu v-model="plot.conversionDateMenu" lazy transition="scale-transition" offset-y full-width max-width="320px">
         <template v-slot:activator="{ on }">
-          <v-text-field outline label="Date de conversion" v-on="on" readonly :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date" />
+          <v-text-field outline label="Date de conversion" v-on="on" hint="Si inconnue, donner la date de conversion prévue" persistent-hint readonly :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date" />
         </template>
 
         <v-date-picker outline @input="plot.conversionDateMenu = false" type="month" v-model="plot.engagement_date" show-current locale="fr-FR" />
@@ -21,10 +31,11 @@
     <v-btn color="info" @click="addPlot">Ajouter une parcelle</v-btn>
 
     <hr class="my-4" />
-    <v-expansion-panel expand>
+    <h2>Visualisation du parcellaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+    <v-expansion-panel expand :value="[true, true]">
       <v-expansion-panel-content>
         <template v-slot:header>
-          <h2>Vue tabulaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+          <h2>Vue tabulaire </h2>
         </template>
 
         <table class="summary">
@@ -53,7 +64,7 @@
       
       <v-expansion-panel-content>
       <template v-slot:header>
-          <h2>Vue Map <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
+          <h2>Vue Map</h2>
         </template>
         <div class="map">
           <MglMap
@@ -174,7 +185,8 @@ export default {
         { value: "C2", text: "C2" },
         { value: "C3", text: "C3" },
         { value: "BIO", text: "Bio" },
-        { value: "CONV", text: "Conventionnel" }
+        { value: "CONV", text: "Conventionnel" },
+        { value: "Inconnu", text: "Inconnu" }
       ],
 
       knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
@@ -183,14 +195,14 @@ export default {
         {
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
-          "culture_type": 'AIL',
+          "culture_type": ['AIL'],
           "niveau_conversion": 'BIO',
           "engagement_date": "2017-02-03"
         },
         {
           "com": "26108",
           "cadastre_suffixes": 'AM17',
-          "culture_type": 'SOJ',
+          "culture_type": ['SOJ'],
           "niveau_conversion": 'C2',
           "engagement_date": "2017-02-03"
         }
