@@ -9,7 +9,15 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
  la connaissance des parcelles bio en France.
 
     </p>
-    <h2>Saisie du parcellaire</h2>
+    <h2>
+      Saisie du parcellaire
+
+      <v-btn outline round color="success" @click="telepacXmlPrompt" small>
+        <input type="file" ref="telepac_upload_field" @input="uploadXML" accept=".xml,text/xml" hidden>
+        <v-icon small class="mr-2">cloud_upload</v-icon>
+        importer dossier complet TéléPAC (XML)
+      </v-btn>
+    </h2>
 
     <div class="grid">
       <Fragment>
@@ -200,7 +208,7 @@ export default {
         { value: "HVEx", text: "Haute Valeur Environnementale (niveau 1 ou 2)" },
         { value: "DMTR", text: "Demeter" },
         { value: "N&P", text: "Nature & Progrès" },
-        { value: "Inconnu", text: "Inconnu" }
+        { value: "", text: "Inconnu" }
       ],
 
       knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
@@ -298,6 +306,41 @@ export default {
 
     onMapLoaded({ map }) {
         this.map = map;
+    },
+
+    telepacXmlPrompt () {
+      this.$refs.telepac_upload_field.click()
+    },
+
+    async uploadXML () {
+      const text = await this.$refs.telepac_upload_field.files[0].text()
+      const xml = new DOMParser().parseFromString(text, 'text/xml')
+
+      const pacage = xml.querySelector('producteur').getAttribute('numero-pacage')
+
+      this.plots = Array
+        .from(xml.querySelectorAll('parcelle'))
+        .map(plot => {
+          const ilot = plot.parentElement.parentElement
+          const com = ilot.querySelector('commune')?.textContent.trim()
+
+          const id = [
+            ilot.getAttribute('numero-ilot'),
+            plot.querySelector('[numero-parcelle]').getAttribute('numero-parcelle')
+          ].join('.')
+
+          const culture_type = Array.from(plot.querySelectorAll('code-culture'))
+            .map(node => node.textContent)
+            .filter(culture => culture && culture !== '___')
+
+          return {
+            id,
+            com,
+            pacage,
+            culture_type,
+            niveau_conversion: ''
+          }
+        })
     }
   },
 };
