@@ -1,7 +1,9 @@
 <template>
   <v-form v-model="valid">
-    <h1>Vos parcelles</h1>
-    <p><i>Cette section est actuellement en phase de test</i>
+    <h1>Notification du parcellaire opérateur en Agriculture Biologique</h1>
+    <p class="chip">
+      <v-avatar><v-icon>info_outline</v-icon></v-avatar>
+      Cette section est actuellement en phase de test.
     </p>
     <p>
       En renseignant votre parcellaire vous participez à faciliter votre contrôle AB et l’instruction de vos aides PAC si vous les demandez.<br/>
@@ -63,7 +65,7 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
             <td>Date engagement</td>
             <td>Réf cadastrale</td>
             <td>Classement</td>
-            <td>Surface</td>
+            <td>Surface graphique</td>
           </tr>
         </thead>
         <tbody>
@@ -71,7 +73,7 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
             <td>{{ plot.plot_id }}</td>
             <td>{{ plot.culture_type }}</td>
             <td>{{ plot.engagement_date }}</td>
-            <td><a :href="'https://cadastre.data.gouv.fr/map?style=ortho&amp;parcelleId=' + plot.cadastre_id" target="cadastre">{{ plot.cadastre_id }}</a></td>
+            <td>{{ plot.cadastre_id }}</td>
             <td>{{ plot.niveau_conversion }}</td>
             <td>{{ plot.surface === null ? '?' : `${plot.surface}ha`}}</td>
           </tr>
@@ -144,7 +146,6 @@ function prepareRow (row, cadastre_plots = {}) {
     const {geometry} = cadastre_plots[cadastre_id]
     surface = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
   }
-
 
   return {
     com,
@@ -366,6 +367,7 @@ export default {
     thead {
       background: #dfdfdf;
       font-weight: bold;
+      vertical-align: bottom;
     }
 
     tbody {
@@ -396,6 +398,20 @@ export default {
 
     span.header {
       font-weight: bold;
+      align-self: flex-end;
+    }
+  }
+
+  .chip {
+    background: #ffc;
+    border: 1px solid currentColor;
+    border-radius: 2em;
+    display: inline-block;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    .v-avatar {
+      margin-left: -1em;
     }
   }
 
