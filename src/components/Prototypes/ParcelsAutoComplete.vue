@@ -14,9 +14,10 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
     <h2>
       Saisie du parcellaire
 
-      <v-btn outline round color="success" @click="telepacXmlPrompt" small>
+      <v-btn outline round color="success" :disabled="isLoading" @click="telepacXmlPrompt" small>
         <input type="file" ref="telepac_upload_field" @input="uploadXML" accept=".xml,text/xml" hidden>
-        <v-icon small class="mr-2">cloud_upload</v-icon>
+        <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
+        <v-icon v-else small class="mr-2">cloud_upload</v-icon>
         importer dossier complet TéléPAC (XML)
       </v-btn>
     </h2>
@@ -31,10 +32,11 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
         <span class="header">Commentaire</span>
         <span class="header"></span>
       </Fragment>
-      <Fragment class="row xs12 d-flex" v-for="(plot, index) in plots" :key="index">
-        <v-autocomplete single-line outline v-model="plot.com" :item-text="itemText" item-value="COM" :items="_communes" :hide-details="index !== plots.length - 1" />
+
+      <Fragment v-for="(plot, index) in plots" :key="index + plot.id">
+        <offline-lazy-autocomplete single-line :allow-overflow="false" outline v-model="plot.com" :lazy-items="() => $data._communes" item-value="COM" :item-text="({ LIBELLE, DEP }) => `${LIBELLE} (${DEP})`" :hide-details="index !== plots.length - 1" />
         <v-text-field single-line hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" :hide-details="index !== plots.length - 1" />
-        <v-autocomplete single-line outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="index !== plots.length - 1" />
+        <offline-lazy-autocomplete single-line :allow-overflow="false" outline :lazy-items="() => $data._knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="index !== plots.length - 1" />
         <v-select single-line outline v-model="plot.niveau_conversion" :items="conversion_levels" :hide-details="index !== plots.length - 1" />
         <v-text-field single-line clearable outline mask="##/##/####" hint="Format Jour/Mois/Année. Si inconnue, donner la date de conversion prévue" persistent-hint :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  :hide-details="index !== plots.length - 1" />
         <v-text-field single-line hint="Nom de la parcelle, précisions, autres infos ..." persistent-hint clearable outline v-model="plot.comment" :hide-details="index !== plots.length - 1" />
@@ -49,7 +51,7 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
 
     <hr class="my-4" />
 
-    <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading">
+    <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="isLoading">
       <v-icon class="mr-2">map</v-icon>
       {{isMapVisible ? 'actualiser la carte' : 'afficher sur une carte'}}
     </v-btn>
@@ -107,13 +109,15 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
 <script>
 import {Fragment} from 'vue-fragment'
 import {get} from 'axios'
-import communes from '@/api/insee/communes.json'
 import {codes} from '@/modules/codes-cultures/pac.js'
+import OfflineLazyAutocomplete from '@/components/Forms/OfflineLazyAutocomplete.vue'
 import {geometry as area} from '@mapbox/geojson-area'
 import { all as mergeAll } from "deepmerge";
 import bbox from "@turf/bbox";
 import bboxPolygon from "@turf/bbox-polygon";
 import { featureCollection } from "@turf/helpers";
+
+import communes from '@/api/insee/communes.json'
 
 import {
   baseStyle,
@@ -130,10 +134,13 @@ import {
 const IN_HECTARES = 10000
 
 function prepareRow (row, cadastre_plots = {}) {
-  const {culture_type, com, engagement_date, niveau_conversion} = row
+  const {culture_type, com, engagement_date = '', niveau_conversion} = row
+  let formatted_engagement_date = ''
 
-  const [day, month, year] = engagement_date.split('/')
-  const formatted_engagement_date = `${year}-${month}-${day}`
+  if (engagement_date) {
+    const [day, month, year] = engagement_date.split('/')
+    formatted_engagement_date = `${year}-${month}-${day}`
+  }
 
   // 26108000AN0100
   const [, prefixe, section, parcelle] = row.cadastre_suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
@@ -160,10 +167,11 @@ function prepareRow (row, cadastre_plots = {}) {
 
 export default {
   components: {
+    Fragment,
+    OfflineLazyAutocomplete,
     MglMap,
     MglGeojsonLayer,
     MglVectorLayer,
-    Fragment
   },
 
   computed: {
@@ -195,8 +203,14 @@ export default {
   data () {
     return {
       valid: false,
-      loading: false,
+      isLoading: false,
       isMapVisible: false,
+
+      // disable variable observation
+      // eslint-disable-next-line vue/no-reserved-keys
+      _communes: communes,
+      // eslint-disable-next-line vue/no-reserved-keys
+      _knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
 
       conversion_levels: [
         { value: "Cx", text: "En attente du 1er contrôle AB" },
@@ -212,22 +226,25 @@ export default {
         { value: "", text: "Inconnu" }
       ],
 
-      knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
-
       plots: [
         {
+          "id": "@1.1",
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
-          "culture_type": ['AIL'],
+          "culture_type": ['AIL', 'OIG'],
           "niveau_conversion": 'BIO',
           "engagement_date": "03/02/2017"
         },
         {
+          "id": "@1.2",
           "com": "26108",
           "cadastre_suffixes": 'AM17',
           "culture_type": ['SOJ'],
           "niveau_conversion": 'C2',
           "engagement_date": "03/02/2017"
+        },
+        {
+          "id": "@2.1"
         }
       ],
 
@@ -239,34 +256,20 @@ export default {
     };
   },
 
-  created () {
-    this._communes = communes
-  },
-
-  watch: {
-    commune_search (val) {
-      if (!val && val.length < 3) {
-        this.communes = []
-        return
-      }
-
-      const search = val.toLocaleLowerCase()
-      this.communes = communes.filter(({ libelle }) => {
-        return libelle.toLocaleLowerCase().includes(search)
-      })
-    }
-  },
-
   methods: {
     addPlot () {
       const lastLine = this.plots[ this.plots.length - 1 ] ?? {}
       const { com, engagement_date, niveau_conversion } = lastLine
 
-      this.plots.push({ com, engagement_date, niveau_conversion })
+      this.plots.push({ com, engagement_date, niveau_conversion, id: Math.random() })
+    },
+
+    logEvent ($event) {
+      console.log($event)
     },
 
     fetchCadastreSheets () {
-      this.loading = true
+      this.isLoading = true
 
       const sheets = this.structuredPlots.map(({ com, cadastre_id }) => ({ com, cadastre_id }))
       const calls = sheets.reduce((map, sheet) => {
@@ -288,7 +291,7 @@ export default {
       })
 
       Promise.all(callsP).finally(() => {
-        this.loading = false
+        this.isLoading = false
         this.isMapVisible = true
       })
     },
@@ -299,10 +302,6 @@ export default {
      */
     layerStyle(styleId) {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
-    },
-
-    itemText ({ LIBELLE, DEP }) {
-      return `${LIBELLE} (${DEP})`
     },
 
     onMapLoaded({ map }) {
@@ -319,30 +318,38 @@ export default {
 
       const pacage = xml.querySelector('producteur').getAttribute('numero-pacage')
 
-      this.plots = Array
-        .from(xml.querySelectorAll('parcelle'))
-        .map(plot => {
-          const ilot = plot.parentElement.parentElement
-          const com = ilot.querySelector('commune')?.textContent.trim()
+      this.isLoading = true
 
-          const id = [
-            ilot.getAttribute('numero-ilot'),
-            plot.querySelector('[numero-parcelle]').getAttribute('numero-parcelle')
-          ].join('.')
+      setTimeout(() => {
+        this.plots = Array
+          .from(xml.querySelectorAll('parcelle'))
+          .map(plot => {
+            const ilot = plot.parentElement.parentElement
+            const com = ilot.querySelector('commune')?.textContent.trim()
 
-          const culture_type = Array.from(plot.querySelectorAll('code-culture'))
-            .map(node => node.textContent)
-            .filter(culture => culture && culture !== '___')
+            const id = [
+              ilot.getAttribute('numero-ilot'),
+              plot.querySelector('[numero-parcelle]').getAttribute('numero-parcelle')
+            ].join('.')
 
-          return {
-            id,
-            com,
-            pacage,
-            culture_type,
-            niveau_conversion: ''
-          }
-        })
-    }
+            const culture_type = Array.from(plot.querySelectorAll('code-culture'))
+              .map(node => node.textContent)
+              .filter(culture => culture && culture !== '___')
+
+            return {
+              id,
+              com,
+              pacage,
+              culture_type,
+              niveau_conversion: '',
+              comment: `Parcelle ${id}`
+            }
+          })
+
+          this.isLoading = false
+      }, 500)
+    },
+
   },
 };
 </script>
