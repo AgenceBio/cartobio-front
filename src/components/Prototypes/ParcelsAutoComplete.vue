@@ -336,13 +336,19 @@ export default {
               .map(node => node.textContent)
               .filter(culture => culture && culture !== '___')
 
+            const niveau_conversion = plot.querySelector('agri-bio[conduite-bio="true"]') ? 'BIO' : ''
+
             return {
               id,
               com,
               pacage,
               culture_type,
-              niveau_conversion: '',
-              comment: `Parcelle ${id}`
+              niveau_conversion,
+              comment: [
+                `Parcelle ${id}.`,
+                plot.querySelector('agri-bio[conduite-maraichage="true"]') ? 'Conduite en maraîchage.' : '',
+                plot.querySelector('agroforesterie') ? 'Conduite en agroforesterie.' : '',
+              ].filter(d => d).join('\n')
             }
           })
 
