@@ -4,6 +4,18 @@ import VAutoComplete from 'vuetify/lib/components/VAutocomplete'
 export default VAutoComplete.extend({
   inheritAttrs: true,
 
+  props: {
+    appendIcon: {
+      default: 'search'
+    },
+    hideNoData: {
+      default: true
+    },
+    openOnClear: {
+      default: true
+    }
+  },
+
   data () {
     return {
       search: null

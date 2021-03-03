@@ -22,26 +22,23 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
       </v-btn>
     </h2>
 
-    <div class="grid">
-      <Fragment>
-        <span class="header">Commune</span>
-        <span class="header">Parcelles cadastrales</span>
-        <span class="header">Type de culture</span>
-        <span class="header">Statut de conversion</span>
-        <span class="header">Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
-        <span class="header">Commentaire</span>
-        <span class="header"></span>
-      </Fragment>
+    <v-chip class="pacage" v-if="pacage">
+      <b class="mr-2">N°&nbsp;PACAGE</b>
+      {{pacage}}
+    </v-chip>
 
-      <Fragment v-for="(plot, index) in plots" :key="index + plot.id">
-        <offline-lazy-autocomplete single-line :allow-overflow="false" outline v-model="plot.com" :lazy-items="() => $data._communes" item-value="COM" :item-text="({ LIBELLE, DEP }) => `${LIBELLE} (${DEP})`" :hide-details="index !== plots.length - 1" />
-        <v-text-field single-line hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" :hide-details="index !== plots.length - 1" />
-        <offline-lazy-autocomplete single-line :allow-overflow="false" outline :lazy-items="() => $data._knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="index !== plots.length - 1" />
-        <v-select single-line outline v-model="plot.niveau_conversion" :items="conversion_levels" :hide-details="index !== plots.length - 1" />
-        <v-text-field single-line clearable outline mask="##/##/####" hint="Format Jour/Mois/Année. Si inconnue, donner la date de conversion prévue" persistent-hint :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  :hide-details="index !== plots.length - 1" />
-        <v-text-field single-line hint="Nom de la parcelle, précisions, autres infos ..." persistent-hint clearable outline v-model="plot.comment" :hide-details="index !== plots.length - 1" />
-        <v-btn flat icon large @click="$delete(plots, index)"><v-icon medium>delete</v-icon></v-btn>
-      </Fragment>
+    <div class="grid">
+      <div class="header">
+        <span>Commune</span>
+        <span>Parcelles cadastrales</span>
+        <span>Type de culture</span>
+        <span>Statut de conversion</span>
+        <span>Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
+        <span>Commentaire</span>
+        <span></span>
+      </div>
+
+      <plot-row v-for="(feature, index) in plots.features" :feature="feature" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
     </div>
 
     <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
@@ -71,13 +68,13 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
           </tr>
         </thead>
         <tbody>
-          <tr v-for="plot in structuredPlots" :key="plot.plot_id + plot.cadastre_id">
-            <td>{{ plot.plot_id }}</td>
-            <td>{{ plot.culture_type }}</td>
-            <td>{{ plot.engagement_date }}</td>
-            <td>{{ plot.cadastre_id }}</td>
-            <td>{{ plot.niveau_conversion }}</td>
-            <td>{{ plot.surface === null ? '?' : `${plot.surface}ha`}}</td>
+          <tr v-for="({ properties, id }) in structuredPlots.features" :key="id">
+            <td>{{ id }}</td>
+            <td>{{ properties.culture_type }}</td>
+            <td>{{ properties.engagement_date }}</td>
+            <td>{{ properties.cadastral_references }}</td>
+            <td>{{ properties.niveau_conversion }}</td>
+            <td>{{ properties.surface ? `${properties.surface}ha` : '?'}}</td>
           </tr>
         </tbody>
       </table>
@@ -107,17 +104,14 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
 </template>
 
 <script>
-import {Fragment} from 'vue-fragment'
 import {get} from 'axios'
-import {codes} from '@/modules/codes-cultures/pac.js'
-import OfflineLazyAutocomplete from '@/components/Forms/OfflineLazyAutocomplete.vue'
 import {geometry as area} from '@mapbox/geojson-area'
 import { all as mergeAll } from "deepmerge";
-import bbox from "@turf/bbox";
+import geometryBbox  from "@turf/bbox";
 import bboxPolygon from "@turf/bbox-polygon";
-import { featureCollection } from "@turf/helpers";
-
-import communes from '@/api/insee/communes.json'
+import { featureCollection, feature as Feature } from "@turf/helpers";
+import PlotRow from './PlotRow'
+import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 
 import {
   baseStyle,
@@ -133,9 +127,20 @@ import {
 
 const IN_HECTARES = 10000
 
-function prepareRow (row, cadastre_plots = {}) {
-  const {culture_type, com, engagement_date = '', niveau_conversion} = row
+function emptyPolygon () {
+  return {
+    type: "Polygon",
+    coordinates: []
+  }
+}
+
+function prepareFeature ({ feature }) {
+  const { culture_type, com, niveau_conversion } = feature.properties
+  const { engagement_date = '', cadastre_suffixes = '' } = feature.properties
+  const { id, geometry } = feature
+
   let formatted_engagement_date = ''
+  let surface = 0
 
   if (engagement_date) {
     const [day, month, year] = engagement_date.split('/')
@@ -143,61 +148,34 @@ function prepareRow (row, cadastre_plots = {}) {
   }
 
   // 26108000AN0100
-  const [, prefixe, section, parcelle] = row.cadastre_suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
-  const cadastre_id = section ? `${row.com}${prefixe || '000'}${section}${parcelle.padStart(4, 0)}` : ''
-  const plot_id = cadastre_id;
+  const cadastre_references = cadastre_suffixes.split(/\W/).filter(d => d).map(suffix => {
+    const [, prefixe, section, parcelle] = suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
+    return section ? `${com}${prefixe || '000'}${section}${parcelle.padStart(4, 0)}` : ''
+  })
 
-  let surface = null
-
-  if (cadastre_id && cadastre_plots[cadastre_id]) {
-    const {geometry} = cadastre_plots[cadastre_id]
+  if (geometry.coordinates.length) {
     surface = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
   }
 
-  return {
+  const properties = {
+    ...feature.properties,
     com,
     culture_type,
     engagement_date: formatted_engagement_date,
-    cadastre_id,
-    plot_id,
+    cadastre_references,
     niveau_conversion,
     surface
   }
+
+  return Feature(geometry, properties, { id })
 }
 
 export default {
   components: {
-    Fragment,
-    OfflineLazyAutocomplete,
     MglMap,
     MglGeojsonLayer,
     MglVectorLayer,
-  },
-
-  computed: {
-    structuredPlots () {
-      const plots = []
-
-      this.plots.forEach(row => {
-        const suffixes = (row.cadastre_suffixes ?? '').split(',')
-        plots.push(...suffixes.map(suffix => prepareRow({ ...row, cadastre_suffix: suffix}, this.cadastre_plots)))
-      })
-      if(this.map)
-        this.map.resize();
-      return plots
-    },
-    plotsGeoJson () {
-      let fc = featureCollection(Object.entries(this.cadastre_plots).map(([, value]) => value));
-      if(this.map)
-        this.map.getSource("plots").setData(fc);
-      return fc;
-    },
-    mapBounds() {
-      let bounds = bboxPolygon(bbox(this.plotsGeoJson)).bbox;
-      if (this.map)
-        this.map.fitBounds(bounds);
-      return bounds;
-    }
+    PlotRow,
   },
 
   data () {
@@ -206,87 +184,118 @@ export default {
       isLoading: false,
       isMapVisible: false,
 
-      // disable variable observation
-      // eslint-disable-next-line vue/no-reserved-keys
-      _communes: communes,
-      // eslint-disable-next-line vue/no-reserved-keys
-      _knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
-
-      conversion_levels: [
-        { value: "Cx", text: "En attente du 1er contrôle AB" },
-        { value: "C1", text: "C1" },
-        { value: "C2", text: "C2" },
-        { value: "C3", text: "C3" },
-        { value: "BIO", text: "Bio" },
-        { value: "CONV", text: "Conventionnel" },
-        { value: "HVE3", text: "Haute Valeur Environnementale (niveau 3)" },
-        { value: "HVEx", text: "Haute Valeur Environnementale (niveau 1 ou 2)" },
-        { value: "DMTR", text: "Demeter" },
-        { value: "N&P", text: "Nature & Progrès" },
-        { value: "", text: "Inconnu" }
-      ],
-
-      plots: [
-        {
-          "id": "@1.1",
+      pacage: null,
+      plots: featureCollection([
+        Feature(emptyPolygon(), {
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
           "culture_type": ['AIL', 'OIG'],
           "niveau_conversion": 'BIO',
           "engagement_date": "03/02/2017"
-        },
-        {
-          "id": "@1.2",
+        }, { "id": "@1.1" }),
+        Feature(emptyPolygon(), {
           "com": "26108",
           "cadastre_suffixes": 'AM17',
           "culture_type": ['SOJ'],
           "niveau_conversion": 'C2',
           "engagement_date": "03/02/2017"
-        },
-        {
-          "id": "@2.1"
-        }
-      ],
+        }, { "id": "@1.2" }),
+        Feature(emptyPolygon(), {
+        }, { "id": "@2.1" })
+      ]),
 
-      cadastre_plots: {},
       mapStyle: mergeAll([
         baseStyle,
         cadastreStyle,
-        cartobioStyle])
+        cartobioStyle
+      ])
     };
+  },
+
+  computed: {
+    hasAtLeastOneGeometry () {
+      return this.structuredPlots.features.some(feature => feature.geometry.coordinates.length > 0)
+    },
+
+    mapBounds () {
+      const geometry = this.hasAtLeastOneGeometry ? geometryBbox(this.plots) : [-9.86, 41.15, 10.38, 51.56]
+      return bboxPolygon(geometry).bbox
+    },
+
+    structuredPlots () {
+      return featureCollection(
+        this.plots.features.map(feature => prepareFeature({ feature }))
+      )
+    }
   },
 
   methods: {
     addPlot () {
-      const lastLine = this.plots[ this.plots.length - 1 ] ?? {}
+      const lastLine = this.plots.features[ this.plots.length - 1 ] ?? {}
       const { com, engagement_date, niveau_conversion } = lastLine
 
-      this.plots.push({ com, engagement_date, niveau_conversion, id: Math.random() })
+      this.plots.features.push(Feature({}, { com, engagement_date, niveau_conversion }, { id: Math.random() }))
     },
 
-    logEvent ($event) {
-      console.log($event)
+    deleteFeatureId (id) {
+      const index = this.plots.features.findIndex(({ id: featureId }) => featureId === id)
+
+      this.$delete(this.plots.features, index)
     },
 
     fetchCadastreSheets () {
       this.isLoading = true
 
-      const sheets = this.structuredPlots.map(({ com, cadastre_id }) => ({ com, cadastre_id }))
-      const calls = sheets.reduce((map, sheet) => {
-        if (Array.isArray(map[ sheet.com ]) === false) {
-          map[ sheet.com ] = []
+      const sheets = this.structuredPlots.features.reduce((acc, feature) => {
+        const { com } = feature.properties
+        const { id: featureId } = feature
+
+        feature.properties.cadastre_references.forEach(reference => {
+          acc.push({ com, reference, featureId })
+        })
+
+        return acc
+      }, [])
+
+      const calls = sheets.reduce((map, { featureId, com, reference }) => {
+        if (Array.isArray(map[ com ]) === false) {
+          map[ com ] = []
         }
 
-        map[ sheet.com ].push(sheet.cadastre_id)
+        map[ com ].push({ reference, featureId })
 
         return map
       }, {})
 
-      const callsP = Object.entries(calls).map(([com, ids]) => {
+      const callsP = Object.entries(calls).map(([com, references]) => {
         return get(`https://cadastre.data.gouv.fr/bundler/cadastre-etalab/communes/${com}/geojson/parcelles`)
-          .then(response => response.data.features.filter(feature => ids.includes(feature.id)))
-          .then(features => features.forEach(feature => {
-            this.$set(this.cadastre_plots, feature.id, feature)
+          .then(response => response.data.features.filter(feature => references.map(({ reference }) => reference).includes(feature.id)))
+          .then(features => features.forEach(cadastreFeature => {
+            // we retrieve the feature id associated to this cadastral reference
+            const { featureId } = references.find(({ reference }) => cadastreFeature.id === reference)
+
+            // we
+            const index = this.plots.features.findIndex(({ id }) => id === featureId)
+            const parcelle = this.plots.features[index]
+
+            // we add the geometry as a Polygon
+            if (parcelle.geometry.coordinates.length === 0) {
+              parcelle.geometry = { ...cadastreFeature.geometry }
+            }
+            // we morph a Polygon with geometry into a MultiPolygon (stack of polygons)
+            else if (parcelle.geometry.coordinates.length === 1) {
+              parcelle.geometry.type = 'MultiPolygon'
+              parcelle.geometry.coordinates = [
+                parcelle.geometry.coordinates,
+                cadastreFeature.geometry.coordinates
+              ]
+            }
+            // we add another Polygon coordinates to a MultiPolygon
+            else {
+              parcelle.geometry.coordinates.push([ ...cadastreFeature.geometry.coordinates ])
+            }
+
+            this.$set(this.plots.features, index, parcelle)
           }))
       })
 
@@ -305,7 +314,15 @@ export default {
     },
 
     onMapLoaded({ map }) {
-        this.map = map;
+      this.map = map;
+
+      this.updateMap()
+    },
+
+    updateMap () {
+      this.map.getSource("plots").setData(this.plots)
+      this.map.fitBounds(this.mapBounds)
+      this.map.resize();
     },
 
     telepacXmlPrompt () {
@@ -314,46 +331,15 @@ export default {
 
     async uploadXML () {
       const text = await this.$refs.telepac_upload_field.files[0].text()
-      const xml = new DOMParser().parseFromString(text, 'text/xml')
-
-      const pacage = xml.querySelector('producteur').getAttribute('numero-pacage')
-
       this.isLoading = true
 
-      setTimeout(() => {
-        this.plots = Array
-          .from(xml.querySelectorAll('parcelle'))
-          .map(plot => {
-            const ilot = plot.parentElement.parentElement
-            const com = ilot.querySelector('commune')?.textContent.trim()
+      this.$nextTick(() => {
+        const { pacage, featureCollection } = convertXmlDossierToGeoJSON(text)
+        this.pacage = pacage
+        this.plots = featureCollection
 
-            const id = [
-              ilot.getAttribute('numero-ilot'),
-              plot.querySelector('[numero-parcelle]').getAttribute('numero-parcelle')
-            ].join('.')
-
-            const culture_type = Array.from(plot.querySelectorAll('code-culture'))
-              .map(node => node.textContent)
-              .filter(culture => culture && culture !== '___')
-
-            const niveau_conversion = plot.querySelector('agri-bio[conduite-bio="true"]') ? 'BIO' : ''
-
-            return {
-              id,
-              com,
-              pacage,
-              culture_type,
-              niveau_conversion,
-              comment: [
-                `Parcelle ${id}.`,
-                plot.querySelector('agri-bio[conduite-maraichage="true"]') ? 'Conduite en maraîchage.' : '',
-                plot.querySelector('agroforesterie') ? 'Conduite en agroforesterie.' : '',
-              ].filter(d => d).join('\n')
-            }
-          })
-
-          this.isLoading = false
-      }, 500)
+        this.isLoading = false
+      })
     },
 
   },
@@ -402,17 +388,18 @@ export default {
     height: 500px;
   }
 
-  .grid {
+  .grid .row,
+  .grid .header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-column-gap: 5px;
     grid-row-gap: 1em;
     margin: 1em 0;
+  }
 
-    span.header {
-      font-weight: bold;
-      align-self: flex-end;
-    }
+  .grid .header span {
+    font-weight: bold;
+    align-self: flex-end;
   }
 
   .chip {
