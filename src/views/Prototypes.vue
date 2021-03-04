@@ -22,7 +22,7 @@
 
 <script>
 // import { mapGetters } from 'vuex'
-import ParcelsAutoComplete from '../components/Prototypes/ParcelsAutoComplete.vue'
+import ParcelsAutoComplete from '@/components/Prototypes/ParcelsAutoComplete.vue'
 
 export default {
   name: "Prototypes",

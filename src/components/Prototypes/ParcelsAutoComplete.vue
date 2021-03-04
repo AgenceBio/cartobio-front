@@ -1,103 +1,117 @@
 <template>
   <v-form v-model="valid">
-    <h1>Vos parcelles</h1>
-    <p><i>Cette section est actuellement en phase de test</i>
+    <h1>Notification du parcellaire opérateur en Agriculture Biologique</h1>
+    <p class="chip">
+      <v-avatar><v-icon>info_outline</v-icon></v-avatar>
+      Cette section est actuellement en phase de test.
     </p>
     <p>
       En renseignant votre parcellaire vous participez à faciliter votre contrôle AB et l’instruction de vos aides PAC si vous les demandez.<br/>
 Les données renseignées seront uniquement communiquées à votre Organisme Certificateur en l’état. Vos données anonymisées permettront également d’améliorer
- la connaissance des parcelles bio en France. 
+ la connaissance des parcelles bio en France.
 
     </p>
-    <h2>Saisie du parcellaire</h2>
+    <h2>
+      Saisie du parcellaire
 
+      <v-btn outline round color="success" :disabled="isLoading" @click="telepacXmlPrompt" small>
+        <input type="file" ref="telepac_upload_field" @input="uploadXML" accept=".xml,text/xml" hidden>
+        <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
+        <v-icon v-else small class="mr-2">cloud_upload</v-icon>
+        importer dossier complet TéléPAC (XML)
+      </v-btn>
+    </h2>
 
-    <v-flex class="row xs12 d-flex" v-for="(plot, index) in plots" :key="index">
-      <v-autocomplete label="Commune" hint="Nom de la commune (Code INSEE)" persistent-hint clearable outline v-model="plot.com" :item-text="itemText" item-value="com" :items="_communes" />
-      <v-text-field label="Numéro cadastral" hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" />
-      <v-autocomplete label="Type de culture" outline :items="knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" />
-      <v-select label="Statut conversion" outline v-model="plot.niveau_conversion" :items="conversion_levels" />
-      <v-menu v-model="plot.conversionDateMenu" lazy transition="scale-transition" offset-y full-width max-width="320px">
-        <template v-slot:activator="{ on }">
-          <v-text-field outline label="Date de conversion" v-on="on" hint="Si inconnue, donner la date de conversion prévue" persistent-hint readonly :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date" />
-        </template>
+    <v-chip class="pacage" v-if="pacage">
+      <b class="mr-2">N°&nbsp;PACAGE</b>
+      {{pacage}}
+    </v-chip>
 
-        <v-date-picker outline @input="plot.conversionDateMenu = false" type="month" v-model="plot.engagement_date" show-current locale="fr-FR" />
-      </v-menu>
-      <v-text-field label="Commentaire" hint="Nom de la parcelle, précisions, autres infos ..." persistent-hint clearable outline v-model="plot.comment" />
-      <v-btn flat icon large @click="$delete(plots, index)"><v-icon large>delete</v-icon></v-btn> 
-    </v-flex>
+    <div class="grid">
+      <div class="header">
+        <span>Commune</span>
+        <span>Parcelles cadastrales</span>
+        <span>Type de culture</span>
+        <span>Statut de conversion</span>
+        <span>Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
+        <span>Commentaire</span>
+        <span></span>
+      </div>
 
-    <v-btn color="info" @click="addPlot">Ajouter une parcelle</v-btn>
+      <plot-row v-for="(feature, index) in plots.features" :feature="feature" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
+    </div>
+
+    <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
+      <v-icon class="mr-2">add_circle_outline</v-icon>
+      Ajouter une parcelle
+    </v-btn>
 
     <hr class="my-4" />
-    <h2>Visualisation du parcellaire <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="loading" small>calculer les surfaces</v-btn></h2>
-    <v-expansion-panel expand :value="[true, true]">
-      <v-expansion-panel-content>
-        <template v-slot:header>
-          <h2>Vue tabulaire </h2>
-        </template>
 
-        <table class="summary">
-          <thead>
-            <tr>
-              <td>Parcelle</td>
-              <td>Production végétale</td>
-              <td>Date engagement</td>
-              <td>Réf cadastrale</td>
-              <td>Classement</td>
-              <td>Surface</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="plot in structuredPlots" :key="plot.plot_id + plot.cadastre_id">
-              <td>{{ plot.plot_id }}</td>
-              <td>{{ plot.culture_type }}</td>
-              <td>{{ plot.engagement_date }}</td>
-              <td><a :href="'https://cadastre.data.gouv.fr/map?style=ortho&amp;parcelleId=' + plot.cadastre_id" target="cadastre">{{ plot.cadastre_id }}</a></td>
-              <td>{{ plot.niveau_conversion }}</td>
-              <td>{{ plot.surface === null ? '?' : `${plot.surface}ha`}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </v-expansion-panel-content>
-      
-      <v-expansion-panel-content>
-      <template v-slot:header>
-          <h2>Vue Map</h2>
-        </template>
-        <div class="map">
-          <MglMap
-          :mapStyle="mapStyle"
-          :bounds.sync="mapBounds"
-          @load="onMapLoaded"
-          ref="mapboxDiv"
-          >
-          <MglGeojsonLayer
-            sourceId="plots"
-            :layer="layerStyle('operator-parcels')"
-            layerId="operator-parcels"/>
-          <MglVectorLayer
-              before="place-continent"
-              sourceId="cadastre"
-              :layer="layerStyle('selectable-cadastral-parcels')"
-              layerId="parcelles"/>
-          </MglMap>
-        </div>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+    <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="isLoading">
+      <v-icon class="mr-2">map</v-icon>
+      {{isMapVisible ? 'actualiser la carte' : 'afficher sur une carte'}}
+    </v-btn>
+
+    <section v-if="isMapVisible">
+      <h2 class="headline my-3">Parcellaire tabulaire </h2>
+
+      <table class="summary">
+        <thead>
+          <tr>
+            <td>Parcelle</td>
+            <td>Production végétale</td>
+            <td>Date engagement</td>
+            <td>Réf cadastrale</td>
+            <td>Classement</td>
+            <td>Surface graphique</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="({ properties, id }) in structuredPlots.features" :key="id">
+            <td>{{ id }}</td>
+            <td>{{ properties.culture_type }}</td>
+            <td>{{ properties.engagement_date }}</td>
+            <td>{{ properties.cadastral_references }}</td>
+            <td>{{ properties.niveau_conversion }}</td>
+            <td>{{ properties.surface ? `${properties.surface}ha` : '?'}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="headline my-3">Parcellaire graphique</h2>
+
+      <div class="map">
+        <MglMap
+        :mapStyle="mapStyle"
+        :bounds.sync="mapBounds"
+        @load="onMapLoaded"
+        ref="mapboxDiv"
+        >
+        <MglGeojsonLayer
+          sourceId="plots"
+          :layer="layerStyle('operator-parcels')"
+          layerId="operator-parcels"/>
+        <MglVectorLayer
+            before="place-continent"
+            sourceId="cadastre"
+            :layer="layerStyle('selectable-cadastral-parcels')"
+            layerId="parcelles"/>
+        </MglMap>
+      </div>
+    </section>
   </v-form>
 </template>
 
 <script>
 import {get} from 'axios'
-import communes from '@/api/insee/communes.json'
-import {codes} from '@/modules/codes-cultures/pac.js'
 import {geometry as area} from '@mapbox/geojson-area'
 import { all as mergeAll } from "deepmerge";
-import bbox from "@turf/bbox";
+import geometryBbox  from "@turf/bbox";
 import bboxPolygon from "@turf/bbox-polygon";
-import { featureCollection } from "@turf/helpers";
+import { featureCollection, feature as Feature } from "@turf/helpers";
+import PlotRow from './PlotRow'
+import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 
 import {
   baseStyle,
@@ -113,158 +127,182 @@ import {
 
 const IN_HECTARES = 10000
 
-function prepareRow (row, cadastre_plots = {}) {
-  const {culture_type, com, engagement_date, niveau_conversion} = row
-  
-
-
-  // 26108000AN0100
-  const [, prefixe, section, parcelle] = row.cadastre_suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
-  const cadastre_id = section ? `${row.com}${prefixe || '000'}${section}${parcelle.padStart(4, 0)}` : ''
-  const plot_id = cadastre_id;
-
-  let surface = null
-
-  if (cadastre_id && cadastre_plots[cadastre_id]) {
-    const {geometry} = cadastre_plots[cadastre_id]
-    surface = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
-  }
-
-
+function emptyPolygon () {
   return {
-    com,
-    culture_type,
-    engagement_date,
-    cadastre_id,
-    plot_id,
-    niveau_conversion,
-    surface
+    type: "Polygon",
+    coordinates: []
   }
 }
 
+function prepareFeature ({ feature }) {
+  const { culture_type, com, niveau_conversion } = feature.properties
+  const { engagement_date = '', cadastre_suffixes = '' } = feature.properties
+  const { id, geometry } = feature
+
+  let formatted_engagement_date = ''
+  let surface = 0
+
+  if (engagement_date) {
+    const [day, month, year] = engagement_date.split('/')
+    formatted_engagement_date = `${year}-${month}-${day}`
+  }
+
+  // 26108000AN0100
+  const cadastre_references = cadastre_suffixes.split(/\W/).filter(d => d).map(suffix => {
+    const [, prefixe, section, parcelle] = suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
+    return section ? `${com}${prefixe || '000'}${section}${parcelle.padStart(4, 0)}` : ''
+  })
+
+  if (geometry.coordinates.length) {
+    surface = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
+  }
+
+  const properties = {
+    ...feature.properties,
+    com,
+    culture_type,
+    engagement_date: formatted_engagement_date,
+    cadastre_references,
+    niveau_conversion,
+    surface
+  }
+
+  return Feature(geometry, properties, { id })
+}
+
 export default {
-  computed: {
-    structuredPlots () {
-      const plots = []
-
-      this.plots.forEach(row => {
-        const suffixes = (row.cadastre_suffixes ?? '').split(',')
-        plots.push(...suffixes.map(suffix => prepareRow({ ...row, cadastre_suffix: suffix}, this.cadastre_plots)))
-      })
-      if(this.map)
-        this.map.resize();
-      return plots
-    },
-    plotsGeoJson () {
-      let fc = featureCollection(Object.entries(this.cadastre_plots).map(([, value]) => value));
-      if(this.map)
-        this.map.getSource("plots").setData(fc);
-      return fc;
-    },
-    mapBounds() {
-      let bounds = bboxPolygon(bbox(this.plotsGeoJson)).bbox;
-      if (this.map)
-        this.map.fitBounds(bounds);
-      return bounds;
-    }
-  },
-
   components: {
     MglMap,
     MglGeojsonLayer,
-    MglVectorLayer
+    MglVectorLayer,
+    PlotRow,
   },
 
   data () {
     return {
       valid: false,
-      loading: false,
+      isLoading: false,
+      isMapVisible: false,
 
-      conversion_levels: [
-        { value: "C1", text: "C1" },
-        { value: "C2", text: "C2" },
-        { value: "C3", text: "C3" },
-        { value: "BIO", text: "Bio" },
-        { value: "CONV", text: "Conventionnel" },
-        { value: "Inconnu", text: "Inconnu" }
-      ],
-
-      knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
-
-      plots: [
-        {
+      pacage: null,
+      plots: featureCollection([
+        Feature(emptyPolygon(), {
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
-          "culture_type": ['AIL'],
+          "culture_type": ['AIL', 'OIG'],
           "niveau_conversion": 'BIO',
-          "engagement_date": "2017-02-03"
-        },
-        {
+          "engagement_date": "03/02/2017"
+        }, { "id": "@1.1" }),
+        Feature(emptyPolygon(), {
           "com": "26108",
           "cadastre_suffixes": 'AM17',
           "culture_type": ['SOJ'],
           "niveau_conversion": 'C2',
-          "engagement_date": "2017-02-03"
-        }
-      ],
+          "engagement_date": "03/02/2017"
+        }, { "id": "@1.2" }),
+        Feature(emptyPolygon(), {
+        }, { "id": "@2.1" })
+      ]),
 
-      cadastre_plots: {},
       mapStyle: mergeAll([
         baseStyle,
         cadastreStyle,
-        cartobioStyle])
+        cartobioStyle
+      ])
     };
   },
 
-  created () {
-    this._communes = communes
-  },
+  computed: {
+    hasAtLeastOneGeometry () {
+      return this.structuredPlots.features.some(feature => feature.geometry.coordinates.length > 0)
+    },
 
-  watch: {
-    commune_search (val) {
-      if (!val && val.length < 3) {
-        this.communes = []
-        return
-      }
+    mapBounds () {
+      const geometry = this.hasAtLeastOneGeometry ? geometryBbox(this.plots) : [-9.86, 41.15, 10.38, 51.56]
+      return bboxPolygon(geometry).bbox
+    },
 
-      const search = val.toLocaleLowerCase()
-      this.communes = communes.filter(({ libelle }) => {
-        return libelle.toLocaleLowerCase().includes(search)
-      })
+    structuredPlots () {
+      return featureCollection(
+        this.plots.features.map(feature => prepareFeature({ feature }))
+      )
     }
   },
 
   methods: {
     addPlot () {
-      const lastLine = this.plots[ this.plots.length - 1 ] ?? {}
-      const { com, engagement_date } = lastLine
+      const lastLine = this.plots.features[ this.plots.length - 1 ] ?? {}
+      const { com, engagement_date, niveau_conversion } = lastLine
 
-      this.plots.push({ com, engagement_date })
+      this.plots.features.push(Feature({}, { com, engagement_date, niveau_conversion }, { id: Math.random() }))
+    },
+
+    deleteFeatureId (id) {
+      const index = this.plots.features.findIndex(({ id: featureId }) => featureId === id)
+
+      this.$delete(this.plots.features, index)
     },
 
     fetchCadastreSheets () {
-      this.loading = true
+      this.isLoading = true
 
-      const sheets = this.structuredPlots.map(({ com, cadastre_id }) => ({ com, cadastre_id }))
-      const calls = sheets.reduce((map, sheet) => {
-        if (Array.isArray(map[ sheet.com ]) === false) {
-          map[ sheet.com ] = []
+      const sheets = this.structuredPlots.features.reduce((acc, feature) => {
+        const { com } = feature.properties
+        const { id: featureId } = feature
+
+        feature.properties.cadastre_references.forEach(reference => {
+          acc.push({ com, reference, featureId })
+        })
+
+        return acc
+      }, [])
+
+      const calls = sheets.reduce((map, { featureId, com, reference }) => {
+        if (Array.isArray(map[ com ]) === false) {
+          map[ com ] = []
         }
 
-        map[ sheet.com ].push(sheet.cadastre_id)
+        map[ com ].push({ reference, featureId })
 
         return map
       }, {})
 
-      const callsP = Object.entries(calls).map(([com, ids]) => {
+      const callsP = Object.entries(calls).map(([com, references]) => {
         return get(`https://cadastre.data.gouv.fr/bundler/cadastre-etalab/communes/${com}/geojson/parcelles`)
-          .then(response => response.data.features.filter(feature => ids.includes(feature.id)))
-          .then(features => features.forEach(feature => {
-            this.$set(this.cadastre_plots, feature.id, feature)
+          .then(response => response.data.features.filter(feature => references.map(({ reference }) => reference).includes(feature.id)))
+          .then(features => features.forEach(cadastreFeature => {
+            // we retrieve the feature id associated to this cadastral reference
+            const { featureId } = references.find(({ reference }) => cadastreFeature.id === reference)
+
+            // we
+            const index = this.plots.features.findIndex(({ id }) => id === featureId)
+            const parcelle = this.plots.features[index]
+
+            // we add the geometry as a Polygon
+            if (parcelle.geometry.coordinates.length === 0) {
+              parcelle.geometry = { ...cadastreFeature.geometry }
+            }
+            // we morph a Polygon with geometry into a MultiPolygon (stack of polygons)
+            else if (parcelle.geometry.coordinates.length === 1) {
+              parcelle.geometry.type = 'MultiPolygon'
+              parcelle.geometry.coordinates = [
+                parcelle.geometry.coordinates,
+                cadastreFeature.geometry.coordinates
+              ]
+            }
+            // we add another Polygon coordinates to a MultiPolygon
+            else {
+              parcelle.geometry.coordinates.push([ ...cadastreFeature.geometry.coordinates ])
+            }
+
+            this.$set(this.plots.features, index, parcelle)
           }))
       })
 
-      Promise.all(callsP).finally(() => this.loading = false)
+      Promise.all(callsP).finally(() => {
+        this.isLoading = false
+        this.isMapVisible = true
+      })
     },
 
     /**
@@ -275,13 +313,35 @@ export default {
       return cartobioStyle.layers.find(({ id }) => id === styleId);
     },
 
-    itemText ({ com, libelle }) {
-      return `${libelle} (${com})`
+    onMapLoaded({ map }) {
+      this.map = map;
+
+      this.updateMap()
     },
 
-    onMapLoaded({ map }) {
-        this.map = map;
-    }
+    updateMap () {
+      this.map.getSource("plots").setData(this.plots)
+      this.map.fitBounds(this.mapBounds)
+      this.map.resize();
+    },
+
+    telepacXmlPrompt () {
+      this.$refs.telepac_upload_field.click()
+    },
+
+    async uploadXML () {
+      const text = await this.$refs.telepac_upload_field.files[0].text()
+      this.isLoading = true
+
+      this.$nextTick(() => {
+        const { pacage, featureCollection } = convertXmlDossierToGeoJSON(text)
+        this.pacage = pacage
+        this.plots = featureCollection
+
+        this.isLoading = false
+      })
+    },
+
   },
 };
 </script>
@@ -306,6 +366,7 @@ export default {
     thead {
       background: #dfdfdf;
       font-weight: bold;
+      vertical-align: bottom;
     }
 
     tbody {
@@ -321,10 +382,37 @@ export default {
   h2 {
     margin-top : 0;
   }
-  .map { 
-    position: relative; 
+  .map {
+    position: relative;
     width: 100%;
     height: 500px;
   }
-  
+
+  .grid .row,
+  .grid .header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-column-gap: 5px;
+    grid-row-gap: 1em;
+    margin: 1em 0;
+  }
+
+  .grid .header span {
+    font-weight: bold;
+    align-self: flex-end;
+  }
+
+  .chip {
+    background: #ffc;
+    border: 1px solid currentColor;
+    border-radius: 2em;
+    display: inline-block;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    .v-avatar {
+      margin-left: -1em;
+    }
+  }
+
 </style>

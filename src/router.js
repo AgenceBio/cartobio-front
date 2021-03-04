@@ -67,6 +67,9 @@ export default new Router({
         }
       ]
     },
+
+    { path: '/prototypes', name: 'prototypes', component: () => import(/* webpackChunkName: "prototypes" */'./views/Prototypes.vue') },
+
     {
       path: '/',
       component: ContentPagesLayout,
@@ -88,8 +91,6 @@ export default new Router({
         { path: '/api', name: 'api', component: ApiDocumentation },
         { path: '/features/organismes-certification-bio', name: 'landing-oc', component: LandingCertificationBody },
         { path: '/features/territoires', name: 'landing-territoires', component: LandingTerritory },
-
-        { path: '/prototypes', name: 'prototypes', component: () => import(/* webpackChunkName: "prototypes" */'./views/Prototypes.vue') },
 
         { path: '*', name: '404', component: PageNotFound }
       ]

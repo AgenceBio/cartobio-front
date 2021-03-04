@@ -28,6 +28,7 @@
     "geojson-vt": "^3.2.1",
     "lodash": "^4.17.20",
     "mapbox-gl": "^1.13.0",
+    "reproject": "^1.2.6",
     "vue": "^2.6.12",
     "vue-fragment": "^1.5.1",
     "vue-ls": "^3.2.1",
