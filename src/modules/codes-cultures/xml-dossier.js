@@ -51,6 +51,7 @@ export function convertXmlDossierToGeoJSON (text) {
   const xml = new DOMParser().parseFromString(text, 'text/xml')
 
   const pacage = xml.querySelector('producteur').getAttribute('numero-pacage')
+  const [, campagne] = /-(\d{4,})-V/i.exec(xml.querySelector('producteur').getAttribute('fichier-xsd'))
   const nodes = Array.from(xml.querySelectorAll('parcelle'))
 
   const featureCollection = Collection(nodes.map(parcelle => {
@@ -65,5 +66,5 @@ export function convertXmlDossierToGeoJSON (text) {
 
   console.log(featureCollection)
 
-  return { pacage, featureCollection: toWgs84(featureCollection, lambert93) }
+  return { pacage, campagne, featureCollection: toWgs84(featureCollection, lambert93) }
 }

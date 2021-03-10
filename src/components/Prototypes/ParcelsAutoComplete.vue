@@ -1,6 +1,6 @@
 <template>
   <v-form v-model="valid">
-    <h1>Notification du parcellaire opérateur en Agriculture Biologique</h1>
+    <h1 class="display-1">Notification du parcellaire opérateur en Agriculture Biologique</h1>
     <p class="chip">
       <v-avatar><v-icon>info_outline</v-icon></v-avatar>
       Cette section est actuellement en phase de test.
@@ -9,42 +9,70 @@
       En renseignant votre parcellaire vous participez à faciliter votre contrôle AB et l’instruction de vos aides PAC si vous les demandez.<br/>
 Les données renseignées seront uniquement communiquées à votre Organisme Certificateur en l’état. Vos données anonymisées permettront également d’améliorer
  la connaissance des parcelles bio en France.
-
     </p>
-    <h2>
-      Saisie du parcellaire
 
+    <h2 class="headline">
+      Saisie du parcellaire
+    </h2>
+
+    <div>
       <v-btn outline round color="success" :disabled="isLoading" @click="telepacXmlPrompt" small>
         <input type="file" ref="telepac_upload_field" @input="uploadXML" accept=".xml,text/xml" hidden>
         <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
         <v-icon v-else small class="mr-2">cloud_upload</v-icon>
-        importer dossier complet TéléPAC (XML)
+        importer dossier TéléPAC (XML)
       </v-btn>
-    </h2>
 
-    <v-chip class="pacage" v-if="pacage">
-      <b class="mr-2">N°&nbsp;PACAGE</b>
-      {{pacage}}
-    </v-chip>
+      <v-btn outline round disabled small>
+        <v-icon small class="mr-2">cloud_upload</v-icon>
+        importer depuis MesParcelles
+      </v-btn>
 
-    <div class="grid">
-      <div class="header">
-        <span>Commune</span>
-        <span>Parcelles cadastrales</span>
-        <span>Type de culture</span>
-        <span>Statut de conversion</span>
-        <span>Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
-        <span>Commentaire</span>
-        <span></span>
-      </div>
+      <v-btn outline round disabled small>
+        <v-icon small class="mr-2">cloud_upload</v-icon>
+        importer depuis Geofolia
+      </v-btn>
 
-      <plot-row v-for="(feature, index) in plots.features" :feature="feature" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
+      <v-btn outline round disabled small>
+        <v-icon small class="mr-2">cloud_upload</v-icon>
+        importer depuis Smug Farmer
+      </v-btn>
     </div>
 
-    <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
-      <v-icon class="mr-2">add_circle_outline</v-icon>
-      Ajouter une parcelle
-    </v-btn>
+    <div v-if="pacage" class="my-3">
+      <v-chip class="pacage">
+        <b class="mr-2">Campagne PAC</b>
+        {{campagne}}
+      </v-chip>
+      <v-chip class="pacage">
+        <b class="mr-2">N°&nbsp;PACAGE</b>
+        {{pacage}}
+      </v-chip>
+    </div>
+
+    <div :class="{ grid: true, 'no-cadastre': pacage }">
+      <span class="header">Commune</span>
+      <span v-if="!pacage" class="header">Références<br>cadastrales</span>
+      <span class="header">Type de culture</span>
+      <span class="header">Statut de conversion</span>
+      <span class="header">Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
+      <span class="header">Commentaire</span>
+      <span class="header"></span>
+
+      <plot-row v-for="(feature, index) in plots.features" :feature="feature" :pacage="pacage" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
+    </div>
+
+    <div class="my-4">
+      <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
+        <v-icon class="mr-2">add_circle_outline</v-icon>
+        Ajouter une parcelle
+      </v-btn>
+
+      <v-btn disabled color="info">
+        <v-icon class="mr-2">add_circle_outline</v-icon>
+        Ajouter une zone de rucher
+      </v-btn>
+    </div>
 
     <hr class="my-4" />
 
@@ -62,7 +90,7 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
             <td>Parcelle</td>
             <td>Production végétale</td>
             <td>Date engagement</td>
-            <td>Réf cadastrale</td>
+            <td v-if="!pacage">Réf cadastrale</td>
             <td>Classement</td>
             <td>Surface graphique</td>
           </tr>
@@ -70,9 +98,9 @@ Les données renseignées seront uniquement communiquées à votre Organisme Cer
         <tbody>
           <tr v-for="({ properties, id }) in structuredPlots.features" :key="id">
             <td>{{ id }}</td>
-            <td>{{ properties.culture_type }}</td>
+            <td>{{ properties.culture_type.join(', ') }}</td>
             <td>{{ properties.engagement_date }}</td>
-            <td>{{ properties.cadastral_references }}</td>
+            <td v-if="!pacage">{{ properties.cadastre_references.join(', ') }}</td>
             <td>{{ properties.niveau_conversion }}</td>
             <td>{{ properties.surface ? `${properties.surface}ha` : '?'}}</td>
           </tr>
@@ -135,17 +163,10 @@ function emptyPolygon () {
 }
 
 function prepareFeature ({ feature }) {
-  const { culture_type, com, niveau_conversion } = feature.properties
-  const { engagement_date = '', cadastre_suffixes = '' } = feature.properties
+  const { com, cadastre_suffixes = '' } = feature.properties
   const { id, geometry } = feature
 
-  let formatted_engagement_date = ''
   let surface = 0
-
-  if (engagement_date) {
-    const [day, month, year] = engagement_date.split('/')
-    formatted_engagement_date = `${year}-${month}-${day}`
-  }
 
   // 26108000AN0100
   const cadastre_references = cadastre_suffixes.split(/\W/).filter(d => d).map(suffix => {
@@ -159,11 +180,7 @@ function prepareFeature ({ feature }) {
 
   const properties = {
     ...feature.properties,
-    com,
-    culture_type,
-    engagement_date: formatted_engagement_date,
     cadastre_references,
-    niveau_conversion,
     surface
   }
 
@@ -185,23 +202,22 @@ export default {
       isMapVisible: false,
 
       pacage: null,
+      campagne: null,
       plots: featureCollection([
         Feature(emptyPolygon(), {
           "com": "26108",
           "cadastre_suffixes": 'ZI631, ZI637',
           "culture_type": ['AIL', 'OIG'],
           "niveau_conversion": 'BIO',
-          "engagement_date": "03/02/2017"
+          "engagement_date": "2017-03-02"
         }, { "id": "@1.1" }),
         Feature(emptyPolygon(), {
           "com": "26108",
           "cadastre_suffixes": 'AM17',
           "culture_type": ['SOJ'],
           "niveau_conversion": 'C2',
-          "engagement_date": "03/02/2017"
+          "engagement_date": "2017-03-02"
         }, { "id": "@1.2" }),
-        Feature(emptyPolygon(), {
-        }, { "id": "@2.1" })
       ]),
 
       mapStyle: mergeAll([
@@ -234,7 +250,12 @@ export default {
       const lastLine = this.plots.features[ this.plots.length - 1 ] ?? {}
       const { com, engagement_date, niveau_conversion } = lastLine
 
-      this.plots.features.push(Feature({}, { com, engagement_date, niveau_conversion }, { id: Math.random() }))
+      this.plots.features.push(Feature({}, {
+        com,
+        engagement_date,
+        niveau_conversion,
+        culture_type: []
+      }, { id: Math.random() }))
     },
 
     deleteFeatureId (id) {
@@ -333,13 +354,14 @@ export default {
       const text = await this.$refs.telepac_upload_field.files[0].text()
       this.isLoading = true
 
-      this.$nextTick(() => {
-        const { pacage, featureCollection } = convertXmlDossierToGeoJSON(text)
+      setTimeout(() => this.$nextTick(() => {
+        const { pacage, campagne, featureCollection } = convertXmlDossierToGeoJSON(text)
         this.pacage = pacage
+        this.campagne = campagne
         this.plots = featureCollection
 
         this.isLoading = false
-      })
+      }), 200)
     },
 
   },
@@ -388,18 +410,25 @@ export default {
     height: 500px;
   }
 
-  .grid .row,
-  .grid .header {
+  .grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-column-gap: 5px;
     grid-row-gap: 1em;
+    grid-column-gap: 0;
+    grid-template-columns: repeat(7, auto);
     margin: 1em 0;
-  }
 
-  .grid .header span {
-    font-weight: bold;
-    align-self: flex-end;
+    &.no-cadastre {
+      grid-template-columns: repeat(6, auto);
+    }
+
+    span.header {
+      font-weight: bold;
+      align-self: end;
+    }
+
+    /deep/ > * {
+      padding: 0 .5rem;
+    }
   }
 
   .chip {
@@ -412,6 +441,10 @@ export default {
 
     .v-avatar {
       margin-left: -1em;
+    }
+
+    &:first-child {
+      margin-left: 0;
     }
   }
 
