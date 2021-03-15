@@ -1,16 +1,41 @@
 <template>
-  <div>
-    <offline-lazy-autocomplete single-line :allow-overflow="false" outline v-model="plot.com" :lazy-items="() => $data._communes" item-value="COM" :item-text="({ LIBELLE, DEP }) => `${LIBELLE} (${DEP})`" :hide-details="!isLastLine" />
-    <v-text-field single-line hint="Sous la forme AZ01, AN5, 011K0038 etc." persistent-hint clearable outline v-model="plot.cadastre_suffixes" :hide-details="!isLastLine" />
-    <v-autocomplete single-line :allow-overflow="false" outline :items="$data._knownCultures" item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="!isLastLine" />
-    <v-select single-line outline v-model="plot.niveau_conversion" :items="conversion_levels" :hide-details="!isLastLine" />
-    <v-text-field single-line clearable outline mask="##/##/####" hint="Format Jour/Mois/Année. Si inconnue, donner la date de conversion prévue" persistent-hint :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  :hide-details="!isLastLine" />
-    <v-text-field single-line hint="Nom de la parcelle, précisions, autres infos ..." persistent-hint clearable outline v-model="plot.comment" :hide-details="!isLastLine" />
-    <v-btn flat icon large @click="$emit('delete', id)"><v-icon medium>delete</v-icon></v-btn>
+  <div v-frag>
+    <span>
+      <offline-lazy-autocomplete v-model="plot.com" :lazy-items="() => $data._communes" item-value="COM" :item-text="({ LIBELLE, DEP }) => `${LIBELLE} (${DEP})`" :hide-details="!isLastLine" />
+    </span>
+
+    <span v-if="!pacage">
+      <input type="text" v-model="plot.cadastre_suffixes" :hide-details="!isLastLine" />
+    </span>
+
+    <div class="select-wrapper multiple">
+      <select item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="!isLastLine">
+        <option v-for="item in $data._knownCultures" :key="item['Code Culture']" :value="item['Code Culture']">{{ item['Libellé Culture']}}</option>
+      </select>
+    </div>
+
+    <div class="select-wrapper">
+      <select v-model="plot.niveau_conversion" :hide-details="!isLastLine">
+        <option v-for="({value, text}) in conversion_levels" :key="value" :value="value">{{text}}</option>
+      </select>
+    </div>
+
+    <span>
+      <input type="date" min="1970-01-01" :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  :hide-details="!isLastLine" />
+    </span>
+
+    <span>
+      <textarea v-model="plot.comment" :hide-details="!isLastLine" />
+    </span>
+
+    <span>
+      <v-btn outline icon @click="$emit('delete', id)"><v-icon color="red darken-4">clear</v-icon></v-btn>
+    </span>
   </div>
 </template>
 
 <script>
+import frag from 'vue-frag';
 import OfflineLazyAutocomplete from '@/components/Forms/OfflineLazyAutocomplete.vue'
 
 import {codes} from '@/modules/codes-cultures/pac.js'
@@ -21,7 +46,15 @@ export default {
     OfflineLazyAutocomplete,
   },
 
+  directives: {
+    frag
+  },
+
   props: {
+    pacage: {
+      type: String
+    },
+
     feature: {
       type: Object
     },
@@ -114,7 +147,7 @@ export default {
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: subgrid;
     grid-column-gap: 5px;
     grid-row-gap: 1em;
     margin: 1em 0;
@@ -135,6 +168,41 @@ export default {
 
     .v-avatar {
       margin-left: -1em;
+    }
+  }
+
+  /deep/ input[type="text"],
+  /deep/ input[type="search"],
+  input[type="date"],
+  select,
+  textarea {
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: .5em;
+    max-width: 100%;
+
+    &:invalid {
+      box-shadow: red 0 0 3px;
+      border-color: darkred;
+    }
+  }
+
+  select option:checked {
+    background-color: green;
+    color: green;
+    font-weight: bold;
+  }
+
+  .select-wrapper {
+    position: relative;
+    max-width: 150px;
+
+    &:not(.multiple):after {
+      content: "▼";
+      font-size: 1rem;
+      top: 6px;
+      right: 2em;
+      position: absolute;
     }
   }
 
