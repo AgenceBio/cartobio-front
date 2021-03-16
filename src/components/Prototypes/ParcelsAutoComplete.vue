@@ -140,6 +140,7 @@ import bboxPolygon from "@turf/bbox-polygon";
 import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
+import { parseReferences } from '@/cadastre.js'
 
 import {
   baseStyle,
@@ -169,10 +170,7 @@ function prepareFeature ({ feature }) {
   let surface = 0
 
   // 26108000AN0100
-  const cadastre_references = cadastre_suffixes.split(/\W/).filter(d => d).map(suffix => {
-    const [, prefixe, section, parcelle] = suffix.trim().match(/^(\d{0,3})([a-zA-Z]{1,2})(\d+)$/) ?? []
-    return section ? `${com}${prefixe || '000'}${section}${parcelle.padStart(4, 0)}` : ''
-  })
+  const cadastre_references = parseReferences(cadastre_suffixes, { com })
 
   if (geometry.coordinates.length) {
     surface = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
