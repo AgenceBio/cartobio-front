@@ -5,7 +5,7 @@
     </span>
 
     <span v-if="!pacage">
-      <input type="text" v-model="plot.cadastre_suffixes" :hide-details="!isLastLine" />
+      <input type="text" v-model="plot.cadastre_suffixes" :hide-details="!isLastLine" autocomplete="disabled" />
     </span>
 
     <div class="select-wrapper multiple">

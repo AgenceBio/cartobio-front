@@ -1,6 +1,6 @@
 <template>
   <Fragment>
-    <input type="search" ref="input" :list="listId" v-model="search" @input="handleInputChange" autocomplete="off" />
+    <input type="search" ref="input" :list="listId" v-model="search" @input="handleInputChange" autocomplete="disabled" />
     <datalist :id="listId">
       <option v-for="item in items" :key="getValue(item)+getText(item)" :value="getValue(item)">{{ getText(item) }}</option>
     </datalist>
