@@ -41,6 +41,7 @@
     "vuex": "^3.6.0"
   },
   "devDependencies": {
+    "@jest/globals": "^26.6.2",
     "@mapbox/geojson-area": "^0.2.2",
     "@mapbox/polylabel": "^1.0.2",
     "@sindresorhus/slugify": "^1.1.0",
