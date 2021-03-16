@@ -1,4 +1,3 @@
-import './plugins/vuetify'
 import Vue from 'vue'
 import Storage from 'vue-ls';
 import VueMeta from 'vue-meta'
@@ -7,13 +6,15 @@ import store from './store.js'
 import router from './router'
 import App from './App.vue'
 
-let storageOptions = {
+import 'vuetify/dist/vuetify.min.css'
+
+const storageOptions = {
   namespace: 'cartobio_',
   name: 'ls',
   storage: 'local'
 }
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, { iconfont: 'md' })
 Vue.use(Storage, storageOptions)
 Vue.use(VueMeta, {
   refreshOnceOnNavigation: true
