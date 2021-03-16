@@ -34,16 +34,19 @@ jobs:
         auto_tag: true
         allow_pull_request: true
 
+    # as jerray/publish-docker-action@v1.0.5
+    # only `master` branch is alias as `latest`
+    # `latest` can be used again when https://github.com/jerray/publish-docker-action/pull/17 is merged
     - uses: garygrossgarten/github-action-ssh@v0.5.0
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       with:
         host: ${{ secrets.AGENCEBIO_SSH_HOST }}
         username: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
         privateKey: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
         command: |
-          docker pull agencebio/cartobio-presentation:latest \
+          docker pull agencebio/cartobio-presentation:main \
           && docker stop cartobio \
           && docker run -d --rm \
             -p 127.0.0.1:3000:80 \
             --name cartobio \
-            agencebio/cartobio-presentation:latest
+            agencebio/cartobio-presentation:main
