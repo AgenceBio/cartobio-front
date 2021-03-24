@@ -119,6 +119,7 @@
           </v-btn>
         </li>
         <li>
+          
           <label class="label" for="numero_pacage">Numéro PACAGE</label>
           <div>
             <input type="text" class="input" placeholder="000000000" id="numero_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
@@ -489,13 +490,11 @@ export default {
 
         this.$store
           .dispatch("operators/FETCH_WFS_LAYERS", params)
-          .then((dataPerYear) => {
-            console.log(dataPerYear);
+          .then((data) => {
             this.pacage = pacage;
             this.campagne = 2019;
             this.isLoading = false;
-            console.log(dataPerYear)
-            this.plots = this.formatFeatures(dataPerYear[0][1]);
+            this.plots = this.formatFeatures(data[0][1]);
           }, this);
     },
 
