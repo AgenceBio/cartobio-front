@@ -107,11 +107,7 @@
       </h2>
 
       <ul class="pa-0 inline-choices">
-        <!--<li>
-          <label class="label" for="telepac_pacage">Référence PACAGE</label>
-
-          <input type="text" class="input" id="telepac_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
-        </li> -->
+       
 
         <li>
           <label class="label" for="telepac_upload_field">Dossier TéléPAC</label>
@@ -121,6 +117,13 @@
             <v-icon v-else class="mr-2">cloud_upload</v-icon>
               {{ pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
           </v-btn>
+        </li>
+        <li>
+          <label class="label" for="numero_pacage">Numéro PACAGE</label>
+          <div>
+            <input type="text" class="input" placeholder="000000000" id="numero_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
+            <v-btn outline small @click="validateUserInputPacage" id="validate_user_input_pacage" ref="validate_user_input_pacage">Valider</v-btn>
+          </div>
         </li>
       </ul>
 
