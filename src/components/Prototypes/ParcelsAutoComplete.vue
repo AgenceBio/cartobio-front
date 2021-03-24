@@ -315,6 +315,7 @@ export default {
 
       pacage: null,
       campagne: null,
+      userInputPacage: null,
       plots: featureCollection([
         Feature(emptyPolygon(), {
           "com": "26108",
@@ -354,7 +355,8 @@ export default {
       return featureCollection(
         this.plots.features.map(feature => prepareFeature({ feature }))
       )
-    }
+    },
+
   },
 
   methods: {
@@ -478,7 +480,45 @@ export default {
       }, 100)
     },
 
-  },
+    validateUserInputPacage() {
+        let pacage = this.userInputPacage;
+        const params = {
+          numeroPacage: pacage,
+          years: [2019],
+        };
+
+        this.$store
+          .dispatch("operators/FETCH_WFS_LAYERS", params)
+          .then((dataPerYear) => {
+            console.log(dataPerYear);
+            this.pacage = pacage;
+            this.campagne = 2019;
+            this.isLoading = false;
+            console.log(dataPerYear)
+            this.plots = this.formatFeatures(dataPerYear[0][1]);
+          }, this);
+    },
+
+    formatFeatures (featureCollection) {
+      featureCollection.features.forEach((feat) => {
+        let prop = feat.properties;
+        feat.properties = {
+          com : "",
+          id: prop.id,
+          pacage: prop.pacage,
+          culture_type: [prop.codecultu],
+          niveau_conversion: prop.bio ? "BIO" : "",
+          comment: [
+            "Ilot " + prop.numilot + " Parcelle " + prop.numparcel,
+            prop.agroforest ? "Conduite en agroforesterie." : "",
+            prop.maraichage ? "Conduite en maraîchage." : "",
+          ].filter(d => d).join('\n')
+        }
+      })
+      return featureCollection;
+    }
+    
+  }
 };
 </script>
 
