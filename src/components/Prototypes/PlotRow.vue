@@ -185,6 +185,12 @@ export default {
       box-shadow: red 0 0 3px;
       border-color: darkred;
     }
+
+    &:disabled {
+      border-color: #bbb;
+      color: #bbb;
+      cursor: default;
+    }
   }
 
   select option:checked {
