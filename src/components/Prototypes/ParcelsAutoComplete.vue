@@ -495,7 +495,7 @@ export default {
             this.campagne = 2019;
             this.isLoading = false;
             this.plots = this.formatFeatures(data[0][1]);
-          }, this);
+          });
     },
 
     formatFeatures (featureCollection) {
