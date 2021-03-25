@@ -2,6 +2,12 @@ import { describe, test, expect } from '@jest/globals'
 import { parseReferences } from './cadastre.js'
 
 describe('parseReferences()', () => {
+  test('empty input', () => {
+    expect(parseReferences('', { })).toStrictEqual([])
+    expect(parseReferences('000 108', { })).toStrictEqual([])
+    expect(parseReferences('000 108')).toStrictEqual([])
+  })
+
   test('non-matching reference', () => {
     expect(parseReferences('', { com: '26108' })).toStrictEqual([])
     expect(parseReferences('000 108', { com: '26108' })).toStrictEqual([])
