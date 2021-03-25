@@ -114,9 +114,19 @@
         </li> -->
 
         <li>
-          <label class="label" for="telepac_upload_field">Dossier TéléPAC</label>
+          <label class="label" for="telepac_upload_zip_field">Fichier parcelles (ZIP)</label>
+          <v-btn outline round color="success" :disabled="isLoading" @click="telepacZipPrompt" small>
+            <input type="file" id="telepac_upload_zip_field" ref="telepac_upload_zip_field" @input="uploadTelepacZIP" accept=".zip,application/zip" hidden>
+            <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
+            <v-icon v-else class="mr-2">cloud_upload</v-icon>
+              {{ pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
+          </v-btn>
+        </li>
+
+        <li>
+          <label class="label" for="telepac_upload_xml_field">Dossier complet (XML)</label>
           <v-btn outline round color="success" :disabled="isLoading" @click="telepacXmlPrompt" small>
-            <input type="file" id="telepac_upload_field" ref="telepac_upload_field" @input="uploadXML" accept=".xml,text/xml" hidden>
+            <input type="file" id="telepac_upload_xml_field" ref="telepac_upload_xml_field" @input="uploadTelepacXML" accept=".xml,text/xml" hidden>
             <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
             <v-icon v-else class="mr-2">cloud_upload</v-icon>
               {{ pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
@@ -241,7 +251,7 @@
 </template>
 
 <script>
-import {get} from 'axios'
+import {get, post} from 'axios'
 import {geometry as area} from '@mapbox/geojson-area'
 import { all as mergeAll } from "deepmerge";
 import geometryBbox  from "@turf/bbox";
@@ -250,6 +260,8 @@ import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
+
+const {VUE_APP_API_ENDPOINT} = process.env;
 
 import {
   baseStyle,
@@ -455,12 +467,47 @@ export default {
       this.map.resize();
     },
 
-    telepacXmlPrompt () {
-      this.$refs.telepac_upload_field.click()
+    telepacZipPrompt () {
+      this.$refs.telepac_upload_zip_field.click()
     },
 
-    async uploadXML () {
-      const text = await this.$refs.telepac_upload_field.files[0].text()
+    telepacXmlPrompt () {
+      this.$refs.telepac_upload_xml_field.click()
+    },
+
+    async uploadTelepacZIP () {
+      const [archive] = await this.$refs.telepac_upload_zip_field.files
+      this.isLoading = true
+
+      const form = new FormData()
+      form.append('archive', archive)
+
+      /** @type {{ data: TelepacFeatureCollection }} */
+      const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
+
+      const { PACAGE, CAMPAGNE } = geojson.features[0]?.properties
+      this.pacage = PACAGE
+      this.campagne = CAMPAGNE
+
+      this.$nextTick(() => {
+        this.isLoading = false
+
+        this.plots = featureCollection(geojson.features.map(({ geometry, properties: prop, id }) => Feature(geometry, {
+          com: prop.COMMUNE,
+          culture_type: [prop.TYPE],
+          niveau_conversion: prop.AGRIBIO === 1 ? 'BIO' : '',
+          engagement_date: null,
+          comment: [
+            `Parcelle ${prop.NUMERO_I}.${prop.NUMERO_P}`,
+            prop.MARAICH ? 'Conduite en maraîchage.' : '',
+            prop.AGROFOREST ? 'Conduite en agroforesterie.' : ''
+          ].filter(d => d).join('\n')
+        }, { id: id ?? `${prop.NUMERO_I}.${prop.NUMERO_P}` })))
+      })
+    },
+
+    async uploadTelepacXML () {
+      const text = await this.$refs.telepac_upload_xml_field.files[0].text()
       this.isLoading = true
 
       setTimeout(async () => {
@@ -474,7 +521,6 @@ export default {
         })
       }, 100)
     },
-
   },
 };
 </script>

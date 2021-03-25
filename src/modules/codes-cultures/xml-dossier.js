@@ -64,7 +64,5 @@ export function convertXmlDossierToGeoJSON (text) {
     return Feature(geometry, properties, { id })
   }))
 
-  console.log(featureCollection)
-
   return { pacage, campagne, featureCollection: toWgs84(featureCollection, lambert93) }
 }
