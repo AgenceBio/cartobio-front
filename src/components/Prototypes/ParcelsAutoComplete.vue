@@ -359,7 +359,7 @@ export default {
       const lastLine = this.plots.features[ this.plots.length - 1 ] ?? {}
       const { com, engagement_date, niveau_conversion } = lastLine
 
-      this.plots.features.push(Feature({}, {
+      this.plots.features.push(Feature(emptyPolygon(), {
         com,
         engagement_date,
         niveau_conversion,
