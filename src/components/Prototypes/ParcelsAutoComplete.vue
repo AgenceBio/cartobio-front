@@ -107,11 +107,7 @@
       </h2>
 
       <ul class="pa-0 inline-choices">
-        <!--<li>
-          <label class="label" for="telepac_pacage">Référence PACAGE</label>
-
-          <input type="text" class="input" id="telepac_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
-        </li> -->
+       
 
         <li>
           <label class="label" for="telepac_upload_zip_field">Fichier parcelles (ZIP)</label>
@@ -131,6 +127,14 @@
             <v-icon v-else class="mr-2">cloud_upload</v-icon>
               {{ pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
           </v-btn>
+        </li>
+        <li>
+          
+          <label class="label" for="numero_pacage">Numéro PACAGE</label>
+          <div>
+            <input type="text" class="input" placeholder="000000000" id="numero_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
+            <v-btn outline small @click="validateUserInputPacage" id="validate_user_input_pacage" ref="validate_user_input_pacage">Valider</v-btn>
+          </div>
         </li>
       </ul>
 
@@ -324,6 +328,7 @@ export default {
 
       pacage: null,
       campagne: null,
+      userInputPacage: null,
       plots: featureCollection([
         Feature(emptyPolygon(), {
           "com": "26108",
@@ -363,7 +368,8 @@ export default {
       return featureCollection(
         this.plots.features.map(feature => prepareFeature({ feature }))
       )
-    }
+    },
+
   },
 
   methods: {
@@ -521,7 +527,46 @@ export default {
         })
       }, 100)
     },
-  },
+
+    validateUserInputPacage() {
+        let pacage = this.userInputPacage;
+        const params = {
+          numeroPacage: pacage,
+          years: [2019],
+        };
+
+        this.$store
+          .dispatch("operators/FETCH_WFS_LAYERS", params)
+          .then((data) => {
+            this.pacage = pacage;
+            const [ [year, features] ] = data
+            
+            this.campagne = year;
+            this.isLoading = false;
+            this.plots = this.formatFeatures(features);
+          });
+    },
+
+    formatFeatures (featureCollection) {
+      featureCollection.features.forEach((feat) => {
+        let prop = feat.properties;
+        feat.properties = {
+          com : "",
+          id: prop.id,
+          pacage: prop.pacage,
+          culture_type: [prop.codecultu],
+          niveau_conversion: prop.bio ? "BIO" : "",
+          comment: [
+            "Ilot " + prop.numilot + " Parcelle " + prop.numparcel,
+            prop.agroforest ? "Conduite en agroforesterie." : "",
+            prop.maraichage ? "Conduite en maraîchage." : "",
+          ].filter(d => d).join('\n')
+        }
+      })
+      return featureCollection;
+    },
+    
+  }
 };
 </script>
 
