@@ -1,7 +1,7 @@
 <template>
   <div v-frag>
     <span>
-      <offline-lazy-autocomplete v-model="plot.com" :lazy-items="() => $data._communes" item-value="COM" :item-text="({ LIBELLE, DEP }) => `${LIBELLE} (${DEP})`" :hide-details="!isLastLine" />
+      <autocomplete :default-value="getTownByValue(plot.com)" @submit="({COM}) => plot.com = COM" :search="searchTown" :get-result-value="getTownValue" :hide-details="!isLastLine" />
     </span>
 
     <span v-if="!pacage">
@@ -36,14 +36,14 @@
 
 <script>
 import frag from 'vue-frag';
-import OfflineLazyAutocomplete from '@/components/Forms/OfflineLazyAutocomplete.vue'
+import Autocomplete from '@trevoreyre/autocomplete-vue'
 
 import {codes} from '@/modules/codes-cultures/pac.js'
 import communes from '@/api/insee/communes.json'
 
 export default {
   components: {
-    OfflineLazyAutocomplete,
+    Autocomplete,
   },
 
   directives: {
@@ -79,8 +79,6 @@ export default {
     return {
       // disable variable observation
       // eslint-disable-next-line vue/no-reserved-keys
-      _communes: communes,
-      // eslint-disable-next-line vue/no-reserved-keys
       _knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
 
       conversion_levels: [
@@ -99,6 +97,37 @@ export default {
 
     };
   },
+
+  methods: {
+    searchFor ({ input, accessor, entries }) {
+      if (input === undefined) {
+        return []
+      }
+
+      const searches = (Array.isArray(input) ? input : [input]).map(v => v.toLocaleLowerCase())
+
+      return entries
+        .filter(item => searches.find(search => accessor(item).toLocaleLowerCase().includes(search)))
+        .slice(0, 20)
+    },
+
+    searchTown (input) {
+      return this.searchFor({ input, entries: communes, accessor: this.getTownValue  })
+    },
+
+    getTownValue ({ LIBELLE, DEP }) {
+      return `${LIBELLE} (${DEP})`
+    },
+
+    getTownByValue (input) {
+      if (!input) {
+        return ''
+      }
+
+      const item = communes.find(({ COM }) => COM === input)
+      return this.getTownValue(item)
+    },
+  }
 
 };
 </script>
@@ -173,9 +202,11 @@ export default {
 
   /deep/ input[type="text"],
   /deep/ input[type="search"],
+  /deep/ .autocomplete-input,
   input[type="date"],
   select,
   textarea {
+    background: #fff;
     border: 1px solid #333;
     border-radius: 3px;
     padding: .5em;
@@ -190,6 +221,31 @@ export default {
       border-color: #bbb;
       color: #bbb;
       cursor: default;
+    }
+  }
+
+  /deep/ .autocomplete {
+    position: relative;
+
+     .autocomplete-result-list {
+      background: white;
+      border: 1px solid black;
+      padding: 0;
+    }
+
+    .autocomplete-result {
+      margin: 0;
+      padding: .5em;
+
+      &:nth-child(even) {
+        background-color: #efefef;
+      }
+    }
+
+    .autocomplete-result:hover,
+    .autocomplete-result[aria-selected="true"] {
+      background: #ffc;
+      cursor: pointer;
     }
   }
 
