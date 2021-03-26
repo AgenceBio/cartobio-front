@@ -492,9 +492,11 @@ export default {
           .dispatch("operators/FETCH_WFS_LAYERS", params)
           .then((data) => {
             this.pacage = pacage;
-            this.campagne = 2019;
+            const [ [year, features] ] = data
+            
+            this.campagne = year;
             this.isLoading = false;
-            this.plots = this.formatFeatures(data[0][1]);
+            this.plots = this.formatFeatures(features);
           });
     },
 
