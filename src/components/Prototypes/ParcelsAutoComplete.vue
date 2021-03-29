@@ -1,5 +1,7 @@
 <template>
   <v-form v-model="valid">
+    <v-btn fixed outline bottom right fab @click="prefillData"><v-icon>auto_fix_high</v-icon></v-btn>
+
     <article class="my-5">
       <h1 class="display-1">Notification de votre parcellaire en Agriculture Biologique</h1>
       <p class="chip my-3">
@@ -115,7 +117,7 @@
             <input type="file" id="telepac_upload_zip_field" ref="telepac_upload_zip_field" @input="uploadTelepacZIP" accept=".zip,application/zip" hidden>
             <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
             <v-icon v-else class="mr-2">cloud_upload</v-icon>
-              {{ pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
+              {{ operator.pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
           </v-btn>
         </li>
 
@@ -125,11 +127,11 @@
             <input type="file" id="telepac_upload_xml_field" ref="telepac_upload_xml_field" @input="uploadTelepacXML" accept=".xml,text/xml" hidden>
             <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
             <v-icon v-else class="mr-2">cloud_upload</v-icon>
-              {{ pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
+              {{ operator.pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
           </v-btn>
         </li>
         <li>
-          
+
           <label class="label" for="numero_pacage">Numéro PACAGE</label>
           <div>
             <input type="text" class="input" placeholder="000000000" id="numero_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
@@ -137,20 +139,9 @@
           </div>
         </li>
       </ul>
-
-      <div v-if="pacage" class="my-3">
-        <v-chip class="pacage">
-          <b class="mr-2">Campagne PAC</b>
-          {{campagne}}
-        </v-chip>
-        <v-chip class="pacage">
-          <b class="mr-2">N°&nbsp;PACAGE</b>
-          {{pacage}}
-        </v-chip>
-      </div>
     </section>
 
-    <section v-if="inputMode === 'manuel' || hasAtLeastOneGeometry" id="manuel" class="my-5">
+    <section id="manuel" class="my-5">
       <h2 class="headline" v-if="inputMode === 'manuel'">
         Saisie du parcellaire
       </h2>
@@ -158,48 +149,67 @@
         Confirmation du parcellaire
       </h2>
 
-      <div class="my-4">
-        <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
-          <v-icon class="mr-2">add_circle_outline</v-icon>
-          Ajouter une parcelle
-        </v-btn>
-
-        <v-btn disabled outline color="info">
-          <v-icon class="mr-2">add_circle_outline</v-icon>
-          Ajouter une zone de rucher
-        </v-btn>
+      <div v-if="operator.pacage" class="my-3">
+        <v-chip class="pacage">
+          <b class="mr-2">Campagne PAC</b>
+          {{operator.campagne}}
+        </v-chip>
+        <v-chip class="pacage">
+          <b class="mr-2">N°&nbsp;PACAGE</b>
+          {{operator.pacage}}
+        </v-chip>
       </div>
 
-      <div :class="{ grid: true, 'no-cadastre': pacage }">
-        <span class="header">Commune</span>
-        <span v-if="!pacage" class="header">Références<br>cadastrales</span>
-        <span class="header">Type de culture</span>
-        <span class="header">Statut de conversion</span>
-        <span class="header">Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
-        <span class="header">Commentaire</span>
-        <span class="header"></span>
+      <div v-if="inputMode === 'manuel' || hasAtLeastOneGeometry">
+        <div class="my-4">
+          <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une parcelle
+          </v-btn>
 
-        <plot-row v-for="(feature, index) in plots.features" :feature="feature" :pacage="pacage" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
+          <v-btn disabled outline color="info">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une zone de rucher
+          </v-btn>
+        </div>
+
+        <div :class="{ grid: true, 'no-cadastre': operator.pacage }">
+          <span class="header">Commune</span>
+          <span v-if="!operator.pacage" class="header">Références<br>cadastrales</span>
+          <span class="header">Type de culture</span>
+          <span class="header">Statut de conversion</span>
+          <span class="header">Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
+          <span class="header">Commentaire</span>
+          <span class="header"></span>
+
+          <plot-row v-for="(feature, index) in plots.features" :feature="feature" :pacage="operator.pacage" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
+        </div>
+
+        <div class="my-4">
+          <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une parcelle
+          </v-btn>
+
+          <v-btn disabled outline color="info">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une zone de rucher
+          </v-btn>
+
+          <br>
+
+          <v-btn color="success" class="mt-3" @click.stop="fetchCadastreSheets" :loading="isLoading">
+            <v-icon class="mr-2">map</v-icon>
+            {{isMapVisible ? 'actualiser la carte' : 'afficher sur une carte'}}
+          </v-btn>
+        </div>
       </div>
 
-      <div class="my-4">
-        <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
-          <v-icon class="mr-2">add_circle_outline</v-icon>
-          Ajouter une parcelle
-        </v-btn>
+      <p v-else>
+        <v-progress-circular indeterminate size=24 color="rgba(0,0,0,.54)" />
 
-        <v-btn disabled outline color="info">
-          <v-icon class="mr-2">add_circle_outline</v-icon>
-          Ajouter une zone de rucher
-        </v-btn>
-
-        <br>
-
-        <v-btn color="success" class="mt-3" @click.stop="fetchCadastreSheets" :loading="isLoading">
-          <v-icon class="mr-2">map</v-icon>
-          {{isMapVisible ? 'actualiser la carte' : 'afficher sur une carte'}}
-        </v-btn>
-      </div>
+        En attente des informations des parcelles.
+      </p>
 
       <!-- <section v-if="isMapVisible">
         <h2 class="headline my-3">Parcellaire tabulaire </h2>
@@ -210,7 +220,7 @@
               <td>Parcelle</td>
               <td>Production végétale</td>
               <td>Date engagement</td>
-              <td v-if="!pacage">Réf cadastrale</td>
+              <td v-if="!operator.pacage">Réf cadastrale</td>
               <td>Classement</td>
               <td>Surface graphique</td>
             </tr>
@@ -220,7 +230,7 @@
               <td>{{ id }}</td>
               <td>{{ properties.culture_type.join(', ') }}</td>
               <td>{{ properties.engagement_date }}</td>
-              <td v-if="!pacage">{{ properties.cadastre_references.join(', ') }}</td>
+              <td v-if="!operator.pacage">{{ properties.cadastre_references.join(', ') }}</td>
               <td>{{ properties.niveau_conversion }}</td>
               <td>{{ properties.surface ? `${properties.surface}ha` : '?'}}</td>
             </tr>
@@ -228,10 +238,10 @@
         </table>
       </section> -->
 
-      <section v-if="hasAtLeastOneGeometry" class="my-5">
+      <section class="my-5">
         <h2 class="headline my-3">Prévisualisation de votre parcellaire</h2>
 
-        <div class="map">
+        <div class="map" v-if="hasAtLeastOneGeometry">
           <MglMap
           :mapStyle="mapStyle"
           :bounds.sync="mapBounds"
@@ -249,6 +259,11 @@
               layerId="parcelles"/>
           </MglMap>
         </div>
+        <p v-else>
+          <v-progress-circular indeterminate size=24 color="rgba(0,0,0,.54)" />
+
+          En attente des informations des parcelles.
+        </p>
       </section>
     </section>
   </v-form>
@@ -264,6 +279,7 @@ import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
+import samplePlots from '@/certification-body/sample-plots.json'
 
 const {VUE_APP_API_ENDPOINT} = process.env;
 
@@ -326,25 +342,18 @@ export default {
       isLoading: false,
       isMapVisible: false,
 
-      pacage: null,
-      campagne: null,
+      operator: {
+        id: 7818,
+        certificatorId: 215844,
+        name: 'BOUSIGNAC Eric',
+        inputDate: new Date(),
+        certifiedBy: 'jviles',
+        pacage: null,
+        campagne: null,
+      },
+
       userInputPacage: null,
-      plots: featureCollection([
-        Feature(emptyPolygon(), {
-          "com": "26108",
-          "cadastre_suffixes": 'ZI631, ZI637',
-          "culture_type": ['AIL', 'OIG'],
-          "niveau_conversion": 'BIO',
-          "engagement_date": "2017-03-02"
-        }, { "id": "@1.1" }),
-        Feature(emptyPolygon(), {
-          "com": "26108",
-          "cadastre_suffixes": 'AM17',
-          "culture_type": ['SOJ'],
-          "niveau_conversion": 'C2',
-          "engagement_date": "2017-03-02"
-        }, { "id": "@1.2" }),
-      ]),
+      plots: featureCollection([]),
 
       mapStyle: mergeAll([
         baseStyle,
@@ -373,6 +382,19 @@ export default {
   },
 
   methods: {
+    prefillData () {
+      this.isLoading = true
+
+      this.$nextTick(() => {
+        this.inputMode = 'telepac'
+        this.isLoading = false
+
+        this.operator.pacage = '2020'
+        this.operator.pacage = '082020054'
+        this.plots = samplePlots
+      })
+    },
+
     addPlot () {
       const lastLine = this.plots.features[ this.plots.length - 1 ] ?? {}
       const { com, engagement_date, niveau_conversion } = lastLine
@@ -492,8 +514,8 @@ export default {
       const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
 
       const { PACAGE, CAMPAGNE } = geojson.features[0]?.properties
-      this.pacage = PACAGE
-      this.campagne = CAMPAGNE
+      this.operator.pacage = PACAGE
+      this.operator.campagne = CAMPAGNE
 
       this.$nextTick(() => {
         this.isLoading = false
@@ -502,6 +524,7 @@ export default {
           com: prop.COMMUNE,
           culture_type: [prop.TYPE],
           niveau_conversion: prop.AGRIBIO === 1 ? 'BIO' : '',
+          pacage: prop.PACAGE,
           engagement_date: null,
           comment: [
             `Parcelle ${prop.NUMERO_I}.${prop.NUMERO_P}`,
@@ -518,8 +541,8 @@ export default {
 
       setTimeout(async () => {
         const { pacage, campagne, featureCollection } = convertXmlDossierToGeoJSON(text)
-        this.pacage = pacage
-        this.campagne = campagne
+        this.operator.pacage = pacage
+        this.operator.campagne = campagne
 
         await this.$nextTick(() => {
           this.plots = featureCollection
@@ -538,10 +561,11 @@ export default {
         this.$store
           .dispatch("operators/FETCH_WFS_LAYERS", params)
           .then((data) => {
-            this.pacage = pacage;
             const [ [year, features] ] = data
-            
-            this.campagne = year;
+
+            this.operator.pacage = pacage;
+            this.operator.campagne = year;
+
             this.isLoading = false;
             this.plots = this.formatFeatures(features);
           });
@@ -565,7 +589,7 @@ export default {
       })
       return featureCollection;
     },
-    
+
   }
 };
 </script>
