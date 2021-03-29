@@ -109,7 +109,7 @@
       </h2>
 
       <ul class="pa-0 inline-choices">
-       
+
 
         <li>
           <label class="label" for="telepac_upload_zip_field">Fichier parcelles (ZIP)</label>
@@ -265,6 +265,23 @@
           En attente des informations des parcelles.
         </p>
       </section>
+
+      <section class="my-5">
+        <h2 class="headline my-3">Exporter le parcellaire</h2>
+
+        <v-btn color="success" :disabled="true">
+          Export Télépac
+        </v-btn>
+
+        <v-btn color="success" :disabled="true">
+          Export GeoJSON/QGIS
+        </v-btn>
+
+        <v-btn color="success" :disabled="!hasAtLeastOneGeometry" @click="startEcocertExport">
+          <v-icon class="mr-2">cloud_download</v-icon>
+          Export Ecocert
+        </v-btn>
+      </section>
     </section>
   </v-form>
 </template>
@@ -279,6 +296,7 @@ import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
+import { toCertificationBodySheet, ecocertExcelTemplate } from '@/certification-body/control-sheet.js'
 import samplePlots from '@/certification-body/sample-plots.json'
 
 const {VUE_APP_API_ENDPOINT} = process.env;
@@ -569,6 +587,16 @@ export default {
             this.isLoading = false;
             this.plots = this.formatFeatures(features);
           });
+    },
+
+    startEcocertExport () {
+      const { structuredPlots: featureCollection, operator } = this
+      const template = ecocertExcelTemplate
+      const format = 'xlsm'
+
+      const download = toCertificationBodySheet({ featureCollection, operator, template, format })
+
+      download(`cartobio-export-ecocert.${format}`)
     },
 
     formatFeatures (featureCollection) {
