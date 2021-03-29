@@ -1,31 +1,31 @@
 <template>
   <div v-frag>
     <span>
-      <autocomplete :default-value="getTownByValue(plot.com)" @submit="({COM}) => plot.com = COM" :search="searchTown" :get-result-value="getTownValue" :hide-details="!isLastLine" />
+      <autocomplete :default-value="getTownByValue(plot.com)" @submit="({COM}) => plot.com = COM" :search="searchTown" :get-result-value="getTownValue" />
     </span>
 
     <span v-if="!pacage">
-      <input type="text" v-model="plot.cadastre_suffixes" :hide-details="!isLastLine" autocomplete="disabled" />
+      <input type="text" v-model="plot.cadastre_suffixes" autocomplete="disabled" />
     </span>
 
     <div class="select-wrapper multiple">
-      <select item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="!isLastLine">
+      <select item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type">
         <option v-for="item in $data._knownCultures" :key="item['Code Culture']" :value="item['Code Culture']">{{ item['Libellé Culture']}}</option>
       </select>
     </div>
 
     <div class="select-wrapper">
-      <select v-model="plot.niveau_conversion" :hide-details="!isLastLine">
+      <select v-model="plot.niveau_conversion" required>
         <option v-for="({value, text}) in conversion_levels" :key="value" :value="value">{{text}}</option>
       </select>
     </div>
 
     <span>
-      <input type="date" min="1970-01-01" :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  :hide-details="!isLastLine" />
+      <input type="date" min="1970-01-01" :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  />
     </span>
 
     <span>
-      <textarea v-model="plot.comment" :hide-details="!isLastLine" />
+      <textarea v-model="plot.comment" />
     </span>
 
     <span>
@@ -222,6 +222,10 @@ export default {
       color: #bbb;
       cursor: default;
     }
+
+    &:hover, &:active {
+      border-color: rgb(33, 150, 243);
+    }
   }
 
   /deep/ .autocomplete {
@@ -259,12 +263,11 @@ export default {
     position: relative;
     max-width: 150px;
 
-    &:not(.multiple):after {
-      content: "▼";
-      font-size: 1rem;
-      top: 6px;
-      right: 2em;
-      position: absolute;
+    &:not(.multiple) select {
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='currentColor'><polygon points='0,0 100,0 50,50'/></svg>");
+      background-repeat: no-repeat;
+      background-size: 12px;
+      background-position: calc(100% - 12px) center;
     }
   }
 
