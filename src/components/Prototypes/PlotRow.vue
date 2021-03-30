@@ -1,31 +1,31 @@
 <template>
   <div v-frag>
     <span>
-      <offline-lazy-autocomplete v-model="plot.com" :lazy-items="() => $data._communes" item-value="COM" :item-text="({ LIBELLE, DEP }) => `${LIBELLE} (${DEP})`" :hide-details="!isLastLine" />
+      <autocomplete :default-value="getTownByValue(plot.com)" @submit="({COM}) => plot.com = COM" :search="searchTown" :get-result-value="getTownValue" />
     </span>
 
     <span v-if="!pacage">
-      <input type="text" v-model="plot.cadastre_suffixes" :hide-details="!isLastLine" autocomplete="disabled" />
+      <input type="text" v-model="plot.cadastre_suffixes" autocomplete="disabled" />
     </span>
 
     <div class="select-wrapper multiple">
-      <select item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type" :hide-details="!isLastLine">
+      <select item-text="Libellé Culture" item-value="Code Culture" multiple v-model="plot.culture_type">
         <option v-for="item in $data._knownCultures" :key="item['Code Culture']" :value="item['Code Culture']">{{ item['Libellé Culture']}}</option>
       </select>
     </div>
 
     <div class="select-wrapper">
-      <select v-model="plot.niveau_conversion" :hide-details="!isLastLine">
+      <select v-model="plot.niveau_conversion" required>
         <option v-for="({value, text}) in conversion_levels" :key="value" :value="value">{{text}}</option>
       </select>
     </div>
 
     <span>
-      <input type="date" min="1970-01-01" :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  :hide-details="!isLastLine" />
+      <input type="date" min="1970-01-01" :disabled="!plot.niveau_conversion || plot.niveau_conversion === 'CONV'" v-model="plot.engagement_date"  />
     </span>
 
     <span>
-      <textarea v-model="plot.comment" :hide-details="!isLastLine" />
+      <textarea v-model="plot.comment" />
     </span>
 
     <span>
@@ -36,14 +36,14 @@
 
 <script>
 import frag from 'vue-frag';
-import OfflineLazyAutocomplete from '@/components/Forms/OfflineLazyAutocomplete.vue'
+import Autocomplete from '@trevoreyre/autocomplete-vue'
 
 import {codes} from '@/modules/codes-cultures/pac.js'
 import communes from '@/api/insee/communes.json'
 
 export default {
   components: {
-    OfflineLazyAutocomplete,
+    Autocomplete,
   },
 
   directives: {
@@ -79,8 +79,6 @@ export default {
     return {
       // disable variable observation
       // eslint-disable-next-line vue/no-reserved-keys
-      _communes: communes,
-      // eslint-disable-next-line vue/no-reserved-keys
       _knownCultures: codes.sort((a, b) => a['Libellé Culture'].localeCompare(b['Libellé Culture'])),
 
       conversion_levels: [
@@ -99,6 +97,37 @@ export default {
 
     };
   },
+
+  methods: {
+    searchFor ({ input, accessor, entries }) {
+      if (input === undefined) {
+        return []
+      }
+
+      const searches = (Array.isArray(input) ? input : [input]).map(v => v.toLocaleLowerCase())
+
+      return entries
+        .filter(item => searches.find(search => accessor(item).toLocaleLowerCase().includes(search)))
+        .slice(0, 20)
+    },
+
+    searchTown (input) {
+      return this.searchFor({ input, entries: communes, accessor: this.getTownValue  })
+    },
+
+    getTownValue ({ LIBELLE, DEP }) {
+      return `${LIBELLE} (${DEP})`
+    },
+
+    getTownByValue (input) {
+      if (!input) {
+        return ''
+      }
+
+      const item = communes.find(({ COM }) => COM === input)
+      return this.getTownValue(item)
+    },
+  }
 
 };
 </script>
@@ -173,9 +202,11 @@ export default {
 
   /deep/ input[type="text"],
   /deep/ input[type="search"],
+  /deep/ .autocomplete-input,
   input[type="date"],
   select,
   textarea {
+    background: #fff;
     border: 1px solid #333;
     border-radius: 3px;
     padding: .5em;
@@ -184,6 +215,41 @@ export default {
     &:invalid {
       box-shadow: red 0 0 3px;
       border-color: darkred;
+    }
+
+    &:disabled {
+      border-color: #bbb;
+      color: #bbb;
+      cursor: default;
+    }
+
+    &:hover, &:active {
+      border-color: rgb(33, 150, 243);
+    }
+  }
+
+  /deep/ .autocomplete {
+    position: relative;
+
+     .autocomplete-result-list {
+      background: white;
+      border: 1px solid black;
+      padding: 0;
+    }
+
+    .autocomplete-result {
+      margin: 0;
+      padding: .5em;
+
+      &:nth-child(even) {
+        background-color: #efefef;
+      }
+    }
+
+    .autocomplete-result:hover,
+    .autocomplete-result[aria-selected="true"] {
+      background: #ffc;
+      cursor: pointer;
     }
   }
 
@@ -197,12 +263,11 @@ export default {
     position: relative;
     max-width: 150px;
 
-    &:not(.multiple):after {
-      content: "▼";
-      font-size: 1rem;
-      top: 6px;
-      right: 2em;
-      position: absolute;
+    &:not(.multiple) select {
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='currentColor'><polygon points='0,0 100,0 50,50'/></svg>");
+      background-repeat: no-repeat;
+      background-size: 12px;
+      background-position: calc(100% - 12px) center;
     }
   }
 

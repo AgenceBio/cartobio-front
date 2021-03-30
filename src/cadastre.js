@@ -1,7 +1,11 @@
 const REFERENCE_RE = /(?=\W|^)((000|\d{3})?\s*([a-z]{1,2})\s*([0-9]{1,4}))(?=\W|$)/ig
 const ALSACE_MOSELLE_RE = /(?=\W|^)((000|\d{3})?\s*([0-9]{0,2}[1-9]{1})\s*([0-9]{1,4}))(?=\W|$)/ig
 
-export function parseReferences(string, { com }) {
+export function parseReferences(string, { com } = {}) {
+  if (!string || !com) {
+    return []
+  }
+
   const RE = ['57', '67', '68'].includes(com.slice(0, 2)) ? ALSACE_MOSELLE_RE : REFERENCE_RE
 
   const references = Array.from(string.matchAll(RE)).map(([,, prefixe, section, parcelle]) => {

@@ -1,138 +1,293 @@
 <template>
   <v-form v-model="valid">
-    <h1 class="display-1">Notification du parcellaire opérateur en Agriculture Biologique</h1>
-    <p class="chip">
-      <v-avatar><v-icon>info_outline</v-icon></v-avatar>
-      Cette section est actuellement en phase de test.
-    </p>
-    <p>
-      En renseignant votre parcellaire vous participez à faciliter votre contrôle AB et l’instruction de vos aides PAC si vous les demandez.<br/>
-Les données renseignées seront uniquement communiquées à votre Organisme Certificateur en l’état. Vos données anonymisées permettront également d’améliorer
- la connaissance des parcelles bio en France.
-    </p>
+    <v-btn fixed outline bottom right fab @click="prefillData"><v-icon>auto_fix_high</v-icon></v-btn>
 
-    <h2 class="headline">
-      Saisie du parcellaire
-    </h2>
+    <article class="my-5">
+      <h1 class="display-1">Notification de votre parcellaire en Agriculture Biologique</h1>
+      <p class="chip my-3">
+        <v-avatar><v-icon>info_outline</v-icon></v-avatar>
+        Cette section est actuellement en phase de test.
+      </p>
+      <p>
+        Le renseignement du parcellaire sert de <strong>lien entre vous et votre organisme de certification</strong>.<br>
+        Nous travaillons à ce que ces informations soient réutilisables tout au long de votre processus de certification.
+      </p>
 
-    <div>
-      <v-btn outline round color="success" :disabled="isLoading" @click="telepacXmlPrompt" small>
-        <input type="file" ref="telepac_upload_field" @input="uploadXML" accept=".xml,text/xml" hidden>
-        <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
-        <v-icon v-else small class="mr-2">cloud_upload</v-icon>
-        importer dossier TéléPAC (XML)
-      </v-btn>
+      <ul>
+        <li><strong>Comment ces données seront utilisées ?</strong></li>
+        <li><v-icon small>privacy_tip</v-icon> votre certification en Agriculture Biologique</li>
+        <li><v-icon small>privacy_tip</v-icon> instruction des aides PAC</li>
+        <li><v-icon small>privacy_tip</v-icon> statistiques annuelles de la bio (données anonymisées)</li>
+        <li><v-icon small>privacy_tip</v-icon> stratégies territoriales de biodiversité (données anonymisées)</li>
+      </ul>
+    </article>
 
-      <v-btn outline round disabled small>
-        <v-icon small class="mr-2">cloud_upload</v-icon>
-        importer depuis MesParcelles
-      </v-btn>
+    <article>
+      <h2 class="headline">
+        Choix du mode de saisie
+      </h2>
 
-      <v-btn outline round disabled small>
-        <v-icon small class="mr-2">cloud_upload</v-icon>
-        importer depuis Geofolia
-      </v-btn>
+      <ul class="px-0">
+        <li>
+          <label class="radio-label">
+            <input type="radio" v-model="inputMode" value="import" />
 
-      <v-btn outline round disabled small>
-        <v-icon small class="mr-2">cloud_upload</v-icon>
-        importer depuis Smug Farmer
-      </v-btn>
-    </div>
+            <h3>Importer depuis un logiciel de gestion agricole</h3>
 
-    <div v-if="pacage" class="my-3">
-      <v-chip class="pacage">
-        <b class="mr-2">Campagne PAC</b>
-        {{campagne}}
-      </v-chip>
-      <v-chip class="pacage">
-        <b class="mr-2">N°&nbsp;PACAGE</b>
-        {{pacage}}
-      </v-chip>
-    </div>
+            <p class="help">Avec MesParcelles, Isagri&nbsp;Geofolia et Smag&nbsp;Farmer.</p>
+          </label>
+        </li>
+        <li>
+          <label class="radio-label">
+            <input type="radio" v-model="inputMode" value="telepac" />
 
-    <div :class="{ grid: true, 'no-cadastre': pacage }">
-      <span class="header">Commune</span>
-      <span v-if="!pacage" class="header">Références<br>cadastrales</span>
-      <span class="header">Type de culture</span>
-      <span class="header">Statut de conversion</span>
-      <span class="header">Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
-      <span class="header">Commentaire</span>
-      <span class="header"></span>
+            <h3>Importer mon dossier PAC</h3>
 
-      <plot-row v-for="(feature, index) in plots.features" :feature="feature" :pacage="pacage" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
-    </div>
+            <p class="help">Via mon identifiant PACAGE, ou un fichier informatique.</p>
+          </label>
+        </li>
+        <li>
+          <label class="radio-label disabled">
+            <input type="radio" v-model="inputMode" value="douanes" :disabled="true" />
 
-    <div class="my-4">
-      <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
-        <v-icon class="mr-2">add_circle_outline</v-icon>
-        Ajouter une parcelle
-      </v-btn>
+            <h3>Importer mon Casier Viticole Informatisé</h3>
 
-      <v-btn disabled color="info">
-        <v-icon class="mr-2">add_circle_outline</v-icon>
-        Ajouter une zone de rucher
-      </v-btn>
-    </div>
+            <p class="help">Tel que géré sur ProDouanes.</p>
+          </label>
+        </li>
+        <li>
+          <label class="radio-label">
+            <input type="radio" v-model="inputMode" value="manuel" />
 
-    <hr class="my-4" />
+            <h3>Saisie manuelle</h3>
 
-    <v-btn color="info" @click.stop="fetchCadastreSheets" :loading="isLoading">
-      <v-icon class="mr-2">map</v-icon>
-      {{isMapVisible ? 'actualiser la carte' : 'afficher sur une carte'}}
-    </v-btn>
+            <p class="help">Avec un formulaire simplifié, aidé d'une carte interactive.</p>
+          </label>
+        </li>
+      </ul>
+    </article>
 
-    <section v-if="isMapVisible">
-      <h2 class="headline my-3">Parcellaire tabulaire </h2>
+    <section v-if="inputMode === 'import'" class="my-5" id="import">
+      <h2 class="headline">
+        Importer depuis un logiciel de gestion agricole
+      </h2>
 
-      <table class="summary">
-        <thead>
-          <tr>
-            <td>Parcelle</td>
-            <td>Production végétale</td>
-            <td>Date engagement</td>
-            <td v-if="!pacage">Réf cadastrale</td>
-            <td>Classement</td>
-            <td>Surface graphique</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="({ properties, id }) in structuredPlots.features" :key="id">
-            <td>{{ id }}</td>
-            <td>{{ properties.culture_type.join(', ') }}</td>
-            <td>{{ properties.engagement_date }}</td>
-            <td v-if="!pacage">{{ properties.cadastre_references.join(', ') }}</td>
-            <td>{{ properties.niveau_conversion }}</td>
-            <td>{{ properties.surface ? `${properties.surface}ha` : '?'}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <ul class="pa-0">
+        <li>
+          <v-btn outline round disabled>
+            <v-icon small class="mr-2">lock</v-icon>
+            connexion à mon compte MesParcelles
+          </v-btn>
+        </li>
 
-      <h2 class="headline my-3">Parcellaire graphique</h2>
+        <li>
+          <v-btn outline round disabled>
+            <v-icon small class="mr-2">lock</v-icon>
+            connexion à mon compte Geofolia
+          </v-btn>
+        </li>
 
-      <div class="map">
-        <MglMap
-        :mapStyle="mapStyle"
-        :bounds.sync="mapBounds"
-        @load="onMapLoaded"
-        ref="mapboxDiv"
-        >
-        <MglGeojsonLayer
-          sourceId="plots"
-          :layer="layerStyle('operator-parcels')"
-          layerId="operator-parcels"/>
-        <MglVectorLayer
-            before="place-continent"
-            sourceId="cadastre"
-            :layer="layerStyle('selectable-cadastral-parcels')"
-            layerId="parcelles"/>
-        </MglMap>
+        <li>
+          <v-btn outline round disabled>
+            <v-icon small class="mr-2">cloud_upload</v-icon>
+            import Geofolia (logiciel fonctionnant hors-ligne)
+          </v-btn>
+        </li>
+
+        <li>
+          <v-btn outline round disabled>
+            <v-icon small class="mr-2">cloud_upload</v-icon>
+            import Smag Farmer
+          </v-btn>
+        </li>
+      </ul>
+    </section>
+
+    <section v-if="inputMode === 'telepac'" id="telepac" class="my-5">
+      <h2 class="headline">
+        Import de mon dossier TéléPAC
+      </h2>
+
+      <ul class="pa-0 inline-choices">
+
+
+        <li>
+          <label class="label" for="telepac_upload_zip_field">Fichier parcelles (ZIP)</label>
+          <v-btn outline round color="success" :disabled="isLoading" @click="telepacZipPrompt" small>
+            <input type="file" id="telepac_upload_zip_field" ref="telepac_upload_zip_field" @input="uploadTelepacZIP" accept=".zip,application/zip" hidden>
+            <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
+            <v-icon v-else class="mr-2">cloud_upload</v-icon>
+              {{ operator.pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
+          </v-btn>
+        </li>
+
+        <li>
+          <label class="label" for="telepac_upload_xml_field">Dossier complet (XML)</label>
+          <v-btn outline round color="success" :disabled="isLoading" @click="telepacXmlPrompt" small>
+            <input type="file" id="telepac_upload_xml_field" ref="telepac_upload_xml_field" @input="uploadTelepacXML" accept=".xml,text/xml" hidden>
+            <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
+            <v-icon v-else class="mr-2">cloud_upload</v-icon>
+              {{ operator.pacage ? 'choisir un nouveau fichier' : 'choisir le fichier' }}
+          </v-btn>
+        </li>
+        <li>
+
+          <label class="label" for="numero_pacage">Numéro PACAGE</label>
+          <div>
+            <input type="text" class="input" placeholder="000000000" id="numero_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
+            <v-btn outline small @click="validateUserInputPacage" id="validate_user_input_pacage" ref="validate_user_input_pacage">Valider</v-btn>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section id="manuel" class="my-5">
+      <h2 class="headline" v-if="inputMode === 'manuel'">
+        Saisie du parcellaire
+      </h2>
+      <h2 class="headline" v-else>
+        Confirmation du parcellaire
+      </h2>
+
+      <div v-if="operator.pacage" class="my-3">
+        <v-chip class="pacage">
+          <b class="mr-2">Campagne PAC</b>
+          {{operator.campagne}}
+        </v-chip>
+        <v-chip class="pacage">
+          <b class="mr-2">N°&nbsp;PACAGE</b>
+          {{operator.pacage}}
+        </v-chip>
       </div>
+
+      <div v-if="inputMode === 'manuel' || hasAtLeastOneGeometry">
+        <div class="my-4">
+          <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une parcelle
+          </v-btn>
+
+          <v-btn disabled outline color="info">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une zone de rucher
+          </v-btn>
+        </div>
+
+        <div :class="{ grid: true, 'no-cadastre': operator.pacage }">
+          <span class="header">Commune</span>
+          <span v-if="!operator.pacage" class="header">Références<br>cadastrales</span>
+          <span class="header">Type de culture</span>
+          <span class="header">Statut de conversion</span>
+          <span class="header">Date d'engagement<br>de&nbsp;la&nbsp;parcelle</span>
+          <span class="header">Commentaire</span>
+          <span class="header"></span>
+
+          <plot-row v-for="(feature, index) in plots.features" :feature="feature" :pacage="operator.pacage" :is-last-line="index === plots.features.length - 1" class="row" :key="feature.id" @delete="deleteFeatureId" />
+        </div>
+
+        <div class="my-4">
+          <v-btn color="info" @click="addPlot() || fetchCadastreSheets()">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une parcelle
+          </v-btn>
+
+          <v-btn disabled outline color="info">
+            <v-icon class="mr-2">add_circle_outline</v-icon>
+            Ajouter une zone de rucher
+          </v-btn>
+
+          <br>
+
+          <v-btn color="success" class="mt-3" @click.stop="fetchCadastreSheets" :loading="isLoading">
+            <v-icon class="mr-2">map</v-icon>
+            {{isMapVisible ? 'actualiser la carte' : 'afficher sur une carte'}}
+          </v-btn>
+        </div>
+      </div>
+
+      <p v-else>
+        <v-progress-circular indeterminate size=24 color="rgba(0,0,0,.54)" />
+
+        En attente des informations des parcelles.
+      </p>
+
+      <!-- <section v-if="isMapVisible">
+        <h2 class="headline my-3">Parcellaire tabulaire </h2>
+
+        <table class="summary">
+          <thead>
+            <tr>
+              <td>Parcelle</td>
+              <td>Production végétale</td>
+              <td>Date engagement</td>
+              <td v-if="!operator.pacage">Réf cadastrale</td>
+              <td>Classement</td>
+              <td>Surface graphique</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="({ properties, id }) in structuredPlots.features" :key="id">
+              <td>{{ id }}</td>
+              <td>{{ properties.culture_type.join(', ') }}</td>
+              <td>{{ properties.engagement_date }}</td>
+              <td v-if="!operator.pacage">{{ properties.cadastre_references.join(', ') }}</td>
+              <td>{{ properties.niveau_conversion }}</td>
+              <td>{{ properties.surface ? `${properties.surface}ha` : '?'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section> -->
+
+      <section class="my-5">
+        <h2 class="headline my-3">Prévisualisation de votre parcellaire</h2>
+
+        <div class="map" v-if="hasAtLeastOneGeometry">
+          <MglMap
+          :mapStyle="mapStyle"
+          :bounds.sync="mapBounds"
+          @load="onMapLoaded"
+          ref="mapboxDiv"
+          >
+          <MglGeojsonLayer
+            sourceId="plots"
+            :layer="layerStyle('operator-parcels')"
+            layerId="operator-parcels"/>
+          <MglVectorLayer
+              before="place-continent"
+              sourceId="cadastre"
+              :layer="layerStyle('selectable-cadastral-parcels')"
+              layerId="parcelles"/>
+          </MglMap>
+        </div>
+        <p v-else>
+          <v-progress-circular indeterminate size=24 color="rgba(0,0,0,.54)" />
+
+          En attente des informations des parcelles.
+        </p>
+      </section>
+
+      <section class="my-5">
+        <h2 class="headline my-3">Exporter le parcellaire</h2>
+
+        <v-btn color="success" :disabled="true">
+          Export Télépac
+        </v-btn>
+
+        <v-btn color="success" :disabled="true">
+          Export GeoJSON/QGIS
+        </v-btn>
+
+        <v-btn color="success" :disabled="!hasAtLeastOneGeometry" @click="startEcocertExport">
+          <v-icon class="mr-2">cloud_download</v-icon>
+          Export Ecocert
+        </v-btn>
+      </section>
     </section>
   </v-form>
 </template>
 
 <script>
-import {get} from 'axios'
+import {get, post} from 'axios'
 import {geometry as area} from '@mapbox/geojson-area'
 import { all as mergeAll } from "deepmerge";
 import geometryBbox  from "@turf/bbox";
@@ -141,6 +296,10 @@ import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
+import { toCertificationBodySheet, ecocertExcelTemplate } from '@/certification-body/control-sheet.js'
+import samplePlots from '@/certification-body/sample-plots.json'
+
+const {VUE_APP_API_ENDPOINT} = process.env;
 
 import {
   baseStyle,
@@ -195,28 +354,24 @@ export default {
 
   data () {
     return {
+      inputMode: null,
+
       valid: false,
       isLoading: false,
       isMapVisible: false,
 
-      pacage: null,
-      campagne: null,
-      plots: featureCollection([
-        Feature(emptyPolygon(), {
-          "com": "26108",
-          "cadastre_suffixes": 'ZI631, ZI637',
-          "culture_type": ['AIL', 'OIG'],
-          "niveau_conversion": 'BIO',
-          "engagement_date": "2017-03-02"
-        }, { "id": "@1.1" }),
-        Feature(emptyPolygon(), {
-          "com": "26108",
-          "cadastre_suffixes": 'AM17',
-          "culture_type": ['SOJ'],
-          "niveau_conversion": 'C2',
-          "engagement_date": "2017-03-02"
-        }, { "id": "@1.2" }),
-      ]),
+      operator: {
+        id: 7818,
+        certificatorId: 215844,
+        name: 'BOUSIGNAC Eric',
+        inputDate: new Date(),
+        certifiedBy: 'jviles',
+        pacage: null,
+        campagne: null,
+      },
+
+      userInputPacage: null,
+      plots: featureCollection([]),
 
       mapStyle: mergeAll([
         baseStyle,
@@ -240,15 +395,29 @@ export default {
       return featureCollection(
         this.plots.features.map(feature => prepareFeature({ feature }))
       )
-    }
+    },
+
   },
 
   methods: {
+    prefillData () {
+      this.isLoading = true
+
+      this.$nextTick(() => {
+        this.inputMode = 'telepac'
+        this.isLoading = false
+
+        this.operator.pacage = '2020'
+        this.operator.pacage = '082020054'
+        this.plots = samplePlots
+      })
+    },
+
     addPlot () {
       const lastLine = this.plots.features[ this.plots.length - 1 ] ?? {}
       const { com, engagement_date, niveau_conversion } = lastLine
 
-      this.plots.features.push(Feature({}, {
+      this.plots.features.push(Feature(emptyPolygon(), {
         com,
         engagement_date,
         niveau_conversion,
@@ -340,29 +509,116 @@ export default {
 
     updateMap () {
       this.map.getSource("plots").setData(this.plots)
-      this.map.fitBounds(this.mapBounds)
+      this.map.fitBounds(this.mapBounds, { padding: 50, maxZoom: 13 })
       this.map.resize();
     },
 
-    telepacXmlPrompt () {
-      this.$refs.telepac_upload_field.click()
+    telepacZipPrompt () {
+      this.$refs.telepac_upload_zip_field.click()
     },
 
-    async uploadXML () {
-      const text = await this.$refs.telepac_upload_field.files[0].text()
+    telepacXmlPrompt () {
+      this.$refs.telepac_upload_xml_field.click()
+    },
+
+    async uploadTelepacZIP () {
+      const [archive] = await this.$refs.telepac_upload_zip_field.files
       this.isLoading = true
 
-      setTimeout(() => this.$nextTick(() => {
-        const { pacage, campagne, featureCollection } = convertXmlDossierToGeoJSON(text)
-        this.pacage = pacage
-        this.campagne = campagne
-        this.plots = featureCollection
+      const form = new FormData()
+      form.append('archive', archive)
 
+      /** @type {{ data: TelepacFeatureCollection }} */
+      const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
+
+      const { PACAGE, CAMPAGNE } = geojson.features[0]?.properties
+      this.operator.pacage = PACAGE
+      this.operator.campagne = CAMPAGNE
+
+      this.$nextTick(() => {
         this.isLoading = false
-      }), 200)
+
+        this.plots = featureCollection(geojson.features.map(({ geometry, properties: prop, id }) => Feature(geometry, {
+          com: prop.COMMUNE,
+          culture_type: [prop.TYPE],
+          niveau_conversion: prop.AGRIBIO === 1 ? 'BIO' : '',
+          pacage: prop.PACAGE,
+          engagement_date: null,
+          comment: [
+            `Parcelle ${prop.NUMERO_I}.${prop.NUMERO_P}`,
+            prop.MARAICH ? 'Conduite en maraîchage.' : '',
+            prop.AGROFOREST ? 'Conduite en agroforesterie.' : ''
+          ].filter(d => d).join('\n')
+        }, { id: id ?? `${prop.NUMERO_I}.${prop.NUMERO_P}` })))
+      })
     },
 
-  },
+    async uploadTelepacXML () {
+      const text = await this.$refs.telepac_upload_xml_field.files[0].text()
+      this.isLoading = true
+
+      setTimeout(async () => {
+        const { pacage, campagne, featureCollection } = convertXmlDossierToGeoJSON(text)
+        this.operator.pacage = pacage
+        this.operator.campagne = campagne
+
+        await this.$nextTick(() => {
+          this.plots = featureCollection
+          this.isLoading = false
+        })
+      }, 100)
+    },
+
+    validateUserInputPacage() {
+        let pacage = this.userInputPacage;
+        const params = {
+          numeroPacage: pacage,
+          years: [2019],
+        };
+
+        this.$store
+          .dispatch("operators/FETCH_WFS_LAYERS", params)
+          .then((data) => {
+            const [ [year, features] ] = data
+
+            this.operator.pacage = pacage;
+            this.operator.campagne = year;
+
+            this.isLoading = false;
+            this.plots = this.formatFeatures(features);
+          });
+    },
+
+    startEcocertExport () {
+      const { structuredPlots: featureCollection, operator } = this
+      const template = ecocertExcelTemplate
+      const format = 'xlsm'
+
+      const download = toCertificationBodySheet({ featureCollection, operator, template, format })
+
+      download(`cartobio-export-ecocert.${format}`)
+    },
+
+    formatFeatures (featureCollection) {
+      featureCollection.features.forEach((feat) => {
+        let prop = feat.properties;
+        feat.properties = {
+          com : "",
+          id: prop.id,
+          pacage: prop.pacage,
+          culture_type: [prop.codecultu],
+          niveau_conversion: prop.bio ? "BIO" : "",
+          comment: [
+            "Ilot " + prop.numilot + " Parcelle " + prop.numparcel,
+            prop.agroforest ? "Conduite en agroforesterie." : "",
+            prop.maraichage ? "Conduite en maraîchage." : "",
+          ].filter(d => d).join('\n')
+        }
+      })
+      return featureCollection;
+    },
+
+  }
 };
 </script>
 
@@ -375,7 +631,9 @@ export default {
     gap: .5em;
   }
 
-  summary {
+  summary,
+  label,
+  .label {
     cursor: pointer;
   }
 
@@ -396,6 +654,60 @@ export default {
     td {
       border: 1px solid #ccc;
       padding: 0.5rem;
+    }
+  }
+
+  .inline-choices > li {
+    display: grid;
+    grid-template-columns: 20% 1fr;
+    grid-template-rows: 2;
+    justify-content: center;
+    margin-bottom: 1em;
+
+    label {
+      grid-row: 1 / 3;
+      align-self: center;
+    }
+  }
+
+  .input[maxlength="9"] {
+    font-family: monospace;
+    letter-spacing: .5rem;
+    max-width: 200px;
+  }
+
+  .label {
+    font-weight: bold;
+  }
+
+  .radio-label {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    grid-template-rows: 2;
+    justify-content: center;
+    column-gap: 1em;
+    padding: 1em;
+
+    &:not(.disabled):hover,
+    &:not(.disabled):focus {
+      background-color: #ffc;
+      border-color: #333;
+    }
+
+    &.disabled {
+      color: #bbb;
+      cursor: default;
+    }
+
+    input[type="radio"] {
+      grid-row: 1 / 3;
+    }
+
+    .help {
+      margin: 0;
     }
   }
 
@@ -443,6 +755,18 @@ export default {
 
     &:first-child {
       margin-left: 0;
+    }
+  }
+
+  .input {
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: .5em;
+    max-width: 100%;
+
+    &:invalid {
+      box-shadow: red 0 0 3px;
+      border-color: darkred;
     }
   }
 
