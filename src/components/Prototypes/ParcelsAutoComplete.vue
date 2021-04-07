@@ -609,11 +609,12 @@ export default {
           culture_type: [prop.codecultu],
           niveau_conversion: prop.bio ? "BIO" : "",
           comment: [
-            "Ilot " + prop.numilot + " Parcelle " + prop.numparcel,
+            `Parcelle ${prop.numilot}.${prop.numparcel}`,
             prop.agroforest ? "Conduite en agroforesterie." : "",
             prop.maraichage ? "Conduite en maraîchage." : "",
           ].filter(d => d).join('\n')
-        }
+        };
+        feat.id = `${prop.numilot}.${prop.numparcel}`;
       })
       return featureCollection;
     },
