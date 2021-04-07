@@ -281,6 +281,10 @@
           <v-icon class="mr-2">cloud_download</v-icon>
           Export Ecocert
         </v-btn>
+        <v-btn color="success" :disabled="!hasAtLeastOneGeometry" @click="startCSVExport">
+          <v-icon class="mr-2">cloud_download</v-icon>
+          Export CSV
+        </v-btn>
       </section>
     </section>
   </v-form>
@@ -296,7 +300,7 @@ import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
-import { toCertificationBodySheet, ecocertExcelTemplate } from '@/certification-body/control-sheet.js'
+import { toCertificationBodySheet, ecocertExcelTemplate, CSVTemplate } from '@/certification-body/control-sheet.js'
 import samplePlots from '@/certification-body/sample-plots.json'
 
 const {VUE_APP_API_ENDPOINT} = process.env;
@@ -597,6 +601,28 @@ export default {
       const download = toCertificationBodySheet({ featureCollection, operator, template, format })
 
       download(`cartobio-export-ecocert.${format}`)
+    },
+
+    startCSVExport () {
+
+      // const rows = [
+      //   ["name1", "city1", "some other info"],
+      //   ["name2", "city2", "more info"]
+      // ];
+
+      // let csvContent = "data:text/csv;charset=utf-8," 
+      //   + rows.map(e => e.join(",")).join("\n");
+      
+      const { structuredPlots: featureCollection, operator } = this
+      
+      console.log(this.structuredPlots);
+      const template = CSVTemplate
+      // format is xlxs booktype
+      const format = 'csv'
+
+      const download = toCertificationBodySheet({ featureCollection, operator, template, format })
+
+      download(`cartobio-export-csv.${format}`)
     },
 
     formatFeatures (featureCollection) {
