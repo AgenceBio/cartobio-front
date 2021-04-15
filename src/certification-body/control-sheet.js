@@ -58,7 +58,7 @@ export function ecocertExcelTemplate ({ featureCollection, operator }) {
   return wb
 }
 
-export function CSVTemplate ({ featureCollection, operator }) {
+export function basicExcelTemplate ({ featureCollection, operator }) {
   const wb = XLSX.utils.book_new()
 
   // First sheet
