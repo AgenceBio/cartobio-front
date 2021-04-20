@@ -81,7 +81,7 @@ export function basicExcelTemplate ({ featureCollection, operator }) {
   // First sheet: plots informations (via `featureCollection`)
   XLSX.utils.sheet_add_aoa(ws1, [
     [],
-    ['Ilots', 'Parcelles', 'Surfaces (ha)', 'Codes', 'Nomenclature Pac', 'Ilot.Parcelle', 'Cultures', 'Variétés/Association/Précision', 'Code Pac', 'Culture/variété/Complément', 'Surfaces', 'Classification Parcelle', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire',	'Parcelles menées en Bio selon déclaration PAC'],
+    ['N°Ilot', 'N°Parcelle', 'Surfaces (ha)', 'Codes', 'Nomenclature Pac', 'Ilot.Parcelle', 'Cultures', 'Variétés/Association/Précision', 'Code Pac', 'Culture/variété/Complément', 'Surfaces', 'Classification Parcelle', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire',	'Parcelles menées en Bio selon déclaration PAC'],
   ], { origin: 'A4'})
 
   XLSX.utils.sheet_add_aoa(ws1, featureCollection.features.map(({ geometry, properties: props, id }) => {
@@ -96,7 +96,7 @@ export function basicExcelTemplate ({ featureCollection, operator }) {
   }), { origin: 'A6', cellDates: true })
 
   // First sheet: finalize
-  XLSX.utils.book_append_sheet(wb, ws1, 'Import Télépac');
+  XLSX.utils.book_append_sheet(wb, ws1, 'Parcellaire Bio');
 
   return wb
 }

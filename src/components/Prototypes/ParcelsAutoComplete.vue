@@ -135,7 +135,11 @@
           <label class="label" for="numero_pacage">Numéro PACAGE</label>
           <div>
             <input type="text" class="input" placeholder="000000000" id="numero_pacage" v-model="userInputPacage" pattern="0?\d{8}" autocomplete="disabled" maxlength="9" />
-            <v-btn outline small @click="validateUserInputPacage" id="validate_user_input_pacage" ref="validate_user_input_pacage">Valider</v-btn>
+
+            <v-btn outline @click="validateUserInputPacage" :disabled="isLoading || userInputPacage.length !== 9">
+              <v-progress-circular v-if="isLoading" size="18" width="2" class="mr-2" indeterminate />
+              Importer ce parcellaire
+            </v-btn>
           </div>
         </li>
       </ul>
@@ -262,7 +266,7 @@
         <p v-else>
           <v-progress-circular indeterminate size=24 color="rgba(0,0,0,.54)" />
 
-          En attente des informations des parcelles.
+          En attente de saisie des informations géographiques des parcelles.
         </p>
       </section>
 
@@ -277,11 +281,11 @@
           Export GeoJSON/QGIS
         </v-btn>
 
-        <v-btn color="success" :disabled="!hasAtLeastOneGeometry" @click="startEcocertExport">
+        <v-btn color="success" :disabled="!hasAtLeastOneRecord" @click="startEcocertExport">
           <v-icon class="mr-2">cloud_download</v-icon>
           Export Ecocert
         </v-btn>
-        <v-btn color="success" :disabled="!hasAtLeastOneGeometry" @click="startXLSXExport">
+        <v-btn color="success" :disabled="!hasAtLeastOneRecord" @click="startXLSXExport">
           <v-icon class="mr-2">cloud_download</v-icon>
           Export Excel
         </v-btn>
@@ -388,6 +392,10 @@ export default {
   computed: {
     hasAtLeastOneGeometry () {
       return this.structuredPlots.features.some(feature => feature.geometry.coordinates.length > 0)
+    },
+
+    hasAtLeastOneRecord () {
+      return this.structuredPlots.features.length > 0
     },
 
     mapBounds () {
@@ -580,6 +588,7 @@ export default {
           years: [2019],
         };
 
+        this.isLoading = true
         this.$store
           .dispatch("operators/FETCH_WFS_LAYERS", params)
           .then((data) => {
@@ -590,7 +599,8 @@ export default {
 
             this.isLoading = false;
             this.plots = this.formatFeatures(features);
-          });
+          })
+          .finally(() => this.isLoading = false)
     },
 
     startEcocertExport () {
