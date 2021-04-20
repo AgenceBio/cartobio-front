@@ -281,6 +281,10 @@
           <v-icon class="mr-2">cloud_download</v-icon>
           Export Ecocert
         </v-btn>
+        <v-btn color="success" :disabled="!hasAtLeastOneGeometry" @click="startXLSXExport">
+          <v-icon class="mr-2">cloud_download</v-icon>
+          Export Excel
+        </v-btn>
       </section>
     </section>
   </v-form>
@@ -296,7 +300,7 @@ import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
-import { toCertificationBodySheet, ecocertExcelTemplate } from '@/certification-body/control-sheet.js'
+import { toCertificationBodySheet, ecocertExcelTemplate, basicExcelTemplate } from '@/certification-body/control-sheet.js'
 import samplePlots from '@/certification-body/sample-plots.json'
 
 const {VUE_APP_API_ENDPOINT} = process.env;
@@ -362,7 +366,7 @@ export default {
 
       operator: {
         id: 7818,
-        certificatorId: 215844,
+        customerId: 215844,
         name: 'BOUSIGNAC Eric',
         inputDate: new Date(),
         certifiedBy: 'jviles',
@@ -596,7 +600,17 @@ export default {
 
       const download = toCertificationBodySheet({ featureCollection, operator, template, format })
 
-      download(`cartobio-export-ecocert.${format}`)
+      download(`cartobio-ecocert-${operator.customerId}.${format}`)
+    },
+
+    startXLSXExport () {
+      const { structuredPlots: featureCollection, operator } = this
+      const template = basicExcelTemplate;
+      const format = 'xlsx'
+
+      const download = toCertificationBodySheet({ featureCollection, operator, template, format })
+
+      download(`cartobio-${operator.id}.${format}`)
     },
 
     formatFeatures (featureCollection) {
@@ -609,11 +623,12 @@ export default {
           culture_type: [prop.codecultu],
           niveau_conversion: prop.bio ? "BIO" : "",
           comment: [
-            "Ilot " + prop.numilot + " Parcelle " + prop.numparcel,
+            `Parcelle ${prop.numilot}.${prop.numparcel}`,
             prop.agroforest ? "Conduite en agroforesterie." : "",
             prop.maraichage ? "Conduite en maraîchage." : "",
           ].filter(d => d).join('\n')
-        }
+        };
+        feat.id = `${prop.numilot}.${prop.numparcel}`;
       })
       return featureCollection;
     },
