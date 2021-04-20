@@ -300,6 +300,7 @@ import {geometry as area} from '@mapbox/geojson-area'
 import { all as mergeAll } from "deepmerge";
 import geometryBbox  from "@turf/bbox";
 import bboxPolygon from "@turf/bbox-polygon";
+import uniqueId from 'lodash/uniqueId'
 import { featureCollection, feature as Feature } from "@turf/helpers";
 import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
@@ -378,7 +379,7 @@ export default {
         campagne: null,
       },
 
-      userInputPacage: null,
+      userInputPacage: '',
       plots: featureCollection([]),
 
       mapStyle: mergeAll([
@@ -434,7 +435,7 @@ export default {
         engagement_date,
         niveau_conversion,
         culture_type: []
-      }, { id: Math.random() }))
+      }, { id: uniqueId('999.') }))
     },
 
     deleteFeatureId (id) {
