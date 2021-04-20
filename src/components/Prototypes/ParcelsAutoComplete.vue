@@ -604,17 +604,13 @@ export default {
     },
 
     startXLSXExport () {
-      
       const { structuredPlots: featureCollection, operator } = this
-      
-      console.log(this.structuredPlots);
       const template = basicExcelTemplate;
-      // format is xlsx booktype
       const format = 'xlsx'
 
       const download = toCertificationBodySheet({ featureCollection, operator, template, format })
 
-      download(`cartobio-export.${format}`)
+      download(`cartobio-${operator.id}.${format}`)
     },
 
     formatFeatures (featureCollection) {

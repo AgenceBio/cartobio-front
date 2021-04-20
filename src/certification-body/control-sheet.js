@@ -64,8 +64,8 @@ export function basicExcelTemplate ({ featureCollection, operator }) {
   // First sheet
   // First sheet: customer informations (via `customer`)
   const ws1 = XLSX.utils.aoa_to_sheet([
-    ['N°Opérateur:', '', operator.certificatorId, '', 'Nom Opérateur:', '', operator.name, '', '', '', '', '', 'N°PACAGE', operator.pacage],
-    ['Date de saisie:', '', operator.inputDate, '', '', '', 'Extrait par:', '', operator.certifiedBy],
+    ['N°Bio:', '', operator.id, '', 'Nom Opérateur:', '', operator.name],
+    ['Date de saisie:', '', operator.inputDate, '', 'N°PACAGE', '', operator.pacage],
   ], { cellDates: true })
 
   ws1['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.id}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
@@ -75,13 +75,13 @@ export function basicExcelTemplate ({ featureCollection, operator }) {
 
   ws1['!merges'] = [
     R('A1:B1'), R('C1:D1'), R('E1:F1'), R('G1:L1'),
-    R('A2:B2'), R('C2:D2'), R('G2:H2')
-  ]  
-  
+    R('A2:B2'), R('C2:D2'), R('E2:F2')
+  ]
+
   // First sheet: plots informations (via `featureCollection`)
   XLSX.utils.sheet_add_aoa(ws1, [
-    ['', '', '', '', 'Partie réservée à l\'Organisme Certificateur'],
-    ['Ilots', 'Parcelles', 'Surfaces (ha)', 'Codes', 'Nomenclature Pac', 'Ilot.Parcelle', 'Cultures', 'Variétés/Association/Précision', 'Code Pac', 'Culture/variété/Complément', 'Surfaces', 'Classification Parcelle', 'Date de conversion', 'Classification Parcelle 2', 'Proposition Classification Culture', 'Pac / Hors Pac / Cueillette', 'Commentaire',	'Parcelles menées en Bio selon déclaration PAC'],
+    [],
+    ['Ilots', 'Parcelles', 'Surfaces (ha)', 'Codes', 'Nomenclature Pac', 'Ilot.Parcelle', 'Cultures', 'Variétés/Association/Précision', 'Code Pac', 'Culture/variété/Complément', 'Surfaces', 'Classification Parcelle', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire',	'Parcelles menées en Bio selon déclaration PAC'],
   ], { origin: 'A4'})
 
   XLSX.utils.sheet_add_aoa(ws1, featureCollection.features.map(({ geometry, properties: props, id }) => {
@@ -92,7 +92,7 @@ export function basicExcelTemplate ({ featureCollection, operator }) {
     const isBio = ['BIO', 'C1', 'C2', 'C3'].includes(props.niveau_conversion)
     const cultures = props.culture_type.join(' - ')
 
-    return [ilotId, parcelleId, surface, cultures, label, id, groupLabel, '', cultures, '', surface, props.niveau_conversion, props.engagement_date, '', '', (isPac ? 'PAC' : ''), '', (isPac && isBio ? 'Oui' : '')]
+    return [ilotId, parcelleId, surface, cultures, label, id, groupLabel, '', cultures, '', surface, props.niveau_conversion, props.engagement_date, (isPac ? 'PAC' : ''), '', (isPac && isBio ? 'Oui' : '')]
   }), { origin: 'A6', cellDates: true })
 
   // First sheet: finalize
