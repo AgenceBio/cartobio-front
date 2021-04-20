@@ -366,7 +366,7 @@ export default {
 
       operator: {
         id: 7818,
-        certificatorId: 215844,
+        customerId: 215844,
         name: 'BOUSIGNAC Eric',
         inputDate: new Date(),
         certifiedBy: 'jviles',
@@ -600,7 +600,7 @@ export default {
 
       const download = toCertificationBodySheet({ featureCollection, operator, template, format })
 
-      download(`cartobio-export-ecocert.${format}`)
+      download(`cartobio-ecocert-${operator.customerId}.${format}`)
     },
 
     startXLSXExport () {

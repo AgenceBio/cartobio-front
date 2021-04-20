@@ -17,7 +17,7 @@ export function ecocertExcelTemplate ({ featureCollection, operator }) {
   // First sheet
   // First sheet: customer informations (via `customer`)
   const ws1 = XLSX.utils.aoa_to_sheet([
-    ['N°Opérateur:', '', operator.certificatorId, '', 'Nom Opérateur:', '', operator.name, '', '', '', '', '', 'N°PACAGE', operator.pacage],
+    ['N°Opérateur:', '', operator.customerId, '', 'Nom Opérateur:', '', operator.name, '', '', '', '', '', 'N°PACAGE', operator.pacage],
     ['Date de saisie:', '', operator.inputDate, '', '', '', 'Extrait par:', '', operator.certifiedBy],
   ], { cellDates: true })
 
