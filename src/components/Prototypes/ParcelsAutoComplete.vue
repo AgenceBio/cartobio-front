@@ -411,7 +411,7 @@ export default {
     },
 
   },
-  
+
   computed: {
     ...mapState('user', ['apiToken']),
   },
@@ -625,7 +625,8 @@ export default {
 
       const download = toCertificationBodySheet({ featureCollection, operator, template, format })
 
-      download(`cartobio-${operator.id}.${format}`)
+      download(`cartobio-${operator.id}.${format}`);
+      sendEmail();
     },
 
     formatFeatures (featureCollection) {
@@ -658,8 +659,6 @@ export default {
         }
       }
 
-      this.isProcessing = true
-
       post(`${VUE_APP_API_ENDPOINT}/v1/parcels/operator/${id}`, {
         uploads: this.uploads,
         sender: {
@@ -670,12 +669,8 @@ export default {
         }
       }, options).then(() => {
         this.freeText = ''
-        this.unsetFeatures()
-        this.$refs.form.reset()
         this.isSaved = true
-        this.trackEvent(["operator", "add-parcel", "state:added"])
       }, console.error).finally(() => {
-        this.isProcessing = false
       })
     },
     
