@@ -307,6 +307,7 @@ import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier
 import { parseReferences } from '@/cadastre.js'
 import { toCertificationBodySheet, ecocertExcelTemplate, basicExcelTemplate } from '@/certification-body/control-sheet.js'
 import samplePlots from '@/certification-body/sample-plots.json'
+import {mapState} from 'vuex';
 
 const {VUE_APP_API_ENDPOINT} = process.env;
 
@@ -409,10 +410,6 @@ export default {
         this.plots.features.map(feature => prepareFeature({ feature }))
       )
     },
-
-  },
-
-  computed: {
     ...mapState('user', ['apiToken']),
   },
 
@@ -626,7 +623,7 @@ export default {
       const download = toCertificationBodySheet({ featureCollection, operator, template, format })
 
       download(`cartobio-${operator.id}.${format}`);
-      sendEmail();
+      this.sendEmail();
     },
 
     formatFeatures (featureCollection) {
@@ -652,20 +649,23 @@ export default {
     sendEmail () {
       const {id} = this.operator
       const {apiToken} = this
-      const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
+      const userId = 'testId';
+      const userEmail = 'testEmail';
+      const userName = "testName";
+      // const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
+      console.log(apiToken);
       const options = {
         headers: {
           Authorization: `Bearer ${apiToken}`
         }
-      }
+      } 
 
       post(`${VUE_APP_API_ENDPOINT}/v1/parcels/operator/${id}`, {
         uploads: this.uploads,
         sender: {
           userId,
           userEmail,
-          userName,
-          ocId,
+          userName
         }
       }, options).then(() => {
         this.freeText = ''
