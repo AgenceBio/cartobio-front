@@ -411,6 +411,10 @@ export default {
     },
 
   },
+  
+  computed: {
+    ...mapState('user', ['apiToken']),
+  },
 
   methods: {
     prefillData () {
@@ -644,6 +648,51 @@ export default {
       return featureCollection;
     },
 
+    sendEmail () {
+      const {id} = this.operator
+      const {apiToken} = this
+      const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
+      const options = {
+        headers: {
+          Authorization: `Bearer ${apiToken}`
+        }
+      }
+
+      this.isProcessing = true
+
+      post(`${VUE_APP_API_ENDPOINT}/v1/parcels/operator/${id}`, {
+        uploads: this.uploads,
+        sender: {
+          userId,
+          userEmail,
+          userName,
+          ocId,
+        }
+      }, options).then(() => {
+        this.freeText = ''
+        this.unsetFeatures()
+        this.$refs.form.reset()
+        this.isSaved = true
+        this.trackEvent(["operator", "add-parcel", "state:added"])
+      }, console.error).finally(() => {
+        this.isProcessing = false
+      })
+    },
+    
+    uploads () {
+      const text = JSON.stringify(this.featureCollection, null, 2)
+      const blob = new Blob([ text ], { type: 'application/json' })
+
+      return [
+        {
+            content: btoa(text),
+            size: blob.size,
+            type: blob.type,
+            filename: 'feature.geojson',
+            disposition: 'attachment'
+          }
+      ]
+    }
   }
 };
 </script>
