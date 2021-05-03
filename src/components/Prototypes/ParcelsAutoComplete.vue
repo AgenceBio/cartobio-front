@@ -307,7 +307,8 @@ import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier
 import { parseReferences } from '@/cadastre.js'
 import { toCertificationBodySheet, ecocertExcelTemplate, basicExcelTemplate } from '@/certification-body/control-sheet.js'
 import samplePlots from '@/certification-body/sample-plots.json'
-import {mapState} from 'vuex';
+import {mapState, mapActions} from 'vuex';
+import {authenticateWithCredentials} from '@/api/user.js'
 
 const {VUE_APP_API_ENDPOINT} = process.env;
 
@@ -410,7 +411,28 @@ export default {
         this.plots.features.map(feature => prepareFeature({ feature }))
       )
     },
+    ...mapActions('user', ['setProfile']),
     ...mapState('user', ['apiToken']),
+    ...mapState(['userProfile']),
+  },
+
+  created () {  
+    if (!this.apiToken) {
+      
+    const {login, password} = {login : "cartobio-proto@yopmail.com", password: "Cartobio12345"};
+     
+     authenticateWithCredentials({login, password})
+        .then(({  token, decodedToken, cartobioToken }) => {
+          this.$ls.set("token", token, decodedToken.exp);
+          this.$ls.set("cartobioToken", cartobioToken, decodedToken.exp);
+          console.log(cartobioToken);
+
+          // for some weird reasons cartobioToken transforms from token to this component object between here and the setProfile method ... 
+          // return this.setProfile(cartobioToken);
+          // for prototype/demo purpose, reloading the page actually log in for the test account, since the token is in localstorage.
+          this.$router.go(0);
+        })
+    }
   },
 
   methods: {
@@ -649,23 +671,26 @@ export default {
     sendEmail () {
       const {id} = this.operator
       const {apiToken} = this
-      const userId = 'testId';
-      const userEmail = 'testEmail';
-      const userName = "testName";
-      // const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
       console.log(apiToken);
+      const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
+
+      this.freeText = "Données exportées via le prototype";
+      
+      // const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
       const options = {
         headers: {
           Authorization: `Bearer ${apiToken}`
         }
-      } 
+      }
 
       post(`${VUE_APP_API_ENDPOINT}/v1/parcels/operator/${id}`, {
-        uploads: this.uploads,
+        uploads: this.uploads(),
+        text: this.freeText,
         sender: {
           userId,
           userEmail,
-          userName
+          userName,
+          ocId
         }
       }, options).then(() => {
         this.freeText = ''
