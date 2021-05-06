@@ -306,7 +306,6 @@ import PlotRow from './PlotRow'
 import { convertXmlDossierToGeoJSON } from '@/modules/codes-cultures/xml-dossier.js'
 import { parseReferences } from '@/cadastre.js'
 import { toCertificationBodySheet, ecocertExcelTemplate, basicExcelTemplate } from '@/certification-body/control-sheet.js'
-import samplePlots from '@/certification-body/sample-plots.json'
 
 const {VUE_APP_API_ENDPOINT} = process.env;
 
@@ -416,13 +415,13 @@ export default {
     prefillData () {
       this.isLoading = true
 
-      this.$nextTick(() => {
+      get('sample-telepac-plots.json').then(({ data }) => {
         this.inputMode = 'telepac'
         this.isLoading = false
 
-        this.operator.pacage = '2020'
+        this.operator.campagne = '2020'
         this.operator.pacage = '082020054'
-        this.plots = samplePlots
+        this.plots = data
       })
     },
 
