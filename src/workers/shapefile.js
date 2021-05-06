@@ -13,6 +13,11 @@ function createIdFromHash(object) {
   return createHash('sha256').update(buffer).digest('hex')
 }
 
+function toShortSha512(string) {
+  const buffer = Buffer.from(string)
+  return createHash('sha512').update(buffer).digest('hex').slice(0, 48)
+}
+
 function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) {
   const filteringFeaturesPolygon = new gdal.MultiPolygon()
 
@@ -50,29 +55,38 @@ function extractFeatures({sourceFile, filteringFeatures, millesime: MILLESIME}) 
   while (feature = layer.features.next()) {
     const fields = feature.fields.toObject()
     const {BIO, bio, CODE_CULTU, codecultu} = fields
+    const {SURF_ADM, MARAICHAGE, AGROFOREST, PACAGE, pacage} = fields
     const {label: LBL_CULTU, groupLabel: GRP_CULTU} = fromCode(CODE_CULTU ?? codecultu)
 
     const geometry = getWGS84Geometry(feature)
     const SURFACE_HA = parseFloat(area(geometry) / IN_HECTARES).toFixed(2)
+    const ANON_ID = toShortSha512(pacage ?? PACAGE)
 
     const properties = {
+      // Computed fields
+      ANON_ID,
+      MILLESIME,
+      //
       BIO: parseInt(BIO ?? bio, 10),
+      // Type, and labels
       CODE_CULTU: CODE_CULTU ?? codecultu,
       LBL_CULTU,
       GRP_CULTU,
       SURFACE_HA,
-      MILLESIME
+      // PAC fields
+      SURF_ADM,
+      MARAICHAGE: MARAICHAGE === '1' ? '1' : '0',
+      AGROFOREST: AGROFOREST ? '1' : '0',
     }
 
     const privateProperties = {
-      PACAGE: fields.pacage ?? fields.PACAGE,
       NUM_ILOT: fields.numilot ?? fields.NUM_ILOT,
       NUM_PARCEL: fields.numparcel ?? fields.NUM_PARCEL
     }
 
     features.push({
       type: 'Feature',
-      id: createIdFromHash({ ...properties, ...privateProperties }),
+      id: createIdFromHash({ ANON_ID, ...privateProperties }),
       geometry,
       properties
     })
