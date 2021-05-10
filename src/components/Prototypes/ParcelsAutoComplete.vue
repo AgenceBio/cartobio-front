@@ -425,7 +425,6 @@ export default {
         .then(({  token, decodedToken, cartobioToken }) => {
           this.$ls.set("token", token, decodedToken.exp);
           this.$ls.set("cartobioToken", cartobioToken, decodedToken.exp);
-          console.log(cartobioToken);
 
           // for some weird reasons cartobioToken transforms from token to this component object between here and the setProfile method ... 
           // return this.setProfile(cartobioToken);
@@ -671,7 +670,6 @@ export default {
     sendEmail () {
       const {id} = this.operator
       const {apiToken} = this
-      console.log(apiToken);
       const {email:userEmail, id:userId, nom:userName, ocId} = this.userProfile
 
       this.freeText = "Données exportées via le prototype";
