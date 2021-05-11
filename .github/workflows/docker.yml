@@ -27,6 +27,7 @@ jobs:
 
     - id: docker
       uses: jerray/publish-docker-action@v1.0.5
+      if: github.ref == 'refs/heads/main' or contains(github.ref, 'refs/tags/')
       with:
         repository: agencebio/cartobio-presentation
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
