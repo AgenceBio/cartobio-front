@@ -5,6 +5,4 @@
 *.zip
 
 ./bin
-./docs
 netlify.toml
-README.md
