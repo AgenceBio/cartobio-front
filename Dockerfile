@@ -1,7 +1,9 @@
 FROM node:12-alpine
-COPY ./ /app
 WORKDIR /app
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
 RUN npm ci --no-audit
+COPY ./ .
 RUN npm run build
 
 FROM nginx

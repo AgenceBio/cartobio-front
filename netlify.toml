@@ -1,0 +1,7 @@
+# Reference docs: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  force = false
+  status = 200
