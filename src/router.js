@@ -35,6 +35,8 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
+  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#scroll-behavior
+  scrollBehavior: (from, to, savedPosition) => savedPosition ? savedPosition : { x: 0, y: 0 },
   routes: [
     {
       path: '/map',
