@@ -14,9 +14,9 @@
           <v-icon>arrow_drop_down</v-icon>
           Choisissez vos données
         </v-btn> -->
-        <v-btn :href="signupUrl" target="_blank" large outline round color="primary" class="mb-5 mt-4">
-          <v-icon class="mr-2">contact_mail</v-icon>
-          Demandez les données de votre territoire
+        <v-btn :href="datasetUrl" target="_blank" @click="trackEvent(['opendata', 'landing-territory', 'top'])" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">cloud_download</v-icon>
+          Téléchargez les données de votre territoire
         </v-btn>
       </p>
     </v-layout>
@@ -72,14 +72,9 @@
 
     <v-layout column align-center justify-space-between my-4>
       <p>
-        <v-btn :href="signupUrl" target="_blank" large outline round color="primary" class="mb-5 mt-4">
-          <v-icon class="mr-2">contact_mail</v-icon>
-          Remplir une demande de données
-        </v-btn>
-
-        <v-btn :href="mailto" @click="trackEvent(['mailto', 'landing-territory:question', 'bottom'])" large outline round color="primary" class="mb-5 mt-4">
-          <v-icon class="mr-2">email</v-icon>
-          Un doute, une question ?
+        <v-btn :href="datasetUrl" target="_blank" @click="trackEvent(['opendata', 'landing-territory', 'bottom'])" large outline round color="primary" class="mb-5 mt-4">
+          <v-icon class="mr-2">cloud_download</v-icon>
+          Téléchargez les données de votre territoire
         </v-btn>
       </p>
     </v-layout>
@@ -114,8 +109,7 @@ export default {
     return {
       timerId: null,
       serviceIndex: 0,
-      mailto: 'mailto:cartobio@beta.gouv.fr?subject=J\'ai%20une%20question%20%C3%A0%20propos%20des%20donn%C3%A9es%20de%20mon%20territoire',
-      signupUrl: 'https://api.gouv.fr/les-api/api_cartobio_territoires/demande-acces',
+      datasetUrl: 'https://www.data.gouv.fr/fr/datasets/616d6531c2951bbe8bd97771/',
       services: [
         'de la reconquête de l\'eau',
         'des Plans Alimentaires Territoriaux (PAT)',
