@@ -91,8 +91,4 @@ Now open [`localhost:8080`](https://localhost:8080) to see the app running.
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-## Docker
-The website is deployed using Docker.
-You can just download the docker image on the [Docker Hub](https://cloud.docker.com/u/agencebio/repository/docker/agencebio/cartobio-presentation "agencebio/cartobio-presentation") and run it.
-
 [france-geojson]: https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/departements-avec-outre-mer.geojson
