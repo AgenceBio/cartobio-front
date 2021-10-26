@@ -1,8 +1,0 @@
-./node_modules
-./dist
-*.geojson
-*.gpkg
-*.zip
-
-./bin
-netlify.toml

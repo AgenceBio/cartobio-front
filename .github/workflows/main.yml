@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build and deploy
 
 on:
   push:
@@ -17,6 +17,7 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 14
+        cache: 'npm'
 
     - name: Assign env variables to a .env file
       run: env | grep VUE_APP > .env.production.local
@@ -28,32 +29,21 @@ jobs:
         VUE_APP_NOTIFICATIONS_ENDPOINT: "https://cartobio.org/api/notifications"
         VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
 
-    - run: npm clean-install
+    - run: npm clean-install-test
     - run: npm run build
 
-    - id: docker
-      uses: jerray/publish-docker-action@v1.0.5
-      if: github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/')
-      with:
-        repository: agencebio/cartobio-presentation
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-        auto_tag: true
-        allow_pull_request: true
-
-    # as jerray/publish-docker-action@v1.0.5
-    # only `master` branch is alias as `latest`
-    # `latest` can be used again when https://github.com/jerray/publish-docker-action/pull/17 is merged
-    - uses: garygrossgarten/github-action-ssh@v0.5.0
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2.3.1
       if: github.ref == 'refs/heads/main'
       with:
-        host: ${{ secrets.AGENCEBIO_SSH_HOST }}
-        username: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
-        privateKey: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
-        command: |
-          docker pull agencebio/cartobio-presentation:main \
-          && docker stop cartobio \
-          && docker run -d --rm \
-            -p 127.0.0.1:3000:80 \
-            --name cartobio \
-            agencebio/cartobio-presentation:main
+        key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+        known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
+
+    - name: rsync
+      if: github.ref == 'refs/heads/main'
+      run: |
+        rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
+      env:
+        REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
+        REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+        REMOTE_PATH: /var/www/cartobio.org/
