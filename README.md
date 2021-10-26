@@ -6,8 +6,6 @@ Static website presenting CartoBio Project.
 - [Quick handbooks](#handbook)
 - [**Documentation**](docs)
   - [Récupérer les données du parcellaire bio via l'API CartoBio](docs/api.md)
-  - [Utilisation de l'espace collaboratif IGN](docs/ign.md)
-  - [Exploration des fichiers du Registre Parcellaire Graphique (RPG)](docs/rpg.md)
   - [Mettre à jour le parcellaire bio anonyme sur PostGIS et GeoServer](docs/postgis.md)
 
 ## Project setup
@@ -34,57 +32,6 @@ npm test
 
 ## Handbook
 
-### Export a GeoJSON/Shapefile, filtered by one or many Shapefiles
-
-```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/d0{11,09,66}/cartobio.shp' --shapefiles '../reseau11/**/*.shp'
-
-✔ Parsed 9 features in 5 datasets.
-  ✔ d009/cartobio.shp
-  ✔ d009/cartononbio.shp
-  ⠹ d011/cartobio.shp
-  ⠹ d011/cartononbio.shp
-  ✔ d066/cartobio.shp
-  ⠹ d066/cartononbio.shp
-```
-
-### Export a GeoJSON/Shapefile, encompassing EPCI boundaries
-
-```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/**/*.shp' --epci 200067106
-
-✔ Parsed 158 features in 1 datasets.
-  ✔ d064/cartobio.shp
-  ⠹ d064/cartononbio.shp
-```
-
-### Export a GeoJSON/Shapefile, encompassing Insee codes boundaries
-
-```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/**/*.shp' --insee "26108,26011,26289"
-
-✔ Parsed 3 features in 3 datasets.
-  ❯ Filtering features
-    ⠴ 2017/rpgbio2017v6.shp
-    Exporting as export-insee-26108,26011,26289-2017.geojson
-    Cleanup
-    Exporting as export-insee-26108,26011,26289-2017.shp.zip
-```
-
-### Export a GeoJSON/Shapefile, encompassing two departments
-
-```bash
-$ npm run export -- --millesime 2019 --from '../RPG/2019/**/*.shp' --departement 7,26
-
-✔ Parsed 2 features in 1 datasets.
-  ❯ Filtering features
-    ✔ d007/cartobio.shp
-    ✔ d007/cartononbio.shp
-    ⠏ d026/cartobio.shp
-    ⠏ d026/cartononbio.shp
-    Exporting as export-d07,d26-2019.geojson
-    Cleanup
-    Exporting as export-d07,d26-2019.shp.zip
 
 ### Compute total surfaces
 
@@ -122,7 +69,7 @@ $ in2csv --no-inference /path/to/codes_culture20xx.xlsx \
 Or, with a more complete CSV file:
 
 ```sh
-$ csvjson --encoding latin1 --delimiter ';' --indent 2  --quoting 1 --no-inference \
+$ csvjson --encoding windows-1252 --delimiter ';' --indent 2  --quoting 1 --no-inference \
   src/modules/codes-cultures/Codification_cultures_principales.csv \
   > src/modules/codes-cultures/data.json
 ```
