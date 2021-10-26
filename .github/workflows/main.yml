@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 14
 
     - name: Assign env variables to a .env file
       run: env | grep VUE_APP > .env.production.local
@@ -24,6 +27,9 @@ jobs:
         VUE_APP_API_ENDPOINT: "https://cartobio.org/api"
         VUE_APP_NOTIFICATIONS_ENDPOINT: "https://cartobio.org/api/notifications"
         VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
+
+    - run: npm clean-install
+    - run: npm run build
 
     - id: docker
       uses: jerray/publish-docker-action@v1.0.5
