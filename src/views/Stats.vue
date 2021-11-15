@@ -103,7 +103,7 @@ export default {
       stats: null,
       apiAccessCount: null,
       apiAccessCallsCount: null,
-      dataAccessCount: 57,
+      dataAccessCount: 94 /* demandes consignées à la main, pre-DataPass */ + 88 /* particuliers lors du DataPass */,
       loading: true,
       errored: false,
       SAU_TOTALE,
