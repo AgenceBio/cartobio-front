@@ -23,7 +23,7 @@
     </v-toolbar-items>
 
 
-    <Login :show="isAuthenticating" class="navbar-button" />
+    <Login class="navbar-button" />
   </v-toolbar>
 </template>
 <script>

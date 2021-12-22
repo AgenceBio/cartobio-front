@@ -570,12 +570,12 @@ export default {
       const text = await this.$refs.telepac_upload_xml_field.files[0].text()
       this.isLoading = true
 
-      setTimeout(async () => {
+      setTimeout(() => {
         const { pacage, campagne, featureCollection } = convertXmlDossierToGeoJSON(text)
         this.operator.pacage = pacage
         this.operator.campagne = campagne
 
-        await this.$nextTick(() => {
+        this.$nextTick(() => {
           this.plots = featureCollection
           this.isLoading = false
         })

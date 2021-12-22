@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="show" persistent max-width="600px">
-    <v-card v-on:keyup.enter="tryLogin()">
+  <v-dialog :value="isAuthenticating" persistent max-width="600px">
+    <v-card v-on:keyup.enter="tryLogin">
       <v-toolbar card color="#b9d065">
         <v-card-title>
           <h3 class="headline mb-0">Connexion à CartoBio</h3>
@@ -47,7 +47,7 @@
         <v-btn
           color="primary"
           type="submit"
-          @click="tryLogin()"
+          @click="tryLogin"
           :loading="loading"
           :disabled="loading"
         >Connexion</v-btn>
@@ -57,15 +57,12 @@
 </template>
 
 <script>
-import {mapActions, mapMutations} from 'vuex'
+import {mapActions, mapMutations, mapGetters} from 'vuex'
 import {authenticateWithCredentials} from '@/api/user.js'
 
 export default {
   name: "Login",
 
-  props: {
-    show: Boolean
-  },
 
   data: () => ({
     loginFailed: false,
@@ -77,6 +74,10 @@ export default {
       required: value => !!value || 'Ce champ est obligatoire.',
     }
   }),
+
+  computed: {
+    ...mapGetters('user', ['isAuthenticated', 'isAuthenticating'])
+  },
 
   methods: {
     ...mapActions('user', ['setProfile', 'trackEvent']),
