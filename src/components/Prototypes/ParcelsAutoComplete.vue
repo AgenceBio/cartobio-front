@@ -762,7 +762,7 @@ export default {
       align-self: end;
     }
 
-    /deep/ > * {
+    ::v-deep > * {
       padding: 0 .5rem;
     }
   }

@@ -74,10 +74,10 @@ export default {
         this.currentError = error.message
       }
     },
-    
+
     async verifyPacage (numeroPacage) {
       const { numeroBio } = await this.$store.dispatch('pacage/VERIFY', { numeroPacage })
-      
+
       if (numeroBio) {
         throw new Error(`Ce numéro PACAGE est déjà assigné à l'opérateur bio n°${numeroBio}).`)
       }
@@ -132,7 +132,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/deep/ .v-subheader {
+::v-deep .v-subheader {
   padding-left: 0;
   text-transform: uppercase;
 }
@@ -145,7 +145,7 @@ export default {
   margin: 0;
 }
 
-.pacage /deep/ input[type="number"] {
+.pacage ::v-deep input[type="number"] {
   appearance: textfield;
 
   &::-webkit-outer-spin-button,

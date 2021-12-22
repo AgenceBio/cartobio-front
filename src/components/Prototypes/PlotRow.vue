@@ -200,9 +200,9 @@ export default {
     }
   }
 
-  /deep/ input[type="text"],
-  /deep/ input[type="search"],
-  /deep/ .autocomplete-input,
+  ::v-deep input[type="text"],
+  ::v-deep input[type="search"],
+  ::v-deep .autocomplete-input,
   input[type="date"],
   select,
   textarea {
@@ -228,7 +228,7 @@ export default {
     }
   }
 
-  /deep/ .autocomplete {
+  ::v-deep .autocomplete {
     position: relative;
 
      .autocomplete-result-list {

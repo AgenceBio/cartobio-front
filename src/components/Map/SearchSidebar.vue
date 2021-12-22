@@ -173,13 +173,13 @@ computed: {
   height: auto;
 }
 
-[role="listitem"]:not(.no-click) /deep/ .v-list__tile--link:hover,
+[role="listitem"]:not(.no-click) ::v-deep .v-list__tile--link:hover,
 [role="listitem"]:not(.no-click):hover + .v-divider {
   border-color: #1976d2;
   color: #1976d2;
 }
 
-[role="listitem"].no-click /deep/ .v-list__tile--link {
+[role="listitem"].no-click ::v-deep .v-list__tile--link {
   cursor: default;
 
   &:hover {
@@ -191,11 +191,11 @@ computed: {
   padding: 0;
 }
 
-/deep/ .v-expansion-panel__header {
+::v-deep .v-expansion-panel__header {
   padding: 0 16px; // same as .v-list-tile-content
 }
 
-/deep/ .v-expansion-panel__header,
+::v-deep .v-expansion-panel__header,
 .theme--light.v-subheader {
   color: #457382;
   font-weight: bold;

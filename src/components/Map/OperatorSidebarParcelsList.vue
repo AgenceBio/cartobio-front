@@ -215,11 +215,11 @@ section {
   height: 100%;
 }
 
-.v-toolbar /deep/ .v-toolbar__content {
+.v-toolbar ::v-deep .v-toolbar__content {
   padding-left: 12px; /* half of what it is supposed to be */
 }
 
-.v-toolbar /deep/ .v-toolbar__title {
+.v-toolbar ::v-deep .v-toolbar__title {
   line-height: 1.1;
   overflow: auto;
   white-space: unset;
@@ -266,21 +266,21 @@ section {
   color : #457382;
 }
 
-.v-expansion-panel /deep/ {
+.v-expansion-panel ::v-deep {
   align-content: flex-start;
 }
 
-.v-expansion-panel /deep/ .v-expansion-panel__header {
+.v-expansion-panel ::v-deep .v-expansion-panel__header {
   cursor: default;
   padding: 0 12px;
 }
 
 
-.parcels /deep/ .v-table__overflow {
+.parcels ::v-deep .v-table__overflow {
   overflow-x: hidden;
 }
 
-.parcels /deep/ .v-table {
+.parcels ::v-deep .v-table {
   tbody {
     tr:hover {
       background: #F6F7E2;

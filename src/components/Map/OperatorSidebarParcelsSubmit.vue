@@ -293,7 +293,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/deep/ .v-subheader {
+::v-deep .v-subheader {
   padding-left: 0;
   text-transform: uppercase;
 }

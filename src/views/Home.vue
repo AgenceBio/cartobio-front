@@ -95,7 +95,7 @@
           </v-flex>
 
           <v-flex xs5 order-xs1>
-            <v-img min-height="160" alt="" src="@/assets/landing/Screenshot 2020-03-23 at 09.50.06.png" class="elevation-4" />
+            <v-img min-height="160" alt="" src="@/assets/landing/Screenshot 2020-03-23 at 09.50.06.jpg" class="elevation-4" />
           </v-flex>
         </v-layout>
       </v-card>

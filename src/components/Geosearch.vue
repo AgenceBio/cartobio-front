@@ -142,11 +142,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-text-field--box /deep/ input {
+.v-text-field--box ::v-deep input {
   margin-top: 12px; // same as .solo… but with box!
 }
 
-.v-text-field /deep/ .v-input__control > .v-input__slot::before {
+.v-text-field ::v-deep .v-input__control > .v-input__slot::before {
   border-color: rgb(185, 208, 101);
   border-width: 3px 0 0;
 }
