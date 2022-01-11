@@ -1,94 +1,29 @@
-# CartoBio-Presentation
+# CartoBio
 
-Static website presenting CartoBio Project.
+Application de suivi et de certificaton du parcellaire bio à destination des _opérateurs bio_[^1] et aux _organismes de certification_.
 
-- [Changelog](CHANGELOG.md)
-- [Quick handbooks](#handbook)
-- [**Documentation**](docs)
-  - [Récupérer les données du parcellaire bio via l'API CartoBio](docs/api.md)
-  - [Mettre à jour le parcellaire bio anonyme sur PostGIS et GeoServer](docs/postgis.md)
+Cette application implémente [la maquette Figma de l'interface opérateurs](https://www.figma.com/file/sVYES3AEoLk90DalmhxDAX).
 
-## Project setup
+## Installation
+
+**Pré-requis** : `node@16`
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Développement local
 
 ```
 npm start
 ```
 
-### Compiles and minifies for production
+### Prépare au déploiement
 ```
 npm run build
 ```
 
-### Run your tests
+### Exécution des tests
 ```
 npm test
 ```
-
-
-## Handbook
-
-
-### Compute total surfaces
-
-```bash
-$ npm run update-stats path/to/RPG-shapefiles/*.zip
-
-```
-
-This script will:
-
-1. Convert Shapefiles/Lambert 93 into GeoJSON/WGS84 (~2h)
-2. Fetch local government boundaries from [`gregoiredavid/france-geojson@v2.1.1` repo][france-geojson] (~1min)
-3. Compute parcel surfaces within their county boundaries (~18min)
-
-The `public/stats.json` file will be update accordingly.
-
-### Rebuild Partners Logos SVG Sprite
-
-
-```bash
-$ npx svg-spreact-cli --no-optimize src/assets/logos > src/assets/logos-sprite.svg
-```
-
-### Update "Codes Cultures" data file
-
-Once you get a new `.xlsx` file with the update crop codes,
-run the folllowing command:
-
-```sh
-$ in2csv --no-inference /path/to/codes_culture20xx.xlsx \
-  | csvcut --columns '1,2' --delete-empty-rows \
-  | csvjson --indent 2 > src/modules/codes-cultures/data.json
-```
-
-Or, with a more complete CSV file:
-
-```sh
-$ csvjson --encoding windows-1252 --delimiter ';' --indent 2  --quoting 1 --no-inference \
-  src/modules/codes-cultures/Codification_cultures_principales.csv \
-  > src/modules/codes-cultures/data.json
-```
-
-**Note**: the pipeline relies on [csvkit](https://csvkit.readthedocs.io).
-
-
-### Build Docker image
-
-⚠️ Do you have an `.env.production.local` file? If not, the built app will be unstable.
-
-```bash
-$ docker build -t agencebio/cartobio-presentation .
-$ docker run -ti --rm -p 8080:80 agencebio/cartobio-presentation
-```
-
-Now open [`localhost:8080`](https://localhost:8080) to see the app running.
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
-[france-geojson]: https://github.com/gregoiredavid/france-geojson/raw/v2.1.1/departements-avec-outre-mer.geojson

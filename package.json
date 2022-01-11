@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "vite",
     "test": "exit 0",
     "posttest": "eslint ./src"
   },
