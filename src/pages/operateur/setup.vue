@@ -20,11 +20,11 @@
   </ul>
 
   <section v-if="featureSource === 'telepac'">
-    <button type="button">
+    <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
       ☁️ Importer mon parcellaire à jour
     </button>
 
-    <button type="button">
+    <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
       🔐 Connecter mon compte TelePAC
     </button>
   </section>
