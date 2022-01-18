@@ -39,6 +39,7 @@
       "eslint:recommended"
     ],
     "rules": {
+      "no-unused-vars": "warn",
       "vue/multi-word-component-names": "off",
       "vue/no-mutating-props": "warn",
       "vue/no-multiple-template-root": "off",
