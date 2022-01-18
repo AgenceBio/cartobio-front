@@ -1,36 +1,41 @@
 <template>
-  <section>
-    <h2>
-      GAEC de la Tête d'Or
-      <small>Cet outil est actuellement en phase de test</small>
-    </h2>
+  <div class="container">
+    <section>
+      <h2>
+        GAEC de la Tête d'Or
+        <small>Cet outil est actuellement en phase de test</small>
+      </h2>
 
-    <ul>
-      <li v-for="(features, ilot) in featuresByIlot" :key="ilot">
-        <h3>Ilot {{ ilot }} <small>({{ features.length }} parcelles)</small></h3>
+      <ul>
+        <li v-for="(features, ilot) in featuresByIlot" :key="ilot">
+          <h3>Ilot {{ ilot }} <small>({{ features.length }} parcelles)</small></h3>
 
-        <table>
-          <tr v-for="feature in features" :key="feature['rpg.ilot'] + feature['rpg.parcelle'] ">
-            <th scope="row">{{ feature.name }}</th>
-            <td>0,77 ha</td>
-            <td>{{ feature['rpg.code_culture'] }}</td>
-            <td>{{ feature['bio.statut'] }}</td>
-            <td>{{ feature['bio.conversion_date'] }}</td>
-          </tr>
-        </table>
-      </li>
-    </ul>
+          <table class="parcelles">
+            <tr v-for="feature in features" :key="feature['rpg.ilot'] + feature['rpg.parcelle'] ">
+              <th scope="row">{{ feature.name }}</th>
+              <td>0,77 ha</td>
+              <td>{{ feature['rpg.code_culture'] }}</td>
+              <td>{{ feature['bio.statut'] }}</td>
+              <td>{{ feature['bio.conversion_date'] }}</td>
+            </tr>
+          </table>
+        </li>
+      </ul>
 
-  </section>
+    </section>
 
-  <aside class="map">
+    <aside class="map" ref="mapContainer">
 
-  </aside>
+    </aside>
+  </div>
 </template>
 
 <script setup>
-import { readonly, computed } from 'vue'
+import { readonly, computed, onMounted, ref } from 'vue'
 import groupBy from 'array.prototype.groupby'
+import { Map as MapLibre } from 'maplibre-gl'
+
+const mapContainer = ref(null)
 
 const features = readonly([
   {
@@ -140,13 +145,49 @@ const features = readonly([
 ])
 
 const featuresByIlot = computed(() => groupBy(features, (feature) => feature['rpg.ilot']))
+
+onMounted(() => {
+  const map = new MapLibre({
+    container: mapContainer.value,
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [3, 46],
+    zoom: 5
+  })
+})
+
 </script>
 
 
-<style scoped>
+<style lang="postcss" scoped>
+.container {
+  display: flex;
+  position: relative;
+}
+
+.container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.container > section {
+  flex-grow: 1;
+  padding: 0 var(--spacing);
+}
+
+table.parcelles {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.parcelles,
+table.parcelles :is(td, th) {
+  border: 1px solid #ccc;
+  padding: .5em;
+}
+
 .map {
   background: #ccc;
-  height: 100vh;
+  height: calc(100vh - 3rem);
   width: max(50vw, 450px);
 }
 </style>
