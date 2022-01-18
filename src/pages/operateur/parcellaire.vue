@@ -2,7 +2,7 @@
   <div class="container">
     <section>
       <h2>
-        GAEC de la Tête d'Or
+        {{ currentUser.commercial_name }}
         <small>Cet outil est actuellement en phase de test</small>
       </h2>
 
@@ -24,18 +24,18 @@
 
     </section>
 
-    <aside class="map" ref="mapContainer">
-
-    </aside>
+    <aside class="map" ref="mapContainer" />
   </div>
 </template>
 
 <script setup>
 import { readonly, computed, onMounted, ref } from 'vue'
 import groupBy from 'array.prototype.groupby'
+import store from '../../store.js'
 import { Map as MapLibre } from 'maplibre-gl'
 
 const mapContainer = ref(null)
+const { currentUser } = store.state
 
 const features = readonly([
   {
