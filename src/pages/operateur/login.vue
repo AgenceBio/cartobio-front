@@ -4,7 +4,7 @@
     <small>Cet outil est actuellement en phase de test</small>
   </h2>
 
-  <form v-if="!state.currentUser" @submit.prevent="loginUser(user)">
+  <form v-if="!state.currentUser" @submit.prevent="store.loginUser(user)">
     <div class="row">
       <label>
         Rechercher
@@ -42,7 +42,7 @@
 
 <script setup>
 import { readonly, toRefs } from 'vue'
-import store from '../../store.js'
+import _store from '../../store.js'
 
 const user = readonly({
   name: 'Jean Dupont',
@@ -52,6 +52,6 @@ const user = readonly({
   pacage: 'XXXXXXXX',
 })
 
-const { loginUser } = toRefs(store)
-const { state } = store
+const store = _store
+const { state } = toRefs(store)
 </script>
