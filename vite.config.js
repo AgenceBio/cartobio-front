@@ -6,6 +6,14 @@ import Pages from "vite-plugin-pages";
 export default defineConfig({
   plugins: [
     vue(),
-    Pages(),
+    Pages({
+      extendRoute (route, parent) {
+        if (route.path.startsWith('/operateur') && route.path !== '/operateur/login') {
+          return { ...route, meta: { requiresAuth: true } }
+        }
+
+        return route
+      }
+    }),
   ]
 })
