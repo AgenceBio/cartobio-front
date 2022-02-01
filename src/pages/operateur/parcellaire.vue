@@ -3,7 +3,7 @@
     <section>
       <h2>
         {{ currentUser.commercial_name }}
-        <small>Cet outil est actuellement en phase de test</small>
+        <small class="tag">Cet outil est actuellement en phase de test</small>
       </h2>
 
       <ul>
