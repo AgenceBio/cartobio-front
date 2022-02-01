@@ -20,14 +20,17 @@
     "normalize.css": "^8.0.1",
     "vue": "^3.2.25",
     "vue-feather": "^2.0.0-rc.1",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@testing-library/vue": "^6.4.2",
     "@vitejs/plugin-vue": "^2.0.0",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.6.0",
     "eslint-plugin-vue": "^8.2.0",
     "postcss-preset-env": "^7.2.3",
+    "typescript": "^4.5.5",
     "vite": "^2.7.2",
     "vite-plugin-pages": "^0.19.9"
   },
