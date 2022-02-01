@@ -15,9 +15,11 @@
   },
   "dependencies": {
     "array.prototype.groupby": "^1.0.0",
+    "feather-icons": "^4.28.0",
     "maplibre-gl": "^2.0.1",
     "normalize.css": "^8.0.1",
     "vue": "^3.2.25",
+    "vue-feather": "^2.0.0-rc.1",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {

@@ -1,14 +1,31 @@
 <template>
   <header>
-    <h1><router-link to="/" rel="home">CartoBio</router-link></h1>
+    <h1><router-link to="/" rel="home">CartoBio</router-link> <sup aria-hidden>(beta)</sup></h1>
 
     <nav class="main-navigation">
       <ul>
-        <li v-if="state.currentUser">
-          👤 {{ state.currentUser.commercial_name }}
+        <li v-if="currentUser.id">
+          <vue-feather type="user" stroke-width="2" size="16" /> {{ currentUser.commercial_name }}
+        </li>
+        <li v-if="currentUser.id">
+          <router-link to="/operateur/setup">
+            <vue-feather type="map" stroke-width="2" size="16" />
+            Mon parcellaire
+          </router-link>
+        </li>
+        <li v-if="currentUser.id">
+          <router-link to="/logout" custom v-slot="{ href }">
+            <a :href="href" @click.prevent="logout">
+              <vue-feather type="log-out" stroke-width="2" size="16" />
+              Déconnexion
+            </a>
+          </router-link>
         </li>
         <li>
-          <a href="#">Aide</a>
+          <a href="#">
+            <vue-feather type="help-circle" stroke-width="2" size="16" />
+            Aide
+          </a>
         </li>
       </ul>
     </nav>
@@ -16,14 +33,22 @@
 </template>
 
 <script setup>
+import { toRef } from 'vue'
+import { useRouter } from 'vue-router'
 import store from '../store.js'
 
-const { state } = store
+const router = useRouter()
+
+const currentUser = toRef(store.state, 'currentUser')
+function logout () {
+  store.logoutUser()
+  router.replace('/')
+}
 </script>
 
 <style lang="postcss" scoped>
 header {
-  background-color: #ccc;
+  background-color: #C4C4C4;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -36,6 +61,9 @@ header h1 {
   font-weight: bold;
   margin: 0;
 }
+  header h1 sup {
+    font-size: .8rem;
+  }
 
 header nav {
 
