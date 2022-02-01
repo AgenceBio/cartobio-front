@@ -1,15 +1,15 @@
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 
 export default reactive({
   state: {
-    currentUser: null
+    currentUser: {}
   },
 
   loginUser (userData) {
-    this.state.currentUser = toRefs(userData)
+    Object.assign(this.state.currentUser, userData)
   },
 
   logoutUser () {
-    this.state.currentUser = null
+    this.state.currentUser = {}
   },
 })
