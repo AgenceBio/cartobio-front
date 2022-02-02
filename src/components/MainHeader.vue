@@ -5,7 +5,7 @@
     <nav class="main-navigation">
       <ul>
         <li v-if="currentUser.id">
-          <vue-feather type="user" stroke-width="2" size="16" /> {{ currentUser.commercial_name }}
+          <vue-feather type="user" stroke-width="2" size="16" /> {{ currentUser.nom }}
         </li>
         <li v-if="currentUser.id">
           <router-link to="/operateur/setup">
