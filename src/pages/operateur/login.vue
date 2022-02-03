@@ -108,7 +108,7 @@ onMounted(() => loginInput.value?.focus())
 async function tryLogin () {
   isLoading.value = true
 
-  const result = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/tryLogin`, {
+  const result = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v1/tryLogin`, {
     method: 'POST',
     body: JSON.stringify({ q: userLogin.value }),
     headers: {
