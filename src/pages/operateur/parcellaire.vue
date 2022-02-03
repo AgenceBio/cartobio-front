@@ -11,12 +11,12 @@
           <h3>Ilot {{ ilot }} <small>({{ features.length }} parcelles)</small></h3>
 
           <table class="parcelles">
-            <tr v-for="feature in features" :key="feature['rpg.ilot'] + feature['rpg.parcelle'] ">
-              <th scope="row">{{ feature.name }}</th>
-              <td>0,77 ha</td>
-              <td>{{ feature['rpg.code_culture'] }}</td>
-              <td>{{ feature['bio.statut'] }}</td>
-              <td>{{ feature['bio.conversion_date'] }}</td>
+            <tr v-for="({ properties: props }) in features" :key="props.NUMERO_I + props.NUMERO_P ">
+              <th scope="row">Parcelle {{ props.NUMERO_P }}</th>
+              <td>{{ props.SURF }} ha</td>
+              <td>{{ props.TYPE }}</td>
+              <td>?</td>
+              <td>?</td>
             </tr>
           </table>
         </li>
@@ -29,122 +29,15 @@
 </template>
 
 <script setup>
-import { readonly, computed, onMounted, ref } from 'vue'
+import { readonly, computed, onMounted, ref, toRefs } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import store from '../../store.js'
 import { Map as MapLibre } from 'maplibre-gl'
 
 const mapContainer = ref(null)
-const { currentUser } = store.state
+const { currentUser, parcellaire } = toRefs(store.state)
 
-const features = readonly([
-  {
-    name: 'Parcelle 1',
-    'rpg.parcelle': 1,
-    'rpg.ilot': 1,
-    'rpg.code_culture': 'PTH',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 2',
-    'rpg.parcelle': 2,
-    'rpg.ilot': 1,
-    'rpg.code_culture': 'PTH',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 3',
-    'rpg.parcelle': 3,
-    'rpg.ilot': 1,
-    'rpg.code_culture': 'PTH',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 4',
-    'rpg.parcelle': 4,
-    'rpg.ilot': 1,
-    'rpg.code_culture': 'PTH',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 5',
-    'rpg.parcelle': 5,
-    'rpg.ilot': 1,
-    'rpg.code_culture': 'PTH',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 1',
-    'rpg.parcelle': 1,
-    'rpg.ilot': 2,
-    'rpg.code_culture': 'BTH',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 1',
-    'rpg.parcelle': 1,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 2',
-    'rpg.parcelle': 2,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 3',
-    'rpg.parcelle': 3,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 4',
-    'rpg.parcelle': 4,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 5',
-    'rpg.parcelle': 5,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 6',
-    'rpg.parcelle': 6,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-  {
-    name: 'Parcelle 7',
-    'rpg.parcelle': 7,
-    'rpg.ilot': 3,
-    'rpg.code_culture': 'AIL',
-    'bio.statut': 'BIO',
-    'bio.conversion_date': '2010-05-01'
-  },
-])
-
-const featuresByIlot = computed(() => groupBy(features, (feature) => feature['rpg.ilot']))
+const featuresByIlot = computed(() => groupBy(parcellaire.value.features, (feature) => feature.properties.NUMERO_I))
 
 onMounted(() => {
   const map = new MapLibre({

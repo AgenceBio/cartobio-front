@@ -40,22 +40,37 @@
         <img src="/import/telepac-export.png" class="screenshot" alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
       </p>
 
-      <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+      <button type="button" @click="pacFileInput.click()">
+        <input type="file" ref="pacFileInput" accept=".zip" @change="handlePacFileUpload" hidden>
         <vue-feather type="upload-cloud" /> Importer ma dernière déclaration PAC
       </button>
+
+      <p class="help">
+        <vue-feather type="thumbs-up" />
+        Le nom du fichier ressemble à <code>Dossier-PAC-{{ campagnePacAnnee }}_parcelle-{{ campagnePacAnnee }}_{{ currentUser.numeroPacage }}_….zip</code>
+      </p>
     </article>
   </section>
 
 </template>
 
 <script setup>
-import { ref, readonly, computed } from 'vue'
+import { post } from 'axios'
+import { ref, readonly, computed, toRef } from 'vue'
+import { useRouter } from 'vue-router'
+import store from '../../store.js'
 
+const { VUE_APP_API_ENDPOINT } = import.meta.env
+
+const router = useRouter()
+const currentUser = toRef(store.state, 'currentUser')
 const featureSource = ref('')
 const campagnePacAnnee = ref(2021)
 const campagnePacAnneeShort = computed(() => String(campagnePacAnnee.value).slice(-2))
 const campagnePacUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/auth/accueilTas.action?campagne=${campagnePacAnnee.value}&titreApplication=Dossier+PAC+${campagnePacAnnee.value}`)
 const campagnePacExportUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/ie/exportShpIlots.action`)
+
+const pacFileInput = ref(null)
 
 const featureSources = readonly({
   telepac: {
@@ -79,6 +94,17 @@ const featureSources = readonly({
     active: false,
   }
 })
+
+async function handlePacFileUpload (event) {
+  const [archive] = pacFileInput.value.files
+
+  const form = new FormData()
+  form.append('archive', archive)
+  const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
+
+  store.setParcelles(geojson)
+  router.push('/operateur/parcellaire')
+}
 </script>
 
 <style scoped>
