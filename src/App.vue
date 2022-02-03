@@ -14,7 +14,11 @@ const router = useRouter()
 
 router.beforeEach((to, from) => {
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
-    router.replace('/operateur/login')
+    return router.replace('/operateur/login')
+  }
+
+  if (to.meta.requiresGeodata && !store.state.parcellaireSource) {
+    return router.replace('/operateur/setup')
   }
 })
 </script>

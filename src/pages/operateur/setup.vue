@@ -64,7 +64,7 @@ const { VUE_APP_API_ENDPOINT } = import.meta.env
 
 const router = useRouter()
 const currentUser = toRef(store.state, 'currentUser')
-const featureSource = ref('')
+const featureSource = ref(store.state.parcellaireSource)
 const campagnePacAnnee = ref(2021)
 const campagnePacAnneeShort = computed(() => String(campagnePacAnnee.value).slice(-2))
 const campagnePacUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/auth/accueilTas.action?campagne=${campagnePacAnnee.value}&titreApplication=Dossier+PAC+${campagnePacAnnee.value}`)
@@ -102,7 +102,8 @@ async function handlePacFileUpload (event) {
   form.append('archive', archive)
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
 
-  store.setParcelles(geojson)
+  store.setParcelles({ geojson, source: featureSource.value })
+
   router.push('/operateur/parcellaire')
 }
 </script>

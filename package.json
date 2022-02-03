@@ -14,6 +14,7 @@
     "node": "^16.0.0"
   },
   "dependencies": {
+    "@turf/bbox": "^6.5.0",
     "array.prototype.groupby": "^1.0.0",
     "axios": "^0.25.0",
     "feather-icons": "^4.28.0",

@@ -8,7 +8,7 @@
           <vue-feather type="user" stroke-width="2" size="16" /> {{ currentUser.nom }}
         </li>
         <li v-if="currentUser.id">
-          <router-link to="/operateur/setup">
+          <router-link to="/operateur/parcellaire">
             <vue-feather type="map" stroke-width="2" size="16" />
             Mon parcellaire
           </router-link>

@@ -123,7 +123,7 @@ async function tryLogin () {
 
 function loginCandidateUser () {
   store.loginUser(candidateUser)
-  router.push('/operateur/setup')
+  router.push('/operateur/parcellaire')
 }
 </script>
 

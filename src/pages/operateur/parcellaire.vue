@@ -29,13 +29,17 @@
 </template>
 
 <script setup>
-import { readonly, computed, onMounted, ref, toRefs } from 'vue'
-import groupBy from 'array.prototype.groupby'
-import store from '../../store.js'
+import { computed, onMounted, onBeforeMount, ref, toRefs } from 'vue'
+import { useRouter } from 'vue-router'
 import { Map as MapLibre } from 'maplibre-gl'
+import groupBy from 'array.prototype.groupby'
+import bbox from '@turf/bbox'
 
+import store from '../../store.js'
+
+const router = useRouter()
 const mapContainer = ref(null)
-const { currentUser, parcellaire } = toRefs(store.state)
+const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
 
 const featuresByIlot = computed(() => groupBy(parcellaire.value.features, (feature) => feature.properties.NUMERO_I))
 
@@ -43,8 +47,27 @@ onMounted(() => {
   const map = new MapLibre({
     container: mapContainer.value,
     style: 'https://demotiles.maplibre.org/style.json',
-    center: [3, 46],
-    zoom: 5
+    bounds: bbox(parcellaire.value),
+    padding: 20,
+  })
+
+  map.on('load', () => {
+    map.addSource('parcellaire-operateur', {
+      type: 'geojson',
+      data: parcellaire.value
+    })
+
+    map.addLayer({
+      id: 'parcellaire-operateur-geometry',
+      source: 'parcellaire-operateur',
+      type: 'fill',
+      paint: {
+        "fill-color": "#00ffff",
+        "fill-outline-color": "#00ffff",
+        "fill-opacity": 0.5,
+      },
+      layout: {}
+    })
   })
 })
 

@@ -9,6 +9,10 @@ export default defineConfig({
     vue(),
     Pages({
       extendRoute (route, parent) {
+        if (route.path === '/operateur/parcellaire') {
+          return { ...route, meta: { requiresAuth: true, requiresGeodata: true } }
+        }
+
         if (route.path.startsWith('/operateur') && route.path !== '/operateur/login') {
           return { ...route, meta: { requiresAuth: true } }
         }
