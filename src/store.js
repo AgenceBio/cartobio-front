@@ -1,12 +1,14 @@
 import { reactive } from 'vue'
 
+const DEFAULT_STATE = {
+  currentUser: {},
+  parcellaire: {},
+  parcellaireSource: null,
+  parcellaireSourceLastUpdate: null,
+}
+
 export default reactive({
-  state: {
-    currentUser: {},
-    parcellaire: {},
-    parcellaireSource: null,
-    parcellaireSourceLastUpdate: null,
-  },
+  state: structuredClone(DEFAULT_STATE),
 
   loginUser (userData) {
     Object.assign(this.state.currentUser, userData)
@@ -19,7 +21,6 @@ export default reactive({
   },
 
   logoutUser () {
-    this.state.currentUser = {}
-    this.state.parcellaire = {}
+    Object.assign(this.state, structuredClone(DEFAULT_STATE))
   },
 })
