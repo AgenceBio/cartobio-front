@@ -1,0 +1,665 @@
+CODE;LIBELLE_CULTURE;CAMPAGNE_DEBUT;CAMPAGNE_FIN
+BR;Bâtiments;2014;2014
+EL;Eléments naturels non admissibles;2014;2014
+NE;Surface agricole temporairement non exploitée;2014;2014
+VF;Vanille verte;2014;2014
+YY;Ylang-ylang;2014;2014
+LQ;Nvelles surf. légumin. fourrag. (luz.;2010;2012
+LR;Lupin doux semé tardivement (après le 31/05);2010;2014
+MC;Maraîchage commercialisé (hors serres et tunnels fixes);2010;2010
+MH;Moha;2010;2014
+MN;Melon commercialisé;2010;2014
+MR;Maraîchage (hors serres et tunnels fixes);2010;2010
+NA;Navet commercialisé;2010;2014
+NB;Navette commercialisée;2010;2014
+NC;Noix commercialisées;2010;2014
+NO;Noisettes commercialisées;2010;2014
+NT;Navette;2010;2014
+NV;Navet;2010;2014
+OC;Oignon commercialisé;2010;2014
+OE;Oeillette;2010;2014
+OR;Poireau;2010;2014
+OT;Oeillette commercialisée;2010;2014
+OV;Oliveraie commercialisée;2010;2014
+P1;Pommes de terre de consommation commercialisées;2010;2014
+P2;Pommes de terre féculières commercialisées;2010;2014
+P3;Plants de pomme de terre commercialisés;2010;2014
+P4;Plantes à parfum;2010;2014
+P5;Plantes à parfum;2010;2014
+P6;Pistaches commercialisées;2010;2014
+P7;Pois chiches commercialisés;2010;2014
+P8;Pois d'hiver commercialisé;2010;2014
+P9;Pois de printemps commercialisé;2010;2014
+PB;Persil;2010;2014
+PD;Poireau commercialisé;2010;2014
+PJ;Petits pois commercialisés;2010;2014
+PV;Plantes à parfum;2010;2014
+PW;Plantes médicinales;2010;2014
+PY;Persil commercialisé;2010;2014
+R3;Semences de riz - grains longs commercialisés;2010;2011
+R4;Semences de riz - grains courts commercialisés;2010;2011
+RT;Riz semé tardivement (après le 30/06);2010;2011
+SC;Salade commercialisée;2010;2014
+SJ;Soja commercialisé;2010;2014
+SL;Salade;2010;2014
+TC;Tomates de consommation;2010;2011
+TD;Tabac commercialisé;2010;2014
+TI;Taillis courte rotation;2010;2014
+TN;Tomates de consommation commercialisées;2010;2011
+TS;Tournesol commercialisé;2010;2014
+VC;Vergers commercialisés;2010;2014
+VD;Vesces commercialisées;2010;2014
+VG;Vignes;2010;2010
+VN;Vignes commercialisées;2010;2010
+A1;Autres protéagineux commercialisés;2010;2014
+A2;Pois de printemps semé tardivement (après le 31/05);2010;2014
+AA;Ail commercialisé;2010;2014
+AD;Amandes commercialisées;2010;2014
+AE;Autres oléagineux commercialisés;2010;2014
+AH;Avoine hiver;2010;2014
+AI;Ail;2010;2014
+AP;Avoine printemps;2010;2014
+AS;Autres semences de céréales commercialisées;2010;2014
+BG;Blé dur printemps semé tardivement (après le 31/05);2010;2014
+BI;Betterave non fourragère commercialisée;2010;2014
+BT;Betterave non fourragère;2010;2014
+C1;Châtaigneraie entretenue par des porcins (Corse);2010;2014
+C2;Chênaie entretenue par des porcins (Corse);2010;2014
+C3;Colza de printemps commercialisé;2010;2014
+C4;Chanvre oléagineux commercialisé;2010;2011
+C5;Chanvre sans contrat commercialisé;2010;2011
+CB;Carotte commercialisée;2010;2014
+CC;Chou;2010;2014
+CD;Céleri commercialisé;2010;2014
+CE;Chicorée commercialisée;2010;2014
+CJ;Chou commercialisé;2010;2014
+CK;Chicorée;2010;2014
+CL;Céleri;2010;2014
+CN;Caroubes commercialisées;2010;2014
+CQ;Châtaignes commercialisées;2010;2014
+CS;Colza d'hiver commercialisé;2010;2014
+CT;Carotte;2010;2014
+CY;Semences de chanvre commercialisées;2010;2011
+DS;Fourrages déshydratés commercialisés;2010;2011
+EC;Endive commercialisée;2010;2014
+ET;Semences d'épeautre commercialisées;2010;2011
+F1;Prairie permanente production foin commercialisé;2010;2014
+F2;Prairie temporaire production foin commercialisé;2010;2014
+F3;Prairie temporaire plus de 5 ans prod. foin commercialisé;2010;2014
+FB;Fleurs annuelles;2010;2014
+FC;Fleurs annuelles commercialisées;2010;2014
+FD;Protéagineux fourragers commercialisés;2010;2014
+FF;Féveroles commercialisées;2010;2014
+FG;Autres fruits et légumes commercialisés;2010;2014
+FH;Féveroles semées tardivemt (après le 31/05) commercialisées;2010;2014
+FI;Fourrage annuel;2010;2014
+FL;Féveroles;2010;2014
+FM;Fèves commercialisées;2010;2014
+FT;Féveroles semées tardivement (après le 31/05);2010;2014
+FV;Fèves;2010;2014
+GA;Gel annuel;2010;2014
+GF;Gel fixe;2010;2014
+GS;Gel spécifique (jachère faune sauvage;2010;2014
+HA;Haricot;2010;2014
+HB;Houblon commercialisé;2010;2014
+HI;Haricot commercialisé;2010;2014
+I2;Pois de printemps semé tardivemt (après 31/05) commercialisé;2010;2014
+LA;Lavande;2010;2014
+LB;Semences de lin fibres commercialisées;2010;2011
+LF;Nvelles surf. légumin. fourrag. (luzerne;2010;2012
+LG;Légumes de plein champ commercialisés;2010;2014
+LH;Lentilles commercialisées;2010;2014
+LJ;Lin non textile commercialisé;2010;2014
+LK;Lupin doux commercialisé;2010;2014
+LL;Lupin doux semé tardivement (après le 31/05) commercialisé;2010;2014
+LM;Lin fibres sans contrat commercialisé;2010;2011
+LO;Semences de lin oléagineux commercialisées;2010;2011
+BDH;Blé dur d'hiver;2015;NA
+PPR;Pois de printemps semé avant le 31/05;2015;NA
+MEL;Autre mélilot;2015;NA
+CSS;Culture sous serre hors sol;2016;NA
+SNA;Surface non agricole non visible sur l'orthophoto;2015;2015
+BOR;Bordure de champ;2015;NA
+FF6;Féverole fourragère implantée pour la récolte 2016;2016;2018
+GER;Géranium;2016;NA
+JO6;Jarosse implantée pour la récolte 2016;2016;2018
+LH6;Lupin fourrager d'hiver implanté pour la récolte 2016;2016;2018
+LP6;Lupin fourrager de printemps implanté pour la récolte 2016;2016;2018
+LU6;Luzerne implantée pour la récolte 2016;2016;2018
+MC6;Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2016 et de céréales;2016;2018
+ME6;Mélilot implanté pour la récolte 2016;2016;2018
+MH6;Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2016 et d'herbacées ou de graminées fourragères;2016;2017
+ML6;Mélange de légumineuses fourragères implantées pour la récolte 2016 (entre elles);2016;2018
+PH6;Pois fourrager d'hiver implanté pour la récolte 2016;2016;2018
+PP6;Pois fourrager de printemps implanté pour la récolte 2016;2016;2018
+PSN;Psyllium noir de Provence;2016;NA
+SA6;Sainfoin implanté pour la récolte 2016;2016;2018
+SE6;Serradelle implantée pour la récolte 2016;2016;2018
+TR6;Trèfle implanté pour la récolte 2016;2016;2018
+VE6;Vesce implantée pour la récolte 2016;2016;2018
+VGD;Verger (DOM);2016;NA
+ACA;Autre culture non précisée dans la liste (admissible);2015;NA
+AGR;Agrume;2015;NA
+AIL;Ail;2015;NA
+ANA;Ananas;2015;NA
+ANE;Aneth;2015;NA
+ANG;Angélique;2015;NA
+ANI;Anis;2015;NA
+ARA;Arachide;2015;NA
+ART;Artichaut;2015;NA
+AUB;Aubergine;2015;NA
+AVH;Avoine d'hiver;2015;NA
+AVO;Avocat;2015;NA
+AVP;Avoine de printemps;2015;NA
+BAR;Bardane;2015;NA
+BAS;Basilic;2015;NA
+BCA;Banane créole (fruit et légume) - autre;2015;NA
+BCF;Banane créole (fruit et légume) - fermage;2015;NA
+BCI;Banane créole (fruit et légume) - indivision;2015;NA
+BCP;Banane créole (fruit et légume) - propriété ou faire valoir direct;2015;NA
+BCR;Banane créole (fruit et légume) - réforme foncière;2015;NA
+BDP;Blé dur de printemps;2015;NA
+BDT;Blé dur de printemps semé tardivement (après le 31/05);2015;2017
+BEA;Banane export - autre;2015;NA
+BEF;Banane export - fermage;2015;NA
+BEI;Banane export - indivision;2015;NA
+BEP;Banane export - propriété ou faire valoir direct;2015;NA
+BER;Banane export - réforme foncière;2015;NA
+BFP;Bande admissible le long d'une forêt avec production;2015;NA
+BFS;Bande admissible le long d'une forêt sans production;2015;NA
+BLT;Bleuet;2015;NA
+BOP;Bois pâturé;2015;NA
+BRH;Bourrache de 5 ans ou moins;2015;NA
+BRO;Brôme de 5 ans ou moins;2015;NA
+BTA;Bande tampon;2015;NA
+BTH;Blé tendre d'hiver;2015;NA
+BTN;Betterave non fourragère / Bette;2015;NA
+BTP;Blé tendre de printemps;2015;NA
+BUR;Bugle rampant;2015;NA
+BVF;Betterave fourragère;2015;NA
+CAB;Caroube;2015;NA
+CAC;Café / Cacao;2015;NA
+CAE;Châtaigneraie entretenue par des porcins ou des petits ruminants;2015;NA
+CAF;Carotte fourragère;2015;NA
+CAG;Autre céréale d'un autre genre;2015;NA
+CAR;Carotte;2015;NA
+CAV;Carvi;2015;NA
+CBT;Cerise bigarreau pour transformation;2015;NA
+CCN;Concombre / Cornichon;2015;NA
+CCT;Courgette / Citrouille;2015;NA
+CEE;Chênaie entretenue par des porcins ou des petits ruminants;2015;NA
+CEL;Céleri;2015;NA
+CES;Chicorée / Endive / Scarole;2015;NA
+CGF;Autre céréale de genre Fagopyrum;2015;NA
+CGH;Autre céréale de genre Phalaris;2015;NA
+CGO;Autre céréale de genre Sorghum;2015;NA
+CGP;Autre céréale de genre Panicum;2015;NA
+CGS;Autre céréale de genre Setaria;2015;NA
+CHA;Autre céréale d'hiver de genre Avena;2015;NA
+CHF;Chou fourrager;2015;NA
+CHH;Autre céréale d'hiver de genre Hordeum;2015;NA
+CHR;Chardon Marie;2015;NA
+CHS;Autre céréale d'hiver de genre Secale;2015;NA
+CHT;Autre céréale d'hiver de genre Triticum;2015;NA
+CHU;Chou;2015;NA
+CHV;Chanvre;2015;NA
+CIB;Ciboulette;2015;NA
+CID;Cultures conduites en interrangs : 2 cultures représentant chacune plus de 25%;2015;NA
+CIT;Cultures conduites en interrangs : 3 cultures représentant chacune plus de 25%;2015;NA
+CMB;Courge musquée / Butternut;2015;NA
+CML;Cameline;2015;NA
+CMM;Camomille;2015;NA
+CPA;Autre céréale de printemps de genre Avena;2015;NA
+CPH;Autre céréale de printemps de genre Hordeum;2015;NA
+CPL;Fourrage composé de céréales et/ou de protéagineux (en proportion < 50%) et/ou de légumineuses fourragères (en proportion < 50%);2015;NA
+CPS;Autre céréale de printemps de genre Secale;2015;NA
+CPT;Autre céréale de printemps de genre Triticum;2015;NA
+CPZ;Autre céréale de printemps de genre Zea;2015;NA
+CRA;Cresson alénois de 5 ans ou moins;2015;NA
+CRD;Coriandre;2015;NA
+CRF;Cerfeuil;2015;NA
+CRN;Cornille;2015;NA
+CRS;Cresson;2015;NA
+CSA;Canne à sucre - autre;2015;NA
+CSF;Canne à sucre - fermage;2015;NA
+CSI;Canne à sucre - indivision;2015;NA
+CSP;Canne à sucre - propriété ou faire valoir direct;2015;NA
+CSR;Canne à sucre - réforme foncière;2015;NA
+CTG;Châtaigne;2015;NA
+CUA;Culture sous abattis;2015;NA
+CUM;Cumin;2015;NA
+CUR;Curcuma;2015;NA
+CZH;Colza d'hiver;2015;NA
+CZP;Colza de printemps;2015;NA
+DOL;Dolique;2015;NA
+DTY;Dactyle de 5 ans ou moins;2015;NA
+EPE;Epeautre;2015;NA
+EPI;Epinard;2015;NA
+EST;Estragon;2015;NA
+FAG;Autre fourrage annuel d'un autre genre;2015;NA
+FET;Fétuque de 5 ans ou moins;2015;NA
+FEV;Fève;2015;NA
+FF5;Féverole fourragère implantée pour la récolte 2015;2015;2017
+FFO;Autre féverole fourragère;2015;NA
+FLA;Autre légume ou fruit annuel;2015;NA
+FLO;Fléole de 5 ans ou moins;2015;NA
+FLP;Autre légume ou fruit pérenne;2015;NA
+FNO;Fenouil;2015;NA
+FNU;Fenugrec;2015;NA
+FRA;Fraise;2015;NA
+FSG;Autre plante fourragère sarclée d'un autre genre;2015;NA
+FVL;Féverole semée avant le 31/05;2015;NA
+FVT;Féverole semée tardivement (après le 31/05);2015;2015
+GAI;Gaillet;2015;NA
+GES;Gesse;2015;NA
+GFP;Autre graminée fourragère pure de 5 ans ou moins;2015;NA
+HAR;Haricot / Flageolet;2015;NA
+HBL;Houblon;2015;NA
+HPC;Horticulture ornementale de plein champ;2015;NA
+HSA;Horticulture ornementale sous abri;2015;NA
+J5M;Jachère de 5 ans ou moins;2015;NA
+J6P;Jachère de 6 ans ou plus;2015;NA
+J6S;Jachère de 6 ans ou plus déclarée comme SIE;2015;NA
+JNO;Jachère noire;2015;NA
+JO5;Jarosse implantée pour la récolte 2015;2015;2017
+JOD;Jarosse déshydratée;2015;NA
+JOS;Autre jarosse;2015;NA
+LAV;Lavande / Lavandin;2015;NA
+LBF;Laitue / Batavia / Feuille de chêne;2015;NA
+LDH;Lupin doux d'hiver;2015;NA
+LDP;Lupin doux de printemps semé avant le 31/05;2015;NA
+LDT;Lupin doux de printemps semé tardivement (après le 31/05);2015;2015
+LEC;Lentille cultivée (non fourragère);2015;NA
+LEF;Lentille fourragère;2015;NA
+LFH;Autre lupin fourrager d'hiver;2015;NA
+LFP;Autre lupin fourrager de printemps;2015;NA
+LH5;Lupin fourrager d'hiver implanté pour la récolte 2015;2015;2017
+LIF;Lin fibres;2015;NA
+LIH;Lin non textile d'hiver;2015;NA
+LIP;Lin non textile de printemps;2015;NA
+LOT;Lotier;2015;NA
+LP5;Lupin fourrager de printemps implanté pour la récolte 2015;2015;2017
+LSA;Légume sous abri;2015;NA
+LU5;Luzerne implantée pour la récolte 2015;2015;2017
+LUD;Luzerne déshydratée;2015;NA
+LUZ;Autre luzerne;2015;NA
+MAC;Mâche;2015;NA
+MAV;Mauve;2015;NA
+MC5;Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2015 et de céréales;2015;2017
+ME5;Mélilot implanté pour la récolte 2015;2015;2017
+MED;Mélilot déshydraté;2015;NA
+MH5;Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2015 et d'herbacées ou de graminées fourragères;2015;2017
+MID;Maïs doux;2015;NA
+MIE;Maïs ensilage;2015;NA
+MIN;Minette;2015;NA
+MIS;Maïs;2015;NA
+ML5;Mélange de légumineuses fourragères implantées pour la récolte 2015 (entre elles);2015;2017
+MLD;Mélange de légumineuses déshydratées (entre elles);2015;NA
+MLG;Mélange de légumineuses prépondérantes au semis et de graminées fourragères de 5 ans ou moins;2015;NA
+MLI;Mélisse;2015;NA
+MLO;Melon;2015;NA
+MLP;Millepertuis;2015;NA
+MLT;Millet;2015;NA
+MOH;Moha;2015;NA
+MOT;Moutarde;2015;NA
+MPA;Autre mélange de plantes fixant l'azote;2015;NA
+MPC;Mélange de protéagineux (pois et/ou lupin et/ou féverole) prépondérants semés avant le 31/05 et de céréales;2015;NA
+MRG;Marguerite;2015;NA
+MRJ;Marjolaine / Origan;2015;NA
+MRS;Marais salant;2015;NA
+MTH;Menthe;2015;NA
+NOS;Noisette;2015;NA
+NOX;Noix;2015;NA
+NVE;Navette d'été;2015;NA
+NVF;Navet fourrager;2015;NA
+NVH;Navette d'hiver;2015;NA
+NVT;Navet;2015;NA
+NYG;Nyger;2015;NA
+OAG;Autre oléagineux d'un autre genre;2015;NA
+OEH;Autre oléagineux d'espèce Helianthus;2015;NA
+OEI;Oeillette;2015;NA
+OHN;Autre oléagineux d'hiver d'espèce Brassica napus;2015;NA
+OHR;Autre oléagineux d'hiver d'espèce Brassica rapa;2015;NA
+OIG;Oignon / Echalotte;2015;NA
+OLI;Oliveraie;2015;NA
+OPN;Autre oléagineux de printemps d'espèce Brassica napus;2015;NA
+OPR;Autre oléagineux de printemps d'espèce Brassica rapa;2015;NA
+ORH;Orge d'hiver;2015;NA
+ORP;Orge de printemps;2015;NA
+OSE;Oseille;2015;NA
+PAG;Autre protéagineux d'un autre genre;2015;NA
+PAN;Panais;2015;NA
+PAQ;Pâquerette;2015;NA
+PAR;Plante aromatique (autre que vanille);2015;NA
+PAS;Pastèque;2015;NA
+PAT;Paturin commun de 5 ans ou moins;2015;NA
+PCH;Pois chiche;2015;NA
+PCL;Phacélie de 5 ans ou moins;2015;NA
+PEP;Pépinière;2015;NA
+PFH;Autre pois fourrager d'hiver;2015;NA
+PFP;Autre pois fourrager de printemps;2015;NA
+PFR;Petit fruit rouge;2015;NA
+PH5;Pois fourrager d'hiver implanté pour la récolte 2015;2015;2017
+PHI;Pois d'hiver;2015;NA
+PIS;Pistache;2015;NA
+PMD;Plante médicinale;2015;NA
+PMV;Primevère;2015;NA
+POR;Poireau;2015;NA
+POT;Potiron / Potimarron;2015;NA
+PP5;Pois fourrager de printemps implanté pour la récolte 2015;2015;2017
+PPA;Autre PPAM annuelle;2015;NA
+PPF;Plante à parfum (autre que géranium et vétiver);2015;NA
+PPH;Prairie permanente - herbe prédominante (ressources fourragères ligneuses absentes ou peu présentes);2015;NA
+PPO;Petits pois;2015;NA
+PPP;Autre PPAM pérenne;2015;NA
+PPT;Pois de printemps semé tardivement (après le 31/05);2015;2015
+PRL;Prairie en rotation longue (6 ans ou plus);2015;NA
+PRU;Prune d'Ente pour transformation;2015;NA
+PSE;Pensée;2015;NA
+PSL;Persil;2015;NA
+PSY;Plantain psyllium;2015;NA
+PTC;Pomme de terre de consommation;2015;NA
+PTF;Pomme de terre féculière;2015;NA
+PTR;Autre prairie temporaire de 5 ans ou moins;2015;NA
+PVP;Poivron / Piment;2015;NA
+PVT;Pêche Pavie pour transformation;2015;NA
+PWT;Poire Williams pour transformation;2015;NA
+RDF;Radis fourrager;2015;NA
+RDI;Radis;2015;NA
+RGA;Ray-grass de 5 ans ou moins;2015;NA
+RIZ;Riz;2015;NA
+ROM;Romarin;2015;NA
+ROQ;Roquette;2015;NA
+ROS;Roselière;2015;NA
+RUT;Rutabaga;2015;NA
+RVI;Restructuration du vignoble;2015;NA
+SA5;Sainfoin implanté pour la récolte 2015;2015;2017
+SAD;Sainfoin déshydraté;2015;NA
+SAI;Autre sainfoin;2015;NA
+SBO;Surface boisée sur une ancienne terre agricole;2015;NA
+SE5;Seradelle implantée pour la récolte 2015;2015;2017
+SED;Serradelle déshydratée;2015;NA
+SER;Autre seradelle;2015;NA
+SFI;Salsifi;2015;NA
+SGE;Sauge;2015;NA
+SGH;Seigle d'hiver;2015;NA
+SGP;Seigle de printemps;2015;NA
+SNE;Surface agricole temporairement non exploitée;2015;NA
+SOG;Sorgho;2015;NA
+SOJ;Soja;2015;NA
+SPH;Surface pastorale - herbe prédominante et ressources fourragères ligneuses présentes;2015;NA
+SPL;Surface pastorale - ressources fourragères ligneuses prédominantes;2015;NA
+SRI;Sariette;2015;NA
+SRS;Sarrasin;2015;NA
+TAB;Tabac;2015;NA
+TBT;Tubercule tropical;2015;NA
+TCR;Taillis à courte rotation;2015;NA
+THY;Thym;2015;NA
+TOM;Tomate;2015;NA
+TOP;Topinambour;2015;NA
+TOT;Tomate pour transformation;2015;NA
+TR5;Trèfle implanté pour la récolte 2015;2015;2017
+TRD;Trèfle déshydraté;2015;NA
+TRE;Autre trèfle;2015;NA
+TRN;Tournesol;2015;NA
+TRU;Truffière (chênaie de plants mycorhizés);2015;NA
+TTH;Triticale d'hiver;2015;NA
+TTP;Triticale de printemps;2015;NA
+VAL;Valériane;2015;NA
+VE5;Vesce implantée pour la récolte 2015;2015;2017
+VED;Vesce déshydratée;2015;NA
+VER;Véronique;2015;NA
+VES;Autre vesce;2015;NA
+VET;Vétiver;2015;NA
+VNB;Vanille sous bois;2015;NA
+VNL;Vanille;2015;NA
+VNV;Vanille verte;2015;2019
+VRC;Vigne : raisins de cuve;2015;NA
+VRG;Verger;2015;NA
+VRT;Vigne : raisins de table;2015;NA
+XFE;X-Felium de 5 ans ou moins;2015;NA
+YLA;Ylang-ylang;2015;NA
+MCR;Mélange de céréales;2015;NA
+MOL;Mélange d'oléagineux;2015;NA
+MPT;Mélange de protéagineux semés tardivement (après le 31/05);2015;2015
+MCT;Miscanthus;2015;NA
+BCC;Banane créole (fruit et légume) - colonnage;2015;1900
+CSC;Canne à sucre - colonnage;2015;1900
+CNA;Châtaigneraie non entretenue par des porcins ou des petits ruminants;2019;NA
+CNE;Chênaie non entretenue par des porcins ou des petits ruminants;2019;NA
+MLC;Mélange de légumineuses fourragères prépondérantes et de céréales et/ou d'oléagineux;2019;NA
+MLF;Mélange de légumineuses fourragères (entre elles);2019;NA
+MLS;Mélange de légumineuses non fourragères prépondérantes et de céréales et/ou d'oléagineux;2020;NA
+ACP;Autre culture pérenne;2021;NA
+BC;Blé dur d'hiver sans semences certifiées;2009;2009
+BD;Blé dur de printemps sans semences certifiées;2009;2009
+CX;Semences de chanvre;2009;2011
+CZ;Semences de chanvre + contrat textile;2009;2011
+J1;Gel industriel blé;2009;2009
+J2;Gel industriel colza;2009;2009
+J3;Gel industriel tournesol;2009;2009
+J4;Gel industriel maïs;2009;2009
+J5;Gel industriel protéagineux;2009;2009
+J6;Gel industriel autres céréales;2009;2009
+J7;Gel industriel autres oléagineux;2009;2009
+J8;Gel industriel cultures admissibles aux DPU hors COP;2009;2009
+LV;Lavande;2009;2014
+LY;Semences de lin fibres;2009;2011
+LZ;Semences de lin fibres + contrat textile;2009;2011
+VR;Vétiver;2008;2014
+VV;Vignes de cuve;2009;2009
+CSE;Chanvre sans étiquette conforme;2018;NA
+LO7;Lotier implanté pour la récolte 2017;2017;2018
+MI7;Minette implanté pour la récolte 2017;2017;2018
+FF7;Féverole fourragère implantée pour la récolte 2017;2017;2018
+JO7;Jarosse implantée pour la récolte 2017;2017;2018
+LH7;Lupin fourrager d'hiver implanté pour la récolte 2017;2017;2018
+LP7;Lupin fourrager de printemps implanté pour la récolte 2017;2017;2018
+LU7;Luzerne implantée pour la récolte 2017;2017;2018
+ME7;Mélilot implanté pour la récolte 2017;2017;2018
+PH7;Pois fourrager d'hiver implanté pour la récolte 2017;2017;2018
+PP7;Pois fourrager de printemps implanté pour la récolte 2017;2017;2018
+SA7;Sainfoin implanté pour la récolte 2017;2017;2018
+SE7;Serradelle implantée pour la récolte 2017;2017;2018
+TR7;Trèfle implanté pour la récolte 2017;2017;2018
+VE7;Vesce implantée pour la récolte 2017;2017;2018
+ML7;Mélange de légumineuses fourragères implantées pour la récolte 2017 (entre elles);2017;2018
+MC7;Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2017 et de céréales et d'oléagineux;2017;2018
+MH7;Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2017 et d'herbacées ou de graminées fourragères;2017;2017
+ORT;Ortie;2017;NA
+C7;Chanvre;2012;2014
+C8;Chanvre commercialisé;2012;2014
+LW;Lin fibres commercialisé;2012;2014
+TT;Tomates;2012;2014
+TU;Tomates commercialisées;2012;2014
+DL;Légumineuses déshydratées;2012;2014
+DM;Légumineuses déshydratées commercialisées;2012;2014
+BV;Pépinières;2011;2014
+BW;Pépinières commercialisées;2011;2014
+BX;Petits fruits rouges;2011;2014
+BY;Petits fruits rouges commercialisés;2011;2014
+C6;Parcours ligneux (Corse);2011;2014
+MU;Maraîchage dont cultures sous serre et tunnels sauf hors-sol;2011;2012
+MV;Maraîchage commercialisé dont serre et tunnels sauf hors-sol;2011;2012
+VU;Vignes : raisins de table;2011;2014
+VX;Vignes commercialisées : raisins de table;2011;2014
+VY;Vignes : raisins de cuve;2011;2014
+VZ;Vignes commercialisées : raisins de cuve;2011;2014
+MW;Maraîchage commercialisé sauf serre;2013;2014
+MX;Maraîchage sauf serre;2013;2014
+MY;Maraîchage sous serre et tunnels sauf hors-sol;2013;2014
+ZZZ;Culture inconnue;2015;NA
+MPP;Mélange de protéagineux (pois et/ou lupin et/ou féverole);2018;NA
+LO8;Lotier implanté pour la récolte 2018;2018;2018
+MI8;Minette implanté pour la récolte 2018;2018;2018
+FF8;Féverole fourragère implantée pour la récolte 2018;2018;2018
+JO8;Jarosse implantée pour la récolte 2018;2018;2018
+LH8;Lupin fourrager d'hiver implanté pour la récolte 2018;2018;2018
+LP8;Lupin fourrager de printemps implanté pour la récolte 2018;2018;2018
+LU8;Luzerne implantée pour la récolte 2018;2018;2018
+ME8;Mélilot implanté pour la récolte 2018;2018;2018
+PH8;Pois fourrager d'hiver implanté pour la récolte 2018;2018;2018
+PP8;Pois fourrager de printemps implanté pour la récolte 2018;2018;2018
+SA8;Sainfoin implanté pour la récolte 2018;2018;2018
+SE8;Serradelle implantée pour la récolte 2018;2018;2018
+TR8;Trèfle implanté pour la récolte 2018;2018;2018
+VE8;Vesce implantée pour la récolte 2018;2018;2018
+ML8;Mélange de légumineuses fourragères implantées pour la récolte 2018 (entre elles);2018;2018
+MC8;Mélange de légumineuses fourragères prépondérantes implantées pour la récolte 2018 et de céréales et d'oléagineux;2018;2018
+VRN;Vigne : raisins de cuve non en production;2018;NA
+J9;Gel industriel - non défini;2009;2009
+ZA;Ananas commercialisé;2010;2014
+YA;Canne à sucre commercialisée;2010;2014
+YI;Curcuma commercialisé;2010;2014
+YL;Géranium commercialisé;2010;2014
+YE;Horticulture ornem. plein champ commercialisée;2010;2014
+YF;Horticulture ornem. sous abri commercialisée;2010;2014
+YG;Légumes sous abri commercialisés;2010;2014
+YM;Pastèques commercialisées;2010;2014
+YO;Plantes à parfum (autres que gér. et vét.) commercialisées;2010;2014
+YH;Plantes aromatiques (autres que vanille) commercialisées;2010;2014
+YJ;Plantes médicinales commercialisées;2010;2014
+YC;Tubercules tropicaux commercialisées;2010;2014
+YP;Vanille commercialisée;2010;2014
+YQ;Vanille sous bois commercialisée;2010;2014
+YR;Vétiver commercialisé;2010;2014
+YB;Banane créole (fruit et légume) commercialisée;2010;2014
+YD;Café - cacao commercialisé;2010;2014
+YN;Cultures sous abattis commercialisées;2010;2014
+AC;Autres céréales;2007;2014
+AF;Autres fleurs;2007;2009
+AG;Agrumes transformés;2007;2014
+AL;Alpiste;2007;2014
+AM;Amandes;2007;2014
+AO;Autres oléagineux;2007;2014
+AT;Autres cultures non précisées dans la liste (admissibles);2007;2014
+AU;Autres utilisations (non admissibles);2007;2013
+AV;Avoine;2007;2009
+BA;Blé dur hiver;2007;2014
+BB;Blé dur printemps;2007;2014
+BE;Betterave sucrière;2007;2009
+BH;Blé tendre hiver;2007;2014
+BO;Aide au boisement de terre agricole;2007;2014
+BP;Blé tendre printemps;2007;2014
+CA;Caroubes;2007;2014
+CG;Châtaignes;2007;2014
+CH;Colza d'hiver;2007;2014
+CI;Chicorée à inuline;2007;2009
+CO;Chanvre oléagineux;2007;2011
+CP;Colza de printemps;2007;2014
+CU;Chanvre sans contrat;2007;2011
+CV;Chanvre fibres;2007;2011
+CW;Semences de chanvre;2007;2008
+DH;Fourrages déshydratés;2007;2011
+EN;Autres cultures énergétiques;2007;2009
+EP;Epeautre;2007;2014
+ES;Estives;2007;2014
+EX;Semences d'épeautre;2007;2011
+FA;Fourrage annuel;2007;2014
+FE;Fèves et féveroles;2007;2009
+FN;Fleurs admissibles;2007;2009
+FP;Autres fruits et légumes;2007;2014
+GB;Gel betterave;2007;2009
+GE;Gel;2007;2009
+GI;Gel industriel hors betterave;2007;2008
+GL;Gel légumineuses;2007;2009
+GV;Gel vert;2007;2014
+HC;Hors culture - aidée;2007;2013
+HO;Houblon;2007;2014
+LC;Légumes de plein champs;2007;2014
+LD;Landes et parcours;2007;2014
+LE;Lentilles;2007;2014
+LN;Lin non textile;2007;2014
+LP;Lupin doux;2007;2014
+LS;Semences de lin fibres;2007;2008
+LT;Lin fibres;2007;2014
+LU;Lin fibres sans contrat;2007;2011
+LX;Semences de lin oléagineux;2007;2011
+MA;Maïs;2007;2014
+MD;Maïs doux;2007;2014
+ME;Maïs ensilage;2007;2014
+MI;Millet;2007;2014
+MS;Maïs semence;2007;2014
+MT;Moutarde;2007;2014
+NS;Noisettes;2007;2014
+NX;Noix;2007;2014
+OA;Oliveraie avant 1998;2007;2007
+OH;Orge d'hiver;2007;2014
+OI;Oignon;2007;2014
+OL;Oliveraie;2007;2014
+ON;Oliveraie après 1998 et hors PRO;2007;2007
+OP;Orge de printemps;2007;2014
+PA;Plantes méd;2007;2007
+PC;Pois chiches;2007;2014
+PE;Pommes de terre de consommation;2007;2014
+PF;Pommes de terre féculières;2007;2014
+PH;Pois d'hiver;2007;2014
+PI;Pistaches;2007;2014
+PL;Plants de pomme de terre;2007;2014
+PM;Plantes à parfum;2007;2009
+PN;Prairie permanente (non intégrée dans 1 rotation);2007;2014
+PO;Plantes médicinales;2007;2009
+PP;Pois de printemps;2007;2014
+PR;Autres protéagineux;2007;2014
+PS;Petits pois;2007;2014
+PT;Prairie temporaire (entrant dans 1 rotation);2007;2014
+PX;Prairie temporaire de plus de 5 ans;2007;2014
+R1;Semences de riz - grains longs;2007;2011
+R2;Semences de riz - grains courts;2007;2011
+RE;Restructuration du vignoble;2007;2014
+RZ;Riz;2007;2014
+SE;Seigle;2007;2014
+SG;Semences potagères;2007;2009
+SH;Sorgho;2007;2014
+SM;Semences fourragères;2007;2014
+SO;Soja;2007;2014
+SR;Sarrasin;2007;2014
+SY;Sylviculture (non admissible);2007;2013
+TA;Tabac;2007;2014
+TB;Tournesol MAE biné;2007;2007
+TM;Tomates pour transformation;2007;2011
+TO;Tournesol;2007;2014
+TR;Triticale;2007;2014
+UN;Usage non agricole;2007;2013
+VE;Vergers;2007;2014
+VI;Vignes;2007;2008
+VS;Vesces;2007;2014
+Y0;Canne à sucre;2007;2014
+Y1;Banane export;2007;2014
+Y2;Banane créole (fruit et légume);2007;2014
+Y3;Tubercules tropicaux;2007;2014
+Y4;Café - cacao;2007;2014
+Y5;Vanille autres plantes aromatiques;2007;2007
+Y6;Horticulture ornem. plein champ;2007;2014
+Y7;Horticulture ornem. sous abri;2007;2014
+Y8;Légumes sous abri;2007;2014
+Y9;Culture spécif. DOM 1;2007;2007
+Z1;Ananas;2007;2014
+Z2;Culture spécif. DOM 3;2007;2007
+Z3;Culture spécif. DOM 4;2007;2007
+Z4;Culture spécif. DOM 5;2007;2007
+SB;Semences de blé dur commercialisées;2010;2014
+SF;Semences fourragères commercialisées;2010;2014
+MO;Moutarde commercialisée;2010;2014
+PZ;Plantes aromatiques (découplage 2010);2005;2008
+AR;Plantes aromatiques (autres que vanille);2008;2014
+CF;Chou-fleur;2008;2009
+CM;Curcuma;2008;2014
+CR;Cerise bigarreaux industrie;2008;2009
+DC;Plantes médicinales;2008;2014
+ED;Endive;2008;2014
+FO;Protéagineux fourragers;2008;2014
+FR;Fraise;2008;2014
+GR;Géranium;2008;2014
+JA;Jachère (rotation culture);2008;2009
+LI;Légumes industrie;2008;2009
+ML;Melon;2008;2014
+PG;Pêches pour transformation;2008;2014
+PK;Poires pour transformation;2008;2014
+PQ;Pastèque;2008;2014
+PU;Prunes d'Ente pour transformation;2008;2014
+SA;Cultures sous abattis;2008;2014
+UM;Plantes à parfum (autres que géranium et vétiver);2008;2014
+VA;Vanille;2008;2014
+VB;Vanille sous bois;2008;2014
+VT;Vignes de table;2009;2009

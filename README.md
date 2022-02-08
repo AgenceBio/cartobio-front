@@ -27,3 +27,12 @@ npm run build
 ```
 npm test
 ```
+
+## Maintenance
+
+### Mettre à jour les codes cultures PAC
+
+```sh
+cat docs/pac/REF_CULTURES_GROUPES_CULTURES_2020.csv \
+  | csvjson --no-inference --indent 2 > src/referentiels/codes-pac.json
+```
