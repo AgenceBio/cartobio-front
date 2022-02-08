@@ -1,5 +1,6 @@
 <template>
   <MainHeader />
+  <MainNotifications />
 
   <router-view v-bind="$attrs" />
 </template>
@@ -9,6 +10,7 @@ import { useRouter } from 'vue-router'
 import store from './store.js'
 
 import MainHeader from './components/MainHeader.vue'
+import MainNotifications from './components/MainNotifications.vue'
 
 const router = useRouter()
 

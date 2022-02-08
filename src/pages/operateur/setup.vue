@@ -1,10 +1,4 @@
 <template>
-  <p class="notification is-success">
-    <vue-feather type="check" />
-    Nous avons bien pu valider votre identité.
-    Vous pourrez utiliser CartoBio grâce à ce même email quand vous le souhaitez.
-  </p>
-
   <h2>
     Votre parcellaire
     <small class="tag">Cet outil est actuellement en phase de test</small>
@@ -126,14 +120,4 @@ article .screenshot {
 </style>
 
 <style scoped>
-.notification {
-  background: var(--type-default);
-  color: var(--type-default--text);
-  padding: 1rem;
-}
-
-  .notification.is-success {
-    background-color: var(--type-success);
-    color: var(--type-success--text);
-  }
 </style>
