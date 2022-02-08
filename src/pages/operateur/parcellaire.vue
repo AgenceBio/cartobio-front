@@ -2,7 +2,7 @@
   <div class="container">
     <section>
       <h2>
-        {{ currentUser.commercial_name }}
+        {{ currentUser.nom }}
         <small class="tag">Cet outil est actuellement en phase de test</small>
       </h2>
 
@@ -10,11 +10,14 @@
         <li v-for="(features, ilot) in featuresByIlot" :key="ilot">
           <h3>Ilot {{ ilot }} <small>({{ features.length }} parcelles)</small></h3>
 
-          <table class="parcelles">
+          <table class="parnpcelles">
             <tr v-for="({ properties: props }) in features" :key="props.NUMERO_I + props.NUMERO_P ">
-              <th scope="row">Parcelle {{ props.NUMERO_P }}</th>
-              <td>{{ props.SURF }} ha</td>
-              <td>{{ props.TYPE }}</td>
+              <th scope="row">Parcelle&nbsp;{{ props.NUMERO_P }}</th>
+              <td>{{ props.SURF }}&nbsp;ha</td>
+              <td>
+                <span>{{ groupLibelléFromCode(props.TYPE) }}</span><br>
+                <small>{{ libelléFromCode(props.TYPE) }}</small>
+              </td>
               <td>?</td>
               <td>?</td>
             </tr>
@@ -29,15 +32,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onBeforeMount, ref, toRefs } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, toRefs } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
+import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
 
 import store from '../../store.js'
 
-const router = useRouter()
 const mapContainer = ref(null)
 const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
 
