@@ -24,6 +24,17 @@
     <article>
       <h3>Import de déclaration PAC</h3>
 
+      <button type="button" @click="pacFileInput.click()">
+        <input type="file" ref="pacFileInput" accept=".zip" @change="handlePacFileUpload" hidden>
+        <vue-feather type="upload-cloud" /> Importer ma dernière déclaration PAC
+      </button>
+
+      <p class="help">
+        <vue-feather type="thumbs-up" />
+        Le nom du fichier ressemble à <code>Dossier-PAC-{{ campagnePacAnnee }}_parcelle-{{ campagnePacAnnee }}_{{ currentUser.numeroPacage }}_….zip</code>
+      </p>
+    </article>
+
       <p class="help">
         <vue-feather type="help-circle" />
 
@@ -33,15 +44,35 @@
 
         <img src="/import/telepac-export.png" class="screenshot" alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
       </p>
+  </section>
 
-      <button type="button" @click="pacFileInput.click()">
-        <input type="file" ref="pacFileInput" accept=".zip" @change="handlePacFileUpload" hidden>
-        <vue-feather type="upload-cloud" /> Importer ma dernière déclaration PAC
+  <section v-if="featureSource === 'geofolia'">
+    <!-- <article>
+      <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+        🔐 Connecter mon compte Isagri Geofolia
+      </button>
+    </article> -->
+
+    <article>
+      <h3>Import des parcelles et interventions</h3>
+
+      <button type="button" @click="geofoliaFileInput.click()">
+        <input type="file" ref="geofoliaFileInput" accept=".zip" @change="handleGeofoliaFileUpload" hidden>
+        <vue-feather type="upload-cloud" /> Importer mes parcelles et interventions
       </button>
 
       <p class="help">
         <vue-feather type="thumbs-up" />
-        Le nom du fichier ressemble à <code>Dossier-PAC-{{ campagnePacAnnee }}_parcelle-{{ campagnePacAnnee }}_{{ currentUser.numeroPacage }}_….zip</code>
+        Le nom du fichier ressemble à <code>…_Parcelles et Interventions (ZIP)_….zip</code>
+      </p>
+
+      <p class="help">
+        <vue-feather type="help-circle" />
+
+        Le fichier <b>Parcelles et interventions (ZIP)</b> se trouve dans l'onglet "Export › Parcelles et interventions"
+        du logiciel Géofolia, édité par Isagri.
+
+        <img src="/import/geofolia-export.png" class="screenshot" alt="Écran Export Parcelles et interventions du logiciel Géofolia" />
       </p>
     </article>
   </section>
@@ -65,6 +96,7 @@ const campagnePacUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/t
 const campagnePacExportUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/ie/exportShpIlots.action`)
 
 const pacFileInput = ref(null)
+const geofoliaFileInput = ref(null)
 
 const featureSources = readonly({
   telepac: {
@@ -77,7 +109,7 @@ const featureSources = readonly({
   },
   geofolia: {
     label: 'Géofolia',
-    active: false,
+    active: true,
   },
   smagfarmer: {
     label: 'SMAG Farmer',
@@ -89,7 +121,7 @@ const featureSources = readonly({
   }
 })
 
-async function handlePacFileUpload (event) {
+async function handlePacFileUpload () {
   const [archive] = pacFileInput.value.files
 
   const form = new FormData()
@@ -97,7 +129,17 @@ async function handlePacFileUpload (event) {
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
 
   store.setParcelles({ geojson, source: featureSource.value })
+  router.push('/operateur/parcellaire')
+}
 
+async function handleGeofoliaFileUpload () {
+  const [archive] = geofoliaFileInput.value.files
+
+  const form = new FormData()
+  form.append('archive', archive)
+  const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/geofolia/geojson`, form)
+
+  store.setParcelles({ geojson, source: featureSource.value })
   router.push('/operateur/parcellaire')
 }
 </script>
