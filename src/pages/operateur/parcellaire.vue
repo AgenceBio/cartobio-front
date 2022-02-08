@@ -6,24 +6,22 @@
         <small class="tag">Cet outil est actuellement en phase de test</small>
       </h2>
 
-      <ul>
-        <li v-for="(features, ilot) in featuresByIlot" :key="ilot">
-          <h3>Ilot {{ ilot }} <small>({{ features.length }} parcelles)</small></h3>
-
-          <table class="parnpcelles">
-            <tr v-for="({ properties: props }) in features" :key="props.NUMERO_I + props.NUMERO_P ">
-              <th scope="row">Parcelle&nbsp;{{ props.NUMERO_P }}</th>
-              <td>{{ props.SURF }}&nbsp;ha</td>
-              <td>
-                <span>{{ groupLibelléFromCode(props.TYPE) }}</span><br>
-                <small>{{ libelléFromCode(props.TYPE) }}</small>
-              </td>
-              <td>?</td>
-              <td>?</td>
-            </tr>
-          </table>
-        </li>
-      </ul>
+      <table class="parcelles">
+        <tr v-for="({ properties: props }) in parcellaire.features" :key="props.NUMERO_I + props.NUMERO_P ">
+          <th scope="row" class="rowIdCell">
+            <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
+            <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
+          </th>
+          <td>{{ props.COMMUNE }}</td>
+          <td>{{ props.SURF }}&nbsp;ha</td>
+          <td>
+            <span>{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</span><br>
+            <small v-if="!props.TYPE_LIBELLE">{{ libelléFromCode(props.TYPE) }}</small>
+          </td>
+          <td>?</td>
+          <td>?</td>
+        </tr>
+      </table>
 
     </section>
 
@@ -97,15 +95,27 @@ table.parcelles {
   width: 100%;
 }
 
+.rowIdCell small {
+  font-weight: normal;
+  margin-left: .5rem;
+}
+
 table.parcelles,
 table.parcelles :is(td, th) {
   border: 1px solid #ccc;
   padding: .5em;
+  text-align: left;
 }
 
 .map {
   background: #ccc;
   height: calc(100vh - 3rem);
+  position: sticky;
+  top: 0;
   width: max(50vw, 450px);
+}
+
+::v-deep .maplibregl-control-container {
+  display: none;
 }
 </style>
