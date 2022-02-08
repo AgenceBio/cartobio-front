@@ -17,6 +17,7 @@
     "@turf/bbox": "^6.5.0",
     "array.prototype.groupby": "^1.0.0",
     "axios": "^0.25.0",
+    "deepmerge": "^4.2.2",
     "feather-icons": "^4.28.0",
     "maplibre-gl": "^2.0.1",
     "normalize.css": "^8.0.1",

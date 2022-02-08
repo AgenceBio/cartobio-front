@@ -34,7 +34,12 @@ import { computed, onMounted, ref, toRefs } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
+import { all as mergeAll } from 'deepmerge'
 import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
+
+import baseStyle from '../../map-styles/base.json'
+import cadastreStyle from '../../map-styles/cadastre.json'
+import infrastructureStyle from '../../map-styles/infrastructure.json'
 
 import store from '../../store.js'
 
@@ -46,7 +51,8 @@ const featuresByIlot = computed(() => groupBy(parcellaire.value.features, (featu
 onMounted(() => {
   const map = new MapLibre({
     container: mapContainer.value,
-    style: 'https://demotiles.maplibre.org/style.json',
+    hash: true,
+    style: mergeAll([ baseStyle, cadastreStyle, infrastructureStyle ]),
     bounds: bbox(parcellaire.value),
     padding: 20,
   })
@@ -68,6 +74,8 @@ onMounted(() => {
       },
       layout: {}
     })
+
+    map.setZoom(map.getZoom() - 1)
   })
 })
 
