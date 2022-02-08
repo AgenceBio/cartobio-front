@@ -17,6 +17,10 @@ router.beforeEach((to, from) => {
     return router.replace('/operateur/login')
   }
 
+  if (to.path === '/operateur/login' && store.state.currentUser.id) {
+    return router.replace('/operateur/parcellaire')
+  }
+
   if (to.meta.requiresGeodata && !store.state.parcellaireSource) {
     return router.replace('/operateur/setup')
   }

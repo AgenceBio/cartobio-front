@@ -4,7 +4,7 @@
     <small class="tag">Cet outil est actuellement en phase de test</small>
   </h2>
 
-  <form v-if="!candidateUser.id" @submit.prevent="tryLogin">
+  <form v-if="!candidateUsers.length" @submit.prevent="tryLogin">
     <div class="row">
       <label>
         Rechercher
@@ -24,33 +24,34 @@
     </div>
   </form>
 
-  <form v-else @submit.prevent="loginCandidateUser">
-    <h3>{{ candidateUser.nom }} <vue-feather type="check-square" size="16" /></h3>
+  <section class="candidateUsers" v-else>
+    <form class="candidateUserForm" v-for="candidateUser in candidateUsers" :key="candidateUser.id" @submit.prevent="loginCandidateUser(candidateUser)">
+      <h3>{{ candidateUser.nom }} <vue-feather type="check-square" size="16" /></h3>
 
-    <dl class="candidateUser">
-      <dt>Dénomination courante</dt>
-      <dd>{{ candidateUser.denominationCourante }}</dd>
-      <dt>Numéro de SIRET</dt>
-      <dd>{{ candidateUser.siret }}</dd>
-      <dt>Numéro PACAGE</dt>
-      <dd>{{ candidateUser.numeroPacage }}</dd>
-      <dt>Numéro Bio</dt>
-      <dd>{{ candidateUser.id }}</dd>
-      <dt>Date d'engagement</dt>
-      <dd>{{ candidateUser.dateEngagement }}</dd>
-    </dl>
+      <dl class="candidateUser">
+        <dt>Dénomination courante</dt>
+        <dd>{{ candidateUser.denominationCourante }}</dd>
+        <dt>Numéro de SIRET</dt>
+        <dd>{{ candidateUser.siret }}</dd>
+        <dt>Numéro PACAGE</dt>
+        <dd>{{ candidateUser.numeroPacage }}</dd>
+        <dt>Numéro Bio</dt>
+        <dd>{{ candidateUser.id }}</dd>
+        <dt>Date d'engagement</dt>
+        <dd>{{ candidateUser.dateEngagement }}</dd>
+      </dl>
 
-    <p>
-      <button type="submit">
-        <vue-feather type="lock"></vue-feather>
-        Confirmer mon identité
-      </button>
+      <p>
+        <button type="submit">
+          <vue-feather type="lock"></vue-feather>
+          Confirmer cette identité
+        </button>
 
-      <!-- Un email vous sera envoyé à votre adresse professionnelle :
-      {{ candidateUser.email }} -->
-    </p>
-  </form>
-
+        <!-- Un email vous sera envoyé à votre adresse professionnelle :
+        {{ candidateUser.email }} -->
+      </p>
+    </form>
+  </section>
 </template>
 
 <script setup>
@@ -62,7 +63,7 @@ const router = useRouter()
 const loginInput = ref(null)
 const userLogin = ref('')
 const isLoading = ref(false)
-let candidateUser = store.state.currentUser
+let candidateUsers = ref([])
 
 const LOGIN_TYPES = [
   { id: 'name', label: "nom" },
@@ -108,7 +109,7 @@ onMounted(() => loginInput.value?.focus())
 async function tryLogin () {
   isLoading.value = true
 
-  const result = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v1/tryLogin`, {
+  const userProfiles = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v1/tryLogin`, {
     method: 'POST',
     body: JSON.stringify({ q: userLogin.value }),
     headers: {
@@ -118,10 +119,10 @@ async function tryLogin () {
 
   isLoading.value = false
 
-  Object.assign(candidateUser, result)
+  candidateUsers.value = userProfiles
 }
 
-function loginCandidateUser () {
+function loginCandidateUser (candidateUser) {
   store.loginUser(candidateUser)
   router.push('/operateur/parcellaire')
 }
@@ -134,6 +135,18 @@ span[aria-selected="true"] {
 
 .help span:not(:last-of-type)::after {
   content: ", ";
+}
+
+section.candidateUsers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.candidateUserForm {
+  border: 1px solid var(--brand-color);
+  border-radius: 5px;
+  padding: 1rem;
 }
 
 dl.candidateUser {
