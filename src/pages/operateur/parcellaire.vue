@@ -13,10 +13,10 @@
         </select>
       </label>
 
-      <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key">
+      <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">{{ label }} ({{ surface }}&nbsp;ha)</caption>
 
-        <tr v-for="({ properties: props }) in features" :key="props.NUMERO_I + props.NUMERO_P ">
+        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="selectedFeaturedId = id" :key="props.NUMERO_I + props.NUMERO_P" :aria-selected="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
           <th scope="row" class="rowIdCell">
             <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
             <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, toRefs, readonly } from 'vue'
+import { computed, onMounted, ref, toRefs, unref, readonly, watch } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
@@ -56,6 +56,8 @@ import store from '../../store.js'
 
 const mapContainer = ref(null)
 const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
+const hoveredFeatureId = ref(null)
+const selectedFeaturedId = ref(null)
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
@@ -67,6 +69,7 @@ const groupingChoices = readonly({
 
 const userGroupingChoice = ref('')
 const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
+const handleTableParcelleHover = ($event) => console.log($event)
 
 const featureGroups = computed(() => {
   if (userGroupingChoice.value === '') {
@@ -99,9 +102,10 @@ onMounted(() => {
   })
 
   map.on('load', () => {
+    console.log(unref(parcellaire))
     map.addSource('parcellaire-operateur', {
       type: 'geojson',
-      data: parcellaire.value
+      data: unref(parcellaire)
     })
 
     map.addLayer({
@@ -109,14 +113,52 @@ onMounted(() => {
       source: 'parcellaire-operateur',
       type: 'fill',
       paint: {
-        "fill-color": "#00ffff",
-        "fill-outline-color": "#00ffff",
-        "fill-opacity": 0.5,
+        "fill-color": [
+          'case',
+          ['boolean', ['feature-state', 'selected'], false],
+          "#ffcc00",
+          ['boolean', ['feature-state', 'hover'], false],
+          "#0080ff",
+          "#00ff80"
+        ],
+        "fill-opacity": 0.9,
       },
       layout: {}
     })
 
     map.setZoom(map.getZoom() - 1)
+
+    watch(hoveredFeatureId, (id, previousId) => {
+      if (id) {
+        map.setFeatureState({ source: 'parcellaire-operateur', id }, { hover: true })
+      }
+
+      if (previousId){
+        map.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { hover: false })
+      }
+    })
+
+    watch(selectedFeaturedId, (id, previousId) => {
+      if (id) {
+        map.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: true })
+      }
+
+      if (previousId){
+        map.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { selected: false })
+      }
+    })
+  })
+
+  map.on('mousemove', 'parcellaire-operateur-geometry', ({ features }) => {
+    if (features.length) {
+      hoveredFeatureId.value = features[0].properties.id
+    }
+  })
+
+  map.on('mouseleave', 'parcellaire-operateur-geometry', () => {
+    if (hoveredFeatureId.value) {
+      hoveredFeatureId.value = null
+    }
   })
 })
 
@@ -147,6 +189,16 @@ table.parcelles {
   table.parcelles caption {
     font-weight: bold;
     text-align: left;
+  }
+
+  table.parcelles tr:nth-child(even) {
+    background-color: #efefef;
+  }
+  table.parcelles tr.hovered {
+    background-color: #00ffff50;
+  }
+  table.parcelles tr[aria-selected="true"] {
+    background-color: #ffcc00;
   }
 
 .rowIdCell small {
