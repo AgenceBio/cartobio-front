@@ -54,6 +54,9 @@ header {
   justify-content: space-between;
   height: calc(var(--spacing) * 3);
   padding: calc(var(--spacing) / 2) var(--spacing);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 header h1 {

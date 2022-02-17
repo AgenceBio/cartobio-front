@@ -70,6 +70,13 @@ form label {
   cursor: pointer;
 }
 
+button.link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+}
+
 .tag {
   background-color: var(--brand-color);
   border-radius: 5px;

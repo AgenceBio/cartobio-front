@@ -236,7 +236,7 @@ table.parcelles :is(td, th) {
   background: #ccc;
   height: calc(100vh - 3rem);
   position: sticky;
-  top: 0;
+  top: calc((var(--spacing) * 3) + var(--spacing));
   width: max(50vw, 450px);
 }
 
