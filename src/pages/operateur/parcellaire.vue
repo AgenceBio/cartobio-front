@@ -16,7 +16,7 @@
       <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">{{ label }} ({{ surface }}&nbsp;ha)</caption>
 
-        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="selectedFeaturedId = id" :key="props.NUMERO_I + props.NUMERO_P" :aria-selected="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
+        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="selectedFeaturedId = id" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
           <th scope="row" class="rowIdCell">
             <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
             <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, toRefs, unref, readonly, watch } from 'vue'
+import { computed, onMounted, ref, toRefs, unref, readonly, watch, nextTick } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
@@ -69,7 +69,6 @@ const groupingChoices = readonly({
 
 const userGroupingChoice = ref('')
 const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
-const handleTableParcelleHover = ($event) => console.log($event)
 
 const featureGroups = computed(() => {
   if (userGroupingChoice.value === '') {
@@ -102,7 +101,6 @@ onMounted(() => {
   })
 
   map.on('load', () => {
-    console.log(unref(parcellaire))
     map.addSource('parcellaire-operateur', {
       type: 'geojson',
       data: unref(parcellaire)
@@ -151,13 +149,25 @@ onMounted(() => {
 
   map.on('mousemove', 'parcellaire-operateur-geometry', ({ features }) => {
     if (features.length) {
-      hoveredFeatureId.value = features[0].properties.id
+      hoveredFeatureId.value = features[0].id
+      map.getCanvas().style.cursor = "pointer"
     }
   })
 
   map.on('mouseleave', 'parcellaire-operateur-geometry', () => {
     if (hoveredFeatureId.value) {
       hoveredFeatureId.value = null
+      map.getCanvas().style.cursor = ""
+    }
+  })
+
+  map.on('click', 'parcellaire-operateur-geometry', ({ lngLat }) => {
+    const point = map.project(lngLat)
+    const features = map.queryRenderedFeatures(point, { layers: ['parcellaire-operateur-geometry'] })
+
+    if (features.length) {
+      selectedFeaturedId.value = features[0].id
+      nextTick(() => document.querySelector('tr[aria-current="true"]')?.scrollIntoView())
     }
   })
 })
@@ -196,8 +206,9 @@ table.parcelles {
   }
   table.parcelles tr.hovered {
     background-color: #00ffff50;
+    cursor: pointer;
   }
-  table.parcelles tr[aria-selected="true"] {
+  table.parcelles tr[aria-current="true"] {
     background-color: #ffcc00;
   }
 
@@ -229,7 +240,7 @@ table.parcelles :is(td, th) {
   width: max(50vw, 450px);
 }
 
-::v-deep .maplibregl-control-container {
+:deep(.maplibregl-control-container) {
   display: none;
 }
 </style>
