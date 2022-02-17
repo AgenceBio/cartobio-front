@@ -14,7 +14,9 @@
     "node": "^16.0.0"
   },
   "dependencies": {
+    "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
     "array.prototype.groupby": "^1.0.0",
     "axios": "^0.25.0",
     "deepmerge": "^4.2.2",

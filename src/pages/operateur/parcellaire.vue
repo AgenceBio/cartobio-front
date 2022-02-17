@@ -6,20 +6,29 @@
         <small class="tag">Cet outil est actuellement en phase de test</small>
       </h2>
 
-      <table class="parcelles">
-        <tr v-for="({ properties: props }) in parcellaire.features" :key="props.NUMERO_I + props.NUMERO_P ">
+      <label>
+        Grouper les parcelles par
+        <select @change="handleUserGroupingChoice">
+          <option :value="value" v-for="(label, value) in groupingChoices" :key="value" :selected="value === userGroupingChoice">{{ label }}</option>
+        </select>
+      </label>
+
+      <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key">
+        <caption v-if="label">{{ label }} ({{ surface }}&nbsp;ha)</caption>
+
+        <tr v-for="({ properties: props }) in features" :key="props.NUMERO_I + props.NUMERO_P ">
           <th scope="row" class="rowIdCell">
             <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
             <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
           </th>
-          <td>{{ props.COMMUNE }}</td>
           <td>{{ props.SURF }}&nbsp;ha</td>
           <td>
             <span>{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</span><br>
-            <small v-if="!props.TYPE_LIBELLE">{{ libelléFromCode(props.TYPE) }}</small>
+            <small v-if="!props.TYPE_LIBELLE" :title="libelléFromCode(props.TYPE)" class="culture-group">{{ libelléFromCode(props.TYPE) }}</small>
           </td>
-          <td>?</td>
-          <td>?</td>
+          <td>
+            <span>Statut de conversion inconnu</span><br>
+          </td>
         </tr>
       </table>
 
@@ -30,10 +39,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, toRefs } from 'vue'
+import { computed, onMounted, ref, toRefs, readonly } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
+import area from '@turf/area'
+import { featureCollection } from '@turf/helpers'
 import { all as mergeAll } from 'deepmerge'
 import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
 
@@ -46,7 +57,37 @@ import store from '../../store.js'
 const mapContainer = ref(null)
 const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
 
-const featuresByIlot = computed(() => groupBy(parcellaire.value.features, (feature) => feature.properties.NUMERO_I))
+const inHa = (value) => parseFloat((value / 10000).toFixed(2))
+
+const groupingChoices = readonly({
+  '': '…',
+  'COMMUNE': 'Commune',
+  'TYPE': 'Culture',
+})
+
+const userGroupingChoice = ref('')
+const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
+
+const featureGroups = computed(() => {
+  if (userGroupingChoice.value === '') {
+    return [{
+      label: '',
+      key: 'none',
+      features: parcellaire.value.features,
+      surface: inHa(area(featureCollection(parcellaire.value.features)))
+    }]
+  }
+
+  const groups = groupBy(parcellaire.value.features, (feature) => feature.properties[ userGroupingChoice.value ])
+
+  return Object.entries(groups).map(([key, features]) => ({
+    label: key,
+    key,
+    features,
+    surface: inHa(area(featureCollection(features)).toFixed(2)),
+  })).sort((a, b) => b.surface - a.surface)
+})
+
 
 onMounted(() => {
   const map = new MapLibre({
@@ -100,8 +141,13 @@ onMounted(() => {
 
 table.parcelles {
   border-collapse: collapse;
+  margin: 1.5rem 0;
   width: 100%;
 }
+  table.parcelles caption {
+    font-weight: bold;
+    text-align: left;
+  }
 
 .rowIdCell small {
   font-weight: normal;
@@ -113,6 +159,14 @@ table.parcelles :is(td, th) {
   border: 1px solid #ccc;
   padding: .5em;
   text-align: left;
+}
+
+.culture-group {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 350px;
 }
 
 .map {
