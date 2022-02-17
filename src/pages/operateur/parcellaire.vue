@@ -16,6 +16,43 @@
       <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">{{ label }} ({{ surface }}&nbsp;ha)</caption>
 
+        <thead>
+          <tr>
+            <td colspan="4">
+              <vue-feather type="corner-left-down" size="16" />
+              <button v-if="!massGroupEditFormState[key]" type="button" class="link" @click="setMassGroupEditFormState(key, 'open')">modifier ces {{ features.length }} parcelles</button>
+              <button v-else type="button" class="link" @click="clearMassGroupEditForm(key)">annuler cette modification</button>
+
+              <form v-if="massGroupEditFormState[key]" @submit.prevent="handleMassGroupEditSubmit(key)">
+                <div class="field">
+                  <label>Date d'engagement</label>
+                  <div class="control">
+                    <input type="date" name="engagement_date" @change="handleMassGroupEditChange(key, $event)" />
+
+                    <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
+                    <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Niveau de conversion</label>
+                  <div class="control">
+                    <select name="conversion_niveau" @change="handleMassGroupEditChange(key, $event)">
+                      <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field is-grouped">
+                  <div class="control">
+                    <button class="button is-link">Appliquer</button>
+                  </div>
+                </div>
+              </form>
+            </td>
+          </tr>
+        </thead>
+
         <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="selectedFeaturedId = id" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
           <th scope="row" class="rowIdCell">
             <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
@@ -27,9 +64,20 @@
             <small v-if="!props.TYPE_LIBELLE" :title="libelléFromCode(props.TYPE)" class="culture-group">{{ libelléFromCode(props.TYPE) }}</small>
           </td>
           <td>
-            <span>Statut de conversion inconnu</span><br>
+            <span v-if="props.conversion_niveau">{{ props.conversion_niveau }} ({{ props.engagement_date }})</span>
+            <span v-else>Statut de conversion inconnu</span>
           </td>
         </tr>
+        <tfoot>
+          <tr>
+            <td colspan="4">
+              <a href="#top">
+                <vue-feather type="arrow-up" size="16" />
+                retour en haut de page
+              </a>
+            </td>
+          </tr>
+        </tfoot>
       </table>
 
     </section>
@@ -67,6 +115,17 @@ const groupingChoices = readonly({
   'TYPE': 'Culture',
 })
 
+const conversionLevels = readonly([
+  { value: '', label: 'Niveau de conversion inconnu' },
+  { value: 'C1', label: 'C1 — Première année de conversion' },
+  { value: 'C2', label: 'C2 — Deuxième année de conversion' },
+  { value: 'C3', label: 'C3 — Troisième année de conversion' },
+  { value: 'AB', label: 'AB — Agriculture biologique' },
+])
+
+const massGroupEditFormState = ref({})
+const massGroupEditFormValues = ref({})
+
 const userGroupingChoice = ref('')
 const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
 
@@ -89,6 +148,36 @@ const featureGroups = computed(() => {
     surface: inHa(area(featureCollection(features)).toFixed(2)),
   })).sort((a, b) => b.surface - a.surface)
 })
+
+const setMassGroupEditFormState = (groupKey, state) => {
+  massGroupEditFormState.value[groupKey] = state
+}
+
+const handleMassGroupEditSubmit = (groupKey) => {
+  const { features } = featureGroups.value.find(({ key }) => key === groupKey)
+  features.forEach(({ properties }) => {
+    Object.entries(massGroupEditFormValues.value[groupKey]).forEach(([key, value]) => {
+      properties[key] = value
+    })
+  })
+
+  clearMassGroupEditForm(groupKey)
+}
+
+const clearMassGroupEditForm = (groupKey) => {
+  massGroupEditFormState.value[groupKey] = null
+  massGroupEditFormValues.value[groupKey] = null
+}
+
+const handleMassGroupEditChange = (groupKey, $event) => {
+  const { name, value } = $event.target
+
+  if (!massGroupEditFormValues.value[groupKey]) (
+    massGroupEditFormValues.value[groupKey] = {}
+  )
+
+  massGroupEditFormValues.value[groupKey][name] = value
+}
 
 
 onMounted(() => {
@@ -167,7 +256,7 @@ onMounted(() => {
 
     if (features.length) {
       selectedFeaturedId.value = features[0].id
-      nextTick(() => document.querySelector('tr[aria-current="true"]')?.scrollIntoView())
+      nextTick(() => document.querySelector('tr[aria-current="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
     }
   })
 })
