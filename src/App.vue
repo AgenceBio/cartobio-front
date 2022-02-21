@@ -81,6 +81,11 @@ textarea {
   width: calc(100% - .8rem - .8rem);
 }
 
+select,
+textarea {
+  max-width: calc(100% - .8rem - .8rem);
+}
+
 :where(.button, textarea, input[type="text"], input[type="date"], input[type="search"]) {
   padding: .8rem;
 }

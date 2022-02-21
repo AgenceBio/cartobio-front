@@ -32,3 +32,5 @@ export function groupLibelléFromCode (code){
 
   return found ? found.LIBELLE_GROUPE_CULTURE : DEFAULT_LIBELLE
 }
+
+export const liste = Object.freeze(codes.map(({ CODE_CULTURE, LIBELLE_CULTURE }) => ([CODE_CULTURE, LIBELLE_CULTURE])))

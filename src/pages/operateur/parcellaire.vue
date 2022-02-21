@@ -61,7 +61,7 @@
           </tr>
         </thead>
 
-        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="handleFeatureSelectionFromTable(id)" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
+        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="handleFeatureSelectionFromTable(id)" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId}">
           <th scope="row" class="rowIdCell">
             <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
             <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
@@ -87,8 +87,44 @@
           </tr>
         </tfoot>
       </table>
-
     </section>
+
+    <div class="popup-template" ref="mapPopupRef" hidden>
+      <form @submit.prevent="handleFeatureChange" v-if="selectedFeatureId">
+        <div class="field">
+          <label>Type de culture</label>
+          <div class="control">
+            <select v-model="selectedFeature.properties.TYPE">
+              <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">{{ libellé }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Date d'engagement</label>
+          <div class="control">
+            <input type="date" v-model="selectedFeature.properties.engagement_date" />
+
+            <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
+            <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Niveau de conversion</label>
+          <div class="control">
+            <select  v-model="selectedFeature.properties.conversion_niveau">
+              <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Commentaire</label>
+          <div class="control"><textarea v-model="selectedFeature.properties.commentaire" /></div>
+        </div>
+      </form>
+    </div>
 
     <aside class="map" ref="mapContainer" />
   </div>
@@ -96,13 +132,14 @@
 
 <script setup>
 import { computed, onMounted, ref, toRefs, unref, readonly, watch, nextTick } from 'vue'
-import { Map as MapLibre } from 'maplibre-gl'
+import { Map as MapLibre, Popup } from 'maplibre-gl'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
+import centroid from '@turf/centroid'
 import { featureCollection } from '@turf/helpers'
 import { all as mergeAll } from 'deepmerge'
-import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
+import { liste as codesPac, libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
 
 import baseStyle from '../../map-styles/base.json'
 import cadastreStyle from '../../map-styles/cadastre.json'
@@ -111,9 +148,14 @@ import infrastructureStyle from '../../map-styles/infrastructure.json'
 import store from '../../store.js'
 
 const mapContainer = ref(null)
+const mapPopupRef = ref(null)
 const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
-const selectedFeaturedId = ref(null)
+const selectedFeatureId = ref(null)
+const selectedFeature = ref(null)
+let map = null
+
+const popup = new Popup({ offset: [0, -15 ], maxWidth: '450px' })
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
@@ -187,9 +229,30 @@ const handleMassGroupEditChange = (groupKey, $event) => {
   massGroupEditFormValues.value[groupKey][name] = value
 }
 
+const handleFeatureChange = ($event) => {
+  console.log(selectedFeature)
+}
+
+const getFeatureById = (id) => {
+  return parcellaire.value.features.find(feature => feature.id === id)
+}
+
+const handleFeatureSelectionFromTable = (id) => {
+  selectedFeatureId.value = id
+
+  zoomInto(getFeatureById(id), { maxZoom: 15 })
+}
+
+function zoomInto (featureOrFeatureCollection, { maxZoom }) {
+  const bounds = bbox(featureOrFeatureCollection)
+  const { center, zoom, bearing } = map.cameraForBounds(bounds, { padding: 50, maxZoom }) ?? {}
+  if (center && zoom) {
+    map.flyTo({ center, zoom, bearing })
+  }
+}
 
 onMounted(() => {
-  const map = new MapLibre({
+  map = new MapLibre({
     container: mapContainer.value,
     hash: true,
     style: mergeAll([ baseStyle, cadastreStyle, infrastructureStyle ]),
@@ -221,7 +284,7 @@ onMounted(() => {
       layout: {}
     })
 
-    map.setZoom(map.getZoom() - 1)
+    zoomInto(parcellaire.value, { maxZoom: 13 })
 
     watch(hoveredFeatureId, (id, previousId) => {
       if (id) {
@@ -233,9 +296,25 @@ onMounted(() => {
       }
     })
 
-    watch(selectedFeaturedId, (id, previousId) => {
+    watch(selectedFeatureId, (id, previousId) => {
       if (id) {
         map.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: true })
+
+        selectedFeature.value = getFeatureById(id)
+        const [lat, lon] = centroid(selectedFeature.value).geometry.coordinates
+        nextTick(() => {
+          popup.setLngLat([lat, lon])
+
+          if (!popup.isOpen()) {
+            popup.setDOMContent(mapPopupRef.value.firstChild)
+            popup.addTo(map)
+          }
+        })
+
+      }
+      else {
+        selectedFeature.value = null
+        popup.remove()
       }
 
       if (previousId){
@@ -263,7 +342,7 @@ onMounted(() => {
     const features = map.queryRenderedFeatures(point, { layers: ['parcellaire-operateur-geometry'] })
 
     if (features.length) {
-      selectedFeaturedId.value = features[0].id
+      selectedFeatureId.value = features[0].id
       nextTick(() => document.querySelector('tr[aria-current="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
     }
   })
