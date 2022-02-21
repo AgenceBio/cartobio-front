@@ -1,10 +1,18 @@
 <template>
-  <div class="container">
+  <div class="full-width">
     <section>
       <h2>
         {{ currentUser.nom }}
         <small class="tag">Cet outil est actuellement en phase de test</small>
       </h2>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button disabled><vue-feather type="mail" /> Transmettre cette version du parcellaire à mon Organisme de Certification</button>
+        </div>
+      </div>
+
+      <hr />
 
       <label>
         Grouper les parcelles par
@@ -53,15 +61,15 @@
           </tr>
         </thead>
 
-        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="selectedFeaturedId = id" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
+        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="handleFeatureSelectionFromTable(id)" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeaturedId" :class="{hovered: id === hoveredFeatureId}">
           <th scope="row" class="rowIdCell">
             <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
             <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
           </th>
           <td>{{ props.SURF }}&nbsp;ha</td>
           <td>
-            <span>{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</span><br>
-            <small v-if="!props.TYPE_LIBELLE" :title="libelléFromCode(props.TYPE)" class="culture-group">{{ libelléFromCode(props.TYPE) }}</small>
+            <span class="culture-type">{{ libelléFromCode(props.TYPE) }}</span><br>
+            <small :title="props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE)" class="culture-group">{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</small>
           </td>
           <td>
             <span v-if="props.conversion_niveau">{{ props.conversion_niveau }} ({{ props.engagement_date }})</span>
@@ -265,17 +273,17 @@ onMounted(() => {
 
 
 <style lang="postcss" scoped>
-.container {
+.full-width {
   display: flex;
   position: relative;
 }
 
-.container ul {
+.full-width ul {
   list-style: none;
   padding: 0;
 }
 
-.container > section {
+.full-width > section {
   flex-grow: 1;
   padding: 0 var(--spacing);
 }
@@ -313,6 +321,7 @@ table.parcelles :is(td, th) {
   text-align: left;
 }
 
+.culture-type,
 .culture-group {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -331,5 +340,29 @@ table.parcelles :is(td, th) {
 
 :deep(.maplibregl-control-container) {
   display: none;
+}
+
+:deep(.maplibregl-popup) {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+:deep(.maplibregl-popup-content) {
+  background: #fff;
+  border: 1px solid var(--brand-color);
+  border-radius: 3px;
+  padding: 2rem 1rem 1rem;
+  position: relative;
+}
+:deep(.maplibregl-popup-close-button) {
+  position: absolute;
+  right: .5rem;
+  top: .5rem;
+}
+
+hr {
+  border: 1px solid var(--brand-color);
+  margin: 1rem 0;
+  max-width: 50%;
 }
 </style>

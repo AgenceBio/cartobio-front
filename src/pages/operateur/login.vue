@@ -1,57 +1,66 @@
 <template>
-  <h2>
-    Votre exploitation
-    <small class="tag">Cet outil est actuellement en phase de test</small>
-  </h2>
+  <div class="container">
+    <h2>
+      Votre exploitation
+      <small class="tag">Cet outil est actuellement en phase de test</small>
+    </h2>
 
-  <form v-if="!candidateUsers.length" @submit.prevent="tryLogin">
-    <div class="row">
-      <label>
-        Rechercher
-        <input type="text" name="search" v-model="userLogin" ref="loginInput" required autofocus />
+    <form @submit.prevent="tryLogin">
+      <div class="row">
+        <label>
+          Rechercher
+          <input type="text" name="search" v-model="userLogin" ref="loginInput" required autofocus />
 
-        <button type="submit" :disabled="isLoading">
-          <vue-feather type="loader" animation="spin" v-if="isLoading" />
-          <span v-else>OK</span>
+          <button class="button" type="submit" :disabled="isLoading">
+            <vue-feather type="loader" animation="spin" v-if="isLoading" />
+            <span v-else>OK</span>
+          </button>
+        </label>
+
+        <p class="help">
+          Par <span v-for="({ id, label }) in LOGIN_TYPES" :aria-selected="userLoginType.includes(id)" :key="id">
+            {{ label }}
+          </span>…
+        </p>
+      </div>
+
+      <p v-if="candidateUsers.length">
+        <button class="link" @click="resetSearch">
+          <vue-feather type="rotate-ccw" />
+          Annuler la recherche
         </button>
-      </label>
-
-      <p class="help">
-        Par <span v-for="({ id, label }) in LOGIN_TYPES" :aria-selected="userLoginType.includes(id)" :key="id">
-          {{ label }}
-        </span>…
-      </p>
-    </div>
-  </form>
-
-  <section class="candidateUsers" v-else>
-    <form class="candidateUserForm" v-for="candidateUser in candidateUsers" :key="candidateUser.id" @submit.prevent="loginCandidateUser(candidateUser)">
-      <h3>{{ candidateUser.nom }} <vue-feather type="check-square" size="16" /></h3>
-
-      <dl class="candidateUser">
-        <dt>Dénomination courante</dt>
-        <dd>{{ candidateUser.denominationCourante }}</dd>
-        <dt>Numéro de SIRET</dt>
-        <dd>{{ candidateUser.siret }}</dd>
-        <dt>Numéro PACAGE</dt>
-        <dd>{{ candidateUser.numeroPacage }}</dd>
-        <dt>Numéro Bio</dt>
-        <dd>{{ candidateUser.id }}</dd>
-        <dt>Date d'engagement</dt>
-        <dd>{{ candidateUser.dateEngagement }}</dd>
-      </dl>
-
-      <p>
-        <button type="submit">
-          <vue-feather type="lock"></vue-feather>
-          Confirmer cette identité
-        </button>
-
-        <!-- Un email vous sera envoyé à votre adresse professionnelle :
-        {{ candidateUser.email }} -->
       </p>
     </form>
-  </section>
+
+    <section class="candidateUsers" v-if="candidateUsers.length">
+      <form class="candidateUserForm" v-for="candidateUser in candidateUsers" :key="candidateUser.id" @submit.prevent="loginCandidateUser(candidateUser)">
+        <h3>{{ candidateUser.nom }} <vue-feather type="check-square" size="16" /></h3>
+
+        <dl class="candidateUser">
+          <dt>Dénomination courante</dt>
+          <dd>{{ candidateUser.denominationCourante }}</dd>
+          <dt>Numéro de SIRET</dt>
+          <dd>{{ candidateUser.siret }}</dd>
+          <dt>Numéro PACAGE</dt>
+          <dd>{{ candidateUser.numeroPacage }}</dd>
+          <dt>Numéro Bio</dt>
+          <dd>{{ candidateUser.id }}</dd>
+          <dt>Date d'engagement</dt>
+          <dd>{{ candidateUser.dateEngagement }}</dd>
+        </dl>
+
+        <p>
+          <button class="button" type="submit">
+            <vue-feather type="lock"></vue-feather>
+            Confirmer cette identité
+          </button>
+
+          <!-- Un email vous sera envoyé à votre adresse professionnelle :
+          {{ candidateUser.email }} -->
+        </p>
+      </form>
+    </section>
+  </div>
 </template>
 
 <script setup>
@@ -105,6 +114,12 @@ const userLoginType = computed(() => {
 
 
 onMounted(() => loginInput.value?.focus())
+
+function resetSearch () {
+  candidateUsers.value = []
+  userLogin.value = ''
+  loginInput.value.focus()
+}
 
 async function tryLogin () {
   isLoading.value = true

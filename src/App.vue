@@ -33,7 +33,7 @@ router.beforeEach((to, from) => {
 @import 'normalize.css/normalize.css';
 
 :root {
-  --brand-color: #E5E5E5;
+  --brand-color: hsl(0, 0%, 90%);
 
   --type-default: hsl(0, 0%, 96%);
   --type-success: hsl(142, 52%, 96%);
@@ -53,6 +53,12 @@ router.beforeEach((to, from) => {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.container {
+  margin: 0 auto;
+  padding: 0 1rem;
+  max-width: 64rem;
+}
+
 i.vue-feather {
   margin-right: .2rem;
   vertical-align: middle;
@@ -62,17 +68,54 @@ form label {
   font-weight: bold;
 }
 
-:where(button, input[type="button"], input[type="submit"], input[type="text"], input[type="search"]) {
-  padding: 1em;
+:where(.button, button, input[type="text"], input[type="date"], input[type="search"]) {
+  border: 1px solid #333;
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, .3);
+  background-color: #fcfcfc;
+  color: #333;
+  padding: .2rem;
+  text-decoration: none;
 }
 
-:where(form label, button, input[type="button"], input[type="submit"]):not(:disabled) {
+:where(.button, input[type="text"], input[type="date"], input[type="search"]) {
+  padding: .8rem;
+}
+
+[disabled]:where(.button, button, input[type="text"], input[type="date"], input[type="search"]) {
+  color: #999;
+  border-color: #999;
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, .1);
+  cursor: not-allowed;
+}
+
+:where(.button, input[type="text"], input[type="date"], input[type="search"]) + .button {
+  border-left: none;
+}
+
+.field {
+  margin: .5rem 0;
+}
+
+:where(form label, button, select, .button, input[type="button"], input[type="submit"]):not(:disabled) {
   cursor: pointer;
 }
 
-button.link {
+a.button,
+button {
+  background-color: var(--brand-color);
+}
+
+  a.button:hover, button:hover {
+    background-color: hsl(0, 0%, 85%);
+  }
+
+button.link,
+details.help summary {
   background: transparent;
   border: none;
+  box-shadow: none;
+  color: #00f;
+  cursor: pointer;
   padding: 0;
   text-decoration: underline;
 }
