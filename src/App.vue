@@ -68,7 +68,7 @@ form label {
   font-weight: bold;
 }
 
-:where(.button, button, input[type="text"], input[type="date"], input[type="search"]) {
+:where(.button, button, textarea, input[type="text"], input[type="date"], input[type="search"]) {
   border: 1px solid #333;
   box-shadow: 2px 2px 1px rgba(0, 0, 0, .3);
   background-color: #fcfcfc;
@@ -77,23 +77,27 @@ form label {
   text-decoration: none;
 }
 
-:where(.button, input[type="text"], input[type="date"], input[type="search"]) {
+textarea {
+  width: calc(100% - .8rem - .8rem);
+}
+
+:where(.button, textarea, input[type="text"], input[type="date"], input[type="search"]) {
   padding: .8rem;
 }
 
-[disabled]:where(.button, button, input[type="text"], input[type="date"], input[type="search"]) {
+[disabled]:where(.button, button, textarea, input[type="text"], input[type="date"], input[type="search"]) {
   color: #999;
   border-color: #999;
   box-shadow: 2px 2px 1px rgba(0, 0, 0, .1);
   cursor: not-allowed;
 }
 
-:where(.button, input[type="text"], input[type="date"], input[type="search"]) + .button {
+:where(.button, textarea, input[type="text"], input[type="date"], input[type="search"]) + .button {
   border-left: none;
 }
 
 .field {
-  margin: .5rem 0;
+  margin: .5rem 0 1rem;
 }
 
 :where(form label, button, select, .button, input[type="button"], input[type="submit"]):not(:disabled) {
