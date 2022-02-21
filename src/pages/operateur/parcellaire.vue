@@ -90,7 +90,7 @@
     </section>
 
     <div class="popup-template" ref="mapPopupRef" hidden>
-      <form @submit.prevent="handleFeatureChange" v-if="selectedFeatureId">
+      <form v-if="selectedFeatureId">
         <div class="field">
           <label>Type de culture</label>
           <div class="control">
@@ -155,7 +155,8 @@ const selectedFeatureId = ref(null)
 const selectedFeature = ref(null)
 let map = null
 
-const popup = new Popup({ offset: [0, -15 ], maxWidth: '450px' })
+// terrible hack because I understood too late that setDOMContent _moves_ the dom node, and Vue losts track of its content
+const popup = new Popup({ offset: [0, -15 ], maxWidth: '450px', closeButton: false, closeOnClick: false })
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
@@ -227,10 +228,6 @@ const handleMassGroupEditChange = (groupKey, $event) => {
   )
 
   massGroupEditFormValues.value[groupKey][name] = value
-}
-
-const handleFeatureChange = ($event) => {
-  console.log(selectedFeature)
 }
 
 const getFeatureById = (id) => {
@@ -305,12 +302,14 @@ onMounted(() => {
         nextTick(() => {
           popup.setLngLat([lat, lon])
 
-          if (!popup.isOpen()) {
+          if (!popup.getElement()) {
             popup.setDOMContent(mapPopupRef.value.firstChild)
+          }
+
+          if (!popup.isOpen()) {
             popup.addTo(map)
           }
         })
-
       }
       else {
         selectedFeature.value = null
