@@ -60,7 +60,7 @@
     "markdown-it": "^10.0.0",
     "markdown-it-footnote": "^3.0.2",
     "markdown-it-prism": "^2.2.1",
-    "prismjs": "^1.25.0",
+    "prismjs": "^1.27.0",
     "sass": "^1.45.1",
     "sass-loader": "^10.2.0",
     "string-replace-loader": "^2.3.0",
