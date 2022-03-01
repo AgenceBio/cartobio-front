@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
 const DEFAULT_STATE = {
   currentUser: {},
@@ -7,8 +7,11 @@ const DEFAULT_STATE = {
   parcellaireSourceLastUpdate: null,
 }
 
-export default reactive({
-  state: structuredClone(DEFAULT_STATE),
+const store = reactive({
+  state: {
+    ...structuredClone(DEFAULT_STATE),
+    currentUser: localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : structuredClone(DEFAULT_STATE.currentUser)
+  },
 
   loginUser (userData) {
     Object.assign(this.state.currentUser, userData)
@@ -24,3 +27,9 @@ export default reactive({
     Object.assign(this.state, structuredClone(DEFAULT_STATE))
   },
 })
+
+watch(() => store.state.currentUser, currentUser => {
+  localStorage.setItem('currentUser', JSON.stringify(currentUser))
+}, { deep: true })
+
+export default store
