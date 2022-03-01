@@ -50,6 +50,7 @@ const store =  new Vuex.Store({
             // This allow a simpler change in case of notification API change.
             switch (category) {
                 case "Super OC":
+                case "OC CartoBio":
                 case "OC":
                     userCat = this.state.categories.oc;
                     break;
