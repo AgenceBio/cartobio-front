@@ -17,9 +17,9 @@ const store = reactive({
     Object.assign(this.state.currentUser, userData)
   },
 
-  setParcelles ({ geojson, source }) {
+  setParcelles ({ geojson, source, sourceLastUpdate }) {
     this.state.parcellaireSource = source
-    this.state.parcellaireSourceLastUpdate = new Date().toISOString()
+    this.state.parcellaireSourceLastUpdate = sourceLastUpdate ?? new Date().toISOString()
     Object.assign(this.state.parcellaire, geojson)
   },
 

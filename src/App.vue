@@ -2,19 +2,33 @@
   <MainHeader />
   <MainNotifications />
 
-  <router-view v-bind="$attrs" />
+  <RouterView v-bind="$attrs" />
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { get } from 'axios'
 import store from './store.js'
 
 import MainHeader from './components/MainHeader.vue'
 import MainNotifications from './components/MainNotifications.vue'
 
+const { VUE_APP_API_ENDPOINT } = import.meta.env
 const router = useRouter()
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
+  if (store.state.currentUser.id && Object.keys(store.state.parcellaire).length === 0) {
+    const { data } = await get(`${VUE_APP_API_ENDPOINT}/v2/operator/${store.state.currentUser.id}`)
+
+    if (data) {
+      store.setParcelles({
+        geojson: data.parcelles,
+        source: data.metadata.source,
+        sourceLastUpdate: data.metadata.sourceLastUpdate,
+      })
+    }
+  }
+
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
     return router.replace('/operateur/login')
   }

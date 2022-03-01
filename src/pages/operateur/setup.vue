@@ -136,7 +136,15 @@ async function handlePacFileUpload () {
   form.append('archive', archive)
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
 
-  store.setParcelles({ geojson, source: featureSource.value })
+  const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${currentUser.value.id}/parcelles`, {
+    geojson,
+    metadata: {
+      source: featureSource.value,
+      sourceLastUpdate: new Date().toISOString()
+    }
+  })
+
+  store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
   router.push('/operateur/parcellaire')
 }
 
@@ -147,7 +155,15 @@ async function handleGeofoliaFileUpload () {
   form.append('archive', archive)
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/geofolia/geojson`, form)
 
-  store.setParcelles({ geojson, source: featureSource.value })
+  const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${currentUser.value.id}/parcelles`, {
+    geojson,
+    metadata: {
+      source: featureSource.value,
+      sourceLastUpdate: new Date().toISOString()
+    }
+  })
+
+  store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
   router.push('/operateur/parcellaire')
 }
 </script>
