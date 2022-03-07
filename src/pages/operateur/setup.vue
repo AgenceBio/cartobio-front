@@ -1,3 +1,8 @@
+<route lang="yaml">
+meta:
+  requiresAuth: true
+</route>
+
 <template>
   <div class="container">
     <h2>

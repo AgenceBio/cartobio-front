@@ -1,3 +1,9 @@
+<route lang="yaml">
+meta:
+  requiresAuth: true
+  requiresGeodata: true
+</route>
+
 <template>
   <div class="full-width">
     <section>
