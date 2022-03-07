@@ -3,7 +3,6 @@
     <section>
       <h2>
         {{ currentUser.nom }}
-        <small class="tag">Cet outil est actuellement en phase de test</small>
       </h2>
 
       <div class="field is-grouped">
