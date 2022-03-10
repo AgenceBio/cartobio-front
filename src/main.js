@@ -26,6 +26,7 @@ Vue.use(Matomo, {
   enableLinkTracking: true,
   enableHeartBeatTimer: 15,
   siteId: 116,
+  trackerUrl: 'https://cartobio.org/s/',
   trackerScriptUrl: 'https://cartobio.org/s/index.js',
 })
 
