@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Storage from 'vue-ls';
 import VueMeta from 'vue-meta'
 import Vuetify from 'vuetify/lib'
+import Matomo from 'vue-matomo'
 import store from './store.js'
 import router from './router'
 import App from './App.vue'
@@ -18,6 +19,14 @@ Vue.use(Vuetify, { iconfont: 'md' })
 Vue.use(Storage, storageOptions)
 Vue.use(VueMeta, {
   refreshOnceOnNavigation: true
+})
+
+Vue.use(Matomo, {
+  domains: ['cartobio.org', 'www.cartobio.org'],
+  enableLinkTracking: true,
+  enableHeartBeatTimer: 15,
+  siteId: 116,
+  trackerScriptUrl: 'https://cartobio.org/s/index.js',
 })
 
 Vue.config.productionTip = false

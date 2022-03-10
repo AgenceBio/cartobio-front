@@ -35,6 +35,7 @@
     "vue-fragment": "^1.5.1",
     "vue-ls": "^3.2.1",
     "vue-mapbox": "^0.4.1",
+    "vue-matomo": "^4.1.0",
     "vue-meta": "^2.4.0",
     "vue-router": "^3.4.9",
     "vuetify": "^1.5.24",
