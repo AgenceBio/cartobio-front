@@ -77,10 +77,10 @@ let candidateUsers = ref([])
 const LOGIN_TYPES = [
   { id: 'name', label: "nom" },
   { id: 'siret', label: "SIRET" },
-  { id: 'email', label: "email" },
+  // { id: 'email', label: "email" },
   { id: 'farm-name', label: "nom d’exploitation" },
   // { id: 'phone', label: "numéro de téléphone" },
-  { id: 'pacage', label: "numéro PACAGE" },
+  // { id: 'pacage', label: "numéro PACAGE" },
 ]
 
 const userLoginType = computed(() => {
