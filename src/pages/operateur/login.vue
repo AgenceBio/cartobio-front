@@ -119,6 +119,7 @@ function resetSearch () {
   candidateUsers.value = []
   userLogin.value = ''
   loginInput.value.focus()
+  window._paq.push(['trackEvent', 'login', `search`, 'reset'])
 }
 
 async function tryLogin () {
@@ -135,9 +136,11 @@ async function tryLogin () {
   isLoading.value = false
 
   candidateUsers.value = userProfiles
+  window._paq.push(['trackEvent', 'login', `search`, 'results'])
 }
 
 function loginCandidateUser (candidateUser) {
+  window._paq.push(['trackEvent', 'login', `search`, 'selectOperator'])
   store.loginUser(candidateUser)
   router.push('/operateur/parcellaire')
 }
