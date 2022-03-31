@@ -1,8 +1,7 @@
 # Reference docs: https://docs.netlify.com/configure-builds/file-based-configuration/
 
-[build]
-  [build.environment]
-    MATOMO_SITE_ID = 245
+[build.environment]
+  VUE_APP_MATOMO_SITE_ID = 245
 
 
 [[redirects]]
