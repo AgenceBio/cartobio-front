@@ -94,7 +94,7 @@ meta:
 
 <script setup>
 import { post } from 'axios'
-import { ref, readonly, computed, toRef } from 'vue'
+import { ref, readonly, computed, toRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import store from '../../store.js'
 
@@ -110,6 +110,8 @@ const campagnePacExportUrl = computed(() => `https://www.telepac.agriculture.gou
 
 const pacFileInput = ref(null)
 const geofoliaFileInput = ref(null)
+
+watch(featureSource, () => window._paq.push(['trackEvent', 'setup', 'sourceSelect', featureSource.value]))
 
 const featureSources = readonly({
   telepac: {
@@ -136,6 +138,7 @@ const featureSources = readonly({
 
 async function handlePacFileUpload () {
   const [archive] = pacFileInput.value.files
+  window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'start'])
 
   const form = new FormData()
   form.append('archive', archive)
@@ -150,11 +153,13 @@ async function handlePacFileUpload () {
   })
 
   store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
+  window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
   router.push('/operateur/parcellaire')
 }
 
 async function handleGeofoliaFileUpload () {
   const [archive] = geofoliaFileInput.value.files
+  window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'start'])
 
   const form = new FormData()
   form.append('archive', archive)
@@ -169,6 +174,7 @@ async function handleGeofoliaFileUpload () {
   })
 
   store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
+  window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
   router.push('/operateur/parcellaire')
 }
 </script>

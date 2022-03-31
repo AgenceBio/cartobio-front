@@ -1,5 +1,10 @@
 # Reference docs: https://docs.netlify.com/configure-builds/file-based-configuration/
 
+[build]
+  [build.environment]
+    MATOMO_SITE_ID = 245
+
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
