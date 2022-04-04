@@ -22,9 +22,7 @@ jobs:
     - name: Assign env variables to a .env file
       run: env | grep VUE_APP > .env.production.local
       env:
-        VUE_APP_API_IGN: ${{ secrets.VUE_APP_API_IGN }}
-        VUE_APP_GEOSERVER_PREFIX: "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpgbio_"
-        VUE_APP_GEOSERVER_SUFFIX: "@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+        VUE_APP_SITE_ID: 244
         VUE_APP_API_ENDPOINT: "https://cartobio.org/api"
         VUE_APP_NOTIFICATIONS_ENDPOINT: "https://cartobio.org/api/notifications"
         VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"

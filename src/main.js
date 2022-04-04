@@ -5,7 +5,7 @@ import App from './App.vue'
 import VueFeather from 'vue-feather'
 import Matomo from 'vue-matomo'
 
-const { MATOMO_SITE_ID = 116 } = import.meta.env
+const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
 
 const router = createRouter({
   routes,
@@ -16,7 +16,7 @@ createApp(App)
   .use(router)
   .use(Matomo, {
     router,
-    siteId: MATOMO_SITE_ID,
+    siteId,
     domains: ['app.cartobio.org', 'v2--cartobio-dev.netlify.app'],
     enableLinkTracking: true,
     discardHashTag: true,
