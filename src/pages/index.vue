@@ -35,3 +35,7 @@
     </p>
   </div>
 </template>
+
+<style scoped>
+@import '@/styles/button.css';
+</style>

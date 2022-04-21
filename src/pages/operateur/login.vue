@@ -147,6 +147,8 @@ function loginCandidateUser (candidateUser) {
 </script>
 
 <style scoped>
+@import '@/styles/form.css';
+
 span[aria-selected="true"] {
   font-weight: bold;
 }
