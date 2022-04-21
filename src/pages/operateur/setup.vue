@@ -55,6 +55,56 @@ meta:
       </article>
     </section>
 
+    <section v-if="featureSource === 'mesparcelles'">
+      <!-- <article>
+        <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+          🔐 Connecter mon compte MesParcelles
+        </button>
+      </article> -->
+
+      <article>
+        <h3>Connexion à votre compte MesParcellaire</h3>
+
+        <form @submit.prevent="handleMesParcellesLoginImport(mesParcellesUser)">
+          <div class="field">
+            <label for="mp-email">Adresse e-mail MesParcelles</label>
+
+            <div class="control">
+              <input type="email" id="mp-email" v-model="mesParcellesUser.email" ref="loginInput" required autofocus />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="mp-password">Mot de passe</label>
+            <div class="control">
+              <input type="password" id="mp-password" v-model="mesParcellesUser.password" required autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="mp-server">Serveur régional</label>
+
+            <div class="control">
+              <select id="mp-server" v-model="mesParcellesUser.server" required>
+                <option v-for="(label, key) in mesParcellesServers" :value="key" :key="key" selected="selected">{{ label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field is-grouped">
+            <div class="control">
+              <button class="button is-link">Importer les parcelles</button>
+            </div>
+          </div>
+        </form>
+
+        <p class="help">
+          <vue-feather type="info" />
+          Nous importons les parcelles de l'exploitation principale, pour l'instant.
+        </p>
+      </article>
+    </section>
+
     <section v-if="featureSource === 'geofolia'">
       <!-- <article>
         <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
@@ -113,14 +163,34 @@ const geofoliaFileInput = ref(null)
 
 watch(featureSource, () => window._paq.push(['trackEvent', 'setup', 'sourceSelect', featureSource.value]))
 
+const mesParcellesUser = ref({
+  email: '',
+  password: '',
+  server: 'rhone-alpes'
+})
+const mesParcellesServers = readonly({
+  'alsace-lorraine': 'Alsace-Lorraine',
+  'aquitaine': 'Aquitaine',
+  'auvergne': 'Auvergne',
+  'bourgogne': 'Bourgogne',
+  'bretagne': 'Bretagne',
+  'centre': 'Centre',
+  'champagne-ardenne': 'Champagne-Ardenne',
+  'franche-compte': 'Franche-Comté',
+  'ile-de-france': 'Île-de-France',
+  'limousin': 'Limousin',
+  'hautsdefrance': 'Hauts-de-France',
+  'normandie': 'Normandie',
+  'paca': 'Provence-Alpes-Côte-d\'Azur',
+  'pdl': 'Pays-de-la-Loire',
+  'poitou-charentes': 'Poitou-Charentes',
+  'rhone-alpes': 'Rhône-Alpes',
+})
+
 const featureSources = readonly({
-  telepac: {
-    label: 'Déclaration PAC',
-    active: true,
-  },
   mesparcelles: {
     label: 'MesParcelles',
-    active: false,
+    active: true,
   },
   geofolia: {
     label: 'Géofolia',
@@ -129,6 +199,10 @@ const featureSources = readonly({
   smagfarmer: {
     label: 'SMAG Farmer',
     active: false,
+  },
+  telepac: {
+    label: 'Déclaration PAC',
+    active: true,
   },
   ncvi: {
     label: 'ProDouanes (nCVI)',
@@ -177,6 +251,24 @@ async function handleGeofoliaFileUpload () {
   window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
   router.push('/operateur/parcellaire')
 }
+
+async function handleMesParcellesLoginImport ({ email, password, server }) {
+  const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, password, server })
+
+  console.log(geojson)
+
+  const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${currentUser.value.id}/parcelles`, {
+    geojson,
+    metadata: {
+      source: featureSource.value,
+      sourceLastUpdate: new Date().toISOString()
+    }
+  })
+
+  store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
+  window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
+  router.push('/operateur/parcellaire')
+}
 </script>
 
 <style scoped>
@@ -201,4 +293,5 @@ details.help summary {
 </style>
 
 <style scoped>
+@import '@/styles/form.css';
 </style>
