@@ -17,32 +17,6 @@
             <use xlink:href="@/assets/logos-sprite.svg#ab"></use>
           </svg>
         </a>
-        <a href="https://www.geoportail.gouv.fr/" target="_blank">
-          <svg class="logo">
-            <use xlink:href="@/assets/logos-sprite.svg#ign"></use>
-          </svg>
-        </a>
-        <a class="mx-2"
-          href="https://entrepreneur-interet-general.etalab.gouv.fr/defis/2019/cartobio.html"
-          target="_blank"
-        >
-          <svg class="logo">
-            <use xlink:href="@/assets/logos-sprite.svg#eig"></use>
-          </svg>
-        </a>
-        <a
-          href="https://www.gouvernement.fr/secretariat-general-pour-l-investissement-sgpi"
-          target="_blank"
-        >
-          <svg class="logo">
-            <use xlink:href="@/assets/logos-sprite.svg#investir-avenir"></use>
-          </svg>
-        </a>
-        <a href="https://beta.gouv.fr/startups/cartobio.html" target="_blank">
-          <svg class="logo">
-            <use xlink:href="@/assets/logos-sprite.svg#betagouvfr"></use>
-          </svg>
-        </a>
       </v-card-text>
 
       <v-divider />
