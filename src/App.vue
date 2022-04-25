@@ -45,27 +45,9 @@ router.beforeEach(async (to, from) => {
 
 <style>
 @import 'normalize.css/normalize.css';
-
-:root {
-  --brand-color: hsl(0, 0%, 90%);
-
-  --type-default: hsl(0, 0%, 96%);
-  --type-success: hsl(142, 52%, 96%);
-  --type-warning: hsl(48, 100%, 96%);
-  --type-danger: hsl(347, 90%, 96%);
-  --type-default--text: hsl(0, 0%, 30%);
-  --type-success--text: hsl(141, 53%, 30%);
-  --type-warning--text: hsl(48, 100%, 30%);
-  --type-danger--text:  hsl(348, 86%, 30%);
-
-  --spacing: 1rem;
-}
-
-#app {
-  font-family: Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import '@/styles/fonts.css';
+@import '@/styles/variables.css';
+@import '@/styles/typography.css';
 
 .container {
   margin: 0 auto;
