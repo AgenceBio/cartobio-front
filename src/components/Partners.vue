@@ -12,11 +12,6 @@
             <use xlink:href="@/assets/logos-sprite.svg#inao"></use>
           </svg>
         </a>
-        <a href="https://www.agencebio.org/" target="_blank">
-          <svg class="logo">
-            <use xlink:href="@/assets/logos-sprite.svg#ab"></use>
-          </svg>
-        </a>
       </v-card-text>
 
       <v-divider />
