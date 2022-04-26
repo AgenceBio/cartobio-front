@@ -95,50 +95,49 @@ meta:
       </table>
     </section>
 
-    <div class="popup-template" ref="mapPopupRef" hidden>
-      <form v-if="selectedFeatureId">
-        <div class="field">
-          <label>Type de culture</label>
-          <div class="control">
-            <select v-model="selectedFeature.properties.TYPE">
-              <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">{{ libellé }}</option>
-            </select>
+    <MapContainer class="map" @load="loadSourceAndLayers" :style="mapStyles" :bounds="mapBounds">
+      <Popup :lnglat="popupLngLat" maxWidth="450px" v-if="selectedFeatureId" @popup:closed="selectedFeatureId = null">
+        <form>
+          <div class="field">
+            <label>Type de culture</label>
+            <div class="control">
+              <select v-model="selectedFeature.properties.TYPE">
+                <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">{{ libellé }}</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label>Date d'engagement</label>
-          <div class="control">
-            <input type="date" v-model="selectedFeature.properties.engagement_date" />
+          <div class="field">
+            <label>Date d'engagement</label>
+            <div class="control">
+              <input type="date" v-model="selectedFeature.properties.engagement_date" />
 
-            <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
-            <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
+              <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
+              <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
+            </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label>Niveau de conversion</label>
-          <div class="control">
-            <select  v-model="selectedFeature.properties.conversion_niveau">
-              <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
-            </select>
+          <div class="field">
+            <label>Niveau de conversion</label>
+            <div class="control">
+              <select  v-model="selectedFeature.properties.conversion_niveau">
+                <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label>Commentaire</label>
-          <div class="control"><textarea v-model="selectedFeature.properties.commentaire" /></div>
-        </div>
-      </form>
-    </div>
-
-    <aside class="map" ref="mapContainer" />
+          <div class="field">
+            <label>Commentaire</label>
+            <div class="control"><textarea v-model="selectedFeature.properties.commentaire" /></div>
+          </div>
+        </form>
+      </Popup>
+    </MapContainer>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, toRefs, unref, readonly, watch, nextTick } from 'vue'
-import { Map as MapLibre, Popup } from 'maplibre-gl'
+import { computed, ref, toRefs, unref, readonly, shallowRef, watch, nextTick } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
@@ -152,17 +151,18 @@ import cadastreStyle from '../../map-styles/cadastre.json'
 import infrastructureStyle from '../../map-styles/infrastructure.json'
 
 import store from '../../store.js'
+import MapContainer from '../../components/Map/MapContainer.vue'
+import Popup from '../../components/Map/Popup.vue'
 
-const mapContainer = ref(null)
-const mapPopupRef = ref(null)
 const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
 const selectedFeatureId = ref(null)
 const selectedFeature = ref(null)
-let map = null
 
-// terrible hack because I understood too late that setDOMContent _moves_ the dom node, and Vue losts track of its content
-const popup = new Popup({ offset: [0, -15 ], maxWidth: '450px', closeButton: false, closeOnClick: false })
+const map = shallowRef(null)
+const mapStyles = mergeAll([ baseStyle, cadastreStyle, infrastructureStyle ])
+const mapBounds = bbox(parcellaire.value)
+const popupLngLat = ref([0, 0])
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
@@ -248,115 +248,99 @@ const handleFeatureSelectionFromTable = (id) => {
 
 function zoomInto (featureOrFeatureCollection, { maxZoom }) {
   const bounds = bbox(featureOrFeatureCollection)
-  const { center, zoom, bearing } = map.cameraForBounds(bounds, { padding: 50, maxZoom }) ?? {}
+  const { center, zoom, bearing } = map.value.cameraForBounds(bounds, { padding: 50, maxZoom }) ?? {}
   if (center && zoom) {
-    map.flyTo({ center, zoom, bearing })
+    map.value.flyTo({ center, zoom, bearing })
   }
 }
 
-onMounted(() => {
-  map = new MapLibre({
-    container: mapContainer.value,
-    hash: true,
-    style: mergeAll([ baseStyle, cadastreStyle, infrastructureStyle ]),
-    bounds: bbox(parcellaire.value),
-    padding: 20,
+function loadSourceAndLayers (maplibreMap) {
+  map.value = maplibreMap
+
+  maplibreMap.addSource('parcellaire-operateur', {
+    type: 'geojson',
+    data: unref(parcellaire)
   })
 
-  map.on('load', () => {
-    map.addSource('parcellaire-operateur', {
-      type: 'geojson',
-      data: unref(parcellaire)
-    })
-
-    map.addLayer({
-      id: 'parcellaire-operateur-geometry',
-      source: 'parcellaire-operateur',
-      type: 'fill',
-      paint: {
-        "fill-color": [
-          'case',
-          ['boolean', ['feature-state', 'selected'], false],
-          "#ffcc00",
-          ['boolean', ['feature-state', 'hover'], false],
-          "#0080ff",
-          "#00ff80"
-        ],
-        "fill-opacity": 0.9,
-      },
-      layout: {}
-    })
-
-    zoomInto(parcellaire.value, { maxZoom: 13 })
-
-    watch(hoveredFeatureId, (id, previousId) => {
-      if (id) {
-        map.setFeatureState({ source: 'parcellaire-operateur', id }, { hover: true })
-      }
-
-      if (previousId){
-        map.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { hover: false })
-      }
-    })
-
-    watch(selectedFeatureId, (id, previousId) => {
-      if (id) {
-        map.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: true })
-
-        selectedFeature.value = getFeatureById(id)
-        const [lat, lon] = centroid(selectedFeature.value).geometry.coordinates
-        nextTick(() => {
-          popup.setLngLat([lat, lon])
-
-          if (!popup.getElement()) {
-            popup.setDOMContent(mapPopupRef.value.firstChild)
-          }
-
-          if (!popup.isOpen()) {
-            popup.addTo(map)
-          }
-        })
-      }
-      else {
-        selectedFeature.value = null
-        popup.remove()
-      }
-
-      if (previousId){
-        map.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { selected: false })
-      }
-    })
+  maplibreMap.addLayer({
+    id: 'parcellaire-operateur-geometry',
+    source: 'parcellaire-operateur',
+    type: 'fill',
+    paint: {
+      "fill-color": [
+        'case',
+        ['boolean', ['feature-state', 'selected'], false],
+        "#ffcc00",
+        ['boolean', ['feature-state', 'hover'], false],
+        "#0080ff",
+        "#00ff80"
+      ],
+      "fill-opacity": 0.9,
+    },
+    layout: {}
   })
 
-  map.on('mousemove', 'parcellaire-operateur-geometry', ({ features }) => {
+  zoomInto(parcellaire.value, { maxZoom: 13 })
+
+  watch(hoveredFeatureId, (id, previousId) => {
+    if (id) {
+      maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id }, { hover: true })
+    }
+
+    if (previousId){
+      maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { hover: false })
+    }
+  })
+
+  watch(selectedFeatureId, (id, previousId) => {
+    if (id) {
+      maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: true })
+
+      selectedFeature.value = getFeatureById(id)
+      popupLngLat.value = centroid(selectedFeature.value).geometry.coordinates
+    }
+    else {
+      selectedFeature.value = null
+    }
+
+    if (previousId){
+      map.value.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { selected: false })
+    }
+  })
+
+  maplibreMap.on('mousemove', 'parcellaire-operateur-geometry', ({ features }) => {
     if (features.length) {
       hoveredFeatureId.value = features[0].id
-      map.getCanvas().style.cursor = "pointer"
+      map.value.getCanvas().style.cursor = "pointer"
     }
   })
 
-  map.on('mouseleave', 'parcellaire-operateur-geometry', () => {
+  maplibreMap.on('mouseleave', 'parcellaire-operateur-geometry', () => {
     if (hoveredFeatureId.value) {
       hoveredFeatureId.value = null
-      map.getCanvas().style.cursor = ""
+      maplibreMap.getCanvas().style.cursor = ""
     }
   })
 
-  map.on('click', 'parcellaire-operateur-geometry', ({ lngLat }) => {
-    const point = map.project(lngLat)
-    const features = map.queryRenderedFeatures(point, { layers: ['parcellaire-operateur-geometry'] })
+  maplibreMap.on('click', 'parcellaire-operateur-geometry', ({ lngLat }) => {
+    const point = maplibreMap.project(lngLat)
+    const features = maplibreMap.queryRenderedFeatures(point, { layers: ['parcellaire-operateur-geometry'] })
 
     if (features.length) {
       selectedFeatureId.value = features[0].id
       nextTick(() => document.querySelector('tr[aria-current="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
     }
   })
-})
-
+}
 </script>
 
-
 <style lang="postcss" scoped>
+form select,
+form textarea,
+form input {
+  max-width: 100%;
+}
+
 .full-width {
   display: flex;
   position: relative;
@@ -420,28 +404,6 @@ table.parcelles :is(td, th) {
   position: sticky;
   top: calc((var(--spacing) * 3) + var(--spacing));
   width: max(50vw, 450px);
-}
-
-:deep(.maplibregl-control-container) {
-  display: none;
-}
-
-:deep(.maplibregl-popup) {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-:deep(.maplibregl-popup-content) {
-  background: #fff;
-  border: 1px solid var(--brand-color);
-  border-radius: 3px;
-  padding: 2rem 1rem 1rem;
-  position: relative;
-}
-:deep(.maplibregl-popup-close-button) {
-  position: absolute;
-  right: .5rem;
-  top: .5rem;
 }
 
 hr {
