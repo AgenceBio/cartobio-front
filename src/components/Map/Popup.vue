@@ -47,7 +47,6 @@ onMounted(() => {
 
 watch(() => props.lnglat, () => {
   nextTick(() => {
-    console.log('watched')
     popup.value
       .setLngLat(toRaw(props.lnglat))
       .setDOMContent(popupRef.value)

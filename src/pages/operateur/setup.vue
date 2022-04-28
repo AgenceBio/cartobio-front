@@ -255,8 +255,6 @@ async function handleGeofoliaFileUpload () {
 async function handleMesParcellesLoginImport ({ email, password, server }) {
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, password, server })
 
-  console.log(geojson)
-
   const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${currentUser.value.id}/parcelles`, {
     geojson,
     metadata: {

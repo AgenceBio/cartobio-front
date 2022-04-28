@@ -27,50 +27,62 @@ meta:
         </select>
       </label>
 
+      <form v-if="selectedFeatureIds.size" @submit.prevent="handleMassGroupEditSubmit()" class="mass-edit-form">
+        <p v-if="selectedFeatureIds.size === 1">Pour cette parcelle, effectuer les changements suivants :</p>
+        <p v-else>Pour ces {{ selectedFeatureIds.size }} parcelles, effectuer les changements suivants :</p>
+
+        <div class="field">
+          <label>Déclarer leur date d'engagement au</label>
+          <div class="control">
+            <input type="date" name="engagement_date" @change="handleMassGroupEditChange($event)" />
+
+            <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
+            <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Changer leur niveau de conversion en</label>
+          <div class="control">
+            <select name="conversion_niveau" @change="handleMassGroupEditChange($event)">
+              <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button class="button is-link">Appliquer</button>
+          </div>
+          <div class="control">
+            <button type="cancel" @click="closeMassEditForm()" class="button link">Annuler les modifications</button>
+          </div>
+        </div>
+      </form>
+
       <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">{{ label }} ({{ surface }}&nbsp;ha)</caption>
 
         <thead>
           <tr>
-            <td colspan="4">
+            <td colspan="4" class="parcelles-group-header">
               <vue-feather type="corner-left-down" size="16" />
-              <button v-if="!massGroupEditFormState[key]" type="button" class="link" @click="setMassGroupEditFormState(key, 'open')">modifier ces {{ features.length }} parcelles</button>
-              <button v-else type="button" class="link" @click="clearMassGroupEditForm(key)">annuler cette modification</button>
-
-              <form v-if="massGroupEditFormState[key]" @submit.prevent="handleMassGroupEditSubmit(key)">
-                <div class="field">
-                  <label>Date d'engagement</label>
-                  <div class="control">
-                    <input type="date" name="engagement_date" @change="handleMassGroupEditChange(key, $event)" />
-
-                    <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
-                    <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label>Niveau de conversion</label>
-                  <div class="control">
-                    <select name="conversion_niveau" @change="handleMassGroupEditChange(key, $event)">
-                      <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="field is-grouped">
-                  <div class="control">
-                    <button class="button is-link">Appliquer</button>
-                  </div>
-                </div>
-              </form>
+              <button type="button" class="link" @click="addFeaturesToSelection(features)">sélectionner</button> /
+              <button type="button" class="link" @click="removeFeaturesFromSelection(features)">désélectionner</button>
+              ces {{ features.length }} parcelles
             </td>
           </tr>
         </thead>
 
-        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="handleFeatureSelectionFromTable(id)" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId}">
+        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="toggleFeatureSelection({ id })" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId, selected: selectedFeatureIds.has(id)}">
           <th scope="row" class="rowIdCell">
-            <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
-            <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
+            <div class="show">
+              <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
+              <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
+            </div>
+            <div class="show-on-hover">
+              <input class="feature-selection" type="checkbox" :checked="selectedFeatureIds.has(id)" @click.stop="toggleFeatureSelection({ id })" />
+            </div>
           </th>
           <td>{{ props.SURF }}&nbsp;ha</td>
           <td>
@@ -137,7 +149,7 @@ meta:
 </template>
 
 <script setup>
-import { computed, ref, toRefs, unref, readonly, shallowRef, watch, nextTick } from 'vue'
+import { computed, ref, toRefs, unref, readonly, shallowRef, watch, nextTick, toRaw, reactive } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
@@ -156,8 +168,13 @@ import Popup from '../../components/Map/Popup.vue'
 
 const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
+
+// user single selected/feature focus
 const selectedFeatureId = ref(null)
 const selectedFeature = ref(null)
+
+// user selected/checked features
+const selectedFeatureIds = ref(new Set())
 
 const map = shallowRef(null)
 const mapStyles = mergeAll([ baseStyle, cadastreStyle, infrastructureStyle ])
@@ -174,6 +191,7 @@ const groupingChoices = readonly({
 
 const conversionLevels = readonly([
   { value: '', label: 'Niveau de conversion inconnu' },
+  { value: 'CONV', label: 'Conventionnel' },
   { value: 'C1', label: 'C1 — Première année de conversion' },
   { value: 'C2', label: 'C2 — Deuxième année de conversion' },
   { value: 'C3', label: 'C3 — Troisième année de conversion' },
@@ -185,6 +203,24 @@ const massGroupEditFormValues = ref({})
 
 const userGroupingChoice = ref('')
 const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
+
+function addFeaturesToSelection (features) {
+  const newIds = new Set()
+  features.forEach(({ id }) => newIds.add(id))
+  selectedFeatureIds.value = new Set([...selectedFeatureIds.value, ...newIds])
+}
+
+function removeFeaturesFromSelection (features) {
+  const remainingIds = new Set([...selectedFeatureIds.value])
+  features.forEach(({ id }) => remainingIds.delete(id))
+  selectedFeatureIds.value = remainingIds
+}
+
+function toggleFeatureSelection (feature) {
+  selectedFeatureIds.value.has(feature.id)
+    ? removeFeaturesFromSelection([feature])
+    : addFeaturesToSelection([feature])
+}
 
 const featureGroups = computed(() => {
   if (userGroupingChoice.value === '') {
@@ -210,30 +246,32 @@ const setMassGroupEditFormState = (groupKey, state) => {
   massGroupEditFormState.value[groupKey] = state
 }
 
-const handleMassGroupEditSubmit = (groupKey) => {
-  const { features } = featureGroups.value.find(({ key }) => key === groupKey)
-  features.forEach(({ properties }) => {
-    Object.entries(massGroupEditFormValues.value[groupKey]).forEach(([key, value]) => {
-      properties[key] = value
+const handleMassGroupEditSubmit = () => {
+  parcellaire.value.features
+    .filter(({ id }) => selectedFeatureIds.value.has(id))
+    .forEach(({ properties }) => {
+      Object.entries(massGroupEditFormValues.value).forEach(([key, value]) => {
+        properties[key] = value
+      })
     })
-  })
 
-  clearMassGroupEditForm(groupKey)
+  clearMassGroupEditForm()
 }
 
-const clearMassGroupEditForm = (groupKey) => {
-  massGroupEditFormState.value[groupKey] = null
-  massGroupEditFormValues.value[groupKey] = null
+function closeMassEditForm () {
+  clearMassGroupEditForm()
+  selectedFeatureIds.value = new Set()
 }
 
-const handleMassGroupEditChange = (groupKey, $event) => {
+const clearMassGroupEditForm = () => {
+  massGroupEditFormState.value = {}
+  massGroupEditFormValues.value = {}
+}
+
+const handleMassGroupEditChange = ($event) => {
   const { name, value } = $event.target
 
-  if (!massGroupEditFormValues.value[groupKey]) (
-    massGroupEditFormValues.value[groupKey] = {}
-  )
-
-  massGroupEditFormValues.value[groupKey][name] = value
+  massGroupEditFormValues.value[name] = value
 }
 
 const getFeatureById = (id) => {
@@ -241,8 +279,12 @@ const getFeatureById = (id) => {
 }
 
 const handleFeatureSelectionFromTable = (id) => {
-  selectedFeatureId.value = id
+  if (selectedFeatureId.value === id) {
+    selectedFeatureId.value = null
+    return
+  }
 
+  selectedFeatureId.value = id
   zoomInto(getFeatureById(id), { maxZoom: 15 })
 }
 
@@ -291,6 +333,19 @@ function loadSourceAndLayers (maplibreMap) {
       maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id: previousId }, { hover: false })
     }
   })
+
+  watch(() => selectedFeatureIds, (currentIds) => {
+    currentIds.value.forEach(id => {
+      maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: true })
+    })
+
+    parcellaire.value.features.forEach(({ id }) => {
+      const { selected } = maplibreMap.getFeatureState({ id, source: 'parcellaire-operateur' })
+      if (selected && !currentIds.value.has(id)) {
+        maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: false })
+      }
+    })
+  }, { deep: true })
 
   watch(selectedFeatureId, (id, previousId) => {
     if (id) {
@@ -376,6 +431,29 @@ table.parcelles {
   table.parcelles tr[aria-current="true"] {
     background-color: #ffcc00;
   }
+
+.show-on-hover,
+.hovered .show,
+.selected .show {
+  display: none;
+}
+  .hovered .show-on-hover,
+  .selected .show-on-hover {
+    display: inherit;
+  }
+
+.mass-edit-form {
+  background: var(--background-default-grey);
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, .1), -2px -2px 3px rgba(0, 0, 0, .1);
+  margin: 1rem 0;
+  padding: 1rem;
+  position: sticky;
+  top: 5rem;
+  z-index: 10;
+}
+
 
 .rowIdCell small {
   font-weight: normal;
