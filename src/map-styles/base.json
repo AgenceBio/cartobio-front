@@ -46,7 +46,11 @@
       "id": "photographies-aeriennes",
       "type": "raster",
       "source": "photographies-aeriennes",
-      "paint": {"raster-resampling": "linear"}
+      "paint": {
+        "raster-opacity": 0.4,
+        "raster-resampling": "linear",
+        "raster-saturation": -0.5
+      }
     },
     {
       "id": "communes",
