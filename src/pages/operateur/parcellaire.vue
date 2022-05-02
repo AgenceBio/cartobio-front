@@ -23,7 +23,7 @@ meta:
       <label>
         Grouper les parcelles par
         <select @change="handleUserGroupingChoice">
-          <option :value="value" v-for="(label, value) in groupingChoices" :key="value" :selected="value === userGroupingChoice">{{ label }}</option>
+          <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key" :selected="value === userGroupingChoice">{{ label }}</option>
         </select>
       </label>
 
@@ -183,20 +183,20 @@ const popupLngLat = ref([0, 0])
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
-const groupingChoices = readonly({
-  '': '…',
-  'COMMUNE': 'Commune',
-  'TYPE': 'Culture',
-})
+const groupingChoices = {
+  '': { label: '…' },
+  'COMMUNE': { label: 'commune', datapoint: 'COMMUNE', groupLabelFn: (d) => d.properties.COMMUNE },
+  'CULTURE': { label: 'culture', datapoint: 'TYPE', groupLabelFn: (d) => libelléFromCode(d.properties.TYPE) },
+}
 
-const conversionLevels = readonly([
+const conversionLevels = [
   { value: '', label: 'Niveau de conversion inconnu' },
   { value: 'CONV', label: 'Conventionnel' },
   { value: 'C1', label: 'C1 — Première année de conversion' },
   { value: 'C2', label: 'C2 — Deuxième année de conversion' },
   { value: 'C3', label: 'C3 — Troisième année de conversion' },
   { value: 'AB', label: 'AB — Agriculture biologique' },
-])
+]
 
 const massGroupEditFormState = ref({})
 const massGroupEditFormValues = ref({})
@@ -232,10 +232,12 @@ const featureGroups = computed(() => {
     }]
   }
 
-  const groups = groupBy(parcellaire.value.features, (feature) => feature.properties[ userGroupingChoice.value ])
+  const groups = groupBy(parcellaire.value.features, (feature) => {
+    return feature.properties[ groupingChoices[userGroupingChoice.value].datapoint ]
+  })
 
   return Object.entries(groups).map(([key, features]) => ({
-    label: key,
+    label: groupingChoices[userGroupingChoice.value].groupLabelFn(features[0]),
     key,
     features,
     surface: inHa(area(featureCollection(features)).toFixed(2)),
