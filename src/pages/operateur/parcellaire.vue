@@ -185,8 +185,21 @@ const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
 const groupingChoices = {
   '': { label: '…' },
-  'COMMUNE': { label: 'commune', datapoint: 'COMMUNE', groupLabelFn: (d) => d.properties.COMMUNE },
-  'CULTURE': { label: 'culture', datapoint: 'TYPE', groupLabelFn: (d) => libelléFromCode(d.properties.TYPE) },
+  'COMMUNE': {
+    label: 'commune',
+    datapoint: () => 'COMMUNE',
+    groupLabelFn: (d) => d.properties.COMMUNE
+  },
+  'CULTURE': {
+    label: 'culture',
+    datapoint: () => 'TYPE',
+    groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
+  },
+  'ANNEE_ENGAGEMENT': {
+    label: 'année d\'engagement',
+    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
+    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue'
+  },
 }
 
 const conversionLevels = [
@@ -233,11 +246,11 @@ const featureGroups = computed(() => {
   }
 
   const groups = groupBy(parcellaire.value.features, (feature) => {
-    return feature.properties[ groupingChoices[userGroupingChoice.value].datapoint ]
+    return groupingChoices[userGroupingChoice.value].datapoint(feature)
   })
 
   return Object.entries(groups).map(([key, features]) => ({
-    label: groupingChoices[userGroupingChoice.value].groupLabelFn(features[0]),
+    label: groupingChoices[userGroupingChoice.value].groupLabelFn(features[0], key),
     key,
     features,
     surface: inHa(area(featureCollection(features)).toFixed(2)),
