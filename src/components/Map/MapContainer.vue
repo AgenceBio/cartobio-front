@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { provide, shallowRef, ref, onMounted } from 'vue'
+import { provide, shallowRef, ref, onMounted, watch } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 
 const map = shallowRef(null)
@@ -32,6 +32,8 @@ onMounted(() => {
 
   map.value.once('load', () => emit('load', map.value))
 })
+
+watch(() => props.style, () => map.value.setStyle(props.style), { deep: true })
 </script>
 
 <style lang="postcss" scoped>

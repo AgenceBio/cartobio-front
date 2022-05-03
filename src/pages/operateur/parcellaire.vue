@@ -78,7 +78,7 @@ meta:
           </tr>
         </thead>
 
-        <tr v-for="({ properties: props, id }) in features" @mouseover="hoveredFeatureId = id" @click="toggleFeatureSelection({ id })" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId, selected: selectedFeatureIds.has(id)}">
+        <tr v-for="({ properties: props, id }) in features" :id="'p' + id" @mouseover="hoveredFeatureId = id" @click="toggleFeatureSelection({ id })" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId, selected: selectedFeatureIds.has(id)}">
           <th scope="row" class="rowIdCell">
             <div class="show">
               <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
@@ -181,7 +181,6 @@ const selectedFeature = ref(null)
 const selectedFeatureIds = ref(new Set())
 
 const map = shallowRef(null)
-const mapStyles = mergeAll([ baseStyle, cadastreStyle, infrastructureStyle ])
 const mapBounds = bbox(parcellaire.value)
 const popupLngLat = ref([0, 0])
 
@@ -278,6 +277,48 @@ const featureGroups = computed(() => {
   })).sort((a, b) => b.surface - a.surface)
 })
 
+const featureGroupsStyles = computed(() => {
+  return featureGroups.value.flatMap(({ features, accentColor }) => ([
+    ['in', ['get', 'id'], ['literal', features.map(({ id }) => id)]],
+    accentColor
+  ]))
+})
+
+const mapStyles = computed(() => {
+  return mergeAll([
+    baseStyle,
+    cadastreStyle,
+    infrastructureStyle,
+    parcellaire.value ? {
+      sources: {
+        'parcellaire-operateur': {
+          type: 'geojson',
+          data: unref(parcellaire)
+        }
+      },
+      layers: [
+        {
+          id: 'parcellaire-operateur-geometry',
+          source: 'parcellaire-operateur',
+          type: 'fill',
+          paint: {
+            "fill-color": [
+              'case',
+              ['boolean', ['feature-state', 'selected'], false],
+              "#ffcc00",
+              ['boolean', ['feature-state', 'hover'], false],
+              "#0080ff",
+              ...featureGroupsStyles.value,
+              "black"
+            ],
+            "fill-opacity": 0.9,
+          }
+        }
+      ]
+    } : {}
+  ])
+})
+
 const setMassGroupEditFormState = (groupKey, state) => {
   massGroupEditFormState.value[groupKey] = state
 }
@@ -334,29 +375,6 @@ function zoomInto (featureOrFeatureCollection, { maxZoom }) {
 
 function loadSourceAndLayers (maplibreMap) {
   map.value = maplibreMap
-
-  maplibreMap.addSource('parcellaire-operateur', {
-    type: 'geojson',
-    data: unref(parcellaire)
-  })
-
-  maplibreMap.addLayer({
-    id: 'parcellaire-operateur-geometry',
-    source: 'parcellaire-operateur',
-    type: 'fill',
-    paint: {
-      "fill-color": [
-        'case',
-        ['boolean', ['feature-state', 'selected'], false],
-        "#ffcc00",
-        ['boolean', ['feature-state', 'hover'], false],
-        "#0080ff",
-        "#00ff80"
-      ],
-      "fill-opacity": 0.9,
-    },
-    layout: {}
-  })
 
   zoomInto(parcellaire.value, { maxZoom: 13 })
 
