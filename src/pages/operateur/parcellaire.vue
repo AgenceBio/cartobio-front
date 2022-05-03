@@ -60,8 +60,12 @@ meta:
         </div>
       </form>
 
-      <table class="parcelles" v-for="({ features, label, surface, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
-        <caption v-if="label">{{ label }} ({{ surface }}&nbsp;ha)</caption>
+      <table class="parcelles" v-for="({ features, label, surface, accentColor, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
+        <caption v-if="label">
+          <span class="color-badge" :style="{ '--accent-color': accentColor }" />
+          {{ label }}
+          ({{ surface }}&nbsp;ha)
+        </caption>
 
         <thead>
           <tr>
@@ -187,12 +191,12 @@ const groupingChoices = {
   '': { label: '…' },
   'COMMUNE': {
     label: 'commune',
-    datapoint: () => 'COMMUNE',
+    datapoint: (d) => d.properties.COMMUNE,
     groupLabelFn: (d) => d.properties.COMMUNE
   },
   'CULTURE': {
     label: 'culture',
-    datapoint: () => 'TYPE',
+    datapoint: (d) => d.properties.TYPE,
     groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
   },
   'ANNEE_ENGAGEMENT': {
@@ -209,6 +213,21 @@ const conversionLevels = [
   { value: 'C2', label: 'C2 — Deuxième année de conversion' },
   { value: 'C3', label: 'C3 — Troisième année de conversion' },
   { value: 'AB', label: 'AB — Agriculture biologique' },
+]
+
+const colorPalette = [
+  "#ff73fa",
+  "#76b100",
+  "#ba00ae",
+  "#01c672",
+  "#0045b4",
+  "#e1cc00",
+  "#7c2d82",
+  "#feff7c",
+  "#ff8dee",
+  "#408b00",
+  "#b61300",
+  "#ac9200"
 ]
 
 const massGroupEditFormState = ref({})
@@ -240,6 +259,7 @@ const featureGroups = computed(() => {
     return [{
       label: '',
       key: 'none',
+      accentColor: colorPalette[1],
       features: parcellaire.value.features,
       surface: inHa(area(featureCollection(parcellaire.value.features)))
     }]
@@ -249,9 +269,10 @@ const featureGroups = computed(() => {
     return groupingChoices[userGroupingChoice.value].datapoint(feature)
   })
 
-  return Object.entries(groups).map(([key, features]) => ({
+  return Object.entries(groups).map(([key, features], i) => ({
     label: groupingChoices[userGroupingChoice.value].groupLabelFn(features[0], key),
     key,
+    accentColor: colorPalette[i%12],
     features,
     surface: inHa(area(featureCollection(features)).toFixed(2)),
   })).sort((a, b) => b.surface - a.surface)
@@ -434,6 +455,12 @@ table.parcelles {
   table.parcelles caption {
     font-weight: bold;
     text-align: left;
+  }
+  table.parcelles .color-badge {
+    background-color: var(--accent-color);
+    display: inline-block;
+    height: 14px;
+    width: 14px;
   }
 
   table.parcelles tr:nth-child(even) {
