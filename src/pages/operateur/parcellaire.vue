@@ -97,7 +97,7 @@ meta:
           </td>
           <td>
             <span v-if="props.conversion_niveau">{{ props.conversion_niveau }} ({{ props.engagement_date }})</span>
-            <span v-else>Statut de conversion inconnu</span>
+            <span v-else>Niveau de conversion inconnu</span>
           </td>
         </tr>
         <tfoot>
@@ -188,6 +188,15 @@ const popupLngLat = ref([0, 0])
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
 
+const conversionLevels = [
+  { value: '', label: 'Niveau de conversion inconnu' },
+  { value: 'CONV', label: 'Conventionnel' },
+  { value: 'C1', label: 'C1 — Première année de conversion' },
+  { value: 'C2', label: 'C2 — Deuxième année de conversion' },
+  { value: 'C3', label: 'C3 — Troisième année de conversion' },
+  { value: 'AB', label: 'AB — Agriculture biologique' },
+]
+
 const groupingChoices = {
   '': { label: '…' },
   'COMMUNE': {
@@ -200,21 +209,17 @@ const groupingChoices = {
     datapoint: (d) => d.properties.TYPE,
     groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
   },
+  'NIVEAU_CONVERSION': {
+    label: 'niveau de conversion',
+    datapoint: (d) => d.properties.conversion_niveau || '',
+    groupLabelFn: (d, groupingKey) => conversionLevels.find(({ value }) => value === groupingKey)?.label
+  },
   'ANNEE_ENGAGEMENT': {
     label: 'année d\'engagement',
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
     groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue'
   },
 }
-
-const conversionLevels = [
-  { value: '', label: 'Niveau de conversion inconnu' },
-  { value: 'CONV', label: 'Conventionnel' },
-  { value: 'C1', label: 'C1 — Première année de conversion' },
-  { value: 'C2', label: 'C2 — Deuxième année de conversion' },
-  { value: 'C3', label: 'C3 — Troisième année de conversion' },
-  { value: 'AB', label: 'AB — Agriculture biologique' },
-]
 
 const colorPalette = [
   "#ff73fa",
