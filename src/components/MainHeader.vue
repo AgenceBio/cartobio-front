@@ -21,12 +21,6 @@
             </a>
           </router-link>
         </li>
-        <li>
-          <a href="#">
-            <vue-feather type="help-circle" stroke-width="2" size="16" />
-            Aide
-          </a>
-        </li>
       </ul>
     </nav>
   </header>
