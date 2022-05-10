@@ -7,26 +7,6 @@ meta:
 <template>
   <div class="full-width">
     <section>
-      <h2>
-        {{ currentUser.nom }}
-        <small class="tag">Cet outil est actuellement en phase de test</small>
-      </h2>
-
-      <div class="field is-grouped">
-        <div class="control">
-          <button disabled><vue-feather type="mail" /> Transmettre cette version du parcellaire à mon Organisme de Certification</button>
-        </div>
-      </div>
-
-      <hr />
-
-      <label>
-        Grouper les parcelles par
-        <select @change="handleUserGroupingChoice">
-          <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key" :selected="value === userGroupingChoice">{{ label }}</option>
-        </select>
-      </label>
-
       <form v-if="selectedFeatureIds.size" @submit.prevent="handleMassGroupEditSubmit()" class="mass-edit-form">
         <p v-if="selectedFeatureIds.size === 1">Pour cette parcelle, effectuer les changements suivants :</p>
         <p v-else>Pour ces {{ selectedFeatureIds.size }} parcelles, effectuer les changements suivants :</p>
@@ -59,6 +39,28 @@ meta:
           </div>
         </div>
       </form>
+
+      <div v-else>
+        <h2>
+          {{ currentUser.nom }}
+          <small class="tag">Cet outil est actuellement en phase de test</small>
+        </h2>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button disabled><vue-feather type="mail" /> Transmettre cette version du parcellaire à mon Organisme de Certification</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <label>
+          Grouper les parcelles par
+          <select @change="handleUserGroupingChoice">
+            <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key" :selected="value === userGroupingChoice">{{ label }}</option>
+          </select>
+        </label>
+      </div>
 
       <table class="parcelles" v-for="({ features, label, surface, accentColor, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">
