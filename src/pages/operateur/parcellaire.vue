@@ -7,38 +7,7 @@ meta:
 <template>
   <div class="full-width">
     <section>
-      <form v-if="selectedFeatureIds.size" @submit.prevent="handleMassGroupEditSubmit()" class="mass-edit-form">
-        <p v-if="selectedFeatureIds.size === 1">Pour cette parcelle, effectuer les changements suivants :</p>
-        <p v-else>Pour ces {{ selectedFeatureIds.size }} parcelles, effectuer les changements suivants :</p>
-
-        <div class="field">
-          <label>Déclarer leur date d'engagement au</label>
-          <div class="control">
-            <input type="date" name="engagement_date" @change="handleMassGroupEditChange($event)" />
-
-            <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
-            <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Changer leur niveau de conversion en</label>
-          <div class="control">
-            <select name="conversion_niveau" @change="handleMassGroupEditChange($event)">
-              <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field is-grouped">
-          <div class="control">
-            <button class="button is-link">Appliquer</button>
-          </div>
-          <div class="control">
-            <button type="cancel" @click="closeMassEditForm()" class="button link">Annuler les modifications</button>
-          </div>
-        </div>
-      </form>
+      <OperatorPlotForm v-if="selectedFeatureIds.size" :features="selectedFeatures" @submit="handleMassGroupEditSubmit" @cancel="clearSelectedFeatures" class="mass-edit-form" />
 
       <div v-else>
         <h2>
@@ -96,8 +65,9 @@ meta:
             <small :title="props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE)" class="culture-group">{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</small>
           </td>
           <td>
-            <span v-if="props.conversion_niveau">{{ props.conversion_niveau }} ({{ props.engagement_date }})</span>
-            <span v-else>Niveau de conversion inconnu</span>
+            <abbr :title="getConversionLevel(props.conversion_niveau).label">{{ getConversionLevel(props.conversion_niveau).shortLabel }}</abbr>
+            <br v-if="isABLevel(props.conversion_niveau)" />
+            <small v-if="isABLevel(props.conversion_niveau)">engagée le {{ dateDDMMYYY(props.engagement_date) }}</small>
           </td>
         </tr>
         <tfoot>
@@ -115,54 +85,22 @@ meta:
 
     <MapContainer class="map" @load="loadSourceAndLayers" :style="mapStyles" :bounds="mapBounds">
       <Popup :lnglat="popupLngLat" maxWidth="450px" v-if="selectedFeatureId" @popup:closed="selectedFeatureId = null">
-        <form>
-          <div class="field">
-            <label>Type de culture</label>
-            <div class="control">
-              <select v-model="selectedFeature.properties.TYPE">
-                <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">{{ libellé }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Date d'engagement</label>
-            <div class="control">
-              <input type="date" v-model="selectedFeature.properties.engagement_date" />
-
-              <!-- <button class="link" type="button">utiliser la date de notification ({{ currentUser.dateEngagement }})</button>
-              <button class="link" type="button">utiliser la date de 1<sup>er</sup> engagement ({{ currentUser.datePremierEngagement }})</button> -->
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Niveau de conversion</label>
-            <div class="control">
-              <select  v-model="selectedFeature.properties.conversion_niveau">
-                <option v-for="niveau in conversionLevels" :key="niveau.value" :value="niveau.value">{{ niveau.label }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Commentaire</label>
-            <div class="control"><textarea v-model="selectedFeature.properties.commentaire" /></div>
-          </div>
-        </form>
+        <OperatorPlotForm :features="[selectedFeature]" @submit="handleFeatureEdit" @cancel="selectedFeatureId = null" />
       </Popup>
     </MapContainer>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, toRefs, unref, readonly, shallowRef, watch, nextTick, toRaw, reactive } from 'vue'
+import { computed, ref, toRefs, unref, shallowRef, watch, nextTick } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
 import centroid from '@turf/centroid'
 import { featureCollection } from '@turf/helpers'
 import { all as mergeAll } from 'deepmerge'
-import { liste as codesPac, libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
+import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
+import { conversionLevels, getConversionLevel, isABLevel } from '../../referentiels/ab.js'
 
 import baseStyle from '../../map-styles/base.json'
 import cadastreStyle from '../../map-styles/cadastre.json'
@@ -171,31 +109,24 @@ import infrastructureStyle from '../../map-styles/infrastructure.json'
 import store from '../../store.js'
 import MapContainer from '../../components/Map/MapContainer.vue'
 import Popup from '../../components/Map/Popup.vue'
+import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
 
-const { currentUser, parcellaire, parcellaireSource } = toRefs(store.state)
+const { currentUser, parcellaire } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
 
 // user single selected/feature focus
 const selectedFeatureId = ref(null)
-const selectedFeature = ref(null)
+const selectedFeature = computed(() => selectedFeatureId.value ? getFeatureById(selectedFeatureId.value) : null)
 
 // user selected/checked features
 const selectedFeatureIds = ref(new Set())
+const selectedFeatures = computed(() => Array.from(selectedFeatureIds.value).map(getFeatureById))
 
 const map = shallowRef(null)
 const mapBounds = bbox(parcellaire.value)
 const popupLngLat = ref([0, 0])
 
 const inHa = (value) => parseFloat((value / 10000).toFixed(2))
-
-const conversionLevels = [
-  { value: '', label: 'Niveau de conversion inconnu' },
-  { value: 'CONV', label: 'Conventionnel' },
-  { value: 'C1', label: 'C1 — Première année de conversion' },
-  { value: 'C2', label: 'C2 — Deuxième année de conversion' },
-  { value: 'C3', label: 'C3 — Troisième année de conversion' },
-  { value: 'AB', label: 'AB — Agriculture biologique' },
-]
 
 const groupingChoices = {
   '': { label: '…' },
@@ -235,9 +166,6 @@ const colorPalette = [
   "#b61300",
   "#ac9200"
 ]
-
-const massGroupEditFormState = ref({})
-const massGroupEditFormValues = ref({})
 
 const userGroupingChoice = ref('')
 const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
@@ -326,36 +254,20 @@ const mapStyles = computed(() => {
   ])
 })
 
-const setMassGroupEditFormState = (groupKey, state) => {
-  massGroupEditFormState.value[groupKey] = state
-}
-
-const handleMassGroupEditSubmit = () => {
+const handleMassGroupEditSubmit = (formState) => {
   parcellaire.value.features
     .filter(({ id }) => selectedFeatureIds.value.has(id))
     .forEach(({ properties }) => {
-      Object.entries(massGroupEditFormValues.value).forEach(([key, value]) => {
-        properties[key] = value
-      })
+      Object.entries(formState)
+        .filter(([key, value]) => value !== undefined)
+        .forEach(([key, value]) => properties[key] = value)
     })
 
-  clearMassGroupEditForm()
+  clearSelectedFeatures()
 }
 
-function closeMassEditForm () {
-  clearMassGroupEditForm()
+function clearSelectedFeatures () {
   selectedFeatureIds.value = new Set()
-}
-
-const clearMassGroupEditForm = () => {
-  massGroupEditFormState.value = {}
-  massGroupEditFormValues.value = {}
-}
-
-const handleMassGroupEditChange = ($event) => {
-  const { name, value } = $event.target
-
-  massGroupEditFormValues.value[name] = value
 }
 
 const getFeatureById = (id) => {
@@ -378,6 +290,13 @@ function zoomInto (featureOrFeatureCollection, { maxZoom }) {
   if (center && zoom) {
     map.value.flyTo({ center, zoom, bearing })
   }
+}
+
+function dateDDMMYYY (date) {
+  return new Date(date).toLocaleDateString('fr-FR', {
+    dateStyle: 'short',
+    timeZone: 'Europe/Paris'
+  })
 }
 
 function loadSourceAndLayers (maplibreMap) {
@@ -412,11 +331,7 @@ function loadSourceAndLayers (maplibreMap) {
     if (id) {
       maplibreMap.setFeatureState({ source: 'parcellaire-operateur', id }, { selected: true })
 
-      selectedFeature.value = getFeatureById(id)
       popupLngLat.value = centroid(selectedFeature.value).geometry.coordinates
-    }
-    else {
-      selectedFeature.value = null
     }
 
     if (previousId){
@@ -468,8 +383,9 @@ form input {
 }
 
 .full-width > section {
-  flex-grow: 1;
+  flex: 0 0 50vw;
   padding: 0 var(--spacing);
+  position: relative;
 }
 
 table.parcelles {
@@ -519,6 +435,7 @@ table.parcelles {
   position: sticky;
   top: 5rem;
   z-index: 10;
+  max-width: 100%;
 }
 
 

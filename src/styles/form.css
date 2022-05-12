@@ -14,10 +14,13 @@ form label {
 }
 
 textarea {
-  width: calc(100% - .8rem - .8rem);
+  max-width: calc(100% - .8rem - .8rem);
 }
 
-select,
+select {
+  max-width: 450px;
+}
+
 textarea {
   max-width: calc(100% - .8rem - .8rem);
 }
