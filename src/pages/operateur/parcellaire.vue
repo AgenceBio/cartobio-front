@@ -150,6 +150,11 @@ const groupingChoices = {
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
     groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue'
   },
+  'TELEPAC': {
+    label: 'déclaration PAC',
+    datapoint: (d) => d.properties.declaration_pac,
+    groupLabelFn: (d, groupingKey) => groupingKey === 'true' ? 'Déclarée à la PAC' : 'Non-déclarée à la PAC'
+  },
 }
 
 const colorPalette = [

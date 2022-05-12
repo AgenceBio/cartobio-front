@@ -3,6 +3,11 @@
 form label {
   font-weight: bold;
 }
+  form input[type="checkbox"] + label,
+  form input[type="radio"] + label {
+    font-weight: normal;
+    margin-left: .5rem;
+  }
 
 :where(textarea, input[type="text"], input[type="date"], input[type="search"]) {
   border: 1px solid #333;
