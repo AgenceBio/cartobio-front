@@ -31,13 +31,36 @@
     </div>
 
     <div class="field" v-if="formState.conversion_niveau">
-      <label>Déclaration PAC</label>
       <div class="control">
         <input id="plot_declaration_pac" type="checkbox" v-model="formState.declaration_pac" :value="1" />
-        <label for="plot_declaration_pac" v-if="hasOneFeature">cette parcelle bénéficie d'une aide PAC</label>
-        <label for="plot_declaration_pac" v-else>ces {{ props.features.length }} parcelles bénéficient d'une aide PAC</label>
+        <label for="plot_declaration_pac" v-if="hasOneFeature">Cette parcelle bénéficie d'une aide PAC</label>
+        <label for="plot_declaration_pac" v-else>Ces {{ props.features.length }} parcelles bénéficient d'une aide PAC</label>
       </div>
     </div>
+
+    <fieldset class="field" v-if="formState.declaration_pac">
+      <legend>Déclaration PAC</legend>
+
+      <div class="field">
+        <div :class="{ control: true, 'control--disabled': !isABLevel(formState.conversion_niveau) }">
+          <input id="plot_declaration_pac_bio" type="checkbox" v-model="formState.declaration_pac_bio" :value="1" :disabled="!isABLevel(formState.conversion_niveau)" />
+          <label for="plot_declaration_pac_bio" v-if="hasOneFeature">Cette parcelle est déclarée en BIO</label>
+          <label for="plot_declaration_pac_bio" v-else>Ces {{ props.features.length }} parcelles sont déclarées en BIO</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Utiliser un type de culture différent</label>
+        <div class="control">
+          <select v-model="formState.declaration_pac_type">
+            <option v-if="!hasOneFeature" class="unchanged" :value="undefined">Inchangé</option>
+            <option v-if="!hasOneFeature" class="unchanged" :value="''">Pas de culture spécifique</option>
+            <option disabled>---</option>
+            <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">{{ libellé }}</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
 
     <div class="field">
       <label>Commentaire</label>
@@ -76,6 +99,8 @@ const formState = reactive({
   commentaire: hasOneFeature.value ? features[0].properties.commentaire : undefined,
   conversion_niveau: hasOneFeature.value ? features[0].properties.conversion_niveau : undefined,
   declaration_pac: hasOneFeature.value ? features[0].properties.declaration_pac : undefined,
+  declaration_pac_bio: hasOneFeature.value ? features[0].properties.declaration_pac_bio : undefined,
+  declaration_pac_type: hasOneFeature.value ? features[0].properties.declaration_pac_type : undefined,
   engagement_date: hasOneFeature ? features[0].properties.engagement_date : undefined,
   TYPE: hasOneFeature.value ? features[0].properties.TYPE : undefined,
 })

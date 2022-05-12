@@ -26,6 +26,11 @@ select {
   max-width: 450px;
 }
 
+fieldset legend {
+  font-weight: bold;
+  padding: 0 .5rem;
+}
+
 textarea {
   max-width: calc(100% - .8rem - .8rem);
 }
@@ -40,6 +45,11 @@ textarea {
   box-shadow: 2px 2px 1px rgba(0, 0, 0, .1);
   cursor: not-allowed;
 }
+  .control--disabled,
+  .control--disabled label {
+    color: #999;
+    accent-color: #999;
+  }
 
 :where(.button, textarea, input[type="text"], input[type="email"], input[type="password"], input[type="tel"], input[type="date"], input[type="search"]) + .button {
   border-left: none;

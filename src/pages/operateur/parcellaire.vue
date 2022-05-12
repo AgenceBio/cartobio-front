@@ -85,7 +85,7 @@ meta:
 
     <MapContainer class="map" @load="loadSourceAndLayers" :style="mapStyles" :bounds="mapBounds">
       <Popup :lnglat="popupLngLat" maxWidth="450px" v-if="selectedFeatureId" @popup:closed="selectedFeatureId = null">
-        <OperatorPlotForm :features="[selectedFeature]" @submit="handleFeatureEdit" @cancel="selectedFeatureId = null" />
+        <OperatorPlotForm :features="[selectedFeature]" @submit="handleSingleFeatureEditSubmit" @cancel="selectedFeatureId = null" />
       </Popup>
     </MapContainer>
   </div>
@@ -269,6 +269,16 @@ const handleMassGroupEditSubmit = (formState) => {
     })
 
   clearSelectedFeatures()
+}
+
+const handleSingleFeatureEditSubmit = (formState) => {
+  const feature = selectedFeature.value
+
+  Object.entries(formState)
+      .filter(([key, value]) => value !== undefined)
+      .forEach(([key, value]) => feature.properties[key] = value)
+
+  selectedFeatureId.value = null
 }
 
 function clearSelectedFeatures () {
