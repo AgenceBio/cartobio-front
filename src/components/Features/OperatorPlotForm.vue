@@ -3,7 +3,7 @@
     <div class="field">
       <label>Type de culture</label>
       <div class="control">
-        <select v-model="formState.type">
+        <select v-model="formState.TYPE">
           <option v-if="!hasOneFeature" class="unchanged" :value="undefined">Inchangé</option>
           <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">{{ libellé }}</option>
         </select>
@@ -77,7 +77,7 @@ const formState = reactive({
   conversion_niveau: hasOneFeature.value ? features[0].properties.conversion_niveau : undefined,
   declaration_pac: hasOneFeature.value ? features[0].properties.declaration_pac : undefined,
   engagement_date: hasOneFeature ? features[0].properties.engagement_date : undefined,
-  type: hasOneFeature.value ? features[0].properties.TYPE : undefined,
+  TYPE: hasOneFeature.value ? features[0].properties.TYPE : undefined,
 })
 </script>
 
