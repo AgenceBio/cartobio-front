@@ -19,7 +19,7 @@ const props = defineProps({
   bounds: Array,
 })
 
-const emit = defineEmits(['load'])
+const emit = defineEmits(['load', 'zoom:change'])
 
 onMounted(() => {
   map.value = new MapLibre({
@@ -30,7 +30,11 @@ onMounted(() => {
     padding: 20,
   })
 
-  map.value.once('load', () => emit('load', map.value))
+  map.value.once('load', ({ target: map }) => {
+    emit('load', map)
+    emit('zoom:change', map.getZoom())
+  })
+  map.value.on('zoomend', ({ target: map }) => emit('zoom:change', map.getZoom()))
 })
 
 watch(() => props.style, () => map.value.setStyle(props.style), { deep: true })
