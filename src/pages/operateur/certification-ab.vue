@@ -7,36 +7,83 @@ meta:
 <template>
   <div class="full-width">
     <section>
-      <h2>Mon parcellaire</h2>
+      <OperatorPlotForm v-if="selectedFeatureIds.size" :features="selectedFeatures" @submit="handleMassGroupEditSubmit" @cancel="clearSelectedFeatures" class="mass-edit-form" />
 
-      <div class="field is-grouped">
-        <div class="control">
-          <ul>
-            <li v-for="(layer, id) in selectableLayerStyles" :key="id" :aria-disabled="!layer.checkFn()">
-              <label>
-                <input type="checkbox" :checked="layer.checked" :disabled="!layer.checkFn()" @input="layer.checked = !layer.checked" />
-                {{ layer.label }}
-              </label>
-              <span class="help" v-if="layer.helpText" v-html="layer.helpText" />
-            </li>
-          </ul>
+      <div v-else>
+        <h2>Ma certification AB</h2>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <ul>
+              <li><button disabled><vue-feather type="save" /> Enregister les changements</button></li>
+              <li><button disabled><vue-feather type="mail" /> Transmettre à Ecocert</button></li>
+            </ul>
+          </div>
         </div>
+
+        <br />
+
+        <label>
+          Grouper les parcelles par
+          <select @change="handleUserGroupingChoice">
+            <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key" :selected="value === userGroupingChoice">{{ label }}</option>
+          </select>
+        </label>
       </div>
 
-      <table class="parcelles">
-        <tbody>
-          <tr v-for="(group, key) in featureGroups" :key="key">
-            <th>
-              <span class="color-badge" :style="{ '--accent-color': group.accentColor }" />
-              {{ group.label }}
-            </th>
-            <td class="numeric">{{ inHa(group.surface) }}&nbsp;ha</td>
+      <table class="parcelles" v-for="({ features, label, surface, accentColor, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
+        <caption v-if="label">
+          <span class="color-badge" :style="{ '--accent-color': accentColor }" />
+          {{ label }}
+          ({{ surface }}&nbsp;ha)
+        </caption>
+
+        <thead>
+          <tr>
+            <td colspan="4" class="parcelles-group-header">
+              <vue-feather type="corner-left-down" size="16" />
+              <button type="button" class="link" @click="addFeaturesToSelection(features)">sélectionner</button> /
+              <button type="button" class="link" @click="removeFeaturesFromSelection(features)">désélectionner</button>
+              ces {{ features.length }} parcelles
+            </td>
           </tr>
-        </tbody>
+        </thead>
+
+        <tr v-for="({ properties: props, id }) in features" :id="'p' + id" @mouseover="hoveredFeatureId = id" @click="toggleFeatureSelection({ id })" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId, selected: selectedFeatureIds.has(id)}">
+          <th scope="row" class="rowIdCell">
+            <div class="show">
+              <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
+              <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
+            </div>
+            <div class="show-on-hover">
+              <input class="feature-selection" type="checkbox" :checked="selectedFeatureIds.has(id)" @click.stop="toggleFeatureSelection({ id })" />
+            </div>
+          </th>
+          <td>{{ props.SURF }}&nbsp;ha</td>
+          <td>
+            <span class="culture-type">{{ libelléFromCode(props.TYPE) }}</span><br>
+            <small :title="props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE)" class="culture-group">{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</small>
+          </td>
+          <td>
+            <abbr :title="getConversionLevel(props.conversion_niveau).label">{{ getConversionLevel(props.conversion_niveau).shortLabel }}</abbr>
+            <br v-if="isABLevel(props.conversion_niveau)" />
+            <small v-if="isABLevel(props.conversion_niveau)">engagée le {{ dateDDMMYYY(props.engagement_date) }}</small>
+          </td>
+        </tr>
+        <tfoot>
+          <tr>
+            <td colspan="4">
+              <a href="#top">
+                <vue-feather type="arrow-up" size="16" />
+                retour en haut de page
+              </a>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </section>
 
-    <MapContainer class="map" @load="loadSourceAndLayers" @zoom:change="zoomLevel = $event" :style="mapStyles" :bounds="mapBounds">
+    <MapContainer class="map" @load="loadSourceAndLayers" :style="mapStyles" :bounds="mapBounds">
       <Popup :lnglat="popupLngLat" maxWidth="450px" v-if="selectedFeatureId" @popup:closed="selectedFeatureId = null">
         <OperatorPlotForm :features="[selectedFeature]" @submit="handleSingleFeatureEditSubmit" @cancel="selectedFeatureId = null" />
       </Popup>
@@ -45,7 +92,7 @@ meta:
 </template>
 
 <script setup>
-import { computed, ref, toRefs, unref, shallowRef, watch, nextTick, reactive } from 'vue'
+import { computed, ref, toRefs, unref, shallowRef, watch, nextTick } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
@@ -66,7 +113,6 @@ import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
 
 const { currentUser, parcellaire } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
-const zoomLevel = ref(null)
 
 // user single selected/feature focus
 const selectedFeatureId = ref(null)
@@ -80,7 +126,36 @@ const map = shallowRef(null)
 const mapBounds = bbox(parcellaire.value)
 const popupLngLat = ref([0, 0])
 
-const inHa = (value) => parseFloat((value / 10000)).toLocaleString('fr-FR', { maximumFractionDigits: 2, minimumFractionDigits: 2 })
+const inHa = (value) => parseFloat((value / 10000).toFixed(2))
+
+const groupingChoices = {
+  '': { label: '…' },
+  'COMMUNE': {
+    label: 'commune',
+    datapoint: (d) => d.properties.COMMUNE,
+    groupLabelFn: (d) => d.properties.COMMUNE
+  },
+  'CULTURE': {
+    label: 'culture',
+    datapoint: (d) => d.properties.TYPE,
+    groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
+  },
+  'NIVEAU_CONVERSION': {
+    label: 'niveau de conversion',
+    datapoint: (d) => d.properties.conversion_niveau || '',
+    groupLabelFn: (d, groupingKey) => conversionLevels.find(({ value }) => value === groupingKey)?.label
+  },
+  'ANNEE_ENGAGEMENT': {
+    label: 'année d\'engagement',
+    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
+    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue'
+  },
+  'TELEPAC': {
+    label: 'déclaration PAC',
+    datapoint: (d) => d.properties.declaration_pac,
+    groupLabelFn: (d, groupingKey) => groupingKey === 'true' ? 'Déclarée à la PAC' : 'Non-déclarée à la PAC'
+  },
+}
 
 const colorPalette = [
   "#ff73fa",
@@ -97,31 +172,48 @@ const colorPalette = [
   "#ac9200"
 ]
 
-const selectableLayerStyles = reactive({
-  cadastre: {
-    checked: false,
-    label: 'Afficher le cadastre',
-    helpText: '',
-    checkFn: () => zoomLevel.value >= 13
-  },
-  surroundings: {
-    checked: false,
-    label: 'Afficher les parcelles environnantes',
-    checkFn: () => true
-  },
-})
+const userGroupingChoice = ref('')
+const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
+
+function addFeaturesToSelection (features) {
+  const newIds = new Set()
+  features.forEach(({ id }) => newIds.add(id))
+  selectedFeatureIds.value = new Set([...selectedFeatureIds.value, ...newIds])
+}
+
+function removeFeaturesFromSelection (features) {
+  const remainingIds = new Set([...selectedFeatureIds.value])
+  features.forEach(({ id }) => remainingIds.delete(id))
+  selectedFeatureIds.value = remainingIds
+}
+
+function toggleFeatureSelection (feature) {
+  selectedFeatureIds.value.has(feature.id)
+    ? removeFeaturesFromSelection([feature])
+    : addFeaturesToSelection([feature])
+}
 
 const featureGroups = computed(() => {
+  if (userGroupingChoice.value === '') {
+    return [{
+      label: '',
+      key: 'none',
+      accentColor: colorPalette[1],
+      features: parcellaire.value.features,
+      surface: inHa(area(featureCollection(parcellaire.value.features)))
+    }]
+  }
+
   const groups = groupBy(parcellaire.value.features, (feature) => {
-    return feature.properties.TYPE
+    return groupingChoices[userGroupingChoice.value].datapoint(feature)
   })
 
   return Object.entries(groups).map(([key, features], i) => ({
-    label: libelléFromCode(key),
+    label: groupingChoices[userGroupingChoice.value].groupLabelFn(features[0], key),
     key,
     accentColor: colorPalette[i%12],
     features,
-    surface: area(featureCollection(features)),
+    surface: inHa(area(featureCollection(features)).toFixed(2)),
   })).sort((a, b) => b.surface - a.surface)
 })
 
@@ -135,6 +227,7 @@ const featureGroupsStyles = computed(() => {
 const mapStyles = computed(() => {
   return mergeAll([
     baseStyle,
+    cadastreStyle,
     infrastructureStyle,
     parcellaire.value ? {
       sources: {
@@ -162,8 +255,7 @@ const mapStyles = computed(() => {
           }
         }
       ]
-    } : {},
-    selectableLayerStyles.cadastre.checked ? cadastreStyle : {},
+    } : {}
   ])
 })
 
@@ -341,13 +433,6 @@ table.parcelles {
   table.parcelles tr.hovered {
     background-color: #00ffff50;
     cursor: pointer;
-  }
-  table.parcelles th {
-    text-align: left;
-  }
-  table.parcelles .numeric {
-    font-variant-numeric: tabular-nums;
-    text-align: right;
   }
   table.parcelles tr[aria-current="true"] {
     background-color: #ffcc00;

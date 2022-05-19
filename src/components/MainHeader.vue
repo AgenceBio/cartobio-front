@@ -8,6 +8,12 @@
           <vue-feather type="user" stroke-width="2" size="16" /> {{ currentUser.nom }}
         </li>
         <li v-if="currentUser.id">
+          <router-link to="/operateur/certification-ab">
+            <vue-feather type="key" stroke-width="2" size="16" />
+            Ma certification AB
+          </router-link>
+        </li>
+        <li v-if="currentUser.id">
           <router-link to="/operateur/parcellaire">
             <vue-feather type="map" stroke-width="2" size="16" />
             Mon parcellaire
