@@ -9,19 +9,22 @@ meta:
     <section>
       <h2>Mon parcellaire</h2>
 
-      <div class="field is-grouped">
-        <div class="control">
-          <ul>
-            <li v-for="(layer, id) in selectableLayerStyles" :key="id" :aria-disabled="!layer.checkFn()">
-              <label>
-                <input type="checkbox" :checked="layer.checked" :disabled="!layer.checkFn()" @input="layer.checked = !layer.checked" />
-                {{ layer.label }}
-              </label>
-              <span class="help" v-if="layer.helpText" v-html="layer.helpText" />
-            </li>
-          </ul>
+      <fieldset>
+        <legend>Options d'affichage</legend>
+        <div class="field is-grouped">
+          <div class="control">
+            <ul>
+              <li v-for="(layer, id) in selectableLayerStyles" :key="id" :aria-disabled="!layer.checkFn()">
+                <label>
+                  <input type="checkbox" :checked="layer.checked" :disabled="!layer.checkFn()" @input="layer.checked = !layer.checked" />
+                  {{ layer.label }}
+                </label>
+                <span class="help" v-if="layer.helpText" v-html="layer.helpText" />
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </fieldset>
 
       <table class="parcelles">
         <tbody>
@@ -289,6 +292,8 @@ function loadSourceAndLayers (maplibreMap) {
 </script>
 
 <style lang="postcss" scoped>
+@import '@/styles/form.css';
+
 form select,
 form textarea,
 form input {

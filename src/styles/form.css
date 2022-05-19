@@ -1,5 +1,9 @@
 @import './button.css';
 
+label {
+  cursor: pointer;
+}
+
 form label {
   font-weight: bold;
 }
@@ -26,10 +30,14 @@ select {
   max-width: 450px;
 }
 
-fieldset legend {
-  font-weight: bold;
-  padding: 0 .5rem;
+fieldset {
+  border: 2px solid #ccc;
 }
+
+  fieldset legend {
+    font-weight: bold;
+    padding: 0 .5rem;
+  }
 
 textarea {
   max-width: calc(100% - .8rem - .8rem);
