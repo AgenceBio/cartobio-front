@@ -61,6 +61,7 @@ import { conversionLevels, getConversionLevel, isABLevel } from '../../referenti
 import baseStyle from '../../map-styles/base.json'
 import cadastreStyle from '../../map-styles/cadastre.json'
 import infrastructureStyle from '../../map-styles/infrastructure.json'
+import surroundingsStyle from '../../map-styles/surroundings.json'
 
 import store from '../../store.js'
 import MapContainer from '../../components/Map/MapContainer.vue'
@@ -139,6 +140,7 @@ const mapStyles = computed(() => {
   return mergeAll([
     baseStyle,
     infrastructureStyle,
+    selectableLayerStyles.surroundings.checked ? surroundingsStyle : {},
     parcellaire.value ? {
       sources: {
         'parcellaire-operateur': {
@@ -161,7 +163,7 @@ const mapStyles = computed(() => {
               ...featureGroupsStyles.value,
               "black"
             ],
-            "fill-opacity": 0.9,
+            "fill-opacity": 1,
           }
         }
       ]

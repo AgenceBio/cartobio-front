@@ -1,0 +1,48 @@
+{
+  "sources": {
+    "rpg-anon-2020": {
+      "type": "vector",
+      "scheme": "tms",
+      "tiles": [
+        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+      ]
+    }
+  },
+  "layers": [
+    {
+      "id": "rpg-anon-2020-fill",
+      "type": "fill",
+      "source": "rpg-anon-2020",
+      "source-layer": "anon_rpg_2020",
+      "minzoom": 9,
+      "maxzoom": 24,
+      "paint": {
+        "fill-color": [
+          "match",
+          ["to-string", ["get", "codecultu"]],
+          ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"],
+          "#EB5757",
+          ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"],
+          "#F2C94C",
+          "#F2994A"
+        ],
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "rpg-anon-2020-border",
+      "type": "line",
+      "source": "rpg-anon-2020",
+      "source-layer": "anon_rpg_2020",
+      "minzoom": 10,
+      "maxzoom": 24,
+      "paint": {
+        "line-color": "#B39DDB",
+        "line-opacity": 0.9,
+        "line-width": {
+          "stops": [[9, 0], [12, 1]]
+        }
+      }
+    }
+  ]
+}
