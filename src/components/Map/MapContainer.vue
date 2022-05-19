@@ -37,7 +37,10 @@ onMounted(() => {
   map.value.on('zoomend', ({ target: map }) => emit('zoom:change', map.getZoom()))
 })
 
-watch(() => props.style, () => map.value.setStyle(props.style), { deep: true })
+watch(() => props.style, () => {
+  map.value.setStyle(props.style)
+  map.value.triggerRepaint()
+}, { deep: true })
 </script>
 
 <style lang="postcss" scoped>
