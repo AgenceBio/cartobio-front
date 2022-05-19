@@ -142,66 +142,8 @@
       "filter": ["has", "point_count"],
       "layout": {
         "text-field": "{point_count_abbreviated}",
-        "text-font": ["Lato Bold", "Noto Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-size": 12
-      }
-    },
-    {
-      "id": "selectable-cadastral-parcels",
-      "type": "line",
-      "source": "cadastre",
-      "source-layer": "parcelles",
-      "minzoom": 11,
-      "maxzoom": 24,
-      "paint": {
-        "line-color": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          "lightgreen",
-          ["boolean", ["feature-state", "hover"], false],
-          "lightblue",
-          "white"
-        ],
-        "line-opacity": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          1,
-          ["boolean", ["feature-state", "hover"], false],
-          0.8,
-          0.5
-        ],
-        "line-width": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          3,
-          1
-        ]
-      }
-    },
-    {
-      "id": "selectable-cadastral-parcels-area",
-      "type": "fill",
-      "source": "cadastre",
-      "source-layer": "parcelles",
-      "minzoom": 11,
-      "maxzoom": 24,
-      "paint": {
-        "fill-color": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          "lightgreen",
-          ["boolean", ["feature-state", "hover"], false],
-          "lightblue",
-          "transparent"
-        ],
-        "fill-opacity": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          1,
-          ["boolean", ["feature-state", "hover"], false],
-          0.8,
-          0.5
-        ]
       }
     },
     {
