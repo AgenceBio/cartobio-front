@@ -18,10 +18,6 @@
     </p>
 
     <p>
-      Les données que vous allez renseigner sont uniquement transmises à votre organisme certificateur et à l’administration si une aide PAC est demandée.
-    </p>
-
-    <p>
       Le projet CartoBio est porté par l’Agence Bio et l'INAO, soutenu par
       le Ministère de l’Agriculture et de l'Alimentation ainsi que par le
       Ministère de la Transition Ecologique.
