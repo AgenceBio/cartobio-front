@@ -24,7 +24,7 @@
     </p>
 
     <p>
-      <router-link class="button" to="/operateur/login">
+      <router-link class="button" to="/operateur/certification-ab">
         <vue-feather type="play-circle" />
         Utiliser CartoBio
       </router-link>

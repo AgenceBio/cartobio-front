@@ -2,7 +2,17 @@
   <MainHeader />
   <MainNotifications />
 
-  <RouterView v-bind="$attrs" />
+      <Suspense>
+        <template #default>
+          <RouterView v-bind="$attrs" v-slot="{ Component }">
+            <component :is="Component"/>
+          </RouterView>
+        </template>
+        <template #fallback>
+          Loading...
+        </template>
+      </Suspense>
+
 </template>
 
 <script setup>
@@ -17,29 +27,17 @@ const { VUE_APP_API_ENDPOINT } = import.meta.env
 const router = useRouter()
 
 router.beforeEach(async (to, from) => {
-  if (store.state.currentUser.id && Object.keys(store.state.parcellaire).length === 0) {
-    const { data } = await get(`${VUE_APP_API_ENDPOINT}/v2/operator/${store.state.currentUser.id}`)
-
-    if (data) {
-      store.setParcelles({
-        geojson: data.parcelles,
-        source: data.metadata.source,
-        sourceLastUpdate: data.metadata.sourceLastUpdate,
-      })
-    }
-  }
-
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
     return router.replace('/operateur/login')
   }
 
   if (to.path === '/operateur/login' && store.state.currentUser.id) {
-    return router.replace('/operateur/parcellaire')
+    return router.replace('/operateur/certification-ab')
   }
 
-  if (to.meta.requiresGeodata && !store.state.parcellaireSource) {
-    return router.replace('/operateur/setup')
-  }
+  // if (to.meta.requiresGeodata && !store.state.parcellaireSource) {
+  //   return router.replace('/operateur/setup')
+  // }
 })
 </script>
 

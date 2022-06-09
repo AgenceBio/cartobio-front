@@ -101,6 +101,7 @@ import { featureCollection } from '@turf/helpers'
 import { all as mergeAll } from 'deepmerge'
 import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
 import { conversionLevels, getConversionLevel, isABLevel } from '../../referentiels/ab.js'
+import { getOperatorParcelles } from '../../cartobio-api.js'
 
 import baseStyle from '../../map-styles/base.json'
 import cadastreStyle from '../../map-styles/cadastre.json'
@@ -110,6 +111,8 @@ import store from '../../store.js'
 import MapContainer from '../../components/Map/MapContainer.vue'
 import Popup from '../../components/Map/Popup.vue'
 import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
+
+await getOperatorParcelles()
 
 const { currentUser, parcellaire } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
