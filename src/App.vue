@@ -2,17 +2,16 @@
   <MainHeader />
   <MainNotifications />
 
-      <Suspense>
-        <template #default>
-          <RouterView v-bind="$attrs" v-slot="{ Component }">
-            <component :is="Component"/>
-          </RouterView>
-        </template>
-        <template #fallback>
-          Loading...
-        </template>
-      </Suspense>
-
+  <Suspense>
+    <template #default>
+      <RouterView v-bind="$attrs" v-slot="{ Component }">
+        <component :is="Component"/>
+      </RouterView>
+    </template>
+    <template #fallback>
+      Loading...
+    </template>
+  </Suspense>
 </template>
 
 <script setup>

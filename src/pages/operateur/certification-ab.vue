@@ -15,8 +15,7 @@ meta:
         <div class="field is-grouped">
           <div class="control">
             <ul>
-              <li><button disabled><vue-feather type="save" /> Enregister les changements</button></li>
-              <li><button disabled><vue-feather type="mail" /> Transmettre à Ecocert</button></li>
+              <li><button :disabled="!hasChanged"><vue-feather type="save" /> Enregister les changements</button></li>
             </ul>
           </div>
         </div>
@@ -92,7 +91,7 @@ meta:
 </template>
 
 <script setup>
-import { computed, ref, toRefs, unref, shallowRef, watch, nextTick } from 'vue'
+import { computed, ref, toRefs, unref, readonly, shallowRef, watch, nextTick } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
@@ -115,6 +114,7 @@ import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
 await getOperatorParcelles()
 
 const { currentUser, parcellaire } = toRefs(store.state)
+const initialParcellaire = Object.freeze(JSON.stringify(store.state.parcellaire))
 const hoveredFeatureId = ref(null)
 
 // user single selected/feature focus
@@ -226,6 +226,8 @@ const featureGroupsStyles = computed(() => {
     accentColor
   ]))
 })
+
+const hasChanged = computed(() => JSON.stringify(parcellaire.value) !== initialParcellaire)
 
 const mapStyles = computed(() => {
   return mergeAll([
