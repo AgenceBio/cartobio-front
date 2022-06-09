@@ -15,7 +15,10 @@ meta:
         <div class="field is-grouped">
           <div class="control">
             <ul>
-              <li><button :disabled="!hasChanged"><vue-feather type="save" /> Enregister les changements</button></li>
+              <li>
+                <button :disabled="!canSave" @click="handleSubmitParcellesChange">
+                  <vue-feather :type="isSending ? 'loader' : 'save'" :animation="isSending ? 'spin' : null" /> Enregister ces changements</button>
+                </li>
             </ul>
           </div>
         </div>
@@ -91,7 +94,7 @@ meta:
 </template>
 
 <script setup>
-import { computed, ref, toRefs, unref, readonly, shallowRef, watch, nextTick } from 'vue'
+import { computed, ref, toRefs, unref, shallowRef, watch, nextTick } from 'vue'
 import groupBy from 'array.prototype.groupby'
 import bbox from '@turf/bbox'
 import area from '@turf/area'
@@ -100,7 +103,7 @@ import { featureCollection } from '@turf/helpers'
 import { all as mergeAll } from 'deepmerge'
 import { libelléFromCode, groupLibelléFromCode } from '../../referentiels/pac.js'
 import { conversionLevels, getConversionLevel, isABLevel } from '../../referentiels/ab.js'
-import { getOperatorParcelles } from '../../cartobio-api.js'
+import { getOperatorParcelles, submitParcellesChanges } from '../../cartobio-api.js'
 
 import baseStyle from '../../map-styles/base.json'
 import cadastreStyle from '../../map-styles/cadastre.json'
@@ -114,7 +117,7 @@ import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
 await getOperatorParcelles()
 
 const { currentUser, parcellaire } = toRefs(store.state)
-const initialParcellaire = Object.freeze(JSON.stringify(store.state.parcellaire))
+const initialParcellaire = ref(JSON.stringify(store.state.parcellaire))
 const hoveredFeatureId = ref(null)
 
 // user single selected/feature focus
@@ -175,8 +178,24 @@ const colorPalette = [
   "#ac9200"
 ]
 
+const isSending = ref(false)
 const userGroupingChoice = ref('')
 const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
+
+async function handleSubmitParcellesChange () {
+  isSending.value = true
+
+  try {
+    await submitParcellesChanges(parcellaire.value)
+    initialParcellaire.value = JSON.stringify(parcellaire.value)
+  }
+  catch (error) {
+    console.error(error)
+  }
+  finally {
+    isSending.value = false
+  }
+}
 
 function addFeaturesToSelection (features) {
   const newIds = new Set()
@@ -227,7 +246,8 @@ const featureGroupsStyles = computed(() => {
   ]))
 })
 
-const hasChanged = computed(() => JSON.stringify(parcellaire.value) !== initialParcellaire)
+const hasChanged = computed(() => JSON.stringify(parcellaire.value) !== initialParcellaire.value)
+const canSave = computed(() => isSending.value === false && hasChanged.value === true)
 
 const mapStyles = computed(() => {
   return mergeAll([
