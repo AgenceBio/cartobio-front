@@ -2,22 +2,16 @@
   <MainHeader />
   <MainNotifications />
 
-  <Suspense>
-    <template #default>
-      <RouterView v-bind="$attrs" v-slot="{ Component }">
-        <component :is="Component"/>
-      </RouterView>
-    </template>
-    <template #fallback>
-      Loading...
-    </template>
-  </Suspense>
+  <RouterView v-bind="$attrs" v-slot="{ Component }">
+    <component :is="Component"/>
+  </RouterView>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { get } from 'axios'
 import store from './store.js'
+import { getOperatorParcelles } from './cartobio-api.js'
 
 import MainHeader from './components/MainHeader.vue'
 import MainNotifications from './components/MainNotifications.vue'
@@ -34,9 +28,16 @@ router.beforeEach(async (to, from) => {
     return router.replace('/operateur/certification-ab')
   }
 
-  // if (to.meta.requiresGeodata && !store.state.parcellaireSource) {
-  //   return router.replace('/operateur/setup')
-  // }
+  if (to.meta.requiresGeodata) {
+    try {
+      await getOperatorParcelles()
+    }
+    catch (error) {
+      if (error.name === 'ParcellesNotSetup') {
+        return router.push('/operateur/setup')
+      }
+    }
+  }
 })
 </script>
 

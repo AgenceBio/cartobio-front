@@ -3,12 +3,25 @@ import store from './store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
+class ParcellesNotSetupError extends Error {
+  name = 'ParcellesNotSetup'
+  message = 'Parcelles have not been setup for this operator.'
+}
+
+class ParcellesEmptyError extends Error {
+  name = 'ParcellesEmpty'
+  message = 'Parcelles are setup, but empty for this operator.'
+}
+
 export async function getOperatorParcelles () {
   const { id, token } = store.state.currentUser
 
   const { data } = await get(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}`)
 
-  if (data) {
+  if (!data || !data.metadata.source) {
+    throw new ParcellesNotSetupError()
+  }
+  else if (data.parcelles.features.length && data.metadata.source) {
     store.setParcelles({
       geojson: data.parcelles,
       source: data.metadata.source,

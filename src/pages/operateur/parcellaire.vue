@@ -67,9 +67,7 @@ import store from '../../store.js'
 import MapContainer from '../../components/Map/MapContainer.vue'
 import Popup from '../../components/Map/Popup.vue'
 import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
-import { getOperatorParcelles } from '../../cartobio-api.js'
 
-await getOperatorParcelles()
 
 const { currentUser, parcellaire } = toRefs(store.state)
 const hoveredFeatureId = ref(null)
