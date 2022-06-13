@@ -358,9 +358,9 @@ table.parcelles {
 
 .map {
   background: #ccc;
-  height: calc(100vh - 3rem);
+  height: 100vh;
   position: sticky;
-  top: calc((var(--spacing) * 3) + var(--spacing));
+  top: 0;
   width: max(50vw, 450px);
 }
 </style>
