@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from "vue-router"
 import routes from "~pages"
 import App from './App.vue'
-import VueFeather from 'vue-feather'
 import Matomo from 'vue-matomo'
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
@@ -24,5 +23,4 @@ createApp(App)
     trackerUrl: 'https://cartobio.org/s/',
     trackerScriptUrl: 'https://cartobio.org/s/index.js',
   })
-  .component(VueFeather.name, VueFeather)
   .mount('#app')

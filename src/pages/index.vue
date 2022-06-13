@@ -1,37 +1,29 @@
 <template>
-  <div class="container">
-    <h2>CartoBio, le parcellaire cultivé en Agriculture Biologique</h2>
+  <div class="fr-container--fluid fr-background-alt--grey fr-py-5w">
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters ">
+        <div class="fr-col-lg-12">
 
-    <p>
-      Cet outil permet de préparer au mieux le contrôle Bio en
-      servant de base de discussion durant la partie dédiée au parcellaire.
-      Il vise à faciliter également l’instruction des aides PAC Bio si elles sont demandées.
-      Il s'appuie sur le parcellaire déjà renseigné précédemment sur TéléPAC ou
-      un outil de gestion de votre parcellaire (Géofolia, MesParcelles, …).
-    </p>
 
-    <p>
-      Les données renseignées sont uniquement transmises à votre
-      organisme certificateur et à l’administration si une aide PAC est demandée.
-      Après les avoir rendues anonymes, elles compléteront le parcellaire
-      cultivé en agriculture biologique.
-    </p>
+          <h2>Valorisez vos parcelles</h2>
 
-    <p>
-      Le projet CartoBio est porté par l’Agence Bio et l'INAO, soutenu par
-      le Ministère de l’Agriculture et de l'Alimentation ainsi que par le
-      Ministère de la Transition Ecologique.
-    </p>
+          <p>
+            <strong>Préparez votre contrôle bio</strong><br />
+            Échangez facilement avec votre contrôleur avant, pendant et après l'audit.
+          </p>
 
-    <p>
-      <router-link class="button" to="/operateur/certification-ab">
-        <vue-feather type="play-circle" />
-        Utiliser CartoBio
-      </router-link>
-    </p>
+          <p>
+            <strong>Simplifiez la demande d'aides PAC</strong><br />
+            Évitez les erreurs de saisie en réutilisant vos données.
+          </p>
+
+          <p>
+            <router-link class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" to="/operateur/certification-ab">
+              Utiliser CartoBio
+            </router-link>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
-<style scoped>
-@import '@/styles/button.css';
-</style>

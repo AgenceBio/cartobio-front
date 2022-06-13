@@ -6,34 +6,31 @@ meta:
 
 <template>
   <div class="full-width">
-    <section>
+    <section class="fr-py-2w">
       <OperatorPlotForm v-if="selectedFeatureIds.size" :features="selectedFeatures" @submit="handleMassGroupEditSubmit" @cancel="clearSelectedFeatures" class="mass-edit-form" />
 
       <div v-else>
-        <h2>Ma certification AB</h2>
+        <h2 class="fr-h3">Ma certification AB</h2>
 
-        <div class="field is-grouped">
-          <div class="control">
-            <ul>
-              <li>
-                <button :disabled="!canSave" @click="handleSubmitParcellesChange">
-                  <vue-feather :type="isSending ? 'loader' : 'save'" :animation="isSending ? 'spin' : null" /> Enregister ces changements</button>
-                </li>
-            </ul>
-          </div>
-        </div>
+        <ul class="fr-btns-group fr-btns-group--inline-lg">
+          <li>
+              <button :class="{'fr-btn': true, /*'fr-btn--icon-left': true, 'fr-icon-save-line': !isSending, 'fr-icon-more-line': isSending*/ }" :disabled="!canSave" @click="handleSubmitParcellesChange">
+                Enregister ces changements
+              </button>
+          </li>
+        </ul>
 
-        <br />
-
-        <label>
-          Grouper les parcelles par
-          <select @change="handleUserGroupingChoice">
+        <div class="fr-select-group">
+          <label class="fr-label" for="plots-group-by">
+            Grouper les parcelles par
+          </label>
+          <select class="fr-select" id="plots-group-by" @change="handleUserGroupingChoice">
             <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key" :selected="value === userGroupingChoice">{{ label }}</option>
           </select>
-        </label>
+        </div>
       </div>
 
-      <table class="parcelles" v-for="({ features, label, surface, accentColor, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
+      <table class="fr-table fr-table--bordered parcelles" v-for="({ features, label, surface, accentColor, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">
           <span class="color-badge" :style="{ '--accent-color': accentColor }" />
           {{ label }}
@@ -42,41 +39,40 @@ meta:
 
         <thead>
           <tr>
-            <td colspan="4" class="parcelles-group-header">
-              <vue-feather type="corner-left-down" size="16" />
-              <button type="button" class="link" @click="addFeaturesToSelection(features)">sélectionner</button> /
-              <button type="button" class="link" @click="removeFeaturesFromSelection(features)">désélectionner</button>
+            <td colspan="5" class="parcelles-group-header">
+              <button type="button" class="fr-btn--sm fr-btn--tertiary" @click="addFeaturesToSelection(features)">sélectionner</button> /
+              <button type="button" class="fr-btn--sm fr-btn--tertiary" @click="removeFeaturesFromSelection(features)">désélectionner</button>
               ces {{ features.length }} parcelles
             </td>
           </tr>
         </thead>
 
-        <tr v-for="({ properties: props, id }) in features" :id="'p' + id" @mouseover="hoveredFeatureId = id" @click="toggleFeatureSelection({ id })" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId, selected: selectedFeatureIds.has(id)}">
-          <th scope="row" class="rowIdCell">
-            <div class="show">
+        <tbody>
+          <tr v-for="({ properties: props, id }) in features" :id="'p' + id" @mouseover="hoveredFeatureId = id" @click="toggleFeatureSelection({ id })" :key="props.NUMERO_I + props.NUMERO_P" :aria-current="id === selectedFeatureId" :class="{hovered: id === hoveredFeatureId, selected: selectedFeatureIds.has(id)}">
+            <td>
+              <input type="checkbox" :checked="selectedFeatureIds.has(id)" @click.stop="toggleFeatureSelection({ id })" />
+            </td>
+            <th scope="row" class="rowIdCell">
               <span>{{ props.NOM || `${props.NUMERO_I}.${props.NUMERO_P}` }}</span>
               <small v-if="props.NOM">({{ props.NUMERO_I }}.{{ props.NUMERO_P }})</small>
-            </div>
-            <div class="show-on-hover">
-              <input class="feature-selection" type="checkbox" :checked="selectedFeatureIds.has(id)" @click.stop="toggleFeatureSelection({ id })" />
-            </div>
-          </th>
-          <td>{{ props.SURF }}&nbsp;ha</td>
-          <td>
-            <span class="culture-type">{{ libelléFromCode(props.TYPE) }}</span><br>
-            <small :title="props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE)" class="culture-group">{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</small>
-          </td>
-          <td>
-            <abbr :title="getConversionLevel(props.conversion_niveau).label">{{ getConversionLevel(props.conversion_niveau).shortLabel }}</abbr>
-            <br v-if="isABLevel(props.conversion_niveau)" />
-            <small v-if="isABLevel(props.conversion_niveau)">engagée le {{ dateDDMMYYY(props.engagement_date) }}</small>
-          </td>
-        </tr>
+            </th>
+            <td>{{ props.SURF }}&nbsp;ha</td>
+            <td>
+              <span class="culture-type">{{ libelléFromCode(props.TYPE) }}</span>
+              <small :title="props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE)" class="culture-group">{{ props.TYPE_LIBELLE ?? groupLibelléFromCode(props.TYPE) }}</small>
+            </td>
+            <td>
+              <abbr :title="getConversionLevel(props.conversion_niveau).label">{{ getConversionLevel(props.conversion_niveau).shortLabel }}</abbr>
+              <br v-if="isABLevel(props.conversion_niveau)" />
+              <small v-if="isABLevel(props.conversion_niveau)">engagée le {{ dateDDMMYYY(props.engagement_date) }}</small>
+            </td>
+          </tr>
+        </tbody>
+
         <tfoot>
           <tr>
             <td colspan="4">
-              <a href="#top">
-                <vue-feather type="arrow-up" size="16" />
+              <a href="#top" class="fr-icon--sm fr-icon-arrow-up-fill">
                 retour en haut de page
               </a>
             </td>
@@ -403,29 +399,14 @@ function loadSourceAndLayers (maplibreMap) {
 }
 </script>
 
-<style lang="postcss" scoped>
-form select,
-form textarea,
-form input {
-  max-width: 100%;
-}
-
+<style scoped>
 .full-width {
   display: flex;
   position: relative;
 }
 
-.full-width ul {
-  list-style: none;
-  padding: 0;
-}
-
-[aria-current] {
+[aria-current="true"] {
   font-weight: bold;
-}
-
-.full-width ol {
-  list-style-position: inside;
 }
 
 .full-width > section {
@@ -450,9 +431,6 @@ table.parcelles {
     width: 14px;
   }
 
-  table.parcelles tr:nth-child(even) {
-    background-color: #efefef;
-  }
   table.parcelles tr.hovered {
     background-color: #00ffff50;
     cursor: pointer;
@@ -478,8 +456,6 @@ table.parcelles {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, .1), -2px -2px 3px rgba(0, 0, 0, .1);
   margin: 1rem 0;
   padding: 1rem;
-  position: sticky;
-  top: 5rem;
   z-index: 10;
   max-width: 100%;
 }
@@ -490,33 +466,25 @@ table.parcelles {
   margin-left: .5rem;
 }
 
-table.parcelles,
-table.parcelles :is(td, th) {
-  border: 1px solid #ccc;
-  padding: .5em;
-  text-align: left;
-}
-
 .culture-type,
 .culture-group {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: inline-block;
+  display: block;
   max-width: 350px;
 }
 
 .map {
   background: #ccc;
-  height: calc(100vh - 3rem);
+  height: 100vh;
   position: sticky;
-  top: calc((var(--spacing) * 3) + var(--spacing));
+  top: 0;
   width: max(50vw, 450px);
 }
 
-hr {
-  border: 1px solid var(--brand-color);
-  margin: 1rem 0;
-  max-width: 50%;
+.fr-checkbox-group--no-label label {
+  position: absolute;
+  left: -1000px;
 }
 </style>

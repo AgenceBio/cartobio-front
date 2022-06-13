@@ -6,27 +6,26 @@ meta:
 
 <template>
   <div class="full-width">
-    <section>
-      <h2>Mon parcellaire</h2>
+    <section class="fr-py-2w">
+      <h2 class="fr-h3">Mon parcellaire</h2>
 
-      <fieldset>
-        <legend>Options d'affichage</legend>
-        <div class="field is-grouped">
-          <div class="control">
-            <ul>
-              <li v-for="(layer, id) in selectableLayerStyles" :key="id" :aria-disabled="!layer.checkFn()">
-                <label>
-                  <input type="checkbox" :checked="layer.checked" :disabled="!layer.checkFn()" @input="layer.checked = !layer.checked" />
-                  {{ layer.label }}
-                </label>
-                <span class="help" v-if="layer.helpText" v-html="layer.helpText" />
-              </li>
-            </ul>
-          </div>
-        </div>
-      </fieldset>
+      <div class="fr-form-group">
+        <fieldset class="fr-fieldset">
+          <legend class="fr-fieldset__legend">Options d'affichage</legend>
+          <ul class="fr-fieldset__content">
+            <li v-for="(layer, id) in selectableLayerStyles" :key="id" :aria-disabled="!layer.checkFn()" class="fr-checkbox-group">
+              <input type="checkbox" :checked="layer.checked" :disabled="!layer.checkFn()" @input="layer.checked = !layer.checked" :id="'options-' + id" />
+              <label class="fr-label" :for="'options-' + id">
+                {{ layer.label }}
+                <span class="fr-hint-text" v-if="layer.helpText" v-html="layer.helpText" />
+              </label>
+            </li>
+          </ul>
+        </fieldset>
+      </div>
 
-      <table class="parcelles">
+      <table class="fr-table fr-table--bordered parcelles">
+        <caption>Groupes de culture</caption>
         <tbody>
           <tr v-for="(group, key) in featureGroups" :key="key">
             <th>
@@ -104,9 +103,9 @@ const colorPalette = [
 
 const selectableLayerStyles = reactive({
   cadastre: {
-    checked: false,
+    checked: true,
     label: 'Afficher le cadastre',
-    helpText: '',
+    helpText: 'Le niveau de zoom doit être suffisant pour qu\'il s\'affiche.',
     checkFn: () => zoomLevel.value >= 13
   },
   surroundings: {
@@ -294,31 +293,18 @@ function loadSourceAndLayers (maplibreMap) {
 }
 </script>
 
-<style lang="postcss" scoped>
-@import '@/styles/form.css';
-
-form select,
-form textarea,
-form input {
-  max-width: 100%;
-}
-
+<style scoped>
 .full-width {
   display: flex;
   position: relative;
 }
 
-.full-width ul {
-  list-style: none;
-  padding: 0;
-}
-
-[aria-current] {
+[aria-current="true"] {
   font-weight: bold;
 }
 
-.full-width ol {
-  list-style-position: inside;
+ul.fr-fieldset__content {
+  list-style: none;
 }
 
 .full-width > section {
@@ -343,15 +329,9 @@ table.parcelles {
     width: 14px;
   }
 
-  table.parcelles tr:nth-child(even) {
-    background-color: #efefef;
-  }
   table.parcelles tr.hovered {
     background-color: #00ffff50;
     cursor: pointer;
-  }
-  table.parcelles th {
-    text-align: left;
   }
   table.parcelles .numeric {
     font-variant-numeric: tabular-nums;
@@ -361,40 +341,10 @@ table.parcelles {
     background-color: #ffcc00;
   }
 
-.show-on-hover,
-.hovered .show,
-.selected .show {
-  display: none;
-}
-  .hovered .show-on-hover,
-  .selected .show-on-hover {
-    display: inherit;
-  }
-
-.mass-edit-form {
-  background: var(--background-default-grey);
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, .1), -2px -2px 3px rgba(0, 0, 0, .1);
-  margin: 1rem 0;
-  padding: 1rem;
-  position: sticky;
-  top: 5rem;
-  z-index: 10;
-  max-width: 100%;
-}
-
 
 .rowIdCell small {
   font-weight: normal;
   margin-left: .5rem;
-}
-
-table.parcelles,
-table.parcelles :is(td, th) {
-  border: 1px solid #ccc;
-  padding: .5em;
-  text-align: left;
 }
 
 .culture-type,
@@ -402,7 +352,7 @@ table.parcelles :is(td, th) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: inline-block;
+  display: block;
   max-width: 350px;
 }
 
@@ -412,11 +362,5 @@ table.parcelles :is(td, th) {
   position: sticky;
   top: calc((var(--spacing) * 3) + var(--spacing));
   width: max(50vw, 450px);
-}
-
-hr {
-  border: 1px solid var(--brand-color);
-  margin: 1rem 0;
-  max-width: 50%;
 }
 </style>

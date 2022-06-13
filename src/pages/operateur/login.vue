@@ -1,64 +1,68 @@
 <template>
-  <div class="container">
-    <h2>
-      Votre exploitation
-      <small class="tag">Cet outil est actuellement en phase de test</small>
+  <div class="fr-container fr-my-5w">
+    <h2 class="fr-h3">
+      Sélectionner mon exploitation
     </h2>
 
-    <form @submit.prevent="tryLogin">
-      <div class="row">
-        <label>
-          Rechercher
-          <input type="text" name="search" v-model="userLogin" ref="loginInput" required autofocus />
-
-          <button class="button" type="submit" :disabled="isLoading">
-            <vue-feather type="loader" animation="spin" v-if="isLoading" />
-            <span v-else>OK</span>
-          </button>
-        </label>
-
-        <p class="help">
-          Par <span v-for="({ id, label }) in LOGIN_TYPES" :aria-selected="userLoginType.includes(id)" :key="id">
-            {{ label }}
-          </span>…
-        </p>
-      </div>
-
-      <p v-if="candidateUsers.length">
-        <button class="link" @click="resetSearch">
-          <vue-feather type="rotate-ccw" />
-          Annuler la recherche
-        </button>
-      </p>
+    <form @submit.prevent="tryLogin" class="fr-search-bar fr-search-bar--lg" id="header-search" role="search">
+      <label class="fr-label" for="search-784-input">
+          Recherche
+      </label>
+      <input class="fr-input" placeholder="Rechercher" v-model="userLogin" ref="loginInput" required autofocustype="search" id="search-784-input">
+      <button class="fr-btn" title="Rechercher" :disabled="isLoading">
+        Rechercher
+      </button>
     </form>
 
-    <section class="candidateUsers" v-if="candidateUsers.length">
-      <form class="candidateUserForm" v-for="candidateUser in candidateUsers" :key="candidateUser.id" @submit.prevent="loginCandidateUser(candidateUser)">
-        <h3>{{ candidateUser.nom }} <vue-feather type="check-square" size="16" /></h3>
+    <div class="fr-highlight help">
+      <p>Par <span v-for="({ id, label }) in LOGIN_TYPES" :aria-selected="userLoginType.includes(id)" :key="id">
+          {{ label }}
+        </span>…
+      </p>
+    </div>
 
-        <dl class="candidateUser">
-          <dt>Dénomination courante</dt>
-          <dd>{{ candidateUser.denominationCourante }}</dd>
-          <dt>Numéro de SIRET</dt>
-          <dd>{{ candidateUser.siret }}</dd>
-          <dt>Numéro PACAGE</dt>
-          <dd>{{ candidateUser.numeroPacage }}</dd>
-          <dt>Numéro Bio</dt>
-          <dd>{{ candidateUser.id }}</dd>
-          <dt>Date d'engagement</dt>
-          <dd>{{ candidateUser.dateEngagement }}</dd>
-        </dl>
+    <p v-if="candidateUsers.length" class="fr-my-3w">
+      <button class="fr-link fr-icon-close-circle-line" @click="resetSearch">
+        Annuler cette recherche
+      </button>
+    </p>
 
-        <p>
-          <button class="button" type="submit">
-            <vue-feather type="lock"></vue-feather>
-            Confirmer cette identité
-          </button>
+    <section class="fr-grid-row fr-grid-row--gutters" v-if="candidateUsers.length">
+      <article class="fr-col-12 fr-col-md-4" v-for="candidateUser in candidateUsers" :key="candidateUser.id">
+        <div class="fr-card fr-card--horizontal">
+          <div class="fr-card__body">
+              <div class="fr-card__content">
+                  <h4 class="fr-card__title">{{ candidateUser.nom }}</h4>
+                  <div class="fr-card__desc">
+                    <ul>
+                      <li><b>Dénomination courante</b> : {{ candidateUser.denominationCourante }}</li>
+                      <li><b>SIRET</b> : {{ candidateUser.siret }}</li>
+                      <li><b>PACAGE</b> : {{ candidateUser.numeroPacage }}</li>
+                      <li><b>Numéro Bio</b> : {{ candidateUser.id }}</li>
+                      <li><b>Date d'engagement</b> : {{ candidateUser.dateEngagement }}</li>
+                    </ul>
+                  </div>
+                  <div class="fr-card__start">
+                      <ul class="fr-tags-group">
+                          <li>
+                              <p class="fr-badge fr-badge--success fr-icon-medal-fill">vérifié</p>
+                          </li>
+                      </ul>
+                  </div>
+                </div>
 
-          <!-- Un email vous sera envoyé à votre adresse professionnelle :
-          {{ candidateUser.email }} -->
-        </p>
-      </form>
+                <div class="fr-card__footer">
+                  <ul class="fr-btns-group  fr-btns-group--inline-lg">
+                      <li>
+                        <button class="fr-btn" @click.prevent="loginCandidateUser(candidateUser)">
+                          Confirmer cette identité
+                        </button>
+                      </li>
+                  </ul>
+                </div>
+          </div>
+        </div>
+      </article>
     </section>
   </div>
 </template>
@@ -147,26 +151,12 @@ function loginCandidateUser (candidateUser) {
 </script>
 
 <style scoped>
-@import '@/styles/form.css';
-
 span[aria-selected="true"] {
   font-weight: bold;
 }
 
 .help span:not(:last-of-type)::after {
   content: ", ";
-}
-
-section.candidateUsers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-
-.candidateUserForm {
-  border: 1px solid var(--brand-color);
-  border-radius: 5px;
-  padding: 1rem;
 }
 
 dl.candidateUser {
@@ -184,4 +174,5 @@ dl.candidateUser {
   dl.candidateUser dd {
     margin: 0;
   }
+
 </style>

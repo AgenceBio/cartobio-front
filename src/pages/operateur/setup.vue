@@ -4,141 +4,135 @@ meta:
 </route>
 
 <template>
-  <div class="container">
+  <div class="fr-container fr-my-5w">
     <h2>
-      Votre parcellaire
-      <small class="tag">Cet outil est actuellement en phase de test</small>
+      Importer mon parcellaire
     </h2>
 
     <p>
       Sélectionner l’outil où votre parcellaire est maintenu à jour.
     </p>
 
-    <ul class="sources">
-      <li v-for="(source, sourceId) in featureSources">
-        <button class="button" :disabled="source.active === false" type="button" :aria-current="sourceId === featureSource" @click="featureSource = sourceId">{{ source.label }}</button>
-      </li>
-    </ul>
 
-    <section v-if="featureSource === 'telepac'">
-      <!-- <article>
-        <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
-          🔐 Connecter mon compte TelePAC
-        </button>
-      </article> -->
+    <div class="fr-tabs">
+      <ul class="fr-tabs__list" role="tablist">
+        <li v-for="(source, sourceId) in featureSources" role="presentation" :key="sourceId">
+          <button class="fr-tabs__tab" :disabled="source.active === false" type="button" :aria-selected="sourceId === featureSource" @click="featureSource = sourceId">{{ source.label }}</button>
+        </li>
+      </ul>
 
-      <article>
-        <h3>Import de déclaration PAC</h3>
+      <section :class="{'fr-tabs__panel': true, 'fr-tabs__panel--selected': featureSource === 'telepac'}" role="tabpanel">
+        <!-- <article>
+          <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+            🔐 Connecter mon compte TelePAC
+          </button>
+        </article> -->
+        <div class="fr-alert fr-alert--info fr-mb-5w">
+            <p class="fr-alert__title">Remarque</p>
+            <p>
+              Le nom du fichier ressemble à
+              <code>Dossier-PAC-{{ campagnePacAnnee }}_parcelle-{{ campagnePacAnnee }}_{{ currentUser.numeroPacage }}_….zip</code>.
+            </p>
+        </div>
 
-        <button type="button" @click="pacFileInput.click()">
-          <input type="file" ref="pacFileInput" accept=".zip" @change="handlePacFileUpload" hidden>
-          <vue-feather type="upload-cloud" /> Importer ma dernière déclaration PAC
-        </button>
+          <div class="fr-upload-group">
+              <input type="file" ref="pacFileInput" accept=".zip" @change="handlePacFileUpload" hidden />
 
-        <p class="help">
-          <vue-feather type="thumbs-up" />
-          Le nom du fichier ressemble à <code>Dossier-PAC-{{ campagnePacAnnee }}_parcelle-{{ campagnePacAnnee }}_{{ currentUser.numeroPacage }}_….zip</code>
-        </p>
-
-        <details class="help">
-          <summary><vue-feather type="help-circle" /> Où trouver mon fichier ?</summary>
-
-          <p>
-            Le fichier <b>Parcelles déclarées {{ campagnePacAnnee }} › Fichier de parcelles</b> se trouve sur le <a href="https://www.telepac.agriculture.gouv.fr/" target="_blank">portail Telepac</a>,
-            dans la <a :href="campagnePacUrl" target="_blank">téléprocédure <b>Dossier PAC {{ campagnePacAnnee }}</b></a>,
-            dans l'onglet bleu "Import/export" puis <a :href="campagnePacExportUrl" target="_blank">Export îlots et parcelles</a>.
-          </p>
-          <p>
-            <img src="/import/telepac-export.png" class="screenshot" alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
-          </p>
-        </details>
-      </article>
-    </section>
-
-    <section v-if="featureSource === 'mesparcelles'">
-      <!-- <article>
-        <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
-          🔐 Connecter mon compte MesParcelles
-        </button>
-      </article> -->
-
-      <article>
-        <h3>Connexion à votre compte MesParcellaire</h3>
-
-        <form @submit.prevent="handleMesParcellesLoginImport(mesParcellesUser)">
-          <div class="field">
-            <label for="mp-email">Adresse e-mail MesParcelles</label>
-
-            <div class="control">
-              <input type="email" id="mp-email" v-model="mesParcellesUser.email" ref="loginInput" required autofocus />
-            </div>
+              <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="pacFileInput.click()">
+                Importer ma dernière déclaration PAC
+              </button>
           </div>
 
-          <div class="field">
-            <label for="mp-password">Mot de passe</label>
-            <div class="control">
-              <input type="password" id="mp-password" v-model="mesParcellesUser.password" required autocomplete="off" />
+
+          <details class="fr-my-5w">
+            <summary class="fr-icon-questionnaire-line fr-btn fr-btn--secondary fr-btn--icon-left">Où trouver mon fichier ?</summary>
+
+            <p>
+              Le fichier <b>Parcelles déclarées {{ campagnePacAnnee }} › Fichier de parcelles</b> se trouve sur le <a href="https://www.telepac.agriculture.gouv.fr/" target="_blank">portail Telepac</a>,
+              dans la <a :href="campagnePacUrl" target="_blank">téléprocédure <b>Dossier PAC {{ campagnePacAnnee }}</b></a>,
+              dans l'onglet bleu "Import/export" puis <a :href="campagnePacExportUrl" target="_blank">Export îlots et parcelles</a>.
+            </p>
+            <p>
+              <img src="/import/telepac-export.png" class="screenshot" alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
+            </p>
+          </details>
+      </section>
+
+      <section :class="{'fr-tabs__panel': true, 'fr-tabs__panel--selected': featureSource === 'mesparcelles'}" role="tabpanel">
+        <!-- <article>
+          <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+            🔐 Connecter mon compte MesParcelles
+          </button>
+        </article> -->
+
+        <div class="fr-alert fr-alert--info fr-mb-5w">
+            <p class="fr-alert__title">Remarque</p>
+            <p>Nous importons les parcelles de l'exploitation principale, pour l'instant.</p>
+        </div>
+
+          <form @submit.prevent="handleMesParcellesLoginImport(mesParcellesUser)">
+            <div class="fr-input-group">
+              <label for="mp-email" class="fr-label">Adresse e-mail MesParcelles</label>
+
+              <div class="fr-input-wrap fr-icon-mail-line">
+                <input type="email" class="fr-input" id="mp-email" v-model="mesParcellesUser.email" ref="loginInput" required autofocus />
+              </div>
             </div>
-          </div>
 
-          <div class="field">
-            <label for="mp-server">Serveur régional</label>
+            <div class="fr-input-group">
+              <label for="mp-password" class="fr-label">Mot de passe</label>
+              <div class="fr-input-wrap fr-icon-shield-line">
+                <input type="password" class="fr-input" id="mp-password" v-model="mesParcellesUser.password" required autocomplete="off" />
+              </div>
+            </div>
 
-            <div class="control">
-              <select id="mp-server" v-model="mesParcellesUser.server" required>
+            <div class="fr-input-group">
+              <label for="mp-server" class="fr-label">Choix du serveur régional</label>
+              <select id="mp-server" class="fr-select" v-model="mesParcellesUser.server" required>
                 <option v-for="(label, key) in mesParcellesServers" :value="key" :key="key" selected="selected">{{ label }}</option>
               </select>
             </div>
-          </div>
 
-          <div class="field is-grouped">
-            <div class="control">
-              <button class="button is-link">Importer les parcelles</button>
+            <div class="fr-input-group">
+              <button class="fr-btn" :disabled="!mesParcellesUser.server || !mesParcellesUser.password || !mesParcellesUser.email">Importer les parcelles</button>
             </div>
+          </form>
+      </section>
+
+      <section :class="{'fr-tabs__panel': true, 'fr-tabs__panel--selected': featureSource === 'geofolia'}" role="tabpanel">
+        <!-- <article>
+          <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+            🔐 Connecter mon compte Isagri Geofolia
+          </button>
+        </article> -->
+        <div class="fr-alert fr-alert--info fr-mb-5w">
+            <p class="fr-alert__title">Remarque</p>
+            <p>Le nom du fichier ressemble à <code>…_Parcelles et Interventions (ZIP)_….zip</code>.</p>
+        </div>
+
+          <div class="fr-upload-group">
+              <input type="file" ref="geofoliaFileInput" accept=".zip" @change="handleGeofoliaFileUpload" hidden>
+
+              <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="geofoliaFileInput.click()">
+                Importer mes parcelles et interventions
+              </button>
           </div>
-        </form>
 
-        <p class="help">
-          <vue-feather type="info" />
-          Nous importons les parcelles de l'exploitation principale, pour l'instant.
-        </p>
-      </article>
-    </section>
 
-    <section v-if="featureSource === 'geofolia'">
-      <!-- <article>
-        <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
-          🔐 Connecter mon compte Isagri Geofolia
-        </button>
-      </article> -->
+          <details class="fr-my-5w">
+            <summary class="fr-icon-questionnaire-line fr-btn fr-btn--secondary fr-btn--icon-left">Où trouver mon fichier ?</summary>
 
-      <article>
-        <h3>Import des parcelles et interventions</h3>
+            <p>
+              Le fichier <b>Parcelles et interventions (ZIP)</b> se trouve dans l'onglet "Export › Parcelles et interventions"
+              du logiciel Géofolia, édité par Isagri.
+            </p>
 
-        <button type="button" @click="geofoliaFileInput.click()">
-          <input type="file" ref="geofoliaFileInput" accept=".zip" @change="handleGeofoliaFileUpload" hidden>
-          <vue-feather type="upload-cloud" /> Importer mes parcelles et interventions
-        </button>
-
-        <p class="help">
-          <vue-feather type="thumbs-up" />
-          Le nom du fichier ressemble à <code>…_Parcelles et Interventions (ZIP)_….zip</code>
-        </p>
-
-        <details class="help">
-          <summary><vue-feather type="help-circle" /> Où trouver mon fichier ?</summary>
-
-          <p>
-            Le fichier <b>Parcelles et interventions (ZIP)</b> se trouve dans l'onglet "Export › Parcelles et interventions"
-            du logiciel Géofolia, édité par Isagri.
-          </p>
-
-          <p>
-            <img src="/import/geofolia-export.png" class="screenshot" alt="Écran Export Parcelles et interventions du logiciel Géofolia" />
-          </p>
-        </details>
-      </article>
-    </section>
+            <p>
+              <img src="/import/geofolia-export.png" class="screenshot" alt="Écran Export Parcelles et interventions du logiciel Géofolia" />
+            </p>
+          </details>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -152,7 +146,7 @@ const { VUE_APP_API_ENDPOINT } = import.meta.env
 
 const router = useRouter()
 const currentUser = toRef(store.state, 'currentUser')
-const featureSource = ref(store.state.parcellaireSource)
+const featureSource = ref(store.state.parcellaireSource ?? 'telepac')
 const campagnePacAnnee = ref(2021)
 const campagnePacAnneeShort = computed(() => String(campagnePacAnnee.value).slice(-2))
 const campagnePacUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/auth/accueilTas.action?campagne=${campagnePacAnnee.value}&titreApplication=Dossier+PAC+${campagnePacAnnee.value}`)
@@ -196,10 +190,6 @@ const featureSources = readonly({
     label: 'Géofolia',
     active: true,
   },
-  smagfarmer: {
-    label: 'SMAG Farmer',
-    active: false,
-  },
   telepac: {
     label: 'Déclaration PAC',
     active: true,
@@ -207,7 +197,11 @@ const featureSources = readonly({
   ncvi: {
     label: 'ProDouanes (nCVI)',
     active: false,
-  }
+  },
+  smagfarmer: {
+    label: 'SMAG Farmer',
+    active: false,
+  },
 })
 
 async function handlePacFileUpload () {
@@ -288,8 +282,4 @@ article .screenshot {
 details.help summary {
   display: block;
 }
-</style>
-
-<style scoped>
-@import '@/styles/form.css';
 </style>

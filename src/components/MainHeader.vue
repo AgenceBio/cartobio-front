@@ -1,34 +1,57 @@
 <template>
-  <header>
-    <h1><router-link to="/" rel="home">CartoBio</router-link> <sup aria-hidden>(beta)</sup></h1>
+  <header role="banner" class="fr-header">
+    <div class="fr-header__body">
+        <div class="fr-container">
+            <div class="fr-header__body-row">
+                <div class="fr-header__brand fr-enlarge-link">
+                    <div class="fr-header__brand-top">
+                        <div class="fr-header__logo">
+                            <p class="fr-logo">
+                                Intitulé
+                            </p>
+                        </div>
+                    </div>
 
-    <nav class="main-navigation">
-      <ul>
-        <li v-if="currentUser.id">
-          <vue-feather type="user" stroke-width="2" size="16" /> {{ currentUser.nom }}
-        </li>
-        <li v-if="currentUser.id">
-          <router-link to="/operateur/certification-ab">
-            <vue-feather type="key" stroke-width="2" size="16" />
-            Ma certification AB
-          </router-link>
-        </li>
-        <li v-if="currentUser.id">
-          <router-link to="/operateur/parcellaire">
-            <vue-feather type="map" stroke-width="2" size="16" />
-            Mon parcellaire
-          </router-link>
-        </li>
-        <li v-if="currentUser.id">
-          <router-link to="/logout" custom v-slot="{ href }">
-            <a :href="href" @click.prevent="logout">
-              <vue-feather type="log-out" stroke-width="2" size="16" />
-              Déconnexion
-            </a>
-          </router-link>
-        </li>
-      </ul>
-    </nav>
+                    <div class="fr-header__service">
+                        <router-link to="/" rel="home">
+                          <p class="fr-header__service-title">
+                            Cartobio <span class="fr-badge fr-badge--new">beta</span>
+                          </p>
+                        </router-link>
+
+                        <p class="fr-header__service-tagline">Parcellaire cultivé en Agriculture Biologique</p>
+                    </div>
+                </div>
+
+                <div class="fr-header__tools">
+                  <div class="fr-header__tools-links">
+                      <ul class="fr-links-group">
+                        <!-- <li v-if="currentUser.id">
+                          {{ currentUser.nom }}
+                        </li> -->
+                        <li v-if="currentUser.id">
+                          <router-link to="/operateur/certification-ab" class="fr-link fr-icon-medal-fill">
+                            Ma certification AB
+                          </router-link>
+                        </li>
+                        <li v-if="currentUser.id">
+                          <router-link to="/operateur/parcellaire" class="fr-link fr-icon-map-pin-user-fill">
+                            Mon parcellaire
+                          </router-link>
+                        </li>
+                        <li v-if="currentUser.id">
+                          <router-link to="/logout" custom v-slot="{ href }">
+                            <a :href="href" class="fr-link fr-icon-logout-box-r-line" @click.prevent="logout">
+                              Déconnexion
+                            </a>
+                          </router-link>
+                        </li>
+                      </ul>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
   </header>
 </template>
 
@@ -46,38 +69,6 @@ function logout () {
 }
 </script>
 
-<style lang="postcss" scoped>
-header {
-  background-color: #C4C4C4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: calc(var(--spacing) * 3);
-  padding: calc(var(--spacing) / 2) var(--spacing);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-header h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 0;
-}
-  header h1 sup {
-    font-size: .8rem;
-  }
-
-header nav {
-
-}
-
-header nav ul {
-  display: flex;
-  gap: .5rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+<style scoped>
 
 </style>

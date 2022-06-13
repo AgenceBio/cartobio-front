@@ -8,7 +8,8 @@ export default defineConfig({
   envPrefix: 'VUE_APP_',
   resolve: {
     alias: {
-      '@': resolve(join(__dirname, 'src'))
+      '@gouvfr/dsfr': resolve(join(__dirname, 'node_modules', '@gouvfr', 'dsfr', 'dist')),
+      'styles': resolve(join(__dirname, 'src', 'styles'))
     }
   },
   plugins: [

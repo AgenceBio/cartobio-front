@@ -14,6 +14,7 @@
     "node": "^16.0.0"
   },
   "dependencies": {
+    "@gouvfr/dsfr": "^1.5.1",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
     "@turf/centroid": "^6.5.0",
@@ -25,7 +26,6 @@
     "maplibre-gl": "^2.0.1",
     "normalize.css": "^8.0.1",
     "vue": "^3.2.25",
-    "vue-feather": "^2.0.0-rc.1",
     "vue-matomo": "^4.1.0",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2"
