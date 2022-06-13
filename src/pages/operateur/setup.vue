@@ -228,7 +228,7 @@ async function handlePacFileUpload () {
 
   store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
   window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
-  router.push('/operateur/parcellaire')
+  router.push('/operateur/certification-ab')
 }
 
 async function handleGeofoliaFileUpload () {
@@ -265,7 +265,7 @@ async function handleMesParcellesLoginImport ({ email, password, server }) {
 
   store.setParcelles({ geojson: data.parcelles, source: featureSource.value })
   window._paq.push(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
-  router.push('/operateur/parcellaire')
+  router.push('/operateur/certification-ab')
 }
 </script>
 

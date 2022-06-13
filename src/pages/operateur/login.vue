@@ -142,7 +142,7 @@ async function tryLogin () {
 function loginCandidateUser (candidateUser) {
   window._paq.push(['trackEvent', 'login', `search`, 'selectOperator'])
   store.loginUser(candidateUser)
-  router.push('/operateur/parcellaire')
+  router.push('/operateur/certification-ab')
 }
 </script>
 
