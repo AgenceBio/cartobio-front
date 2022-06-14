@@ -37,7 +37,7 @@
         <button v-else class="fr-btn">Appliquer les changements sur ces {{props.features.length}} parcelles</button>
       </li>
       <li>
-        <button type="cancel" @click.prevent="emit('cancel')" class="fr-link">Annuler les modifications</button>
+        <button type="cancel" @click.prevent="emit('cancel')" class="fr-link">Annuler ces modifications</button>
       </li>
     </ul>
   </form>

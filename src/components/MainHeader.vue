@@ -35,7 +35,7 @@
                         </li> -->
                 <li v-if="currentUser.id">
                   <router-link to="/operateur/certification-ab" class="fr-link fr-icon-medal-fill">
-                    Ma certification AB
+                    Ma certification&nbsp;<abbr title="Agriculture Biologique">AB</abbr>
                   </router-link>
                 </li>
                 <li v-if="currentUser.id">

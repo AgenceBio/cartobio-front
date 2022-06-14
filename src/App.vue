@@ -1,14 +1,22 @@
 <template>
   <MainHeader />
 
-  <RouterView v-bind="$attrs" v-slot="{ Component }">
-    <component :is="Component"/>
+  <RouterView v-slot="{ Component, route }">
+    <Suspense>
+      <template #default>
+        <component
+          :is="Component"
+          :key="route.meta.usePathKey ? route.path : undefined"
+        />
+      </template>
+      <template #fallback>Chargement... </template>
+    </Suspense>
   </RouterView>
+
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { get } from 'axios'
 import store from './store.js'
 import { getOperatorParcelles } from './cartobio-api.js'
 
@@ -45,4 +53,11 @@ router.beforeEach(async (to, from) => {
 @import '@gouvfr/dsfr/dsfr.css';
 @import '@gouvfr/dsfr/utility/icons/icons.css';
 @import 'styles/variables.css';
+
+a[aria-disabled] {
+  --text-action-high-blue-france: gray;
+  --border-action-high-blue-france: gray;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 </style>

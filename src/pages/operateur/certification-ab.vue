@@ -7,20 +7,10 @@ meta:
 <template>
   <div class="full-width">
     <section class="fr-py-2w">
-      <OperatorPlotForm v-if="selectedFeatureIds.size" :features="selectedFeatures" @submit="handleMassGroupEditSubmit" @cancel="clearSelectedFeatures" class="mass-edit-form" />
+      <div>
+        <AbDetails class="fr-my-3w" :user="currentUser" />
 
-      <div v-else>
-        <h2 class="fr-h3">Ma certification AB</h2>
-
-        <ul class="fr-btns-group fr-btns-group--inline-lg">
-          <li>
-              <button :class="{'fr-btn': true, /*'fr-btn--icon-left': true, 'fr-icon-save-line': !isSending, 'fr-icon-more-line': isSending*/ }" :disabled="!canSave" @click="handleSubmitParcellesChange">
-                Enregister ces changements
-              </button>
-          </li>
-        </ul>
-
-        <div class="fr-select-group">
+        <div class="fr-select-group fr-my-3w">
           <label class="fr-label" for="plots-group-by">
             Grouper les parcelles par
           </label>
@@ -29,6 +19,18 @@ meta:
           </select>
         </div>
       </div>
+
+      <hr class="fr-mb-3w fr-mt-5w" />
+
+      <OperatorPlotForm v-if="selectedFeatureIds.size" :features="selectedFeatures" @submit="handleMassGroupEditSubmit" @cancel="clearSelectedFeatures" class="mass-edit-form" />
+
+      <ul class="fr-btns-group fr-btns-group--inline-lg" v-else>
+        <li>
+            <button :class="{'fr-btn': true, /*'fr-btn--icon-left': true, 'fr-icon-save-line': !isSending, 'fr-icon-more-line': isSending*/ }" :disabled="!canSave" @click="handleSubmitParcellesChange">
+              Enregister ces changements sur le serveur
+            </button>
+        </li>
+      </ul>
 
       <table class="fr-table fr-table--bordered parcelles" v-for="({ features, label, surface, accentColor, key }) in featureGroups" :key="key" @mouseout="hoveredFeatureId = null">
         <caption v-if="label">
@@ -109,6 +111,7 @@ import store from '../../store.js'
 import MapContainer from '../../components/Map/MapContainer.vue'
 import Popup from '../../components/Map/Popup.vue'
 import OperatorPlotForm from '../../components/Features/OperatorPlotForm.vue'
+import AbDetails from '../../components/Certification/AbDetails.vue'
 
 const { currentUser, parcellaire } = toRefs(store.state)
 const initialParcellaire = ref(JSON.stringify(store.state.parcellaire))

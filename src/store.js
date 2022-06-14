@@ -14,6 +14,7 @@ const store = reactive({
   },
 
   loginUser (userData) {
+    console.log(userData)
     Object.assign(this.state.currentUser, userData)
   },
 
