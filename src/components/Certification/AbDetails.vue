@@ -19,12 +19,17 @@
       </div>
 
       <div class="fr-card__footer">
-        <ul class="fr-links-group">
+        <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--icon-left">
           <li v-if="currentCertificate">
-            <a class="fr-btn fr-btn--secondary fr-btn--sm" :aria-disabled="!currentCertificate.url" :href="currentCertificate.url" target="_blank" rel="noopener noreferrer">
-              certificat AB
+            <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" :aria-disabled="!currentCertificate.url" :href="currentCertificate.url" target="_blank" rel="noopener noreferrer">
+              Mon certificat
             </a>
           </li>
+          <!-- <li>
+            <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" aria-disabled href="#" target="_blank" rel="noopener noreferrer">
+              Attestation de notification
+            </a>
+          </li> -->
         </ul>
       </div>
     </div>
