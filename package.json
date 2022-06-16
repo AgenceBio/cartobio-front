@@ -2,9 +2,19 @@
   "name": "@agencebio/cartobio-front",
   "version": "2.0.0-alpha",
   "private": true,
+  "files": ["dist"],
+  "main": "./dist/notification-cartobio.umd.js",
+  "module": "./dist/notification-cartobio.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/notification-cartobio.es.js",
+      "require": "./dist/notification-cartobio.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "vite build --config vite.notification-webcomponent.config.js",
     "preview": "vite preview",
     "start": "vite",
     "test": "exit 0",

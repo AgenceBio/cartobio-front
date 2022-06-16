@@ -46,3 +46,17 @@ export async function submitParcellesChanges (geojson) {
   })
 }
 
+export async function submitParcelles (geojson, { source }) {
+  const { id, token } = store.state.currentUser
+
+  const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
+    geojson,
+    metadata: {
+      source,
+      sourceLastUpdate: new Date().toISOString()
+    }
+  })
+
+  store.setParcelles({ geojson: data.parcelles, source })
+}
+
