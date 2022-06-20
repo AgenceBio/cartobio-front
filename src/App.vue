@@ -13,6 +13,8 @@
     </Suspense>
   </RouterView>
 
+  <MainFooter />
+
 </template>
 
 <script setup>
@@ -21,6 +23,7 @@ import store from './store.js'
 import { getOperatorParcelles } from './cartobio-api.js'
 
 import MainHeader from './components/MainHeader.vue'
+import MainFooter from './components/MainFooter.vue'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 const router = useRouter()
