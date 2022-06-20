@@ -44,7 +44,7 @@
             <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front">Code source : ouvert</a>
           </li>
           <li class="fr-footer__bottom-item">
-            <router-link class="fr-footer__bottom-link" to="/accessibilite">Accessibilité: partiellement conforme</router-link>
+            <router-link class="fr-footer__bottom-link" to="/accessibilite">Accessibilité: non conforme</router-link>
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/mentions-legales">Mentions légales</router-link>
