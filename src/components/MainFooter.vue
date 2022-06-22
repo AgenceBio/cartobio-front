@@ -23,7 +23,7 @@
             ou vous avez un commentaire sur cette page,
             envoyez-nous un message à l'adresse suivante :
 
-            <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:cartobio@beta.gouv.fr?subject=' + mailtoSubject">cartobio@beta.gouv.fr</a>
+            <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:cartobio@beta.gouv.fr?subject=' + mailtoSubject">cartobio@beta.gouv.fr</a><br>
            
             <b data-v-74aedaa4="" class="">Merci !</b><br />
             <br>
