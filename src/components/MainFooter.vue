@@ -17,13 +17,17 @@
 
         <div class="fr-footer__content">
           <p class="fr-footer__content-desc">
-            <b class="fr-icon-leaf-fill fr-icon--sm fr-icon--left">Aidez-nous à améliorer ce service.</b><br />
+            <b class="fr-icon-leaf-fill fr-icon--sm fr-icon--left">Aidez-nous à améliorer ce service !</b><br />
             Si vous rencontrez un problème,
             vous n'arrivez pas à finaliser une action
             ou vous avez un commentaire sur cette page,
             envoyez-nous un message à l'adresse suivante :
 
-            <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:cartobio@beta.gouv.fr?subject=' + mailtoSubject">cartobio@beta.gouv.fr</a>
+            <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:cartobio@beta.gouv.fr?subject=' + mailtoSubject">cartobio@beta.gouv.fr</a><br>
+           
+            <b data-v-74aedaa4="" class="">Merci !</b><br />
+            <br>
+            <br>
           </p>
           <ul class="fr-footer__content-list">
             <li class="fr-footer__content-item">
