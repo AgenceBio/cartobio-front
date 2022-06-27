@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div>
     <!-- <article>
           <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
             🔐 Connecter mon compte MesParcelles
@@ -43,7 +43,7 @@
           parcelles</button>
       </div>
     </form>
-  </section>
+  </div>
 </template>
 
 <script setup>
@@ -54,11 +54,7 @@ import store from '../../store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
-const { currentUser } = defineProps({
-  currentUser: Object
-})
-
-const emit = defineEmits(['import:ok'])
+const emit = defineEmits(['upload:start', 'upload:complete'])
 const source = 'mesparcelles'
 
 const mesParcellesUser = ref({
@@ -87,11 +83,11 @@ const mesParcellesServers = readonly({
 })
 
 async function handleLoginImport ({ email, password, server }) {
-  statsPush(['trackEvent', 'setup', `import:${source}`, 'start'])
+  emit('upload:start')
 
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, password, server })
 
-  emit('import:ok', { geojson, source })
+  emit('upload:complete', { geojson, source })
 }
 
 </script>

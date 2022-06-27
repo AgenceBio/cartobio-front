@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div>
     <!-- <article>
           <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
             🔐 Connecter mon compte Isagri Geofolia
@@ -33,7 +33,7 @@
           alt="Écran Export Parcelles et interventions du logiciel Géofolia" />
       </p>
     </details>
-  </section>
+  </div>
 </template>
 
 <script setup>
@@ -44,23 +44,19 @@ import store from '../../store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
-const { currentUser } = defineProps({
-  currentUser: Object
-})
-
 const fileInput = ref(null)
 
-const emit = defineEmits(['import:ok'])
+const emit = defineEmits(['upload:start', 'upload:complete'])
 const source = 'geofolia'
 
 async function handleFileUpload () {
   const [archive] = fileInput.value.files
-  statsPush(['trackEvent', 'setup', `import:${source}`, 'start'])
+  emit('upload:start')
 
   const form = new FormData()
   form.append('archive', archive)
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/geofolia/geojson`, form)
 
-  emit('import:ok', { geojson, source })
+  emit('upload:complete', { geojson, source })
 }
 </script>

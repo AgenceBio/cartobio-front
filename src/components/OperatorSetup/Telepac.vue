@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div>
     <!-- <article>
           <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
             🔐 Connecter mon compte TelePAC
@@ -38,22 +38,21 @@
           alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
       </p>
     </details>
-  </section>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, toRef } from 'vue'
 import { post } from 'axios'
 import { statsPush } from '../../pages/stats.js'
 import store from '../../store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
-const { currentUser } = defineProps({
-  currentUser: Object
-})
+console.log('import.meta.env', import.meta.env)
 
-const emit = defineEmits(['import:ok'])
+const emit = defineEmits(['upload:start', 'upload:complete'])
+const currentUser = toRef(store.state, 'currentUser')
 
 const campagnePacAnnee = ref(2021)
 const campagnePacAnneeShort = computed(() => String(campagnePacAnnee.value).slice(-2))
@@ -65,12 +64,12 @@ const source = 'telepac'
 
 async function handleFileUpload () {
   const [archive] = fileInput.value.files
-  statsPush(['trackEvent', 'setup', `import:${source}`, 'start'])
+  emit('upload:start')
 
   const form = new FormData()
   form.append('archive', archive)
   const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
 
-  emit('import:ok', { geojson, source })
+  emit('upload:complete', { geojson, source })
 }
 </script>

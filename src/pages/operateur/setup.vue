@@ -1,49 +1,48 @@
 <route lang="yaml">
+classNames: fr-container fr-my-5w
 meta:
   requiresAuth: true
 </route>
 
 <template>
   <div class="fr-container fr-my-5w">
-    <h2>
-      Importer mon parcellaire
-    </h2>
+    <h2>Importer mon parcellaire</h2>
 
     <p>
       Sélectionner l’outil où votre parcellaire est maintenu à jour.
     </p>
 
-    <div class="fr-tabs">
-      <ul class="fr-tabs__list" role="tablist">
-        <li v-for="(source, sourceId) in featureSources" role="presentation" :key="sourceId">
-          <button class="fr-tabs__tab" :disabled="!source.component" type="button" :aria-selected="sourceId === featureSource" @click="featureSource = sourceId">{{ source.label }}</button>
-        </li>
-      </ul>
-
-      <Component :is="featureSources[featureSource].component" currentUser @upload:ok="handleUpload" :class="{ 'fr-tabs__panel': true, 'fr-tabs__panel--selected': true }" role="tabpanel" />
-    </div>
+    <OperatorSetup @import:start="onUploadStart" @import:complete="onSuccess" @error="onError" ref="importTool" />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import store from '../../store.js'
 import { statsPush } from '../stats.js'
-import { submitParcelles } from '../../cartobio-api.js'
 
-import featureSources from '../../components/OperatorSetup/index.js'
+import OperatorSetup from '../../components/OperatorSetup/index.vue'
 
 const router = useRouter()
-const featureSource = ref(store.state.parcellaireSource ?? 'telepac')
+const importTool = ref(null)
 
-watch(featureSource, () => statsPush(['trackEvent', 'setup', 'sourceSelect', featureSource.value]))
+onMounted(() => {
+  watch(() => importTool.value.featureSource, () => {
+    statsPush(['trackEvent', 'setup', 'sourceSelect', importTool.value.featureSource])
+  })
+})
 
-async function handleUpload ({ geojson, source }) {
-  await submitParcelles(geojson, { source })
+function onUploadStart () {
+  statsPush(['trackEvent', 'setup', `import:${importTool.value.featureSource}`, 'start'])
+}
 
-  statsPush(['trackEvent', 'setup', `import:${featureSource.value}`, 'ok'])
+function onSuccess () {
+  statsPush(['trackEvent', 'setup', `import:${importTool.value.featureSource}`, 'ok'])
   router.push('/operateur/certification-ab')
+}
+
+function onError (error) {
+  statsPush(['trackEvent', 'setup', `import:${importTool.value.featureSource}`, 'error'])
 }
 </script>
 
