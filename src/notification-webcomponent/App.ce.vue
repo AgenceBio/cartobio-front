@@ -1,30 +1,53 @@
 <template>
-  <h1>Hello {{ label }}</h1>
+  <h2>Utilisateur #{{ store.state.currentUser.id }}</h2>
+  <OperatorSetup v-if="uploadState !== 'complete'" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @error="onError" />
+  <div v-else class="fr-alert fr-alert--success fr-mb-5w">
+    <p class="fr-alert__title">Import réussi</p>
+    <p>Merci, et à bientôt !</p>
+  </div>
 
-  <p><button class=" searchBtnCommun  AdvancedsearchBtn">Stylé !</button></p>
-
-  <p>Auth token : <code>{{ authToken }}</code></p>
-
-  <ParcellaireSetup />
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import ParcellaireSetup from '../pages/operateur/setup.vue'
+import { ref, onBeforeMount } from 'vue'
 
-defineProps({
+import OperatorSetup from '../components/OperatorSetup/index.vue'
+import store from '../store.js'
+import { parse } from '../jwt.js'
+
+const uploadState = ref(null)
+
+const props = defineProps({
   'auth-token': String
 })
 
-const label = ref('Cartobio')
+onBeforeMount(() => {
+  const token = parse(props.authToken)
+  if (token.id) {
+    store.loginUser(token)
+  }
+})
+
+function onUploadStart () {
+  console.log('upload:start')
+  uploadState.value = 'start'
+}
+
+function onSuccess ({ geojson, source }) {
+  console.log('upload:complete', { geojson, source })
+  uploadState.value = 'complete'
+}
+
+function onError (error) {
+  console.error('error', error)
+  uploadState.value = 'error'
+}
 </script>
 
 <style>
 @charset "utf-8";
-
-@import '@gouvfr/dsfr/dsfr.css';
+@import '@gouvfr/dsfr/dsfr.main.css';
 @import '@gouvfr/dsfr/utility/icons/icons.css';
-@import '../styles/variables.css';
 
 a[aria-disabled] {
   --text-action-high-blue-france: gray;

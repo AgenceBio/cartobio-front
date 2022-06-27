@@ -1,4 +1,10 @@
 import { defineCustomElement } from 'vue'
-import App from './App.ce.vue'
+import NotificationCartobio from './App.ce.vue'
 
-customElements.define('notification-cartobio', defineCustomElement(App))
+const NotificationCartobioElement = defineCustomElement({
+  ...NotificationCartobio,
+  styles: NotificationCartobio.styles.map(style => style.replace(/:root/g, ':host'))
+})
+
+customElements.define('notification-cartobio', NotificationCartobioElement)
+
