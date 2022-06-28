@@ -49,8 +49,6 @@ import store from '../../store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
-console.log('import.meta.env', import.meta.env)
-
 const emit = defineEmits(['upload:start', 'upload:complete'])
 const currentUser = toRef(store.state, 'currentUser')
 

@@ -7,6 +7,6 @@
   status = 200
 
 [[headers]]
-  for = "/*"
+  for = "/notification-webcomponent/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"

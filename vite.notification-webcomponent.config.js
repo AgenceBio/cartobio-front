@@ -3,8 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import Pages from "vite-plugin-pages"
 import { resolve, join } from 'path'
 
-console.log(import.meta.env)
-
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => ({
   envPrefix: 'VUE_APP_',
