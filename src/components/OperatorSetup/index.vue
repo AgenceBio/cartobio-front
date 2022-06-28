@@ -18,7 +18,7 @@ import { submitParcelles } from '../../cartobio-api.js'
 import featureSources from '../../components/OperatorSetup/index.js'
 import store from '../../store.js'
 
-const emit = defineEmits(['import:start', 'import:complete', 'error'])
+const emit = defineEmits(['import:start', 'import:complete', 'import:error'])
 const featureSource = ref(store.state.parcellaireSource ?? 'telepac')
 
 defineExpose({ featureSource })
@@ -29,7 +29,7 @@ async function handleUpload ({ geojson, source }) {
     emit('import:complete', { geojson, source })
   }
   catch (error) {
-    emit('error', error)
+    emit('import:error', error)
   }
 }
 </script>

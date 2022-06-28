@@ -12,7 +12,7 @@ meta:
       Sélectionner l’outil où votre parcellaire est maintenu à jour.
     </p>
 
-    <OperatorSetup @import:start="onUploadStart" @import:complete="onSuccess" @error="onError" ref="importTool" />
+    <OperatorSetup @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" ref="importTool" />
   </div>
 </template>
 
