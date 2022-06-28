@@ -13,6 +13,11 @@ export default defineConfig({
 
   build: {
     outDir: join(__dirname, 'dist', 'notification-webcomponent'),
+    lib: {
+      entry: resolve(__dirname, 'src/notification-webcomponent/main.js'),
+      name: 'NotificationCartobio',
+      fileName: (format) => `notification-cartobio.${format}.js`,
+    },
   },
 
   plugins: [ vue(), Pages() ],
