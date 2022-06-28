@@ -3,8 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import Pages from "vite-plugin-pages"
 import { resolve, join } from 'path'
 
+console.log(import.meta.env)
+
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
   envPrefix: 'VUE_APP_',
 
   base: '/notification-webcomponent/',
@@ -13,11 +15,11 @@ export default defineConfig({
 
   build: {
     outDir: join(__dirname, 'dist', 'notification-webcomponent'),
-    lib: {
+    ...(mode === 'lib' ? { lib: {
       entry: resolve(__dirname, 'src/notification-webcomponent/main.js'),
       name: 'NotificationCartobio',
       fileName: (format) => `notification-cartobio.${format}.js`,
-    },
+    } } : {}),
   },
 
   plugins: [ vue(), Pages() ],
@@ -35,4 +37,4 @@ export default defineConfig({
       allow: [__dirname]
     }
   }
-})
+}))
