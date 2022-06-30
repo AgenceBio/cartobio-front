@@ -1,18 +1,5 @@
 <template>
   <div>
-    <!-- <article>
-          <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
-            🔐 Connecter mon compte TelePAC
-          </button>
-        </article> -->
-    <div class="fr-alert fr-alert--info fr-mb-5w">
-      <p class="fr-alert__title">Remarque</p>
-      <p>
-        Le nom du fichier ressemble à
-        <code>Dossier-PAC-{{ campagnePacAnnee }}_parcelle-{{ campagnePacAnnee }}_{{ currentUser.numeroPacage }}_….zip</code>.
-      </p>
-    </div>
-
     <div class="fr-upload-group">
       <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden />
 
@@ -52,7 +39,7 @@ const { VUE_APP_API_ENDPOINT } = import.meta.env
 const emit = defineEmits(['upload:start', 'upload:complete'])
 const currentUser = toRef(store.state, 'currentUser')
 
-const campagnePacAnnee = ref(2021)
+const campagnePacAnnee = ref(2022)
 const campagnePacAnneeShort = computed(() => String(campagnePacAnnee.value).slice(-2))
 const campagnePacUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/auth/accueilTas.action?campagne=${campagnePacAnnee.value}&titreApplication=Dossier+PAC+${campagnePacAnnee.value}`)
 const campagnePacExportUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/ie/exportShpIlots.action`)
