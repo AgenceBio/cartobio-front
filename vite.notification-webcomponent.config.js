@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode }) => ({
 
   build: {
     outDir: join(__dirname, 'dist', 'notification-webcomponent'),
-    ...(mode === 'lib' ? { lib: {
+    ...(mode.startsWith('lib') ? { lib: {
       entry: resolve(__dirname, 'src/notification-webcomponent/main.js'),
       name: 'NotificationCartobio',
       fileName: (format) => `notification-cartobio.${format}.js`,

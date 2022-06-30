@@ -18,7 +18,32 @@
       <p>Il est intégré à la page avec ce code :</p>
 
       <pre><code>
-&lt;notification-cartobio auth-token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEzNzQ0LCJpYXQiOjE1MTYyMzkwMjJ9.6ONAXQgk1ynvMC-qfUKSrY6J2etBhQpfBZVUD0TS5wg"&gt;&lt;/notification-cartobio&gt;
+&lt;template&gt;
+  &lt;notification-cartobio
+    :auth-token="userJwtToken"
+    @import:start="onImport"
+    @import:complete="onSuccess"
+    @import:error="onError" /&gt;
+&lt;/template&gt;
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const userJwtToken = ref('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEzNzQ0LCJpYXQiOjE1MTYyMzkwMjJ9.6ONAXQgk1ynvMC-qfUKSrY6J2etBhQpfBZVUD0TS5wg')
+
+function onImport () {
+
+}
+
+function onSuccess ({ geojson }) {
+
+}
+
+function onError (error) {
+
+}
+&lt;/script&gt;
+
+&lt;!-- dans index.html --&gt;
 &lt;script type="module" src="%PUBLIC_URL%/notification-webcomponent/notification-cartobio.es.js"&gt;&lt;/script&gt;
       </code></pre>
 
