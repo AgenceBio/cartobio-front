@@ -15,8 +15,12 @@ const mapContainer = ref(null)
 provide('map', map)
 
 const props = defineProps({
-  style: Object,
+  style: [Object, String],
   bounds: Array,
+  options: {
+    type: Object,
+    default: {}
+  },
 })
 
 const emit = defineEmits(['load', 'zoom:change'])
@@ -28,6 +32,7 @@ onMounted(() => {
     style: props.style,
     bounds: props.bounds,
     padding: 20,
+    ...props.options,
   })
 
   map.value.once('load', ({ target: map }) => {

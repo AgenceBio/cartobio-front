@@ -6,49 +6,114 @@ meta:
 
 <template>
   <div class="fr-container fr-my-5w">
-    <h2>Importer mon parcellaire</h2>
+    <div class="fr-stepper">
+      <h2 class="fr-stepper__title">
+        <span class="fr-stepper__state">Étape {{ currentStep.index }} sur {{ allSteps.length }}</span>
+        {{ currentStep.title }}
+      </h2>
+      <div class="fr-stepper__steps" :data-fr-current-step="currentStep.index" :data-fr-steps="allSteps.length"></div>
+      <p class="fr-stepper__details" v-if="nextStep">
+        <span class="fr-text--bold">Étape suivante&nbsp;:</span> {{ nextStep.title }}
+      </p>
+    </div>
 
-    <p>
-      Sélectionner l’outil où votre parcellaire est maintenu à jour.
-    </p>
+    <section v-if="currentStep.index === 1">
+      <p class="fr-text--lg">
+        Nous vous demandons quelques informations lors
+        d'une <em>première utilisation</em> de Cartobio.
+      </p>
 
-    <OperatorSetup @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" ref="importTool" />
+      <p class="fr-text--lg">
+        Nous avons pensé le procédé pour qu'il vous évite du travail de recopie
+        lors du prochain audit avec votre organisme de certification.
+      </p>
+
+      <p>
+        <button @click="currentStepIndex = currentStepIndex + 1" class="fr-btn"><b>Étape suivante</b> : {{
+          nextStep.title }}</button>
+      </p>
+    </section>
+    <section v-else-if="currentStep.index === 2">
+      <p>
+        Sélectionner l'outil informatisé qui est au plus proche de la réalité de votre terrain.
+      </p>
+
+      <OperatorSetup @source:change="onSourceChange" @import:start="onUploadStart" @import:complete="onSuccess"
+        @import:error="onError" />
+    </section>
+    <section v-else-if="currentStep.index === 3">
+      <div class="fr-alert fr-alert--success">
+        <p class="fr-alert__title">{{ parcellaire.features.length }} parcelles importées</p>
+        <p>Les parcelles de votre compte {{ importToolName }} ont bien été importées dans Cartobio.</p>
+      </div>
+
+      <MapContainer :options="{ interactive: false, hash: false }" :style="baseVectorStyles" :bounds="mapBounds" class="map fr-my-5w">
+        <GeojsonLayer :data="parcellaire" name="parcellaire-operateur" />
+      </MapContainer>
+
+      <router-link to="/operateur/certification-ab" class="fr-btn">
+        Vérifier mes parcelles
+      </router-link>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, toRefs, readonly, computed } from 'vue'
 import { statsPush } from '../stats.js'
+import store from '../../store.js'
+
+import bbox from '@turf/bbox'
 
 import OperatorSetup from '../../components/OperatorSetup/index.vue'
+import MapContainer from '../../components/Map/MapContainer.vue'
+import GeojsonLayer from '../../components/Map/GeojsonLayer.vue'
+import importTools from '../../components/OperatorSetup/index.js'
 
-const router = useRouter()
-const importTool = ref(null)
+const importTool = ref('')
+const { parcellaire, parcellaireSource } = toRefs(store.state)
+const baseVectorStyles = 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json'
 
-onMounted(() => {
-  watch(() => importTool.value.featureSource, () => {
-    statsPush(['trackEvent', 'setup', 'sourceSelect', importTool.value.featureSource])
-  })
-})
+const currentStepIndex = ref(0)
+const allSteps = readonly([
+  { title: 'Bienvenue sur Cartobio' },
+  { title: 'Importer mon parcellaire' },
+  { title: 'Voir sur une carte' },
+])
 
-function onUploadStart () {
-  statsPush(['trackEvent', 'setup', `import:${importTool.value.featureSource}`, 'start'])
+const currentStep = computed(() => ({ index: currentStepIndex.value + 1, ...allSteps[currentStepIndex.value] }))
+const nextStep = computed(() => currentStepIndex.value + 1 < allSteps.length ? allSteps[currentStepIndex.value + 1] : null)
+const importToolName = computed(() => parcellaireSource.value ? importTools[parcellaireSource.value].label : '')
+
+const mapBounds = computed(() => bbox(parcellaire.value))
+
+function onSourceChange (source) {
+  importTool.value = source
+  statsPush(['trackEvent', 'setup', 'sourceSelect', importTool.value])
 }
 
-function onSuccess () {
-  statsPush(['trackEvent', 'setup', `import:${importTool.value.featureSource}`, 'ok'])
-  router.push('/operateur/certification-ab')
+function onUploadStart () {
+  statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'start'])
+}
+
+function onSuccess ({ geojson }) {
+  statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'ok'])
+  parcellaire.value = geojson
+  currentStepIndex.value += 1
 }
 
 function onError (error) {
-  statsPush(['trackEvent', 'setup', `import:${importTool.value.featureSource}`, 'error'])
+  statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'error'])
 }
 </script>
 
 <style scoped>
 [aria-current="true"] {
   font-weight: bold;
+}
+
+.fr-text--lg {
+  max-width: 40rem;
 }
 
 .sources {
@@ -64,5 +129,11 @@ article .screenshot {
 
 details.help summary {
   display: block;
+}
+
+.map {
+  background: #ccc;
+  height: 450px;
+  width: 450px;
 }
 </style>

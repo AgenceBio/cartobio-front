@@ -12,7 +12,7 @@ export default {
     component: GeofoliaPanel,
   },
   telepac: {
-    label: 'Déclaration PAC',
+    label: 'Telepac',
     component: TelepacPanel,
   },
   ncvi: {

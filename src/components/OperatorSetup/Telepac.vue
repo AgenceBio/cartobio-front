@@ -49,6 +49,10 @@
             </a>
           </li>
         </ol>
+
+        <a href="#top" class="fr-mt-5w fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-arrow-up-fill">
+          retour en haut de page
+        </a>
       </div>
     </fieldset>
   </div>

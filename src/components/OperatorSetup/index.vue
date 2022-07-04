@@ -11,15 +11,16 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 import { submitParcelles } from '../../cartobio-api.js'
 
 import featureSources from '../../components/OperatorSetup/index.js'
 import store from '../../store.js'
 
-const emit = defineEmits(['import:start', 'import:complete', 'import:error'])
+const emit = defineEmits(['source:change', 'import:start', 'import:complete', 'import:error'])
 const featureSource = ref(store.state.parcellaireSource ?? 'telepac')
+watchEffect(() => emit('source:change', featureSource.value))
 
 defineExpose({ featureSource })
 
