@@ -35,7 +35,7 @@
                   <h4 class="fr-card__title">{{ candidateUser.nom }}</h4>
                   <div class="fr-card__desc">
                     <ul>
-                      <li><b>Dénomination courante</b> : {{ candidateUser.denominationCourante }}</li>
+                      <li v-if="candidateUser.denominationCourante && candidateUser.denominationCourante !== candidateUser.nom"><b>Dénomination courante</b> : {{ candidateUser.denominationCourante }}</li>
                       <li><b>SIRET</b> : {{ candidateUser.siret }}</li>
                       <li><b>PACAGE</b> : {{ candidateUser.numeroPacage }}</li>
                       <li><b>Numéro Bio</b> : {{ candidateUser.id }}</li>
@@ -75,6 +75,9 @@ import store from '../../store.js'
 const router = useRouter()
 const loginInput = ref(null)
 const userLogin = ref('')
+const cleanedInput = computed(() => userLogin.value.trim())
+const cleanedInputWithoutSpaces = computed(() => userLogin.value.replace(/ /g, ''))
+
 const isLoading = ref(false)
 let candidateUsers = ref([])
 
@@ -88,15 +91,12 @@ const LOGIN_TYPES = [
 ]
 
 const userLoginType = computed(() => {
-  const cleanedInput = userLogin.value.trim()
-  const cleanedInputWithoutSpaces = cleanedInput.replace(/ /g, '')
-
   //
-  if (/^[0-9]{8,9}$/i.test(cleanedInputWithoutSpaces)) {
+  if (/^[0-9]{8,9}$/i.test(cleanedInputWithoutSpaces.value)) {
     return ['pacage']
   }
   //
-  else if (/^[0-9]{14}$/i.test(cleanedInputWithoutSpaces)) {
+  else if (/^[0-9]{14}$/i.test(cleanedInputWithoutSpaces.value)) {
     return ['siret']
   }
   // 0102030405
@@ -105,11 +105,11 @@ const userLoginType = computed(() => {
   //   return ['phone']
   // }
   // via https://github.com/sindresorhus/email-regex/blob/main/index.js
-  else if (new RegExp('^[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*$').test(cleanedInputWithoutSpaces)) {
+  else if (new RegExp('^[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*$').test(cleanedInputWithoutSpaces.value)) {
     return ['email']
   }
   // arbitrary length… maybe not a great idea
-  else if (cleanedInputWithoutSpaces.length > 3) {
+  else if (cleanedInputWithoutSpaces.value.length > 3) {
     return ['name', 'farm-name']
   }
 
@@ -131,7 +131,7 @@ async function tryLogin () {
 
   const userProfiles = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v1/tryLogin`, {
     method: 'POST',
-    body: JSON.stringify({ q: userLogin.value }),
+    body: JSON.stringify({ q: cleanedInput.value }),
     headers: {
       'Content-Type': 'application/json'
     }
