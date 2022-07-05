@@ -8,47 +8,74 @@
       </button>
     </div>
 
-    <fieldset class="fr-fieldset fr-my-5w">
+    <hr class="fr-mt-5w fr-mb-3w" />
+
+    <fieldset class="fr-fieldset">
       <legend class="fr-fieldset__legend fr-icon fr-icon-questionnaire-line">
-        Où trouver mon fichier ?
+        Où télécharger le fichier de ma dernière déclaration PAC ?
       </legend>
 
       <div class="fr-fieldset__content">
         <p>
-          Le fichier <b>Fichier de parcelles déclarées {{ campagnePacAnnee }}</b> se récupère en quelques clics
+          Le <b>fichier de parcelles déclarées {{ campagnePacAnnee }}</b> se récupère en quelques clics
           sur le <a href="https://www.telepac.agriculture.gouv.fr/" target="_blank">portail Telepac</a> :
         </p>
 
-        <ol class="fr-list">
-          <li>
-            connectez-vous avec vos identifiants Télépac
-          </li>
+        <div class="fr-grid-row">
+          <div class="fr-col-5">
+            <ol class="fr-list">
+              <li class="fr-mb-2w">
+                connectez-vous avec vos identifiants Télépac
+              </li>
 
-          <li>
-            sélectionnez l'entrée
-            <a :href="campagnePacUrl" class="fr-text--bold" target="_blank">Dossier PAC {{ campagnePacAnnee }}</a>
-            dans l'encart <b>Téléprocédures</b>
+              <li class="fr-mb-2w">
+                dans l'encart <b>Téléprocédures</b>,
+                sélectionnez l'entrée
+                <a :href="campagnePacUrl" class="fr-text--bold" target="_blank">Dossier PAC {{ campagnePacAnnee }}</a>
+              </li>
 
-            <img src="/import/capture_ecran_telepac_accueil.png" class="fr-responsive-img fr-ratio-4x3 screenshot"
-            alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
-          </li>
+              <li class="fr-mb-2w">
+                dans l'onglet bleu <b>Import/export</b>,
+                sélectionnez le menu
+                <a :href="campagnePacExportUrl" class="fr-text--bold" target="_blank">Export îlots et parcelles</a>
+              </li>
 
-          <li>
-            sélectionnez le menu
-            <a :href="campagnePacExportUrl" class="fr-text--bold" target="_blank">Export îlots et parcelles</a>
-            dans l'onglet bleu <b>Import/export</b>
+              <li class="fr-mb-2w">
+                cliquez sur le lien
+                <a :href="campagnePacExportShapefileUrl" target="_blank">
+                  <b>Parcelles déclarées {{ campagnePacAnnee }}</b> : Fichier de parcelles
+                </a>
+              </li>
 
-            <img src="/import/capture_ecran_telepac_export.png" class="fr-responsive-img fr-ratio-4x3 screenshot"
-            alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
-          </li>
+              <li class="fr-mb-2w">
+                <button class="fr-btn fr-icon-upload-line fr-btn--icon-left fr-mb-2w" @click="fileInput.click()">
+                  Importer ma dernière déclaration PAC
+                </button>
+                <br />
 
-          <li>
-            cliquez sur le lien
-            <a :href="campagnePacExportShapefileUrl" target="_blank">
-              <b>Parcelles déclarées {{ campagnePacAnnee }}</b> : Fichier de parcelles
-            </a>
-          </li>
-        </ol>
+                <span class="fr-icon fr-icon-info-fill">
+                  le fichier téléchargé se trouve dans votre <b>répertoire "Téléchargements"</b>.
+                </span>
+              </li>
+            </ol>
+
+            <p>
+
+            </p>
+          </div>
+
+          <div class="fr-col-7">
+            <p>
+              <img src="/import/capture_ecran_telepac_accueil.png" class="fr-responsive-img fr-ratio-4x3 screenshot"
+                alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
+            </p>
+
+            <p>
+              <img src="/import/capture_ecran_telepac_export.png" class="fr-responsive-img fr-ratio-4x3 screenshot"
+                alt="Écran Import/Export du dossier PAC sur le service en ligne Telepac" />
+            </p>
+          </div>
+        </div>
 
         <a href="#top" class="fr-mt-5w fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-arrow-up-fill">
           retour en haut de page
