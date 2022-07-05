@@ -127,9 +127,3 @@ async function handleFileUpload () {
   emit('upload:complete', { geojson, source })
 }
 </script>
-
-<style scoped>
-img.screenshot {
-  max-width: 650px;
-}
-</style>
