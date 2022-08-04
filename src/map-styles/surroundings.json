@@ -15,7 +15,7 @@
       "source": "rpg-anon",
       "source-layer": "rpg2020",
       "minzoom": 8,
-      "maxzoom": 14,
+      "maxzoom": 24,
       "paint": {
         "fill-color": [
           "match",
@@ -35,7 +35,7 @@
       "source": "rpg-anon",
       "source-layer": "rpg2020",
       "minzoom": 8,
-      "maxzoom": 14,
+      "maxzoom": 24,
       "paint": {
         "line-color": "#B39DDB",
         "line-opacity": 0.9,
