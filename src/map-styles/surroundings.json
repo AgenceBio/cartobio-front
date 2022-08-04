@@ -1,10 +1,10 @@
 {
   "sources": {
-    "rpg-anon-2020": {
+    "rpg-anon": {
       "type": "vector",
-      "scheme": "tms",
+      "scheme": "xyz",
       "tiles": [
-        "https://cartobio.org/geoserver/gwc/service/tms/1.0.0/cartobio:anon_rpg_2020@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+        "https://cartobio.org/tiles/rpg-2020/{z}/{x}/{y}.pbf"
       ]
     }
   },
@@ -12,14 +12,14 @@
     {
       "id": "rpg-anon-2020-fill",
       "type": "fill",
-      "source": "rpg-anon-2020",
-      "source-layer": "anon_rpg_2020",
-      "minzoom": 9,
-      "maxzoom": 24,
+      "source": "rpg-anon",
+      "source-layer": "rpg2020",
+      "minzoom": 8,
+      "maxzoom": 14,
       "paint": {
         "fill-color": [
           "match",
-          ["to-string", ["get", "codecultu"]],
+          ["to-string", ["get", "CODE_CULTU"]],
           ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"],
           "#EB5757",
           ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"],
@@ -32,10 +32,10 @@
     {
       "id": "rpg-anon-2020-border",
       "type": "line",
-      "source": "rpg-anon-2020",
-      "source-layer": "anon_rpg_2020",
-      "minzoom": 10,
-      "maxzoom": 24,
+      "source": "rpg-anon",
+      "source-layer": "rpg2020",
+      "minzoom": 8,
+      "maxzoom": 14,
       "paint": {
         "line-color": "#B39DDB",
         "line-opacity": 0.9,
