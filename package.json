@@ -35,14 +35,14 @@
   },
   "devDependencies": {
     "@testing-library/vue": "^6.4.2",
-    "@vitejs/plugin-vue": "^2.0.0",
+    "@vitejs/plugin-vue": "^3.0.1",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.6.0",
     "eslint-plugin-vue": "^8.2.0",
     "postcss-preset-env": "^7.2.3",
     "typescript": "^4.5.5",
-    "vite": "^2.7.2",
-    "vite-plugin-pages": "^0.21.4"
+    "vite": "^3.0.4",
+    "vite-plugin-pages": "^0.25.0"
   },
   "eslintConfig": {
     "root": true,

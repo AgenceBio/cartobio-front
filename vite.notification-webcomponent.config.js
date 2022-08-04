@@ -7,11 +7,12 @@ import { resolve, join } from 'path'
 export default defineConfig(({ command, mode }) => ({
   envPrefix: 'VUE_APP_',
 
-  base: '/notification-webcomponent/',
+
   root: 'src/notification-webcomponent',
   envDir: __dirname,
 
   build: {
+    base: '/notification-webcomponent/',
     outDir: join(__dirname, 'dist', 'notification-webcomponent'),
     ...(mode.startsWith('lib') ? { lib: {
       entry: resolve(__dirname, 'src/notification-webcomponent/main.js'),
@@ -31,6 +32,7 @@ export default defineConfig(({ command, mode }) => ({
   },
 
   server: {
+    port: 3000,
     fs: {
       allow: [__dirname]
     }

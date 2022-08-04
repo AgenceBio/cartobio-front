@@ -18,4 +18,8 @@ export default defineConfig({
       'styles': resolve(join(__dirname, 'src', 'styles'))
     },
   },
+
+  server: {
+    port: 3000
+  }
 })
