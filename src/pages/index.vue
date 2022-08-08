@@ -29,7 +29,7 @@
   <div class="fr-container fr-py-4w">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-lg-6 fr-text-align-center">
-        <img src="../assets/illustrations/undraw_environment_iaus.svg" class="fr-responsive-img fr-my-3w cta-img"
+        <img src="../assets/illustrations/undraw_environment.svg" class="fr-responsive-img fr-my-3w cta-img"
           alt="" />
 
         <h3 class="fr-h4">Agriculteurs, agricultrices</h3>
@@ -46,7 +46,7 @@
       </div>
 
       <div class="fr-col-lg-6 fr-text-align-center">
-        <img src="../assets/illustrations/undraw_certification_re_ifll.svg" class="fr-responsive-img fr-my-3w cta-img"
+        <img src="../assets/illustrations/undraw_certification.svg" class="fr-responsive-img fr-my-3w cta-img"
           alt="" />
 
         <h3 class="fr-h4">Organismes de Certification</h3>
@@ -111,25 +111,25 @@
 
       <ul class="fr-grid-row fr-text-align-center steps fr-grid-row--gutters">
         <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_prioritise_re_r5xu (2).svg"
+          <img src="../assets/illustrations/undraw_prioritise_ready.svg"
             class="fr-responsive-img fr-my-3w cta-img" alt="" />
 
           Import ou création du parcellaire par les agriculteurs.trices
         </li>
         <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_job_hunt_re_q203.svg" class="fr-responsive-img fr-my-3w cta-img"
+          <img src="../assets/illustrations/undraw_job_hunt.svg" class="fr-responsive-img fr-my-3w cta-img"
             alt="" />
 
           Le parcellaire est validé par l’OC lors du controle Bio
         </li>
         <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_online_transactions_-02-ka.svg"
+          <img src="../assets/illustrations/undraw_online_transactions.svg"
             class="fr-responsive-img fr-my-3w cta-img" alt="" />
 
           Transmission du parcellaire à la DDT pour une instruction simplifiée des aides PAC
         </li>
         <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_open_source_-1-qxw.svg" class="fr-responsive-img fr-my-3w cta-img"
+          <img src="../assets/illustrations/undraw_open_source.svg" class="fr-responsive-img fr-my-3w cta-img"
             alt="" />
 
           Le parcellaire anonymisé est publié et réutilisé par de nombreux acteurs
