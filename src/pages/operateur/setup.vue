@@ -60,7 +60,7 @@ meta:
 
 <script setup>
 import { ref, toRefs, readonly, computed } from 'vue'
-import { statsPush } from '../stats.js'
+import { statsPush } from '@/stats.js'
 import store from '../../store.js'
 
 import bbox from '@turf/bbox'

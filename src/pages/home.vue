@@ -138,34 +138,13 @@
     </div>
   </div>
 
-  <div class="fr-container--fluid fr-background-alt--grey fr-py-5w">
-    <div class="fr-container container--stats">
-      <div class="fr-grid-row">
-        <div class="fr-col-12">
-          <h2 class="fr-h4">Les chiffres</h2>
-        </div>
-      </div>
-
-      <ul class="fr-grid-row">
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">1500</span>
-          Parcelles renseignés
-        </li>
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">80%</span>
-          De la surface cultivée en bio
-        </li>
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">430</span>
-          Téléchargements des données
-        </li>
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">37</span>
-          Réutilisations de ces données
-        </li>
-      </ul>
-    </div>
-  </div>
+  <StatsSection class="fr-background-alt--grey">
+    <template #footer-link>
+      <router-link to="/stats" class="fr-btn fr-btn--secondary">
+        Voir toutes les statistiques
+      </router-link>
+    </template>
+  </StatsSection>
 
   <div class="fr-container fr-py-5w">
     <div class="fr-grid-row">
@@ -291,6 +270,10 @@
   </div>
 </template>
 
+<script setup>
+import StatsSection from '@/components/Stats/section.vue'
+</script>
+
 <style scoped>
 .fr-text-align-center {
   text-align: center;
@@ -320,14 +303,5 @@
 
 img.logo {
   max-height: 100px;
-}
-
-.container--stats ul.fr-grid-row {
-  list-style: none;
-}
-
-.container--stats span {
-  display: block;
-  margin: 0;
 }
 </style>
