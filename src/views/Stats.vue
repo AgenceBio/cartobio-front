@@ -156,8 +156,8 @@ export default {
       })
       .finally(() => this.loading = false)
 
-    get('https://back.datapass.api.gouv.fr/api/stats?target_api=cartobio')
-      .then((response) => this.dataAccessCount += response.data.validated_enrollment_count)
+    get('https://back.datapass.api.gouv.fr/api/enrollments/public?target_api=cartobio')
+      .then((response) => this.dataAccessCount += response.data.meta.total_count)
 
     // get Matomo stats for connexion events
     let matomoURL = "https://cartobio.org/s/api"
