@@ -98,6 +98,13 @@
           </ul>
         </div>
       </div>
+      <div class="fr-grid-row">
+        <p class="fr-col-12 fr-mt-3w">
+          <router-link to="/projet" class="fr-btn fr-btn--secondary">
+            En savoir plus sur le projet
+          </router-link>
+        </p>
+      </div>
     </div>
   </div>
 
