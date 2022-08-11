@@ -19,7 +19,7 @@
             <div class="fr-header__service">
               <router-link to="/" rel="home">
                 <p class="fr-header__service-title">
-                  CartoBio <span class="fr-badge fr-badge--new">beta</span>
+                  CartoBio <span class="fr-badge fr-badge--green-emeraude">beta</span>
                 </p>
               </router-link>
 
@@ -29,25 +29,29 @@
 
           <div class="fr-header__tools">
             <div class="fr-header__tools-links">
-              <ul class="fr-links-group">
-                <!-- <li v-if="currentUser.id">
-                          {{ currentUser.nom }}
-                        </li> -->
-                <li v-if="currentUser.id">
-                  <router-link to="/operateur/certification-ab" class="fr-link fr-icon-medal-fill">
+              <ul class="fr-links-group" v-if="currentUser.id">
+                <li>
+                  <router-link to="/exploitation/certification-ab" class="fr-link fr-icon-medal-fill">
                     Ma certification&nbsp;<abbr title="Agriculture Biologique">AB</abbr>
                   </router-link>
                 </li>
-                <li v-if="currentUser.id">
-                  <router-link to="/operateur/parcellaire" class="fr-link fr-icon-map-pin-user-fill">
+                <li>
+                  <router-link to="/exploitation/parcellaire" class="fr-link fr-icon-map-pin-user-fill">
                     Mon parcellaire
                   </router-link>
                 </li>
-                <li v-if="currentUser.id">
+                <li>
                   <router-link to="/logout" custom v-slot="{ href }">
                     <a :href="href" class="fr-link fr-icon-logout-box-r-line" @click.prevent="logout">
                       Déconnexion
                     </a>
+                  </router-link>
+                </li>
+              </ul>
+              <ul class="fr-links-group" v-else>
+                <li>
+                  <router-link to="/exploitation/login" class="fr-icon-account-circle-fill">
+                    Connexion
                   </router-link>
                 </li>
               </ul>
@@ -69,7 +73,7 @@ const router = useRouter()
 const currentUser = toRef(store.state, 'currentUser')
 function logout() {
   store.logoutUser()
-  router.replace('/')
+  router.replace('/exploitation')
 }
 </script>
 

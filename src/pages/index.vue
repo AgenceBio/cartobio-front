@@ -18,7 +18,7 @@
           </p>
 
           <p>
-            <router-link class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" to="/operateur/certification-ab">
+            <router-link class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" to="/exploitation">
               Utiliser CartoBio
             </router-link>
           </p>

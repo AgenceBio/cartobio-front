@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <article>
-          <button type="button" @click.prevent="$router.push('/operateur/parcellaire')">
+          <button type="button" @click.prevent="$router.push('/exploitation/parcellaire')">
             🔐 Connecter mon compte Isagri Geofolia
           </button>
         </article> -->

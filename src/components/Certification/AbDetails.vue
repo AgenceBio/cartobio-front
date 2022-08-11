@@ -3,7 +3,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h4 class="fr-card__title">
-          <router-link to="/operateur/certification-ab">
+          <router-link to="/exploitation/certification-ab">
             Ma certification&nbsp;<abbr title="Agriculture Biologique">AB</abbr>
           </router-link>
         </h4>

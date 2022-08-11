@@ -30,11 +30,11 @@ const router = useRouter()
 
 router.beforeEach(async (to, from) => {
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
-    return router.replace('/operateur/login')
+    return router.replace('/exploitation/login')
   }
 
-  if (to.path === '/operateur/login' && store.state.currentUser.id) {
-    return router.replace('/operateur/certification-ab')
+  if (to.path === '/exploitation/login' && store.state.currentUser.id) {
+    return router.replace('/exploitation/certification-ab')
   }
 
   if (to.meta.requiresGeodata) {
@@ -43,7 +43,7 @@ router.beforeEach(async (to, from) => {
     }
     catch (error) {
       if (error.name === 'ParcellesNotSetup') {
-        return router.push('/operateur/setup')
+        return router.push('/exploitation/setup')
       }
     }
   }
@@ -62,5 +62,10 @@ a[aria-disabled] {
   --border-action-high-blue-france: gray;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+.fr-col--center,
+.fr-grid-row--align-center {
+  text-align: center;
 }
 </style>
