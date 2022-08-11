@@ -1,8 +1,8 @@
 <template>
   <div class="fr-container fr-my-5w">
-    <h1>Mentions légales de Cartobio</h1>
+    <h1>Mentions légales de CartoBio</h1>
     <h2>Editeur de la Plateforme</h2>
-    <p>La Plateforme Cartobio est éditée par l'Agence Bio située&nbsp;:
+    <p>La Plateforme CartoBio est éditée par l'Agence Bio située&nbsp;:
       12, rue Henri Rol Tanguy,
       93100 MONTREUIL</p>
     <h2>Directeur de la publication</h2>

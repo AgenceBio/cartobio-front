@@ -40,7 +40,7 @@
 
         <p>
           <router-link to="/exploitation" class="fr-btn fr-btn--secondary">
-            Utiliser Cartobio pour mon exploitation
+            Utiliser CartoBio pour mon exploitation
           </router-link>
         </p>
       </div>
@@ -57,7 +57,7 @@
 
         <p>
           <router-link to="/certification" class="fr-btn fr-btn--secondary">
-            Utiliser Cartobio pour mes contrôles
+            Utiliser CartoBio pour mes contrôles
           </router-link>
         </p>
       </div>

@@ -19,7 +19,7 @@
             <div class="fr-header__service">
               <router-link to="/" rel="home">
                 <p class="fr-header__service-title">
-                  Cartobio <span class="fr-badge fr-badge--new">beta</span>
+                  CartoBio <span class="fr-badge fr-badge--new">beta</span>
                 </p>
               </router-link>
 

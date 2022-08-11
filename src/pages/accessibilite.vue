@@ -4,18 +4,18 @@
     <p>Établie le <span>20 juin 2022</span>.</p>
     <p><span>L'Agence Bio</span> s’engage à rendre son service accessible, conformément à l’article 47 de la loi n°
       2005-102 du 11 février 2005.</p>
-    <p>Cette déclaration d’accessibilité s’applique à <strong>Cartobio</strong><span>
+    <p>Cette déclaration d’accessibilité s’applique à <strong>CartoBio</strong><span>
         (<span>https://cartobio.org</span>)</span>.</p>
     <h2>État de conformité</h2>
     <p>
-      <strong>Cartobio</strong> est
+      <strong>CartoBio</strong> est
       <strong><span data-printfilter="lowercase">non conforme</span></strong> avec le <abbr
         title="Référentiel général d’amélioration de l’accessibilité">RGAA</abbr>. <span>Le site n’a encore pas été
         audité.</span>
     </p>
     <h2>Amélioration et contact</h2>
     <p>Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de
-      <span>Cartobio</span> pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
+      <span>CartoBio</span> pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
     </p>
     <ul class="basic-information feedback h-card">
       <li>

@@ -20,7 +20,7 @@ meta:
     <section v-if="currentStep.index === 1">
       <p class="fr-text--lg">
         Nous vous demandons quelques informations lors
-        d'une <em>première utilisation</em> de Cartobio.
+        d'une <em>première utilisation</em> de CartoBio.
       </p>
 
       <p class="fr-text--lg">
@@ -44,7 +44,7 @@ meta:
     <section v-else-if="currentStep.index === 3">
       <div class="fr-alert fr-alert--success">
         <p class="fr-alert__title">{{ parcellaire.features.length }} parcelles importées</p>
-        <p>Les parcelles de votre compte {{ importToolName }} ont bien été importées dans Cartobio.</p>
+        <p>Les parcelles de votre compte {{ importToolName }} ont bien été importées dans CartoBio.</p>
       </div>
 
       <MapContainer :options="{ interactive: false, hash: false }" :style="baseVectorStyles" :bounds="mapBounds" class="map fr-my-5w">
@@ -76,7 +76,7 @@ const baseVectorStyles = 'https://openmaptiles.geo.data.gouv.fr/styles/osm-brigh
 
 const currentStepIndex = ref(0)
 const allSteps = readonly([
-  { title: 'Bienvenue sur Cartobio' },
+  { title: 'Bienvenue sur CartoBio' },
   { title: 'Importer mon parcellaire' },
   { title: 'Voir sur une carte' },
 ])
