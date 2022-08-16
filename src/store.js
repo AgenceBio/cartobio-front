@@ -6,6 +6,7 @@ const DEFAULT_STATE = {
   parcellaire: {},
   parcellaireSource: null,
   parcellaireSourceLastUpdate: null,
+  stats: {}
 }
 
 const DEFAULT_STATS = {
@@ -16,6 +17,7 @@ const DEFAULT_STATS = {
     return (this.surfaceRpgBioCouverte / this.surfaceBioCouverte * 100).toLocaleString('fr-FR')
   },
   cartobioExploitationsCount: 0,
+  cartobioParcellesCount: 0,
   opendataDownloadCount: 518, // datapass.api.gouv.fr + demandes manuelles
 }
 
@@ -27,11 +29,14 @@ const store = reactive({
   },
 
   async fetchStats () {
-    const [ dataGouv ] = await Promise.all([
-      get('https://www.data.gouv.fr/api/1/datasets/616d6531c2951bbe8bd97771/')
+    const [ dataGouv, cartobioStats ] = await Promise.all([
+      get('https://www.data.gouv.fr/api/1/datasets/616d6531c2951bbe8bd97771/'),
+      get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
     ])
 
     this.state.stats.opendataDownloadCount = dataGouv.data.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), DEFAULT_STATS.opendataDownloadCount)
+    this.state.stats.cartobioExploitationsCount = cartobioStats.data.stats.count
+    this.state.stats.cartobioParcellesCount = cartobioStats.data.stats.parcelles_count
 
   },
 
