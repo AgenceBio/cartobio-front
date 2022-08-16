@@ -20,7 +20,7 @@
           </ul>
         </div>
 
-        <div class="fr-col-md-5" v-if="sectionBusiness">
+        <div class="fr-col-md-5 fr-col-offset-md-1--right" v-if="sectionBusiness">
           <h3 class="fr-h4">Partenaires métier</h3>
 
           <ul class="logo-grid">
