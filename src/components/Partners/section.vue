@@ -11,11 +11,11 @@
           <h3 class="fr-h4">Administrations et organismes publics</h3>
 
           <ul class="logo-grid">
-            <li><img src="@/assets/logos-partenaires/masa.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/mte.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/agence-bio.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/inao.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/ofb.png" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/masa.svg" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/mtect.svg" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/agence-bio.svg" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/inao.svg" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/ofb.svg" alt="" class="logo"></li>
             <li><img src="@/assets/logos-partenaires/asp.svg" alt="" class="logo"></li>
           </ul>
         </div>
@@ -24,9 +24,9 @@
           <h3 class="fr-h4">Partenaires métier</h3>
 
           <ul class="logo-grid">
-            <li><img src="@/assets/logos-business/mes-parcelles.png" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-business/mes-parcelles.svg" alt="" class="logo"></li>
             <li><img src="@/assets/logos-business/geofolia.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-business/douanes.png" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-business/douanes.svg" alt="" class="logo"></li>
           </ul>
         </div>
 
@@ -66,6 +66,7 @@ defineProps({
 
 <style scoped>
 .logo-grid {
+  align-items: center;
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
@@ -74,6 +75,7 @@ defineProps({
 
 .logo-grid img.logo {
   max-height: 100px;
+  max-width: 170px;
 }
 .logo-grid img.logo[src$=".svg"] {
   height: 100px;
