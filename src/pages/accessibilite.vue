@@ -5,7 +5,7 @@
     <p><span>L'Agence Bio</span> s’engage à rendre son service accessible, conformément à l’article 47 de la loi n°
       2005-102 du 11 février 2005.</p>
     <p>Cette déclaration d’accessibilité s’applique à <strong>CartoBio</strong><span>
-        (<span>https://cartobio.org</span>)</span>.</p>
+        (<span>https://cartobio.agencebio.org</span>)</span>.</p>
     <h2>État de conformité</h2>
     <p>
       <strong>CartoBio</strong> est
@@ -24,7 +24,7 @@
 
       <li>
         Formulaire de contact&nbsp;: <router-link
-          to="/contact">https://cartobio.org/contact</router-link>
+          to="/contact">https://cartobio.agencebio.org/contact</router-link>
       </li>
       <li>
         Adresse&nbsp;: <span>Agence Bio, 12, rue Henri Rol Tanguy, 93100 MONTREUIL</span>

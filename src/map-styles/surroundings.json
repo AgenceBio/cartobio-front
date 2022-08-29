@@ -4,7 +4,7 @@
       "type": "vector",
       "scheme": "xyz",
       "tiles": [
-        "https://cartobio.org/tiles/rpg-2020/{z}/{x}/{y}.pbf"
+        "https://cartobio.agencebio.org/tiles/rpg-2020/{z}/{x}/{y}.pbf"
       ]
     }
   },
