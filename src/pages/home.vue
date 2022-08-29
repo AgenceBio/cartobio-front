@@ -111,17 +111,20 @@
     </template>
   </StatsSection>
 
-  <OpendataSection class=" fr-py-5w">
+  <OpendataSection>
     <template #headline>
       <h2 class="fr-h4">Les réutilisations</h2>
     </template>
   </OpendataSection>
+
+  <ContributeSection class="fr-background-alt--grey" />
 </template>
 
 <script setup>
 import StatsSection from '@/components/Stats/section.vue'
 import PartnersSection from '@/components/Partners/section.vue'
 import OpendataSection from '@/components/Partners/opendata-section.vue'
+import ContributeSection from '@/components/Partners/contribute-section.vue'
 </script>
 
 <style scoped>
