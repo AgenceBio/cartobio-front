@@ -32,13 +32,13 @@ jobs:
 
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2.3.1
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/v2'
       with:
         key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
         known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
 
     - name: rsync
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/v2'
       run: |
         rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
       env:
