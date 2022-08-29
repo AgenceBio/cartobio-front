@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build and deploy (v2)
 
 on:
   push:
@@ -6,7 +6,9 @@ on:
     - 'docs/**'
     - 'bin/**'
     - 'infrastructure/**'
-    - 'src/workers/**'
+    - '*.example'
+    - 'netlify.toml'
+    - '*.md'
 
 jobs:
 
@@ -24,8 +26,6 @@ jobs:
       env:
         VUE_APP_SITE_ID: 244
         VUE_APP_API_ENDPOINT: "https://cartobio.org/api"
-        VUE_APP_NOTIFICATIONS_ENDPOINT: "https://cartobio.org/api/notifications"
-        VUE_APP_COLLABORATIF_ENDPOINT: "https://cartobio.org/api/espacecollaboratif"
 
     - run: npm clean-install-test
     - run: npm run build
@@ -44,4 +44,4 @@ jobs:
       env:
         REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
         REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
-        REMOTE_PATH: /var/www/cartobio.org/
+        REMOTE_PATH: /var/www/cartobio.agencebio.org/
