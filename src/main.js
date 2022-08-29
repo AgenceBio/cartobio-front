@@ -9,6 +9,17 @@ const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
 const router = createRouter({
   routes,
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    else if (to.hash) {
+      return { el: to.hash, behavior: 'smooth' }
+    }
+    else {
+      return { top: 0, behavior: 'smooth' }
+    }
+  }
 })
 
 createApp(App)
