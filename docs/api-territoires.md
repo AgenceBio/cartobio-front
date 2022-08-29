@@ -21,14 +21,14 @@ Nous destinons l'API Territoires de CartoBio aux **acteurs des territoires**.<br
 **Exemple de requête pour récupérer du GeoJSON :
 
 ```bash
-$ curl https://cartobio.org/api/v1/territoires/test
-$ curl -H 'Accept: application/json' https://cartobio.org/api/v1/territoires/test
+$ curl https://cartobio.agencebio.org/api/v1/territoires/test
+$ curl -H 'Accept: application/json' https://cartobio.agencebio.org/api/v1/territoires/test
 ```
 
 **Exemple de requête pour récupérer du ESRI Shapefile :
 
 ```bash
-$ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.org/api/v1/territoires/test
+$ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.agencebio.org/api/v1/territoires/test
 ```
 
 # Référence de l'API (`v1` • beta)
@@ -41,7 +41,7 @@ $ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.org/api/v1
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/territoires/epci/200067106
+$ curl https://cartobio.agencebio.org/api/v1/territoires/epci/200067106
 ```
 
 <details>
@@ -147,7 +147,7 @@ $ curl https://cartobio.org/api/v1/territoires/epci/200067106
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/territoires/epci/64102
+$ curl https://cartobio.agencebio.org/api/v1/territoires/epci/64102
 ```
 
 <details>
@@ -258,8 +258,8 @@ $ curl https://cartobio.org/api/v1/territoires/epci/64102
 **Exemple de requête** :
 
 ```bash
-$ curl -X PUT --upload-file -H 'Content-Type: application/vnd.shp+octet-stream' contour.shp https://cartobio.org/api/v1/territoires?espg=4171
-$ curl -X PUT --upload-file -H 'Content-Type: application/json' contour.geojson https://cartobio.org/api/v1/territoires?crs=RFG93
+$ curl -X PUT --upload-file -H 'Content-Type: application/vnd.shp+octet-stream' contour.shp https://cartobio.agenebio.org/api/v1/territoires?espg=4171
+$ curl -X PUT --upload-file -H 'Content-Type: application/json' contour.geojson https://cartobio.agenebio.org/api/v1/territoires?crs=RFG93
 ```
 
 <details>

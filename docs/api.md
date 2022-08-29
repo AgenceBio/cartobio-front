@@ -36,7 +36,7 @@ Illustration du passage du jeton dans une requête vers l'API :
 ```bash
 $ CARTOBIO_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvY0lkIjowLCJ0ZXN0Ijp0cnVlfQ.B7elZEHGsKYwWxDNWalnwU7L1ZkdAjQVeAo0Hi4VsB4"
 
-$ curl -H "Authorization: Bearer ${CARTOBIO_TOKEN}" https://cartobio.org/api/v1/test
+$ curl -H "Authorization: Bearer ${CARTOBIO_TOKEN}" https://cartobio.agencebio.org/api/v1/test
 ```
 
 **Exemple de réponse** :
@@ -48,7 +48,7 @@ $ curl -H "Authorization: Bearer ${CARTOBIO_TOKEN}" https://cartobio.org/api/v1/
 Et maintenant, en cas d'identification incorrecte :
 
 ```bash
-$ curl https://cartobio.org/api/v1/test
+$ curl https://cartobio.agencebio.org/api/v1/test
 ```
 
 **Exemple de réponse** :
@@ -72,7 +72,7 @@ Toutes les requêtes nécessitent un [jeton d'accès](#demander-un-jeton-d’acc
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/test
+$ curl https://cartobio.agencebio.org/api/v1/test
 ```
 
 <details>
@@ -88,7 +88,7 @@ $ curl https://cartobio.org/api/v1/test
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/parcels
+$ curl https://cartobio.agencebio.org/api/v1/parcels
 ```
 
 <details>
@@ -194,7 +194,7 @@ $ curl https://cartobio.org/api/v1/parcels
 **Exemple de requête** :
 
 ```bash
-$ curl https://cartobio.org/api/v1/parcels/operator/11
+$ curl https://cartobio.agencebio.org/api/v1/parcels/operator/11
 ```
 
 <details>

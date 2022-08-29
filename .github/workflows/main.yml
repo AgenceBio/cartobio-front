@@ -25,7 +25,7 @@ jobs:
       run: env | grep VUE_APP > .env.production.local
       env:
         VUE_APP_SITE_ID: 244
-        VUE_APP_API_ENDPOINT: "https://cartobio.org/api"
+        VUE_APP_API_ENDPOINT: "https://cartobio.agencebio.org/api"
 
     - run: npm clean-install-test
     - run: npm run build
