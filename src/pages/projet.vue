@@ -1,6 +1,7 @@
 <route lang="yaml">
 meta:
-  title: Stratégie et historique du projet CartoBio
+  seo:
+    title: Stratégie et historique du projet CartoBio
 </route>
 
 <template>
@@ -10,7 +11,7 @@ meta:
         <h1>Le projet CartoBio</h1>
       </div>
 
-      <section class="fr-col-12">
+      <section class="fr-col-md-8">
         <h2 class="fr-h3">Le problème</h2>
 
         <p>
@@ -35,7 +36,7 @@ meta:
         </p>
       </section>
 
-      <section class="fr-col-12">
+      <section class="fr-col-md-8">
         <h2 class="fr-h3">La solution apportée</h2>
 
         <p>
@@ -51,7 +52,7 @@ meta:
         </p>
       </section>
 
-      <section class="fr-col-12">
+      <section class="fr-col-md-8">
         <h2 class="fr-h3">Les partenaires</h2>
 
         <p>
@@ -69,7 +70,7 @@ meta:
         </p>
       </section>
 
-      <section class="fr-col-12">
+      <section class="fr-col-md-8">
         <h2 class="fr-h3">Stratégie</h2>
 
         <p>CartoBio s’appuie sur la collaboration avec les Organismes Certificateurs pour constituer sa base de données géographique. Nous nous basons sur l’annualité du contrôle bio pour atteindre un parcellaire complet d’ici la fin de la campagne PAC 2024.</p>
@@ -77,7 +78,7 @@ meta:
         <p>Enfin, concernant le jeu de données en open data, il est aujourd’hui disponible au téléchargement dans sa version brute sur <a href="https://www.data.gouv.fr">Data.gouv.fr</a>. L’objectif est de rendre les données intelligibles pour tous via la création d’une interface de visualisation.</p>
       </section>
 
-      <section class="fr-col-12">
+      <section class="fr-col-md-8">
         <h2 class="fr-h3">Historique du projet</h2>
 
         <p>

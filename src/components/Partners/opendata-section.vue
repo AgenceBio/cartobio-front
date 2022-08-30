@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-lg-4">
           <div class="fr-card">
             <div class="fr-card__body">
@@ -123,6 +123,14 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="fr-grid-row">
+        <p>
+          <a href="https://forms.gle/i7nzBQTifPhfVmt4A" class="fr-btn fr-btn--secondary" rel="noreferrer noopener" target="_blank">
+            Ajouter ma réutilisation
+          </a>
+        </p>
       </div>
     </div>
   </div>

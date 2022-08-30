@@ -1,10 +1,15 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from "vue-router"
+import { createHead } from "@vueuse/head"
 import routes from "~pages"
 import App from './App.vue'
 import Matomo from 'vue-matomo'
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
+
+const head = createHead({
+  titleTemplate: '%s — CartoBio (beta)'
+})
 
 const router = createRouter({
   routes,
@@ -22,8 +27,9 @@ const router = createRouter({
   }
 })
 
-createApp(App)
+const app = createApp(App)
   .use(router)
+  .use(head)
   .use(Matomo, {
     router,
     siteId,
@@ -34,4 +40,9 @@ createApp(App)
     trackerUrl: 'https://cartobio.agencebio.org/s/',
     trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
   })
-  .mount('#app')
+
+router.isReady().then(() => {
+  app.mount('#app')
+  window.head = head
+})
+

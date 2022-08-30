@@ -22,6 +22,7 @@
     "@turf/bbox": "^6.5.0",
     "@turf/centroid": "^6.5.0",
     "@turf/helpers": "^6.5.0",
+    "@vueuse/head": "^0.7.9",
     "array.prototype.groupby": "^1.0.0",
     "axios": "^0.26.0",
     "deepmerge": "^4.2.2",

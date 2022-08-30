@@ -1,3 +1,9 @@
+<route lang="yaml">
+  meta:
+    seo:
+      title: Votre parcellaire cultivé en agriculture biologique
+  </route>
+
 <template>
   <div class="fr-container--fluid fr-background-alt--grey fr-py-5w">
     <div class="fr-container">
@@ -66,42 +72,7 @@
 
   <PartnersSection class="fr-background-alt--grey" section-oc section-administrations />
 
-  <div class="fr-container--fluid fr-py-5w">
-    <div class="fr-container container--stats">
-      <div class="fr-grid-row">
-        <div class="fr-col-12">
-          <h2 class="fr-h4">Comment ça fonctionne ?</h2>
-        </div>
-      </div>
-
-      <ul class="fr-grid-row fr-grid-row--align-center steps fr-grid-row--gutters">
-        <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_prioritise_ready.svg"
-            class="fr-responsive-img fr-my-3w cta-img" alt="" />
-
-          Import ou création du parcellaire par les agriculteurs.trices
-        </li>
-        <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_job_hunt.svg" class="fr-responsive-img fr-my-3w cta-img"
-            alt="" />
-
-          Le parcellaire est validé par l’OC lors du controle Bio
-        </li>
-        <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_online_transactions.svg"
-            class="fr-responsive-img fr-my-3w cta-img" alt="" />
-
-          Transmission du parcellaire à la DDT pour une instruction simplifiée des aides PAC
-        </li>
-        <li class="fr-col-3">
-          <img src="../assets/illustrations/undraw_open_source.svg" class="fr-responsive-img fr-my-3w cta-img"
-            alt="" />
-
-          Le parcellaire anonymisé est publié et réutilisé par de nombreux acteurs
-        </li>
-      </ul>
-    </div>
-  </div>
+  <ProductFlowSection />
 
   <StatsSection class="fr-background-alt--grey">
     <template #footer-link>
@@ -125,23 +96,12 @@ import StatsSection from '@/components/Stats/section.vue'
 import PartnersSection from '@/components/Partners/section.vue'
 import OpendataSection from '@/components/Partners/opendata-section.vue'
 import ContributeSection from '@/components/Partners/contribute-section.vue'
+import ProductFlowSection from '@/components/Features/productflow-section.vue'
 </script>
 
 <style scoped>
 
 .cta-img {
   max-height: 6em;
-}
-
-.steps > li {
-  position: relative;
-}
-
-.steps > li:not(:last-child):after {
-  content: "→";
-  font-size: 3em;
-  position: absolute;
-  top: 1.5em;
-  right: -0.25em;
 }
 </style>

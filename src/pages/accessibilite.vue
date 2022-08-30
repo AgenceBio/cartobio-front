@@ -1,3 +1,9 @@
+<route lang="yaml">
+  meta:
+    seo:
+      title: Déclaration d'accessibilité du service en ligne
+  </route>
+
 <template>
   <div class="fr-container fr-my-5w">
     <h1>Déclaration d’accessibilité</h1>

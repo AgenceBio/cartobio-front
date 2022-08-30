@@ -14,11 +14,12 @@
   </RouterView>
 
   <MainFooter />
-
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { useHead } from '@vueuse/head'
+import { computed } from 'vue'
 import store from './store.js'
 import { getOperatorParcelles } from './cartobio-api.js'
 
@@ -27,6 +28,9 @@ import MainFooter from './components/MainFooter.vue'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 const router = useRouter()
+const route = useRoute()
+
+const title = computed(() => route.meta?.seo?.title)
 
 router.beforeEach(async (to, from) => {
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
@@ -48,6 +52,9 @@ router.beforeEach(async (to, from) => {
     }
   }
 })
+
+// SEO
+useHead({ title })
 </script>
 
 <style>
