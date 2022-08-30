@@ -80,7 +80,12 @@ meta:
     </div>
   </div>
 
-  <ProductflowSection class="fr-background-alt--blue-france" expanded />
+  <ProductflowSection class="fr-background-alt--blue-france" expanded>
+    <template #step-1>Import du parcellaire par l’agriculteur·ice en amont du contrôle</template>
+    <template #step-1b>Création du parcellaire en ligne par l’agriculteur·ice</template>
+    <template #step-2>Le parcellaire de l’année est validé par le contrôleur·se pendant l'audit Bio</template>
+    <template #step-2b>Le parcellaire peut être mis à jour si besoin</template>
+  </ProductflowSection>
 
   <div class="fr-container fr-py-5w">
     <div class="fr-grid-row fr-grid-row--gutters">

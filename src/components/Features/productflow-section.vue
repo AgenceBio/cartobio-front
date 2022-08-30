@@ -7,29 +7,29 @@
         </div>
 
         <div class="fr-col-md-12">
-          <ol class="fr-list steps">
+          <ol :class="{'fr-list': true, 'steps': true, 'steps--expanded': expanded}">
             <li class="step-1">
               <img src="@/assets/illustrations/undraw_prioritise_ready.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg fr-my-3w cta-img" alt="" />
 
-              Import du parcellaire en amont du contrôle
+              <slot name="step-1">Import du parcellaire en amont du contrôle</slot>
             </li>
 
-            <li class="step-1b">
+            <li :class="{'step-1b': true, 'optional': optionalStep1b}" v-if="expanded">
               <img src="@/assets/illustrations/undraw_building_blocks.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg fr-my-3w cta-img" alt="" />
 
-              Créez votre parcellaire en ligne
+              <slot name="step-1b">Créez votre parcellaire en ligne</slot>
             </li>
 
             <li class="step-2">
               <img src="@/assets/illustrations/undraw_job_hunt.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg fr-my-3w cta-img" alt="" />
 
-              Le parcellaire de l’année est validé pendant le controle Bio
+              <slot name="step-2">Le parcellaire de l’année est validé pendant le controle Bio</slot>
             </li>
 
-            <li class="step-2b">
+            <li class="step-2b" v-if="expanded">
               <img src="@/assets/illustrations/undraw_content.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg fr-my-3w cta-img" alt="" />
 
-              Mettez à jour le parcellaire si besoin
+              <slot name="step-2b">Mettez à jour le parcellaire si besoin</slot>
             </li>
 
             <li class="step-3">
@@ -55,6 +55,10 @@ defineProps({
   expanded: {
     type: Boolean,
     default: false
+  },
+  optionalStep1b: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
@@ -71,9 +75,15 @@ defineProps({
   }
 
   .steps > li {
+    font-size: 0.9em;
     max-width: 16em;
     position: absolute;
     text-align: center;
+  }
+  .steps > li::after,
+  .steps > li::before {
+    position: absolute;
+    z-index: 10;
   }
   .steps > li::marker {
     content: "";
@@ -82,10 +92,6 @@ defineProps({
     left: 0%;
     top: 0%;
   }
-    .steps > li::after {
-      position: absolute;
-      z-index: 10;
-    }
     .steps > li.step-1::after {
       content: url(@/assets/illustrations/arrow-1.svg);
       top: 0;
@@ -117,15 +123,31 @@ defineProps({
       left: 85%;
     }
   .steps > li.step-3 {
+    left: 55%;
+    top: 60%;
+  }
+  .steps:not(.steps--expanded) > li.step-3 .cta-img {
+    max-height: 4em;
+  }
+  .steps.steps--expanded > li.step-3 {
     left: 60%;
     top: 0%;
   }
-    .steps > li.step-3::after {
+    .steps:not(.steps--expanded) > li.step-3::before {
+      content: url(@/assets/illustrations/arrow-3-optional.svg);
+      top: 0%;
+      left: -60%;
+    }
+    .steps.steps--expanded > li.step-3::after {
       content: url(@/assets/illustrations/arrow-3.svg);
       top: 50%;
       left: 85%;
     }
   .steps > li.step-4 {
+    left: 60%;
+    top: 0%;
+  }
+  .steps.steps--expanded > li.step-4 {
     left: 75%;
     top: 50%;
   }
