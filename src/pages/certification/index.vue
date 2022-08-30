@@ -140,4 +140,10 @@ const currentUser = toRef(store.state, 'currentUser')
   max-height: 6em;
   max-width: 200px;
 }
+
+@media screen and (max-width: 62em) {
+  .fr-list {
+    padding-left: 1.5rem;
+  }
+}
 </style>

@@ -68,7 +68,13 @@ defineProps({
   max-height: 6em;
 }
 
-@media (min-width: 62em) {
+@media screen and (max-width: 62em) {
+  .steps {
+    padding-left: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 62em) {
   .steps {
     height: 400px;
     position: relative;
