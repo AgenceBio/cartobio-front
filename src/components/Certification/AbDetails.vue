@@ -3,7 +3,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h4 class="fr-card__title">
-          <router-link to="/exploitation/certification-ab">
+          <router-link to="/exploitation/parcellaire">
             Ma certification&nbsp;<abbr title="Agriculture Biologique">AB</abbr>
           </router-link>
         </h4>
@@ -11,6 +11,9 @@
         <p class="fr-card__desc">
           Vous êtes engagé·e en bio depuis le {{ dateFormat(currentUser.dateEngagement) }}
           <span v-if="currentCertificate">avec {{ currentCertificate.organisme }}</span>.
+          <br />
+          Les parcelles affichées sont issues de données {{ importToolName }}
+          importées le {{ importToolDate }}.
         </p>
 
         <!-- <div class="fr-card__end">
@@ -23,6 +26,11 @@
           <li v-if="currentCertificate">
             <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" :aria-disabled="!currentCertificate.url" :href="currentCertificate.url" target="_blank" rel="noopener noreferrer">
               Mon certificat
+            </a>
+          </li>
+          <li>
+            <a class="fr-btn fr-btn--secondary" disabled rel="noopener noreferrer">
+              Nouvelle synchro avec {{ importToolName }}
             </a>
           </li>
           <!-- <li>
@@ -39,7 +47,9 @@
 <script setup>
 import { computed, toRefs } from 'vue'
 
-import store from '../../store.js'
+import store from '@/store.js'
+import importTools from '@/components/OperatorSetup/index.js'
+
 import { dateFormat } from '../dates.js'
 
 defineProps({
@@ -49,8 +59,11 @@ defineProps({
   }
 })
 
-const { currentUser } = toRefs(store.state)
+const { currentUser, parcellaireSource, parcellaireSourceLastUpdate } = toRefs(store.state)
 
+// source
+const importToolName = computed(() => importTools[parcellaireSource.value].label)
+const importToolDate = new Date(parcellaireSourceLastUpdate.value).toLocaleDateString('fr-FR')
 const currentCertificate = computed(() => currentUser.value.certificats.at(-1))
 </script>
 

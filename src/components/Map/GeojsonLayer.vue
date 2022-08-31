@@ -24,16 +24,16 @@ watch(map, () => {
         data: props.data
       })
       .addLayer({
-        id: `${props.name}-layer`,
+        id: `${props.name}-geometry`,
         source: props.name,
         type: 'fill',
         paint: {
           "fill-color": [
             'case',
-            ['boolean', ['feature-state', 'selected'], false],
-            "#ffcc00",
+            // ['boolean', ['feature-state', 'selected'], false],
+            // "#ffcc00",
             ['boolean', ['feature-state', 'hover'], false],
-            "#0080ff",
+            "#00ffff",
             "#000091"
           ],
           "fill-opacity": 0.9,

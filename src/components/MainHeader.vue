@@ -19,7 +19,7 @@
             <div class="fr-header__service">
               <router-link to="/" rel="home">
                 <p class="fr-header__service-title">
-                  CartoBio <span class="fr-badge fr-badge--green-emeraude">beta</span>
+                  CartoBio <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">beta</span>
                 </p>
               </router-link>
 
@@ -27,36 +27,36 @@
             </div>
           </div>
 
-          <div class="fr-header__tools">
-            <div class="fr-header__tools-links">
-              <ul class="fr-links-group" v-if="currentUser.id">
-                <li>
-                  <router-link to="/exploitation/certification-ab" class="fr-link fr-icon-medal-fill">
-                    Ma certification&nbsp;<abbr title="Agriculture Biologique">AB</abbr>
-                  </router-link>
-                </li>
-                <li>
-                  <router-link to="/exploitation/parcellaire" class="fr-link fr-icon-map-pin-user-fill">
-                    Mon parcellaire
-                  </router-link>
-                </li>
-                <li>
-                  <router-link to="/logout" custom v-slot="{ href }">
-                    <a :href="href" class="fr-link fr-icon-logout-box-r-line" @click.prevent="logout">
-                      Déconnexion
-                    </a>
-                  </router-link>
-                </li>
-              </ul>
-              <ul class="fr-links-group" v-else>
-                <li>
-                  <router-link to="/exploitation/login" class="fr-icon-account-circle-fill">
-                    Connexion
-                  </router-link>
-                </li>
-              </ul>
-            </div>
+          <div class="fr-header__tools" :data-numero-bio="currentUser.id" v-if="currentUser.id">
+            <span class="fr-icon fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden />{{ currentUser.nom }}<br />
+            <router-link to="/logout" custom v-slot="{ href }">
+              <a :href="href" class="fr-icon fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
+                Déconnexion
+              </a>
+            </router-link>
           </div>
+        </div>
+      </div>
+
+      <div class="fr-header__menu">
+        <div class="fr-container">
+          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+            <ul class="fr-nav__list">
+              <li class="fr-nav__item">
+                <router-link to="/exploitation/parcellaire" class="fr-nav__link">
+                  Mon parcellaire
+                </router-link>
+              </li>
+              <li class="fr-nav__item">
+                <router-link to="/exploitation/environs" class="fr-nav__link">
+                  Parcelles environnantes
+                </router-link>
+              </li>
+              <li class="fr-nav__item">
+                <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { toRef } from 'vue'
+import { reactive, toRef } from 'vue'
 import { useRouter } from 'vue-router'
 import store from '../store.js'
 
@@ -74,6 +74,14 @@ const currentUser = toRef(store.state, 'currentUser')
 function logout() {
   store.logoutUser()
   router.replace('/exploitation')
+}
+
+const menus = reactive({
+  about: false
+})
+
+function toggle (menuId) {
+  menus[menuId] = !menus[menuId]
 }
 </script>
 

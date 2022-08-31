@@ -1,6 +1,4 @@
 <route lang="yaml">
-# redirect:
-#   path: /exploitation/certification-ab
 meta:
   seo:
     title: Passer moins de temps à recopier de l'information pendant ma certification bio
@@ -24,7 +22,7 @@ meta:
           </p>
 
           <p v-if="currentUser.id">
-            <router-link class="fr-btn" to="/exploitation/certification-ab">
+            <router-link class="fr-btn" to="/exploitation/parcellaire">
               Accéder à mon opérateur
             </router-link>
           </p>

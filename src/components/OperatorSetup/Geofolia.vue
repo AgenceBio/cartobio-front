@@ -1,10 +1,5 @@
 <template>
   <div>
-    <!-- <article>
-          <button type="button" @click.prevent="$router.push('/exploitation/parcellaire')">
-            🔐 Connecter mon compte Isagri Geofolia
-          </button>
-        </article> -->
     <div class="fr-alert fr-alert--info fr-mb-5w">
       <p class="fr-alert__title">Remarque</p>
       <p>Le nom du fichier ressemble à <code>…_Parcelles et Interventions (ZIP)_….zip</code>.</p>

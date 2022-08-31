@@ -1,11 +1,5 @@
 <template>
   <div>
-    <!-- <article>
-          <button type="button" @click.prevent="$router.push('/exploitation/parcellaire')">
-            🔐 Connecter mon compte MesParcelles
-          </button>
-        </article> -->
-
     <div class="fr-alert fr-alert--info fr-mb-5w">
       <p class="fr-alert__title">Remarque</p>
       <p>Nous importons les parcelles de l'exploitation principale, pour l'instant.</p>

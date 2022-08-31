@@ -38,7 +38,7 @@ router.beforeEach(async (to, from) => {
   }
 
   if (to.path === '/exploitation/login' && store.state.currentUser.id) {
-    return router.replace('/exploitation/certification-ab')
+    return router.replace('/exploitation/parcellaire')
   }
 
   if (to.meta.requiresGeodata) {
