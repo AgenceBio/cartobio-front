@@ -35,6 +35,11 @@
               </a>
             </router-link>
           </div>
+          <div class="fr-header__tools" v-else>
+            <router-link to="/exploitation/login" class="fr-icon-account-circle-fill" aria-role="button">
+              Connexion
+            </router-link>
+          </div>
         </div>
       </div>
 
