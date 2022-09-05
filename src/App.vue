@@ -3,12 +3,10 @@
 
   <RouterView v-slot="{ Component, route }">
     <Suspense>
-      <template #default>
-        <component
-          :is="Component"
-          :key="route.meta.usePathKey ? route.path : undefined"
-        />
-      </template>
+      <component
+        :is="Component"
+        :key="route.meta.usePathKey ? route.path : undefined"
+      />
       <template #fallback>Chargement... </template>
     </Suspense>
   </RouterView>
@@ -17,41 +15,17 @@
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useHead } from '@vueuse/head'
 import { computed } from 'vue'
-import store from './store.js'
-import { getOperatorParcelles } from './cartobio-api.js'
 
 import MainHeader from './components/MainHeader.vue'
 import MainFooter from './components/MainFooter.vue'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
-const router = useRouter()
 const route = useRoute()
 
 const title = computed(() => route.meta?.seo?.title)
-
-router.beforeEach(async (to, from) => {
-  if (to.meta.requiresAuth && !store.state.currentUser.id) {
-    return router.replace('/exploitation/login')
-  }
-
-  if (to.path === '/exploitation/login' && store.state.currentUser.id) {
-    return router.replace('/exploitation/parcellaire')
-  }
-
-  if (to.meta.requiresGeodata) {
-    try {
-      await getOperatorParcelles()
-    }
-    catch (error) {
-      if (error.name === 'ParcellesNotSetup') {
-        return router.push('/exploitation/setup')
-      }
-    }
-  }
-})
 
 // SEO
 useHead({ title })

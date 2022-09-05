@@ -2,8 +2,11 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from "vue-router"
 import { createHead } from "@vueuse/head"
 import routes from "~pages"
-import App from './App.vue'
 import Matomo from 'vue-matomo'
+
+import store from './store.js'
+import { getOperatorParcelles } from './cartobio-api.js'
+import App from './App.vue'
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
 
@@ -23,6 +26,27 @@ const router = createRouter({
     }
     else {
       return { top: 0, behavior: 'smooth' }
+    }
+  }
+})
+
+router.beforeEach(async (to, from) => {
+  if (to.meta.requiresAuth && !store.state.currentUser.id) {
+    return router.replace('/exploitation/login')
+  }
+
+  if (to.path === '/exploitation/login' && store.state.currentUser.id) {
+    return router.replace('/exploitation/parcellaire')
+  }
+
+  if (to.meta.requiresGeodata) {
+    try {
+      await getOperatorParcelles()
+    }
+    catch (error) {
+      if (error.name === 'ParcellesNotSetup') {
+        return router.push('/exploitation/setup')
+      }
     }
   }
 })
