@@ -27,15 +27,15 @@
             </div>
           </div>
 
-          <div class="fr-header__tools" :data-numero-bio="currentUser.id" v-if="currentUser.id">
-            <span class="fr-icon fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden />{{ currentUser.nom }}<br />
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="currentUser.id" v-if="currentUser.id">
+            <span class="fr-icon fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden>{{ currentUser.nom }}</span><br />
             <router-link to="/logout" custom v-slot="{ href }">
               <a :href="href" class="fr-icon fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
                 Déconnexion
               </a>
             </router-link>
           </div>
-          <div class="fr-header__tools" v-else>
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools" v-else>
             <router-link to="/exploitation/login" class="fr-icon-account-circle-fill" aria-role="button">
               Connexion
             </router-link>
@@ -59,6 +59,16 @@
               </li>
               <li class="fr-nav__item">
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
+              </li>
+              <li class="fr-nav__item fr-hidden-lg">
+                <router-link to="/logout" custom v-slot="{ href }" v-if="currentUser.id">
+                  <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
+                    Déconnexion
+                  </a>
+                </router-link>
+                <router-link to="/exploitation/login" class="fr-nav__link" aria-role="button" v-else>
+                  Connexion
+                </router-link>
               </li>
             </ul>
           </nav>

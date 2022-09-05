@@ -14,7 +14,8 @@
         </li>
         <li class="fr-col-md-3">
           <span class="fr-display--xl fr-text-title--blue-france">{{ stats.surfaceCartographiéConnuee }}%</span>
-          De la surface cultivée en bio cartographiée
+          De la surface cultivée en bio cartographiée<br/>
+          (correspondant au <a href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/" target="_blank">RPG Bio</a>)
         </li>
         <li class="fr-col-md-3">
           <span class="fr-display--xl fr-text-title--blue-france">{{ stats.opendataDownloadCount }}</span>
