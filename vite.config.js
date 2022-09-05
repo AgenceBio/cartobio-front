@@ -9,7 +9,7 @@ export default defineConfig({
 
   plugins: [
     vue(),
-    Pages(),
+    Pages({ extensions: ['vue'] }),
   ],
 
   resolve: {
