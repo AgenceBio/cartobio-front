@@ -28,10 +28,11 @@ watch(map, () => {
         source: props.name,
         type: 'fill',
         paint: {
+          "fill-outline-color": "#fff",
           "fill-color": [
             'case',
-            // ['boolean', ['feature-state', 'selected'], false],
-            // "#ffcc00",
+            ['boolean', ['feature-state', 'selected'], false],
+            "#ffcc00",
             ['boolean', ['feature-state', 'hover'], false],
             "#00ffff",
             "#000091"

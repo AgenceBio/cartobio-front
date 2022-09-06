@@ -19,7 +19,7 @@
       <th scope="col" class="fr-text--xs">Certification</th>
       <th scope="col" colspan="2" class="numeric fr-text--xs">Surface graphique</th>
     </tr>
-    <tr class="parcelle" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click.prevent.stop="toggleSelectedIds(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
+    <tr class="parcelle" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click.prevent.stop="toggleSelectedIds(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
           <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="toggleSelectedIds(feature.id)" />
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { computed, ref, unref } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { surface, inHa } from '@/pages/exploitation/features.js'
 import ConversionLevel from './ConversionLevel.vue'
 
@@ -84,6 +84,20 @@ function toggleFeatureGroup () {
 
   allSelected.value = !allSelected.value
 }
+
+watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
+  const newItems = featureIds.value.filter(id => {
+    return selectedIds.includes(id) && !prevSelectedIds.includes(id)
+  })
+
+  if (newItems.length === 1 && newItems.length !== featureIds.value.length) {
+    open.value = true
+
+    setTimeout(() => {
+      document.querySelector(`tr#parcelle-${newItems[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 200)
+  }
+})
 </script>
 
 <style scoped>
