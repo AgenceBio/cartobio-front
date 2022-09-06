@@ -36,7 +36,6 @@ function dateDDMMYYY (date) {
 <style scoped>
   .certification-details {
     display: flex;
-    justify-content: space-between;
-    /* flex-direction: column; */
+    flex-direction: column;
   }
 </style>
