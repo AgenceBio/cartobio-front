@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <div class="fr-header__menu">
+      <div class="fr-header__menu" v-if="currentUser.id">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
