@@ -12,7 +12,7 @@
           Vous êtes engagé·e en bio depuis le {{ dateFormat(currentUser.dateEngagement) }}
           <span v-if="currentCertificate">avec {{ currentCertificate.organisme }}</span>.
           <br />
-          Les parcelles affichées sont issues de données {{ importToolName }}
+          Les parcelles affichées sont issues de vos données {{ importToolName }}
           importées le {{ importToolDate }}.
         </p>
 
@@ -25,14 +25,14 @@
         <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--icon-left">
           <li v-if="currentCertificate">
             <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" :aria-disabled="!currentCertificate.url" :href="currentCertificate.url" target="_blank" rel="noopener noreferrer">
-              Mon certificat
+              Mon certificat AB
             </a>
           </li>
-          <li>
+          <!-- <li>
             <a class="fr-btn fr-btn--secondary" disabled rel="noopener noreferrer">
               Nouvelle synchro avec {{ importToolName }}
             </a>
-          </li>
+          </li> -->
           <!-- <li>
             <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" aria-disabled href="#" target="_blank" rel="noopener noreferrer">
               Attestation de notification

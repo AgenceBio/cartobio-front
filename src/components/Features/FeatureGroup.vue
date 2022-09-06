@@ -7,11 +7,17 @@
           <label class="fr-label" :for="'radio-'+ featureGroup.key" />
         </div>
       </td>
-      <th scope="row">
+      <th scope="row" colspan="3">
         <span class="fr-icon fr-icon fr-icon-arrow-right-s-fill" :aria-checked="open" aria-role="button" />
         {{ featureGroup.label }}
       </th>
       <td class="numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
+    </tr>
+    <tr :hidden="!open" class="intermediate-header">
+      <th scope="col" class="fr-text--xs"></th>
+      <th scope="col" class="fr-text--xs">Nom</th>
+      <th scope="col" class="fr-text--xs">Certification</th>
+      <th scope="col" colspan="2" class="numeric fr-text--xs">Surface graphique</th>
     </tr>
     <tr class="parcelle" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click.prevent.stop="toggleSelectedIds(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
@@ -24,6 +30,12 @@
         <span v-if="feature.properties.NUMERO_I">Ilot {{ feature.properties.NUMERO_I }}<span v-if="feature.properties.NUMERO_P">, parcelle {{ feature.properties.NUMERO_P }}</span></span>
         <span v-else>{{ feature.properties.NOM }}</span>
       </td>
+      <td>
+        <ConversionLevel :feature="feature" />
+      </td>
+      <td class="fr-px-0">
+        <!-- <span class="fr-icon fr-icon-message-2-line fr-text-label--green-tilleul-verveine" aria-role="button" /> -->
+      </td>
       <td class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
     </tr>
   </tbody>
@@ -32,6 +44,7 @@
 <script setup>
 import { computed, ref, unref } from 'vue'
 import { surface, inHa } from '@/pages/exploitation/features.js'
+import ConversionLevel from './ConversionLevel.vue'
 
 const props = defineProps({
   featureGroup: {
@@ -74,6 +87,10 @@ function toggleFeatureGroup () {
 </script>
 
 <style scoped>
+  .fr-table tr.intermediate-header th {
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+  }
   .fr-table td.numeric,
   .fr-table th.numeric {
     font-variant-numeric: tabular-nums;
