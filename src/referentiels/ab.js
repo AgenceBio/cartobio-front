@@ -6,7 +6,7 @@ export const LEVEL_C3 = 'C3'
 export const LEVEL_AB = 'AB'
 
 export const conversionLevels = [
-  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: '' },
+  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Donnée inconnue' },
   { value: LEVEL_CONVENTIONAL, label: 'Conventionnel', shortLabel: 'Conventionnel' },
   { value: LEVEL_C1, label: 'C1 — Première année de conversion', shortLabel: 'C1' },
   { value: LEVEL_C2, label: 'C2 — Deuxième année de conversion', shortLabel: 'C2' },

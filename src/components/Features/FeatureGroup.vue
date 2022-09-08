@@ -81,8 +81,6 @@ function toggleFeatureGroup () {
   else {
     emit('update:selectedIds', props.selectedIds.concat(Array.from(unref(featureIds.value))))
   }
-
-  allSelected.value = !allSelected.value
 }
 
 watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {

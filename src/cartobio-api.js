@@ -18,7 +18,7 @@ export async function getOperatorParcelles () {
 
   const { data } = await get(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}`)
 
-  if (!data || !data.metadata.source) {
+  if (!data || !data.parcelles || !data.metadata.source) {
     throw new ParcellesNotSetupError()
   }
   else if (data.parcelles.features.length && data.metadata.source) {

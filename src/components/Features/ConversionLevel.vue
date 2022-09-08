@@ -4,7 +4,12 @@
   </i>
   <span class="certification-details" v-else-if="isABLevel(feature.properties.conversion_niveau)">
     <abbr :title="conversionLevel.label">{{ conversionLevel.shortLabel }}</abbr>
-    <small>engagée le {{ dateDDMMYYY(feature.properties.engagement_date) }}</small>
+    <small v-if="feature.properties.engagement_date">
+      engagée le {{ dateDDMMYYY(feature.properties.engagement_date) }}
+    </small>
+    <small v-else>
+      date engagement inconnue
+    </small>
   </span>
   <span v-else>
     {{ conversionLevel.shortLabel }}
@@ -12,7 +17,7 @@
 </template>
 
 <script setup>
-
+import { computed } from 'vue'
 import { getConversionLevel, isABLevel } from '@/referentiels/ab.js'
 
 const props = defineProps({
@@ -22,7 +27,7 @@ const props = defineProps({
   }
 })
 
-const conversionLevel = getConversionLevel(props.feature.properties.conversion_niveau)
+const conversionLevel = computed(() => getConversionLevel(props.feature.properties.conversion_niveau))
 
 
 function dateDDMMYYY (date) {
