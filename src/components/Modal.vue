@@ -1,0 +1,34 @@
+<template>
+  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue">
+    <div class="fr-container fr-container--fluid fr-container-md">
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-modal__body">
+            <div class="fr-modal__header">
+              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('update:modelValue')">
+                Fermer
+              </button>
+            </div>
+            <div class="fr-modal__content">
+              <h1 id="modal-title" class="fr-modal__title">
+                <slot name="title" />
+              </h1>
+
+              <slot name="default" />
+          </div>
+          <div class="fr-modal__footer">
+              <slot name="footer" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</template>
+
+<script setup>
+const emit = defineEmits(['update:modelValue'])
+const props = defineProps({
+  modelValue: Boolean
+})
+</script>

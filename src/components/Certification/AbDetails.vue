@@ -24,9 +24,14 @@
       <div class="fr-card__footer">
         <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--icon-left">
           <li v-if="currentCertificate">
-            <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" :aria-disabled="!currentCertificate.url" :href="currentCertificate.url" target="_blank" rel="noopener noreferrer">
+            <a class="fr-btn fr-btn--secondary fr-icon-file-download-fill" :aria-disabled="!currentCertificate.url || null" :href="currentCertificate.url" target="_blank" rel="noopener noreferrer">
               Mon certificat AB
             </a>
+          </li>
+          <li>
+            <button class="fr-btn fr-btn--secondary" data-fr-opened="false" aria-controls="global-modal" @click="modal = true">
+              Exporter mon parcellaire
+            </button>
           </li>
           <!-- <li>
             <a class="fr-btn fr-btn--secondary" disabled rel="noopener noreferrer">
@@ -41,14 +46,19 @@
         </ul>
       </div>
     </div>
+
+    <Teleport to="body">
+      <ParcellaireExportModal v-model="modal" />
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { computed, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 
 import store from '@/store.js'
 import importTools from '@/components/OperatorSetup/index.js'
+import ParcellaireExportModal from '@/components/Features/ParcellaireExportModal.vue'
 
 import { dateFormat } from '../dates.js'
 
@@ -59,6 +69,7 @@ defineProps({
   }
 })
 
+const modal = ref(false)
 const { currentUser, parcellaireSource, parcellaireSourceLastUpdate } = toRefs(store.state)
 
 // source
