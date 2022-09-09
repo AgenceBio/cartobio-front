@@ -11,7 +11,8 @@ const props = defineProps({
   name: {
     type: String,
     required: true,
-  }
+  },
+  before: String
 })
 
 const map = inject('map')
@@ -35,11 +36,15 @@ watch(map, () => {
             "#ffcc00",
             ['boolean', ['feature-state', 'hover'], false],
             "#00ffff",
+            ['boolean', ['==', ['get', "TYPE"], "BOR"], false],
+            //--blue-france-main-525
+            "#6a6af4",
+            //--blue-france-sun-113-625
             "#000091"
           ],
           "fill-opacity": 0.9,
         }
-      })
+      }, props.before)
   })
 })
 </script>

@@ -31,7 +31,7 @@ onMounted(() => {
     hash: true,
     style: props.style,
     bounds: props.bounds,
-    padding: 20,
+    padding: 50,
     ...props.options,
   })
 
