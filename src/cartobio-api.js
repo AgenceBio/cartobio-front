@@ -24,8 +24,7 @@ export async function getOperatorParcelles () {
   else if (data.parcelles.features.length && data.metadata.source) {
     store.setParcelles({
       geojson: data.parcelles,
-      source: data.metadata.source,
-      sourceLastUpdate: data.metadata.sourceLastUpdate,
+      ...data.metadata
     })
   }
 
@@ -42,7 +41,7 @@ export async function submitParcellesChanges (geojson) {
 
   store.setParcelles({
     geojson: data.parcelles,
-    lastUpdate: data.metadata.lastUpdate,
+    ...data.metadata
   })
 }
 
@@ -57,6 +56,9 @@ export async function submitParcelles (geojson, { source }) {
     }
   })
 
-  store.setParcelles({ geojson: data.parcelles, source })
+  store.setParcelles({
+    geojson: data.parcelles,
+    ...data.metadata
+  })
 }
 

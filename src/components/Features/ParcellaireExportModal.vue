@@ -14,7 +14,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-left">
         <li>
-          <button class="fr-btn fr-icon-table-line fr-btn--secondary">
+          <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="excelExport">
             Excel
           </button>
         </li>
@@ -30,8 +30,14 @@
 
 <script setup>
 import { readonly, toRaw } from 'vue'
+import { utils, writeFile } from 'xlsx'
 import store from '@/store.js'
 import Modal from '@/components/Modal.vue'
+import { libelléFromCode } from '@/referentiels/pac.js'
+import { surface, inHa } from '@/pages/exploitation/features.js'
+
+const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
+const { decode_range: R } = utils
 
 const currentUser = readonly(store.state.currentUser)
 const parcellaire = toRaw(store.state.parcellaire)
@@ -46,5 +52,68 @@ function geojsonExport() {
   link.href = URL.createObjectURL(blob)
   link.download = `parcellaire-operateur-${currentUser.id}.json`
   link.click()
+}
+
+function excelExport ({ filename = `parcellaire-operateur-${currentUser.id}.xlsx` , template = 'user' }) {
+  const workbook = excelTemplates[template]({
+    featureCollection: parcellaire,
+    operator: currentUser
+  })
+
+  return writeFile(workbook, filename, { bookType : 'xlsx' })
+}
+
+const excelTemplates = {
+  user: ({ featureCollection, operator }) => {
+    const workbook = book_new()
+    const today = new Date().toLocaleDateString('fr-FR', {
+      dateStyle: 'short',
+      timeZone: 'Europe/Paris'
+    })
+
+    // First sheet
+    // First sheet: customer informations (via `customer`)
+    const sheet = aoa_to_sheet([
+      ['Numéro bio :', '', operator.id, '', 'Nom Opérateur:', operator.nom],
+      ['Date de saisie :', '', today, '', 'N°PACAGE', operator.numeroPacage],
+      ['Surface graphique totale (en ha) :', '', inHa(surface(featureCollection))]
+    ], { cellDates: true })
+
+    sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.id}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+    sheet['C2'].t = 'd'
+    sheet['C2'].z = 'dd/mm/yyyy'
+    sheet['C2'].v = today
+
+    sheet['!merges'] = [
+      R('A1:B1'), R('C1:D1'), R('F1:K1'),
+      R('A2:B2'), R('C2:D2'),
+      R('A3:B3'), R('C3:D3'),
+    ]
+
+    sheet['!cols'] = [
+      { wch: 16 }, '', '', '', {wch: 16},
+      { wch: 40 }, { wch: 10 }, '', { wch: 10 }, '', { wch: 60 }
+    ]
+
+    // First sheet: plots informations (via `featureCollection`)
+    sheet_add_aoa(sheet, [
+      ['Identifiant CartoBio', 'N°Ilot', 'N°Parcelle', 'Surfaces graphique (ha)', 'Code culture', 'Libellé culture', 'PACAGE', 'Niveau de conversion', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire'],
+    ], { origin: 'A6'})
+
+    sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
+      const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
+      const label = props.TYPE_LIBELLE ?? libelléFromCode(props.TYPE)
+      const surfaceHa = inHa(surface(geometry))
+      const isPac = Boolean(props.PACAGE)
+      const culture = props.TYPE
+
+      return [id, ilotId, parcelleId, surfaceHa, culture, label, props.PACAGE, props.conversion_niveau, props.engagement_date, (isPac ? 'PAC' : ''), props.commentaire]
+    }), { origin: 'A7', cellDates: true })
+
+    // First sheet: finalize
+    book_append_sheet(workbook, sheet, 'Parcellaire Bio');
+
+    return workbook
+  }
 }
 </script>

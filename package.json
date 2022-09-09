@@ -32,7 +32,8 @@
     "vue": "^3.2.25",
     "vue-matomo": "^4.1.0",
     "vue-router": "^4.0.12",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@testing-library/vue": "^6.4.2",
