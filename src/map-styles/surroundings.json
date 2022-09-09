@@ -24,7 +24,7 @@
           ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
           "#f93f42",
           ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
-          "#a7a967",
+          "#b7a73f",
           "#fcbfbf"
         ],
         "fill-opacity": 0.7

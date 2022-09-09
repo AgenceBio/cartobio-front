@@ -1,6 +1,8 @@
 <template>
   <aside ref="mapContainer">
     <slot />
+
+    <slot name="footer" />
     <slot name="credits" />
   </aside>
 </template>
