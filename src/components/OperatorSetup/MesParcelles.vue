@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, readonly } from 'vue'
-import { post } from 'axios'
+import axios from 'axios'
 import { statsPush } from '@/stats.js'
 import store from '../../store.js'
 
@@ -79,7 +79,7 @@ const mesParcellesServers = readonly({
 async function handleLoginImport ({ email, password, server }) {
   emit('upload:start')
 
-  const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, password, server })
+  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, password, server })
 
   emit('upload:complete', { geojson, source })
 }

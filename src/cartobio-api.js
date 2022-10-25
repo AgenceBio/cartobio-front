@@ -1,4 +1,4 @@
-import { get, post } from 'axios'
+import axios from 'axios'
 import store from './store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
@@ -16,7 +16,7 @@ class ParcellesEmptyError extends Error {
 export async function getOperatorParcelles () {
   const { id, token } = store.state.currentUser
 
-  const { data } = await get(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}`)
+  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}`)
 
   if (!data || !data.parcelles || !data.metadata.source) {
     throw new ParcellesNotSetupError()
@@ -34,7 +34,7 @@ export async function getOperatorParcelles () {
 export async function submitParcellesChanges (geojson) {
   const { id, token } = store.state.currentUser
 
-  const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
+  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
     geojson,
     lastUpdate: new Date().toISOString()
   })
@@ -48,7 +48,7 @@ export async function submitParcellesChanges (geojson) {
 export async function submitParcelles (geojson, { source }) {
   const { id, token } = store.state.currentUser
 
-  const { data } = await post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
+  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
     geojson,
     metadata: {
       source,

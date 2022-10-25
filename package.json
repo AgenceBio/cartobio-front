@@ -22,9 +22,9 @@
     "@turf/bbox": "^6.5.0",
     "@turf/centroid": "^6.5.0",
     "@turf/helpers": "^6.5.0",
-    "@vueuse/head": "^0.7.9",
+    "@vueuse/head": "^0.9.8",
     "array.prototype.groupby": "^1.0.0",
-    "axios": "^0.26.0",
+    "axios": "^1.1.3",
     "deepmerge": "^4.2.2",
     "feather-icons": "^4.28.0",
     "maplibre-gl": "^2.0.1",
@@ -40,11 +40,11 @@
     "@vitejs/plugin-vue": "^3.0.1",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.6.0",
-    "eslint-plugin-vue": "^8.2.0",
+    "eslint-plugin-vue": "^9.6.0",
     "postcss-preset-env": "^7.2.3",
     "typescript": "^4.5.5",
     "vite": "^3.0.4",
-    "vite-plugin-pages": "^0.25.0"
+    "vite-plugin-pages": "^0.27.1"
   },
   "eslintConfig": {
     "root": true,

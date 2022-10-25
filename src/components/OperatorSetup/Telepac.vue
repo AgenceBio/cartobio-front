@@ -87,7 +87,7 @@
 
 <script setup>
 import { ref, computed, readonly, toRef } from 'vue'
-import { post } from 'axios'
+import axios from 'axios'
 import { statsPush } from '@/stats.js'
 import store from '../../store.js'
 
@@ -122,7 +122,7 @@ async function handleFileUpload () {
 
   const form = new FormData()
   form.append('archive', archive)
-  const { data: geojson } = await post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
+  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
 
   emit('upload:complete', { geojson, source })
 }
