@@ -27,7 +27,7 @@
             </div>
           </div>
 
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="currentUser.id" v-if="currentUser.id">
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="currentUser.numeroBio" v-if="currentUser.id">
             <span class="fr-icon fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden>{{ currentUser.nom }}</span><br />
             <router-link to="/logout" custom v-slot="{ href }">
               <a :href="href" class="fr-icon fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">

@@ -50,11 +50,11 @@ function geojsonExport() {
 
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
-  link.download = `parcellaire-operateur-${currentUser.id}.json`
+  link.download = `parcellaire-operateur-${currentUser.numeroBio}.json`
   link.click()
 }
 
-function excelExport ({ filename = `parcellaire-operateur-${currentUser.id}.xlsx` , template = 'user' }) {
+function excelExport ({ filename = `parcellaire-operateur-${currentUser.numeroBio}.xlsx` , template = 'user' }) {
   const workbook = excelTemplates[template]({
     featureCollection: parcellaire,
     operator: currentUser
@@ -74,7 +74,7 @@ const excelTemplates = {
     // First sheet
     // First sheet: customer informations (via `customer`)
     const sheet = aoa_to_sheet([
-      ['Numéro bio :', '', operator.id, '', 'Nom Opérateur:', operator.nom],
+      ['Numéro bio :', '', operator.numeroBio, '', 'Nom Opérateur:', operator.nom],
       ['Date de saisie :', '', today, '', 'N°PACAGE', operator.numeroPacage],
       ['Surface graphique totale (en ha) :', '', inHa(surface(featureCollection))]
     ], { cellDates: true })

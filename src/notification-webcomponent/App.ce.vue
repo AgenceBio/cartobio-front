@@ -1,5 +1,5 @@
 <template>
-  <h2>Utilisateur #{{ store.state.currentUser.id }}</h2>
+  <h2>Utilisateur #{{ store.state.currentUser.numeroBio }}</h2>
   <OperatorSetup v-if="uploadState !== 'complete'" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" />
   <div v-else class="fr-alert fr-alert--success fr-mb-5w">
     <p class="fr-alert__title">Import réussi</p>
