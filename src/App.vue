@@ -7,7 +7,15 @@
         :is="Component"
         :key="route.meta.usePathKey ? route.path : undefined"
       />
-      <template #fallback>Chargement... </template>
+      <template #fallback>
+        <div class="fr-container fr-py-6w">
+          <div class="fr-grid-row">
+            <div class="fr-col-12">
+              <h2 class="fr-h4">Chargement des données…</h2>
+            </div>
+          </div>
+        </div>
+      </template>
     </Suspense>
   </RouterView>
 
@@ -48,5 +56,12 @@ a[aria-disabled] {
 .fr-col--center,
 .fr-grid-row--align-center {
   text-align: center;
+}
+
+.fr-background-alt--blue-france {
+  background-color: var(--background-alt-blue-france);
+}
+.fr-background-alt--grey {
+  background-color: var(--background-alt-grey);
 }
 </style>
