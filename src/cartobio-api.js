@@ -31,10 +31,11 @@ export async function getOperatorParcelles () {
   return data.parcelles
 }
 
-export async function getOperators () {
+export async function searchOperators (input) {
   const { id, certificats, token } = store.state.currentUser
   const ocId = certificats[0].organismeCertificateurId || null
-  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/${ocId}`)
+
+  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/search`, { ocId, input })
 
   return data
 }
