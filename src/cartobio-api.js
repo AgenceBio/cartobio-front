@@ -33,7 +33,7 @@ export async function getOperatorParcelles () {
 }
 
 export async function searchOperators (input) {
-  const { id, certificats, token } = store.state.currentUser
+  const { certificats, token } = store.state.currentUser
   const ocId = certificats[0].organismeCertificateurId || null
 
   const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/search`, { ocId, input })

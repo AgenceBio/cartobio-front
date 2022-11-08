@@ -30,7 +30,7 @@ const router = createRouter({
   }
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
     return router.replace('/exploitation/login')
   }
