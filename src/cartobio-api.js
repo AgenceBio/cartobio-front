@@ -23,6 +23,7 @@ export async function getOperatorParcelles () {
   }
   else if (data.parcelles.features.length && data.metadata.source) {
     store.setParcelles({
+      record_id: data.record_id,
       geojson: data.parcelles,
       ...data.metadata
     })
@@ -41,23 +42,27 @@ export async function searchOperators (input) {
 }
 
 export async function submitParcellesChanges (geojson) {
-  const { id, token } = store.state.currentUser
+  const { id: operatorId, numeroBio, token } = store.state.currentUser
 
-  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
+  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}/parcelles`, {
+    numeroBio,
     geojson,
-    lastUpdate: new Date().toISOString()
   })
 
   store.setParcelles({
+    record_id: data.record_id,
     geojson: data.parcelles,
     ...data.metadata
   })
 }
 
 export async function submitParcelles (geojson, { source }) {
-  const { id, token } = store.state.currentUser
+  const { id: operatorId, numeroBio, certificats, token } = store.state.currentUser
 
-  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}/parcelles`, {
+  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}/parcelles`, {
+    ocId: certificats[0]?.organismeCertificateurId,
+    ocLabel: certificats[0]?.organisme,
+    numeroBio,
     geojson,
     metadata: {
       source,
@@ -66,6 +71,7 @@ export async function submitParcelles (geojson, { source }) {
   })
 
   store.setParcelles({
+    record_id: data.record_id,
     geojson: data.parcelles,
     ...data.metadata
   })

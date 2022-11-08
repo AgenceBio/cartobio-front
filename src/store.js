@@ -3,6 +3,7 @@ import axios from 'axios'
 
 const DEFAULT_STATE = {
   currentUser: {},
+  record_id: null,
   parcellaire: {},
   parcellaireSource: null,
   parcellaireSourceLastUpdate: null,
@@ -44,7 +45,8 @@ const store = reactive({
     Object.assign(this.state.currentUser, userData)
   },
 
-  setParcelles ({ geojson, source, sourceLastUpdate }) {
+  setParcelles ({ record_id, geojson, source, sourceLastUpdate }) {
+    this.state.record_id = record_id
     this.state.parcellaireSource = source
     this.state.parcellaireSourceLastUpdate = sourceLastUpdate ?? new Date().toISOString()
     Object.assign(this.state.parcellaire, geojson)
