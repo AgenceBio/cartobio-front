@@ -27,18 +27,30 @@
             </div>
           </div>
 
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="currentUser.numeroBio" v-if="currentUser.id">
-            <span class="fr-icon fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden>{{ currentUser.nom }}</span><br />
-            <router-link to="/logout" custom v-slot="{ href }">
-              <a :href="href" class="fr-icon fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
-                Déconnexion
-              </a>
-            </router-link>
-          </div>
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools" v-else>
-            <router-link to="/exploitation/login" class="fr-icon-account-circle-fill" aria-role="button">
-              Connexion
-            </router-link>
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="currentUser.numeroBio">
+            <div class="fr-header__tools-links">
+              <ul class="fr-btns-group" v-if="currentUser.id">
+                <li class="tool-username">
+                  <span class="fr-btn fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden>
+                    {{ currentUser.nom }}
+                  </span>
+                </li>
+                <li class="tool-logout">
+                  <router-link to="/logout" custom v-slot="{ href }">
+                    <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
+                      Déconnexion
+                    </a>
+                  </router-link>
+                </li>
+              </ul>
+              <ul class="fr-btn-group" v-else>
+                <li>
+                  <router-link to="/exploitation/login" class="fr-btn fr-icon-account-circle-fill" aria-role="button">
+                    Connexion
+                  </router-link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -104,4 +116,22 @@ function toggle (menuId) {
 .logo {
   width: 3.5rem;
 }
+
+.fr-header__brand {
+  flex-shrink: 0;
+}
+
+.tool-username {
+  flex-shrink: 1;
+  max-width: 30vw !important;
+}
+  .tool-username span {
+    display: inline-block;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    max-width: 100% !important;
+  }
+  .tool-username span::before {
+    display: inline-block;
+  }
 </style>
