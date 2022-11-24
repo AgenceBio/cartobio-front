@@ -1,5 +1,5 @@
 <template>
-  <span :class="['fr-badge', 'fr-badge--sm', 'fr-badge--no-icon', state.color]">
+  <span :class="['fr-badge', state.color]">
     {{ state.label }}
     <span v-if="date" class="year">{{ date }}</span>
   </span>
@@ -17,16 +17,16 @@ const props = defineProps({
 
 const STATE_MAP = readonly({
   UNKNOWN: {
-    label: 'Parcellaire inconnu',
-    color: ''
+    label: 'Non renseigné',
+    color: 'fr-badge--warning'
   },
   OPERATOR_DRAFT: {
     label: 'Brouillon',
-    color: 'fr-badge--blue-ecume'
+    color: 'fr-badge--info'
   },
   AUDITED: {
     label: 'Audit terminé',
-    color: 'fr-badge--warning'
+    color: 'fr-badge--new'
   },
   CERTIFIED: {
     label: 'Certifié',

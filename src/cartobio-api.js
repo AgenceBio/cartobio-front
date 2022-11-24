@@ -32,6 +32,10 @@ export async function getOperatorParcelles () {
   return data.parcelles
 }
 
+/**
+ * @TODO use session ocId
+ * @returns
+ */
 export async function searchOperators (input) {
   const { certificats, token } = store.state.currentUser
   const ocId = certificats[0].organismeCertificateurId || null
@@ -39,6 +43,19 @@ export async function searchOperators (input) {
   const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/search`, { ocId, input })
 
   return data
+}
+
+/**
+ * @TODO use session ocId
+ * @returns
+ */
+export async function fetchLatestOperators () {
+  const { certificats, token } = store.state.currentUser
+  const ocId = certificats[0].organismeCertificateurId
+
+  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/latest`, { params: { ocId } })
+
+  return data.operators
 }
 
 export async function submitParcellesChanges (geojson) {
