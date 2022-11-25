@@ -43,18 +43,17 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiresGeodata) {
-    try {
-      const record = await getOperatorParcelles(store.state.currentUser.id)
+    const record = await getOperatorParcelles(store.state.currentUser.id)
+
+    if (!record || !record.parcelles || !record.metadata.source) {
+      return router.push('/exploitation/setup')
+    }
+    else {
       store.setParcelles({
         record_id: record.record_id,
         geojson: record.parcelles,
         ...record.metadata
       })
-    }
-    catch (error) {
-      if (error.name === 'ParcellesNotSetup') {
-        return router.push('/exploitation/setup')
-      }
     }
   }
 })

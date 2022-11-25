@@ -18,10 +18,6 @@ export async function getOperatorParcelles (operatorId) {
 
   const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}`)
 
-  if (!data || !data.parcelles || !data.metadata.source) {
-    throw new ParcellesNotSetupError()
-  }
-
   return data
 }
 
