@@ -43,7 +43,7 @@
 
 <script setup>
 import { computed, ref, unref, watch } from 'vue'
-import { surface, inHa } from '@/pages/exploitation/features.js'
+import { surface, inHa } from '@/components/Features/index.js'
 import ConversionLevel from './ConversionLevel.vue'
 
 const props = defineProps({

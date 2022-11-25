@@ -66,6 +66,10 @@ export function getFeatureGroups (collection, pivot = 'CULTURE') {
   })).sort((a, b) => b.surface - a.surface)
 }
 
+export function getFeatureById (features, id) {
+  return features.find(feature => feature.id === id)
+}
+
 export function getFeatureGroupsStyles (groups) {
   return groups.flatMap(({ features, accentColor }) => ([
     ['in', ['get', 'id'], ['literal', features.map(({ id }) => id)]],

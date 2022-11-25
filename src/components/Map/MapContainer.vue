@@ -11,13 +11,18 @@
 import { provide, shallowRef, ref, onMounted, watch } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
 
+import baseStyle from '@/map-styles/base.json'
+
 const map = shallowRef(null)
 const mapContainer = ref(null)
 
 provide('map', map)
 
 const props = defineProps({
-  style: [Object, String],
+  style: {
+    type: [Object, String],
+    default: baseStyle
+  },
   bounds: Array,
   options: {
     type: Object,

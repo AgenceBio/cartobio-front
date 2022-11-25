@@ -13,23 +13,16 @@ class ParcellesEmptyError extends Error {
   message = 'Parcelles are setup, but empty for this operator.'
 }
 
-export async function getOperatorParcelles () {
-  const { id, token } = store.state.currentUser
+export async function getOperatorParcelles (operatorId) {
+  const { token } = store.state.currentUser
 
-  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/operator/${id}`)
+  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}`)
 
   if (!data || !data.parcelles || !data.metadata.source) {
     throw new ParcellesNotSetupError()
   }
-  else if (data.parcelles.features.length && data.metadata.source) {
-    store.setParcelles({
-      record_id: data.record_id,
-      geojson: data.parcelles,
-      ...data.metadata
-    })
-  }
 
-  return data.parcelles
+  return data
 }
 
 /**

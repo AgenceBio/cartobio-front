@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from "vue-router"
 import { createHead } from "@vueuse/head"
 import routes from "~pages"
@@ -9,6 +10,8 @@ import { getOperatorParcelles } from './cartobio-api.js'
 import App from './App.vue'
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
+
+const pinia = createPinia()
 
 const head = createHead({
   titleTemplate: '%s — CartoBio (beta)'
@@ -41,7 +44,12 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiresGeodata) {
     try {
-      await getOperatorParcelles()
+      const record = await getOperatorParcelles(store.state.currentUser.id)
+      store.setParcelles({
+        record_id: record.record_id,
+        geojson: record.parcelles,
+        ...record.metadata
+      })
     }
     catch (error) {
       if (error.name === 'ParcellesNotSetup') {
@@ -54,6 +62,7 @@ router.beforeEach(async (to) => {
 const app = createApp(App)
   .use(router)
   .use(head)
+  .use(pinia)
   .use(Matomo, {
     router,
     siteId,
