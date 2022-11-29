@@ -26,7 +26,7 @@ export const groupingChoices = {
     groupLabelFn: (d) => d.properties.COMMUNE
   },
   'CULTURE': {
-    label: 'culture',
+    label: 'type de culture',
     datapoint: (d) => d.properties.TYPE,
     groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
   },
@@ -68,6 +68,23 @@ export function getFeatureGroups (collection, pivot = 'CULTURE') {
 
 export function getFeatureById (features, id) {
   return features.find(feature => feature.id === id)
+}
+
+export function featureName (feature) {
+  if (feature.properties.NOM) {
+    return feature.properties.NOM
+  }
+  else if (feature.properties.NUMERO_I || feature.properties.NUMERO_P) {
+    return [
+      feature.properties.NUMERO_I ? `ilot ${feature.properties.NUMERO_I}` : '',
+      feature.properties.NUMERO_P ? `parcelle ${feature.properties.NUMERO_P}` : '',
+    ]
+    .filter(d => d)
+    .join(', ')
+  }
+  else {
+    return '-'
+  }
 }
 
 export function getFeatureGroupsStyles (groups) {

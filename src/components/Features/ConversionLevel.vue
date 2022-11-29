@@ -1,24 +1,12 @@
 <template>
-  <i v-if="!feature.properties.conversion_niveau">
-    Donnée inconnue
-  </i>
-  <span class="certification-details" v-else-if="isABLevel(feature.properties.conversion_niveau)">
-    <abbr :title="conversionLevel.label">{{ conversionLevel.shortLabel }}</abbr>
-    <small v-if="feature.properties.engagement_date">
-      engagée le {{ dateDDMMYYY(feature.properties.engagement_date) }}
-    </small>
-    <small v-else>
-      date engagement inconnue
-    </small>
-  </span>
-  <span v-else>
-    {{ conversionLevel.shortLabel }}
+  <span :class="['fr-badge', color]">
+    {{ label }}
   </span>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { getConversionLevel, isABLevel } from '@/referentiels/ab.js'
+import { getConversionLevel } from '@/referentiels/ab.js'
 
 const props = defineProps({
   feature: {
@@ -28,19 +16,17 @@ const props = defineProps({
 })
 
 const conversionLevel = computed(() => getConversionLevel(props.feature.properties.conversion_niveau))
-
-
-function dateDDMMYYY (date) {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    dateStyle: 'short',
-    timeZone: 'Europe/Paris'
-  })
-}
+const label = computed(() => props.feature.properties.conversion_niveau ? conversionLevel.value.shortLabel : 'Inconnue')
+const color = computed(() => props.feature.properties.conversion_niveau ? 'fr-badge--success' : 'fr-badge--warning')
 </script>
 
 <style scoped>
-  .certification-details {
-    display: flex;
-    flex-direction: column;
+.fr-badge--success {
+  background-color: transparent;
+  color: var(--text-default-grey);
+  font-weight: normal;
+}
+  .fr-badge--success::before {
+    background-color: transparent;
   }
 </style>

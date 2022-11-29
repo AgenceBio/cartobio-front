@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()
@@ -9,7 +9,7 @@ export const useFeaturesStore = defineStore('features', () => {
   const selectedIds = ref([])
   const activeId = ref(null)
   const hoveredId = ref(null)
-  const all = ref([])
+  const all = reactive([])
 
   function getFeatureById (id) {
     return all.value.find(feature => feature.id === id)
@@ -32,6 +32,8 @@ export const useFeaturesStore = defineStore('features', () => {
   const selectedFeatures = computed(() => {
     return selectedIds.value.map(getFeatureById)
   })
+
+  const collection = computed(() => ({ type: 'FeatureCollection', features: all.value }))
 
   function setAll (features) {
     all.value = features
@@ -118,6 +120,7 @@ export const useFeaturesStore = defineStore('features', () => {
     hoveredFeature,
     selectedFeatures,
     allSelected,
+    collection,
     // methods
     setAll,
     toggleAllSelected,

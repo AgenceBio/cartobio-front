@@ -51,6 +51,12 @@ router.beforeEach(async (to) => {
     else {
       store.setParcelles({
         record_id: record.record_id,
+        record: {
+          record_id: record.record_id,
+          certification_state: record.certification_state,
+          created_at: record.created_at,
+          updated_at: record.updated_at,
+        },
         geojson: record.parcelles,
         ...record.metadata
       })

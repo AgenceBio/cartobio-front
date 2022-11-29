@@ -5,20 +5,21 @@
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-modal__body">
             <div class="fr-modal__header">
-              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('update:modelValue')">
+              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('update:modelValue', false)">
                 Fermer
               </button>
             </div>
             <div class="fr-modal__content">
               <h1 id="modal-title" class="fr-modal__title">
+                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" />
                 <slot name="title" />
               </h1>
 
-              <slot name="default" />
+              <slot name="default" v-bind="$attrs" />
+            </div>
           </div>
           <div class="fr-modal__footer">
-              <slot name="footer" />
-            </div>
+            <slot name="footer" />
           </div>
         </div>
       </div>
@@ -29,6 +30,7 @@
 <script setup>
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
-  modelValue: Boolean
+  modelValue: Boolean,
+  icon: String
 })
 </script>

@@ -7,43 +7,41 @@
           <label class="fr-label" :for="'radio-'+ featureGroup.key" />
         </div>
       </td>
-      <th scope="row" colspan="3">
-        <span class="fr-icon fr-icon fr-icon-arrow-right-s-fill" :aria-checked="open" aria-role="button" />
-        {{ featureGroup.label }}
-      </th>
+      <td><span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" /></td>
+      <th scope="row" colspan="2">{{ featureGroup.label }}</th>
       <td class="numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
+      <td class="actions"><span :class="['fr-icon', 'fr-icon-edit-fill', groupValidationClass]" /></td>
     </tr>
     <tr :hidden="!open" class="intermediate-header">
-      <th scope="col" class="fr-text--xs"></th>
-      <th scope="col" class="fr-text--xs">Nom</th>
-      <th scope="col" class="fr-text--xs">Certification</th>
-      <th scope="col" colspan="2" class="numeric fr-text--xs">Surface graphique</th>
+      <th scope="col" colspan="2"></th>
+      <th scope="col">Nom</th>
+      <th scope="col">Certification</th>
+      <th scope="col" colspan="2"></th>
     </tr>
-    <tr class="parcelle" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click.prevent.stop="toggleSelectedIds(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
+    <tr class="parcelle" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
           <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="toggleSelectedIds(feature.id)" />
           <label class="fr-label" :for="'radio-' + feature.id" />
         </div>
       </th>
-      <td>
-        <span v-if="feature.properties.NUMERO_I">Ilot {{ feature.properties.NUMERO_I }}<span v-if="feature.properties.NUMERO_P">, parcelle {{ feature.properties.NUMERO_P }}</span></span>
-        <span v-else>{{ feature.properties.NOM }}</span>
-      </td>
+      <td></td>
+      <td>{{ featureName(feature) }}</td>
       <td>
         <ConversionLevel :feature="feature" />
       </td>
-      <td class="fr-px-0">
-        <!-- <span class="fr-icon fr-icon-message-2-line fr-text-label--green-tilleul-verveine" aria-role="button" /> -->
-      </td>
       <td class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
+      <td class="actions">
+        <span class="fr-icon fr-icon-edit-line" aria-role="button" />
+      </td>
     </tr>
   </tbody>
 </template>
 
 <script setup>
 import { computed, ref, unref, watch } from 'vue'
-import { surface, inHa } from '@/components/Features/index.js'
+import { surface, inHa, featureName } from '@/components/Features/index.js'
+import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 
 const props = defineProps({
@@ -61,16 +59,18 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:hoveredId', 'update:selectedIds'])
+const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'edit:featureId'])
 const open = ref(false)
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
 const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
+const groupValidationClass = computed(() => {
+  const validation = applyValidationRules(...props.featureGroup.features)
+  return validation.total === validation.success ? 'fr-icon-success-line fr-icon--success' : 'fr-icon-warning-fill fr-icon--warning'
+})
 
-function toggleSelectedIds (featureId) {
-  return props.selectedIds.includes(featureId)
-    ? emit('update:selectedIds', props.selectedIds.filter(id => id !== featureId))
-    : emit('update:selectedIds', props.selectedIds.concat(featureId))
+function toggleEditForm (featureId) {
+  return emit('edit:featureId', featureId)
 }
 
 function toggleFeatureGroup () {
@@ -99,9 +99,17 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
 </script>
 
 <style scoped>
+.fr-table tr.intermediate-header {
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(0deg, var(--border-plain-grey), var(--border-plain-grey));
+}
   .fr-table tr.intermediate-header th {
-    padding-top: .5rem;
-    padding-bottom: .5rem;
+    background-color: var(--background-default-grey);
+    color: var(--text-mention-grey);
+    border-bottom: 2px solid ;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
   }
   .fr-table td.numeric,
   .fr-table th.numeric {
@@ -133,11 +141,23 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
   }
 
   .fr-icon[aria-checked="true"]::before {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
   }
 
   table tr[aria-current="location"] {
     background-color: #00ffff50 !important;
     cursor: pointer;
   }
+
+  .actions {
+    text-align: center;
+  }
+
+.fr-icon--success {
+  color: var(--text-default-success);
+}
+
+.fr-icon--warning {
+  color: var(--text-default-warning);
+}
 </style>

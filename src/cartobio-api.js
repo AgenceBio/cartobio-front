@@ -47,8 +47,8 @@ export async function fetchLatestOperators () {
   return data.operators
 }
 
-export async function submitParcellesChanges (geojson) {
-  const { id: operatorId, numeroBio, token } = store.state.currentUser
+export async function submitParcellesChanges ({ geojson, operatorId, numeroBio }) {
+  const { token } = store.state.currentUser
 
   const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}/parcelles`, {
     numeroBio,
