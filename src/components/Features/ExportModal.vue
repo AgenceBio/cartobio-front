@@ -29,35 +29,45 @@
 </template>
 
 <script setup>
-import { readonly, toRaw } from 'vue'
+import { computed, toRaw } from 'vue'
 import { utils, writeFile } from 'xlsx'
-import store from '@/store.js'
-import Modal from '@/components/Modal.vue'
 import { libelléFromCode } from '@/referentiels/pac.js'
 import { surface, inHa } from '@/components/Features/index.js'
+
+import Modal from '@/components/Modal.vue'
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
 
-const currentUser = readonly(store.state.currentUser)
-const parcellaire = toRaw(store.state.parcellaire)
+const props = defineProps({
+  operator: {
+    type: Object,
+    required: true
+  },
+  collection: {
+    type: Object,
+    required: true
+  }
+})
+
+const numeroBio = computed(() => props.operator.numeroBio)
 
 function geojsonExport() {
   const blob = new Blob(
-    [JSON.stringify(parcellaire, null, 2)],
+    [JSON.stringify(toRaw(props.collection), null, 2)],
     { type: 'application/json'}
   )
 
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
-  link.download = `parcellaire-operateur-${currentUser.numeroBio}.json`
+  link.download = `parcellaire-operateur-${numeroBio.value}.json`
   link.click()
 }
 
-function excelExport ({ filename = `parcellaire-operateur-${currentUser.numeroBio}.xlsx` , template = 'user' }) {
+function excelExport ({ filename = `parcellaire-operateur-${numeroBio.value}.xlsx` , template = 'user' }) {
   const workbook = excelTemplates[template]({
-    featureCollection: parcellaire,
-    operator: currentUser
+    featureCollection: props.collection,
+    operator: props.operator
   })
 
   return writeFile(workbook, filename, { bookType : 'xlsx' })

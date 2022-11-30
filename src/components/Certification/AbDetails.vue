@@ -48,7 +48,7 @@
     </div>
 
     <Teleport to="body">
-      <ParcellaireExportModal v-model="modal" />
+      <ParcellaireExportModal :operator="currentUser" :collection="parcellaire"  v-model="modal" />
     </Teleport>
   </div>
 </template>
@@ -58,7 +58,7 @@ import { computed, ref, toRefs } from 'vue'
 
 import store from '@/store.js'
 import importTools from '@/components/OperatorSetup/index.js'
-import ParcellaireExportModal from '@/components/Features/ParcellaireExportModal.vue'
+import ParcellaireExportModal from '@/components/Features/ExportModal.vue'
 
 import { dateFormat } from '../dates.js'
 
@@ -70,7 +70,7 @@ defineProps({
 })
 
 const modal = ref(false)
-const { currentUser, parcellaireSource, parcellaireSourceLastUpdate } = toRefs(store.state)
+const { currentUser, parcellaire, parcellaireSource, parcellaireSourceLastUpdate } = toRefs(store.state)
 
 // source
 const importToolName = computed(() => importTools[parcellaireSource.value].label)

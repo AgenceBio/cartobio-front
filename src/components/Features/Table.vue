@@ -115,7 +115,7 @@ function handleSingleFeatureEdit ({ id, patch }) {
 }
 
 function doSave (geojson) {
-  const { id: operatorId, numerobio: numeroBio} = props.operator
+  const { id: operatorId, numeroBio} = props.operator
 
   isSaving.value = true
 
