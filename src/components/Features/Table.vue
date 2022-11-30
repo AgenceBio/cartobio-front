@@ -40,7 +40,7 @@
         </tr>
       </thead>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" :validation-rules="validationRules" />
     </table>
   </div>
 
@@ -78,7 +78,8 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  'edit-form': Object
+  'edit-form': Object,
+  'validation-rules': Object
 })
 
 const isSaving = ref(false)

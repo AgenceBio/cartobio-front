@@ -56,6 +56,10 @@ const props = defineProps({
   selectedIds: {
     type: Array,
     required: true
+  },
+  validationRules: {
+    type: Object,
+    required: true,
   }
 })
 
@@ -65,8 +69,8 @@ const open = ref(false)
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
 const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
 const groupValidationClass = computed(() => {
-  const validation = applyValidationRules(...props.featureGroup.features)
-  return validation.total === validation.success ? 'fr-icon-success-line fr-icon--success' : 'fr-icon-warning-fill fr-icon--warning'
+  const validation = applyValidationRules(props.validationRules.rules, ...props.featureGroup.features)
+  return validation.total === validation.success ? `fr-icon-success-line ${props.validationRules.success}` : `fr-icon-warning-fill ${props.validationRules.error}`
 })
 
 function toggleEditForm (featureId) {
@@ -155,6 +159,10 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
 
 .fr-icon--success {
   color: var(--text-default-success);
+}
+
+.fr-icon--neutral {
+  color: transparent;
 }
 
 .fr-icon--warning {

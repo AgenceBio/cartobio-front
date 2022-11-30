@@ -18,16 +18,24 @@ export const userFacingConversionLevels = conversionLevels.filter(({ value }) =>
 
 const VALIDATION_RULES = {
   NOT_EMPTY (feature) {
-    const { conversion_niveau, engagement_date, TYPE } = feature.properties
+    const { TYPE } = feature.properties
+
+    return Boolean(TYPE)
+  },
+  ENGAGEMENT_DATE (feature) {
+    const { conversion_niveau, engagement_date } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
-    if (!TYPE || conversionLevel.value === LEVEL_UNKNOWN || (isABLevel(conversion_niveau) && !engagement_date)) {
+    if (conversionLevel.value === LEVEL_UNKNOWN || (isABLevel(conversion_niveau) && !engagement_date)) {
       return false
     }
 
     return true
   }
 }
+
+export const OPERATOR_RULES = [VALIDATION_RULES.NOT_EMPTY]
+export const AUDITOR_RULES = [VALIDATION_RULES.NOT_EMPTY, VALIDATION_RULES.ENGAGEMENT_DATE]
 
 export function getConversionLevel (level) {
   return conversionLevels.find(({ value }) => value === level) ?? getConversionLevel(LEVEL_UNKNOWN)
@@ -37,14 +45,16 @@ export function isABLevel (level) {
   return ABLevels.includes(level)
 }
 
-export function applyValidationRules (...features) {
+export function applyValidationRules (validatedRules, ...features) {
   let total = 0
   let success = 0
   let failures = 0
   const rules = {}
 
   features.forEach(feature => {
-    Object.entries(VALIDATION_RULES).forEach(([id, validationFn]) => {
+    validatedRules.forEach((validationFn) => {
+      const id = validationFn.name
+
       rules[id] = validationFn(feature)
       total++
       rules[id] ? success++ : failures++
