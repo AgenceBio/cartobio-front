@@ -49,19 +49,15 @@ export function applyValidationRules (validatedRules, ...features) {
   let total = 0
   let success = 0
   let failures = 0
-  const rules = {}
 
   features.forEach(feature => {
     validatedRules.forEach((validationFn) => {
-      const id = validationFn.name
-
-      rules[id] = validationFn(feature)
       total++
-      rules[id] ? success++ : failures++
+      validationFn(feature) ? success++ : failures++
     })
   })
 
-  return { total, success, failures, rules }
+  return { total, success, failures }
 }
 
 export const ABLevels = [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB]
