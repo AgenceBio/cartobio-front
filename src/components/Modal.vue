@@ -17,9 +17,10 @@
 
               <slot name="default" v-bind="$attrs" />
             </div>
-          </div>
-          <div class="fr-modal__footer">
-            <slot name="footer" />
+
+            <div class="fr-modal__footer">
+              <slot name="footer" />
+            </div>
           </div>
         </div>
       </div>
