@@ -1,5 +1,5 @@
 <template>
-  <span :class="['fr-badge', color]">
+  <span :class="className">
     {{ label }}
   </span>
 </template>
@@ -17,16 +17,6 @@ const props = defineProps({
 
 const conversionLevel = computed(() => getConversionLevel(props.feature.properties.conversion_niveau))
 const label = computed(() => props.feature.properties.conversion_niveau ? conversionLevel.value.shortLabel : 'Inconnue')
-const color = computed(() => props.feature.properties.conversion_niveau ? 'fr-badge--success' : 'fr-badge--warning')
+const className = computed(() => props.feature.properties.conversion_niveau ? '' : 'fr-badge fr-badge--warning')
 </script>
 
-<style scoped>
-.fr-badge--success {
-  background-color: transparent;
-  color: var(--text-default-grey);
-  font-weight: normal;
-}
-  .fr-badge--success::before {
-    background-color: transparent;
-  }
-</style>
