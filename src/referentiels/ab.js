@@ -5,6 +5,16 @@ export const LEVEL_C2 = 'C2'
 export const LEVEL_C3 = 'C3'
 export const LEVEL_AB = 'AB'
 
+export const CERTIFICATION_STATE = {
+  OPERATOR_DRAFT: 'OPERATOR_DRAFT',
+  AUDITED: 'AUDITED',
+  CERTIFIED: 'CERTIFIED',
+}
+
+export function isCertificationImmutable (state) {
+  return [CERTIFICATION_STATE.AUDITED, CERTIFICATION_STATE.CERTIFIED].includes(state)
+}
+
 export const conversionLevels = [
   { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Donnée inconnue' },
   { value: LEVEL_CONVENTIONAL, label: 'Conventionnel', shortLabel: 'Conventionnel' },

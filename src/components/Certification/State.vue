@@ -8,6 +8,8 @@
 <script setup>
 import { readonly, computed } from 'vue'
 
+import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
+
 const props = defineProps({
   record: {
     type: Object,
@@ -20,15 +22,15 @@ const STATE_MAP = readonly({
     label: 'Non renseigné',
     color: 'fr-badge--warning'
   },
-  OPERATOR_DRAFT: {
+  [CERTIFICATION_STATE.OPERATOR_DRAFT]: {
     label: 'Brouillon',
     color: 'fr-badge--info'
   },
-  AUDITED: {
+  [CERTIFICATION_STATE.AUDITED]: {
     label: 'Audit terminé',
     color: 'fr-badge--new'
   },
-  CERTIFIED: {
+  [CERTIFICATION_STATE.CERTIFIED]: {
     label: 'Certifié',
     color: 'fr-badge--success'
   },

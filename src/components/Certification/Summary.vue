@@ -6,7 +6,7 @@
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="!isAudited && isComplete">
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden>🎉</span></h3>
 
-    <button class="fr-btn">Terminer l'audit</button>
+    <button class="fr-btn" @click="sendOffModal = true">Terminer l'audit</button>
   </div>
 
   <div class="fr-callout fr-callout--green-emeraude" v-else-if="isAudited && isComplete">
@@ -16,13 +16,22 @@
   <Teleport to="body">
     <FeaturesExportModal :operator="operator" :collection="features" v-model="exportModal" />
   </Teleport>
+
+  <Teleport to="body">
+    <SendOffModal :operator="operator" :record="record" v-model="sendOffModal" @submit="handleSendOff" />
+  </Teleport>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import { applyValidationRules } from '@/referentiels/ab.js'
+import { applyValidationRules, isCertificationImmutable, CERTIFICATION_STATE } from '@/referentiels/ab.js'
+import { updateAuditState } from '@/cartobio-api.js'
+import { useRecordStore } from '@/stores/index.js'
+
+const recordStore = useRecordStore()
 
 import FeaturesExportModal from '@/components/Features/ExportModal.vue'
+import SendOffModal from '@/components/Certification/SendOffModal.vue'
 
 const props = defineProps({
   operator: {
@@ -43,10 +52,20 @@ const props = defineProps({
   }
 })
 
-const validationModal = ref(false)
+const sendOffModal = ref(false)
 const exportModal = ref(false)
 const validationResult = computed(() => applyValidationRules(props.validationRules.rules, ...props.features.features))
 const hasFailures = computed(() => Boolean(validationResult.value.failures))
 const isComplete = computed(() => hasFailures.value === false)
-const isAudited = computed(() => ['AUDITED', 'CERTIFIED'].includes(props.record.certification_state.value))
+const isAudited = computed(() => isCertificationImmutable(props.record.certification_state))
+
+async function handleSendOff ({ record_id: recordId, patch }) {
+  const record = await updateAuditState({ recordId }, {
+    ...patch,
+    certification_state: CERTIFICATION_STATE.AUDITED
+  })
+
+  recordStore.update(record)
+  sendOffModal.value = false
+}
 </script>

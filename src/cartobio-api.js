@@ -62,6 +62,12 @@ export async function submitParcellesChanges ({ geojson, operatorId, numeroBio }
   })
 }
 
+export async function updateAuditState ({ recordId }, patch) {
+  const { data } = await axios.patch(`${VUE_APP_API_ENDPOINT}/v2/certification/audits/${recordId}`, patch)
+
+  return data
+}
+
 export async function submitParcelles (geojson, { source }) {
   const { id: operatorId, numeroBio, certificats, token } = store.state.currentUser
 
