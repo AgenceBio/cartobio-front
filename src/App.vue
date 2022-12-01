@@ -24,19 +24,17 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 import { computed } from 'vue'
 
 import MainHeader from './components/MainHeader.vue'
 import MainFooter from './components/MainFooter.vue'
 
-const { VUE_APP_API_ENDPOINT } = import.meta.env
 const route = useRoute()
-
 const title = computed(() => route.meta?.seo?.title)
 
 // SEO
-useHead({ title })
+useHead({ title, titleTemplate: '%s — CartoBio (beta)' })
 </script>
 
 <style>

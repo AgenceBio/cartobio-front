@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from "vue-router"
-import { createHead } from "@vueuse/head"
+import { createHead } from "@unhead/vue"
 import routes from "~pages"
 import Matomo from 'vue-matomo'
 
@@ -12,10 +12,7 @@ import App from './App.vue'
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
 
 const pinia = createPinia()
-
-const head = createHead({
-  titleTemplate: '%s — CartoBio (beta)'
-})
+const head = createHead()
 
 const router = createRouter({
   routes,

@@ -29,9 +29,21 @@
 </template>
 
 <script setup>
+import { watch } from 'vue'
+import { useHead } from '@unhead/vue'
+
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: Boolean,
   icon: String
+})
+
+watch(() => props.modelValue, (isOpen) => {
+  useHead({
+    htmlAttrs: {
+      'data-fr-scrolling': isOpen,
+      tagDuplicateStrategy: 'replace'
+    }
+  })
 })
 </script>
