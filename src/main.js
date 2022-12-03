@@ -55,7 +55,7 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to) => {
   if (to.path === '/login/agencebio') {
-    window.location = `${VUE_APP_API_ENDPOINT}/../auth-provider/agencebio/login`
+    window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login`
     return false
   }
 
