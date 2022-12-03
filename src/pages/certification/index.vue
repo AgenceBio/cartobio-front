@@ -27,7 +27,7 @@ meta:
             </router-link>
           </p>
           <p v-else>
-            <router-link class="fr-btn" to="/exploitation/login">
+            <router-link class="fr-btn" to="/certification/exploitations">
               Chercher un opérateur
             </router-link>
           </p>
