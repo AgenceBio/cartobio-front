@@ -1,7 +1,10 @@
 import axios from 'axios'
-import store from './store.js'
 
-const { VUE_APP_API_ENDPOINT } = import.meta.env
+import store from '@/store.js'
+
+const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
+
+const cartobioApi = axios.create({ baseURL })
 
 class ParcellesNotSetupError extends Error {
   name = 'ParcellesNotSetup'
@@ -13,23 +16,12 @@ class ParcellesEmptyError extends Error {
   message = 'Parcelles are setup, but empty for this operator.'
 }
 
-export async function getOperatorParcelles (operatorId) {
-  const { token } = store.state.currentUser
-
-  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}`)
-
-  return data
-}
-
-/**
- * @TODO use session ocId
- * @returns
- */
-export async function searchOperators (input) {
-  const { certificats, token } = store.state.currentUser
-  const ocId = certificats[0].organismeCertificateurId || null
-
-  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/search`, { ocId, input })
+export async function getOperatorParcelles (operatorId, { token } = {}) {
+  const { data } = await cartobioApi.get(`/v2/operator/${operatorId}`, token ? {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  } : {})
 
   return data
 }
@@ -38,11 +30,26 @@ export async function searchOperators (input) {
  * @TODO use session ocId
  * @returns
  */
-export async function fetchLatestOperators () {
-  const { certificats, token } = store.state.currentUser
-  const ocId = certificats[0].organismeCertificateurId
+export async function searchOperators (input, { token }) {
+  const { data } = await cartobioApi.post(`/v2/certification/operators/search`, { input }, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
 
-  const { data } = await axios.get(`${VUE_APP_API_ENDPOINT}/v2/certification/operators/latest`, { params: { ocId } })
+  return data
+}
+
+/**
+ * @TODO use session ocId
+ * @returns
+ */
+export async function fetchLatestOperators ({ token }) {
+  const { data } = await cartobioApi.get(`/v2/certification/operators/latest`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
 
   return data.operators
 }
@@ -50,7 +57,7 @@ export async function fetchLatestOperators () {
 export async function submitParcellesChanges ({ geojson, operatorId, numeroBio }) {
   const { token } = store.state.currentUser
 
-  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}/parcelles`, {
+  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
     numeroBio,
     geojson,
   })
@@ -63,7 +70,7 @@ export async function submitParcellesChanges ({ geojson, operatorId, numeroBio }
 }
 
 export async function updateAuditState ({ recordId }, patch) {
-  const { data } = await axios.patch(`${VUE_APP_API_ENDPOINT}/v2/certification/audits/${recordId}`, patch)
+  const { data } = await cartobioApi.patch(`/v2/certification/audits/${recordId}`, patch)
 
   return data
 }
@@ -71,7 +78,7 @@ export async function updateAuditState ({ recordId }, patch) {
 export async function submitParcelles (geojson, { source }) {
   const { id: operatorId, numeroBio, certificats, token } = store.state.currentUser
 
-  const { data } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/operator/${operatorId}/parcelles`, {
+  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
     ocId: certificats[0]?.organismeCertificateurId,
     ocLabel: certificats[0]?.organisme,
     numeroBio,
@@ -87,5 +94,17 @@ export async function submitParcelles (geojson, { source }) {
     geojson: data.parcelles,
     ...data.metadata
   })
+}
+
+export async function verifyToken (userToken) {
+  const { data } = await cartobioApi.post(`/v2/user/verify`, {}, {
+    headers: {
+      Authorization: `Bearer ${userToken}`
+    }
+  })
+
+  cartobioApi.defaults.headers.common['Authorization'] = `Bearer ${userToken}`
+
+  return data
 }
 
