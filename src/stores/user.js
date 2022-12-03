@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import { setAuthorization } from '@/cartobio-api'
 
 export const ROLES = Object.freeze({
   OC: 'oc',
@@ -28,6 +29,10 @@ export const useUserStore = defineStore('user', () => {
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
 
+  if (token.value) {
+    setAuthorization(token.value)
+  }
+
   const role = computed(() => {
     const groupName = user.value?.mainGroup?.nom
 
@@ -51,10 +56,12 @@ export const useUserStore = defineStore('user', () => {
 
   function login (userToken) {
     token.value = userToken
+    setAuthorization(userToken)
   }
 
   function logout () {
     token.value = null
+    setAuthorization('')
   }
 
   return {
