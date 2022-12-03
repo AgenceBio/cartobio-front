@@ -67,6 +67,7 @@ const store = reactive({
 
   logoutUser () {
     Object.assign(this.state, structuredClone(DEFAULT_STATE))
+    localStorage.removeItem('currentUser')
   },
 })
 
