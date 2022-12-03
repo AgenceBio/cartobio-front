@@ -38,7 +38,7 @@ const app = createApp(App)
   .use(Matomo, {
     router,
     siteId,
-    domains: ['app.cartobio.org', 'v2--cartobio-dev.netlify.app'],
+    domains: ['cartobio.agencebio.org', 'v2--cartobio-dev.netlify.app'],
     enableLinkTracking: true,
     discardHashTag: true,
     enableHeartBeatTimer: 15,
