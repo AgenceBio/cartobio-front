@@ -43,6 +43,20 @@
                   </router-link>
                 </li>
               </ul>
+              <ul class="fr-btns-group" v-else-if="isLogged">
+                <li class="tool-username">
+                  <span :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]" aria-hidden>
+                    {{ user.nom }}
+                  </span>
+                </li>
+                <li class="tool-logout">
+                  <router-link to="/logout" custom v-slot="{ href }">
+                    <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
+                      Déconnexion
+                    </a>
+                  </router-link>
+                </li>
+              </ul>
               <ul class="fr-btn-group" v-else>
                 <li>
                   <router-link to="/exploitation/login" class="fr-btn fr-icon-account-circle-fill" aria-role="button">
@@ -86,21 +100,58 @@
           </nav>
         </div>
       </div>
+
+      <div class="fr-header__menu" v-if="(isLogged && role === 'oc')">
+        <div class="fr-container">
+          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+            <ul class="fr-nav__list">
+              <li class="fr-nav__item">
+                <router-link to="/certification/exploitations" class="fr-nav__link">
+                  Mes client·es
+                </router-link>
+              </li>
+              <li class="fr-nav__item fr-hidden-lg">
+                <router-link to="/logout" custom v-slot="{ href }" v-if="currentUser.id">
+                  <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
+                    Déconnexion
+                  </a>
+                </router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { reactive, toRef } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, reactive, toRef } from 'vue'
+import { useRouter } from 'vue-router';
+import { useUserStore, ROLES } from '@/stores/user.js'
+import { storeToRefs } from 'pinia'
 import store from '../store.js'
 
+const userStore = useUserStore()
 const router = useRouter()
 
+const ROLE_ICONS = new Map([
+  [ROLES.OC, 'fr-icon-medal-fill'],
+  [ROLES.OPERATEUR, 'fr-icon-plant-fill'],
+  [ROLES.ADMIN, 'fr-icon-shield-fill'],
+  [ROLES.UNKNOWN, 'fr-icon-warning-fill']
+])
+
+const { user, role, isLogged } = storeToRefs(userStore)
+const roleIcon = computed(() => ROLE_ICONS.get(role) ?? 'fr-icon-account-circle-fill')
+
 const currentUser = toRef(store.state, 'currentUser')
-function logout() {
-  store.logoutUser()
-  router.replace('/exploitation')
+async function logout() {
+  await Promise.all([
+    store.logoutUser(),
+    userStore.logout(),
+    router.push('/'),
+  ])
 }
 
 const menus = reactive({

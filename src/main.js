@@ -6,10 +6,11 @@ import routes from "~pages"
 import Matomo from 'vue-matomo'
 
 import store from './store.js'
+import { useUserStore } from '@/stores/index.js'
 import { getOperatorParcelles } from './cartobio-api.js'
 import App from './App.vue'
 
-const { VUE_APP_MATOMO_SITE_ID:siteId = '245' } = import.meta.env
+const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
 
 const pinia = createPinia()
 const head = createHead()
@@ -30,7 +31,38 @@ const router = createRouter({
   }
 })
 
+const app = createApp(App)
+  .use(router)
+  .use(head)
+  .use(pinia)
+  .use(Matomo, {
+    router,
+    siteId,
+    domains: ['app.cartobio.org', 'v2--cartobio-dev.netlify.app'],
+    enableLinkTracking: true,
+    discardHashTag: true,
+    enableHeartBeatTimer: 15,
+    trackerUrl: 'https://cartobio.agencebio.org/s/',
+    trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
+  })
+
+const userStore = useUserStore()
+
+router.isReady().then(() => {
+  app.mount('#app')
+  window.head = head
+})
+
 router.beforeEach(async (to) => {
+  if (to.path === '/login/agencebio') {
+    window.location = `${VUE_APP_API_ENDPOINT}/../auth-provider/agencebio/login`
+    return false
+  }
+
+  if (to.meta.requiredRoles && !to.meta.requiredRoles.includes(userStore.role)) {
+    return router.push({ path: '/login', query: { returnto: to.path }})
+  }
+
   if (to.meta.requiresAuth && !store.state.currentUser.id) {
     return router.replace('/exploitation/login')
   }
@@ -53,25 +85,5 @@ router.beforeEach(async (to) => {
       })
     }
   }
-})
-
-const app = createApp(App)
-  .use(router)
-  .use(head)
-  .use(pinia)
-  .use(Matomo, {
-    router,
-    siteId,
-    domains: ['app.cartobio.org', 'v2--cartobio-dev.netlify.app'],
-    enableLinkTracking: true,
-    discardHashTag: true,
-    enableHeartBeatTimer: 15,
-    trackerUrl: 'https://cartobio.agencebio.org/s/',
-    trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
-  })
-
-router.isReady().then(() => {
-  app.mount('#app')
-  window.head = head
 })
 
