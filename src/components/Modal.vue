@@ -1,6 +1,6 @@
 <template>
   <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue">
-    <div class="fr-container fr-container--fluid fr-container-md">
+    <div ref="target" class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-modal__body">
@@ -29,14 +29,18 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useHead } from '@unhead/vue'
+import { onClickOutside } from '@vueuse/core'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: Boolean,
   icon: String
 })
+
+const target = ref(null)
+onClickOutside(target, () => emit('update:modelValue', false))
 
 watch(() => props.modelValue, (isOpen) => {
   useHead({
