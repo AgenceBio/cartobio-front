@@ -5,7 +5,7 @@
       <ParcellaireState :state="record.certification_state" :date="record.created_at" />
     </p>
     <p class="actions">
-      <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
+      <button :disabled="!canDisplayHistory" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
         Historique
       </button>
     </p>
@@ -24,6 +24,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+
 import ParcellaireState from '@/components/Certification/State.vue'
 import OperatorHistoryModal from '@/components/Operator/HistoryModal.vue'
 
@@ -42,6 +43,7 @@ const props = defineProps({
 
 const historyModal = ref(false)
 const displayCallout = computed(() => props.record.audit_demandes && isCertificationImmutable(props.record.certification_state))
+const canDisplayHistory = computed(() => Array.isArray(props.record.audit_history) && props.record.audit_history.length)
 </script>
 
 <style scoped>
