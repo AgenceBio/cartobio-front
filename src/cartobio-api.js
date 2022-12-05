@@ -5,16 +5,6 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
 const cartobioApi = axios.create({ baseURL })
 
-class ParcellesNotSetupError extends Error {
-  name = 'ParcellesNotSetup'
-  message = 'Parcelles have not been setup for this operator.'
-}
-
-class ParcellesEmptyError extends Error {
-  name = 'ParcellesEmpty'
-  message = 'Parcelles are setup, but empty for this operator.'
-}
-
 export async function getOperatorParcelles (operatorId) {
   const { data } = await cartobioApi.get(`/v2/operator/${operatorId}`)
 
@@ -22,7 +12,6 @@ export async function getOperatorParcelles (operatorId) {
 }
 
 /**
- * @TODO use session ocId
  * @returns
  */
 export async function searchOperators (input) {
@@ -32,7 +21,6 @@ export async function searchOperators (input) {
 }
 
 /**
- * @TODO use session ocId
  * @returns
  */
 export async function fetchLatestOperators () {
