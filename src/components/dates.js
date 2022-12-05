@@ -1,23 +1,39 @@
-const ddmmyy = new Intl.DateTimeFormat('fr-FR', {
+const ddmmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'Europe/Paris',
   dateStyle: 'medium'
 })
 
-const mmyy = new Intl.DateTimeFormat('fr-FR', {
+const ddmmmmyyyyIntl = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: 'Europe/Paris',
+  dateStyle: 'long'
+})
+
+const mmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'Europe/Paris',
   month: 'long',
   year: 'numeric'
 })
 
-export function dateFormat (date) {
-  return ddmmyy.format(new Date(date))
+/**
+ * @param {String} date
+ * @returns {String} formatted date as DD MMMM YYYY
+ */
+export function ddmmmmyyyy (date) {
+  return ddmmmmyyyyIntl.format(new Date(date))
 }
 
 /**
- *
+ * @param {String} date
+ * @returns {String} formatted date as DD MM YYYY
+ */
+export function dateFormat (date) {
+  return ddmmyyIntl.format(new Date(date))
+}
+
+/**
  * @param {String} date
  * @returns {String} formatted date as MM YYYY
  */
 export function monthYearDateFormat (date) {
-  return mmyy.format(new Date(date))
+  return mmyyIntl.format(new Date(date))
 }
