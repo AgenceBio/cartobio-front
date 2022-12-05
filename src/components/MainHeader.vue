@@ -69,7 +69,30 @@
         </div>
       </div>
 
-      <div class="fr-header__menu" v-if="currentUser.id">
+      <div class="fr-header__menu" v-if="(isLogged && role === 'oc')">
+        <div class="fr-container">
+          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+            <ul class="fr-nav__list">
+              <li class="fr-nav__item">
+                <router-link to="/certification/exploitations" class="fr-nav__link">
+                  Exploitations
+                </router-link>
+              </li>
+              <li class="fr-nav__item">
+                <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
+              </li>
+              <li class="fr-nav__item fr-hidden-lg">
+                <router-link to="/logout" custom v-slot="{ href }" v-if="currentUser.id">
+                  <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
+                    Déconnexion
+                  </a>
+                </router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="fr-header__menu" v-else-if="currentUser.id">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
@@ -94,27 +117,6 @@
                 </router-link>
                 <router-link to="/exploitation/login" class="fr-nav__link" aria-role="button" v-else>
                   Connexion
-                </router-link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-
-      <div class="fr-header__menu" v-if="(isLogged && role === 'oc')">
-        <div class="fr-container">
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
-            <ul class="fr-nav__list">
-              <li class="fr-nav__item">
-                <router-link to="/certification/exploitations" class="fr-nav__link">
-                  Mes client·es
-                </router-link>
-              </li>
-              <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }" v-if="currentUser.id">
-                  <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
-                    Déconnexion
-                  </a>
                 </router-link>
               </li>
             </ul>
@@ -147,11 +149,8 @@ const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-c
 
 const currentUser = toRef(store.state, 'currentUser')
 async function logout() {
-  await Promise.all([
-    store.logoutUser(),
-    userStore.logout(),
-    router.push('/'),
-  ])
+  await Promise.all([store.logoutUser(), userStore.logout()])
+  router.push('/')
 }
 </script>
 
