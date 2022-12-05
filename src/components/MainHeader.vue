@@ -143,7 +143,7 @@ const ROLE_ICONS = new Map([
 ])
 
 const { user, role, isLogged } = storeToRefs(userStore)
-const roleIcon = computed(() => ROLE_ICONS.get(role) ?? 'fr-icon-account-circle-fill')
+const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-circle-fill')
 
 const currentUser = toRef(store.state, 'currentUser')
 async function logout() {
@@ -152,14 +152,6 @@ async function logout() {
     userStore.logout(),
     router.push('/'),
   ])
-}
-
-const menus = reactive({
-  about: false
-})
-
-function toggle (menuId) {
-  menus[menuId] = !menus[menuId]
 }
 </script>
 
