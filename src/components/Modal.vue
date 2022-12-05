@@ -31,7 +31,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useHead } from '@unhead/vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, onKeyStroke } from '@vueuse/core'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -41,6 +41,7 @@ const props = defineProps({
 
 const target = ref(null)
 onClickOutside(target, () => emit('update:modelValue', false))
+onKeyStroke('Escape', () => emit('update:modelValue', false))
 
 watch(() => props.modelValue, (isOpen) => {
   useHead({
