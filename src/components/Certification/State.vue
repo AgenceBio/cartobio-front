@@ -11,10 +11,8 @@ import { readonly, computed } from 'vue'
 import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 
 const props = defineProps({
-  record: {
-    type: Object,
-    required: true
-  }
+  state: String,
+  date: String
 })
 
 const STATE_MAP = readonly({
@@ -36,11 +34,11 @@ const STATE_MAP = readonly({
   },
 })
 
-const stateId = computed(() => props.record.certification_state in STATE_MAP ? props.record.certification_state : 'UNKNOWN')
+const stateId = computed(() => props.state in STATE_MAP ? props.state : 'UNKNOWN')
 const state = computed(() => STATE_MAP[stateId.value])
 const date = computed(() => {
-  return props.record.created_at
-    ? new Date(props.record.created_at).toLocaleDateString('fr-FR', { year: 'numeric'})
+  return props.date
+    ? new Date(props.date).toLocaleDateString('fr-FR', { year: 'numeric'})
     : ''
 })
 </script>
