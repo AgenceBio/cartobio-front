@@ -22,6 +22,8 @@
           <div class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
             <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
 
+            <Spinner v-else-if="(!isVerifying && isLogged && hasCertificationBodyRole)">Chargement de votre liste clients…</Spinner>
+
             <div class="fr-connect-group" v-else-if="!isLogged">
               <p>
                 L'accès à CartoBio s'effectue avec l'aide de votre compte Agence Bio&nbsp;:
@@ -62,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore, ROLES } from '@/stores/user.js'
@@ -75,8 +77,9 @@ const store = useUserStore()
 const route = useRoute()
 const router = useRouter()
 
-const { user, token, isLogged, role } = storeToRefs(store)
+const { token, isLogged, role } = storeToRefs(store)
 const isVerifying = ref(false)
+const hasCertificationBodyRole = computed(() => role.value === ROLES.OC)
 
 onMounted(async () => {
   const hashOrUserToken = route.hash ? (new URLSearchParams(route.hash)).get('#token') : token.value
