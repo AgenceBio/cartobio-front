@@ -11,7 +11,7 @@
         <div class="fr-container fr-py-6w">
           <div class="fr-grid-row">
             <div class="fr-col-12">
-              <h2 class="fr-h4">Chargement des données…</h2>
+              <Spinner class="fr-h5">Chargement des données…</Spinner>
             </div>
           </div>
         </div>
@@ -27,8 +27,9 @@ import { useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
 import { computed } from 'vue'
 
-import MainHeader from './components/MainHeader.vue'
-import MainFooter from './components/MainFooter.vue'
+import MainHeader from '@/components/MainHeader.vue'
+import MainFooter from '@/components/MainFooter.vue'
+import Spinner from '@/components/Spinner.vue'
 
 const route = useRoute()
 const title = computed(() => route.meta?.seo?.title)
