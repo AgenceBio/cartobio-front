@@ -1,6 +1,6 @@
 <template>
   <tbody>
-    <tr @click.stop="open = !open" class="clickable">
+    <tr @click.stop="open = !open" class="clickable group-header">
       <td>
         <div class="fr-checkbox-group single-checkbox">
           <input type="checkbox" :id="'radio-'+ featureGroup.key" :checked="allSelected" @click="toggleFeatureGroup" />
@@ -18,7 +18,7 @@
       <th scope="col">Certification</th>
       <th scope="col" colspan="2"></th>
     </tr>
-    <tr class="parcelle" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
+    <tr class="parcelle clickable" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
           <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="toggleSelectedIds(feature.id)" />
@@ -111,7 +111,7 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
   .fr-table tr.intermediate-header th {
     background-color: var(--background-default-grey);
     color: var(--text-mention-grey);
-    border-bottom: 2px solid ;
+    border-bottom: 1px solid ;
     padding-top: .75rem;
     padding-bottom: .75rem;
   }
@@ -119,6 +119,12 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
   .fr-table th.numeric {
     font-variant-numeric: tabular-nums;
     text-align: right !important;
+  }
+
+  .fr-table tr.group-header :is(td, th),
+  .fr-table tr.intermediate-header th,
+  .fr-table tr.parcelle :is(td, th) {
+    padding: .6rem;
   }
 
   .fr-table tr.parcelle {
@@ -140,17 +146,13 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
     .subtable tbody {
       width: 100%;
     }
-  .clickable {
-    cursor: pointer;
-  }
 
   .fr-icon[aria-checked="true"]::before {
     transform: rotate(180deg);
   }
 
   table tr[aria-current="location"] {
-    background-color: #00ffff50 !important;
-    cursor: pointer;
+    background-color: var(--background-alt-blue-france-hover) !important;
   }
 
   .actions {

@@ -52,6 +52,16 @@ a[aria-disabled] {
   pointer-events: none;
 }
 
+.clickable {
+  cursor: pointer;
+}
+tr.clickable:hover {
+  background-color: var(--background-alt-blue-france-hover) !important;
+}
+tr.clickable:hover th:first-of-type {
+  text-decoration: underline;
+}
+
 .fr-col--center,
 .fr-grid-row--align-center {
   text-align: center;
