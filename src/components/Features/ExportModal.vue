@@ -1,5 +1,5 @@
 <template>
-  <component :is="Modal" v-bind="$attrs">
+  <component :is="Modal" v-bind="$attrs" icon="fr-icon-road-map-line">
     <template #title>Export de parcellaire</template>
 
     <p>
@@ -12,15 +12,24 @@
     </p>
 
     <template #footer>
-      <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-left">
+      <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
           <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="excelExport">
-            Excel
+            Excel&nbsp;<small>(<code aria-label="Extension de fichier .xlsx">.xlsx</code>)</small>
           </button>
         </li>
         <li>
           <button class="fr-btn fr-icon-france-line fr-btn--secondary" @click="geojsonExport">
-            Géographique&nbsp;<small>(GeoJSON)</small>
+            GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
+          </button>
+        </li>
+        <li class="fr-mt-5w">
+          <p class="fr-mb-0 fr-ml-1w">
+            <span class="fr-icon fr-icon--sm fr-icon-information-line" aria-hidden="true" />
+            Bientôt disponible
+          </p>
+          <button class="fr-btn fr-icon-france-line fr-btn--secondary" disabled>
+            Shapefile&nbsp;<small>(<code aria-label="Extension de fichier .shp">.shp</code>)</small>
           </button>
         </li>
       </ul>

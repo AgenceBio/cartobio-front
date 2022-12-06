@@ -9,14 +9,6 @@
     <button class="fr-btn" @click="sendOffModal = true">Terminer l'audit</button>
   </div>
 
-  <div class="fr-callout fr-callout--green-emeraude" v-else-if="isAudited && isComplete">
-    <button class="fr-btn fr-btn--secondary fr-m-0" @click="exportModal = true">Télécharger le parcellaire</button>
-  </div>
-
-  <Teleport to="body">
-    <FeaturesExportModal :operator="operator" :collection="features" v-if="exportModal" v-model="exportModal" />
-  </Teleport>
-
   <Teleport to="body">
     <SendOffModal :operator="operator" :record="record" v-if="sendOffModal" v-model="sendOffModal" @submit="handleSendOff" />
   </Teleport>
@@ -30,7 +22,6 @@ import { useRecordStore } from '@/stores/index.js'
 
 const recordStore = useRecordStore()
 
-import FeaturesExportModal from '@/components/Features/ExportModal.vue'
 import SendOffModal from '@/components/Certification/SendOffModal.vue'
 
 const props = defineProps({
@@ -53,7 +44,6 @@ const props = defineProps({
 })
 
 const sendOffModal = ref(false)
-const exportModal = ref(false)
 const validationResult = computed(() => applyValidationRules(props.validationRules.rules, ...props.features.features))
 const hasFailures = computed(() => Boolean(validationResult.value.failures))
 const isComplete = computed(() => hasFailures.value === false)
