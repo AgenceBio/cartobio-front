@@ -14,11 +14,11 @@
   </div>
 
   <Teleport to="body">
-    <FeaturesExportModal :operator="operator" :collection="features" v-model="exportModal" />
+    <FeaturesExportModal :operator="operator" :collection="features" v-if="exportModal" v-model="exportModal" />
   </Teleport>
 
   <Teleport to="body">
-    <SendOffModal :operator="operator" :record="record" v-model="sendOffModal" @submit="handleSendOff" />
+    <SendOffModal :operator="operator" :record="record" v-if="sendOffModal" v-model="sendOffModal" @submit="handleSendOff" />
   </Teleport>
 </template>
 

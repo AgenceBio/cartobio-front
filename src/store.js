@@ -1,5 +1,6 @@
 import { reactive, watch } from 'vue'
 import axios from 'axios'
+import { now } from '@/components/dates.js'
 
 const DEFAULT_STATE = {
   currentUser: {},
@@ -47,13 +48,13 @@ const store = reactive({
 
   },
 
-  loginUser (userData) {
+  setCurrentUser (userData) {
     Object.assign(this.state.currentUser, userData)
   },
 
   setParcelles ({ geojson, source, sourceLastUpdate }) {
     this.state.parcellaireSource = source
-    this.state.parcellaireSourceLastUpdate = sourceLastUpdate ?? new Date().toISOString()
+    this.state.parcellaireSourceLastUpdate = sourceLastUpdate ?? now()
     Object.assign(this.state.parcellaire, geojson)
   },
 

@@ -115,13 +115,14 @@ function handleSingleFeatureEdit ({ id, patch }) {
 }
 
 function doSave (geojson) {
-  const { id: operatorId, numeroBio} = props.operator
+  const { id: operatorId, numeroBio, organismeCertificateur } = props.operator
+  const { id: ocId, nom: ocLabel } = organismeCertificateur
 
   isSaving.value = true
 
   setTimeout(async () => {
     try {
-      await submitParcellesChanges ({ geojson, operatorId, numeroBio })
+      await submitParcellesChanges ({ geojson, operatorId, ocId, ocLabel, numeroBio })
       savingResult.value = {
         type: 'success',
         message: "Parcellaire correctement sauvegardé sur les serveurs CartoBio."

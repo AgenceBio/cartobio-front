@@ -35,7 +35,7 @@ const emit = defineEmits(['load', 'zoom:change'])
 onMounted(() => {
   map.value = new MapLibre({
     container: mapContainer.value,
-    hash: true,
+    hash: false,
     style: props.style,
     bounds: props.bounds,
     padding: 50,

@@ -14,7 +14,6 @@
   color: #fff;
   font-weight: bold;
   height: 100%;
-  position: absolute;
   width: 100%;
 }
 </style>

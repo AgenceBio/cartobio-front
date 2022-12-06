@@ -1,3 +1,6 @@
+import { computed, readonly, ref } from 'vue'
+const { VUE_APP_CURRENT_CAMPAGNE_PAC: CURRENT_CAMPAGNE_PAC } = import.meta.env
+
 /**
  * @type {Array<CodePac>}
  */
@@ -31,6 +34,25 @@ export function groupLibelléFromCode (code){
   const found = codes.find((row) => row.CODE_CULTURE === code)
 
   return found ? found.LIBELLE_GROUPE_CULTURE : DEFAULT_LIBELLE
+}
+
+export function useTélépac (campagneYear = CURRENT_CAMPAGNE_PAC) {
+  const campagne = readonly(ref(campagneYear))
+  const campagneShort = computed(() => String(campagne.value).slice(-2))
+  const previousCampagne = computed(() => campagne.value - 1)
+
+  const urls = computed(() => ({
+    home: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/auth/accueilTas.action?campagne=${campagneShort.value}&titreApplication=Dossier+PAC+${campagneShort.value}`,
+    exportHome: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/ie/exportShpIlots.action`,
+    exportShapefile: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/ie/exportShpFichierParcelles.action?anneeCampagne=${campagneShort.value}`,
+    exportXml: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/ie/exportDossierCourant.action`
+  }))
+
+  function pacageFilename (pacage = '123456789') {
+    return computed(() => `Dossier-PAC-${campagne.value}_parcelle-${campagne.value}_${123456789}_${campagne.value}0131155301.zip`)
+  }
+
+  return { urls, campagne, campagneShort, previousCampagne, pacageFilename }
 }
 
 export const liste = Object.freeze(codes.map(({ CODE_CULTURE, LIBELLE_CULTURE }) => ([CODE_CULTURE, LIBELLE_CULTURE])))

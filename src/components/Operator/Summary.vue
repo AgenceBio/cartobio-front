@@ -1,9 +1,11 @@
 <template>
   <header>
     <h4 class="fr-h4 fr-mb-1w">{{ operator.nom }}</h4>
+
     <p class="fr-subtitle">
       <ParcellaireState :state="record.certification_state" :date="record.created_at" />
     </p>
+
     <p class="actions">
       <button :disabled="!canDisplayHistory" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
         Historique

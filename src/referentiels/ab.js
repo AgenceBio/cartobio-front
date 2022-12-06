@@ -5,6 +5,7 @@ export const LEVEL_C2 = 'C2'
 export const LEVEL_C3 = 'C3'
 export const LEVEL_AB = 'AB'
 
+/** @enum {string} */
 export const CERTIFICATION_STATE = {
   OPERATOR_DRAFT: 'OPERATOR_DRAFT',
   AUDITED: 'AUDITED',

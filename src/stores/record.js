@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
+/** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
+
 export const useRecordStore = defineStore('record', () => {
+  /** @type {reactive<StrictRecord>} */
   const record = reactive({
     record_id: null,
     certification_state: null,
@@ -12,6 +15,9 @@ export const useRecordStore = defineStore('record', () => {
     audit_history: []
   })
 
+  /**
+   * @param {import('@/cartobio-api').Record} updatedRecord
+   */
   function update (updatedRecord) {
     Object.entries(record).forEach(([key]) => {
       if (key in updatedRecord) {

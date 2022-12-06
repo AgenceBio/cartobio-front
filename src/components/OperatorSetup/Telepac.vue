@@ -17,8 +17,8 @@
 
       <div class="fr-fieldset__content">
         <p>
-          Le <b>fichier de parcelles déclarées {{ campagnePacAnnee }}</b> se récupère en quelques clics
-          sur le <a href="https://www.telepac.agriculture.gouv.fr/" target="_blank">portail Telepac</a> :
+          Le <b>fichier de parcelles déclarées {{ télépac.campagne }}</b> se récupère en quelques clics
+          sur le <a :href="télépac.urls.home" target="_blank">portail Telepac</a> :
         </p>
 
         <div class="fr-grid-row">
@@ -31,19 +31,19 @@
               <li class="fr-mb-2w">
                 dans l'encart <b>Téléprocédures</b>,
                 sélectionnez l'entrée
-                <a :href="campagnePacUrl" class="fr-text--bold" target="_blank">Dossier PAC {{ campagnePacAnnee }}</a>
+                <a :href="télépac.urls.home" class="fr-text--bold" target="_blank">Dossier PAC {{ télépac.campagne }}</a>
               </li>
 
               <li class="fr-mb-2w">
                 dans l'onglet bleu <b>Import/export</b>,
                 sélectionnez le menu
-                <a :href="campagnePacExportUrl" class="fr-text--bold" target="_blank">Export îlots et parcelles</a>
+                <a :href="télépac.urls.exportHome" class="fr-text--bold" target="_blank">Export îlots et parcelles</a>
               </li>
 
               <li class="fr-mb-2w">
                 cliquez sur le lien
-                <a :href="campagnePacExportShapefileUrl" target="_blank">
-                  <b>Parcelles déclarées {{ campagnePacAnnee }}</b> : Fichier de parcelles
+                <a :href="télépac.urls.exportShapefile" target="_blank">
+                  <b>Parcelles déclarées {{ télépac.campagne }}</b> : Fichier de parcelles
                 </a>
               </li>
 
@@ -86,29 +86,19 @@
 </template>
 
 <script setup>
-import { ref, computed, readonly, toRef } from 'vue'
-import axios from 'axios'
-import { statsPush } from '@/stats.js'
-import store from '../../store.js'
-
-const { VUE_APP_API_ENDPOINT } = import.meta.env
+import { ref, computed, readonly } from 'vue'
+import { convertShapefileArchiveToGeoJSON } from '@/cartobio-api.js'
+import { useTélépac } from '@/referentiels/pac.js'
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
-const currentUser = toRef(store.state, 'currentUser')
-
-const campagnePacAnnee = ref(2022)
-const campagnePacAnneeShort = computed(() => String(campagnePacAnnee.value).slice(-2))
-const campagnePacUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/auth/accueilTas.action?campagne=${campagnePacAnnee.value}&titreApplication=Dossier+PAC+${campagnePacAnnee.value}`)
-const campagnePacExportUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/ie/exportShpIlots.action`)
-const campagnePacExportShapefileUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/ie/exportShpFichierParcelles.action?anneeCampagne=${campagnePacAnnee.value}`)
-const campagnePacExportXmlUrl = computed(() => `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagnePacAnneeShort.value}/ie/exportDossierCourant.action`)
+const télépac = useTélépac()
 
 const fileInput = ref(null)
 const source = 'telepac'
 
 const helpSteps = readonly([
   { label: 'Je me connecte à Télépac' },
-  { label: `Téléprocédure Dossier PAC ${campagnePacAnnee.value}` },
+  { label: `Téléprocédure Dossier PAC ${télépac.campagne.value}` },
   { label: 'Onglet Import/export' },
   { label: 'Téléchargement du fichier' },
 ])
@@ -120,9 +110,7 @@ async function handleFileUpload () {
   const [archive] = fileInput.value.files
   emit('upload:start')
 
-  const form = new FormData()
-  form.append('archive', archive)
-  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v1/convert/shapefile/geojson`, form)
+  const geojson = await convertShapefileArchiveToGeoJSON(archive)
 
   emit('upload:complete', { geojson, source })
 }

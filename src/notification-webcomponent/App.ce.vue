@@ -23,7 +23,7 @@ const uploadState = ref(null)
 onBeforeMount(() => {
   const token = parse(props.authToken)
   if (token.id) {
-    store.loginUser(token)
+    store.setCurrentUser(token)
   }
 })
 

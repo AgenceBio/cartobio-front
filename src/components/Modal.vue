@@ -18,9 +18,7 @@
               <slot name="default" v-bind="$attrs" />
             </div>
 
-            <div class="fr-modal__footer">
-              <slot name="footer" />
-            </div>
+            <div class="fr-modal__footer"><slot name="footer" /></div>
           </div>
         </div>
       </div>
@@ -52,3 +50,9 @@ watch(() => props.modelValue, (isOpen) => {
   })
 })
 </script>
+
+<style scoped>
+.fr-modal__footer:empty {
+  display: none;
+}
+</style>

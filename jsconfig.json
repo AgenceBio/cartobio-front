@@ -7,6 +7,5 @@
       "@gouvfr/dsfr/*": ["./node_modules/@gouvfr/dsfr/dist/*"],
       "styles/*": ["./src/styles/*"],
     }
-  },
-  "exclude": ["node_modules", "**/node_modules/*"]
+  }
 }

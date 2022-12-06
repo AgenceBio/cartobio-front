@@ -37,3 +37,10 @@ export function dateFormat (date) {
 export function monthYearDateFormat (date) {
   return mmyyIntl.format(new Date(date))
 }
+
+/**
+ * @returns {string}
+ */
+export function now () {
+  return new Date().toISOString()
+}

@@ -78,6 +78,7 @@ router.beforeEach(async (to) => {
       return router.push('/exploitation/setup')
     }
     else {
+      store.setCurrentUser(record.operator)
       store.setRecord(record)
       store.setParcelles({
         geojson: record.parcelles,
