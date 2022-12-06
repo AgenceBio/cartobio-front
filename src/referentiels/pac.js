@@ -37,7 +37,7 @@ export function groupLibelléFromCode (code){
 }
 
 export function useTélépac (campagneYear = CURRENT_CAMPAGNE_PAC) {
-  const campagne = readonly(ref(campagneYear))
+  const campagne = computed(() => parseFloat(campagneYear))
   const campagneShort = computed(() => String(campagne.value).slice(-2))
   const previousCampagne = computed(() => campagne.value - 1)
 
@@ -53,6 +53,14 @@ export function useTélépac (campagneYear = CURRENT_CAMPAGNE_PAC) {
   }
 
   return { urls, campagne, campagneShort, previousCampagne, pacageFilename }
+}
+
+export function normalize (input) {
+  return String(input).trim().padStart(9, '0')
+}
+
+export function isValid (input) {
+  return /^(97\d|(0[1-9][0-9]|0[0-9][1-9]))\d{6}$/i.test(normalize(input))
 }
 
 export const liste = Object.freeze(codes.map(({ CODE_CULTURE, LIBELLE_CULTURE }) => ([CODE_CULTURE, LIBELLE_CULTURE])))
