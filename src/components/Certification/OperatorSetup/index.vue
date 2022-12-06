@@ -29,37 +29,37 @@
         <div class="fr-card__content">
           <h3 class="fr-card__title">
             <a href="#" role="button" @click.prevent="setupFromTelepacModal = true">
-              Import des données PAC de 2022
+              Import des données PAC de {{ télépac.campagne }}
             </a>
           </h3>
           <div class="fr-card__desc">
             <p>
-              Importez vous-même le fichier .zip de la <b>déclaration PAC de 2022</b>.
+              Importez vous-même le fichier .zip de la <b>déclaration PAC de {{ télépac.campagne }}</b>.
               Ce fichier peut vous être fourni par l'agriculteur ou sa structure de gestion.
             </p>
             <p>
               Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis
-              la déclaration de 2022.
+              la déclaration de {{ télépac.campagne }}.
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- <div class="fr-card fr-enlarge-link fr-card--horizontal">
+    <div class="fr-card fr-enlarge-link fr-card--horizontal">
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
             <a href="#" role="button" @click.prevent="setupFromRPGModal = true">
-              Import des données PAC de 2021
+              Import des données PAC de {{ télépac.previousCampagne }}
             </a>
           </h3>
           <div class="fr-card__desc">
             <p>
-              Importez <b>en un clic</b> la déclaration PAC de 2021.
+              Importez <b>en un clic</b> la déclaration PAC de {{ télépac.previousCampagne }}.
             </p>
             <p>
-              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis la déclaration de 2021.
+              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis la déclaration de {{ télépac.previousCampagne }}.
             </p>
           </div>
           <div class="fr-card__start">
@@ -71,7 +71,7 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 
   <Teleport to="body">
@@ -79,7 +79,7 @@
   </Teleport>
 
   <Teleport to="body">
-    <RPGModal :operator="operator" v-model="setupFromRPGModal" v-if="setupFromRPGModal" />
+    <RPGModal :operator="operator" @upload="handleUpload" v-model="setupFromRPGModal" v-if="setupFromRPGModal" />
   </Teleport>
 </template>
 
@@ -89,12 +89,14 @@ import { ref } from 'vue'
 import telepacModal from '@/components/Certification/OperatorSetup/TelepacModal.vue'
 import RPGModal from '@/components/Certification/OperatorSetup/RPGModal.vue'
 
+import { useTélépac } from '@/referentiels/pac.js'
 import { useFeaturesStore, useRecordStore } from '@/stores/index.js'
 import { submitParcellesChanges } from '@/cartobio-api.js'
 import { now } from '@/components/dates.js'
 
 const featureStore = useFeaturesStore()
 const recordStore = useRecordStore()
+const télépac = useTélépac()
 
 const props = defineProps({
   operator: {

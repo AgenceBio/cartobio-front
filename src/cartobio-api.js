@@ -111,6 +111,16 @@ export async function searchOperators (input) {
 }
 
 /**
+ * @param {string} pacage
+ * @returns {Promise<FeatureCollection>}
+ */
+export async function pacageLookup (pacage) {
+  const { data } = await cartobioApi.get(`/v2/import/pacage/${pacage}`)
+
+  return data
+}
+
+/**
  * @returns {Promise<Record[]>}
  */
 export async function fetchLatestOperators () {

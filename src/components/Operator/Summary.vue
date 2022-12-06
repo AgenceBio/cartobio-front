@@ -6,12 +6,12 @@
       <ParcellaireState :state="record.certification_state" :date="record.created_at" />
     </p>
 
-    <p class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
-      <button :disabled="!canDisplayHistory" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
+    <p v-if="canDisplayHistory" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
+      <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
         Historique
       </button>
 
-      <button :disabled="!canDisplayHistory" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line" @click="exportModal = true">
+      <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line" @click="exportModal = true">
         Exporter
       </button>
     </p>
