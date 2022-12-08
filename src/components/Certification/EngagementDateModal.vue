@@ -1,6 +1,6 @@
 <template>
   <Modal v-bind="$attrs">
-    <template #title>Modification du type de culture</template>
+    <template #title>Modification de la date d'engagement</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -10,12 +10,10 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <label class="fr-label">Nouveau type de culture</label>
-        <select class="fr-select" name="culture" v-model="patch.TYPE" required>
-          <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">
-            {{ libellé }}
-          </option>
-        </select>
+        <label class="fr-label">Date d'engagement</label>
+        <div class="fr-input-wrap fr-icon-calendar-line">
+          <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" required />
+        </div>
       </div>
     </form>
 
@@ -32,10 +30,9 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFeaturesStore } from '@/stores/features.js'
-import { liste as codesPac } from '@/referentiels/pac.js'
 
 import Modal from '@/components/Modal.vue'
 
@@ -46,6 +43,8 @@ const store = useFeaturesStore()
 const { selectedIds } = storeToRefs(store)
 
 const patch = reactive({
-  TYPE: '',
+  engagement_date: '',
 })
+
+const maxDate = computed(() => new Date().toISOString().split('T').at(0))
 </script>

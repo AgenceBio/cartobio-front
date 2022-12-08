@@ -37,7 +37,7 @@
     <div :class="{'fr-input-group': true, 'fr-input-group--disabled': !isAB}">
       <label class="fr-label">Date d'engagement</label>
       <div class="fr-input-wrap fr-icon-calendar-line">
-        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" required :disabled="!isAB" />
+        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" required :disabled="!isAB" min="1985-01-01" :max="maxDate" />
       </div>
     </div>
 
@@ -75,6 +75,7 @@ const patch = reactive({
 
 const emit = defineEmits(['submit'])
 const isAB = computed(() => isABLevel(patch.conversion_niveau))
+const maxDate = computed(() => new Date().toISOString().split('T').at(0))
 </script>
 
 <style scoped>

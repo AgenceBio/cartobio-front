@@ -17,7 +17,7 @@ export function isCertificationImmutable (state) {
 }
 
 export const conversionLevels = [
-  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Donnée inconnue' },
+  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Inconnue' },
   { value: LEVEL_CONVENTIONAL, label: 'Conventionnel', shortLabel: 'Conventionnel' },
   { value: LEVEL_C1, label: 'C1 — Première année de conversion', shortLabel: 'C1' },
   { value: LEVEL_C2, label: 'C2 — Deuxième année de conversion', shortLabel: 'C2' },

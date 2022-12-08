@@ -1,22 +1,38 @@
 <template>
-  <span :class="className">
-    {{ label }}
+  <span v-if="!conversionLevel.value" class="fr-badge fr-badge--warning">
+    {{ conversionLevel.shortLabel }}
+  </span>
+  <span v-else :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`">
+    {{ conversionLevel.shortLabel }}
+    <time class="fr-text--xs" :datetime="conversionDate" v-if="(withDate && conversionDate && isAB)">
+      {{ mmyyyy(conversionDate) }}
+    </time>
   </span>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { getConversionLevel } from '@/referentiels/ab.js'
+import { getConversionLevel, isABLevel } from '@/referentiels/ab.js'
+import { mmyyyy, ddmmmmyyyy } from '@/components/dates.js';
 
 const props = defineProps({
   feature: {
     type: Object,
     required: true
+  },
+  withDate: {
+    type: Boolean,
+    default: false
   }
 })
 
 const conversionLevel = computed(() => getConversionLevel(props.feature.properties.conversion_niveau))
-const label = computed(() => props.feature.properties.conversion_niveau ? conversionLevel.value.shortLabel : 'Inconnue')
-const className = computed(() => props.feature.properties.conversion_niveau ? '' : 'fr-badge fr-badge--warning')
+const conversionDate = computed(() => props.feature.properties.engagement_date && new Date(props.feature.properties.engagement_date).toISOString())
+const isAB = computed(() => isABLevel(props.feature.properties.conversion_niveau))
 </script>
 
+<style scoped>
+time {
+  color: var(--text-mention-grey);
+}
+</style>

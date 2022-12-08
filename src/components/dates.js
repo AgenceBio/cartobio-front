@@ -1,16 +1,26 @@
+// 7 déc. 2022
 const ddmmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'Europe/Paris',
   dateStyle: 'medium'
 })
 
+// 7 décembre 2022
 const ddmmmmyyyyIntl = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'Europe/Paris',
   dateStyle: 'long'
 })
 
-const mmyyIntl = new Intl.DateTimeFormat('fr-FR', {
+// décembre 2022
+const mmmmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'Europe/Paris',
   month: 'long',
+  year: 'numeric'
+})
+
+// 12/2022
+const mmyyIntl = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: 'Europe/Paris',
+  month: 'numeric',
   year: 'numeric'
 })
 
@@ -35,6 +45,14 @@ export function dateFormat (date) {
  * @returns {String} formatted date as MM YYYY
  */
 export function monthYearDateFormat (date) {
+  return mmmmyyIntl.format(new Date(date))
+}
+
+/**
+ * @param {String} date
+ * @returns {String} formatted date as MM YYYY
+ */
+export function mmyyyy (date) {
   return mmyyIntl.format(new Date(date))
 }
 

@@ -1,6 +1,6 @@
 <template>
-  <Modal v-bind="$attrs">
-    <template #title>Modification du type de culture</template>
+  <Modal v-bind="$attrs" icon="fr-icon-calendar-2-line">
+    <template #title>Modification du niveau de conversion</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -10,12 +10,14 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <label class="fr-label">Nouveau type de culture</label>
-        <select class="fr-select" name="culture" v-model="patch.TYPE" required>
-          <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">
-            {{ libellé }}
-          </option>
-        </select>
+        <label class="fr-label">Niveau de conversion</label>
+
+        <div class="fr-radio-group fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
+          <input type="radio" :id="'conversion-' + niveau.value" :value="niveau.value" v-model="patch.conversion_niveau" name="conversion_niveau">
+          <label class="fr-label" :for="'conversion-' + niveau.value">
+            {{ niveau.label }}
+          </label>
+        </div>
       </div>
     </form>
 
@@ -34,8 +36,8 @@
 <script setup>
 import { reactive } from 'vue'
 import { storeToRefs } from 'pinia'
+import { userFacingConversionLevels as conversionLevels } from '@/referentiels/ab.js'
 import { useFeaturesStore } from '@/stores/features.js'
-import { liste as codesPac } from '@/referentiels/pac.js'
 
 import Modal from '@/components/Modal.vue'
 
@@ -46,6 +48,8 @@ const store = useFeaturesStore()
 const { selectedIds } = storeToRefs(store)
 
 const patch = reactive({
-  TYPE: '',
+  conversion_niveau: '',
 })
+
+
 </script>

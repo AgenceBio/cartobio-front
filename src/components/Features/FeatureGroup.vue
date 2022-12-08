@@ -28,7 +28,7 @@
       <td></td>
       <td>{{ featureName(feature) }}</td>
       <td>
-        <ConversionLevel :feature="feature" />
+        <ConversionLevel :feature="feature" with-date />
       </td>
       <td class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
       <td class="actions">
