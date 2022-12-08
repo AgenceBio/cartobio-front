@@ -4,7 +4,7 @@
     {{ featureName(feature) }}
   </p>
 
-  <form @submit.prevent="emit('submit', { id: feature.id, patch })">
+  <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
     <div class="fr-input-group">
       <label class="fr-label">Type de culture</label>
       <select class="fr-select" name="culture" v-model="patch.TYPE" required>

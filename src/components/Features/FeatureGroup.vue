@@ -21,7 +21,7 @@
     <tr class="parcelle clickable" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
-          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="toggleSelectedIds(feature.id)" />
+          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="emit('toggle:singleFeatureId', feature.id)" />
           <label class="fr-label" :for="'radio-' + feature.id" />
         </div>
       </th>
@@ -63,7 +63,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'edit:featureId'])
+const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:singleFeatureId', 'edit:featureId'])
 const open = ref(false)
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))

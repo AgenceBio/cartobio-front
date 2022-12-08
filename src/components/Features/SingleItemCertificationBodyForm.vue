@@ -4,7 +4,7 @@
     {{ featureName(feature) }}
   </p>
 
-  <form @submit.prevent="emit('submit', { id: feature.id, patch })">
+  <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
     <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
       <blockquote>
         <p>{{ feature.properties.commentaires }}</p>

@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-table fr-table--bordered fr-table--no-caption">
+  <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
@@ -11,13 +11,7 @@
         <col width="10%" />
       </colgroup>
       <thead>
-        <tr>
-          <!-- <th scope="col">
-            <div class="fr-checkbox-group single-checkbox">
-              <input type="checkbox" id="select-all" :checked="allSelected" @click="toggleAllSelected" />
-              <label class="fr-label" for="select-all" />
-            </div>
-          </th> -->
+        <tr class="legend">
           <th colspan="2"></th>
           <th colspan="2" scope="col">
             <div class="seemless-select">
@@ -32,15 +26,27 @@
           <th scope="col" class="numeric">Surface</th>
           <th scope="col" class="numeric">Détails</th>
         </tr>
-        <tr class="summary">
+        <tr class="summary" v-if="(selectedFeatureIds.length === 0)">
           <td colspan="2"></td>
           <td colspan="2">{{ features.features.length }} parcelles</td>
           <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
           <td></td>
         </tr>
+        <tr v-else class="summary summary__mass-actions">
+          <td colspan="2">
+            <div class="fr-checkbox-group single-checkbox">
+              <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
+              <label class="fr-label" for="radio-mass-edit" />
+            </div>
+          </td>
+          <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
+          <td colspan="2">
+            <MassActionsSelector :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
+          </td>
+        </tr>
       </thead>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" :validation-rules="validationRules" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
     </table>
   </div>
 
@@ -48,7 +54,7 @@
     <Modal v-model="modal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
       <template #title>Modification de parcelle</template>
 
-      <Component :is="editForm" :feature="editedFeature" v-if="editedFeatureId && editForm" @submit="handleSingleFeatureEdit" />
+      <Component :is="editForm" :feature="editedFeature" v-if="editedFeatureId && editForm" @submit="handleFeaturesEdit" />
     </Modal>
   </Teleport>
 
@@ -63,6 +69,7 @@ import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useFeaturesStore } from '@/stores/features.js'
+import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 import Modal from '@/components/Modal.vue'
 
@@ -79,7 +86,8 @@ const props = defineProps({
     required: true
   },
   'edit-form': Object,
-  'validation-rules': Object
+  'validation-rules': Object,
+  'mass-actions': Array
 })
 
 const isSaving = ref(false)
@@ -88,9 +96,8 @@ const modal = computed(() => Boolean(editedFeatureId.value))
 const store = useFeaturesStore()
 
 const { hoveredId:hoveredFeatureId } = storeToRefs(store)
-const { activeId:selectedFeatureId, activeFeature:selectedFeature } = storeToRefs(store)
-const { allSelected, selectedIds:selectedFeatureIds } = storeToRefs(store)
-const { toggleAllSelected } = store
+const { selectedIds:selectedFeatureIds } = storeToRefs(store)
+const { toggleSingleSelected } = store
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
@@ -101,13 +108,15 @@ const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.t
 // hence, feature groups
 const featureGroups = computed(() => getFeatureGroups(props.features, userGroupingChoice.value))
 
-function handleSingleFeatureEdit ({ id, patch }) {
-  const feature = props.features.features.find(f => f.id === id)
-
-  feature.properties = {
-    ...feature.properties,
-    ...patch
-  }
+function handleFeaturesEdit ({ ids, patch }) {
+  props.features.features
+    .filter(feature => ids.includes(feature.id))
+    .forEach(feature => {
+      feature.properties = {
+        ...feature.properties,
+        ...patch
+      }
+    })
 
   editedFeatureId.value = null
   store.setAll(props.features.features)
@@ -157,6 +166,9 @@ function doSave (geojson) {
   font-weight: normal;
   margin-left: .5rem;
 }
+.fr-table table {
+  overflow: initial;
+}
 
 .fr-table thead {
   background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
@@ -169,9 +181,22 @@ function doSave (geojson) {
   background-position: top, bottom;
   background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
 }
+.fr-table .summary.summary__mass-actions {
+  color: var(--text-inverted-blue-france);
+  background-color: var(--background-action-high-blue-france);
+}
+  .fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before{
+    box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
+  }
 
 .fr-text--align-right {
   text-align: right !important;
+}
+
+.fr-table tr.legend :is(td, th),
+.fr-table tr.summary :is(td, th) {
+  padding-left: .6rem;
+  padding-right: .6rem;
 }
 
 .fr-table td.numeric,
