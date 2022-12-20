@@ -1,7 +1,8 @@
 name: Build and deploy (production)
 
 on:
-  workflow_run:
+  workflow_dispatch:
+  # workflow_run:
   #   workflows: ['Build and deploy (v2)']
   #   types: ['completed']
 
