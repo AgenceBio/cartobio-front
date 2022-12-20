@@ -124,11 +124,22 @@
         </div>
       </div>
     </div>
+    <div class="fr-notice fr-notice--info" v-if="isStaging">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p class="fr-notice__title">
+            Environnement de test CartoBio,
+
+            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">suivez ce lien pour accéder à l'environnement avec données réelles</a>.
+          </p>
+        </div>
+      </div>
+    </div>
   </header>
 </template>
 
 <script setup>
-import { computed, reactive, toRef } from 'vue'
+import { computed, toRef } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
@@ -146,6 +157,7 @@ const ROLE_ICONS = new Map([
 
 const { user, role, isLogged } = storeToRefs(userStore)
 const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-circle-fill')
+const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 
 const currentUser = toRef(store.state, 'currentUser')
 async function logout() {

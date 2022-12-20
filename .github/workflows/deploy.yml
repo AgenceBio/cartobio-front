@@ -25,6 +25,7 @@ jobs:
         VUE_APP_MATOMO_SITE_ID: 244
         VUE_APP_API_ENDPOINT: "https://cartobio.agencebio.org/api"
         VUE_APP_CURRENT_CAMPAGNE_PAC: 2022
+        VUE_APP_PRODUCTION: true
 
     - run: npm clean-install-test
     - run: npm run build
