@@ -1,19 +1,17 @@
-name: Build and deploy (v2)
+name: Build and deploy (production)
 
 on:
-  push:
-    paths-ignore:
-    - 'docs/**'
-    - 'bin/**'
-    - 'infrastructure/**'
-    - '*.example'
-    - 'netlify.toml'
-    - '*.md'
+  workflow_call:
+  # workflow_run:
+  #   workflows: ['Build and deploy (v2)']
+  #   types: ['completed']
 
 jobs:
-  environment: staging
+  # if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref_type == 'tag' }}
+
   build:
     runs-on: ubuntu-latest
+    environment: production
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -24,8 +22,8 @@ jobs:
     - name: Assign env variables to a .env file
       run: env | grep VUE_APP > .env.production.local
       env:
-        VUE_APP_MATOMO_SITE_ID: 245
-        VUE_APP_API_ENDPOINT: "https://cartobio-preprod.agencebio.org/api"
+        VUE_APP_MATOMO_SITE_ID: 244
+        VUE_APP_API_ENDPOINT: "https://cartobio.agencebio.org/api"
         VUE_APP_CURRENT_CAMPAGNE_PAC: 2022
 
     - run: npm clean-install-test
@@ -33,16 +31,14 @@ jobs:
 
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2.3.1
-      if: github.ref == 'refs/heads/v2'
       with:
         key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
         known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
 
     - name: rsync
-      if: github.ref == 'refs/heads/v2'
       run: |
         rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
       env:
         REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
         REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
-        REMOTE_PATH: /var/www/cartobio-preprod.agencebio.org/
+        REMOTE_PATH: /var/www/cartobio.agencebio.org/
