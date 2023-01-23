@@ -2,6 +2,16 @@ name: Build and deploy (production)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+    - "v2"
+    paths-ignore:
+    - 'docs/**'
+    - 'bin/**'
+    - 'infrastructure/**'
+    - '*.example'
+    - 'netlify.toml'
+    - '*.md'
   # workflow_run:
   #   workflows: ['Build and deploy (v2)']
   #   types: ['completed']

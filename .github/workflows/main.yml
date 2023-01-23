@@ -1,6 +1,7 @@
-name: Build and deploy (v2)
+name: Build and deploy (staging)
 
 on:
+  pull_request:
   push:
     paths-ignore:
     - 'docs/**'
