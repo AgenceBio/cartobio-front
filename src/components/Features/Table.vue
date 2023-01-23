@@ -162,6 +162,16 @@ function doSave (geojson) {
 </style>
 
 <style scoped>
+.seemless-select {
+  font-weight: normal;
+}
+  .seemless-select select {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
+    background-position: right center;
+    background-repeat: no-repeat;
+    font-weight: bold;
+  }
+
 .rowIdCell small {
   font-weight: normal;
   margin-left: .5rem;

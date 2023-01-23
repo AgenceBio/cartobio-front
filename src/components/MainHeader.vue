@@ -128,9 +128,11 @@
       <div class="fr-container">
         <div class="fr-notice__body">
           <p class="fr-notice__title">
-            Environnement de test CartoBio,
+            <mark>Vous êtes sur un environnement de test</mark>.
 
-            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">suivez ce lien pour accéder à l'environnement avec données réelles</a>.
+            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
+              Cliquez ici pour accéder à l'environnement avec données réelles.
+            </a>
           </p>
         </div>
       </div>
