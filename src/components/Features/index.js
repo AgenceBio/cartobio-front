@@ -23,7 +23,14 @@ export const groupingChoices = {
   'COMMUNE': {
     label: 'commune',
     datapoint: (d) => d.properties.COMMUNE,
-    groupLabelFn: (d) => d.properties.COMMUNE
+    groupLabelFn: (d) => {
+      if (d.properties.COMMUNE_LABEL) {
+        return `${d.properties.COMMUNE_LABEL} (${d.properties.COMMUNE.slice(0, -3)})`
+      }
+      else {
+        return d.properties.COMMUNE || 'Commune inconnue'
+      }
+    }
   },
   'CULTURE': {
     label: 'type de culture',
