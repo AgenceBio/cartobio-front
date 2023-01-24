@@ -54,9 +54,10 @@ export function getFeatureGroups (collection, pivot = 'CULTURE') {
     return [{
       label: '',
       key: 'none',
+      pivot,
       accentColor: colorPalette[0],
       features: collection.features,
-      surface: inHa(area(featureCollection(collection.features)))
+      surface: inHa(area(featureCollection(collection.features))),
     }]
   }
 
@@ -67,6 +68,7 @@ export function getFeatureGroups (collection, pivot = 'CULTURE') {
   return Object.entries(groups).map(([key, features], i) => ({
     label: groupingChoices[pivot].groupLabelFn(features[0], key),
     key,
+    pivot,
     accentColor: colorPalette[i%12],
     features,
     surface: area(featureCollection(features)),

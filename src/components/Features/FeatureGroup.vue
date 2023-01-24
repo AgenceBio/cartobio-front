@@ -14,7 +14,8 @@
     </tr>
     <tr :hidden="!open" class="intermediate-header">
       <th scope="col" colspan="2"></th>
-      <th scope="col">Nom</th>
+      <th scope="col" v-if="featureGroup.pivot === 'CULTURE'">Nom</th>
+      <th scope="col" v-else>Culture</th>
       <th scope="col">Certification</th>
       <th scope="col" colspan="2"></th>
     </tr>
@@ -26,7 +27,11 @@
         </div>
       </th>
       <td></td>
-      <td>{{ featureName(feature) }}</td>
+      <td v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
+      <td v-else>
+        <span class="culture-type">{{ libelléFromCode(feature.properties.TYPE) }}</span>
+        <small class="culture-precision">{{ featureName(feature) }}</small>
+      </td>
       <td>
         <ConversionLevel :feature="feature" with-date />
       </td>
@@ -41,6 +46,7 @@
 <script setup>
 import { computed, ref, unref, watch } from 'vue'
 import { surface, inHa, featureName } from '@/components/Features/index.js'
+import { libelléFromCode } from '@/referentiels/pac.js'
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 
@@ -137,6 +143,14 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
     /* same as .fr-table--bordered tbody tr */
     background-size: 100% 2px;
     background-image: linear-gradient(180deg, var(--grey-625-425), var(--grey-625-425));
+  }
+
+  .fr-table tr.parcelle .culture-type {
+    display: block;
+  }
+
+  .fr-table tr.parcelle .culture-precision {
+    color: var(--text-mention-grey);
   }
 
   .subtable {
