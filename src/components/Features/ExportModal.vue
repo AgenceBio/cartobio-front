@@ -122,11 +122,23 @@ const excelTemplates = {
     sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
       const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
       const label = props.TYPE_LIBELLE ?? libelléFromCode(props.TYPE)
-      const surfaceHa = inHa(surface(geometry))
+      const surfaceHa = surface(geometry) / 10_000
       const isPac = Boolean(props.PACAGE)
       const culture = props.TYPE
 
-      return [id, ilotId, parcelleId, surfaceHa, culture, label, props.PACAGE, props.conversion_niveau, props.engagement_date, (isPac ? 'PAC' : ''), props.commentaire]
+      return [
+        id,
+        ilotId,
+        parcelleId,
+        surfaceHa,
+        culture,
+        label,
+        props.PACAGE,
+        props.conversion_niveau,
+        props.engagement_date,
+        (isPac ? 'PAC' : ''),
+        props.commentaire
+      ]
     }), { origin: 'A7', cellDates: true })
 
     // First sheet: finalize
