@@ -194,6 +194,16 @@ export async function verifyToken (userToken) {
   return data
 }
 
+export async function exchangeNotificationToken (token) {
+  const { data } = await cartobioApi.get(`/v2/user/exchangeToken`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+
+  return data
+}
+
 export function setAuthorization (userToken) {
   if (userToken) {
     cartobioApi.defaults.headers.common['Authorization'] = `Bearer ${userToken}`

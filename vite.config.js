@@ -31,11 +31,11 @@ export default defineConfig(({ mode }) => {
     ],
 
     resolve: {
-      alias: {
-        '@gouvfr/dsfr': resolve(join(__dirname, 'node_modules', '@gouvfr', 'dsfr', 'dist')),
-        '@/': resolve(join(__dirname, 'src')) + sep,
-        'styles': resolve(join(__dirname, 'src', 'styles'))
-      },
+      alias: [
+        { find: '@gouvfr/dsfr', replacement: resolve(join(__dirname, 'node_modules', '@gouvfr', 'dsfr', 'dist')) },
+        { find: '@/', replacement: resolve(join(__dirname, 'src')) + sep },
+        { find: 'styles', replacement: resolve(join(__dirname, 'src', 'styles')) }
+      ],
     },
 
     server: {

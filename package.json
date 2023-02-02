@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:webcomponent": "vite build --config vite.notification-webcomponent.config.js",
-    "build:webcomponent-lib": "npm run build:webcomponent -- --mode lib",
-    "postbuild": "npm run build:webcomponent && npm run build:webcomponent-lib",
+    "build:widget": "vite build --config vite.widget.config.js --mode lib",
+    "build:widget-demo": "vite build --config vite.widget.config.js",
+    "postbuild": "npm run build:widget && npm run build:widget-demo",
     "preview": "vite preview",
     "start": "vite",
     "test": "vitest run",

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>CartoBio Notification WebComponent</title>
+  </head>
+  <body>
+    <h1>Agence Bio - Notification</h1>
+
+    <details>
+      <summary>Comment installer le WebComponent ?</summary>
+      <p>Il est intégré à la page avec ce code :</p>
+
+      <pre><code>
+&lt;template&gt;
+  &lt;notification-cartobio
+    :auth-token="userJwtToken"
+    @import:start="onImport"
+    @import:complete="onSuccess"
+    @import:error="onError" /&gt;
+&lt;/template&gt;
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const userJwtToken = ref('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEzNzQ0LCJpYXQiOjE1MTYyMzkwMjJ9.6ONAXQgk1ynvMC-qfUKSrY6J2etBhQpfBZVUD0TS5wg')
+
+function onImport () {
+
+}
+
+function onSuccess ({ geojson }) {
+
+}
+
+function onError (error) {
+
+}
+&lt;/script&gt;
+
+&lt;!-- dans index.html --&gt;
+&lt;script type="module" src="https://cartobio-preprod.agencebio.org/notification-webcomponent/notification-cartobio.es.js"&gt;&lt;/script&gt;
+&lt;!-- ou --&gt;
+&lt;script type="module" src="https://cartobio.agencebio.org/notification-webcomponent/notification-cartobio.es.js"&gt;&lt;/script&gt;
+      </code></pre>
+    </details>
+
+    <notification-cartobio auth-token="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE1MTI0MywiZW1haWwiOiJhbnRvaW5lQGF0ZWxpb20uZnIiLCJvcGVyYXRldXJJZCI6MTEzODY1LCJub3RpZmljYXRpb25JZCI6MTQwMzg2LCJudW1lcm9QYWNhZ2UiOm51bGwsIm9yZ2FuaXNtZUNlcnRpZmljYXRldXJJZCI6Niwib3JnYW5pc21lQ2VydGlmaWNhdGV1ck5vbSI6IkNlcnRpcyIsImlhdCI6MTY3Mzk3NjQyOCwiZXhwIjoxNjgyNjE2NDI4fQ.e_gIKqzM0yd7P2xx4WjolmQ8h2x0khCfMwUD7ugxu0vUWrWTw4s-FmpmLCi_k2DPyth4A_zsetXOAIOzwt0p5HD104H-pQCCF0BHNcre-1caH8LjU_ZCu1WerfhwD_KWGnHHutFawKdL7VyT2oYiDF-HtwZNagXgjaCCIz28gxSod_LSww4EVfC_HoEiPZeaZLe3PGCV4ScGSvi-jUHciV7ejakIT-gpNEE6-rn2dPQkTsrggUqSzTIuEdDr0p35YUuleXYeYpTHGw9rsom0SFxZea66W2IWZo0tqYdwrEoDyHMv95ok5966rbzcCbhMwsGbC9WmvCEGp79bjfEoTA"></notification-cartobio>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

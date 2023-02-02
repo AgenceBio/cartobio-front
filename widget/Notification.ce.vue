@@ -1,29 +1,33 @@
 <template>
-  <h2>Utilisateur #{{ store.state.currentUser.numeroBio }}</h2>
-  <OperatorSetup v-if="uploadState !== 'complete'" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" />
-  <div v-else class="fr-alert fr-alert--success fr-mb-5w">
-    <p class="fr-alert__title">Import réussi</p>
-    <p>Merci, et à bientôt !</p>
+  <OperatorSetup v-if="isVerified && canImport" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" />
+
+  <div v-if="!isVerified" class="fr-alert fr-alert--info fr-mb-5w">
+    <p class="fr-alert__title">Connexion à CartoBio</p>
+    <p>Établissement d'une connexion sécurisée.</p>
   </div>
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from 'vue'
+import { computed, ref, onBeforeMount } from 'vue'
 
-import OperatorSetup from '../components/OperatorSetup/index.vue'
-import store from '../store.js'
-import { parse } from '../jwt.js'
-
+import OperatorSetup from '@/components/OperatorSetup/index.vue'
+import store from '@/store.js'
+import { exchangeNotificationToken, getOperatorParcelles } from '@/cartobio-api.js'
 
 const props = defineProps({ 'auth-token': String })
 const emit = defineEmits(['import:start', 'import:complete', 'import:error'])
 
 const uploadState = ref(null)
 
-onBeforeMount(() => {
-  const token = parse(props.authToken)
+const isVerified = computed(() => store.currentUser?.id)
+const canImport = computed(() => uploadState !== 'complete')
+
+onBeforeMount(async () => {
+  const token = await exchangeNotificationToken(props.authToken)
+  console.log({ token })
   if (token.id) {
     store.setCurrentUser(token)
+    const parcelles = await getOperatorParcelles(token.id)
   }
 })
 
@@ -47,7 +51,6 @@ function onError (error) {
 </script>
 
 <style>
-@charset "utf-8";
 @import '@gouvfr/dsfr/dsfr.main.css';
 @import '@gouvfr/dsfr/utility/icons/icons.css';
 
