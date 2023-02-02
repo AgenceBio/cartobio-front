@@ -111,12 +111,12 @@ const excelTemplates = {
 
     sheet['!cols'] = [
       { wch: 16 }, '', '', '', {wch: 16},
-      { wch: 40 }, { wch: 10 }, '', { wch: 10 }, '', { wch: 60 }
+      { wch: 40 }, { wch: 10 }, '', { wch: 10 }, '', { wch: 60 }, { wch: 60 }
     ]
 
     // First sheet: plots informations (via `featureCollection`)
     sheet_add_aoa(sheet, [
-      ['Identifiant CartoBio', 'N°Ilot', 'N°Parcelle', 'Surfaces graphique (ha)', 'Code culture', 'Libellé culture', 'PACAGE', 'Niveau de conversion', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire'],
+      ['Identifiant CartoBio', 'N°Ilot', 'N°Parcelle', 'Surfaces graphique (ha)', 'Code culture', 'Libellé culture', 'PACAGE', 'Niveau de conversion', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire agriculteur', 'Notes d\'audit'],
     ], { origin: 'A6'})
 
     sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
@@ -137,12 +137,13 @@ const excelTemplates = {
         props.conversion_niveau,
         props.engagement_date,
         (isPac ? 'PAC' : ''),
-        props.commentaire
+        props.commentaires ?? '',
+        props.auditeur_notes ?? ''
       ]
     }), { origin: 'A7', cellDates: true })
 
     // First sheet: finalize
-    book_append_sheet(workbook, sheet, 'Parcellaire Bio');
+    book_append_sheet(workbook, sheet, 'Parcellaire bio');
 
     return workbook
   }
