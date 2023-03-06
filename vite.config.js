@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 import { defineConfig, loadEnv } from 'vite'
+=======
+import { defineConfig, searchForWorkspaceRoot } from 'vite'
+>>>>>>> 010dd70 (Adjust how we fetch organismeCertificateur)
 import vue from '@vitejs/plugin-vue'
 import Pages from "vite-plugin-pages"
 import { resolve, join, sep } from 'path'
 import { sentryVitePlugin } from "@sentry/vite-plugin"
+
+const cwd = process.cwd()
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -40,7 +46,13 @@ export default defineConfig(({ mode }) => {
 
     server: {
       host: '127.0.0.1',
-      port: 3000
+      port: 3000,
+      fs: {
+        allow:[
+            searchForWorkspaceRoot(cwd),
+            resolve(cwd, '@gouvfr/dsfr'),
+        ]
+    }
     }
   }
 })

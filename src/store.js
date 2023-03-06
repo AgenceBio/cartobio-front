@@ -3,7 +3,11 @@ import axios from 'axios'
 import { now } from '@/components/dates.js'
 
 const DEFAULT_STATE = {
-  currentUser: {},
+  currentUser: {
+    id: null,
+    prenom: '',
+    nom: ''
+  },
   record_id: null,
   record: {
     record_id: null,
@@ -32,7 +36,6 @@ const DEFAULT_STATS = {
 const store = reactive({
   state: {
     ...structuredClone(DEFAULT_STATE),
-    currentUser: localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : structuredClone(DEFAULT_STATE.currentUser),
     stats: structuredClone(DEFAULT_STATS),
   },
 
@@ -48,8 +51,12 @@ const store = reactive({
 
   },
 
-  setCurrentUser (userData) {
+  setCurrentUser (userData, { persist } = { persist: true }) {
     Object.assign(this.state.currentUser, userData)
+
+    if (persist) {
+      localStorage.setItem('currentUser', JSON.stringify(this.state.currentUser))
+    }
   },
 
   setParcelles ({ geojson, source, sourceLastUpdate }) {
@@ -71,9 +78,5 @@ const store = reactive({
     localStorage.removeItem('currentUser')
   },
 })
-
-watch(() => store.state.currentUser, currentUser => {
-  localStorage.setItem('currentUser', JSON.stringify(currentUser))
-}, { deep: true })
 
 export default store

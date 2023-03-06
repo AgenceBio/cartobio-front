@@ -160,11 +160,11 @@ export async function updateAuditState ({ recordId }, patch) {
  * @returns {Promise}
  */
 export async function submitParcelles (geojson, { source }) {
-  const { id: operatorId, numeroBio, certificats } = store.state.currentUser
+  const { id: operatorId, numeroBio, organismeCertificateur } = store.state.currentUser
 
   const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
-    ocId: certificats[0]?.organismeCertificateurId,
-    ocLabel: certificats[0]?.organisme,
+    ocId: organismeCertificateur?.id,
+    ocLabel: organismeCertificateur?.nom,
     numeroBio,
     geojson,
     metadata: {

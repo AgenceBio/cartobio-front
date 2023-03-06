@@ -86,22 +86,22 @@ router.beforeEach(async (to) => {
     return router.push({ path: '/login', query: { returnto: to.path }})
   }
 
-  if (to.meta.requiresAuth && !store.state.currentUser.id) {
+  if (to.meta.requiresAuth && !userStore.isLogged) {
     return router.replace('/exploitation/login')
   }
 
-  if (to.path === '/exploitation/login' && store.state.currentUser.id) {
+  if (to.path === '/exploitation/login' && userStore.isLogged) {
     return router.replace('/exploitation/parcellaire')
   }
 
   if (to.meta.requiresGeodata) {
-    const record = await getOperatorParcelles(store.state.currentUser.id)
+    const record = await getOperatorParcelles(userStore.user.id)
 
     if (!record || !record.parcelles || !record.metadata.source) {
       return router.push('/exploitation/setup')
     }
     else {
-      store.setCurrentUser(record.operator)
+      store.setCurrentUser(record.operator, { persist: false })
       store.setRecord(record)
       store.setParcelles({
         geojson: record.parcelles,
