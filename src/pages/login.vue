@@ -96,7 +96,7 @@ onMounted(async () => {
       new Promise((resolve) => setTimeout(resolve, 1000))
     ])
 
-    if (!isLogged.value) {
+    if (isLogged.value) {
       store.login(hashOrUserToken)
       router.replace('/login')
     }
