@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, readonly } from 'vue'
 const { VUE_APP_PRELOADED_CAMPAGNE_PAC: PRELOADED_CAMPAGNE_PAC } = import.meta.env
 
 /**
@@ -54,12 +54,12 @@ export function useTélépac (referenceDate = new Date()) {
   const campagneShort = computed(() => String(campagne.value).slice(-2))
   const preloadedCampagne = computed(() => parseInt(PRELOADED_CAMPAGNE_PAC, 10))
 
-  const urls = computed(() => ({
+  const urls = readonly({
     home: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/auth/accueilTas.action?campagne=${campagneShort.value}&titreApplication=Dossier+PAC+${campagneShort.value}`,
     exportHome: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/ie/exportShpIlots.action`,
     exportShapefile: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/ie/exportShpFichierParcelles.action?anneeCampagne=${campagneShort.value}`,
     exportXml: `https://www.telepac.agriculture.gouv.fr/telepac/tas${campagneShort.value}/ie/exportDossierCourant.action`
-  }))
+  })
 
   function pacageFilename (pacage = '123456789') {
     return computed(() => `Dossier-PAC-${campagne.value}_parcelle-${campagne.value}_${pacage}_${campagne.value}0131155301.zip`)

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { defineConfig, loadEnv } from 'vite'
-=======
-import { defineConfig, searchForWorkspaceRoot } from 'vite'
->>>>>>> 010dd70 (Adjust how we fetch organismeCertificateur)
+import { defineConfig, loadEnv, searchForWorkspaceRoot } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Pages from "vite-plugin-pages"
 import { resolve, join, sep } from 'path'

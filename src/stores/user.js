@@ -45,7 +45,7 @@ export const useUserStore = defineStore('user', () => {
     else if (groupName === 'Admin') {
       return ROLES.ADMIN
     }
-    else if (groupName === 'Opérateur') {
+    else if (groupName === 'Opérateur' || user.value.numeroBio) {
       return ROLES.OPERATEUR
     }
     else {

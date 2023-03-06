@@ -21,12 +21,7 @@ meta:
             Pendant le contrôle avec l’opérateur.
           </p>
 
-          <p v-if="currentUser.id">
-            <router-link class="fr-btn" to="/exploitation/parcellaire">
-              Accéder à mon opérateur
-            </router-link>
-          </p>
-          <p v-else>
+          <p>
             <router-link class="fr-btn" to="/certification/exploitations">
               Chercher un opérateur
             </router-link>
@@ -117,15 +112,10 @@ meta:
 </template>
 
 <script setup>
-import { toRef } from 'vue'
-import store from '../../store.js'
-
 import PartnersSection from '@/components/Partners/section.vue'
 import ContributeSection from '@/components/Partners/contribute-section.vue'
 import TestimoniesSection from '@/components/Partners/testimonies-section.vue';
 import ProductflowSection from '@/components/Features/productflow-section.vue';
-
-const currentUser = toRef(store.state, 'currentUser')
 </script>
 
 <style scoped>
