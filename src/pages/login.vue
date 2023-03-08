@@ -91,12 +91,12 @@ onMounted(async () => {
   isVerifying.value = true
 
   try {
-    await Promise.all([
+    const [res] = await Promise.all([
       verifyToken(hashOrUserToken),
       new Promise((resolve) => setTimeout(resolve, 1000))
     ])
 
-    if (isLogged.value) {
+    if (res.id) {
       store.login(hashOrUserToken)
       router.replace('/login')
     }
