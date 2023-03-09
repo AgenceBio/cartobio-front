@@ -3,8 +3,8 @@ name: Build and deploy (production)
 on:
   workflow_dispatch:
   push:
-    branches:
-    - "v2"
+    tags:
+    - "v2.*"
     paths-ignore:
     - 'docs/**'
     - 'bin/**'

@@ -3,6 +3,8 @@ name: Build and deploy (staging)
 on:
   pull_request:
   push:
+    branches:
+    - "v2"
     paths-ignore:
     - 'docs/**'
     - 'bin/**'
