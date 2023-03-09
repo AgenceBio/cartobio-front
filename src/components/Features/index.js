@@ -19,8 +19,13 @@ const colorPalette = [
   "#ac9200"
 ]
 
+export const GROUPE_COMMUNE = 'COMMUNE'
+export const GROUPE_CULTURE = 'CULTURE'
+export const GROUPE_NIVEAU_CONVERSION = 'NIVEAU_CONVERSION'
+export const GROUPE_ANNEE_ENGAGEMENT = 'ANNEE_ENGAGEMENT'
+
 export const groupingChoices = {
-  'COMMUNE': {
+  [GROUPE_COMMUNE]: {
     label: 'commune',
     datapoint: (d) => d.properties.COMMUNE,
     groupLabelFn: (d) => {
@@ -32,24 +37,24 @@ export const groupingChoices = {
       }
     }
   },
-  'CULTURE': {
+  [GROUPE_CULTURE]: {
     label: 'type de culture',
     datapoint: (d) => d.properties.TYPE,
     groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
   },
-  'NIVEAU_CONVERSION': {
+  [GROUPE_NIVEAU_CONVERSION]: {
     label: 'niveau de conversion',
     datapoint: (d) => d.properties.conversion_niveau || '',
     groupLabelFn: (d, groupingKey) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu'
   },
-  'ANNEE_ENGAGEMENT': {
+  [GROUPE_ANNEE_ENGAGEMENT]: {
     label: 'année d\'engagement',
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
     groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue'
   },
 }
 
-export function getFeatureGroups (collection, pivot = 'CULTURE') {
+export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
   if (pivot === '') {
     return [{
       label: '',

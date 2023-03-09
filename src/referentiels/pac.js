@@ -1,12 +1,5 @@
-import { computed, readonly, ref } from 'vue'
+import { computed } from 'vue'
 const { VUE_APP_CURRENT_CAMPAGNE_PAC: CURRENT_CAMPAGNE_PAC } = import.meta.env
-
-/**
- * @type {Array<CodePac>}
- */
-import codes from './codes-pac.json'
-
-const DEFAULT_LIBELLE = '(inconnu)'
 
 /**
  * @typedef {Object} CodePac
@@ -15,6 +8,13 @@ const DEFAULT_LIBELLE = '(inconnu)'
  * @property {string} CODE_GROUPE_CULTURE
  * @property {string} LIBELLE_GROUPE_CULTURE
  */
+
+/**
+ * @type {Array<CodePac>}
+ */
+import codes from './codes-pac.json'
+
+const DEFAULT_LIBELLE = '(inconnu)'
 
 /**
  * @param {string} code

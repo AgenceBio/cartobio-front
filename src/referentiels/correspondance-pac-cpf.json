@@ -1,0 +1,3161 @@
+[
+  {
+    "code_pac": "ACA",
+    "lbl_cultu": "Autre culture non précisée dans la liste (admissible)",
+    "code_cpf_bio": "01.19",
+    "libelle_code_cpf_bio": "Autres cultures non permanentes",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "AGR",
+    "lbl_cultu": "Agrume",
+    "code_cpf_bio": "01.23.1",
+    "libelle_code_cpf_bio": "Agrumes",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "AIL",
+    "lbl_cultu": "Aïl",
+    "code_cpf_bio": "01.13.42",
+    "libelle_code_cpf_bio": "Ail",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "ANA",
+    "lbl_cultu": "Ananas",
+    "code_cpf_bio": "01.22.19.1",
+    "libelle_code_cpf_bio": "Ananas",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "ANE",
+    "lbl_cultu": "Aneth",
+    "code_cpf_bio": "01.28.19.26",
+    "libelle_code_cpf_bio": "Aneth",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": "Plantes médicinales, aromatiques, épices"
+  },
+  {
+    "code_pac": "ANG",
+    "lbl_cultu": "Angélique",
+    "code_cpf_bio": "01.28.30.48",
+    "libelle_code_cpf_bio": "Angélique",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": "Plantes médicinales, aromatiques, épices"
+  },
+  {
+    "code_pac": "ANI",
+    "lbl_cultu": "Anis",
+    "code_cpf_bio": "01.28.14.3",
+    "libelle_code_cpf_bio": "Anis, badiane",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": "Plantes médicinales, aromatiques, épices"
+  },
+  {
+    "code_pac": "ARA",
+    "lbl_cultu": "Arachide",
+    "code_cpf_bio": "01.11.82",
+    "libelle_code_cpf_bio": "Arachides, en coque",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "ART",
+    "lbl_cultu": "Artichaut",
+    "code_cpf_bio": "01.13.17",
+    "libelle_code_cpf_bio": "Artichauts",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "AUB",
+    "lbl_cultu": "Aubergine",
+    "code_cpf_bio": "01.13.33",
+    "libelle_code_cpf_bio": "Aubergines",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "AVH",
+    "lbl_cultu": "Avoine d’hiver",
+    "code_cpf_bio": "01.11.33",
+    "libelle_code_cpf_bio": "Avoine",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "AVO",
+    "lbl_cultu": "Avocat",
+    "code_cpf_bio": "01.22.11",
+    "libelle_code_cpf_bio": "Avocats",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "AVP",
+    "lbl_cultu": "Avoine de printemps",
+    "code_cpf_bio": "01.11.33",
+    "libelle_code_cpf_bio": "Avoine",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "BAR",
+    "lbl_cultu": "Bardane",
+    "code_cpf_bio": "01.28.30.33",
+    "libelle_code_cpf_bio": "Bardane",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "BAS",
+    "lbl_cultu": "Basilic",
+    "code_cpf_bio": "01.28.19.27",
+    "libelle_code_cpf_bio": "Basilic",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "BCA",
+    "lbl_cultu": "Banane créole (fruit et légume) - autre",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BCF",
+    "lbl_cultu": "Banane créole (fruit et légume) - fermage",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BCI",
+    "lbl_cultu": "Banane créole (fruit et légume) - indivision",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BCP",
+    "lbl_cultu": "Banane créole (fruit et légume) - propriété ou faire valoir direct",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BCR",
+    "lbl_cultu": "Banane créole (fruit et légume) - réforme foncière",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BDH",
+    "lbl_cultu": "Blé dur d’hiver",
+    "code_cpf_bio": "01.11.11",
+    "libelle_code_cpf_bio": "Blé dur",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "BDP",
+    "lbl_cultu": "Blé dur de printemps",
+    "code_cpf_bio": "01.11.11",
+    "libelle_code_cpf_bio": "Blé dur",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "BDT",
+    "lbl_cultu": "Blé dur de printemps semé tardivement (après le 31/05)",
+    "code_cpf_bio": "01.11.11",
+    "libelle_code_cpf_bio": "Blé dur",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "BEA",
+    "lbl_cultu": "Banane export - autre",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BEF",
+    "lbl_cultu": "Banane export - fermage",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BEI",
+    "lbl_cultu": "Banane export - indivision",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BEP",
+    "lbl_cultu": "Banane export - propriété ou faire valoir direct",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BER",
+    "lbl_cultu": "Banane export - réforme foncière",
+    "code_cpf_bio": "01.22.12",
+    "libelle_code_cpf_bio": "Bananes, bananes plantains et assimilés",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "BFP",
+    "lbl_cultu": "Bande admissible le long d’une forêt avec production",
+    "code_cpf_bio": "01.99",
+    "libelle_code_cpf_bio": "Autres surfaces non productive et surfaces non agricoles",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "BFS",
+    "lbl_cultu": "Bande admissible le long d’une forêt sans production",
+    "code_cpf_bio": "01.99",
+    "libelle_code_cpf_bio": "Autres surfaces non productive et surfaces non agricoles",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "BLT",
+    "lbl_cultu": "Bleuet",
+    "code_cpf_bio": "01.28.30.34",
+    "libelle_code_cpf_bio": "Bleuet",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "BOP",
+    "lbl_cultu": "Bois pâturé",
+    "code_cpf_bio": "01.95.11",
+    "libelle_code_cpf_bio": "Bois pâturés et parcours ligneux",
+    "code_grp_cultu": "17",
+    "grp_cultu": "Estives et landes",
+    "g": null
+  },
+  {
+    "code_pac": "BOR",
+    "lbl_cultu": "Bordure de champ",
+    "code_cpf_bio": "01.99",
+    "libelle_code_cpf_bio": "Autres surfaces non productive et surfaces non agricoles",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "BRH",
+    "lbl_cultu": "Bourrache de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "BRO",
+    "lbl_cultu": "Brome de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "BTA",
+    "lbl_cultu": "Bande tampon",
+    "code_cpf_bio": "01.99",
+    "libelle_code_cpf_bio": "Autres surfaces non productive et surfaces non agricoles",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "BTH",
+    "lbl_cultu": "Blé tendre d’hiver",
+    "code_cpf_bio": "01.11.12",
+    "libelle_code_cpf_bio": "Blé tendre",
+    "code_grp_cultu": "1",
+    "grp_cultu": "Blé tendre",
+    "g": null
+  },
+  {
+    "code_pac": "BTN",
+    "lbl_cultu": "Betterave non fourragère / Bette",
+    "code_cpf_bio": "01.13.71",
+    "libelle_code_cpf_bio": "Betteraves à sucre",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "BTP",
+    "lbl_cultu": "Blé tendre de printemps",
+    "code_cpf_bio": "01.11.12",
+    "libelle_code_cpf_bio": "Blé tendre",
+    "code_grp_cultu": "1",
+    "grp_cultu": "Blé tendre",
+    "g": null
+  },
+  {
+    "code_pac": "BUR",
+    "lbl_cultu": "Bugle rampante",
+    "code_cpf_bio": "01.28.30.35",
+    "libelle_code_cpf_bio": "Bugle rampant",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "BVF",
+    "lbl_cultu": "Betterave fourragère",
+    "code_cpf_bio": "01.19.10.2",
+    "libelle_code_cpf_bio": "Betterave fourragère",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "CAB",
+    "lbl_cultu": "Caroube",
+    "code_cpf_bio": "01.28.00.99",
+    "libelle_code_cpf_bio": "Autres plantes à épices, aromatiques, médicinales et pharmaceutiques",
+    "code_grp_cultu": "22",
+    "grp_cultu": "Fruits à coque",
+    "g": null
+  },
+  {
+    "code_pac": "CAC",
+    "lbl_cultu": "Café / Cacao",
+    "code_cpf_bio": "01.27.1",
+    "libelle_code_cpf_bio": "Plantes à boissons",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "CAE",
+    "lbl_cultu": "Châtaigneraie entretenue par des porcins ou des petits ruminants",
+    "code_cpf_bio": "01.95.11",
+    "libelle_code_cpf_bio": "Bois pâturés et parcours ligneux",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "CAF",
+    "lbl_cultu": "Carotte fourragère",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "CAG",
+    "lbl_cultu": "Autre céréale d’un autre genre",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CAR",
+    "lbl_cultu": "Carotte",
+    "code_cpf_bio": "01.13.41.1",
+    "libelle_code_cpf_bio": "Carottes",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CAV",
+    "lbl_cultu": "Carvi",
+    "code_cpf_bio": "01.28.14.9",
+    "libelle_code_cpf_bio": "Cumin, carvi et genièvre, bruts",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CBT",
+    "lbl_cultu": "Cerise bigarreau pour transformation",
+    "code_cpf_bio": "01.24.24",
+    "libelle_code_cpf_bio": "Cerises",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "CCN",
+    "lbl_cultu": "Concombre / Cornichon",
+    "code_cpf_bio": "01.13.32",
+    "libelle_code_cpf_bio": "Concombres et cornichons",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CCT",
+    "lbl_cultu": "Courgette / Citrouille",
+    "code_cpf_bio": "01.13.39",
+    "libelle_code_cpf_bio": "Autres légumes à fruits n.c.a.",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CEE",
+    "lbl_cultu": "Chênaie entretenue par des porcins ou des petits ruminants",
+    "code_cpf_bio": "01.95.11",
+    "libelle_code_cpf_bio": "Bois pâturés et parcours ligneux",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "CEL",
+    "lbl_cultu": "Céleri",
+    "code_cpf_bio": "01.13.49.3",
+    "libelle_code_cpf_bio": "Céleris raves",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CES",
+    "lbl_cultu": "Chicorée / Endive / Scarole",
+    "code_cpf_bio": "01.13.19.9",
+    "libelle_code_cpf_bio": "Autres légumes à feuilles ou à tiges",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CGF",
+    "lbl_cultu": "Autre céréale de genre Fagopyrum",
+    "code_cpf_bio": "01.11.49.2",
+    "libelle_code_cpf_bio": "Sarrasin",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CGH",
+    "lbl_cultu": "Autre céréale de genre Phalaris",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CGO",
+    "lbl_cultu": "Autre céréale de genre Sorghum",
+    "code_cpf_bio": "01.11.41",
+    "libelle_code_cpf_bio": "Sorgho",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CGP",
+    "lbl_cultu": "Autre céréale de genre Panicum",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CGS",
+    "lbl_cultu": "Autre céréale de genre Setaria",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CHA",
+    "lbl_cultu": "Autre céréale d’hiver de genre Avena",
+    "code_cpf_bio": "01.11.33",
+    "libelle_code_cpf_bio": "Avoine",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CHF",
+    "lbl_cultu": "Chou fourrager",
+    "code_cpf_bio": "01.19.10.3",
+    "libelle_code_cpf_bio": "Choux fourrager",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "CHH",
+    "lbl_cultu": "Autre céréale d’hiver de genre Hordeum",
+    "code_cpf_bio": "01.11.31",
+    "libelle_code_cpf_bio": "Orges",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CHR",
+    "lbl_cultu": "Chardon Marie",
+    "code_cpf_bio": "01.28.30.49",
+    "libelle_code_cpf_bio": "Chardon Marie",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CHS",
+    "lbl_cultu": "Autre céréale d’hiver de genre Secale",
+    "code_cpf_bio": "01.11.32",
+    "libelle_code_cpf_bio": "Seigle",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CHT",
+    "lbl_cultu": "Autre céréale d’hiver de genre Triticum",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CHU",
+    "lbl_cultu": "Chou",
+    "code_cpf_bio": "01.13.12",
+    "libelle_code_cpf_bio": "Choux",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CHV",
+    "lbl_cultu": "Chanvre",
+    "code_cpf_bio": "01.16.19.2",
+    "libelle_code_cpf_bio": "Chanvre",
+    "code_grp_cultu": "9",
+    "grp_cultu": "Plantes à fibres",
+    "g": null
+  },
+  {
+    "code_pac": "CIB",
+    "lbl_cultu": "Ciboulette",
+    "code_cpf_bio": "01.28.19.44",
+    "libelle_code_cpf_bio": "Ciboulette",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CID",
+    "lbl_cultu": "Cultures conduites en interrangs : 2 cultures représentant chacune plus de 25%",
+    "code_cpf_bio": "01.19.99",
+    "libelle_code_cpf_bio": "Cultures en inter-rang",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "CIT",
+    "lbl_cultu": "Cultures conduites en interrangs : 3 cultures représentant chacune plus de 25%",
+    "code_cpf_bio": "01.19.99",
+    "libelle_code_cpf_bio": "Cultures en inter-rang",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "CMB",
+    "lbl_cultu": "Courge musquée / Butternut",
+    "code_cpf_bio": "01.13.39.31",
+    "libelle_code_cpf_bio": "Courge musquée / Butternut",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CML",
+    "lbl_cultu": "Cameline",
+    "code_cpf_bio": "01.11.99.1",
+    "libelle_code_cpf_bio": "Cameline",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CMM",
+    "lbl_cultu": "Camomille",
+    "code_cpf_bio": "01.28.19.28",
+    "libelle_code_cpf_bio": "Camomille romaine",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CNE",
+    "lbl_cultu": "Chênaie non entretenue par des porcins ou des petits ruminants",
+    "code_cpf_bio": "01.95.19",
+    "libelle_code_cpf_bio": "Bois non pâturés, sans cueillette",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "CPA",
+    "lbl_cultu": "Autre céréale de printemps de genre Avena",
+    "code_cpf_bio": "01.11.33",
+    "libelle_code_cpf_bio": "Avoine",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CPH",
+    "lbl_cultu": "Autre céréale de printemps de genre Hordeum",
+    "code_cpf_bio": "01.11.31",
+    "libelle_code_cpf_bio": "Orges",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CPL",
+    "lbl_cultu": "Fourrage composé de céréales et/ou de protéagineux (en proportion < 50%) et/ou de légumineuses fourragères (en proportion < 50%)",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "CPS",
+    "lbl_cultu": "Autre céréale de printemps de genre Secale",
+    "code_cpf_bio": "01.11.32",
+    "libelle_code_cpf_bio": "Seigle",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CPT",
+    "lbl_cultu": "Autre céréale de printemps de genre Triticum",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CPZ",
+    "lbl_cultu": "Autre céréale de printemps de genre Zea",
+    "code_cpf_bio": "01.11.20",
+    "libelle_code_cpf_bio": "Maïs grain (yc maïs doux)",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "CRA",
+    "lbl_cultu": "Cresson alénois de 5 ans ou moins",
+    "code_cpf_bio": "01.13.19.4",
+    "libelle_code_cpf_bio": "Cresson",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CRD",
+    "lbl_cultu": "Coriandre",
+    "code_cpf_bio": "01.28.14.1",
+    "libelle_code_cpf_bio": "Coriandre (graines)",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CRF",
+    "lbl_cultu": "Cerfeuil",
+    "code_cpf_bio": "01.28.19.29",
+    "libelle_code_cpf_bio": "Cerfeuil",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CRN",
+    "lbl_cultu": "Cornille",
+    "code_cpf_bio": "01.11.76",
+    "libelle_code_cpf_bio": "Dolique à œil noir (pois du brésil, niébé)",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CRS",
+    "lbl_cultu": "Cresson",
+    "code_cpf_bio": "01.13.19.4",
+    "libelle_code_cpf_bio": "Cresson",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CSA",
+    "lbl_cultu": "Canne à sucre - autre",
+    "code_cpf_bio": "01.14",
+    "libelle_code_cpf_bio": "Cannes à sucre",
+    "code_grp_cultu": "26",
+    "grp_cultu": "Canne à sucre",
+    "g": null
+  },
+  {
+    "code_pac": "CSE",
+    "lbl_cultu": "Chanvre sans étiquette conforme",
+    "code_cpf_bio": "01.16.19.2",
+    "libelle_code_cpf_bio": "Chanvre",
+    "code_grp_cultu": "9",
+    "grp_cultu": "Plantes à fibres",
+    "g": null
+  },
+  {
+    "code_pac": "CSF",
+    "lbl_cultu": "Canne à sucre - fermage",
+    "code_cpf_bio": "01.14",
+    "libelle_code_cpf_bio": "Cannes à sucre",
+    "code_grp_cultu": "26",
+    "grp_cultu": "Canne à sucre",
+    "g": null
+  },
+  {
+    "code_pac": "CSI",
+    "lbl_cultu": "Canne à sucre - indivision",
+    "code_cpf_bio": "01.14",
+    "libelle_code_cpf_bio": "Cannes à sucre",
+    "code_grp_cultu": "26",
+    "grp_cultu": "Canne à sucre",
+    "g": null
+  },
+  {
+    "code_pac": "CSP",
+    "lbl_cultu": "Canne à sucre - propriété ou faire valoir direct",
+    "code_cpf_bio": "01.14",
+    "libelle_code_cpf_bio": "Cannes à sucre",
+    "code_grp_cultu": "26",
+    "grp_cultu": "Canne à sucre",
+    "g": null
+  },
+  {
+    "code_pac": "CSR",
+    "lbl_cultu": "Canne à sucre - réforme foncière",
+    "code_cpf_bio": "01.14",
+    "libelle_code_cpf_bio": "Cannes à sucre",
+    "code_grp_cultu": "26",
+    "grp_cultu": "Canne à sucre",
+    "g": null
+  },
+  {
+    "code_pac": "CSS",
+    "lbl_cultu": "Culture sous serre hors sol",
+    "code_cpf_bio": "01.19",
+    "libelle_code_cpf_bio": "Autres cultures non permanentes",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "CTG",
+    "lbl_cultu": "Châtaigne",
+    "code_cpf_bio": "01.25.32",
+    "libelle_code_cpf_bio": "Châtaignes et marrons",
+    "code_grp_cultu": "22",
+    "grp_cultu": "Fruits à coque",
+    "g": null
+  },
+  {
+    "code_pac": "CUA",
+    "lbl_cultu": "Culture sous abattis",
+    "code_cpf_bio": "01.19",
+    "libelle_code_cpf_bio": "Autres cultures non permanentes",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "CUM",
+    "lbl_cultu": "Cumin",
+    "code_cpf_bio": "01.28.14.9",
+    "libelle_code_cpf_bio": "Cumin, carvi et genièvre, bruts",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CUR",
+    "lbl_cultu": "Curcuma",
+    "code_cpf_bio": "01.28.19.51",
+    "libelle_code_cpf_bio": "Curcuma",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "CZH",
+    "lbl_cultu": "Colza d’hiver",
+    "code_cpf_bio": "01.11.93",
+    "libelle_code_cpf_bio": "Colza",
+    "code_grp_cultu": "5",
+    "grp_cultu": "Colza",
+    "g": null
+  },
+  {
+    "code_pac": "CZP",
+    "lbl_cultu": "Colza de printemps",
+    "code_cpf_bio": "01.11.93",
+    "libelle_code_cpf_bio": "Colza",
+    "code_grp_cultu": "5",
+    "grp_cultu": "Colza",
+    "g": null
+  },
+  {
+    "code_pac": "DOL",
+    "lbl_cultu": "Dolique",
+    "code_cpf_bio": "01.11.76",
+    "libelle_code_cpf_bio": "Dolique à œil noir (pois du brésil, niébé)",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "DTY",
+    "lbl_cultu": "Dactyle de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "EPE",
+    "lbl_cultu": "Épeautre",
+    "code_cpf_bio": "01.11.49.1",
+    "libelle_code_cpf_bio": "Epeautre",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "EPI",
+    "lbl_cultu": "Épinard",
+    "code_cpf_bio": "01.13.16",
+    "libelle_code_cpf_bio": "Épinards",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "EST",
+    "lbl_cultu": "Estragon",
+    "code_cpf_bio": "01.28.19.45",
+    "libelle_code_cpf_bio": "Estragon",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "FAG",
+    "lbl_cultu": "Autre fourrage annuel d’un autre genre",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FET",
+    "lbl_cultu": "Fétuque de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FEV",
+    "lbl_cultu": "Fève",
+    "code_cpf_bio": "01.11.72",
+    "libelle_code_cpf_bio": "Fèves, sèches (yc féveroles)",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "FF5",
+    "lbl_cultu": "Féverole fourragère implantée pour la récolte 2015",
+    "code_cpf_bio": "01.11.72",
+    "libelle_code_cpf_bio": "Fèves, sèches (yc féveroles)",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FF6",
+    "lbl_cultu": "Féverole fourragère implantée pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FF7",
+    "lbl_cultu": "Féverole fourragère implantée pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FF8",
+    "lbl_cultu": "Féverole fourragère implantée pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FFO",
+    "lbl_cultu": "Autre féverole fourragère",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FLA",
+    "lbl_cultu": "Autre légume ou fruit annuel",
+    "code_cpf_bio": "01.19",
+    "libelle_code_cpf_bio": "Autres cultures non permanentes",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "FLO",
+    "lbl_cultu": "Fléole de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FLP",
+    "lbl_cultu": "Autre légume ou fruit pérenne",
+    "code_cpf_bio": "01.29",
+    "libelle_code_cpf_bio": "Autres cultures permanentes",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "FNO",
+    "lbl_cultu": "Fenouil",
+    "code_cpf_bio": "01.28.14.2",
+    "libelle_code_cpf_bio": "Fenouil doux et amer",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "FNU",
+    "lbl_cultu": "Fenugrec",
+    "code_cpf_bio": "01.28.19.41",
+    "libelle_code_cpf_bio": "Fenugrec",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "FRA",
+    "lbl_cultu": "Fraise",
+    "code_cpf_bio": "01.25.13",
+    "libelle_code_cpf_bio": "Fraises",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "FSG",
+    "lbl_cultu": "Autre plante fourragère sarclée d’un autre genre",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "FVL",
+    "lbl_cultu": "Féverole semée avant le 31/05",
+    "code_cpf_bio": "01.11.72",
+    "libelle_code_cpf_bio": "Fèves, sèches (yc féveroles)",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "FVT",
+    "lbl_cultu": "Féverole semée tardivement (après le 31/05)",
+    "code_cpf_bio": "01.11.72",
+    "libelle_code_cpf_bio": "Fèves, sèches (yc féveroles)",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "GAI",
+    "lbl_cultu": "Gaillet",
+    "code_cpf_bio": "01.28.00.99",
+    "libelle_code_cpf_bio": "Autres plantes à épices, aromatiques, médicinales et pharmaceutiques",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "GER",
+    "lbl_cultu": "Géranium",
+    "code_cpf_bio": "01.28.30.36",
+    "libelle_code_cpf_bio": "Géranium",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "GES",
+    "lbl_cultu": "Gesse",
+    "code_cpf_bio": "01.11.79.9",
+    "libelle_code_cpf_bio": "Autres légumes secs",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "GFP",
+    "lbl_cultu": "Autre graminée fourragère pure de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "HAR",
+    "lbl_cultu": "Haricot / Flageolet",
+    "code_cpf_bio": "01.11.71",
+    "libelle_code_cpf_bio": "Haricots, secs",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "HBL",
+    "lbl_cultu": "Houblon",
+    "code_cpf_bio": "01.28.2",
+    "libelle_code_cpf_bio": "Houblon en cônes",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "HPC",
+    "lbl_cultu": "Horticulture ornementale de plein champ",
+    "code_cpf_bio": "01.19.21",
+    "libelle_code_cpf_bio": "Fleurs coupées et boutons de fleurs",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "HSA",
+    "lbl_cultu": "Horticulture ornementale sous abri",
+    "code_cpf_bio": "01.19.21",
+    "libelle_code_cpf_bio": "Fleurs coupées et boutons de fleurs",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "J5M",
+    "lbl_cultu": "Jachère de 5 ans ou moins",
+    "code_cpf_bio": "01.91",
+    "libelle_code_cpf_bio": "Jachère, gel entrant en rotation (yc bandes tampon et surfaces non exploitées temporairement)",
+    "code_grp_cultu": "11",
+    "grp_cultu": "Gel (surfaces gelées sans production)",
+    "g": null
+  },
+  {
+    "code_pac": "J6P",
+    "lbl_cultu": "Jachère de 6 ans ou plus",
+    "code_cpf_bio": "01.91",
+    "libelle_code_cpf_bio": "Jachère, gel entrant en rotation (yc bandes tampon et surfaces non exploitées temporairement)",
+    "code_grp_cultu": "11",
+    "grp_cultu": "Gel (surfaces gelées sans production)",
+    "g": null
+  },
+  {
+    "code_pac": "J6S",
+    "lbl_cultu": "Jachère de 6 ans ou plus déclarée comme Surface d’intérêt écologique",
+    "code_cpf_bio": "01.91",
+    "libelle_code_cpf_bio": "Jachère, gel entrant en rotation (yc bandes tampon et surfaces non exploitées temporairement)",
+    "code_grp_cultu": "11",
+    "grp_cultu": "Gel (surfaces gelées sans production)",
+    "g": null
+  },
+  {
+    "code_pac": "JNO",
+    "lbl_cultu": "Jachère noire",
+    "code_cpf_bio": "01.91",
+    "libelle_code_cpf_bio": "Jachère, gel entrant en rotation (yc bandes tampon et surfaces non exploitées temporairement)",
+    "code_grp_cultu": "11",
+    "grp_cultu": "Gel (surfaces gelées sans production)",
+    "g": null
+  },
+  {
+    "code_pac": "JO5",
+    "lbl_cultu": "Jarosse implantée pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "JO6",
+    "lbl_cultu": "Jarosse implantée pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "JO7",
+    "lbl_cultu": "Jarosse implantée pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "JO8",
+    "lbl_cultu": "Jarosse implantée pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "JOD",
+    "lbl_cultu": "Jarosse déshydratée",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "JOS",
+    "lbl_cultu": "Autre jarosse",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LAV",
+    "lbl_cultu": "Lavande / Lavandin",
+    "code_cpf_bio": "01.28.30.10",
+    "libelle_code_cpf_bio": "Lavande, lavandin",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "LBF",
+    "lbl_cultu": "Laitue / Batavia / Feuille de chêne",
+    "code_cpf_bio": "01.13.19.8",
+    "libelle_code_cpf_bio": "Salades",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "LDH",
+    "lbl_cultu": "Lupin doux d’hiver",
+    "code_cpf_bio": "01.11.79.1",
+    "libelle_code_cpf_bio": "Lupin",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "LDP",
+    "lbl_cultu": "Lupin doux de printemps semé avant le 31/05",
+    "code_cpf_bio": "01.11.79.1",
+    "libelle_code_cpf_bio": "Lupin",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "LDT",
+    "lbl_cultu": "Lupin doux de printemps semé tardivement (après le 31/05)",
+    "code_cpf_bio": "01.11.79.1",
+    "libelle_code_cpf_bio": "Lupin",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "LEC",
+    "lbl_cultu": "Lentille cultivée (non fourragère)",
+    "code_cpf_bio": "01.11.74",
+    "libelle_code_cpf_bio": "Lentilles, sèches",
+    "code_grp_cultu": "15",
+    "grp_cultu": "Légumineuses à grains",
+    "g": null
+  },
+  {
+    "code_pac": "LEF",
+    "lbl_cultu": "Lentille fourragère",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LFH",
+    "lbl_cultu": "Autre lupin fourrager d’hiver",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LFP",
+    "lbl_cultu": "Autre lupin fourrager de printemps",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LH5",
+    "lbl_cultu": "Lupin fourrager d’hiver implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LH6",
+    "lbl_cultu": "Lupin fourrager d’hiver implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LH7",
+    "lbl_cultu": "Lupin fourrager d’hiver implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LH8",
+    "lbl_cultu": "Lupin fourrager d'hiver implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LIF",
+    "lbl_cultu": "Lin fibres",
+    "code_cpf_bio": "01.16.19.1",
+    "libelle_code_cpf_bio": "Lin fibre",
+    "code_grp_cultu": "9",
+    "grp_cultu": "Plantes à fibres",
+    "g": null
+  },
+  {
+    "code_pac": "LIH",
+    "lbl_cultu": "Lin non textile d’hiver",
+    "code_cpf_bio": "01.11.91",
+    "libelle_code_cpf_bio": "Lin (graines)",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "LIP",
+    "lbl_cultu": "Lin non textile de printemps",
+    "code_cpf_bio": "01.11.91",
+    "libelle_code_cpf_bio": "Lin (graines)",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "LO7",
+    "lbl_cultu": "Lotier implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LO8",
+    "lbl_cultu": "Lotier implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LOT",
+    "lbl_cultu": "Lotier",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LP5",
+    "lbl_cultu": "Lupin fourrager de printemps implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LP6",
+    "lbl_cultu": "Lupin fourrager de printemps implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LP7",
+    "lbl_cultu": "Lupin fourrager de printemps implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LP8",
+    "lbl_cultu": "Lupin fourrager de printemps implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LSA",
+    "lbl_cultu": "Légume sous abri",
+    "code_cpf_bio": "01.13.90.1",
+    "libelle_code_cpf_bio": "Légumes frais sous abris",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "LU5",
+    "lbl_cultu": "Luzerne implantée pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LU6",
+    "lbl_cultu": "Luzerne implantée pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LU7",
+    "lbl_cultu": "Luzerne implantée pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LU8",
+    "lbl_cultu": "Luzerne implantée pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LUD",
+    "lbl_cultu": "Luzerne déshydratée",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "LUZ",
+    "lbl_cultu": "Autre luzerne",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MAC",
+    "lbl_cultu": "Mâche",
+    "code_cpf_bio": "01.13.19.83",
+    "libelle_code_cpf_bio": "Mâches",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "MAV",
+    "lbl_cultu": "Mauve",
+    "code_cpf_bio": "01.28.30.43",
+    "libelle_code_cpf_bio": "Mauve",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "MC5",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2015 et de céréales",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MC6",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2016 et de céréales",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MC7",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2017 et de céréales",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MC8",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes implantées pour la récolte 2018 et de céréales et d’oléagineux",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MCR",
+    "lbl_cultu": "Mélange de céréales",
+    "code_cpf_bio": "01.11.49.3",
+    "libelle_code_cpf_bio": "Mélanges (avec céréales)",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "MCT",
+    "lbl_cultu": "Miscanthus",
+    "code_cpf_bio": "01.29.00.91",
+    "libelle_code_cpf_bio": "Miscanthus",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "ME5",
+    "lbl_cultu": "Mélilot implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "ME6",
+    "lbl_cultu": "Mélilot implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "ME7",
+    "lbl_cultu": "Mélilot implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "ME8",
+    "lbl_cultu": "Mélilot implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MED",
+    "lbl_cultu": "Mélilot déshydraté",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MEL",
+    "lbl_cultu": "Autre mélilot",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MH5",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2015 et d’herbacées ou de graminées fourragères",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MH6",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2016 et d’herbacées ou de graminées fourragères",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MH7",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes au semis implantées pour la récolte 2017 et d’herbacées ou de graminées fourragères",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MI7",
+    "lbl_cultu": "Minette implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MI8",
+    "lbl_cultu": "Minette implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MID",
+    "lbl_cultu": "Maïs doux",
+    "code_cpf_bio": "01.11.20.1",
+    "libelle_code_cpf_bio": "Maïs doux",
+    "code_grp_cultu": "2",
+    "grp_cultu": "Maïs grain et ensilage",
+    "g": null
+  },
+  {
+    "code_pac": "MIE",
+    "lbl_cultu": "Maïs ensilage",
+    "code_cpf_bio": "01.19.10.5",
+    "libelle_code_cpf_bio": "Maïs fourrager",
+    "code_grp_cultu": "2",
+    "grp_cultu": "Maïs grain et ensilage",
+    "g": null
+  },
+  {
+    "code_pac": "MIN",
+    "lbl_cultu": "Minette",
+    "code_cpf_bio": "01.19.10.8",
+    "libelle_code_cpf_bio": "Luzerne",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MIS",
+    "lbl_cultu": "Maïs",
+    "code_cpf_bio": "01.11.20.2",
+    "libelle_code_cpf_bio": "Maïs grain (hors maïs doux)",
+    "code_grp_cultu": "2",
+    "grp_cultu": "Maïs grain et ensilage",
+    "g": null
+  },
+  {
+    "code_pac": "ML5",
+    "lbl_cultu": "Mélange de légumineuses fourragères implantées pour la récolte 2015 (entre elles)",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "ML6",
+    "lbl_cultu": "Mélange de légumineuses fourragères implantées pour la récolte 2016 (entre elles)",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "ML7",
+    "lbl_cultu": "Mélange de légumineuses fourragères implantées pour la récolte 2017 (entre elles)",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "ML8",
+    "lbl_cultu": "Mélange de légumineuses fourragères implantées pour la récolte 2018 (entre elles)",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MLC",
+    "lbl_cultu": "Mélange de légumineuses fourragères prépondérantes et de céréales et/ou d’oléagineux",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MLD",
+    "lbl_cultu": "Mélange de légumineuses déshydratées (entre elles)",
+    "code_cpf_bio": "01.11.79.9",
+    "libelle_code_cpf_bio": "Autres légumes secs",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MLF",
+    "lbl_cultu": "Mélange de légumineuses fourragères (entre elles)",
+    "code_cpf_bio": "01.19.10.6",
+    "libelle_code_cpf_bio": "Mélanges fourragers",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MLG",
+    "lbl_cultu": "Mélange de légumineuses prépondérantes au semis et de graminées fourragères de 5 ans ou moins",
+    "code_cpf_bio": "01.11.49.32",
+    "libelle_code_cpf_bio": "Mélanges Céréales-légumineuses",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MLI",
+    "lbl_cultu": "Mélisse",
+    "code_cpf_bio": "01.28.30.6",
+    "libelle_code_cpf_bio": "Mélisse",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "MLO",
+    "lbl_cultu": "Melon",
+    "code_cpf_bio": "01.13.29.1",
+    "libelle_code_cpf_bio": "Melons",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "MLP",
+    "lbl_cultu": "Millepertuis",
+    "code_cpf_bio": "01.28.30.71",
+    "libelle_code_cpf_bio": "Millepertuis",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "MLS",
+    "lbl_cultu": "Mélange de légumineuses non fourragères prépondérantes et de céréales et/ou d'oléagineux",
+    "code_cpf_bio": "01.11.49.32",
+    "libelle_code_cpf_bio": "Mélanges Céréales-légumineuses",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "MLT",
+    "lbl_cultu": "Millet",
+    "code_cpf_bio": "01.11.42",
+    "libelle_code_cpf_bio": "Millet",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "MOH",
+    "lbl_cultu": "Moha",
+    "code_cpf_bio": "01.11.49.9",
+    "libelle_code_cpf_bio": "Autres céréales",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "MOL",
+    "lbl_cultu": "Mélange d’oléagineux",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "MOT",
+    "lbl_cultu": "Moutarde",
+    "code_cpf_bio": "01.11.92",
+    "libelle_code_cpf_bio": "Moutarde (graines)",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "MPA",
+    "lbl_cultu": "Autre mélange de plantes fixant l’azote",
+    "code_cpf_bio": "01.93",
+    "libelle_code_cpf_bio": "Engrais vert",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "MPC",
+    "lbl_cultu": "Mélange de protéagineux (pois et/ou lupin et/ou féverole) prépondérants semés avant le 31/05 et de céréales",
+    "code_cpf_bio": "01.11.79.9",
+    "libelle_code_cpf_bio": "Autres légumes secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "MPP",
+    "lbl_cultu": "Mélange de protéagineux (pois et/ou lupin et/ou féverole)",
+    "code_cpf_bio": "01.11.79.9",
+    "libelle_code_cpf_bio": "Autres légumes secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "MPT",
+    "lbl_cultu": "Mélange de protéagineux semés tardivement (après le 31/05)",
+    "code_cpf_bio": "01.11.79.9",
+    "libelle_code_cpf_bio": "Autres légumes secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "MRG",
+    "lbl_cultu": "Marguerite",
+    "code_cpf_bio": "01.28.00.99",
+    "libelle_code_cpf_bio": "Autres plantes à épices, aromatiques, médicinales et pharmaceutiques",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "MRJ",
+    "lbl_cultu": "Marjolaine / Origan",
+    "code_cpf_bio": "01.28.19.99",
+    "libelle_code_cpf_bio": "Autres épices brutes et arômates n.c.a.",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "MRS",
+    "lbl_cultu": "Marais salant",
+    "code_cpf_bio": "08.93.1",
+    "libelle_code_cpf_bio": "Sel de mer",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "MTH",
+    "lbl_cultu": "Menthe",
+    "code_cpf_bio": "01.28.19.3",
+    "libelle_code_cpf_bio": "Menthe",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "NOS",
+    "lbl_cultu": "Noisette",
+    "code_cpf_bio": "01.25.33",
+    "libelle_code_cpf_bio": "Noisettes",
+    "code_grp_cultu": "22",
+    "grp_cultu": "Fruits à coque",
+    "g": null
+  },
+  {
+    "code_pac": "NOX",
+    "lbl_cultu": "Noix",
+    "code_cpf_bio": "01.25.35",
+    "libelle_code_cpf_bio": "Noix",
+    "code_grp_cultu": "22",
+    "grp_cultu": "Fruits à coque",
+    "g": null
+  },
+  {
+    "code_pac": "NVE",
+    "lbl_cultu": "Navette d’été",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "NVF",
+    "lbl_cultu": "Navet fourrager",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "NVH",
+    "lbl_cultu": "Navette d’hiver",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "NVT",
+    "lbl_cultu": "Navet",
+    "code_cpf_bio": "01.13.41.2",
+    "libelle_code_cpf_bio": "Navets",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "NYG",
+    "lbl_cultu": "Nyger",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "OAG",
+    "lbl_cultu": "Autre oléagineux d’un autre genre",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "OEH",
+    "lbl_cultu": "Autre oléagineux d’espèce Helianthus",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "OEI",
+    "lbl_cultu": "Œillette",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "OHN",
+    "lbl_cultu": "Autre oléagineux d’hiver d’espèce Brassica napus",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "OHR",
+    "lbl_cultu": "Autre oléagineux d’hiver d’espèce Brassica rapa",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "OIG",
+    "lbl_cultu": "Oignon / Échalote",
+    "code_cpf_bio": "01.13.43",
+    "libelle_code_cpf_bio": "Oignons, échalotes",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "OLI",
+    "lbl_cultu": "Oliveraie",
+    "code_cpf_bio": "01.26.1",
+    "libelle_code_cpf_bio": "Olives",
+    "code_grp_cultu": "23",
+    "grp_cultu": "Oliviers",
+    "g": null
+  },
+  {
+    "code_pac": "OPN",
+    "lbl_cultu": "Autre oléagineux de printemps d’espèce Brassica napus",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "OPR",
+    "lbl_cultu": "Autre oléagineux de printemps d’espèce Brassica rapa",
+    "code_cpf_bio": "01.11.99",
+    "libelle_code_cpf_bio": "Autres oléagineux n.c.a.",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "ORH",
+    "lbl_cultu": "Orge d'hiver",
+    "code_cpf_bio": "01.11.31",
+    "libelle_code_cpf_bio": "Orges",
+    "code_grp_cultu": "3",
+    "grp_cultu": "Orge",
+    "g": null
+  },
+  {
+    "code_pac": "ORP",
+    "lbl_cultu": "Orge de printemps",
+    "code_cpf_bio": "01.11.31",
+    "libelle_code_cpf_bio": "Orges",
+    "code_grp_cultu": "3",
+    "grp_cultu": "Orge",
+    "g": null
+  },
+  {
+    "code_pac": "ORT",
+    "lbl_cultu": "Ortie",
+    "code_cpf_bio": "01.28.30.37",
+    "libelle_code_cpf_bio": "Ortie",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "OSE",
+    "lbl_cultu": "Oseille",
+    "code_cpf_bio": "01.28.19.46",
+    "libelle_code_cpf_bio": "Oseille",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PAG",
+    "lbl_cultu": "Autre protéagineux d’un autre genre",
+    "code_cpf_bio": "01.11.79.9",
+    "libelle_code_cpf_bio": "Autres légumes secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "PAN",
+    "lbl_cultu": "Panais",
+    "code_cpf_bio": "01.13.49.4",
+    "libelle_code_cpf_bio": "Panais",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PAQ",
+    "lbl_cultu": "Pâquerette",
+    "code_cpf_bio": "01.19.21",
+    "libelle_code_cpf_bio": "Fleurs coupées et boutons de fleurs",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PAR",
+    "lbl_cultu": "Plante aromatique (autre que vanille)",
+    "code_cpf_bio": "01.28.19.99",
+    "libelle_code_cpf_bio": "Autres épices brutes et arômates n.c.a.",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PAS",
+    "lbl_cultu": "Pastèque",
+    "code_cpf_bio": "01.13.21",
+    "libelle_code_cpf_bio": "Pastèques",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PAT",
+    "lbl_cultu": "Pâturin commun de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PCH",
+    "lbl_cultu": "Pois chiche",
+    "code_cpf_bio": "01.11.73",
+    "libelle_code_cpf_bio": "Pois chiches, secs",
+    "code_grp_cultu": "15",
+    "grp_cultu": "Légumineuses à grains",
+    "g": null
+  },
+  {
+    "code_pac": "PCL",
+    "lbl_cultu": "Phacélie de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "PEP",
+    "lbl_cultu": "Pépinière",
+    "code_cpf_bio": "01.03",
+    "libelle_code_cpf_bio": "Plants : plants de pépinière, bulbes, tubercules et rhizomes, boutures et greffons ; blanc de champignon",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "PFH",
+    "lbl_cultu": "Autre pois fourrager d’hiver",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PFP",
+    "lbl_cultu": "Autre pois fourrager de printemps",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PFR",
+    "lbl_cultu": "Petit fruit rouge",
+    "code_cpf_bio": "01.25.1",
+    "libelle_code_cpf_bio": "Baies et fruits du genre Vaccinium",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "PH5",
+    "lbl_cultu": "Pois fourrager d’hiver implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PH6",
+    "lbl_cultu": "Pois fourrager d’hiver implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PH7",
+    "lbl_cultu": "Pois fourrager d’hiver implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PH8",
+    "lbl_cultu": "Pois fourrager d’hiver implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PHI",
+    "lbl_cultu": "Pois d’hiver",
+    "code_cpf_bio": "01.11.75",
+    "libelle_code_cpf_bio": "Pois, secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "PIS",
+    "lbl_cultu": "Pistache",
+    "code_cpf_bio": "01.25.34",
+    "libelle_code_cpf_bio": "Pistaches",
+    "code_grp_cultu": "22",
+    "grp_cultu": "Fruits à coque",
+    "g": null
+  },
+  {
+    "code_pac": "PMD",
+    "lbl_cultu": "Plante médicinale",
+    "code_cpf_bio": "01.28.30.99",
+    "libelle_code_cpf_bio": "Autres plantes utilisées principalement en parfumerie, en pharmacie ou à des fins insecticides, fongicides ou similaires",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PMV",
+    "lbl_cultu": "Primevère",
+    "code_cpf_bio": "01.19.21",
+    "libelle_code_cpf_bio": "Fleurs coupées et boutons de fleurs",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "POR",
+    "lbl_cultu": "Poireau",
+    "code_cpf_bio": "01.13.44",
+    "libelle_code_cpf_bio": "Poireaux et autres alliacés",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "POT",
+    "lbl_cultu": "Potiron / Potimarron",
+    "code_cpf_bio": "01.13.39.32",
+    "libelle_code_cpf_bio": "Potiron / Potimarron",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PP5",
+    "lbl_cultu": "Pois fourrager de printemps implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PP6",
+    "lbl_cultu": "Pois fourrager de printemps implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PP7",
+    "lbl_cultu": "Pois fourrager de printemps implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PP8",
+    "lbl_cultu": "Pois fourrager de printemps implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "PPA",
+    "lbl_cultu": "Autre plante à parfum, aromatique et médicinale annuelle",
+    "code_cpf_bio": "01.28.30.99",
+    "libelle_code_cpf_bio": "Autres plantes utilisées principalement en parfumerie, en pharmacie ou à des fins insecticides, fongicides ou similaires",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PPF",
+    "lbl_cultu": "Plante à parfum (autre que géranium et vétiver)",
+    "code_cpf_bio": "01.28.30.99",
+    "libelle_code_cpf_bio": "Autres plantes utilisées principalement en parfumerie, en pharmacie ou à des fins insecticides, fongicides ou similaires",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PPH",
+    "lbl_cultu": "Prairie permanente - herbe prédominante (ressources fourragères ligneuses absentes ou peu présentes)",
+    "code_cpf_bio": "01.19.10.12",
+    "libelle_code_cpf_bio": "Prairie permanente",
+    "code_grp_cultu": "18",
+    "grp_cultu": "Prairies permanentes",
+    "g": null
+  },
+  {
+    "code_pac": "PPO",
+    "lbl_cultu": "Petits pois",
+    "code_cpf_bio": "01.11.69.9",
+    "libelle_code_cpf_bio": "Autres légumes à cosse, verts n.c.a.",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PPP",
+    "lbl_cultu": "Autre plante à parfum, aromatique et médicinale pérenne",
+    "code_cpf_bio": "01.28.30.99",
+    "libelle_code_cpf_bio": "Autres plantes utilisées principalement en parfumerie, en pharmacie ou à des fins insecticides, fongicides ou similaires",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PPR",
+    "lbl_cultu": "Pois de printemps semé avant le 31/05",
+    "code_cpf_bio": "01.11.75",
+    "libelle_code_cpf_bio": "Pois, secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "PPT",
+    "lbl_cultu": "Pois de printemps semé tardivement (après le 31/05)",
+    "code_cpf_bio": "01.11.75",
+    "libelle_code_cpf_bio": "Pois, secs",
+    "code_grp_cultu": "8",
+    "grp_cultu": "Protéagineux",
+    "g": null
+  },
+  {
+    "code_pac": "PRL",
+    "lbl_cultu": "Prairie en rotation longue (6 ans ou plus)",
+    "code_cpf_bio": "01.19.10.12",
+    "libelle_code_cpf_bio": "Prairie permanente",
+    "code_grp_cultu": "18",
+    "grp_cultu": "Prairies permanentes",
+    "g": null
+  },
+  {
+    "code_pac": "PRU",
+    "lbl_cultu": "Prune d’Ente pour transformation",
+    "code_cpf_bio": "01.24.27",
+    "libelle_code_cpf_bio": "Prunes",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "PSE",
+    "lbl_cultu": "Pensée",
+    "code_cpf_bio": "01.28.00.99",
+    "libelle_code_cpf_bio": "Autres plantes à épices, aromatiques, médicinales et pharmaceutiques",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PSL",
+    "lbl_cultu": "Persil",
+    "code_cpf_bio": "01.28.19.43",
+    "libelle_code_cpf_bio": "Persil",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PSN",
+    "lbl_cultu": "Psyllium noir de Provence",
+    "code_cpf_bio": "01.28.30.38",
+    "libelle_code_cpf_bio": "Psyllium noir de Provence",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PSY",
+    "lbl_cultu": "Plantain psyllium",
+    "code_cpf_bio": "01.28.30.39",
+    "libelle_code_cpf_bio": "Plantain psyllium",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "PTC",
+    "lbl_cultu": "Pomme de terre de consommation",
+    "code_cpf_bio": "01.13.51.1",
+    "libelle_code_cpf_bio": "Pommes de terre (hors féculière)",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PTF",
+    "lbl_cultu": "Pomme de terre féculière",
+    "code_cpf_bio": "01.13.51.2",
+    "libelle_code_cpf_bio": "Pommes de terre féculière",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PTR",
+    "lbl_cultu": "Autre prairie temporaire de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "19",
+    "grp_cultu": "Prairies temporaires",
+    "g": null
+  },
+  {
+    "code_pac": "PVP",
+    "lbl_cultu": "Poivron / Piment",
+    "code_cpf_bio": "01.13.31",
+    "libelle_code_cpf_bio": "Piments et poivrons, verts (uniquement capsicum)",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "PVT",
+    "lbl_cultu": "Pêche Pavie pour transformation",
+    "code_cpf_bio": "01.24.25",
+    "libelle_code_cpf_bio": "Pêches",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "PWT",
+    "lbl_cultu": "Poire Williams pour transformation",
+    "code_cpf_bio": "01.24.21",
+    "libelle_code_cpf_bio": "Poires",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "RDF",
+    "lbl_cultu": "Radis fourrager",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "RDI",
+    "lbl_cultu": "Radis",
+    "code_cpf_bio": "01.13.49.1",
+    "libelle_code_cpf_bio": "Radis",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "RGA",
+    "lbl_cultu": "Ray-grass de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.11",
+    "libelle_code_cpf_bio": "Prairie temporaire",
+    "code_grp_cultu": "19",
+    "grp_cultu": "Prairies temporaires",
+    "g": null
+  },
+  {
+    "code_pac": "RIZ",
+    "lbl_cultu": "Riz",
+    "code_cpf_bio": "01.12",
+    "libelle_code_cpf_bio": "Riz, non décortiqué",
+    "code_grp_cultu": "14",
+    "grp_cultu": "Riz",
+    "g": null
+  },
+  {
+    "code_pac": "ROM",
+    "lbl_cultu": "Romarin",
+    "code_cpf_bio": "01.28.19.21",
+    "libelle_code_cpf_bio": "Romarin",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "ROQ",
+    "lbl_cultu": "Roquette",
+    "code_cpf_bio": "01.13.19.8",
+    "libelle_code_cpf_bio": "Salades",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "ROS",
+    "lbl_cultu": "Roselière",
+    "code_cpf_bio": "01.99",
+    "libelle_code_cpf_bio": "Autres surfaces non productive (yc bordures et bandes tampon)",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "RUT",
+    "lbl_cultu": "Rutabaga",
+    "code_cpf_bio": "01.13.49.6",
+    "libelle_code_cpf_bio": "Rutabagas",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "RVI",
+    "lbl_cultu": "Restructuration du vignoble",
+    "code_cpf_bio": "01.21.12",
+    "libelle_code_cpf_bio": "Raisin de cuve",
+    "code_grp_cultu": "21",
+    "grp_cultu": "Vignes",
+    "g": null
+  },
+  {
+    "code_pac": "SA5",
+    "lbl_cultu": "Sainfoin implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SA6",
+    "lbl_cultu": "Sainfoin implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SA7",
+    "lbl_cultu": "Sainfoin implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SA8",
+    "lbl_cultu": "Sainfoin implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SAD",
+    "lbl_cultu": "Sainfoin déshydraté",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SAI",
+    "lbl_cultu": "Autre sainfoin",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SBO",
+    "lbl_cultu": "Surface boisée sur une ancienne terre agricole",
+    "code_cpf_bio": "01.95.1",
+    "libelle_code_cpf_bio": "Bois",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "SE5",
+    "lbl_cultu": "Serradelle implantée pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SE6",
+    "lbl_cultu": "Serradelle implantée pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SE7",
+    "lbl_cultu": "Serradelle implantée pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SE8",
+    "lbl_cultu": "Serradelle implantée pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SED",
+    "lbl_cultu": "Serradelle déshydratée",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SER",
+    "lbl_cultu": "Autre serradelle",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "SFI",
+    "lbl_cultu": "Salsifis",
+    "code_cpf_bio": "01.13.49.5",
+    "libelle_code_cpf_bio": "Salsifis",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "SGE",
+    "lbl_cultu": "Sauge",
+    "code_cpf_bio": "01.28.30.81",
+    "libelle_code_cpf_bio": "Sauge officinale",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "SGH",
+    "lbl_cultu": "Seigle d’hiver",
+    "code_cpf_bio": "01.11.32",
+    "libelle_code_cpf_bio": "Seigle",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "SGP",
+    "lbl_cultu": "Seigle de printemps",
+    "code_cpf_bio": "01.11.32",
+    "libelle_code_cpf_bio": "Seigle",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "SNA",
+    "lbl_cultu": "Surface non agricole non visible sur l’orthophotographie",
+    "code_cpf_bio": "01.99",
+    "libelle_code_cpf_bio": "Autres surfaces non productive (yc bordures et bandes tampon)",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "SNE",
+    "lbl_cultu": "Surface agricole temporairement non exploitée",
+    "code_cpf_bio": "01.91",
+    "libelle_code_cpf_bio": "Jachère, gel entrant en rotation (yc bandes tampon et surfaces non exploitées temporairement)",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "SOG",
+    "lbl_cultu": "Sorgho",
+    "code_cpf_bio": "01.11.41",
+    "libelle_code_cpf_bio": "Sorgho",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "SOJ",
+    "lbl_cultu": "Soja",
+    "code_cpf_bio": "01.11.81",
+    "libelle_code_cpf_bio": "Fèves de soja",
+    "code_grp_cultu": "7",
+    "grp_cultu": "Autres oléagineux",
+    "g": null
+  },
+  {
+    "code_pac": "SPH",
+    "lbl_cultu": "Surface pastorale - herbe prédominante et ressources fourragères ligneuses présentes",
+    "code_cpf_bio": "01.19.10.13",
+    "libelle_code_cpf_bio": "Parcours herbeux (hors estives collectives)",
+    "code_grp_cultu": "17",
+    "grp_cultu": "Estives et landes",
+    "g": null
+  },
+  {
+    "code_pac": "SPL",
+    "lbl_cultu": "Surface pastorale - ressources fourragères ligneuses prédominantes",
+    "code_cpf_bio": "01.95.11",
+    "libelle_code_cpf_bio": "Bois pâturés et parcours ligneux",
+    "code_grp_cultu": "17",
+    "grp_cultu": "Estives et landes",
+    "g": null
+  },
+  {
+    "code_pac": "SRI",
+    "lbl_cultu": "Sarriette",
+    "code_cpf_bio": "01.28.19.1",
+    "libelle_code_cpf_bio": "Sarriette",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "SRS",
+    "lbl_cultu": "Sarrasin",
+    "code_cpf_bio": "01.11.49.2",
+    "libelle_code_cpf_bio": "Sarrasin",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "TAB",
+    "lbl_cultu": "Tabac",
+    "code_cpf_bio": "01.15",
+    "libelle_code_cpf_bio": "Tabac brut",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "TBT",
+    "lbl_cultu": "Tubercule tropical",
+    "code_cpf_bio": "01.13.5",
+    "libelle_code_cpf_bio": "Racines et tubercules à amidon ou inuline comestibles",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "TCR",
+    "lbl_cultu": "Taillis à courte rotation",
+    "code_cpf_bio": "01.91",
+    "libelle_code_cpf_bio": "Jachère, gel entrant en rotation (yc bandes tampon et surfaces non exploitées temporairement)",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "THY",
+    "lbl_cultu": "Thym",
+    "code_cpf_bio": "01.28.19.25",
+    "libelle_code_cpf_bio": "Thym",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "TOM",
+    "lbl_cultu": "Tomate",
+    "code_cpf_bio": "01.13.34",
+    "libelle_code_cpf_bio": "Tomates",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "TOP",
+    "lbl_cultu": "Topinambour",
+    "code_cpf_bio": "01.13.59",
+    "libelle_code_cpf_bio": "Autres racines et tubercules à amidon ou inuline comestibles",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "TOT",
+    "lbl_cultu": "Tomate pour transformation",
+    "code_cpf_bio": "01.13.34",
+    "libelle_code_cpf_bio": "Tomates",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "TR5",
+    "lbl_cultu": "Trèfle implanté pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.7",
+    "libelle_code_cpf_bio": "Trèfle",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "TR6",
+    "lbl_cultu": "Trèfle implanté pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.7",
+    "libelle_code_cpf_bio": "Trèfle",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "TR7",
+    "lbl_cultu": "Trèfle implanté pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.7",
+    "libelle_code_cpf_bio": "Trèfle",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "TR8",
+    "lbl_cultu": "Trèfle implanté pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.7",
+    "libelle_code_cpf_bio": "Trèfle",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "TRD",
+    "lbl_cultu": "Trèfle déshydraté",
+    "code_cpf_bio": "01.19.10.7",
+    "libelle_code_cpf_bio": "Trèfle",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "TRE",
+    "lbl_cultu": "Autre trèfle",
+    "code_cpf_bio": "01.19.10.7",
+    "libelle_code_cpf_bio": "Trèfle",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "TRN",
+    "lbl_cultu": "Tournesol",
+    "code_cpf_bio": "01.11.95",
+    "libelle_code_cpf_bio": "Tournesol",
+    "code_grp_cultu": "6",
+    "grp_cultu": "Tournesol",
+    "g": null
+  },
+  {
+    "code_pac": "TRU",
+    "lbl_cultu": "Truffière (chênaie de plants mycorhizés)",
+    "code_cpf_bio": "01.13.8",
+    "libelle_code_cpf_bio": "Champignons et truffes",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "TTH",
+    "lbl_cultu": "Triticale d’hiver",
+    "code_cpf_bio": "01.11.43",
+    "libelle_code_cpf_bio": "Triticale",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "TTP",
+    "lbl_cultu": "Triticale de printemps",
+    "code_cpf_bio": "01.11.43",
+    "libelle_code_cpf_bio": "Triticale",
+    "code_grp_cultu": "4",
+    "grp_cultu": "Autres céréales",
+    "g": null
+  },
+  {
+    "code_pac": "VAL",
+    "lbl_cultu": "Valériane",
+    "code_cpf_bio": "01.28.30.44",
+    "libelle_code_cpf_bio": "Valériane",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "VE5",
+    "lbl_cultu": "Vesce implantée pour la récolte 2015",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "VE6",
+    "lbl_cultu": "Vesce implantée pour la récolte 2016",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "VE7",
+    "lbl_cultu": "Vesce implantée pour la récolte 2017",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "VE8",
+    "lbl_cultu": "Vesce implantée pour la récolte 2018",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "VED",
+    "lbl_cultu": "Vesce déshydratée",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "VER",
+    "lbl_cultu": "Véronique",
+    "code_cpf_bio": "01.28.30.45",
+    "libelle_code_cpf_bio": "Véronique",
+    "code_grp_cultu": "25",
+    "grp_cultu": "Légumes ou fleurs",
+    "g": null
+  },
+  {
+    "code_pac": "VES",
+    "lbl_cultu": "Autre vesce",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "VET",
+    "lbl_cultu": "Vétiver",
+    "code_cpf_bio": "01.28.30.46",
+    "libelle_code_cpf_bio": "Vétiver",
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  },
+  {
+    "code_pac": "VGD",
+    "lbl_cultu": "Verger (DOM)",
+    "code_cpf_bio": "01.25.9",
+    "libelle_code_cpf_bio": "Autres fruits d'arbres ou d'arbustes n.c.a.",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "VNB",
+    "lbl_cultu": "Vanille sous bois",
+    "code_cpf_bio": "01.28.18",
+    "libelle_code_cpf_bio": "Vanille, brute",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "VNL",
+    "lbl_cultu": "Vanille",
+    "code_cpf_bio": "01.28.18",
+    "libelle_code_cpf_bio": "Vanille, brute",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "VNV",
+    "lbl_cultu": "Vanille verte",
+    "code_cpf_bio": "01.28.18",
+    "libelle_code_cpf_bio": "Vanille, brute",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "VRC",
+    "lbl_cultu": "Vigne : raisins de cuve",
+    "code_cpf_bio": "01.21.12",
+    "libelle_code_cpf_bio": "Raisin de cuve",
+    "code_grp_cultu": "21",
+    "grp_cultu": "Vignes",
+    "g": null
+  },
+  {
+    "code_pac": "VRG",
+    "lbl_cultu": "Verger",
+    "code_cpf_bio": "01.25.9",
+    "libelle_code_cpf_bio": "Autres fruits d'arbres ou d'arbustes n.c.a.",
+    "code_grp_cultu": "20",
+    "grp_cultu": "Vergers",
+    "g": null
+  },
+  {
+    "code_pac": "VRN",
+    "lbl_cultu": "Vigne : raisins de cuve non en production",
+    "code_cpf_bio": "01.21.12",
+    "libelle_code_cpf_bio": "Raisin de cuve",
+    "code_grp_cultu": "21",
+    "grp_cultu": "Vignes",
+    "g": null
+  },
+  {
+    "code_pac": "VRT",
+    "lbl_cultu": "Vigne : raisins de table",
+    "code_cpf_bio": "01.21.11",
+    "libelle_code_cpf_bio": "Raisin de table",
+    "code_grp_cultu": "21",
+    "grp_cultu": "Vignes",
+    "g": null
+  },
+  {
+    "code_pac": "XFE",
+    "lbl_cultu": "X-Felium de 5 ans ou moins",
+    "code_cpf_bio": "01.19.10.9",
+    "libelle_code_cpf_bio": "Autres plantes et surfaces fourragères n.c.a.",
+    "code_grp_cultu": "16",
+    "grp_cultu": "Fourrage",
+    "g": null
+  },
+  {
+    "code_pac": "YLA",
+    "lbl_cultu": "Ylang-ylang",
+    "code_cpf_bio": "01.28.30.47",
+    "libelle_code_cpf_bio": "Ylang-ylang",
+    "code_grp_cultu": "24",
+    "grp_cultu": "Autres cultures industrielles",
+    "g": null
+  },
+  {
+    "code_pac": "ZZZ",
+    "lbl_cultu": "Culture inconnue",
+    "code_cpf_bio": null,
+    "libelle_code_cpf_bio": null,
+    "code_grp_cultu": "28",
+    "grp_cultu": "Divers",
+    "g": null
+  }
+]
