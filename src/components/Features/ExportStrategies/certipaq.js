@@ -1,5 +1,5 @@
 import { utils } from 'xlsx'
-import { fromCodePac } from '@/referentiels/cpf.js'
+import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } from '@/components/Features/index.js'
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
@@ -75,7 +75,7 @@ export default ({ featureCollection, operator }) => {
       // Ilot
       `${ilotId}_${parcelleId}`,
       // Culture
-      culture.libelle_code_cpf_bio,
+      culture?.libelle_code_cpf_bio ?? `[ERREUR] correspondance manquante avec ${props.TYPE}`,
       // Variété / infos
       '',
       // C0 - AB - C1 - C2 - C3

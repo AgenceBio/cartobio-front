@@ -18,6 +18,7 @@
     "node": "^16.0.0"
   },
   "dependencies": {
+    "@agencebio/rosetta-cultures": "^1.0.3",
     "@gouvfr/dsfr": "^1.8.1",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
