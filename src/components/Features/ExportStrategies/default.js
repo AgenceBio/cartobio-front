@@ -1,5 +1,5 @@
 import { utils } from 'xlsx'
-import { libelléFromCode } from '@/referentiels/pac.js'
+import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface, inHa } from '@/components/Features/index.js'
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
@@ -7,23 +7,21 @@ const { decode_range: R } = utils
 
 export default ({ featureCollection, operator }) => {
   const workbook = book_new()
-  const today = new Date().toLocaleDateString('fr-FR', {
-    dateStyle: 'short',
-    timeZone: 'Europe/Paris'
-  })
+  const today = new Date()
 
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
     ['Numéro bio :', '', operator.numeroBio, '', 'Nom Opérateur:', operator.nom],
     ['Date de saisie :', '', today, '', 'N°PACAGE', operator.numeroPacage],
-    ['Surface graphique totale (en ha) :', '', inHa(surface(featureCollection))]
+    ['Surface graphique totale (en ha) :', '', surface(featureCollection) / 10_000]
   ], { cellDates: true })
 
   sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.id}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
   sheet['C2'].t = 'd'
   sheet['C2'].z = 'dd/mm/yyyy'
-  sheet['C2'].v = today
+  sheet['C3'].t = 'n'
+  sheet['C3'].z = '0.00'
 
   sheet['!merges'] = [
     R('A1:B1'), R('C1:D1'), R('F1:K1'),
@@ -43,7 +41,7 @@ export default ({ featureCollection, operator }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
-    const label = props.TYPE_LIBELLE ?? libelléFromCode(props.TYPE)
+    const label = props.TYPE_LIBELLE ?? fromCodePac(props.TYPE).libelle_code_cpf
     const surfaceHa = surface(geometry) / 10_000
     const isPac = Boolean(props.PACAGE)
     const culture = props.TYPE
@@ -63,6 +61,13 @@ export default ({ featureCollection, operator }) => {
       props.auditeur_notes ?? ''
     ]
   }), { origin: 'A7', cellDates: true })
+
+  // Formatting cells
+  featureCollection.features.forEach((feature, index) => {
+    Object.assign(sheet[`A${7 + index}`], { t: 's' })
+    // surface is a 2 digits figure
+    Object.assign(sheet[`D${7 + index}`], { t: 'n', z: '0.00' })
+  })
 
   // First sheet: finalize
   book_append_sheet(workbook, sheet, 'Parcellaire bio');

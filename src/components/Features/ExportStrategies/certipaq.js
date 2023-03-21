@@ -7,10 +7,7 @@ const { decode_range: R } = utils
 
 export default ({ featureCollection, operator }) => {
   const workbook = book_new()
-  const today = new Date().toLocaleDateString('fr-FR', {
-    dateStyle: 'short',
-    timeZone: 'Europe/Paris'
-  })
+  const today = new Date()
 
   // First sheet
   // First sheet: customer informations (via `customer`)
@@ -75,7 +72,7 @@ export default ({ featureCollection, operator }) => {
       // Ilot
       `${ilotId}_${parcelleId}`,
       // Culture
-      culture?.libelle_code_cpf_bio ?? `[ERREUR] correspondance manquante avec ${props.TYPE}`,
+      culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${props.TYPE}`,
       // Variété / infos
       '',
       // C0 - AB - C1 - C2 - C3
@@ -105,8 +102,10 @@ export default ({ featureCollection, operator }) => {
       .filter(col => sheet[`${col}${6 + index}`].v !== '')
       .forEach(col => Object.assign(sheet[`${col}${6 + index}`], { t: 'n', z: '0.00' }))
 
-    sheet[`K${6 + index}`].t = 'd'
-    sheet[`K${6 + index}`].z = 'dd/mm/yyyy'
+    if (sheet[`K${6 + index}`].v) {
+      sheet[`K${6 + index}`].t = 'd'
+      sheet[`K${6 + index}`].z = 'dd/mm/yyyy'
+    }
   })
 
   // Totaux par niveau de conversion
@@ -138,7 +137,7 @@ export default ({ featureCollection, operator }) => {
     )
 
     sheet_add_aoa(sheet, [
-      [culture.libelle_code_cpf_bio,   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
+      [culture.libelle_code_cpf,   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
     ], { origin: `R${9 + index}`});
 
     // Formattage des totaux
