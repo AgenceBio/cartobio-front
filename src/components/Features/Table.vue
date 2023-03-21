@@ -12,7 +12,12 @@
       </colgroup>
       <thead>
         <tr class="legend">
-          <th colspan="2"></th>
+          <th colspan="2">
+            <div class="fr-checkbox-group single-checkbox">
+              <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
+              <label class="fr-label" for="radio-select-all" />
+            </div>
+          </th>
           <th colspan="2" scope="col">
             <div class="seemless-select">
               <label for="plots-group-by">Parcelles par</label>
@@ -96,8 +101,8 @@ const modal = computed(() => Boolean(editedFeatureId.value))
 const store = useFeaturesStore()
 
 const { hoveredId:hoveredFeatureId } = storeToRefs(store)
-const { selectedIds:selectedFeatureIds } = storeToRefs(store)
-const { toggleSingleSelected } = store
+const { selectedIds:selectedFeatureIds, allSelected } = storeToRefs(store)
+const { toggleSingleSelected, toggleAllSelected } = store
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
