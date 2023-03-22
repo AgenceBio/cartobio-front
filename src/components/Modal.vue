@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watchEffect } from 'vue'
 import { useHead } from '@unhead/vue'
 import { onClickOutside, onKeyStroke } from '@vueuse/core'
 
@@ -41,12 +41,22 @@ const target = ref(null)
 onClickOutside(target, () => emit('update:modelValue', false))
 onKeyStroke('Escape', () => emit('update:modelValue', false))
 
-watch(() => props.modelValue, (isOpen) => {
+const stop = watchEffect(() => {
+  if (props.modelValue) {
+    useHead({
+      htmlAttrs: {
+        'data-fr-scrolling': props.modelValue,
+        tagDuplicateStrategy: 'replace'
+      }
+    })
+  }
+})
+
+onBeforeUnmount(() => {
+  stop()
+
   useHead({
-    htmlAttrs: {
-      'data-fr-scrolling': isOpen,
-      tagDuplicateStrategy: 'replace'
-    }
+    htmlAttrs: {}
   })
 })
 </script>
