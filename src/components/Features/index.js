@@ -4,26 +4,67 @@ import area from '@turf/area'
 import { libelléFromCode } from '@/referentiels/pac.js'
 import { conversionLevels } from '@/referentiels/ab.js'
 
-const colorPalette = [
-  "#ff73fa",
-  "#76b100",
-  "#ba00ae",
-  "#01c672",
-  "#0045b4",
-  "#e1cc00",
-  "#7c2d82",
-  "#feff7c",
-  "#ff8dee",
-  "#408b00",
-  "#b61300",
-  "#ac9200"
-]
+/**
+ * @typedef {import('geojson').Feature} Feature
+ * @typedef {import('geojson').Geometry} Geometry
+ * @typedef {import('geojson').FeatureCollection} FeatureCollection
+ */
+
+/**
+ * @typedef GroupingChoice
+ * @property {String} label
+ * @property {function(Feature): String|Number} datapoint
+ * @property {function(Feature): String} groupLabelFn
+ * @property {function(FeatureGroup, FeatureGroup): Number} sortFn
+ */
+
+/**
+ * @typedef FeatureGroup
+ * @property {String} label
+ * @property {String} key
+ * @property {String} pivot
+ * @property {Feature[]} features
+ * @property {Number} surface
+ */
 
 export const GROUPE_COMMUNE = 'COMMUNE'
 export const GROUPE_CULTURE = 'CULTURE'
+export const GROUPE_ILOT = 'ILOT'
 export const GROUPE_NIVEAU_CONVERSION = 'NIVEAU_CONVERSION'
 export const GROUPE_ANNEE_ENGAGEMENT = 'ANNEE_ENGAGEMENT'
 
+function sortBySurface (groupA, groupB) {
+  return groupB.surface - groupA.surface
+}
+
+function sortByDescendingKey (groupA, groupB) {
+  return groupB.key - groupA.key
+}
+
+function sortByAscendingLabel (groupA, groupB) {
+  return groupA.label.localeCompare(groupB.label)
+}
+
+/**
+ *
+ * @param {function(Feature): function} propertyAccessor
+ * @returns {function}
+ */
+function sortByAscendingFeatureProperty (propertyAccessor) {
+  return function sortByAscendingFeatureGroupProperty (groupA, groupB) {
+    const a = String(propertyAccessor(groupA.features.at(0)))
+    const b = String(propertyAccessor(groupB.features.at(0)))
+
+    return a.localeCompare(b, 'fr-FR', {
+      usage: 'sort',
+      numeric: true
+    })
+  }
+}
+
+/**
+ * @type {Record<string, GroupingChoice>}
+ */
 export const groupingChoices = {
   [GROUPE_COMMUNE]: {
     label: 'commune',
@@ -35,32 +76,47 @@ export const groupingChoices = {
       else {
         return d.properties.COMMUNE || 'Commune inconnue'
       }
-    }
+    },
+    sortFn: sortBySurface
+  },
+  [GROUPE_ILOT]: {
+    label: 'îlot PAC',
+    datapoint: (d) => d.properties.NUMERO_I || '',
+    groupLabelFn: (d) => d.properties.NUMERO_I ? `Îlot ${d.properties.NUMERO_I}` : 'Numéro d\'îlot non-précisé',
+    sortFn: sortByAscendingFeatureProperty((d) => d.properties.NUMERO_I || '')
   },
   [GROUPE_CULTURE]: {
     label: 'type de culture',
     datapoint: (d) => d.properties.TYPE,
-    groupLabelFn: (d) => libelléFromCode(d.properties.TYPE)
+    groupLabelFn: (d) => libelléFromCode(d.properties.TYPE),
+    sortFn: sortByAscendingLabel
   },
   [GROUPE_NIVEAU_CONVERSION]: {
     label: 'niveau de conversion',
     datapoint: (d) => d.properties.conversion_niveau || '',
-    groupLabelFn: (d, groupingKey) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu'
+    groupLabelFn: (d, groupingKey) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu',
+    sortFn: sortBySurface
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
     label: 'année d\'engagement',
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
-    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue'
+    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue',
+    sortFn: sortByDescendingKey
   },
 }
 
+/**
+ *
+ * @param {FeatureCollection} collection
+ * @param {String} pivot
+ * @returns {FeatureGroup[]}
+ */
 export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
   if (pivot === '') {
     return [{
       label: '',
       key: 'none',
       pivot,
-      accentColor: colorPalette[0],
       features: collection.features,
       surface: inHa(area(featureCollection(collection.features))),
     }]
@@ -74,16 +130,24 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
     label: groupingChoices[pivot].groupLabelFn(features[0], key),
     key,
     pivot,
-    accentColor: colorPalette[i%12],
     features,
     surface: area(featureCollection(features)),
-  })).sort((a, b) => b.surface - a.surface)
+  })).sort(groupingChoices[pivot].sortFn)
 }
 
+/**
+ * @param {Feature[]} features
+ * @param {String} id
+ * @returns {Feature}
+ */
 export function getFeatureById (features, id) {
   return features.find(feature => feature.id === id)
 }
 
+/**
+ * @param {Feature} feature
+ * @returns {String}
+ */
 export function featureName (feature) {
   if (feature.properties.NOM) {
     return feature.properties.NOM
@@ -101,13 +165,10 @@ export function featureName (feature) {
   }
 }
 
-export function getFeatureGroupsStyles (groups) {
-  return groups.flatMap(({ features, accentColor }) => ([
-    ['in', ['get', 'id'], ['literal', features.map(({ id }) => id)]],
-    accentColor
-  ]))
-}
-
+/**
+ * @param {String|Number} value
+ * @returns {String}
+ */
 export function inHa (value) {
   return parseFloat((value / 10000))
     .toLocaleString('fr-FR', {
@@ -116,6 +177,10 @@ export function inHa (value) {
     })
 }
 
+/**
+ * @param {Feature|Geometry} geometryOrFeature
+ * @returns {Number}
+ */
 export function surface (geometryOrFeature) {
   return ['FeatureCollection', 'Feature'].includes(geometryOrFeature.type)
     // we have a full feature
