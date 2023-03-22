@@ -56,10 +56,10 @@
   </div>
 
   <Teleport to="body">
-    <Modal v-model="modal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
+    <Modal v-if="editedFeatureId && editForm" v-model="modal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
       <template #title>Modification de parcelle</template>
 
-      <Component :is="editForm" :feature="editedFeature" v-if="editedFeatureId && editForm" @submit="handleFeaturesEdit" />
+      <Component :is="editForm" :feature="editedFeature" @submit="handleFeaturesEdit" />
     </Modal>
   </Teleport>
 
