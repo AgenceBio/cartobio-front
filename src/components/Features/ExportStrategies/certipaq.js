@@ -13,7 +13,7 @@ export default ({ featureCollection, operator }) => {
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
     // A1: B1
-    ['N° de l\'opérateur', notification.numeroClient],
+    ['N° de l\'opérateur', notification.numeroClient ?? ''],
     // A2: B2
     ['Date de saisie :', new Date()],
   ], { cellDates: true })
