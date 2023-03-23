@@ -7,32 +7,31 @@ const { decode_range: R } = utils
 
 export default ({ featureCollection, operator }) => {
   const workbook = book_new()
-  const today = new Date()
+  const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
     // A1: B1
-    ['N° de l\'opérateur', operator.numeroBio],
+    ['N° de l\'opérateur', notification.numeroClient],
     // A2: B2
-    ['Date de saisie :', today],
+    ['Date de saisie :', new Date()],
   ], { cellDates: true })
 
-  sheet['B1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.id}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+  sheet['B1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+  sheet['B1'].t = 's'
   sheet['B2'].t = 'd'
   sheet['B2'].z = 'dd/mm/yyyy'
 
   sheet['!merges'] = [
-    R('F4:J4'), R('O4:P4'),
+    R('E4:I4'), R('O4:P4'),
   ]
 
   sheet['!cols'] = [
-    // parcelleId
-    { wch: 12 },
     // Commune
     { wch: 16 },
     // Ilot
-    { wch: 7 },
+    { wch: 12 },
     // Culture
     { wch: 40 },
     // Variété/infos
@@ -40,13 +39,15 @@ export default ({ featureCollection, operator }) => {
     // C0 - AB - C1 - C2 - C3
     { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 },
     // Date Conv
-    { wch: 10 },
+    { wch: 12 },
     // Observation
     { wch: 40 },
     // Précédent - Anté précédent
     { wch: 10 }, { wch: 10 },
     // Produit - Date
     { wch: 10 }, { wch: 10 },
+    // parcelleId
+    { wch: 16 },
     // [ blank ]
     '',
     // Totaux - AB - C1 - C2 - C3 - C0 - Total
@@ -55,8 +56,8 @@ export default ({ featureCollection, operator }) => {
 
   // First sheet: plots informations (via `featureCollection`)
   sheet_add_aoa(sheet, [
-    ['',                     '',        '',     '',        '',                'Surfaces en ha', '', '', '', '', '',          '',                            '',          '',               'Dernier intrant non autorisé en AB', ''],
-    ['Id. CartoBio', 'Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3',     'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent', 'Produit', 'Date'],
+    ['',        '',     '',        '',                'Surfaces en ha', '', '', '', '', '',          '',                            '',          '',               'Dernier intrant non autorisé en AB',  '',     ''],
+    ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3',     'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent', 'Produit',                             'Date', 'Id. CartoBio'],
   ], { origin: 'A4'})
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
@@ -65,8 +66,6 @@ export default ({ featureCollection, operator }) => {
     const culture = fromCodePac(props.TYPE)
 
     return [
-      // ParcelleId
-      id,
       // Commune
       props.COMMUNE_LABEL,
       // Ilot
@@ -93,18 +92,22 @@ export default ({ featureCollection, operator }) => {
       '',
       // Date
       '',
+      // ParcelleId
+      id,
     ]
   }), { origin: 'A6', cellDates: true })
 
   // Formattage des cellules, s'il y a une valeur
   featureCollection.features.forEach((feature, index) => {
-    ['F', 'G', 'H', 'I', 'J']
+    sheet[`P${6 + index}`].t = 's';
+
+    ['E', 'F', 'G', 'H', 'I']
       .filter(col => sheet[`${col}${6 + index}`].v !== '')
       .forEach(col => Object.assign(sheet[`${col}${6 + index}`], { t: 'n', z: '0.00' }))
 
-    if (sheet[`K${6 + index}`].v) {
-      sheet[`K${6 + index}`].t = 'd'
-      sheet[`K${6 + index}`].z = 'dd/mm/yyyy'
+    if (sheet[`J${6 + index}`].v) {
+      sheet[`J${6 + index}`].t = 'd'
+      sheet[`J${6 + index}`].z = 'dd/mm/yyyy'
     }
   })
 

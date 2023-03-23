@@ -7,17 +7,17 @@ const { decode_range: R } = utils
 
 export default ({ featureCollection, operator }) => {
   const workbook = book_new()
-  const today = new Date()
 
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
     ['Numéro bio :', '', operator.numeroBio, '', 'Nom Opérateur:', operator.nom],
-    ['Date de saisie :', '', today, '', 'N°PACAGE', operator.numeroPacage],
+    ['Date de saisie :', '', new Date(), '', 'N°PACAGE', operator.numeroPacage],
     ['Surface graphique totale (en ha) :', '', surface(featureCollection) / 10_000]
   ], { cellDates: true })
 
-  sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.id}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+  sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+  sheet['C1'].t = 's'
   sheet['C2'].t = 'd'
   sheet['C2'].z = 'dd/mm/yyyy'
   sheet['C3'].t = 'n'
