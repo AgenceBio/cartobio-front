@@ -8,14 +8,28 @@
  */
 
 // via https://github.com/datagistips/memos/blob/main/regexes.md
-const FRENCH_CADASTRE_REFERENCE_RE = /^([013-9]\d|2[AB1-9])(\d{3})((0|[A-Z])[A-Z])([0-9]{4}[a-z]?)$/
+const FRENCH_CADASTRE_REFERENCE_RE = /^(?<commune>(0[1-9]|1[0-9]|2[AB]|2[1-9]|[3-9][0-9])\d{3}|97[1-6]\d{2})(?<prefix>\d{3})(?<section>((0|[A-Z])[A-Z]|\d{2}))(?<number>[0-9]{3,4}[a-z]?)$/
+const trimLeadingZero = (ref) => ref.replace(/^0+([^0]+)$/, '$1')
 
 /**
  * @param {String} reference
- * @returns {CadastreReference}
+ * @returns {CadastreReference?}
  */
 export function parseReference (reference) {
-  const [commune, prefix, section, number] = reference.trim().toLocaleUpperCase().match(FRENCH_CADASTRE_REFERENCE_RE) ?? ['', '', '', '']
+  const match = reference.trim()
+    .toLocaleUpperCase()
+    .match(FRENCH_CADASTRE_REFERENCE_RE)
 
-  return { commune, prefix, section, number }
+    if (!match) {
+      return null
+    }
+
+  const { commune, prefix, section, number } = match.groups
+
+  return {
+    commune: trimLeadingZero(commune),
+    prefix: trimLeadingZero(prefix),
+    section,
+    number: trimLeadingZero(number)
+  }
 }
