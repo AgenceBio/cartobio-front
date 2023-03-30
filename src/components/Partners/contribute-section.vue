@@ -11,7 +11,7 @@
           </p>
 
           <p>
-            <a href="mailto:cartobio@beta.gouv.fr" class="fr-btn fr-btn--secondary">
+            <a href="mailto:support-cartobio@agencebio.org" class="fr-btn fr-btn--secondary">
               Contacter l’équipe Cartobio
             </a>
           </p>

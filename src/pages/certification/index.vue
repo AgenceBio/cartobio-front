@@ -99,7 +99,7 @@ meta:
         </ul>
 
         <p>
-          <a class="fr-btn fr-btn--secondary" href="mailto:cartobio@beta.gouv.fr?subject=Demande%20de%20démo">
+          <a class="fr-btn fr-btn--secondary" href="mailto:support-cartobio@agencebio.org?subject=Demande%20de%20démo">
             Demandez une démo de CartoBio
           </a>
         </p>

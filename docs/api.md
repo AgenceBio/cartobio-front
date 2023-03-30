@@ -306,9 +306,9 @@ dans un délai raisonnable.
 
 
 
-[contact]: mailto:cartobio@beta.gouv.fr?subject=Question%20%C3%A0%20propos%20de%20l'API%20CartoBio
-[ask-token]: mailto:cartobio@beta.gouv.fr?subject=Demande%20%de%jeton%20%pour%20l'API%20CartoBio,%20Merci%20!
-[ask-wip-feature]: mailto:cartobio@beta.gouv.fr?subject=API%20CartoBio%20%3A%20%C3%A0%20propos%20d'une%20future%20fonctionnalit%C3%A9
+[contact]: mailto:support-cartobio@agencebio.org?subject=Question%20%C3%A0%20propos%20de%20l'API%20CartoBio
+[ask-token]: mailto:support-cartobio@agencebio.org?subject=Demande%20%de%jeton%20%pour%20l'API%20CartoBio,%20Merci%20!
+[ask-wip-feature]: mailto:support-cartobio@agencebio.org?subject=API%20CartoBio%20%3A%20%C3%A0%20propos%20d'une%20future%20fonctionnalit%C3%A9
 
 [^1]: Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
       Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.

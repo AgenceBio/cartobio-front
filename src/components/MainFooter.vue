@@ -25,7 +25,7 @@
               envoyez-nous un message à l'adresse suivante :
             </p>
             <p>
-              <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:cartobio@beta.gouv.fr?subject=' + mailtoSubject">cartobio@beta.gouv.fr</a>
+              <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:support-cartobio@agencebio.org?subject=' + mailtoSubject">support-cartobio@agencebio.org</a>
             </p>
             <p class="fr-text--bold">Merci !</p>
           </div>

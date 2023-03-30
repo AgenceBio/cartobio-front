@@ -25,7 +25,7 @@
     </p>
     <ul class="basic-information feedback h-card">
       <li>
-        E-mail&nbsp;: <a href="mailto:cartobio@beta.gouv.fr">cartobio@beta.gouv.fr</a>
+        E-mail&nbsp;: <a href="mailto:support-cartobio@agencebio.org">support-cartobio@agencebio.org</a>
       </li>
 
       <li>
