@@ -11,7 +11,7 @@
         <label for="form-commune" class="fr-label">Commune</label>
 
         <div class="fr-input-wrap fr-icon-road-map-fill">
-          <input type="search" class="fr-input" id="form-commune" required autofocus />
+          <input type="search" class="fr-input" id="form-commune" v-model="commune" required autofocus />
         </div>
       </div>
 
@@ -22,17 +22,37 @@
       <article>
         <p>Par référence cadastrale</p>
 
-        <CadastreField v-for="parcel in landParcels" :parcel="parcel" />
+        <CadastreField v-for="(reference, index) in landParcels" :reference="reference" :commune="commune" @change="updateReference(index, $event)" />
       </article>
     </form>
   </section>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import axios from 'axios'
+import { reactive, ref } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue';
+import { toString } from '@/components/cadastre.js';
 
+const commune = ref('26108')
 const landParcels = reactive(['26108000AI0341'])
+
+function updateReference (index, reference) {
+  console.log({ index, reference })
+
+  axios.get('https://apicarto.ign.fr/api/cadastre/parcelle', {
+    params: {
+      code_insee: reference.commune,
+      section: reference.section,
+      numero: reference.number,
+      com_abs: reference.prefix,
+      _limit: 2,
+      source_ign: 'PCI'
+    }
+  }).then(({ data }) => console.log(data))
+
+  landParcels[index] = toString(reference)
+}
 </script>
 
 <style scoped>

@@ -53,6 +53,10 @@
 
       <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
     </table>
+
+    <p class="fr-my-3w" v-if="addParcelRouteName">
+      <router-link :to="{ name: addParcelRouteName, id: operator.id }" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+    </p>
   </div>
 
   <Teleport to="body">
@@ -92,7 +96,11 @@ const props = defineProps({
   },
   'edit-form': Object,
   'validation-rules': Object,
-  'mass-actions': Array
+  'mass-actions': Array,
+  'add-parcel-route-name': {
+    type: String,
+    default: ''
+  }
 })
 
 const isSaving = ref(false)
