@@ -15,7 +15,7 @@
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
           <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
-              {{ strategy.name }}&nbsp;<small>(<code :aria-label="strategy.name">{{ strategy.extension }}</code>)</small>
+              {{ strategy.name }}&nbsp;<small>(<code :aria-label="strategy.name">.{{ strategy.extension }}</code>)</small>
           </button>
         </li>
         <li>
@@ -39,7 +39,6 @@
 
 <script setup>
 import { computed, toRaw } from 'vue'
-import { writeFile } from 'xlsx'
 import { fromId } from './ExportStrategies/index.js'
 
 import Modal from '@/components/Modal.vue'
@@ -73,11 +72,16 @@ function geojsonExport() {
 }
 
 function ocExport () {
-  const workbook = strategy({
+  const strategy = fromId(organismeCertificateurId.value)
+  const data = strategy({
     featureCollection: props.collection,
     operator: props.operator
   })
 
-  return writeFile(workbook, `${filenameBase.value}.xlsx`, { bookType : 'xlsx' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(data)
+  link.download = `${filenameBase.value}.${strategy.extension}`
+  link.mime = strategy.mime
+  link.click()
 }
 </script>
