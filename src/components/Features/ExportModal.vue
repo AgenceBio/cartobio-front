@@ -14,8 +14,8 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
-          <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="excelExport({ strategy })">
-            Excel&nbsp;<small>(<code aria-label="Extension de fichier .xlsx">.xlsx</code>)</small>
+          <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
+              {{ strategy.name }}&nbsp;<small>(<code :aria-label="strategy.name">{{ strategy.extension }}</code>)</small>
           </button>
         </li>
         <li>
@@ -58,6 +58,7 @@ const props = defineProps({
 const numeroBio = computed(() => props.operator.numeroBio)
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id)
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`)
+const strategy = computed(() => fromId(organismeCertificateurId.value))
 
 function geojsonExport() {
   const blob = new Blob(
@@ -71,9 +72,7 @@ function geojsonExport() {
   link.click()
 }
 
-function excelExport () {
-  const strategy = fromId(organismeCertificateurId.value)
-
+function ocExport () {
   const workbook = strategy({
     featureCollection: props.collection,
     operator: props.operator

@@ -5,7 +5,7 @@ import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } f
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
 
-export default ({ featureCollection, operator }) => {
+const Certipaq = ({ featureCollection, operator }) => {
   const workbook = book_new()
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
@@ -154,3 +154,9 @@ export default ({ featureCollection, operator }) => {
 
   return workbook
 }
+
+Certipaq.label = "Certipaq"
+Certipaq.extension = "csv"
+Certipaq.mimetype = "text/csv"
+
+export default Certipaq;
