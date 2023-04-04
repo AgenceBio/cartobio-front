@@ -18,7 +18,11 @@ const props = defineProps({
 const map = inject('map')
 
 watch(map, () => {
-  map.value.once('load', () => {
+  map.value.on('styledata', () => {
+    if (map.value.getLayer(`${props.name}-geometry`)) {
+      return;
+    }
+
     map.value
       .addSource(props.name, {
         type: 'geojson',
