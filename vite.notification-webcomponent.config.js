@@ -7,7 +7,6 @@ import { resolve, join, sep } from 'path'
 export default defineConfig(({ command, mode }) => ({
   envPrefix: 'VUE_APP_',
 
-
   root: 'src/notification-webcomponent',
   envDir: __dirname,
 
