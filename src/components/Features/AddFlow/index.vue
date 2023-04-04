@@ -19,11 +19,20 @@
         Limites de la parcelle
       </p>
 
-      <article>
-        <p>Par référence cadastrale</p>
+      <article class="fr-pl-5w">
+        <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
+          <input type="radio" id="radio-inline-1" name="radio-inline">
+          <label class="fr-label" for="radio-inline-1">
+            Par référence(s) cadastrale(s)
+          </label>
+        </div>
 
         <CadastreField v-for="(reference, index) in landParcels" :reference="reference" :commune="commune" @change="updateReference(index, $event)" />
       </article>
+
+      <div class="fr-input-group fr-mt-4w">
+        <button class="fr-btn" type="submit">Suivant</button>
+      </div>
     </form>
   </section>
 </template>
