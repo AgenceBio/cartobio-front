@@ -30,6 +30,8 @@ jobs:
         VUE_APP_MATOMO_SITE_ID: 245
         VUE_APP_API_ENDPOINT: "https://cartobio-preprod.agencebio.org/api"
         VUE_APP_CURRENT_CAMPAGNE_PAC: 2022
+        VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
     - run: npm clean-install-test
     - run: npm run build
