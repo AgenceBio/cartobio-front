@@ -20,6 +20,7 @@
   "dependencies": {
     "@agencebio/rosetta-cultures": "^1.1.2",
     "@gouvfr/dsfr": "^1.8.1",
+    "@sentry/vue": "^7.46.0",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
     "@turf/centroid": "^6.5.0",
@@ -38,6 +39,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@sentry/vite-plugin": "^0.4.0",
     "@testing-library/vue": "^6.4.2",
     "@typescript-eslint/eslint-plugin": "^5.45.1",
     "@typescript-eslint/parser": "^5.45.1",
