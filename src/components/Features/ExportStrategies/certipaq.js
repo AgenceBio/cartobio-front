@@ -151,7 +151,7 @@ const Certipaq = ({ featureCollection, operator }) => {
   return new Blob([sheet_to_csv(sheet, { FS: ';' })])
 }
 
-Certipaq.label = "Certipaq"
+Certipaq.label = "Tableur"
 Certipaq.extension = "csv"
 Certipaq.mimetype = "text/csv"
 

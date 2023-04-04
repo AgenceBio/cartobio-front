@@ -15,7 +15,7 @@
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
           <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
-              {{ strategy.name }}&nbsp;<small>(<code :aria-label="strategy.name">.{{ strategy.extension }}</code>)</small>
+              {{ strategy.label }}&nbsp;<small>(<code :aria-label="strategy.label">.{{ strategy.extension }}</code>)</small>
           </button>
         </li>
         <li>
