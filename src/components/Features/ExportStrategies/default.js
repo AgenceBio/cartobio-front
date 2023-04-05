@@ -1,11 +1,11 @@
-import { utils } from 'xlsx'
+import { utils, write } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface, inHa } from '@/components/Features/index.js'
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
 
-export default ({ featureCollection, operator }) => {
+const Default = ({ featureCollection, operator }) => {
   const workbook = book_new()
 
   // First sheet
@@ -72,5 +72,11 @@ export default ({ featureCollection, operator }) => {
   // First sheet: finalize
   book_append_sheet(workbook, sheet, 'Parcellaire bio');
 
-  return workbook
+  return new Blob([write(workbook, { bookType: 'xlsx', type: 'array' })], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 }
+
+Default.label = 'Excel'
+Default.extension = 'xlsx'
+Default.mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+export default Default;

@@ -2,11 +2,10 @@ import { utils } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } from '@/components/Features/index.js'
 
-const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
+const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R } = utils
 
-export default ({ featureCollection, operator }) => {
-  const workbook = book_new()
+const Certipaq = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
   // First sheet
@@ -149,8 +148,11 @@ export default ({ featureCollection, operator }) => {
       .forEach(col => Object.assign(sheet[`${col}${9 + index}`], { t: 'n', z: '0.00' }))
   })
 
-  // First sheet: finalize
-  book_append_sheet(workbook, sheet, 'Parcellaire bio');
-
-  return workbook
+  return new Blob([sheet_to_csv(sheet, { FS: ';' })])
 }
+
+Certipaq.label = "Tableur"
+Certipaq.extension = "csv"
+Certipaq.mimetype = "text/csv"
+
+export default Certipaq;
