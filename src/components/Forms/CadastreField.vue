@@ -7,7 +7,7 @@
       </label>
 
       <div class="fr-input-wrap">
-        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="\d{2,3}" :disabled="communeEmpty" v-model="prefix" />
+        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="\d{2,3}" :disabled="isCommuneEmpty" v-model="prefix" />
       </div>
     </div>
 
@@ -18,7 +18,7 @@
       </label>
 
       <div class="fr-input-wrap">
-        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="communeEmpty" pattern="[a-zA-Z\d]{1,2}" v-model="section" required />
+        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="isCommuneEmpty" pattern="[a-zA-Z\d]{1,2}" v-model="section" required />
       </div>
     </div>
 
@@ -29,13 +29,19 @@
       </label>
 
       <div class="fr-input-wrap">
-        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="\d{1,4}" :disabled="communeEmpty" v-model="number" required />
+        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="\d{1,4}" :disabled="isCommuneEmpty" v-model="number" required />
       </div>
+    </div>
+
+    <div class="fr-input-group fr-input-group--actions">
+      <span :class="{'fr-icon': true, 'fr-icon-check-line': hasGeometry, 'fr-icon-alert-fill': doesNotExist, 'fr-icon-more-fill': isFetchingGeometry }" :disabled="!hasGeometry" />
     </div>
   </div>
 </template>
 
 <script setup>
+import axios from 'axios'
+
 import { computed, ref, watch } from 'vue'
 import { isValidReference, parseReference, toString, trimLeadingZero } from '../cadastre.js';
 
@@ -50,24 +56,65 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(['change', 'geometry'])
 
 const fieldId = ref(crypto.randomUUID())
 const reference = ref(props.reference)
-const parsedReference = computed(() => parseReference(reference.value))
+const parsedReference = computed(() => parseReference(reference.value) ?? { prefix: '', section: '', number: '' })
+const geometry = ref(null)
 
-const prefix = ref(trimLeadingZero(parsedReference.value.prefix))
-const section = ref(trimLeadingZero(parsedReference.value.section))
-const number = ref(trimLeadingZero(parsedReference.value.number))
+const hasGeometry = computed(() => geometry?.value)
+const isCommuneEmpty = computed(() => props.commune === '')
+const doesNotExist = ref(false)
+const isFetchingGeometry = ref(false)
 
-const communeEmpty = computed(() => props.commune === '')
+const prefix = ref(trimLeadingZero(parsedReference.value?.prefix))
+const section = ref(trimLeadingZero(parsedReference.value?.section))
+const number = ref(trimLeadingZero(parsedReference.value?.number))
+const tentativeReference = computed(() => toString({
+  commune: props.commune,
+  prefix: prefix.value,
+  section: section.value,
+  number: number.value
+}))
 
-watch([prefix, section, number], ([prefix, section, number]) => {
-  const tentative = toString({ commune: props.commune, prefix, section, number })
-
-  if (isValidReference(tentative)) {
+watch(tentativeReference, (tentative) => {
+  if (section && number && isValidReference(tentative)) {
+    console.log({ tentative, commune: props.commune })
     reference.value = tentative
     emit('change', parseReference(tentative))
+  }
+})
+
+watch(reference, async (newReference, oldReference) => {
+  if (newReference && newReference !== oldReference && isValidReference(newReference)) {
+    const { commune: code_insee, section, prefix: com_abs, number: numero } = parseReference(newReference)
+    const _limit = 1
+    const source_ign = 'PCI'
+    isFetchingGeometry.value = true
+
+    try {
+      const { data: featureCollection } = await axios.get('https://apicarto.ign.fr/api/cadastre/parcelle', {
+        params: { code_insee, section, numero, com_abs, _limit, source_ign }
+      })
+
+      if (featureCollection.features.length) {
+        doesNotExist.value = false
+        geometry.value = featureCollection.features.at(0)
+        emit('geometry', { reference: newReference, geometry: geometry.value })
+      }
+      else {
+        geometry.value = null
+        doesNotExist.value = true
+        emit('geometry', { reference: newReference, geometry: geometry.value })
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch geometry for ref', newReference, error)
+    }
+    finally {
+      isFetchingGeometry.value = false
+    }
   }
 })
 </script>
@@ -76,5 +123,10 @@ watch([prefix, section, number], ([prefix, section, number]) => {
 .horizontal-stack {
   display: flex;
   gap: 1em;
+}
+
+.horizontal-stack .fr-input-group--actions {
+  display: flex;
+  align-items: center;
 }
 </style>

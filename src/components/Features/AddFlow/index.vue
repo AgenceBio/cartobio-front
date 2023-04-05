@@ -19,48 +19,47 @@
         Limites de la parcelle
       </p>
 
-      <article class="fr-pl-5w">
+      <article class="fr-pl-5w fr-mb-5w">
         <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
-          <input type="radio" id="radio-inline-1" name="radio-inline">
-          <label class="fr-label" for="radio-inline-1">
-            Par référence(s) cadastrale(s)
+          <input type="radio" id="radio-source-cadastre" name="source" value="cadastre" v-model="flowSource">
+          <label class="fr-label" for="radio-source-cadastre">
+            Par référence cadastrale
           </label>
         </div>
 
-        <CadastreField v-for="(reference, index) in landParcels" :reference="reference" :commune="commune" @change="updateReference(index, $event)" />
+        <CadastreField v-for="(reference, index) in cadastreReferences" :reference="reference" :commune="commune" @geometry="updateReference(index, $event)" />
       </article>
 
-      <div class="fr-input-group fr-mt-4w">
-        <button class="fr-btn" type="submit">Suivant</button>
+      <article class="fr-pl-5w fr-mb-5w">
+        <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
+          <input type="radio" id="radio-source-telepac" name="source" value="telepac" disabled v-model="flowSource">
+          <label class="fr-label" for="radio-source-telepac">
+            Par référence Telepac (<i>prochainement</i>)
+          </label>
+        </div>
+      </article>
+
+      <div class="fr-input-group fr-mt-5w">
+        <button class="fr-btn" type="submit" :disabled="!canReachDetailsStep" @click="showDetailsModal = true">Suivant</button>
       </div>
     </form>
   </section>
 </template>
 
 <script setup>
-import axios from 'axios'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue';
 import { toString } from '@/components/cadastre.js';
 
+const flowSource = ref('cadastre')
+const showDetailsModal = ref(false)
 const commune = ref('26108')
-const landParcels = reactive(['26108000AI0341'])
+const cadastreReferences = reactive([''])
 
-function updateReference (index, reference) {
-  console.log({ index, reference })
+const canReachDetailsStep = computed(() => cadastreReferences.filter(d => d).length > 0)
 
-  axios.get('https://apicarto.ign.fr/api/cadastre/parcelle', {
-    params: {
-      code_insee: reference.commune,
-      section: reference.section,
-      numero: reference.number,
-      com_abs: reference.prefix,
-      _limit: 2,
-      source_ign: 'PCI'
-    }
-  }).then(({ data }) => console.log(data))
-
-  landParcels[index] = toString(reference)
+function updateReference (index, { reference, geometry }) {
+  cadastreReferences[index] = reference
 }
 </script>
 
