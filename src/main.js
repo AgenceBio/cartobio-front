@@ -1,8 +1,9 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { createRouter, createWebHistory } from "vue-router"
-import { createHead } from "@unhead/vue"
-import routes from "~pages"
+import { createRouter, createWebHistory } from 'vue-router'
+import { createHead } from '@unhead/vue'
+import * as Sentry from '@sentry/vue'
+import routes from '~pages'
 import Matomo from 'vue-matomo'
 
 import store from './store.js'
@@ -11,6 +12,7 @@ import { getOperatorParcelles } from './cartobio-api.js'
 import App from './App.vue'
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
+const { VUE_APP_SENTRY_DSN } = import.meta.env
 
 const pinia = createPinia()
 const head = createHead()
@@ -38,7 +40,7 @@ const app = createApp(App)
   .use(Matomo, {
     router,
     siteId,
-    domains: ['cartobio.agencebio.org', 'v2--cartobio-dev.netlify.app'],
+    domains: ['cartobio.agencebio.org', 'cartobio-preprod.agencebio.org'],
     enableLinkTracking: true,
     discardHashTag: true,
     enableHeartBeatTimer: 15,
@@ -51,6 +53,27 @@ const userStore = useUserStore()
 router.isReady().then(() => {
   app.mount('#app')
   window.head = head
+
+  if (VUE_APP_SENTRY_DSN) {
+    try {
+      Sentry.init({
+        app,
+        dsn: VUE_APP_SENTRY_DSN,
+        environment: import.meta.env.MODE,
+        integrations: [
+          new Sentry.BrowserTracing({
+            routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+            tracingOrigins: ['localhost', 'cartobio.agencebio.org', 'cartobio-preprod.agencebio.org', /^.+--cartobio-dev.netlify.app$/],
+          }),
+        ],
+        logErrors: true,
+        tracesSampleRate: import.meta.env.PROD ? 0.3 : 1.0,
+      })
+    }
+    catch (error) {
+      console.error("Failed to initialize Sentry client %o", error)
+    }
+  }
 })
 
 router.beforeEach(async (to) => {
