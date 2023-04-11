@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
-import { GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } from '@/components/Features/index.js'
+import { GROUPE_DATE_ENGAGEMENT, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, featureName, getFeatureGroups } from '@/components/Features/index.js'
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
 
@@ -47,7 +47,7 @@ const BureauVeritas = ({ featureCollection, operator }) => {
     { wch: 10 }
   ]
 
-  getFeatureGroups(featureCollection, GROUPE_CULTURE).forEach(({ key, surface, features }, index) => {
+  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ key, surface, features }, index) => {
     const culture = fromCodePac(key)
 
     sheet_add_aoa(sheet, [
@@ -55,7 +55,7 @@ const BureauVeritas = ({ featureCollection, operator }) => {
         culture.groupe,
         culture.libelle_code_cpf,
         culture.code_bureau_veritas,
-        `Ilots : TBD`,
+        `Ilots : ${features.map(feature => featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).join(', ')}`,
         surface / 10_000,
         'ha',
         features.at(0).conversion_niveau,
@@ -70,7 +70,7 @@ const BureauVeritas = ({ featureCollection, operator }) => {
 
   book_append_sheet(workbook, sheet, 'AppliAgro')
 
-  return new Blob([write(workbook, { bookType: 'xlsx', type: 'array' })], { type: BureauVeritas.mimetype })
+  return new Blob([write(workbook, { bookType: BureauVeritas.extension, type: 'array' })], { type: BureauVeritas.mimetype })
 }
 
 BureauVeritas.label = 'Excel'
