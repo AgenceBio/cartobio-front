@@ -102,11 +102,6 @@
                 </router-link>
               </li>
               <li class="fr-nav__item">
-                <router-link to="/exploitation/environs" class="fr-nav__link">
-                  Parcelles environnantes
-                </router-link>
-              </li>
-              <li class="fr-nav__item">
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
