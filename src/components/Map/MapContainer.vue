@@ -2,7 +2,7 @@
   <aside ref="mapContainer">
     <slot />
 
-    <slot name="footer" />
+    <slot name="legend" />
     <slot name="credits" />
   </aside>
 </template>
@@ -10,6 +10,7 @@
 <script setup>
 import { provide, shallowRef, ref, onMounted, watch } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
+import {useResizeObserver} from "@vueuse/core";
 
 import baseStyle from '@/map-styles/base.json'
 
@@ -53,6 +54,10 @@ watch(() => props.style, () => {
   map.value.setStyle(props.style)
   map.value.triggerRepaint()
 }, { deep: true })
+
+useResizeObserver(mapContainer, () => {
+  map.value.resize()
+})
 </script>
 
 <style lang="postcss" scoped>
