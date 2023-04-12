@@ -31,6 +31,7 @@ export const GROUPE_COMMUNE = 'COMMUNE'
 export const GROUPE_CULTURE = 'CULTURE'
 export const GROUPE_ILOT = 'ILOT'
 export const GROUPE_NIVEAU_CONVERSION = 'NIVEAU_CONVERSION'
+export const GROUPE_DATE_ENGAGEMENT = 'DATE_ENGAGEMENT'
 export const GROUPE_ANNEE_ENGAGEMENT = 'ANNEE_ENGAGEMENT'
 
 function sortBySurface (groupA, groupB) {
@@ -105,6 +106,16 @@ export const groupingChoices = {
   },
 }
 
+Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
+  enumerable: false,
+  value: {
+    label: null,
+    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).toISOString().split('T').at(0) : '',
+    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue',
+    sortFn: sortByDescendingKey
+  },
+})
+
 /**
  *
  * @param {FeatureCollection} collection
@@ -112,7 +123,8 @@ export const groupingChoices = {
  * @returns {FeatureGroup[]}
  */
 export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
-  if (pivot === '') {
+  // Use a default pivot if none is provided
+  if (pivot === '' || (Array.isArray(pivot) && pivot.length === 0)) {
     return [{
       label: '',
       key: 'none',
@@ -122,17 +134,20 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
     }]
   }
 
+  const pivots = Array.isArray(pivot) ? pivot : [pivot]
   const groups = groupBy(collection.features, (feature) => {
-    return groupingChoices[pivot].datapoint(feature)
+    return pivots
+      .map(pivot => groupingChoices[pivot].datapoint(feature))
+      .join('-')
   })
 
   return Object.entries(groups).map(([key, features], i) => ({
-    label: groupingChoices[pivot].groupLabelFn(features[0], key),
-    key,
+    label: groupingChoices[pivots.at(0)].groupLabelFn(features[0], key),
+    key: key.split('-').at(0),
     pivot,
     features,
     surface: area(featureCollection(features)),
-  })).sort(groupingChoices[pivot].sortFn)
+  })).sort(groupingChoices[pivots.at(0)].sortFn)
 }
 
 /**
@@ -148,17 +163,17 @@ export function getFeatureById (features, id) {
  * @param {Feature} feature
  * @returns {String}
  */
-export function featureName (feature) {
+export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', '} = {}) {
   if (feature.properties.NOM) {
     return feature.properties.NOM
   }
   else if (feature.properties.NUMERO_I || feature.properties.NUMERO_P) {
     return [
-      feature.properties.NUMERO_I ? `ilot ${feature.properties.NUMERO_I}` : '',
-      feature.properties.NUMERO_P ? `parcelle ${feature.properties.NUMERO_P}` : '',
+      feature.properties.NUMERO_I ? `${ilotLabel}${feature.properties.NUMERO_I}` : '',
+      feature.properties.NUMERO_P ? `${parcelleLabel}${feature.properties.NUMERO_P}` : '',
     ]
     .filter(d => d)
-    .join(', ')
+    .join(separator)
   }
   else {
     return '-'
