@@ -84,6 +84,16 @@ export const useFeaturesStore = defineStore('features', () => {
         map.setFeatureState({ source, id: previousId }, { selected: false })
       }
     })
+
+    map.on("styledata", () => {
+      if (map.getSource(source) === undefined) {
+        return;
+      }
+
+      selectedIds.value.forEach(id => {
+        map.setFeatureState({ source, id }, { selected: true })
+      })
+    })
   }
 
   function bindMaplibreInteractions ({ map, layer }) {
