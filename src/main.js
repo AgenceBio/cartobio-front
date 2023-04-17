@@ -51,9 +51,6 @@ const app = createApp(App)
 const userStore = useUserStore()
 
 router.isReady().then(() => {
-  app.mount('#app')
-  window.head = head
-
   if (VUE_APP_SENTRY_DSN) {
     try {
       Sentry.init({
@@ -74,6 +71,9 @@ router.isReady().then(() => {
       console.error("Failed to initialize Sentry client %o", error)
     }
   }
+
+  app.mount('#app')
+  window.head = head
 })
 
 router.beforeEach(async (to) => {
