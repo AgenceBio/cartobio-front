@@ -58,8 +58,8 @@ const BureauVeritas = ({ featureCollection, operator }) => {
         `Ilots : ${features.map(feature => featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).join(', ')}`,
         surface / 10_000,
         'ha',
-        features.at(0).conversion_niveau,
-        features.at(0).engagement_date,
+        features.at(0).properties.conversion_niveau,
+        features.at(0).properties.engagement_date,
       ]
     ], { origin: `B${2 + index}`, cellDates: true });
 
