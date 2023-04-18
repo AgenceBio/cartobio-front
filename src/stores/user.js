@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { setAuthorization } from '@/cartobio-api'
 
@@ -24,8 +24,8 @@ export function parseJwt (token) {
   return JSON.parse(jsonPayload);
 }
 
-export const useUserStore = defineStore('user', () => {
-  const token = useLocalStorage('cartobioUserToken', '')
+export const useUserStore = defineStore('user', ({ persist = true } = {}) => {
+  const token = persist ? useLocalStorage('cartobioUserToken', '') : ref('')
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
 

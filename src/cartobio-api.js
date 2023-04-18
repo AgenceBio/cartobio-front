@@ -138,6 +138,12 @@ export async function fetchLatestOperators () {
 export async function submitParcellesChanges ({ operatorId, ...params }) {
   const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, { ...params })
 
+  store.setParcelles({
+    record_id: data.record_id,
+    geojson: data.parcelles,
+    ...data.metadata
+  })
+
   return data
 }
 
@@ -151,33 +157,6 @@ export async function updateAuditState ({ recordId }, patch) {
   const { data } = await cartobioApi.patch(`/v2/certification/audits/${recordId}`, patch)
 
   return data
-}
-
-/**
- *
- * @param {GeoJSON.FeatureCollection} geojson
- * @param {{ source: SourceType}} param1
- * @returns {Promise}
- */
-export async function submitParcelles (geojson, { source }) {
-  const { id: operatorId, numeroBio, organismeCertificateur } = store.state.currentUser
-
-  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
-    ocId: organismeCertificateur?.id,
-    ocLabel: organismeCertificateur?.nom,
-    numeroBio,
-    geojson,
-    metadata: {
-      source,
-      sourceLastUpdate: now()
-    }
-  })
-
-  store.setParcelles({
-    record_id: data.record_id,
-    geojson: data.parcelles,
-    ...data.metadata
-  })
 }
 
 /**
@@ -223,7 +202,7 @@ export async function convertShapefileArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
 
-  const { data: geojson } = await cartobioApi.post(`/v1/convert/shapefile/geojson`, form)
+  const { data: geojson } = await cartobioApi.post(`/v2/convert/shapefile/geojson`, form)
 
   return geojson
 }

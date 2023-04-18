@@ -12,21 +12,37 @@
 
 <script setup>
 import { ref, watchEffect } from 'vue'
+import { storeToRefs } from 'pinia'
 
-import { submitParcelles } from '../../cartobio-api.js'
+import { submitParcellesChanges } from '@/cartobio-api.js'
 
-import featureSources from '../../components/OperatorSetup/index.js'
-import store from '../../store.js'
+import { now } from '@/components/dates.js'
+import featureSources from '@/components/OperatorSetup/index.js'
+import { useUserStore } from '@/stores/user.js'
 
 const emit = defineEmits(['source:change', 'import:start', 'import:complete', 'import:error'])
-const featureSource = ref(store.state.parcellaireSource ?? 'telepac')
+const featureSource = ref('telepac')
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 watchEffect(() => emit('source:change', featureSource.value))
 
 defineExpose({ featureSource })
 
 async function handleUpload ({ geojson, source }) {
   try {
-    await submitParcelles(geojson, { source })
+    await submitParcellesChanges({
+      geojson,
+      operatorId: user.value.id,
+      ocId: user.value.organismeCertificateur.id,
+      ocLabel: user.value.organismeCertificateur.nom,
+      metadata: {
+        source,
+        sourceLastUpdate: now()
+      },
+      numeroBio: user.value.numeroBio
+     })
+
     emit('import:complete', { geojson, source })
   }
   catch (error) {
