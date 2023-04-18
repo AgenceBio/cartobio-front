@@ -1,5 +1,5 @@
 <template>
-  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue">
+  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue" @click="click" ref="background">
     <div ref="target" class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
@@ -29,7 +29,7 @@
 <script setup>
 import { onBeforeUnmount, ref, watchEffect } from 'vue'
 import { useHead } from '@unhead/vue'
-import { onClickOutside, onKeyStroke } from '@vueuse/core'
+import { onKeyStroke } from '@vueuse/core'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -38,7 +38,12 @@ const props = defineProps({
 })
 
 const target = ref(null)
-onClickOutside(target, () => emit('update:modelValue', false))
+const background = ref(null)
+const click = (e) => {
+  if (e.target === background.value) {
+    emit('update:modelValue', false)
+  }
+}
 onKeyStroke('Escape', () => emit('update:modelValue', false))
 
 const stop = watchEffect(() => {
