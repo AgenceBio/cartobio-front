@@ -47,6 +47,10 @@ onMounted(() => {
     ...props.options,
   })
 
+  const warningIcon = new Image(10, 10)
+  warningIcon.src = "/src/assets/map/warning.png"
+  map.value.addImage("conventionnelle-risque", warningIcon)
+
   map.value.once('load', ({ target: map }) => {
     emit('load', map)
     emit('zoom:change', map.getZoom())

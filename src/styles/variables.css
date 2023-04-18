@@ -797,4 +797,12 @@
   --beige-gris-galet-main-702: #aea397;
   --beige-gris-galet-850-200: #e0cab0;
   box-sizing: border-box;
+  --map-legend-mes-parcelles: #eee;
+  --map-legend-mes-parcelles-border: var(--blue-france-sun-113-625);
+  --map-legend-sans-culture: #fff1bd;
+  --map-legend-sans-culture-border: #ffe586;
+  --map-legend-bio: #9fe3d2;
+  --map-legend-bio-border: #54cdaf;
+  --map-legend-conventionnelle: #ffd6a4;
+  --map-legend-conventionnelle-border: #ffc177;
 }

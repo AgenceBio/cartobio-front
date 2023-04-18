@@ -20,26 +20,14 @@
       "paint": {
         "fill-color": ["case",
           ["==", ["get", "BIO"], 1],
-          "#27a959",
+          "#9fe3d2",
           ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
-          "#f93f42",
+          "#fff1bd",
           ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
-          "#b7a73f",
-          "#fcbfbf"
+          "#ffd6a4",
+          "#ffd6a4"
         ],
         "fill-opacity": 0.7
-      }
-    },
-    {
-      "id": "rpg-anon-2021-pattern",
-      "type": "fill",
-      "source": "rpg-anon",
-      "source-layer": "rpg2021",
-      "minzoom": 8,
-      "maxzoom": 24,
-      "paint": {
-        "fill-pattern": "pedestrian_polygon",
-        "fill-opacity": 1
       }
     },
     {
@@ -50,11 +38,35 @@
       "minzoom": 8,
       "maxzoom": 24,
       "paint": {
-        "line-color": "#B39DDB",
+        "line-color": ["case",
+          ["==", ["get", "BIO"], 1],
+          "#54cdaf",
+          ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
+          "#ffe586",
+          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
+          "#ffc177",
+          "#ffc177"
+        ],
         "line-opacity": 0.9,
         "line-width": {
           "stops": [[9, 0], [12, 1]]
         }
+      }
+    },
+    {
+      "id": "rpg-anon-2021-labels",
+      "type": "symbol",
+      "source": "rpg-anon",
+      "source-layer": "rpg2021",
+      "minzoom": 8,
+      "maxzoom": 24,
+      "layout": {
+        "icon-image": ["case",
+          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
+          "conventionnelle-risque",
+          ""
+        ],
+        "icon-size": 0.5
       }
     }
   ]
