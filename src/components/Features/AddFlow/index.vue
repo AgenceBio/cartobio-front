@@ -58,6 +58,19 @@ import { computed, reactive, ref } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue';
 import EditForm from '@/components/Features/SingleItemCertificationBodyForm.vue'
 import Modal from "@/components/Modal.vue";
+import { submitNewParcelle } from '@/cartobio-api';
+import store from '@/store.js'
+
+const props = defineProps({
+  operator: {
+    type: Object,
+    required: true
+  },
+  record: {
+    type: Object,
+    required: true
+  }
+})
 
 const flowSource = ref('cadastre')
 const showDetailsModal = ref(false)
@@ -79,9 +92,15 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
   feature.properties.name = reference
 }
 
-function saveFeature ({ patch }) {
+async function saveFeature ({ patch }) {
   feature.properties = { ...feature.properties, ...patch }
-  feature.
+  const record = await submitNewParcelle({ operatorId: props.operator.id }, feature)
+
+  store.setParcelles({
+    record_id: record.record_id,
+    geojson: record.parcelles,
+    ...record.metadata
+  })
 }
 </script>
 
