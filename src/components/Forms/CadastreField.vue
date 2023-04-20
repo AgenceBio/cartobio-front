@@ -86,6 +86,7 @@ watch(tentativeReference, (tentative) => {
   }
 })
 
+let cadastreRequestController;
 watch(reference, async (newReference, oldReference) => {
   if (newReference && newReference !== oldReference && isValidReference(newReference)) {
     const { commune: code_insee, section, prefix: com_abs, number: numero } = parseReference(newReference)
@@ -93,9 +94,15 @@ watch(reference, async (newReference, oldReference) => {
     const source_ign = 'PCI'
     isFetchingGeometry.value = true
 
+
     try {
+      if (cadastreRequestController) {
+        cadastreRequestController.abort()
+      }
+      cadastreRequestController = new AbortController()
       const { data: featureCollection } = await axios.get('https://apicarto.ign.fr/api/cadastre/parcelle', {
-        params: { code_insee, section, numero, com_abs, _limit, source_ign }
+        params: { code_insee, section, numero, com_abs, _limit, source_ign },
+        signal: cadastreRequestController.signal
       })
 
       if (featureCollection.features.length) {
@@ -110,6 +117,9 @@ watch(reference, async (newReference, oldReference) => {
       }
     }
     catch (error) {
+      if (error.name === 'CanceledError') {
+        return
+      }
       console.error('Failed to fetch geometry for ref', newReference, error)
     }
     finally {
