@@ -34,7 +34,7 @@
     </div>
 
     <div class="fr-input-group fr-input-group--actions">
-      <span :class="{'fr-icon': true, 'fr-icon-check-line': hasGeometry, 'fr-icon-alert-fill': doesNotExist, 'fr-icon-more-fill': isFetchingGeometry }" :disabled="!hasGeometry" />
+      <span :class="{'fr-icon': true, 'fr-icon-check-line': hasFeature, 'fr-icon-alert-fill': doesNotExist, 'fr-icon-more-fill': isFetchingGeometry }" :disabled="!hasFeature" />
     </div>
   </div>
 </template>
@@ -56,14 +56,14 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['change', 'geometry'])
+const emit = defineEmits(['change', 'feature'])
 
 const fieldId = ref(crypto.randomUUID())
 const reference = ref(props.reference)
 const parsedReference = computed(() => parseReference(reference.value) ?? { prefix: '', section: '', number: '' })
-const geometry = ref(null)
+const feature = ref(null)
 
-const hasGeometry = computed(() => geometry?.value)
+const hasFeature = computed(() => feature?.value)
 const isCommuneEmpty = computed(() => props.commune === '')
 const doesNotExist = ref(false)
 const isFetchingGeometry = ref(false)
@@ -107,14 +107,13 @@ watch(reference, async (newReference, oldReference) => {
 
       if (featureCollection.features.length) {
         doesNotExist.value = false
-        geometry.value = featureCollection.features.at(0)
-        emit('geometry', { reference: newReference, geometry: geometry.value })
+        feature.value = featureCollection.features.at(0)
       }
       else {
-        geometry.value = null
+        feature.value = null
         doesNotExist.value = true
-        emit('geometry', { reference: newReference, geometry: geometry.value })
       }
+      emit('feature', { reference: newReference, feature: feature.value })
     }
     catch (error) {
       if (error.name === 'CanceledError') {

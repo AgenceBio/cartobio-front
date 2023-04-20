@@ -27,7 +27,7 @@
           </label>
         </div>
 
-        <CadastreField v-for="(reference, index) in cadastreReferences" :reference="reference" :commune="commune" @geometry="updateReference(index, $event)" />
+        <CadastreField v-for="(reference, index) in cadastreReferences" :reference="reference" :commune="commune" @feature="updateReference(index, $event)" />
       </article>
 
       <article class="fr-pl-5w fr-mb-5w">
@@ -44,22 +44,44 @@
       </div>
     </form>
   </section>
+
+  <Teleport to="body">
+    <Modal v-if="showDetailsModal" v-model="showDetailsModal" icon="fr-icon-file-text-fill">
+      <template #title>Ajouter une parcelle</template>
+      <EditForm :feature="feature" @submit="saveFeature"/>
+    </Modal>
+  </Teleport>
 </template>
 
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue';
-import { toString } from '@/components/cadastre.js';
+import EditForm from '@/components/Features/SingleItemCertificationBodyForm.vue'
+import Modal from "@/components/Modal.vue";
 
 const flowSource = ref('cadastre')
 const showDetailsModal = ref(false)
 const commune = ref('26108')
 const cadastreReferences = reactive([''])
+const feature = reactive({ type: "Feature", geometry: null, properties: {} })
 
 const canReachDetailsStep = computed(() => cadastreReferences.filter(d => d).length > 0)
 
-function updateReference (index, { reference, geometry }) {
+function updateReference (index, { reference, feature: cadastreFeature }) {
+  if (cadastreFeature === null) {
+    cadastreReferences[index] = ''
+    return
+  }
+
   cadastreReferences[index] = reference
+  feature.geometry = cadastreFeature.geometry
+  feature.properties.cadastre = reference
+  feature.properties.name = reference
+}
+
+function saveFeature ({ patch }) {
+  feature.properties = { ...feature.properties, ...patch }
+  feature.
 }
 </script>
 
