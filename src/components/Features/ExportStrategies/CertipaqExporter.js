@@ -2,12 +2,13 @@ import { utils } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } from '@/components/Features/index.js'
 
-const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
-const { decode_range: R } = utils
+import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
+const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
+const { decode_range: R, sheet_to_json, json_to_sheet } = utils
 const cultureCpf = (culture, TYPE) => culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${TYPE}`
 
-const Certipaq = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
   // First sheet
@@ -150,11 +151,35 @@ const Certipaq = ({ featureCollection, operator }) => {
       .forEach(col => Object.assign(sheet[`${col}${9 + index}`], { t: 'n', z: '0.00' }))
   })
 
-  return new Blob([sheet_to_csv(sheet, { FS: ';' })])
+  return sheet;
 }
 
-Certipaq.label = "Tableur"
-Certipaq.extension = "csv"
-Certipaq.mimetype = "text/csv"
 
-export default Certipaq;
+class CertipaqExporter extends BaseExporter {
+  label = "Tableur"
+  extension = "csv"
+  mimetype = "text/csv"
+
+  getSheet() {
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
+  }
+
+  toFileData() {
+    const sheet = this.getSheet()
+    return new Blob([sheet_to_csv(sheet, { FS: ';' })])
+  }
+
+  toClipboard() {
+    let sheet = this.getSheet()
+    sheet = sheet_to_json(sheet, { header: 1, raw: false, defval: '' })
+    // Remove first 5 rows, keep first columns A to J
+    sheet = sheet.slice(5).map(row => row.slice(0, 10))
+    sheet = json_to_sheet(sheet)
+    let data = sheet_to_csv(sheet, { FS: '\t' })
+
+    return navigator.clipboard.writeText(data)
+  }
+}
+
+
+export default CertipaqExporter;
