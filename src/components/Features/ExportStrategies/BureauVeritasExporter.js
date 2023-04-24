@@ -52,9 +52,9 @@ const getSheet = ({ featureCollection, operator }) => {
 
     sheet_add_aoa(sheet, [
       [
-        culture.groupe,
-        culture.libelle_code_cpf,
-        culture.code_bureau_veritas,
+        culture?.groupe,
+        culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${key}`,
+        culture?.code_bureau_veritas,
         `Ilots : ${features.map(feature => featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).join(', ')}`,
         surface / 10_000,
         'ha',

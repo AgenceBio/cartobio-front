@@ -6,6 +6,7 @@ import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js
 
 const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R, sheet_to_json, json_to_sheet } = utils
+const cultureCpf = (culture, TYPE) => culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${TYPE}`
 
 const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
@@ -72,7 +73,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Ilot
       `${ilotId}_${parcelleId}`,
       // Culture
-      culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${props.TYPE}`,
+      cultureCpf(culture, props.TYPE),
       // Variété / infos
       '',
       // C0 - AB - C1 - C2 - C3
@@ -141,7 +142,7 @@ const getSheet = ({ featureCollection, operator }) => {
     )
 
     sheet_add_aoa(sheet, [
-      [culture.libelle_code_cpf,   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
+      [cultureCpf(culture, key),   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
     ], { origin: `R${9 + index}`});
 
     // Formattage des totaux

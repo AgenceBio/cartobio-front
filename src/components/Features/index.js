@@ -141,7 +141,7 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
       .join('-')
   })
 
-  return Object.entries(groups).map(([key, features], i) => ({
+  return Object.entries(groups).map(([key, features]) => ({
     label: groupingChoices[pivots.at(0)].groupLabelFn(features[0], key),
     key: key.split('-').at(0),
     pivot,

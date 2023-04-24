@@ -7,11 +7,7 @@
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
     <div class="fr-input-group">
       <label class="fr-label">Type de culture</label>
-      <select class="fr-select" name="culture" v-model="patch.TYPE" required>
-        <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">
-          {{ libellé }}
-        </option>
-      </select>
+      <CultureSelector v-model="patch.TYPE" />
     </div>
 
     <div class="fr-input-group">
@@ -32,7 +28,7 @@
 import { reactive } from 'vue';
 
 import { featureName } from '@/components/Features/index.js'
-import { liste as codesPac } from '@/referentiels/pac.js'
+import CultureSelector from '@/components/Features/CultureSelector.vue'
 
 const props = defineProps({
   feature: {
