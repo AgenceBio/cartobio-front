@@ -41,7 +41,7 @@ const Default = ({ featureCollection, operator }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
-    const label = props.TYPE_LIBELLE ?? fromCodePac(props.TYPE).libelle_code_cpf
+    const label = props.TYPE_LIBELLE ?? fromCodePac(props.TYPE)?.libelle_code_cpf
     const surfaceHa = surface(geometry) / 10_000
     const isPac = Boolean(props.PACAGE)
     const culture = props.TYPE

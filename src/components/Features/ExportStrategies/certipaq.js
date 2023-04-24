@@ -5,6 +5,8 @@ import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } f
 const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R } = utils
 
+const cultureCpf = (culture, TYPE) => culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${TYPE}`
+
 const Certipaq = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
@@ -70,7 +72,7 @@ const Certipaq = ({ featureCollection, operator }) => {
       // Ilot
       `${ilotId}_${parcelleId}`,
       // Culture
-      culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${props.TYPE}`,
+      cultureCpf(culture, props.TYPE),
       // Variété / infos
       '',
       // C0 - AB - C1 - C2 - C3
@@ -139,7 +141,7 @@ const Certipaq = ({ featureCollection, operator }) => {
     )
 
     sheet_add_aoa(sheet, [
-      [culture.libelle_code_cpf,   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
+      [cultureCpf(culture, key),   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
     ], { origin: `R${9 + index}`});
 
     // Formattage des totaux
