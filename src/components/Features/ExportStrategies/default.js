@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
-import { surface, inHa } from '@/components/Features/index.js'
+import { surface } from '@/components/Features/index.js'
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
