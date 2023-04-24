@@ -8,7 +8,7 @@ export { CertipaqExporter, BureauVeritasExporter }
 
 const exporters = new Map([
   // Temporary, use it with Ecocert test account
-  [1, BureauVeritasExporter],
+  [1, CertipaqExporter],
   [2, BureauVeritasExporter],
   [3, CertipaqExporter],
 ])
