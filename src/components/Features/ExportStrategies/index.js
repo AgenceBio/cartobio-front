@@ -1,17 +1,18 @@
-import DefaultStrategy from './default.js'
-import Certipaq from './certipaq.js'
-import BureauVeritas from './bureau-veritas.js'
+import DefaultExporter from './DefaultExporter.js'
+import CertipaqExporter from './CertipaqExporter.js'
+import BureauVeritasExporter from './BureauVeritasExporter.js'
 
-export default DefaultStrategy
-export { Certipaq, BureauVeritas }
+export default DefaultExporter
+export { CertipaqExporter, BureauVeritasExporter }
 
-const strategies = new Map([
+
+const exporters = new Map([
   // Temporary, use it with Ecocert test account
-  [1, BureauVeritas],
-  [2, BureauVeritas],
-  [3, Certipaq],
+  [1, BureauVeritasExporter],
+  [2, BureauVeritasExporter],
+  [3, CertipaqExporter],
 ])
 
 export function fromId (ocId) {
-  return strategies.has(ocId) ? strategies.get(ocId) : DefaultStrategy
+  return exporters.has(ocId) ? exporters.get(ocId) : DefaultExporter
 }

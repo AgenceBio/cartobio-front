@@ -2,10 +2,12 @@ import { utils } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } from '@/components/Features/index.js'
 
+import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
+
 const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R } = utils
 
-const Certipaq = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
   // First sheet
@@ -148,11 +150,24 @@ const Certipaq = ({ featureCollection, operator }) => {
       .forEach(col => Object.assign(sheet[`${col}${9 + index}`], { t: 'n', z: '0.00' }))
   })
 
-  return new Blob([sheet_to_csv(sheet, { FS: ';' })])
+  return sheet;
 }
 
-Certipaq.label = "Tableur"
-Certipaq.extension = "csv"
-Certipaq.mimetype = "text/csv"
 
-export default Certipaq;
+class CertipaqExporter extends BaseExporter {
+  label = "Tableur"
+  extension = "csv"
+  mimetype = "text/csv"
+
+  getSheet() {
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
+  }
+
+  toFileData() {
+    const sheet = this.getSheet()
+    return new Blob([sheet_to_csv(sheet, { FS: ';' })])
+  }
+}
+
+
+export default CertipaqExporter;

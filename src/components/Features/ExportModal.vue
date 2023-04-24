@@ -14,9 +14,20 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
-          <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
-              {{ strategy.label }}&nbsp;<small>(<code :aria-label="strategy.label">.{{ strategy.extension }}</code>)</small>
-          </button>
+          <div class="fr-grid-row">
+            <div class="fr-col">
+              <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
+                {{ exporter.label }}&nbsp;<small>(<code :aria-label="exporter.label">.{{
+                  exporter.extension
+                }}</code>)</small>
+              </button>
+            </div>
+            <div class="fr-col" v-if="exporter.toClipboard">
+              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-file-text-line': !copied}" @click="ocClipboardExport">
+                {{ exporter.label }}&nbsp;<small>(copier-coller)</small>
+              </button>
+            </div>
+          </div>
         </li>
         <li>
           <button class="fr-btn fr-icon-france-line fr-btn--secondary" @click="geojsonExport">
@@ -38,7 +49,7 @@
 </template>
 
 <script setup>
-import { computed, toRaw } from 'vue'
+import { computed, ref, toRaw } from 'vue'
 import { fromId } from './ExportStrategies/index.js'
 
 import Modal from '@/components/Modal.vue'
@@ -57,7 +68,14 @@ const props = defineProps({
 const numeroBio = computed(() => props.operator.numeroBio)
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id)
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`)
-const strategy = computed(() => fromId(organismeCertificateurId.value))
+const exporter = computed(function () {
+  let exporterClass = fromId(organismeCertificateurId.value)
+  return new exporterClass({
+    featureCollection: props.collection,
+    operator: props.operator
+  })
+})
+const copied = ref(false)
 
 function geojsonExport() {
   const blob = new Blob(
@@ -72,16 +90,20 @@ function geojsonExport() {
 }
 
 function ocExport () {
-  const strategy = fromId(organismeCertificateurId.value)
-  const data = strategy({
-    featureCollection: props.collection,
-    operator: props.operator
-  })
-
+  const data = exporter.value.toFileData()
   const link = document.createElement('a')
   link.href = URL.createObjectURL(data)
-  link.download = `${filenameBase.value}.${strategy.extension}`
-  link.mime = strategy.mime
+  link.download = `${filenameBase.value}.${exporter.value.extension}`
+  link.mime = exporter.value.mime
   link.click()
+}
+
+function ocClipboardExport () {
+  exporter.value.toClipboard()
+  copied.value = true
+
+  setTimeout(() => {
+    copied.value = false
+  }, 2000)
 }
 </script>

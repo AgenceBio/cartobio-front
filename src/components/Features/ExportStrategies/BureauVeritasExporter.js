@@ -1,11 +1,11 @@
 import { utils, write } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { GROUPE_DATE_ENGAGEMENT, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, featureName, getFeatureGroups } from '@/components/Features/index.js'
+import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
 
-const BureauVeritas = ({ featureCollection, operator }) => {
-  const workbook = book_new()
+const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
   // First sheet
@@ -68,13 +68,27 @@ const BureauVeritas = ({ featureCollection, operator }) => {
     sheet[`F${2 + index}`].z = '0.00'
   })
 
-  book_append_sheet(workbook, sheet, 'AppliAgro')
-
-  return new Blob([write(workbook, { bookType: BureauVeritas.extension, type: 'array' })], { type: BureauVeritas.mimetype })
+  return sheet
 }
 
-BureauVeritas.label = 'Excel'
-BureauVeritas.extension = 'xlsx'
-BureauVeritas.mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+class BureauVeritasExporter extends BaseExporter {
+  label = 'Excel'
+  extension = 'xlsx'
+  mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-export default BureauVeritas;
+  getSheet() {
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+  }
+
+  toFileData() {
+    const sheet = this.getSheet()
+    const workbook = book_new()
+    book_append_sheet(workbook, sheet, 'AppliAgro')
+
+    return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
+  }
+}
+
+
+
+export default BureauVeritasExporter;

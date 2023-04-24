@@ -1,13 +1,12 @@
 import { utils, write } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
-import { surface, inHa } from '@/components/Features/index.js'
+import { surface } from '@/components/Features/index.js'
+import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
 
-const Default = ({ featureCollection, operator }) => {
-  const workbook = book_new()
-
+const getSheet = ({ featureCollection, operator }) => {
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
@@ -69,14 +68,25 @@ const Default = ({ featureCollection, operator }) => {
     Object.assign(sheet[`D${7 + index}`], { t: 'n', z: '0.00' })
   })
 
-  // First sheet: finalize
-  book_append_sheet(workbook, sheet, 'Parcellaire bio');
-
-  return new Blob([write(workbook, { bookType: 'xlsx', type: 'array' })], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+  return sheet
 }
 
-Default.label = 'Excel'
-Default.extension = 'xlsx'
-Default.mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+class DefaultExporter extends BaseExporter {
+  label = 'Excel'
+  extension = 'xlsx'
+  mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-export default Default;
+  getSheet() {
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+  }
+
+  toFileData() {
+    const sheet = this.getSheet()
+    const workbook = book_new()
+    book_append_sheet(workbook, sheet, 'Parcellaire bio')
+
+    return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
+  }
+}
+
+export default DefaultExporter;
