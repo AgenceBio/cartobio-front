@@ -27,6 +27,7 @@ onMounted(() => {
             return codesPac
                 .filter(([, libelle]) => libelle.toLowerCase().includes(query || ''.toLowerCase()))
                 .map(([code, libelle]) => ({code: code, libelle: libelle}))
+                .sort((a, b) => a.libelle.localeCompare(b.libelle))
           },
           templates: {
             item ({ item, html }) {
@@ -49,6 +50,10 @@ onMounted(() => {
 
 <style>
 .aa-Panel {
-    z-index: 2000;
+  z-index: 2000;
+}
+
+.aa-Item:hover {
+  background-color: #ececfe;
 }
 </style>
