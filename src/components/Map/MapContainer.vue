@@ -55,8 +55,14 @@ watch(() => props.style, () => {
   map.value.triggerRepaint()
 }, { deep: true })
 
-useResizeObserver(mapContainer, () => {
-  map.value.resize()
+useResizeObserver(mapContainer, (entries) => {
+  window.requestAnimationFrame(() => {
+    if (!Array.isArray(entries) || !entries.length) {
+      return;
+    }
+
+    map.value.resize()
+  })
 })
 </script>
 
