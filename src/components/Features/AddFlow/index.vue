@@ -11,7 +11,7 @@
         <label for="form-commune" class="fr-label">Commune</label>
 
         <div class="fr-input-wrap fr-icon-road-map-fill">
-          <input type="search" class="fr-input" id="form-commune" v-model="commune" required autofocus />
+          <CommuneSelect v-model="commune" />
         </div>
       </div>
 
@@ -60,6 +60,7 @@ import EditForm from '@/components/Features/SingleItemCertificationBodyForm.vue'
 import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api';
 import store from '@/store.js'
+import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 
 const props = defineProps({
   operator: {
@@ -74,7 +75,7 @@ const props = defineProps({
 
 const flowSource = ref('cadastre')
 const showDetailsModal = ref(false)
-const commune = ref('26108')
+const commune = ref('')
 const cadastreReferences = reactive([''])
 const feature = reactive({ type: "Feature", geometry: null, properties: {} })
 
