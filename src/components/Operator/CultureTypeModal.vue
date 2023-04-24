@@ -11,11 +11,7 @@
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
         <label class="fr-label">Nouveau type de culture</label>
-        <select class="fr-select" name="culture" v-model="patch.TYPE" required>
-          <option v-for="([code, libellé]) in codesPac" :key="code" :value="code">
-            {{ libellé }}
-          </option>
-        </select>
+        <CultureSelector v-model="patch.TYPE" />
       </div>
     </form>
 
@@ -35,9 +31,9 @@
 import { reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFeaturesStore } from '@/stores/features.js'
-import { liste as codesPac } from '@/referentiels/pac.js'
 
 import Modal from '@/components/Modal.vue'
+import CultureSelector from "@/components/Features/CultureSelector.vue";
 
 const props = defineProps({ })
 const emit = defineEmits(['submit'])
