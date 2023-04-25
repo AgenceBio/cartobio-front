@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { isValid } from './pac.js'
+import { isValid, resolveCampagneFromDate } from './pac.js'
 
 describe('isValid', () => {
   test('valid pacage numbers', () => {
@@ -24,5 +24,16 @@ describe('isValid', () => {
     expect(isValid('000123456')).toBe(false)
     expect(isValid('966345678')).toBe(false)
 
+  })
+})
+
+describe('resolveCampagneFromDate', () => {
+  test('it is the current year', () => {
+    expect(resolveCampagneFromDate(new Date('2023-04-14'))).toBe(2023)
+    expect(resolveCampagneFromDate(new Date('2023-04-15'))).toBe(2023)
+  })
+
+  test('it is the previous year', () => {
+    expect(resolveCampagneFromDate(new Date('2023-04-01'))).toBe(2022)
   })
 })

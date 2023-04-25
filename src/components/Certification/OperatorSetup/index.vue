@@ -62,14 +62,14 @@
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
-            Données PAC de {{ télépac.previousCampagne }}
+            Données PAC de {{ télépac.preloadedCampagne }}
           </h3>
           <div class="fr-card__desc">
             <p>
-              Importez <b>en un clic</b> la déclaration PAC de {{ télépac.previousCampagne }}.
+              Importez <b>en un clic</b> la déclaration PAC de {{ télépac.preloadedCampagne }}.
             </p>
             <p>
-              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis la déclaration de {{ télépac.previousCampagne }}.
+              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis la déclaration de {{ télépac.preloadedCampagne }}.
             </p>
           </div>
           <div class="fr-card__start">
