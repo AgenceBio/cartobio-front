@@ -8,9 +8,8 @@
 </template>
 
 <script setup>
-import { provide, shallowRef, ref, onMounted, watch } from 'vue'
+import { provide, shallowRef, ref, onMounted, onUpdated, watch } from 'vue'
 import { Map as MapLibre } from 'maplibre-gl'
-import {useResizeObserver} from "@vueuse/core";
 
 import baseStyle from '@/map-styles/base.json'
 
@@ -20,14 +19,17 @@ const mapContainer = ref(null)
 provide('map', map)
 
 const props = defineProps({
-  style: {
-    type: [Object, String],
-    default: baseStyle
-  },
   bounds: Array,
+  mode: {
+    type: String,
+  },
   options: {
     type: Object,
     default: {}
+  },
+  style: {
+    type: [Object, String],
+    default: baseStyle
   },
 })
 
@@ -47,6 +49,7 @@ onMounted(() => {
     emit('load', map)
     emit('zoom:change', map.getZoom())
   })
+
   map.value.on('zoomend', ({ target: map }) => emit('zoom:change', map.getZoom()))
 })
 
@@ -55,15 +58,7 @@ watch(() => props.style, () => {
   map.value.triggerRepaint()
 }, { deep: true })
 
-useResizeObserver(mapContainer, (entries) => {
-  window.requestAnimationFrame(() => {
-    if (!Array.isArray(entries) || !entries.length) {
-      return;
-    }
-
-    map.value.resize()
-  })
-})
+onUpdated(() => map.value.resize())
 </script>
 
 <style lang="postcss" scoped>
