@@ -25,7 +25,9 @@ const props = defineProps({
   },
   options: {
     type: Object,
-    default: {}
+    default() {
+      return {}
+    }
   },
   style: {
     type: [Object, String],

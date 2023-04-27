@@ -1,6 +1,6 @@
 <template>
   <div class="fr-alert fr-alert--warning fr-mb-3w" v-if="hasFailures">
-    <p v-for="([ruleId, result]) in validationRulesWithFailures">
+    <p v-for="([ruleId, result]) in validationRulesWithFailures" :key="ruleId">
       {{ ruleId === 'NOT_EMPTY' ? `Il manque un type de culture dans ${result.failures} parcelles.` : '' }}
       {{ ruleId === 'ENGAGEMENT_DATE' ? `Il manque une date d'engagement et/ou un niveau de conversion dans ${result.failures} parcelles.` : '' }}
     </p>
@@ -49,7 +49,7 @@ const props = defineProps({
 const sendOffModal = ref(false)
 const validationResult = computed(() => applyValidationRules(props.validationRules.rules, ...props.features.features))
 const hasFailures = computed(() => Boolean(validationResult.value.failures))
-const validationRulesWithFailures = computed(() => Object.entries(validationResult.value.rules).filter(([ruleId, { failures }]) => failures))
+const validationRulesWithFailures = computed(() => Object.entries(validationResult.value.rules).filter(([, { failures }]) => failures))
 const isComplete = computed(() => hasFailures.value === false)
 const isAudited = computed(() => isCertificationImmutable(props.record.certification_state))
 

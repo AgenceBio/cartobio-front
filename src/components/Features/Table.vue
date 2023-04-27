@@ -108,7 +108,6 @@ const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
 
 const userGroupingChoice = ref('CULTURE')
-const handleUserGroupingChoice = ($event) => userGroupingChoice.value = $event.target.value
 
 // hence, feature groups
 const featureGroups = computed(() => getFeatureGroups(props.features, userGroupingChoice.value))

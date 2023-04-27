@@ -6,7 +6,7 @@
       </button>
       <div :class="['fr-collapse', 'fr-translate__menu', 'fr-menu', isMenuOpen && 'fr-collapse--expanded']" id="mass-actions__actions" data-fr-js-collapse="true" style="--collapse-max-height: none; --collapse: -148px">
         <ul class="fr-menu__list">
-          <li class="w-full" v-for="({ label, component }) in actions">
+          <li class="w-full" v-for="({ label, component }) in actions" :key="label">
             <button class="fr-btn fr-btn--tertiary-no-outline w-full" type="button" @click="openModalWithComponent(component)">
               {{ label }}
             </button>
@@ -25,7 +25,7 @@
 import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 
-const props = defineProps({
+defineProps({
   label: {
     type: String,
     required: true

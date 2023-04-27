@@ -86,7 +86,7 @@
 </template>
 
 <script setup>
-import { ref, computed, readonly } from 'vue'
+import { ref } from 'vue'
 import { convertShapefileArchiveToGeoJSON } from '@/cartobio-api.js'
 import { useTélépac } from '@/referentiels/pac.js'
 
@@ -95,16 +95,6 @@ const télépac = useTélépac()
 
 const fileInput = ref(null)
 const source = 'telepac'
-
-const helpSteps = readonly([
-  { label: 'Je me connecte à Télépac' },
-  { label: `Téléprocédure Dossier PAC ${télépac.campagne.value}` },
-  { label: 'Onglet Import/export' },
-  { label: 'Téléchargement du fichier' },
-])
-
-const currentStepIndex = ref(0)
-const nextStepIndex = computed(() => currentStepIndex.value < helpSteps.length ? currentStepIndex.value + 1 : currentStepIndex.value)
 
 async function handleFileUpload () {
   const [archive] = fileInput.value.files

@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['position'])
+defineProps(['position'])
 </script>
 
 <style scoped>

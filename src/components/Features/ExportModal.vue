@@ -65,11 +65,10 @@ const props = defineProps({
   }
 })
 
-const numeroBio = computed(() => props.operator.numeroBio)
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id)
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`)
 const exporter = computed(function () {
-  let exporterClass = fromId(organismeCertificateurId.value)
+  const exporterClass = fromId(organismeCertificateurId.value)
   return new exporterClass({
     featureCollection: props.collection,
     operator: props.operator

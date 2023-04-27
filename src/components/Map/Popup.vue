@@ -16,7 +16,9 @@ const popupRef = ref(null)
 const props = defineProps({
   lnglat: {
     type: Array,
-    default: [0, 0],
+    default() {
+      return [0, 0]
+    }
   },
   maxWidth: {
     type: String,
@@ -24,7 +26,9 @@ const props = defineProps({
   },
   offset: {
     type: Array,
-    default: [0, -15]
+    default() {
+      return [0, -15]
+    }
   },
 })
 
