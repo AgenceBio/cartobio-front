@@ -37,7 +37,7 @@ const VALIDATION_RULES = {
     const { conversion_niveau, engagement_date } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
-    if (conversionLevel.value === LEVEL_UNKNOWN || (isABLevel(conversion_niveau) && !engagement_date)) {
+    if (conversionLevel.value === LEVEL_UNKNOWN || (isABLevel(conversion_niveau) && conversion_niveau !== LEVEL_AB && !engagement_date)) {
       return false
     }
 
