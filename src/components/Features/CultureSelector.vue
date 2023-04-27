@@ -11,7 +11,7 @@ import '@algolia/autocomplete-theme-classic';
 
 const autocompleteRef = ref(null)
 
-const { modelValue } = defineProps(['modelValue'])
+const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 
 onMounted(() => {
@@ -44,7 +44,7 @@ onMounted(() => {
     renderer: { createElement: h, Fragment, render }
   })
 
-  setQuery(codesPac.find(([code,]) => code === modelValue)?.[1] || '')
+  setQuery(codesPac.find(([code,]) => code === props.modelValue)?.[1] || '')
 })
 </script>
 

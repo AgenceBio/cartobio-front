@@ -175,7 +175,7 @@ class CertipaqExporter extends BaseExporter {
     // Remove first 5 rows, keep first columns A to J
     sheet = sheet.slice(5).map(row => row.slice(0, 10))
     sheet = json_to_sheet(sheet)
-    let data = sheet_to_csv(sheet, { FS: '\t' })
+    const data = sheet_to_csv(sheet, { FS: '\t' })
 
     return navigator.clipboard.writeText(data)
   }

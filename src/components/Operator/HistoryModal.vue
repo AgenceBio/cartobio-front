@@ -41,7 +41,7 @@ import { ddmmmmyyyy } from '@/components/dates.js'
 import Modal from '@/components/Modal.vue'
 import CertificationState from '@/components/Certification/State.vue'
 
-const props = defineProps({
+defineProps({
   operator: {
     type: Object,
     required: true

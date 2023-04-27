@@ -36,7 +36,7 @@ import { useFeaturesStore } from '@/stores/features.js'
 
 import Modal from '@/components/Modal.vue'
 
-const props = defineProps({ })
+defineProps({ })
 const emit = defineEmits(['submit'])
 
 const store = useFeaturesStore()

@@ -41,10 +41,8 @@
 </template>
 
 <script setup>
-import { ref, readonly } from 'vue'
+import { readonly, ref } from 'vue'
 import axios from 'axios'
-import { statsPush } from '@/stats.js'
-import store from '../../store.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
