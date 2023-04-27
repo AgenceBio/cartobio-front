@@ -50,7 +50,7 @@
             </li>
             <li>
               <a class="fr-btn fr-btn--tertiary" href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#1-import-de-la-declaration-pac" target="_blank">
-                besoin d'aide ?
+                besoin d'aide&nbsp;?
               </a>
             </li>
           </ul>
@@ -89,7 +89,7 @@
             </li>
             <li>
               <a class="fr-btn fr-btn--tertiary" href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#2-import-par-numero-de-pac" target="_blank">
-                besoin d'aide ?
+                besoin d'aide&nbsp;?
               </a>
             </li>
           </ul>
