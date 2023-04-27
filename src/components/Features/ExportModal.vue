@@ -15,7 +15,7 @@
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
           <div class="fr-grid-row">
-            <div class="fr-col">
+            <div class="fr-col" v-if="exporter.toFileData">
               <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
                 {{ exporter.label }}&nbsp;<small>(<code :aria-label="exporter.label">.{{
                   exporter.extension
