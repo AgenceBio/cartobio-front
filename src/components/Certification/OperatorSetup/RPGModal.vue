@@ -1,6 +1,6 @@
 <template>
   <component :is="Modal" v-bind="$attrs">
-    <template #title>Import des données PAC de {{ télépac.previousCampagne }}</template>
+    <template #title>Import des données PAC de {{ télépac.preloadedCampagne }}</template>
 
     <form id="rpg-lookup-form" @submit.prevent="handleLookup">
       <div :class="{'fr-input-group': true, 'fr-input-group--valid': isPacageValid}">
@@ -23,7 +23,7 @@
       <h3 class="fr-alert__title">Aucune parcelle trouvée</h3>
       <p>
         Nous n'avons pas connaissance de parcelles déclarées
-        à la PAC en {{ télépac.previousCampagne }} pour le PACAGE {{ numeroPacage }}.
+        à la PAC en {{ télépac.preloadedCampagne }} pour le PACAGE {{ numeroPacage }}.
       </p>
     </div>
 

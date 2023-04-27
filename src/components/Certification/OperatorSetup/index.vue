@@ -6,12 +6,12 @@
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
-            Import du parcellaire par l'agriculteur
+            L'agriculteur utilise CartoBio
           </h3>
           <p class="fr-card__desc">
             L'agriculteur <b>{{ operator.nom }}</b> est autonome sur CartoBio.
-            Il peut importer des données depuis son logiciel de gestion
-            (Géofolia, MesParcelles…) ou ses données PAC.
+            Cette personne peut récupérer des données depuis son logiciel de gestion
+            (Géofolia, MesParcelles…) ou à partir de sa déclaration Telepac la plus récente.
           </p>
           <div class="fr-card__start">
             <ul class="fr-tags-group">
@@ -24,42 +24,52 @@
       </div>
     </div>
 
-    <div class="fr-card fr-enlarge-link fr-card--horizontal fr-mb-3w">
+    <div class="fr-card fr-card--horizontal fr-mb-3w">
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
-            <a href="#" role="button" @click.prevent="setupFromTelepacModal = true">
-              Import des données PAC de {{ télépac.campagne }}
-            </a>
+            Données PAC de {{ télépac.campagne }}
           </h3>
           <div class="fr-card__desc">
             <p>
               Importez vous-même le fichier .zip de la <b>déclaration PAC de {{ télépac.campagne }}</b>.
-              Ce fichier peut vous être fourni par l'agriculteur ou sa structure de gestion.
+              Ce fichier peut vous être fourni par l'agriculteur ou par sa structure de gestion.
             </p>
             <p>
-              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis
-              la déclaration de {{ télépac.campagne }}.
+              Vous aurez éventuellement à <b>mettre à jour</b> les parcelles ayant changé depuis
+              cette déclaration.
             </p>
           </div>
+        </div>
+        <div class="fr-card__footer">
+          <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+            <li>
+              <button class="fr-btn" @click.prevent="setupFromTelepacModal = true">
+                démarrer l'import
+              </button>
+            </li>
+            <li>
+              <a class="fr-btn fr-btn--tertiary" href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#1-import-de-la-declaration-pac" target="_blank">
+                besoin d'aide ?
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <div class="fr-card fr-enlarge-link fr-card--horizontal">
+    <div class="fr-card fr-card--horizontal">
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
-            <a href="#" role="button" @click.prevent="setupFromRPGModal = true">
-              Import des données PAC de {{ télépac.previousCampagne }}
-            </a>
+            Données PAC de {{ télépac.preloadedCampagne }}
           </h3>
           <div class="fr-card__desc">
             <p>
-              Importez <b>en un clic</b> la déclaration PAC de {{ télépac.previousCampagne }}.
+              Importez <b>en un clic</b> la déclaration PAC de {{ télépac.preloadedCampagne }}.
             </p>
             <p>
-              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis la déclaration de {{ télépac.previousCampagne }}.
+              Vous aurez ensuite à <b>mettre à jour</b> les parcelles ayant changé depuis la déclaration de {{ télépac.preloadedCampagne }}.
             </p>
           </div>
           <div class="fr-card__start">
@@ -69,6 +79,20 @@
               </li>
             </ul>
           </div>
+        </div>
+        <div class="fr-card__footer">
+          <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+            <li>
+              <button class="fr-btn" @click.prevent="setupFromRPGModal = true">
+                démarrer l'import
+              </button>
+            </li>
+            <li>
+              <a class="fr-btn fr-btn--tertiary" href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#2-import-par-numero-de-pac" target="_blank">
+                besoin d'aide ?
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
