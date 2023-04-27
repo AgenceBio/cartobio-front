@@ -58,7 +58,7 @@ const getSheet = ({ featureCollection, operator }) => {
 
   // First sheet: plots informations (via `featureCollection`)
   sheet_add_aoa(sheet, [
-    ['',        '',     '',        '',                'Surfaces en ha', '', '', '', '', '',          '',                            '',          '',               'Dernier intrant non autorisé en AB',  '',     ''],
+    [''       ,     '',        '',        '',                'Surfaces en ha', '', '', '', '', '',          '',                            '',          '',               'Dernier intrant non autorisé en AB',  '',     ''],
     ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3',     'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent', 'Produit',                             'Date', 'Id. CartoBio'],
   ], { origin: 'A4'})
 
@@ -95,7 +95,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Date
       '',
       // ParcelleId
-      id,
+      String(id),
     ]
   }), { origin: 'A6', cellDates: true })
 
