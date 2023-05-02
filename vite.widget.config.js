@@ -11,18 +11,22 @@ const libConfig = {
   }
 }
 
-export default defineConfig(({ mode }) => ({
-  ...baseConfig,
+export default defineConfig(({ mode }) => {
+  const resolvedConfig = baseConfig({ mode })
 
-  root: './widget',
-  envDir: resolve(__dirname),
-  publicDir: resolve(join(__dirname, 'public')),
+  return {
+    ...resolvedConfig,
 
-  build: {
-    ...baseConfig.build,
+    root: './widget',
+    envDir: resolve(__dirname),
+    publicDir: resolve(join(__dirname, 'public')),
 
-    emptyOutDir: mode === 'lib',
-    outDir: resolve(join(__dirname, 'dist', 'notification-webcomponent')),
-    ...(mode === 'lib' ? libConfig : {})
-  },
-}))
+    build: {
+      ...resolvedConfig.build,
+
+      emptyOutDir: mode === 'lib',
+      outDir: resolve(join(__dirname, 'dist', 'notification-webcomponent')),
+      ...(mode === 'lib' ? libConfig : {})
+    }
+  }
+})
