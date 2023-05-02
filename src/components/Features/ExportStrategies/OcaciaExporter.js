@@ -1,10 +1,10 @@
-import { utils } from 'xlsx'
+import { utils, write } from 'xlsx'
 import { fromCodePac } from '@agencebio/rosetta-cultures'
 import { surface } from '@/components/Features/index.js'
 
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
-const { aoa_to_sheet, sheet_to_csv } = utils
+const { aoa_to_sheet, book_append_sheet, book_new, sheet_to_csv } = utils
 const cultureCpf = (culture, TYPE) => culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${TYPE}`
 
 const getSheet = ({ featureCollection, operator }) => {
@@ -63,11 +63,19 @@ const getSheet = ({ featureCollection, operator }) => {
 
 class OcaciaExporter extends BaseExporter {
   label = "Tableur"
-  extension = "csv"
-  mimetype = "text/csv"
+  extension = 'xlsx'
+  mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
   getSheet() {
     return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
+  }
+
+  toFileData() {
+    const sheet = this.getSheet()
+    const workbook = book_new()
+    book_append_sheet(workbook, sheet, 'Parcellaire')
+
+    return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
   }
 
   toClipboard() {
