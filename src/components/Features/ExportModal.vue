@@ -15,7 +15,7 @@
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
           <div class="fr-grid-row">
-            <div class="fr-col">
+            <div class="fr-col" v-if="exporter.toFileData">
               <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
                 {{ exporter.label }}&nbsp;<small>(<code :aria-label="exporter.label">.{{
                   exporter.extension
@@ -23,8 +23,8 @@
               </button>
             </div>
             <div class="fr-col" v-if="exporter.toClipboard">
-              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-file-text-line': !copied}" @click="ocClipboardExport">
-                {{ exporter.label }}&nbsp;<small>(copier-coller)</small>
+              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied}" @click="ocClipboardExport">
+                Copier dans le presse-papier
               </button>
             </div>
           </div>
@@ -32,15 +32,6 @@
         <li>
           <button class="fr-btn fr-icon-france-line fr-btn--secondary" @click="geojsonExport">
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
-          </button>
-        </li>
-        <li class="fr-mt-5w">
-          <p class="fr-mb-0 fr-ml-1w">
-            <span class="fr-icon fr-icon--sm fr-icon-information-line" aria-hidden="true" />
-            Bientôt disponible
-          </p>
-          <button class="fr-btn fr-icon-france-line fr-btn--secondary" disabled>
-            Shapefile&nbsp;<small>(<code aria-label="Extension de fichier .shp">.shp</code>)</small>
           </button>
         </li>
       </ul>
