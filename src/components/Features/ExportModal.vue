@@ -23,8 +23,8 @@
               </button>
             </div>
             <div class="fr-col" v-if="exporter.toClipboard">
-              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-file-text-line': !copied}" @click="ocClipboardExport">
-                {{ exporter.label }}&nbsp;<small>(copier-coller)</small>
+              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied}" @click="ocClipboardExport">
+                Copier dans le presse-papier
               </button>
             </div>
           </div>
