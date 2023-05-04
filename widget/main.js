@@ -1,5 +1,8 @@
 import { defineCustomElement } from 'vue'
+import { createPinia, setActivePinia } from 'pinia'
 import NotificationCartobio from './Notification.ce.vue'
+
+setActivePinia(createPinia())
 
 const NotificationCartobioElement = defineCustomElement({
   ...NotificationCartobio,
