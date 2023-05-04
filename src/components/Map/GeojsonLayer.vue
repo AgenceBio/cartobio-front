@@ -7,11 +7,29 @@ import { inject, watch } from 'vue'
 const props = defineProps({
   data: {
     type: Object,
-    required: true,
   },
   name: {
     type: String,
     required: true,
+  },
+  paint: {
+    type: Object,
+    default: () => ({
+      "fill-outline-color": "#fff",
+      "fill-color": [
+        'case',
+        ['boolean', ['feature-state', 'selected'], false],
+        "#000091",
+        ['boolean', ['feature-state', 'hover'], false],
+        "#dcdcfc",
+        ['boolean', ['==', ['get', "TYPE"], "BOR"], false],
+        //--blue-france-main-525
+        "#6a6af4",
+        //--blue-france-sun-113-625
+        "#eee"
+      ],
+      "fill-opacity": 1,
+    })
   },
   before: String
 })
@@ -27,28 +45,13 @@ watch(map, () => {
   map.value
       .addSource(props.name, {
         type: 'geojson',
-        data: props.data
+        data: props.data ?? { type: 'FeatureCollection', features: [] }
       })
       .addLayer({
         id: `${props.name}-geometry`,
         source: props.name,
         type: 'fill',
-        paint: {
-          "fill-outline-color": "#fff",
-          "fill-color": [
-            'case',
-            ['boolean', ['feature-state', 'selected'], false],
-            "#000091",
-            ['boolean', ['feature-state', 'hover'], false],
-            "#dcdcfc",
-            ['boolean', ['==', ['get', "TYPE"], "BOR"], false],
-            //--blue-france-main-525
-            "#6a6af4",
-            //--blue-france-sun-113-625
-            "#eee"
-          ],
-          "fill-opacity": 1
-        }
+        paint: props.paint
       }, props.before)
     .addLayer({
       id: `${props.name}-geometry-outline`,
@@ -61,5 +64,9 @@ watch(map, () => {
       }
     }, props.before)
   })
+})
+
+watch(() => props.data, (featureCollection) => {
+  map.value.getSource(props.name).setData(featureCollection)
 })
 </script>

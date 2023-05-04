@@ -54,11 +54,12 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, markRaw, ref } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue';
 import EditForm from '@/components/Features/SingleItemCertificationBodyForm.vue'
 import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api';
+import { featureCollection } from '@turf/helpers'
 import store from '@/store.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
@@ -73,6 +74,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const emit = defineEmits(['update'])
 
 const flowSource = ref('cadastre')
 const showDetailsModal = ref(false)
@@ -93,6 +96,8 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
   feature.geometry = cadastreFeature.geometry
   feature.properties.cadastre = reference
   feature.properties.name = reference
+
+  emit('update', featureCollection([markRaw(feature)]))
 }
 
 async function saveFeature ({ patch }) {
