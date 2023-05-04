@@ -1,5 +1,7 @@
 import groupBy from 'array.prototype.groupby'
 import { featureCollection, feature } from '@turf/helpers'
+import difference from '@turf/difference'
+import intersect from '@turf/intersect'
 import area from '@turf/area'
 import { libelléFromCode } from '@/referentiels/pac.js'
 import { conversionLevels } from '@/referentiels/ab.js'
@@ -207,4 +209,21 @@ export function surface (geometryOrFeature) {
     ? area(geometryOrFeature)
     // we only have a geometry
     : area(feature(geometryOrFeature))
+}
+
+/**
+ * Returns a geometry, without any content part of a feature collection
+ *
+ * @param {Feature} geometry
+ * @param {FeatureCollection} featureCollection
+ * @returns {Feature}
+ */
+export function diff (feature, featureCollection) {
+  return featureCollection.features.reduce((reducedFeature, target) => {
+    if (!intersect(reducedFeature, target)) {
+      return reducedFeature
+    }
+
+    return difference(reducedFeature, target)
+  }, feature)
 }

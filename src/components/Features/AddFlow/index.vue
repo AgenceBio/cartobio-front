@@ -54,12 +54,13 @@
 </template>
 
 <script setup>
-import { computed, reactive, markRaw, ref } from 'vue'
+import { computed, markRaw, reactive, ref, toRaw } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue';
 import EditForm from '@/components/Features/SingleItemCertificationBodyForm.vue'
 import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api';
 import { featureCollection } from '@turf/helpers'
+import { diff } from '../index.js'
 import store from '@/store.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
@@ -70,6 +71,10 @@ const props = defineProps({
     required: true
   },
   record: {
+    type: Object,
+    required: true
+  },
+  collection: {
     type: Object,
     required: true
   }
@@ -92,12 +97,24 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
     return
   }
 
+  // 1. filter incoming geometry with known geometries
+  const filteredFeature = diff(
+    toRaw(cadastreFeature),
+    featureCollection(props.collection.features.map(f => toRaw(f)))
+  )
+
+  if (filteredFeature.geometry.type === 'MultiPolygon') {
+    console.warn('La parcelle résultante est disjointe.')
+  }
+
+  // 2. track changes
   cadastreReferences[index] = reference
-  feature.geometry = cadastreFeature.geometry
+  feature.geometry = filteredFeature.geometry
   feature.properties.cadastre = reference
   feature.properties.name = reference
 
-  emit('update', featureCollection([markRaw(feature)]))
+  // 3. propage changes to listening component (eg: to display on map)
+  emit('update', markRaw(featureCollection([toRaw(feature)])))
 }
 
 async function saveFeature ({ patch }) {
