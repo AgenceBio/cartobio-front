@@ -2,9 +2,9 @@
   <span v-if="!conversionLevel.value" class="fr-badge fr-badge--warning">
     {{ conversionLevel.shortLabel }}
   </span>
-  <span v-else :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`">
+  <span v-else>
     {{ conversionLevel.shortLabel }}
-    <time class="fr-text--xs" :datetime="conversionDate" v-if="(withDate && conversionDate && isAB)">
+    <time class="fr-text--xs" :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`" :datetime="conversionDate" v-if="(withDate && conversionDate && isAB)">
       {{ mmyyyy(conversionDate) }}
     </time>
   </span>
