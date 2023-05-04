@@ -61,6 +61,7 @@ import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api';
 import store from '@/store.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   operator: {
@@ -80,6 +81,7 @@ const cadastreReferences = reactive([''])
 const feature = reactive({ type: "Feature", geometry: null, properties: {} })
 
 const canReachDetailsStep = computed(() => cadastreReferences.filter(d => d).length > 0)
+const router = useRouter()
 
 function updateReference (index, { reference, feature: cadastreFeature }) {
   if (cadastreFeature === null) {
@@ -101,6 +103,13 @@ async function saveFeature ({ patch }) {
     record_id: record.record_id,
     geojson: record.parcelles,
     ...record.metadata
+  })
+
+  showDetailsModal.value = false
+  await router.push({
+    name: 'certification-exploitations-id',
+    params: { id: props.operator.id },
+    query: { new: record.audit_history.at(-1).parcelleId }
   })
 }
 </script>

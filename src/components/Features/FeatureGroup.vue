@@ -19,7 +19,7 @@
       <th scope="col">Certification</th>
       <th scope="col" colspan="2"></th>
     </tr>
-    <tr class="parcelle clickable" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
+    <tr class="parcelle clickable" :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
           <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="emit('toggle:singleFeatureId', feature.id)" />
@@ -49,6 +49,9 @@ import { surface, inHa, featureName } from '@/components/Features/index.js'
 import { libelléFromCode } from '@/referentiels/pac.js'
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
+import { useRoute } from "vue-router";
+
+const route = useRoute()
 
 const props = defineProps({
   featureGroup: {
@@ -70,9 +73,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:singleFeatureId', 'edit:featureId'])
-const open = ref(false)
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
+const open = ref(featureIds.value.includes(Number(route.query?.new)))
 const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
 const groupValidationClass = computed(() => {
   const validation = applyValidationRules(props.validationRules.rules, ...props.featureGroup.features)
@@ -151,6 +154,11 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
 
   .fr-table tr.parcelle .culture-precision {
     color: var(--text-mention-grey);
+  }
+
+  .fr-table tr.parcelle--is-new,
+  .fr-table tr.parcelle--is-new:nth-child(2n) {
+    background-color: var(--green-tilleul-verveine-975-75);
   }
 
   .subtable {

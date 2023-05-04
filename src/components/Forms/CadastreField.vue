@@ -79,8 +79,7 @@ const tentativeReference = computed(() => toString({
 }))
 
 watch(tentativeReference, (tentative) => {
-  if (section && number && isValidReference(tentative)) {
-    console.log({ tentative, commune: props.commune })
+  if (section.value && number && isValidReference(tentative)) {
     reference.value = tentative
     emit('change', parseReference(tentative))
   }

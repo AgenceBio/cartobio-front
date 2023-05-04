@@ -11,7 +11,7 @@ import axios from "axios";
 
 const autocompleteRef = ref(null)
 
-const { modelValue } = defineProps(['modelValue'])
+const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 const setQueryRef = ref(null)
 
@@ -21,7 +21,7 @@ const updateFieldFromModel = async (value) => {
   }
 
   try {
-    let response = await axios.get(`https://geo.api.gouv.fr/communes/${value}`)
+    const response = await axios.get(`https://geo.api.gouv.fr/communes/${value}`)
     setQueryRef.value(`${response.data.nom} (${response.data.codeDepartement})`)
   } catch (e) {
     if (e.response.status === 404) {
@@ -74,7 +74,7 @@ onMounted(async () => {
   })
   setQueryRef.value = setQuery
 
-  await updateFieldFromModel(modelValue)
+  await updateFieldFromModel(props.modelValue)
 })
 </script>
 
