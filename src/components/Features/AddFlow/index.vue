@@ -27,7 +27,12 @@
           </label>
         </div>
 
-        <CadastreField v-for="(reference, index) in cadastreReferences" :reference="reference" :commune="commune" @feature="updateReference(index, $event)" />
+        <CadastreField v-for="(reference, index) in cadastreReferences" :key="index"
+                       :reference="reference"
+                       :commune="commune"
+                       :helpText="cadastreHelp[index]"
+                       @feature="updateReference(index, $event)"
+        />
       </article>
 
       <article class="fr-pl-5w fr-mb-5w">
@@ -86,6 +91,7 @@ const flowSource = ref('cadastre')
 const showDetailsModal = ref(false)
 const commune = ref('')
 const cadastreReferences = reactive([''])
+const cadastreHelp = reactive([{message: '', error: false}])
 const feature = reactive({ type: "Feature", geometry: null, properties: {} })
 
 const canReachDetailsStep = computed(() => cadastreReferences.filter(d => d).length > 0)
@@ -94,6 +100,7 @@ const router = useRouter()
 function updateReference (index, { reference, feature: cadastreFeature }) {
   if (cadastreFeature === null) {
     cadastreReferences[index] = ''
+    cadastreHelp[index] = ''
     return
   }
 
@@ -103,8 +110,25 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
     featureCollection(props.collection.features.map(f => toRaw(f)))
   )
 
+  if (filteredFeature === null) {
+    cadastreReferences[index] = ''
+    cadastreHelp[index] = {
+      message: 'La parcelle est déjà incluse dans les autres parcelles.',
+      error: true
+    }
+    return
+  }
+
   if (filteredFeature.geometry.type === 'MultiPolygon') {
-    console.warn('La parcelle résultante est disjointe.')
+    cadastreHelp[index] = {
+      message: 'La parcelle résultante est disjointe.',
+      error: false
+    }
+  } else {
+    cadastreHelp[index] = {
+      message: '',
+      error: false
+    }
   }
 
   // 2. track changes

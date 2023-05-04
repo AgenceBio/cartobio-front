@@ -34,9 +34,12 @@
     </div>
 
     <div class="fr-input-group fr-input-group--actions">
-      <span :class="{'fr-icon': true, 'fr-icon-check-line': hasFeature, 'fr-icon-alert-fill': doesNotExist, 'fr-icon-more-fill': isFetchingGeometry }" :disabled="!hasFeature" />
+      <span :class="{'fr-icon': true, 'fr-icon-check-line': hasFeature && !$props.helpText.error, 'fr-icon-alert-fill': doesNotExist, 'fr-icon-more-fill': isFetchingGeometry }" :disabled="!hasFeature" />
     </div>
   </div>
+  <span :class="{ 'fr-hint-text': !$props.helpText.error, 'fr-error-text': $props.helpText.error }"
+        v-if="$props.helpText.message"
+  >{{ $props.helpText.message }}</span>
 </template>
 
 <script setup>
@@ -53,6 +56,15 @@ const props = defineProps({
   reference: {
     type: String,
     default: ''
+  },
+  helpText: {
+    type: Object,
+    default: function () {
+      return {
+        message: '',
+            error: false
+      }
+    }
   }
 })
 
@@ -131,10 +143,19 @@ watch(reference, async (newReference, oldReference) => {
 .horizontal-stack {
   display: flex;
   gap: 1em;
+  margin-bottom: 1rem;
 }
 
 .horizontal-stack .fr-input-group--actions {
   display: flex;
   align-items: center;
+}
+
+.fr-input-group {
+  margin-bottom: 0;
+}
+
+.fr-hint-text {
+  margin-top: 1rem;
 }
 </style>

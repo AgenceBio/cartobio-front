@@ -179,7 +179,7 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     .join(separator)
   }
   else if (feature.properties.cadastre) {
-    let {prefix, section, number} = parseReference(feature.properties.cadastre)
+    const {prefix, section, number} = parseReference(feature.properties.cadastre)
     return `Reférence cadastrale ${prefix !== '000' ? prefix : ''} ${section} ${number}`
   }
   else {
@@ -220,6 +220,10 @@ export function surface (geometryOrFeature) {
  */
 export function diff (feature, featureCollection) {
   return featureCollection.features.reduce((reducedFeature, target) => {
+    if (reducedFeature === null) {
+      return null;
+    }
+
     if (!intersect(reducedFeature, target)) {
       return reducedFeature
     }
