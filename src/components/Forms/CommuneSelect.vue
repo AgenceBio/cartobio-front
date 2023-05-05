@@ -4,7 +4,7 @@
 </template>
 
 <script setup>
-import { Fragment, h, onMounted, onUpdated, ref, render, watch } from 'vue'
+import { Fragment, h, onMounted, ref, render } from 'vue'
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic';
 import axios from "axios";
@@ -85,5 +85,12 @@ onMounted(async () => {
 
 .aa-Item:hover {
   background-color: #ececfe;
+}
+
+.aa-InputWrapperPrefix {
+  display: none;
+}
+.aa-InputWrapper {
+  padding-left: 0.75rem
 }
 </style>
