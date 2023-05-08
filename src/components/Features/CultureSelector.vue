@@ -25,7 +25,7 @@ onMounted(() => {
           sourceId: 'cultures',
           getItems ({ query }) {
             return codesPac
-                .filter(([, libelle]) => libelle.toLowerCase().includes(query || ''.toLowerCase()))
+                .filter(([, libelle]) => libelle.toLowerCase().includes((query || '').toLowerCase()))
                 .map(([code, libelle]) => ({code: code, libelle: libelle}))
                 .sort((a, b) => a.libelle.localeCompare(b.libelle))
           },
@@ -55,5 +55,13 @@ onMounted(() => {
 
 .aa-Item:hover {
   background-color: #ececfe;
+}
+
+.aa-InputWrapperPrefix {
+  display: none;
+}
+
+.aa-InputWrapper {
+  padding-left: 0.75rem
 }
 </style>
