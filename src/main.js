@@ -49,6 +49,7 @@ const app = createApp(App)
   })
 
 const userStore = useUserStore()
+userStore.enablePersistance()
 
 router.isReady().then(() => {
   if (VUE_APP_SENTRY_DSN) {
