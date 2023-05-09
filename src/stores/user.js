@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
+import { computed, ref, watch } from 'vue'
 import { setAuthorization } from '@/cartobio-api'
 
 export const ROLES = Object.freeze({
@@ -25,13 +24,9 @@ export function parseJwt (token) {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const token = useLocalStorage('cartobioUserToken', '')
+  const token = ref('')
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
-
-  if (token.value) {
-    setAuthorization(token.value)
-  }
 
   const role = computed(() => {
     const groupName = user.value?.mainGroup?.nom
@@ -45,7 +40,7 @@ export const useUserStore = defineStore('user', () => {
     else if (groupName === 'Admin') {
       return ROLES.ADMIN
     }
-    else if (groupName === 'Opérateur') {
+    else if (groupName === 'Opérateur' || user.value.numeroBio) {
       return ROLES.OPERATEUR
     }
     else {
@@ -56,13 +51,21 @@ export const useUserStore = defineStore('user', () => {
 
   function login (userToken) {
     token.value = userToken
-    setAuthorization(userToken)
   }
 
   function logout () {
     token.value = null
-    setAuthorization('')
   }
+
+  function enablePersistance (storageName = 'cartobio.v2') {
+    watch(token, function (newToken) {
+      window.localStorage.setItem(storageName, newToken || '')
+    })
+
+    token.value = window.localStorage.getItem(storageName) || ''
+  }
+
+  watch(token, newToken=> setAuthorization(newToken ? newToken : ''))
 
   return {
     token,
@@ -71,6 +74,7 @@ export const useUserStore = defineStore('user', () => {
     user,
     role,
     // methods
+    enablePersistance,
     login,
     logout,
   }

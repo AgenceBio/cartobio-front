@@ -27,23 +27,9 @@
             </div>
           </div>
 
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="currentUser.numeroBio">
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="user.numeroBio">
             <div class="fr-header__tools-links">
-              <ul class="fr-btns-group" v-if="currentUser.id">
-                <li class="tool-username">
-                  <span class="fr-btn fr-icon--sm fr-icon-account-circle-fill fr-mr-1w" aria-hidden>
-                    {{ currentUser.nom }}
-                  </span>
-                </li>
-                <li class="tool-logout">
-                  <router-link to="/logout" custom v-slot="{ href }">
-                    <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
-                      Déconnexion
-                    </a>
-                  </router-link>
-                </li>
-              </ul>
-              <ul class="fr-btns-group" v-else-if="isLogged">
+              <ul class="fr-btns-group" v-if="isLogged">
                 <li class="tool-username">
                   <span :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]" aria-hidden>
                     {{ user.nom }}
@@ -69,7 +55,7 @@
         </div>
       </div>
 
-      <div class="fr-header__menu" v-if="(isLogged && role === 'oc')">
+      <div class="fr-header__menu" v-if="(isLogged && role === ROLES.OC)">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
@@ -82,7 +68,7 @@
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }" v-if="currentUser.id">
+                <router-link to="/logout" custom v-slot="{ href }" v-if="isLogged">
                   <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
                     Déconnexion
                   </a>
@@ -92,7 +78,7 @@
           </nav>
         </div>
       </div>
-      <div class="fr-header__menu" v-else-if="currentUser.id">
+      <div class="fr-header__menu" v-else-if="(isLogged && role === ROLES.OPERATEUR)">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
@@ -105,7 +91,7 @@
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }" v-if="currentUser.id">
+                <router-link to="/logout" custom v-slot="{ href }" v-if="isLogged">
                   <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
                     Déconnexion
                   </a>
@@ -136,7 +122,7 @@
 </template>
 
 <script setup>
-import { computed, toRef } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
@@ -156,7 +142,6 @@ const { user, role, isLogged } = storeToRefs(userStore)
 const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-circle-fill')
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 
-const currentUser = toRef(store.state, 'currentUser')
 async function logout() {
   await Promise.all([store.logoutUser(), userStore.logout()])
   router.push('/')

@@ -5,6 +5,10 @@ import TelepacPanel from './Telepac.vue'
 import { sources } from '@/referentiels/imports.js'
 
 export default {
+  [sources.TELEPAC]: {
+    label: 'Telepac',
+    component: TelepacPanel,
+  },
   [sources.MES_PARCELLES]: {
     label: 'MesParcelles',
     component: MesParcellesPanel,
@@ -12,10 +16,6 @@ export default {
   [sources.GEOFOLIA]: {
     label: 'Géofolia',
     component: GeofoliaPanel,
-  },
-  [sources.TELEPAC]: {
-    label: 'Telepac',
-    component: TelepacPanel,
   },
   [sources.NCVI]: {
     label: 'ProDouanes (nCVI)',

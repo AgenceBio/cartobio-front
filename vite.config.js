@@ -1,8 +1,10 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, searchForWorkspaceRoot } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Pages from "vite-plugin-pages"
 import { resolve, join, sep } from 'path'
 import { sentryVitePlugin } from "@sentry/vite-plugin"
+
+const cwd = process.cwd()
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -31,16 +33,22 @@ export default defineConfig(({ mode }) => {
     ],
 
     resolve: {
-      alias: {
-        '@gouvfr/dsfr': resolve(join(__dirname, 'node_modules', '@gouvfr', 'dsfr', 'dist')),
-        '@/': resolve(join(__dirname, 'src')) + sep,
-        'styles': resolve(join(__dirname, 'src', 'styles'))
-      },
+      alias: [
+        { find: '@gouvfr/dsfr', replacement: resolve(join(__dirname, 'node_modules', '@gouvfr', 'dsfr', 'dist')) },
+        { find: '@/', replacement: resolve(join(__dirname, 'src')) + sep },
+        { find: 'styles', replacement: resolve(join(__dirname, 'src', 'styles')) }
+      ],
     },
 
     server: {
       host: '127.0.0.1',
-      port: 3000
+      port: 3000,
+      fs: {
+        allow:[
+            searchForWorkspaceRoot(cwd),
+            resolve(cwd, '@gouvfr/dsfr'),
+        ]
+    }
     }
   }
 })

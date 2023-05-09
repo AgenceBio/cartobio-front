@@ -1,6 +1,5 @@
 import axios from 'axios'
 import store from '@/store.js'
-import { now } from '@/components/dates.js'
 
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
@@ -88,7 +87,7 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
  * @property {UserRole} mainGroup
  */
 
-const cartobioApi = axios.create({ baseURL })
+const cartobioApi = axios.create({ baseURL, timeout: 4000 })
 
 /**
  * @param {number} operatorId
@@ -124,7 +123,7 @@ export async function pacageLookup (pacage) {
  * @returns {Promise<Record[]>}
  */
 export async function fetchLatestOperators () {
-  const { data } = await cartobioApi.get(`/v2/certification/operators/latest`)
+  const { data } = await cartobioApi.get(`/v2/certification/operators/latest`, { timeout: 10000 })
 
   return data.operators
 }
@@ -137,6 +136,13 @@ export async function fetchLatestOperators () {
  */
 export async function submitParcellesChanges ({ operatorId, ...params }) {
   const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, { ...params })
+
+  // @todo move this wherever `submitParcellesChanges()`, as the general state should be managed at the app level
+  store.setParcelles({
+    record_id: data.record_id,
+    geojson: data.parcelles,
+    ...data.metadata
+  })
 
   return data
 }
@@ -154,33 +160,6 @@ export async function updateAuditState ({ recordId }, patch) {
 }
 
 /**
- *
- * @param {GeoJSON.FeatureCollection} geojson
- * @param {{ source: SourceType}} param1
- * @returns {Promise}
- */
-export async function submitParcelles (geojson, { source }) {
-  const { id: operatorId, numeroBio, certificats } = store.state.currentUser
-
-  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
-    ocId: certificats[0]?.organismeCertificateurId,
-    ocLabel: certificats[0]?.organisme,
-    numeroBio,
-    geojson,
-    metadata: {
-      source,
-      sourceLastUpdate: now()
-    }
-  })
-
-  store.setParcelles({
-    record_id: data.record_id,
-    geojson: data.parcelles,
-    ...data.metadata
-  })
-}
-
-/**
  * @param {string} userToken
  * @returns {Promise<DecodedUserToken>}
  */
@@ -188,6 +167,16 @@ export async function verifyToken (userToken) {
   const { data } = await cartobioApi.get(`/v2/user/verify`, {
     headers: {
       Authorization: `Bearer ${userToken}`
+    }
+  })
+
+  return data
+}
+
+export async function exchangeNotificationToken (token) {
+  const { data } = await cartobioApi.get(`/v2/user/exchangeToken`, {
+    headers: {
+      Authorization: `Bearer ${token}`
     }
   })
 
@@ -212,8 +201,7 @@ export function setAuthorization (userToken) {
 export async function convertShapefileArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
-
-  const { data: geojson } = await cartobioApi.post(`/v1/convert/shapefile/geojson`, form)
+  const { data: geojson } = await cartobioApi.post(`/v2/convert/shapefile/geojson`, form)
 
   return geojson
 }

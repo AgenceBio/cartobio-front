@@ -48,7 +48,7 @@ async function handleFileUpload () {
 
   const form = new FormData()
   form.append('archive', archive)
-  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v1/convert/geofolia/geojson`, form)
+  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/convert/geofolia/geojson`, form)
 
   emit('upload:complete', { geojson, source })
 }

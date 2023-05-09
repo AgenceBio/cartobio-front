@@ -18,6 +18,12 @@ npm install
 npm start
 ```
 
+### WebComponent Notification
+
+```
+npm start -- --config vite.widget.config.js
+```
+
 ### Prépare au déploiement
 
 ```bash

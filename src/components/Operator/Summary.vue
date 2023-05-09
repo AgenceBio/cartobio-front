@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h2 class="fr-h4 fr-mb-1w">{{ operator.nom }}</h2>
+    <h2 class="fr-h4 fr-mb-1w" :data-operator-id="operator.id">{{ operator.nom }}</h2>
 
     <p class="fr-subtitle">
       <ParcellaireState :state="record.certification_state" :date="record.created_at" />
