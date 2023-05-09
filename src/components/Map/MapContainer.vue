@@ -47,13 +47,19 @@ onMounted(() => {
     ...props.options,
   })
 
-  map.value.loadImage("/src/assets/map/warning.png", (error, warningIcon) => {
-    if (error) {
-      return console.error(error)
-    }
+  map.value.on('styleimagemissing', ({ id }) => {
+    if (id !== 'conventionnelle-risque') return
 
-    map.value.addImage("conventionnelle-risque", warningIcon)
+    map.value.loadImage("/src/assets/map/warning.png", (error, warningIcon) => {
+      if (error) return console.error(error)
+      if (map.value.hasImage('conventionnelle-risque')) return
+
+      map.value.addImage("conventionnelle-risque", warningIcon)
+      map.value.triggerRepaint()
+    })
   })
+
+
 
   map.value.once('load', ({ target: map }) => {
     emit('load', map)

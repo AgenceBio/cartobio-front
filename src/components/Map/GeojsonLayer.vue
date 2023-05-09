@@ -1,3 +1,5 @@
+<template></template>
+
 <script setup>
 import { inject, watch } from 'vue'
 
@@ -21,7 +23,7 @@ watch(map, () => {
       return;
     }
 
-    map.value
+  map.value
       .addSource(props.name, {
         type: 'geojson',
         data: props.data
