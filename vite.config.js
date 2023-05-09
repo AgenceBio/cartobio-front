@@ -29,6 +29,9 @@ export default defineConfig(({ mode }) => {
         // Auth tokens can be obtained from https://sentry.incubateur.net/settings/account/api/auth-tokens/
         // and needs the `project:releases` and `org:read` scopes
         authToken: env.SENTRY_AUTH_TOKEN,
+        uploadSourceMaps: Boolean(env.VUE_APP_ENVIRONMENT),
+        injectRelease: Boolean(env.VUE_APP_ENVIRONMENT),
+        telemetry: env.VUE_APP_ENVIRONMENT === 'staging',
       })
     ],
 
