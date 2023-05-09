@@ -21,15 +21,12 @@ import featureSources from '@/components/OperatorSetup/index.js'
 import { useUserStore } from '@/stores/user.js'
 
 const emit = defineEmits(['source:change', 'import:start', 'import:complete', 'import:error'])
-const props = defineProps({
-  trackProvenance: Boolean
-})
 
 
 const featureSource = ref('telepac')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const provenance = computed(() => props.trackProvenance ? window.location.host : null)
+const provenance = computed(() => window.location.host)
 
 watchEffect(() => emit('source:change', featureSource.value))
 

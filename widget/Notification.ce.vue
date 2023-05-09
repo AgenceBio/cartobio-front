@@ -6,7 +6,7 @@
     <p>Impossible d'établir une connexion sécurisée.</p>
   </div>
 
-  <OperatorSetup v-else-if="canImport" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" track-provenance />
+  <OperatorSetup v-else-if="canImport" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" />
 
   <div v-else-if="uploadState === 'complete'" class="fr-alert fr-alert--success fr-mb-5w">
     <p class="fr-alert__title">Parcellaire importé avec succès.</p>

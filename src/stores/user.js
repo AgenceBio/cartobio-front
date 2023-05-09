@@ -59,10 +59,10 @@ export const useUserStore = defineStore('user', () => {
 
   function enablePersistance (storageName = 'cartobio.v2') {
     watch(token, function (newToken) {
-      document.localStorage.setItem(storageName, newToken || '')
+      window.localStorage.setItem(storageName, newToken || '')
     })
 
-    token.value = document.localStorage.getItem(storageName) || ''
+    token.value = window.localStorage.getItem(storageName) || ''
   }
 
   watch(token, newToken=> setAuthorization(newToken ? newToken : ''))
