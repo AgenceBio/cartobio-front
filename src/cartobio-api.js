@@ -1,6 +1,5 @@
 import axios from 'axios'
 import store from '@/store.js'
-import { now } from '@/components/dates.js'
 
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
@@ -88,7 +87,7 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
  * @property {UserRole} mainGroup
  */
 
-const cartobioApi = axios.create({ baseURL })
+const cartobioApi = axios.create({ baseURL, timeout: 4000 })
 
 /**
  * @param {number} operatorId
@@ -124,7 +123,7 @@ export async function pacageLookup (pacage) {
  * @returns {Promise<Record[]>}
  */
 export async function fetchLatestOperators () {
-  const { data } = await cartobioApi.get(`/v2/certification/operators/latest`)
+  const { data } = await cartobioApi.get(`/v2/certification/operators/latest`, { timeout: 10000 })
 
   return data.operators
 }
@@ -138,6 +137,7 @@ export async function fetchLatestOperators () {
 export async function submitParcellesChanges ({ operatorId, ...params }) {
   const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, { ...params })
 
+  // @todo move this wherever `submitParcellesChanges()`, as the general state should be managed at the app level
   store.setParcelles({
     record_id: data.record_id,
     geojson: data.parcelles,
@@ -201,7 +201,6 @@ export function setAuthorization (userToken) {
 export async function convertShapefileArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
-
   const { data: geojson } = await cartobioApi.post(`/v2/convert/shapefile/geojson`, form)
 
   return geojson

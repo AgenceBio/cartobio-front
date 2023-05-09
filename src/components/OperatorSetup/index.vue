@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { submitParcellesChanges } from '@/cartobio-api.js'
@@ -21,9 +21,15 @@ import featureSources from '@/components/OperatorSetup/index.js'
 import { useUserStore } from '@/stores/user.js'
 
 const emit = defineEmits(['source:change', 'import:start', 'import:complete', 'import:error'])
+const props = defineProps({
+  trackProvenance: Boolean
+})
+
+
 const featureSource = ref('telepac')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const provenance = computed(() => props.trackProvenance ? window.location.host : null)
 
 watchEffect(() => emit('source:change', featureSource.value))
 
@@ -33,14 +39,14 @@ async function handleUpload ({ geojson, source }) {
   try {
     await submitParcellesChanges({
       geojson,
+      // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
       operatorId: user.value.id,
-      ocId: user.value.organismeCertificateur.id,
-      ocLabel: user.value.organismeCertificateur.nom,
+      numeroBio: user.value.numeroBio,
       metadata: {
         source,
-        sourceLastUpdate: now()
-      },
-      numeroBio: user.value.numeroBio
+        sourceLastUpdate: now(),
+        provenance: provenance.value
+      }
      })
 
     emit('import:complete', { geojson, source })
