@@ -41,9 +41,7 @@ jobs:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
     - run: npm clean-install-test
-    - run: npm run build
-      env:
-        NODE_ENV: production
+    - run: npm run build -- --base "https://cartobio.agencebio.org/notification-webcomponent/"
 
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2.3.1
