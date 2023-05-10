@@ -21,8 +21,8 @@
         "line-miter-limit": 2
       },
       "paint": {
-        "line-color": "rgba(255, 255, 255, 1)",
-        "line-opacity": 0.3,
+        "line-color": "rgba(30, 30, 30, 1)",
+        "line-opacity": 1,
         "line-width": {"stops": [[16, 1.5], [17, 2]]},
         "line-offset": 0,
         "line-blur": 0,

@@ -12,7 +12,7 @@
     "postbuild": "npm run build:widget && npm run build:widget-demo",
     "preview": "vite preview",
     "start": "vite",
-    "test": "vitest run",
+    "test": "vitest",
     "posttest": "eslint ./src"
   },
   "engines": {
@@ -27,7 +27,9 @@
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
     "@turf/centroid": "^6.5.0",
+    "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
+    "@turf/intersect": "^6.5.0",
     "@unhead/vue": "^1.0.6",
     "@vueuse/core": "^9.6.0",
     "array.prototype.groupby": "^1.0.0",

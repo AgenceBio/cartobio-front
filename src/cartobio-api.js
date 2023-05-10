@@ -135,7 +135,7 @@ export async function fetchLatestOperators () {
  * @returns {Promise<Record>}
  */
 export async function submitParcellesChanges ({ operatorId, ...params }) {
-  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, { ...params })
+  const { data } = await cartobioApi.put(`/v2/operator/${operatorId}/parcelles`, { ...params })
 
   // @todo move this wherever `submitParcellesChanges()`, as the general state should be managed at the app level
   store.setParcelles({
@@ -155,6 +155,21 @@ export async function submitParcellesChanges ({ operatorId, ...params }) {
  */
 export async function updateAuditState ({ recordId }, patch) {
   const { data } = await cartobioApi.patch(`/v2/certification/audits/${recordId}`, patch)
+
+  return data
+}
+
+/**
+ * Add a new plot without id to a feature collection
+ *
+ * @param {{ operatorId: String } options
+ * @param {feature: GeoJSON.Feature } feature
+ * @returns {Promise<{record_id: String, parcelles: GeoJSON.FeatureCollection, metadata: Object}>}
+ */
+export async function submitNewParcelle ({ operatorId }, feature) {
+  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
+    feature
+  })
 
   return data
 }

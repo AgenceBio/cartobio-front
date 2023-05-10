@@ -1,8 +1,11 @@
 import groupBy from 'array.prototype.groupby'
 import { featureCollection, feature } from '@turf/helpers'
+import difference from '@turf/difference'
+import intersect from '@turf/intersect'
 import area from '@turf/area'
 import { libelléFromCode } from '@/referentiels/pac.js'
 import { conversionLevels } from '@/referentiels/ab.js'
+import { parseReference } from "@/components/cadastre.js";
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -175,6 +178,10 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     .filter(d => d)
     .join(separator)
   }
+  else if (feature.properties.cadastre) {
+    const {prefix, section, number} = parseReference(feature.properties.cadastre)
+    return `Reférence cadastrale ${prefix !== '000' ? prefix : ''} ${section} ${number}`
+  }
   else {
     return '-'
   }
@@ -202,4 +209,25 @@ export function surface (geometryOrFeature) {
     ? area(geometryOrFeature)
     // we only have a geometry
     : area(feature(geometryOrFeature))
+}
+
+/**
+ * Returns a geometry, without any content part of a feature collection
+ *
+ * @param {Feature} geometry
+ * @param {FeatureCollection} featureCollection
+ * @returns {Feature}
+ */
+export function diff (feature, featureCollection) {
+  return featureCollection.features.reduce((reducedFeature, target) => {
+    if (reducedFeature === null) {
+      return null;
+    }
+
+    if (!intersect(reducedFeature, target)) {
+      return reducedFeature
+    }
+
+    return difference(reducedFeature, target)
+  }, feature)
 }

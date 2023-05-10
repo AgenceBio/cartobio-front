@@ -4,7 +4,7 @@
   </span>
   <span v-else>
     {{ conversionLevel.shortLabel }}
-    <time class="fr-text--xs" :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`" :datetime="conversionDate" v-if="(withDate && conversionDate && isAB)">
+    <time class="fr-text--xs" :datetime="conversionDate" v-if="(withDate && conversionDate && isAB)" :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`">
       {{ mmyyyy(conversionDate) }}
     </time>
   </span>

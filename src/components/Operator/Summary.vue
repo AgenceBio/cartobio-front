@@ -6,7 +6,7 @@
       <ParcellaireState :state="record.certification_state" :date="record.created_at" />
     </p>
 
-    <p v-if="canDisplayHistory" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
+    <p v-if="canDisplayHistory && disableActions === false" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
       <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
         Historique
       </button>
@@ -52,6 +52,10 @@ const props = defineProps({
   record: {
     type: Object,
     required: true
+  },
+  disableActions: {
+    type: Boolean,
+    default: false
   }
 })
 
