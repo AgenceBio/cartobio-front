@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run build:app",
+    "build:app": "vite build",
     "build:widget": "vite build --config vite.widget.config.js --mode lib",
     "build:widget-demo": "vite build --config vite.widget.config.js",
     "postbuild": "npm run build:widget && npm run build:widget-demo",

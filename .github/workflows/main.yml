@@ -35,7 +35,10 @@ jobs:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
     - run: npm clean-install-test
-    - run: npm run build -- --base "https://cartobio-preprod.agencebio.org/notification-webcomponent/"
+    - run: |
+        npm run build:app
+        npm run build:widget -- --base "https://cartobio-preprod.agencebio.org/notification-webcomponent/"
+        npm run build:widget-demo -- --base "https://cartobio-preprod.agencebio.org/notification-webcomponent/"
 
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2.3.1

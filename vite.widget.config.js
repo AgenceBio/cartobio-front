@@ -18,7 +18,6 @@ export default defineConfig(({ mode }) => {
     ...resolvedConfig,
 
     root: './widget',
-    base: '/notification-webcomponent/',
     envDir: resolve(__dirname),
     publicDir: resolve(join(__dirname, 'public')),
 
