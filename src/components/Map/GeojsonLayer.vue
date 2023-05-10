@@ -1,3 +1,6 @@
+<!-- eslint-disable vue/valid-template-root -->
+<template></template>
+
 <script setup>
 import { inject, watch } from 'vue'
 
@@ -21,7 +24,7 @@ watch(map, () => {
       return;
     }
 
-    map.value
+  map.value
       .addSource(props.name, {
         type: 'geojson',
         data: props.data
@@ -35,18 +38,28 @@ watch(map, () => {
           "fill-color": [
             'case',
             ['boolean', ['feature-state', 'selected'], false],
-            "#ffcc00",
+            "#000091",
             ['boolean', ['feature-state', 'hover'], false],
-            "#00ffff",
+            "#dcdcfc",
             ['boolean', ['==', ['get', "TYPE"], "BOR"], false],
             //--blue-france-main-525
             "#6a6af4",
             //--blue-france-sun-113-625
-            "#000091"
+            "#eee"
           ],
-          "fill-opacity": 0.9,
+          "fill-opacity": 1
         }
       }, props.before)
+    .addLayer({
+      id: `${props.name}-geometry-outline`,
+      source: props.name,
+      type: 'line',
+      paint: {
+        "line-width": 1,
+        "line-color": "#000091",
+        "line-opacity": 0.9,
+      }
+    }, props.before)
   })
 })
 </script>

@@ -9,7 +9,7 @@
 
 <script setup>
 import { provide, shallowRef, ref, onMounted, onUpdated, watch } from 'vue'
-import { Map as MapLibre } from 'maplibre-gl'
+import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
 
 import baseStyle from '@/map-styles/base.json'
 
@@ -47,6 +47,22 @@ onMounted(() => {
     ...props.options,
   })
 
+  map.value.addControl(new NavigationControl(), 'bottom-right')
+
+  map.value.on('styleimagemissing', ({ id }) => {
+    if (id !== 'conventionnelle-risque') return
+
+    map.value.loadImage("/src/assets/map/warning.png", (error, warningIcon) => {
+      if (error) return console.error(error)
+      if (map.value.hasImage('conventionnelle-risque')) return
+
+      map.value.addImage("conventionnelle-risque", warningIcon)
+      map.value.triggerRepaint()
+    })
+  })
+
+
+
   map.value.once('load', ({ target: map }) => {
     emit('load', map)
     emit('zoom:change', map.getZoom())
@@ -63,11 +79,28 @@ watch(() => props.style, () => {
 onUpdated(() => map.value.resize())
 </script>
 
-<style lang="postcss" scoped>
-:deep(.maplibregl-control-container) {
-  display: none;
+<style>
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+.maplibregl-map, .mapboxgl-map {
+  font: inherit;
 }
 
+.maplibregl-ctrl-bottom-right {
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 0;
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  margin: 0;
+}
+</style>
+
+<style lang="postcss" scoped>
+:deep(.maplibregl-ctrl-attrib) {
+  display: none;
+}
 
 :deep(.maplibregl-popup) {
   position: absolute;
@@ -86,5 +119,4 @@ onUpdated(() => map.value.resize())
   right: .5rem;
   top: .5rem;
 }
-
 </style>
