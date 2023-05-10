@@ -6,7 +6,7 @@
     <p>Impossible d'établir une connexion sécurisée.</p>
   </div>
 
-  <OperatorSetup v-else-if="canImport" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" />
+  <OperatorSetup v-else-if="canImport" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" :sources="[sources.TELEPAC]" />
 
   <div v-else-if="uploadState === 'complete'" class="fr-alert fr-alert--success fr-mb-5w">
     <p class="fr-alert__title">Parcellaire importé avec succès.</p>
@@ -23,6 +23,7 @@ import Loading from '@/components/Loading.vue'
 import OperatorSetup from '@/components/OperatorSetup/index.vue'
 import { useUserStore } from '@/stores/user.js'
 import { exchangeNotificationToken } from '@/cartobio-api.js'
+import { sources } from '@/referentiels/imports.js'
 
 const props = defineProps({ 'auth-token': String })
 const emit = defineEmits(['error', 'import:ready', 'import:started', 'import:complete', 'import:errored'])
