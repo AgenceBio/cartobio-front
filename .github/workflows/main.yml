@@ -70,4 +70,4 @@ jobs:
       with:
         environment: staging
         sourcemaps: dist/assets/
-        version: "${{ step.version.outputs.v }}"
+        version: "${{ steps.version.outputs.v }}"
