@@ -63,6 +63,7 @@ jobs:
         SENTRY_ORG: betagouv
         SENTRY_PROJECT: cartobio-front
         SENTRY_URL: https://sentry.incubateur.net/
+        SENTRY_LOG_LEVEL: debug
       with:
         environment: staging
         sourcemaps: dist/assets/
