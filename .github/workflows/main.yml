@@ -67,4 +67,4 @@ jobs:
       with:
         environment: staging
         sourcemaps: dist/assets/
-        ignore_missing: true
+        version: 'latest'
