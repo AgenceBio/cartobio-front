@@ -2,7 +2,6 @@ import { defineConfig, loadEnv, searchForWorkspaceRoot } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Pages from "vite-plugin-pages"
 import { resolve, join, sep } from 'path'
-import { sentryVitePlugin } from "@sentry/vite-plugin"
 
 const cwd = process.cwd()
 
@@ -20,19 +19,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       Pages({ extensions: ['vue'] }),
-      // @see https://github.com/getsentry/sentry-javascript-bundler-plugins/tree/main/packages/vite-plugin#configuration
-      env.SENTRY_AUTH_TOKEN && sentryVitePlugin({
-        url: 'https://sentry.incubateur.net/',
-        org: "betagouv",
-        project: "cartobio-front",
-        include: "./dist",
-        // Auth tokens can be obtained from https://sentry.incubateur.net/settings/account/api/auth-tokens/
-        // and needs the `project:releases` and `org:read` scopes
-        authToken: env.SENTRY_AUTH_TOKEN,
-        uploadSourceMaps: Boolean(env.VUE_APP_ENVIRONMENT),
-        injectRelease: Boolean(env.VUE_APP_ENVIRONMENT),
-        telemetry: env.VUE_APP_ENVIRONMENT === 'staging',
-      })
     ],
 
     resolve: {
