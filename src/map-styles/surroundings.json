@@ -27,6 +27,7 @@
           "#ffd6a4",
           "#ffd6a4"
         ],
+
         "fill-opacity": 0.7
       }
     },
@@ -38,11 +39,14 @@
       "minzoom": 8,
       "maxzoom": 24,
       "paint": {
+        "fill-antialias": false,
+        "fill-color": "#000000",
         "fill-pattern": ["case",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
-          "pedestrian_polygon"
+          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
+          "pedestrian_polygon",
+          ""
         ],
-        "fill-opacity": 0.9
+        "fill-opacity": 1
       }
     },
     {
@@ -66,24 +70,6 @@
         "line-width": {
           "stops": [[9, 0], [12, 1]]
         }
-      }
-    },
-    {
-      "id": "rpg-anon-2021-pattern",
-      "type": "fill",
-      "source": "rpg-anon",
-      "source-layer": "rpg2021",
-      "minzoom": 8,
-      "maxzoom": 24,
-      "paint": {
-        "fill-pattern": ["case",
-          ["==", ["get", "BIO"], 1],
-          "#",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
-          "conventionnelle-risque",
-          ""
-        ],
-        "fill-opacity": 0.5
       }
     }
   ]
