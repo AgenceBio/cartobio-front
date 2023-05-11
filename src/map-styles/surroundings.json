@@ -31,6 +31,21 @@
       }
     },
     {
+      "id": "rpg-anon-2021-pattern",
+      "type": "fill",
+      "source": "rpg-anon",
+      "source-layer": "rpg2021",
+      "minzoom": 8,
+      "maxzoom": 24,
+      "paint": {
+        "fill-pattern": ["case",
+          ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
+          "pedestrian_polygon"
+        ],
+        "fill-opacity": 0.9
+      }
+    },
+    {
       "id": "rpg-anon-2021-border",
       "type": "line",
       "source": "rpg-anon",

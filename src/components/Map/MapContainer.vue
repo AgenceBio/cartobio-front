@@ -49,20 +49,6 @@ onMounted(() => {
 
   map.value.addControl(new NavigationControl(), 'bottom-right')
 
-  map.value.on('styleimagemissing', ({ id }) => {
-    if (id !== 'conventionnelle-risque') return
-
-    map.value.loadImage("/src/assets/map/warning.png", (error, warningIcon) => {
-      if (error) return console.error(error)
-      if (map.value.hasImage('conventionnelle-risque')) return
-
-      map.value.addImage("conventionnelle-risque", warningIcon)
-      map.value.triggerRepaint()
-    })
-  })
-
-
-
   map.value.once('load', ({ target: map }) => {
     emit('load', map)
     emit('zoom:change', map.getZoom())
