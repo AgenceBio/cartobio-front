@@ -57,7 +57,7 @@ jobs:
         REMOTE_PATH: /var/www/cartobio-preprod.agencebio.org/
 
     - id: version
-      run: echo "v=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
+      run: echo v=$(node -p "require('./package.json').version") >> "$GITHUB_OUTPUT"
 
     - name: Create Sentry release
       uses: getsentry/action-release@v1
