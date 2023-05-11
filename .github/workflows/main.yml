@@ -56,6 +56,9 @@ jobs:
         REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
         REMOTE_PATH: /var/www/cartobio-preprod.agencebio.org/
 
+    - id: version
+      run: echo "v=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
+
     - name: Create Sentry release
       uses: getsentry/action-release@v1
       env:
@@ -67,4 +70,4 @@ jobs:
       with:
         environment: staging
         sourcemaps: dist/assets/
-        version: 'latest'
+        version: ${{ step.version.outputs.v }}
