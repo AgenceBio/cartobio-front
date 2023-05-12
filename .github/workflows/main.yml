@@ -41,7 +41,7 @@ jobs:
         npm run build:widget-demo -- --base "https://cartobio-preprod.agencebio.org/notification-webcomponent/"
 
     - name: Install SSH Key
-      uses: shimataro/ssh-key-action@v2.3.1
+      uses: shimataro/ssh-key-action@v2
       if: github.ref == 'refs/heads/v2'
       with:
         key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
@@ -61,6 +61,7 @@ jobs:
 
     - name: Create Sentry release
       uses: getsentry/action-release@v1
+      continue-on-error: true
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_ORG: betagouv
