@@ -37,7 +37,10 @@ export default defineConfig(({ mode }) => {
             searchForWorkspaceRoot(cwd),
             resolve(cwd, '@gouvfr/dsfr'),
         ]
-    }
+      }
+    },
+    test: {
+      environment: 'jsdom',
     }
   }
 })

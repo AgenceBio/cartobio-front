@@ -2,7 +2,7 @@
   <div>
     <div class="fr-upload-group">
       <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden />
-
+      <span class="fr-error-text" v-if="erreur">{{ erreur }}</span>
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
         Importer ma dernière déclaration PAC
       </button>
@@ -95,13 +95,21 @@ const télépac = useTélépac()
 
 const fileInput = ref(null)
 const source = 'telepac'
+const erreur = ref('')
 
 async function handleFileUpload () {
   const [archive] = fileInput.value.files
   emit('upload:start')
 
-  const geojson = await convertShapefileArchiveToGeoJSON(archive)
+  try {
+    const geojson = await convertShapefileArchiveToGeoJSON(archive)
+    emit('upload:complete', { geojson, source })
+  } catch (error) {
+    if (error.response?.status === 500) {
+      erreur.value = 'Le fichier sélectionné ne semble pas être un fichier de déclaration PAC valide.'
+    }
 
-  emit('upload:complete', { geojson, source })
+    erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
+  }
 }
 </script>
