@@ -19,24 +19,24 @@
       <th scope="col">Certification</th>
       <th scope="col" colspan="2"></th>
     </tr>
-    <tr class="parcelle clickable" :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" @click="toggleEditForm(feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
+    <tr class="parcelle clickable" :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
-          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click.stop="emit('toggle:singleFeatureId', feature.id)" />
+          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click="emit('toggle:singleFeatureId', feature.id)" />
           <label class="fr-label" :for="'radio-' + feature.id" />
         </div>
       </th>
-      <td></td>
-      <td v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
-      <td v-else>
+      <td @click="toggleEditForm(feature.id)"></td>
+      <td @click="toggleEditForm(feature.id)" v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
+      <td @click="toggleEditForm(feature.id)" v-else>
         <span class="culture-type">{{ libelléFromCode(feature.properties.TYPE) }}</span>
         <small class="culture-precision">{{ featureName(feature) }}</small>
       </td>
-      <td>
+      <td @click="toggleEditForm(feature.id)">
         <ConversionLevel :feature="feature" with-date />
       </td>
-      <td class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
-      <td class="actions">
+      <td @click="toggleEditForm(feature.id)" class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
+      <td @click="toggleEditForm(feature.id)" class="actions">
         <span class="fr-icon fr-icon-edit-line" aria-role="button" />
       </td>
     </tr>
