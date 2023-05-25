@@ -1,17 +1,14 @@
 <template>
   <aside ref="mapContainer">
-    <slot />
-
+    <slot v-if="map" />
     <slot name="legend" />
     <slot name="credits" />
   </aside>
 </template>
 
 <script setup>
-import { provide, shallowRef, ref, onMounted, onUpdated, watch } from 'vue'
+import { provide, shallowRef, ref, onMounted, onUpdated } from 'vue'
 import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
-
-import baseStyle from '@/map-styles/base.json'
 
 const map = shallowRef(null)
 const mapContainer = ref(null)
@@ -29,10 +26,6 @@ const props = defineProps({
       return {}
     }
   },
-  style: {
-    type: [Object, String],
-    default: baseStyle
-  },
 })
 
 const emit = defineEmits(['load', 'zoom:change'])
@@ -41,7 +34,6 @@ onMounted(() => {
   map.value = new MapLibre({
     container: mapContainer.value,
     hash: false,
-    style: props.style,
     bounds: props.bounds,
     padding: 50,
     ...props.options,
@@ -57,18 +49,13 @@ onMounted(() => {
   map.value.on('zoomend', ({ target: map }) => emit('zoom:change', map.getZoom()))
 })
 
-watch(() => props.style, () => {
-  map.value.setStyle(props.style)
-  map.value.triggerRepaint()
-}, { deep: true })
-
 onUpdated(() => map.value.resize())
 </script>
 
 <style>
 @import "maplibre-gl/dist/maplibre-gl.css";
 
-.maplibregl-map, .mapboxgl-map {
+.maplibregl-map {
   font: inherit;
 }
 
