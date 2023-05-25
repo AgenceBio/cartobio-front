@@ -85,12 +85,7 @@ const wrapper = mount(OperatorSetup, {
     await wrapper.find('input[type="file"]').setValue('')
     expect(convertShapefileArchiveToGeoJSON).toHaveBeenCalledOnce()
     expect(submitParcellesChanges).not.toHaveBeenCalled()
-
-    await new Promise((resolve) => {
-      wrapper.vm.$nextTick(() => {
-        expect(wrapper.text()).toContain('Erreur')
-        resolve()
-      })
-    })
+    await new Promise(setImmediate)
+    expect(wrapper.text()).toContain('Erreur')
   })
 })
