@@ -105,7 +105,7 @@ async function handleFileUpload () {
     const geojson = await convertShapefileArchiveToGeoJSON(archive)
     emit('upload:complete', { geojson, source })
   } catch (error) {
-    if (error.response?.status === 500) {
+    if (error.response?.status === 500 && error.response?.status === 400) {
       erreur.value = 'Le fichier sélectionné ne semble pas être un fichier de déclaration PAC valide.'
     }
 
