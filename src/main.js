@@ -84,18 +84,19 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiredRoles && !to.meta.requiredRoles.includes(userStore.role)) {
-    return router.push({ path: '/login', query: { returnto: to.path }})
+    return router.push({ path: '/login', query: { returnto: to.path, mode: 'certification' } })
   }
 
   if (to.meta.requiresAuth && !userStore.isLogged) {
-    return router.replace('/exploitation/login')
+    return router.replace('/login')
   }
 
-  if (to.path === '/exploitation/login' && userStore.isLogged) {
-    return router.replace('/exploitation/parcellaire')
+  if (to.path === '/login' && userStore.isLogged) {
+    return router.replace('/')
   }
 
   if (to.meta.requiresGeodata) {
+    // @todo fetch route related operator data
     const record = await getOperatorParcelles(userStore.user.id)
 
     if (!record || !record.parcelles || !record.metadata.source) {

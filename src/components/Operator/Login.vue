@@ -5,7 +5,7 @@
   </route>
 
 <template>
-  <div class="fr-container fr-my-5w">
+  <div>
     <h2 class="fr-h3">
       Sélectionner mon exploitation
     </h2>

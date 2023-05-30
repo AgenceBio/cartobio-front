@@ -45,7 +45,7 @@
               </ul>
               <ul class="fr-btn-group" v-else>
                 <li>
-                  <router-link to="/exploitation/login" class="fr-btn fr-icon-account-circle-fill" aria-role="button">
+                  <router-link to="/login" class="fr-btn fr-icon-account-circle-fill" aria-role="button">
                     Connexion
                   </router-link>
                 </li>
@@ -96,7 +96,7 @@
                     Déconnexion
                   </a>
                 </router-link>
-                <router-link to="/exploitation/login" class="fr-nav__link" aria-role="button" v-else>
+                <router-link to="/login" class="fr-nav__link" aria-role="button" v-else>
                   Connexion
                 </router-link>
               </li>
