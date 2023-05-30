@@ -47,6 +47,14 @@ onMounted(() => {
   })
 
   map.value.on('zoomend', ({ target: map }) => emit('zoom:change', map.getZoom()))
+
+  map.value.on('styleimagemissing', ({ target: map, id }) => {
+    if (id !== 'warning') return
+    map.loadImage('/src/assets/map/warning.png', (error, image) => {
+      if (error) throw error
+      map.addImage('warning', image)
+    })
+  })
 })
 
 onUpdated(() => map.value.resize())
