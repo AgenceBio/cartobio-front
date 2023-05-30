@@ -79,7 +79,10 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to) => {
   if (to.path === '/login/agencebio') {
-    window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login`
+    // forwards the user selected tab to the callback URI
+    // this way, we come back to the same tab
+    const qs = new URLSearchParams(to.query)
+    window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login?${qs.toString()}`
     return false
   }
 
