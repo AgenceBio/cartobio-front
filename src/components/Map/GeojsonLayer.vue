@@ -94,7 +94,7 @@ export default {
     }
 
     Object.entries(this.style.sources || {}).map(([key, value]) => {
-      if (this.map.getSource(`${this.name}/${key}`)) return
+      if (this.map.style && this.map.getSource(`${this.name}/${key}`)) return
       this.map.addSource(`${this.name}/${key}`, value)
     })
 
