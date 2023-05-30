@@ -1,12 +1,12 @@
 <template>
   <div class="fr-tabs">
       <ul class="fr-tabs__list" role="tablist">
-        <li v-for="(source, sourceId) in sources" role="presentation" :key="sourceId">
+        <li v-for="(source, sourceId) in sourcesTabs" role="presentation" :key="sourceId">
           <button class="fr-tabs__tab" :disabled="!source.component" type="button" :aria-selected="sourceId === featureSource" @click="featureSource = sourceId">{{ source.label }}</button>
         </li>
       </ul>
 
-      <Component :is="sources[featureSource].component" @upload:start="emit('import:start')" @upload:complete="handleUpload" :class="{ 'fr-tabs__panel': true, 'fr-tabs__panel--selected': true }" role="tabpanel" />
+      <Component :is="sourcesTabs[featureSource].component" @upload:start="emit('import:start')" @upload:complete="handleUpload" :class="{ 'fr-tabs__panel': true, 'fr-tabs__panel--selected': true }" role="tabpanel" />
     </div>
 </template>
 
@@ -34,7 +34,7 @@ const featureSource = ref('telepac')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const provenance = computed(() => window.location.host)
-const sources = computed(() => Object.fromEntries(
+const sourcesTabs = computed(() => Object.fromEntries(
   Object.entries(featureSources).filter(([sourceId]) => props.sources.includes(sourceId))
 ))
 
