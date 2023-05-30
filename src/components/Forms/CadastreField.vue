@@ -71,8 +71,8 @@ const props = defineProps({
 const emit = defineEmits(['change', 'feature'])
 
 const fieldId = ref(crypto.randomUUID())
-const reference = ref(props.reference)
-const parsedReference = computed(() => parseReference(reference.value) ?? { prefix: '', section: '', number: '' })
+const referenceField = ref(props.reference)
+const parsedReference = computed(() => parseReference(referenceField.value) ?? { prefix: '', section: '', number: '' })
 const feature = ref(null)
 
 const hasFeature = computed(() => feature?.value)
@@ -92,13 +92,13 @@ const tentativeReference = computed(() => toString({
 
 watch(tentativeReference, (tentative) => {
   if (section.value && number && isValidReference(tentative)) {
-    reference.value = tentative
+    referenceField.value = tentative
     emit('change', parseReference(tentative))
   }
 })
 
 let cadastreRequestController;
-watch(reference, async (newReference, oldReference) => {
+watch(referenceField, async (newReference, oldReference) => {
   if (newReference && newReference !== oldReference && isValidReference(newReference)) {
     const { commune: code_insee, section, prefix: com_abs, number: numero } = parseReference(newReference)
     const _limit = 1

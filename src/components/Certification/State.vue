@@ -1,7 +1,7 @@
 <template>
-  <span :class="['fr-badge', state.color]">
-    {{ state.label }}
-    <span v-if="date" class="year">{{ date }}</span>
+  <span :class="['fr-badge', stateInfo.color]">
+    {{ stateInfo.label }}
+    <span v-if="date" class="year">{{ dateLabel }}</span>
   </span>
 </template>
 
@@ -35,8 +35,8 @@ const STATE_MAP = readonly({
 })
 
 const stateId = computed(() => props.state in STATE_MAP ? props.state : 'UNKNOWN')
-const state = computed(() => STATE_MAP[stateId.value])
-const date = computed(() => {
+const stateInfo = computed(() => STATE_MAP[stateId.value])
+const dateLabel = computed(() => {
   return props.date
     ? new Date(props.date).toLocaleDateString('fr-FR', { year: 'numeric'})
     : ''
