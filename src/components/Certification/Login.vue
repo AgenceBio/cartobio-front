@@ -79,7 +79,7 @@ onMounted(async () => {
     }
 
     if (role.value === ROLES.OC) {
-      router.replace('/certification/exploitations')
+      router.replace(route.query.returnto ?? '/certification/exploitations')
     }
   }
   finally {

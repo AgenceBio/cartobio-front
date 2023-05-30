@@ -77,25 +77,25 @@ router.isReady().then(() => {
   window.head = head
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
   if (to.path === '/login/agencebio') {
     // forwards the user selected tab to the callback URI
     // this way, we come back to the same tab
-    const qs = new URLSearchParams(to.query)
+    const qs = new URLSearchParams({ ...to.query, returnto: from.redirectedFrom?.fullPath ?? '/' })
     window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login?${qs.toString()}`
     return false
   }
 
   if (to.meta.requiredRoles && !to.meta.requiredRoles.includes(userStore.role)) {
-    return router.push({ path: '/login', query: { returnto: to.path, mode: 'certification' } })
+    return { path: '/login', query: { mode: 'certification' } }
   }
 
   if (to.meta.requiresAuth && !userStore.isLogged) {
-    return router.replace('/login')
+    return { path: '/login', replace: true }
   }
 
   if (to.path === '/login' && userStore.isLogged) {
-    return router.replace('/')
+    return { path: '/', replace: true }
   }
 
   if (to.meta.requiresGeodata) {
@@ -103,7 +103,7 @@ router.beforeEach(async (to) => {
     const record = await getOperatorParcelles(userStore.user.id)
 
     if (!record || !record.parcelles || !record.metadata.source) {
-      return router.push('/exploitation/setup')
+      return { path: '/exploitation/setup' }
     }
     else {
       store.setCurrentUser(record.operator, { persist: false })
