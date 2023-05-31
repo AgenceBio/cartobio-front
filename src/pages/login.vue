@@ -14,12 +14,12 @@
         <div class="fr-tabs" style="--tabs-height: 350px;">
           <ul class="fr-tabs__list" role="tablist">
             <li role="presentation">
-              <router-link to="/login?mode=exploitation" class="fr-tabs__tab" type="button" :aria-selected="mode === MODES_EXPLOITATION">
+              <router-link to="/login?mode=exploitation" class="fr-tabs__tab" role="button" :aria-selected="mode === MODES_EXPLOITATION" @click="mode = MODES_EXPLOITATION" :aria-controls="MODES_EXPLOITATION">
                 Je suis agriculteur·ice
               </router-link>
             </li>
             <li role="presentation">
-              <router-link to="/login?mode=certification" class="fr-tabs__tab" type="button" :aria-selected="mode === MODES_CERTIFICATION">
+              <router-link to="/login?mode=certification" class="fr-tabs__tab" role="button" :aria-selected="mode === MODES_CERTIFICATION" @click="mode = MODES_CERTIFICATION" :aria-controls="MODES_CERTIFICATION">
                 Je travaille pour un organisme de certification
               </router-link>
             </li>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import CertificationLogin from '@/components/Certification/Login.vue'
@@ -54,10 +54,4 @@ const MODES = {
 const route = useRoute()
 const mode = ref(route.query.mode in MODES ? route.query.mode : MODES_EXPLOITATION)
 const LoginComponent = computed(() => MODES[mode.value].component)
-
-watch(() => route.query.mode, (newMode, oldMode) => {
-  if (newMode !== oldMode && newMode in MODES) {
-    mode.value = newMode
-  }
-})
 </script>
