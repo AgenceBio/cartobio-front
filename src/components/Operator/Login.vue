@@ -10,29 +10,24 @@
       Sélectionner mon exploitation
     </h2>
 
-    <form @submit.prevent="tryLogin" class="fr-search-bar fr-search-bar--lg" id="header-search" role="search">
+    <form @submit.prevent="tryLogin" class="fr-search-bar fr-search-bar--lg fr-col-lg-8" id="header-search" role="search">
       <label class="fr-label" for="search-784-input">
           Recherche
       </label>
-      <input class="fr-input" placeholder="Rechercher" v-model="userLogin" ref="loginInput" required autofocustype="search" id="search-784-input">
+      <input class="fr-input" placeholder="Votre SIRET ou nom d'exploitation" v-model="userLogin" ref="loginInput" required autofocustype="search" id="search-784-input">
       <button class="fr-btn" title="Rechercher" :disabled="isLoading">
         Rechercher
       </button>
     </form>
 
-    <div class="fr-alert fr-alert--info fr-my-3w">
-      <p class="fr-alert__title">Champs de recherche</p>
-
-      <p class="help">Votre saisie recherche par <span v-for="({ id, label }) in LOGIN_TYPES" :aria-selected="userLoginType.includes(id)" :key="id">
-        {{ label }}
-      </span>.
-      </p>
-    </div>
-
     <p v-if="hasCandidateUsers" class="fr-my-3w">
       <button class="fr-link fr-icon-close-circle-line" @click="resetSearch">
         Annuler cette recherche
       </button>
+    </p>
+
+    <p id="text-input-error-desc-error" class="fr-error-text" v-if="error">
+      {{ error }}
     </p>
 
     <section class="fr-grid-row fr-grid-row--gutters" v-if="hasCandidateUsers">
@@ -42,10 +37,10 @@
               <div class="fr-card__content">
                   <h4 class="fr-card__title">{{ candidateUser.nom }}</h4>
                   <div class="fr-card__desc">
-                    <ul>
+                    <ul class="list-unstyled">
                       <li v-if="candidateUser.commune"><strong>Siège</strong> : {{ candidateUser.commune }} ({{ candidateUser.departement }})</li>
                       <li v-if="candidateUser.denominationCourante && candidateUser.denominationCourante !== candidateUser.nom"><b>Dénomination courante</b> : {{ candidateUser.denominationCourante }}</li>
-                      <li><b>SIRET</b> : {{ candidateUser.siret }}</li>
+                      <li v-if="candidateUser.siret"><b>SIRET</b> : {{ candidateUser.siret }}</li>
                       <li v-if="candidateUser.numeroPacage"><b>PACAGE</b> : {{ candidateUser.numeroPacage }}</li>
                       <li><b>Numéro Bio</b> : {{ candidateUser.numeroBio }}</li>
                       <li><b>Date d'engagement</b> : {{ candidateUser.dateEngagement }}</li>
@@ -80,54 +75,17 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.js'
-import { isValid as isPacageNumberValid } from '@/referentiels/pac.js'
 
 const userStore = useUserStore()
 const router = useRouter()
 const loginInput = ref(null)
 const userLogin = ref('')
 const cleanedInput = computed(() => userLogin.value.trim())
-const cleanedInputWithoutSpaces = computed(() => userLogin.value.replace(/ /g, ''))
 
 const isLoading = ref(false)
+const error = ref('')
 const candidateUsers = ref([])
 const hasCandidateUsers = computed(() => Boolean(candidateUsers.value.length))
-
-const LOGIN_TYPES = [
-  { id: 'name', label: "nom" },
-  { id: 'siret', label: "SIRET" },
-  // { id: 'email', label: "email" },
-  { id: 'farm-name', label: "nom d’exploitation" },
-  // { id: 'phone', label: "numéro de téléphone" },
-  // { id: 'pacage', label: "numéro PACAGE" },
-]
-
-const userLoginType = computed(() => {
-  //
-  if (isPacageNumberValid(cleanedInputWithoutSpaces.value)) {
-    return ['pacage']
-  }
-  //
-  else if (/^[0-9]{14}$/i.test(cleanedInputWithoutSpaces.value)) {
-    return ['siret']
-  }
-  // 0102030405
-  // +33102030405
-  // else if (/^[0-9]{10}$/i.test(cleanedInputWithoutSpaces) || /^\+[0-9]{2}[0-9]{9}$/i.test(cleanedInputWithoutSpaces)) {
-  //   return ['phone']
-  // }
-  // via https://github.com/sindresorhus/email-regex/blob/main/index.js
-  else if (new RegExp('^[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*$').test(cleanedInputWithoutSpaces.value)) {
-    return ['email']
-  }
-  // arbitrary length… maybe not a great idea
-  else if (cleanedInputWithoutSpaces.value.length > 3) {
-    return ['name', 'farm-name']
-  }
-
-  return []
-})
-
 
 onMounted(() => loginInput.value?.focus())
 
@@ -140,20 +98,28 @@ function resetSearch () {
 
 async function tryLogin () {
   isLoading.value = true
+  error.value = ''
 
-  const userProfiles = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/tryLogin`, {
-    method: 'POST',
-    body: JSON.stringify({ q: cleanedInput.value }),
-    signal: AbortSignal.timeout(8000),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }).then(res => res.json()).finally(() => isLoading.value = false)
+  try {
+    candidateUsers.value = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/tryLogin`, {
+      method: 'POST',
+      body: JSON.stringify({ q: cleanedInput.value }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(res => res.json())
 
+    window._paq.push(['trackEvent', 'login', `search`, 'results'])
+  }
+  catch (e) {
+    error.value = 'La requête n\'a pas pu aboutir. Pouvez-vous réessayer dans quelques secondes ?'
 
+    throw e
+  }
+  finally {
+    isLoading.value = false
+  }
 
-  candidateUsers.value = userProfiles
-  window._paq.push(['trackEvent', 'login', `search`, 'results'])
 }
 
 async function loginCandidateUser (candidateUser) {
@@ -198,5 +164,10 @@ dl.candidateUser {
   dl.candidateUser dd {
     margin: 0;
   }
+
+.list-unstyled {
+  --ul-type: none;
+  --ul-start: 0;
+}
 
 </style>

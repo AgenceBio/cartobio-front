@@ -7,11 +7,11 @@
 <template>
   <div class="fr-container fr-my-5w">
     <div class="fr-grid-row">
-      <div class="fr-col-12 fr-col-lg-8 ">
+      <div class="fr-col-12">
 
         <h2 class="fr-h6">Connexion à CartoBio</h2>
 
-        <div class="fr-tabs" style="--tabs-height: 350px;">
+        <div class="fr-tabs" style="--tabs-height: 95%;">
           <ul class="fr-tabs__list" role="tablist">
             <li role="presentation">
               <router-link to="/login?mode=exploitation" class="fr-tabs__tab" role="button" :aria-selected="mode === MODES_EXPLOITATION" @click="mode = MODES_EXPLOITATION" :aria-controls="MODES_EXPLOITATION">
