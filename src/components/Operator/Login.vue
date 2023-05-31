@@ -29,13 +29,13 @@
       </p>
     </div>
 
-    <p v-if="candidateUsers.length" class="fr-my-3w">
+    <p v-if="hasCandidateUsers" class="fr-my-3w">
       <button class="fr-link fr-icon-close-circle-line" @click="resetSearch">
         Annuler cette recherche
       </button>
     </p>
 
-    <section class="fr-grid-row fr-grid-row--gutters" v-if="candidateUsers.length">
+    <section class="fr-grid-row fr-grid-row--gutters" v-if="hasCandidateUsers">
       <article class="fr-col-12 fr-col-md-4" v-for="candidateUser in candidateUsers" :key="candidateUser.id">
         <div class="fr-card fr-card--horizontal">
           <div class="fr-card__body">
@@ -91,6 +91,7 @@ const cleanedInputWithoutSpaces = computed(() => userLogin.value.replace(/ /g, '
 
 const isLoading = ref(false)
 const candidateUsers = ref([])
+const hasCandidateUsers = computed(() => Boolean(candidateUsers.value.length))
 
 const LOGIN_TYPES = [
   { id: 'name', label: "nom" },
