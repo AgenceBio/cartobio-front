@@ -217,6 +217,5 @@ export async function convertShapefileArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
   const { data: geojson } = await cartobioApi.post(`/v2/convert/shapefile/geojson`, form)
-
   return geojson
 }

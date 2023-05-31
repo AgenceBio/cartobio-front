@@ -97,7 +97,6 @@ import PartnersSection from '@/components/Partners/section.vue'
 import OpendataSection from '@/components/Partners/opendata-section.vue'
 import ContributeSection from '@/components/Partners/contribute-section.vue'
 import ProductFlowSection from '@/components/Features/productflow-section.vue'
-import Loading from '@/components/Loading.vue'
 </script>
 
 <style scoped>
