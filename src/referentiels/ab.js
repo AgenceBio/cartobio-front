@@ -27,13 +27,14 @@ export const conversionLevels = [
 
 export const userFacingConversionLevels = conversionLevels.filter(({ value }) => value !== undefined)
 
-const VALIDATION_RULES = {
-  NOT_EMPTY (feature) {
-    const { TYPE } = feature.properties
+export const RULE_NOT_EMPTY = 'NOT_EMPTY'
+export const RULE_ENGAGEMENT_DATE = 'ENGAGEMENT_DATE'
 
-    return Boolean(TYPE)
+const VALIDATION_RULES = {
+  [RULE_NOT_EMPTY] (feature) {
+    return Boolean(feature.properties.TYPE)
   },
-  ENGAGEMENT_DATE (feature) {
+  [RULE_ENGAGEMENT_DATE] (feature) {
     const { conversion_niveau, engagement_date } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
@@ -45,8 +46,8 @@ const VALIDATION_RULES = {
   }
 }
 
-export const OPERATOR_RULES = [VALIDATION_RULES.NOT_EMPTY]
-export const AUDITOR_RULES = [VALIDATION_RULES.NOT_EMPTY, VALIDATION_RULES.ENGAGEMENT_DATE]
+export const OPERATOR_RULES = [RULE_NOT_EMPTY]
+export const AUDITOR_RULES = [RULE_NOT_EMPTY, RULE_ENGAGEMENT_DATE]
 
 export function getConversionLevel (level) {
   return conversionLevels.find(({ value }) => value === level) ?? getConversionLevel(LEVEL_UNKNOWN)
@@ -56,25 +57,25 @@ export function isABLevel (level) {
   return ABLevels.includes(level)
 }
 
-export function applyValidationRules (validatedRules, ...features) {
+export function applyValidationRules (rules, ...features) {
   let total = 0
   let success = 0
   let failures = 0
-  const rules = validatedRules.reduce((obj, rule) => ({
+  const results = rules.reduce((obj, ruleId) => ({
     ...obj,
-    [rule.name]: { success: 0, failures: 0 }
+    [ruleId]: { success: 0, failures: 0 }
   }), {})
 
   features.forEach(feature => {
-    validatedRules.forEach((validationFn) => {
-      const result = validationFn(feature)
+    rules.forEach((ruleId) => {
+      const result = VALIDATION_RULES[ruleId](feature)
       total++
       result ? success++ : failures++
-      rules[validationFn.name][result ? 'success' : 'failures']++
+      results[ruleId][result ? 'success' : 'failures']++
     })
   })
 
-  return { total, success, failures, rules }
+  return { total, success, failures, rules: results }
 }
 
 export const ABLevels = [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB]
