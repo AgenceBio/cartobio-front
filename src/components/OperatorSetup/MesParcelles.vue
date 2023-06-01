@@ -32,6 +32,14 @@
       </div>
 
       <div class="fr-input-group">
+        <label for="mp-server" class="fr-label">Millésime</label>
+        <select id="mp-server" class="fr-select" v-model="mesParcellesUser.millesime" required>
+          <option v-for="(year) in [2022, 2023]" :value="year" :key="year" selected="selected">{{ year }}
+          </option>
+        </select>
+      </div>
+
+      <div class="fr-input-group">
         <button class="fr-btn"
           :disabled="!mesParcellesUser.server || !mesParcellesUser.password || !mesParcellesUser.email">Importer les
           parcelles</button>
@@ -51,6 +59,7 @@ const source = 'mesparcelles'
 
 const mesParcellesUser = ref({
   email: '',
+  millesime: new Date().getFullYear(),
   password: '',
   server: 'rhone-alpes'
 })
@@ -74,10 +83,10 @@ const mesParcellesServers = readonly({
   'rhone-alpes': 'Rhône-Alpes',
 })
 
-async function handleLoginImport ({ email, password, server }) {
+async function handleLoginImport ({ email, millesime, password, server }) {
   emit('upload:start')
 
-  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, password, server })
+  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, millesime, password, server })
 
   emit('upload:complete', { geojson, source })
 }
