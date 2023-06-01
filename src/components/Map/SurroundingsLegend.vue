@@ -11,7 +11,7 @@
         Conv. à risque
       </li>
       <li><div class="legend-square legend-square--conventionnelle" />Conventionnelle</li>
-      <li><div class="legend-square legend-square--sans-culture" />Sans culture</li>
+      <li><div class="legend-square legend-square--sans-culture" />Prairies et jachères</li>
       <li><div class="legend-square legend-square--bio" />En bio</li>
     </ul>
   </Legend>

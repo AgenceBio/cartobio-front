@@ -1,5 +1,6 @@
 <template>
-  <MapContainer :options="{ interactive: false, hash: false }" :style="baseStyle" :bounds="mapBounds">
+  <MapContainer :options="{ interactive: false, hash: false }" :bounds="mapBounds">
+    <GeojsonLayer :style="baseStyle" name="base" />
     <GeojsonLayer :data="collection" name="parcellaire-operateur" />
   </MapContainer>
 </template>
