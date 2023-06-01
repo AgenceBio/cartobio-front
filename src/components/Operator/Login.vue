@@ -1,9 +1,3 @@
-<route lang="yaml">
-  meta:
-    seo:
-      title: Connexion au service
-  </route>
-
 <template>
   <div>
     <h2 class="fr-h3">
