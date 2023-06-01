@@ -68,7 +68,7 @@
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }" v-if="isLogged">
+                <router-link to="/logout" custom v-slot="{ href }">
                   <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
                     Déconnexion
                   </a>
@@ -91,13 +91,10 @@
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }" v-if="isLogged">
+                <router-link to="/logout" custom v-slot="{ href }">
                   <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
                     Déconnexion
                   </a>
-                </router-link>
-                <router-link to="/login" class="fr-nav__link" aria-role="button" v-else>
-                  Connexion
                 </router-link>
               </li>
             </ul>
