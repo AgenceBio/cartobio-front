@@ -99,19 +99,30 @@ router.beforeEach(async (to, from) => {
   }
 
   if (to.meta.requiresGeodata) {
-    // @todo fetch route related operator data
-    const record = await getOperatorParcelles(userStore.user.id)
+    try {
+      // @todo fetch route related operator data
+      const record = await getOperatorParcelles(userStore.user.id)
 
-    if (!record || !record.parcelles || !record.metadata.source) {
-      return { path: '/exploitation/setup' }
-    }
-    else {
-      store.setCurrentUser(record.operator, { persist: false })
-      store.setRecord(record)
-      store.setParcelles({
-        geojson: record.parcelles,
-        ...record.metadata
-      })
+      if (!record || !record.parcelles || !record.metadata.source) {
+        return { path: '/exploitation/setup' }
+      }
+      else {
+        store.setCurrentUser(record.operator, { persist: false })
+        store.setRecord(record)
+        store.setParcelles({
+          geojson: record.parcelles,
+          ...record.metadata
+        })
+      }
+    } catch (error) {
+      // token has expired
+      if (error.response.status === 401) {
+        userStore.logout()
+        store.logoutUser()
+        return { path: '/login' }
+      }
+
+      throw error
     }
   }
 })
