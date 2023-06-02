@@ -4,10 +4,11 @@
 </template>
 
 <script setup>
-import { liste as codesPac } from '@/referentiels/pac.js'
 import { Fragment, h, onMounted, ref, render } from 'vue'
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic';
+import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
+import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 const autocompleteRef = ref(null)
 
@@ -24,9 +25,10 @@ onMounted(() => {
         {
           sourceId: 'cultures',
           getItems ({ query }) {
-            return codesPac
-                .filter(([, libelle]) => libelle.toLowerCase().includes((query || '').toLowerCase()))
-                .map(([code, libelle]) => ({code: code, libelle: libelle}))
+            return cpf
+                .filter(({ is_selectable }) => is_selectable)
+                .filter(({ libelle_code_cpf: libelle }) => libelle.toLowerCase().includes((query || '').toLowerCase()))
+                .map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }))
                 .sort((a, b) => a.libelle.localeCompare(b.libelle))
           },
           templates: {
@@ -44,7 +46,7 @@ onMounted(() => {
     renderer: { createElement: h, Fragment, render }
   })
 
-  setQuery(codesPac.find(([code,]) => code === props.modelValue)?.[1] || '')
+  setQuery?.(fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
 })
 </script>
 

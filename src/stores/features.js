@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, reactive, computed, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
+import { fromCodePacStrict } from "@agencebio/rosetta-cultures"
 
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()
@@ -12,7 +13,7 @@ export const useFeaturesStore = defineStore('features', () => {
   const all = reactive([])
 
   function getFeatureById (id) {
-    return all.value.find(feature => feature.id === id)
+    return collection.value.find(feature => feature.id === id)
   }
 
   const allSelected = computed(() => {
@@ -33,7 +34,17 @@ export const useFeaturesStore = defineStore('features', () => {
     return selectedIds.value.map(getFeatureById)
   })
 
-  const collection = computed(() => ({ type: 'FeatureCollection', features: all.value }))
+  const collection = computed(() => {
+    const featuresWithCPF = all.value.map(feature => ({
+      ...feature,
+      properties: {
+        ...feature.properties,
+        CPF: fromCodePacStrict(feature.properties.TYPE).code_cpf
+      }
+    }))
+
+    return ({ type: 'FeatureCollection', features: featuresWithCPF })
+  })
 
   function setAll (features) {
     all.value = features

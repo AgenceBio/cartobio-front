@@ -29,7 +29,7 @@
       <td @click="toggleEditForm(feature.id)"></td>
       <td @click="toggleEditForm(feature.id)" v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
       <td @click="toggleEditForm(feature.id)" v-else>
-        <span class="culture-type">{{ libelléFromCode(feature.properties.TYPE) }}</span>
+        <span class="culture-type">{{ fromCodeCpf(feature.properties.CPF).libelle_code_cpf || 'Culture inconnue' }}</span>
         <small class="culture-precision">{{ featureName(feature) }}</small>
       </td>
       <td @click="toggleEditForm(feature.id)">
@@ -45,11 +45,11 @@
 
 <script setup>
 import { computed, ref, unref, watch } from 'vue'
-import { surface, inHa, featureName } from '@/components/Features/index.js'
-import { libelléFromCode } from '@/referentiels/pac.js'
+import { featureName, inHa, surface } from '@/components/Features/index.js'
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
+import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 const route = useRoute()
 

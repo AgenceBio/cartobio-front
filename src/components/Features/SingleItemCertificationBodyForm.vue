@@ -16,7 +16,7 @@
 
     <div class="fr-input-group">
       <label class="fr-label">Type de culture</label>
-      <CultureSelector v-model="patch.TYPE" />
+      <CultureSelector v-model="patch.CPF" />
     </div>
 
     <div class="fr-input-group">
