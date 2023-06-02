@@ -10,6 +10,7 @@ import store from './store.js'
 import { useUserStore } from '@/stores/index.js'
 import { getOperatorParcelles } from './cartobio-api.js'
 import App from './App.vue'
+import { version } from "../package.json"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -61,11 +62,12 @@ router.isReady().then(() => {
         integrations: [
           new Sentry.BrowserTracing({
             routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-            tracingOrigins: ['localhost', 'cartobio.agencebio.org', 'cartobio-preprod.agencebio.org', /^.+--cartobio-dev.netlify.app$/],
+            tracingOrigins: ['cartobio.agencebio.org', 'cartobio-preprod.agencebio.org', /^.+--cartobio-dev.netlify.app$/],
           }),
         ],
         logErrors: true,
         tracesSampleRate: import.meta.env.PROD ? 0.3 : 1.0,
+        release: import.meta.env.PROD ? version : `${version}-dev-${import.meta.env.VITE_GIT_COMMIT_SHA}`,
       })
     }
     catch (error) {

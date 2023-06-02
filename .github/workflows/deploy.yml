@@ -58,3 +58,20 @@ jobs:
         REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
         REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
         REMOTE_PATH: /var/www/cartobio.agencebio.org/
+
+    - name: Create Sentry production release
+      uses: getsentry/action-release@v1
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: betagouv
+        SENTRY_PROJECT: cartobio-front
+        SENTRY_URL: https://sentry.incubateur.net/
+        SENTRY_LOG_LEVEL: debug
+      with:
+        environment: production
+        # On a pas l'intégration GitHub qui permet que Sentry récupère dans
+        # l'autre sens les commits liés à la release, donc on skip
+        set_commits: skip
+        # Le tag de la release est le nom du tag git
+        version: ${{ github.ref }}
+        sourcemaps: dist/assets/
