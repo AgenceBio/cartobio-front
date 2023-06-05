@@ -25,8 +25,6 @@ import { useRecordStore } from '@/stores/index.js'
 
 const recordStore = useRecordStore()
 
-import SendOffModal from '@/components/Certification/SendOffModal.vue'
-
 const props = defineProps({
   operator: {
     type: Object,
