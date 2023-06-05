@@ -1,3 +1,5 @@
+import { fromCodeCpf } from "@agencebio/rosetta-cultures"
+
 export const LEVEL_UNKNOWN = undefined
 export const LEVEL_CONVENTIONAL = 'CONV'
 export const LEVEL_C1 = 'C1'
@@ -30,9 +32,14 @@ export const userFacingConversionLevels = conversionLevels.filter(({ value }) =>
 export const RULE_NOT_EMPTY = 'NOT_EMPTY'
 export const RULE_ENGAGEMENT_DATE = 'ENGAGEMENT_DATE'
 
+export const RULE_CPF = 'CPF'
+
 const VALIDATION_RULES = {
   [RULE_NOT_EMPTY] (feature) {
-    return Boolean(feature.properties.TYPE)
+    return Boolean(feature.properties.CPF)
+  },
+  [RULE_CPF] (feature) {
+    return fromCodeCpf(feature.properties.CPF).is_selectable
   },
   [RULE_ENGAGEMENT_DATE] (feature) {
     const { conversion_niveau, engagement_date } = feature.properties
@@ -46,8 +53,8 @@ const VALIDATION_RULES = {
   }
 }
 
-export const OPERATOR_RULES = [RULE_NOT_EMPTY]
-export const AUDITOR_RULES = [RULE_NOT_EMPTY, RULE_ENGAGEMENT_DATE]
+export const OPERATOR_RULES = [RULE_NOT_EMPTY, RULE_CPF]
+export const AUDITOR_RULES = [RULE_NOT_EMPTY, RULE_CPF, RULE_ENGAGEMENT_DATE]
 
 export function getConversionLevel (level) {
   return conversionLevels.find(({ value }) => value === level) ?? getConversionLevel(LEVEL_UNKNOWN)
@@ -65,6 +72,10 @@ export function applyValidationRules (rules, ...features) {
     ...obj,
     [ruleId]: { success: 0, failures: 0 }
   }), {})
+  const featuresResults = features.reduce((obj, feature) => ({
+    ...obj,
+    [feature.properties.id]: { success: 0, failures: 0 }
+  }), {})
 
   features.forEach(feature => {
     rules.forEach((ruleId) => {
@@ -72,10 +83,11 @@ export function applyValidationRules (rules, ...features) {
       total++
       result ? success++ : failures++
       results[ruleId][result ? 'success' : 'failures']++
+      featuresResults[feature.id][result ? 'success' : 'failures']++
     })
   })
 
-  return { total, success, failures, rules: results }
+  return { total, success, failures, rules: results, features: featuresResults }
 }
 
 export const ABLevels = [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB]
