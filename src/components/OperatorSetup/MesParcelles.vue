@@ -41,7 +41,7 @@
 
       <div class="fr-input-group">
         <button class="fr-btn"
-          :disabled="!mesParcellesUser.server || !mesParcellesUser.password || !mesParcellesUser.email">Importer les
+          :disabled="!mesParcellesUser.server || !mesParcellesUser.password || !mesParcellesUser.email">Collecter les
           parcelles</button>
       </div>
     </form>
@@ -88,7 +88,7 @@ async function handleLoginImport ({ email, millesime, password, server }) {
 
   const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, millesime, password, server })
 
-  emit('upload:complete', { geojson, source })
+  emit('upload:complete', { geojson, source, warnings: [] })
 }
 
 </script>

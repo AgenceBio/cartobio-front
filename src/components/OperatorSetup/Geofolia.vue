@@ -4,7 +4,7 @@
       <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden>
 
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
-        Importer mes parcelles et interventions
+        Sélectionner mon fichier de parcelles et d'interventions
       </button>
     </div>
 
@@ -38,6 +38,6 @@ async function handleFileUpload () {
   form.append('archive', archive)
   const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/convert/geofolia/geojson`, form)
 
-  emit('upload:complete', { geojson, source })
+  emit('upload:complete', { geojson, source, warnings: [] })
 }
 </script>
