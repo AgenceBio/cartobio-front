@@ -12,4 +12,8 @@ setActivePinia(createPinia())
 const router = createRouter({ routes, history: createWebHistory() })
 config.global.plugins = [router]
 
+if (typeof window.URL.createObjectURL === 'undefined') {
+  window.URL.createObjectURL = vi.fn();
+}
+
 afterEach(() => vi.clearAllMocks())

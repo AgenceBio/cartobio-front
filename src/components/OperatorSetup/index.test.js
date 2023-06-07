@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest"
-import { mount } from "@vue/test-utils"
+import { mount, flushPromises } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
 
 import OperatorSetup from "@/components/OperatorSetup/index.vue"
@@ -29,17 +29,17 @@ describe("OperatorSetup", () => {
     })
 
     expect(wrapper.find('ul').findAll('li').length).toBe(1)
-    expect(wrapper.text()).toContain('Importer ma dernière déclaration PAC')
+    expect(wrapper.text()).toContain('Sélectionner ma dernière déclaration PAC')
   })
 
   it("should render tab content for telepac", () => {
-const wrapper = mount(OperatorSetup, {
+    const wrapper = mount(OperatorSetup, {
       props: {
         sources: ['telepac']
       }
     })
 
-    expect(wrapper.text()).toContain('Importer ma dernière déclaration PAC')
+    expect(wrapper.text()).toContain('Sélectionner ma dernière déclaration PAC')
   })
 
   it("should render tab content for Geofolia when selected", async () => {
@@ -51,7 +51,7 @@ const wrapper = mount(OperatorSetup, {
 
     // Click on geofolia tab
     await wrapper.find('ul').findAll('li')[1].find('button').trigger('click')
-    expect(wrapper.text()).toContain('logiciel Géofolia, édité par Isagri')
+    expect(wrapper.text()).toContain(`Sélectionner mon fichier de parcelles et d'interventions`)
   })
 
   it("should render all tabs otherwise", () => {
@@ -69,7 +69,11 @@ const wrapper = mount(OperatorSetup, {
 
     await wrapper.find('input[type="file"]').setValue('')
     expect(convertShapefileArchiveToGeoJSON).toHaveBeenCalledOnce()
-    expect(submitParcellesChanges).toHaveBeenCalled()
+    // it is now called during preview
+    await flushPromises()
+    const confirmBtn = await wrapper.find('.fr-btn')
+    expect(submitParcellesChanges).not.toHaveBeenCalled()
+    expect(confirmBtn.text()).toEqual('Import des données')
   })
 
   it("should handle the case where it cannot convert telepac file (invalid file)", async () => {
@@ -85,7 +89,7 @@ const wrapper = mount(OperatorSetup, {
     await wrapper.find('input[type="file"]').setValue('')
     expect(convertShapefileArchiveToGeoJSON).toHaveBeenCalledOnce()
     expect(submitParcellesChanges).not.toHaveBeenCalled()
-    await new Promise(setImmediate)
+    await flushPromises()
     expect(wrapper.text()).toContain('Erreur')
   })
 })
