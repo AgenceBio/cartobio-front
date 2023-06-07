@@ -4,7 +4,7 @@
       <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden />
       <span class="fr-error-text" v-if="erreur">{{ erreur }}</span>
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
-        Importer ma dernière déclaration PAC
+        Sélectionner ma dernière déclaration PAC
       </button>
     </div>
 
@@ -22,22 +22,29 @@
 <script setup>
 import { ref } from 'vue'
 import { convertShapefileArchiveToGeoJSON } from '@/cartobio-api.js'
+import { deriveFromFilename, useTélépac } from '@/referentiels/pac.js'
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
 
+const { campagne: currentCampagne } = useTélépac()
 const fileInput = ref(null)
 const source = 'telepac'
 const erreur = ref('')
 
 async function handleFileUpload () {
+  const warnings = []
   const [archive] = fileInput.value.files
   const { campagne, pacage } = deriveFromFilename(archive?.name)
 
   emit('upload:start')
 
+  if (campagne !== currentCampagne.value) {
+    warnings.push(`Le fichier contient des données datant de la campagne ${campagne}. Peut-être disposez-vous d'un export plus récent, par exemple de la campagne ${currentCampagne.value} ?`)
+  }
+
   try {
     const geojson = await convertShapefileArchiveToGeoJSON(archive)
-    emit('upload:complete', { geojson, source })
+    emit('upload:complete', { geojson, source, warnings })
   } catch (error) {
     if (error.response?.status === 500 && error.response?.status === 400) {
       erreur.value = 'Le fichier sélectionné ne semble pas être un fichier de déclaration PAC valide.'
