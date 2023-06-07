@@ -1,5 +1,5 @@
 <template>
-  <MapContainer :options="{ interactive: false, hash: false }" :bounds="mapBounds">
+  <MapContainer :controls="controls" :options="{ interactive: false, hash: false }" :bounds="mapBounds">
     <GeojsonLayer :style="baseStyle" name="base" />
     <GeojsonLayer :data="collection" name="parcellaire-operateur" />
   </MapContainer>
@@ -14,6 +14,7 @@ import GeojsonLayer from './GeojsonLayer.vue'
 import baseStyle from '@/map-styles/base.json'
 
 const props = defineProps({
+  controls: Boolean,
   collection: {
     type: Object,
     required: true
