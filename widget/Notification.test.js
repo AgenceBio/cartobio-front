@@ -32,7 +32,7 @@ describe("Notification", () => {
 
     await new Promise(setImmediate)
     expect(exchangeNotificationToken).toHaveBeenCalledOnce()
-    expect(wrapper.text()).toContain("Importer ma dernière déclaration PAC")
+    expect(wrapper.text()).toContain("Sélectionner ma dernière déclaration PAC")
   })
 
   it("should render error state when exchangeNotificationToken fails", async () => {

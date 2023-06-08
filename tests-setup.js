@@ -12,8 +12,22 @@ setActivePinia(createPinia())
 const router = createRouter({ routes, history: createWebHistory() })
 config.global.plugins = [router]
 
-if (typeof window.URL.createObjectURL === 'undefined') {
-  window.URL.createObjectURL = vi.fn();
-}
+vi.mock('maplibre-gl', () => ({
+  Map: vi.fn(() => ({
+    addControl: vi.fn(),
+    on: vi.fn(),
+    once: vi.fn(),
+    remove: vi.fn(),
+    setGlyphs: vi.fn(),
+    loadImage: vi.fn(),
+    addSource: vi.fn(),
+    addLayer: vi.fn(),
+    getLayer: vi.fn(),
+    getSource: vi.fn(),
+    getStyle: vi.fn().mockImplementation(() => ({layers: []})),
+    resize: vi.fn(),
+  })),
+  NavigationControl: vi.fn(),
+}));
 
 afterEach(() => vi.clearAllMocks())
