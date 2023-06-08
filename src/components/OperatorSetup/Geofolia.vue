@@ -1,33 +1,21 @@
 <template>
   <div>
-    <div class="fr-alert fr-alert--info fr-mb-5w">
-      <p class="fr-alert__title">Remarque</p>
-      <p>Le nom du fichier ressemble à <code>…_Parcelles et Interventions (ZIP)_….zip</code>.</p>
-    </div>
-
-    <div class="fr-upload-group">
+    <div class="fr-upload-group fr-mb-5w">
       <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden>
 
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
-        Importer mes parcelles et interventions
+        Sélectionner mon fichier de parcelles et d'interventions
       </button>
     </div>
 
-
-    <details class="fr-my-5w">
-      <summary class="fr-icon-questionnaire-line fr-btn fr-btn--secondary fr-btn--icon-left">Où trouver mon fichier ?
-      </summary>
+    <div class="fr-alert fr-alert--info">
+      <h3 class="fr-alert__title">Où récupérer le fichier demandé ?</h3>
 
       <p>
-        Le fichier <b>Parcelles et interventions (ZIP)</b> se trouve dans l'onglet "Export › Parcelles et interventions"
-        du logiciel Géofolia, édité par Isagri.
+        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-geofolia" target="_blank">Import Géofolia</a>
+        de notre documentation pour une aide illustrée et pas à pas.
       </p>
-
-      <p>
-        <img src="/import/geofolia-export.png" class="screenshot"
-          alt="Écran Export Parcelles et interventions du logiciel Géofolia" />
-      </p>
-    </details>
+    </div>
   </div>
 </template>
 
@@ -50,6 +38,6 @@ async function handleFileUpload () {
   form.append('archive', archive)
   const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/convert/geofolia/geojson`, form)
 
-  emit('upload:complete', { geojson, source })
+  emit('upload:complete', { geojson, source, warnings: [] })
 }
 </script>

@@ -17,6 +17,10 @@ provide('map', map)
 
 const props = defineProps({
   bounds: Array,
+  controls: {
+    type: Boolean,
+    default: true
+  },
   mode: {
     type: String,
   },
@@ -39,7 +43,9 @@ onMounted(() => {
     ...props.options,
   })
 
-  map.value.addControl(new NavigationControl(), 'bottom-right')
+  if (props.controls) {
+    map.value.addControl(new NavigationControl(), 'bottom-right')
+  }
 
   map.value.once('load', ({ target: map }) => {
     emit('load', map)

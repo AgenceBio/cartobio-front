@@ -87,7 +87,7 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
  * @property {UserRole} mainGroup
  */
 
-const cartobioApi = axios.create({ baseURL, timeout: 4000 })
+const cartobioApi = axios.create({ baseURL, timeout: 10000 })
 
 /**
  * @param {number} operatorId

@@ -1,6 +1,17 @@
 import { describe, test, expect } from 'vitest';
 
-import { isValid, resolveCampagneFromDate } from './pac.js'
+import { deriveFromFilename, isValid, resolveCampagneFromDate } from './pac.js'
+
+describe('deriveFromFilename', () => {
+  test('valid filename', () => {
+    expect(deriveFromFilename('Dossier-PAC-2020_dossier_999100540_20201216111411.xml')).toEqual({ pacage: '999100540', campagne: '2020' })
+    expect(deriveFromFilename('Dossier-PAC-2020_parcelle-2020_082020054_20201113091213.zip')).toEqual({ pacage: '082020054', campagne: '2020' })
+  })
+
+  test('invalid filename', () => {
+    expect(deriveFromFilename('Client95_Parcelles et Interventions (ZIP)_20211217153622.zip')).toEqual({ pacage: null, campagne: null })
+  })
+})
 
 describe('isValid', () => {
   test('valid pacage numbers', () => {

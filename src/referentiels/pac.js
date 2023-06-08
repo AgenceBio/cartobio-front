@@ -49,6 +49,26 @@ export function resolveCampagneFromDate (referenceDate) {
   return referenceCampagneStartDate.getFullYear() - (referenceDate < referenceCampagneStartDate ? 1 : 0)
 }
 
+/**
+ * Derive informations from an upload filename
+ *
+ * Filename can look like:
+ * - Dossier-PAC-2020_dossier_999100540_20201216111411.xml
+ * - Dossier-PAC-2020_parcelle-2020_082020054_20201113091213.zip
+ *
+ * @param {String} filename
+ * @returns {?{campagne: String, pacage: String}}
+ */
+export function deriveFromFilename (filename) {
+  const result = String(filename).match(/-PAC-(?<campagne>\d{4})_.+_(?<pacage>\d{9})_/)
+
+  if (!result) {
+    return { pacage: null, campagne: null }
+  }
+
+  return result.groups
+}
+
 export function useTélépac (referenceDate = new Date()) {
   const campagne = computed(() => resolveCampagneFromDate(referenceDate))
   const campagneShort = computed(() => String(campagne.value).slice(-2))
