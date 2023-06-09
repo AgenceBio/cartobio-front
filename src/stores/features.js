@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref, watch } from 'vue'
-import { fromCodePacStrict } from "@agencebio/rosetta-cultures"
+import { fromCodeCpf, fromCodePacStrict } from "@agencebio/rosetta-cultures"
 
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()
@@ -35,13 +35,19 @@ export const useFeaturesStore = defineStore('features', () => {
   })
 
   const collection = computed(() => {
-    const featuresWithCPF = all.value.map(feature => ({
-      ...feature,
-      properties: {
-        ...feature.properties,
-        CPF: fromCodePacStrict(feature.properties.TYPE).code_cpf
+    const featuresWithCPF = all.value.map(feature => {
+      if (fromCodeCpf(feature.properties.CPF || '')?.is_selectable) {
+        return feature
       }
-    }))
+
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          CPF: fromCodePacStrict(feature.properties.TYPE).code_cpf
+        }
+      }
+    })
 
     return ({ type: 'FeatureCollection', features: featuresWithCPF })
   })
