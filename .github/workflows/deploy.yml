@@ -38,7 +38,6 @@ jobs:
         VUE_APP_PRODUCTION: true
         VUE_APP_ENVIRONMENT: production
         VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
     - run: npm clean-install-test
     - run: |

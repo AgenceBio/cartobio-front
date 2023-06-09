@@ -57,7 +57,7 @@ router.isReady().then(() => {
     let release = version.replace("v", "")
 
     if (import.meta.env.VUE_APP_ENVIRONMENT !== 'production') {
-      release = `${release}-dev-${import.meta.env.VITE_GIT_COMMIT_SHA}`
+      release = `${release}-dev-${import.meta.env.VUE_APP_GIT_COMMIT_SHA}`
     }
 
     try {

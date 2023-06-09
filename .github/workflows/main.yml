@@ -32,7 +32,7 @@ jobs:
         VUE_APP_PRELOADED_CAMPAGNE_PAC: 2021
         VUE_APP_ENVIRONMENT: staging
         VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
-        VITE_GIT_COMMIT_SHA: ${{ github.sha }}
+        VUE_APP_GIT_COMMIT_SHA: ${{ github.sha }}
 
     - run: npm clean-install-test
     - run: |
