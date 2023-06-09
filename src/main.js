@@ -53,12 +53,18 @@ const userStore = useUserStore()
 userStore.enablePersistance()
 
 router.isReady().then(() => {
-  if (VUE_APP_SENTRY_DSN) {
+  if (import.meta.env.PROD && VUE_APP_SENTRY_DSN) {
+    let release = version.replace("v", "")
+
+    if (import.meta.env.VUE_APP_ENVIRONMENT !== 'production') {
+      release = `${release}-dev-${import.meta.env.VITE_GIT_COMMIT_SHA}`
+    }
+
     try {
       Sentry.init({
         app,
         dsn: VUE_APP_SENTRY_DSN,
-        environment: import.meta.env.MODE,
+        environment: import.meta.env.VUE_APP_ENVIRONMENT,
         integrations: [
           new Sentry.BrowserTracing({
             routingInstrumentation: Sentry.vueRouterInstrumentation(router),
@@ -66,8 +72,8 @@ router.isReady().then(() => {
           }),
         ],
         logErrors: true,
-        tracesSampleRate: import.meta.env.PROD ? 0.3 : 1.0,
-        release: import.meta.env.PROD ? version : `${version}-dev-${import.meta.env.VITE_GIT_COMMIT_SHA}`,
+        tracesSampleRate: 0.3,
+        release,
       })
     }
     catch (error) {
