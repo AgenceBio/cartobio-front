@@ -10,7 +10,7 @@
       <td><span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" /></td>
       <th scope="row" colspan="2">{{ featureGroup.label }}</th>
       <td class="numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
-      <td class="actions"><span :class="['fr-icon', 'fr-icon-edit-fill', groupValidationClass]" /></td>
+      <td class="actions"><span :class="{ 'fr-icon fr-icon-warning-fill fr-icon--warning': validation.total !== validation.success }" /></td>
     </tr>
     <tr :hidden="!open" class="intermediate-header">
       <th scope="col" colspan="2"></th>
@@ -29,7 +29,7 @@
       <td @click="toggleEditForm(feature.id)"></td>
       <td @click="toggleEditForm(feature.id)" v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
       <td @click="toggleEditForm(feature.id)" v-else>
-        <span class="culture-type">{{ libelléFromCode(feature.properties.TYPE) }}</span>
+        <span class="culture-type">{{ fromCodeCpf(feature.properties.CPF).libelle_code_cpf || 'Culture inconnue' }}</span>
         <small class="culture-precision">{{ featureName(feature) }}</small>
       </td>
       <td @click="toggleEditForm(feature.id)">
@@ -37,7 +37,8 @@
       </td>
       <td @click="toggleEditForm(feature.id)" class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
       <td @click="toggleEditForm(feature.id)" class="actions">
-        <span class="fr-icon fr-icon-edit-line" aria-role="button" />
+        <span v-if="validation.features[feature.id]?.failures" class="fr-icon fr-icon-edit-box-fill fr-icon--warning" aria-role="button" />
+        <span v-else class="fr-icon fr-icon-edit-line" aria-role="button" />
       </td>
     </tr>
   </tbody>
@@ -45,11 +46,11 @@
 
 <script setup>
 import { computed, ref, unref, watch } from 'vue'
-import { surface, inHa, featureName } from '@/components/Features/index.js'
-import { libelléFromCode } from '@/referentiels/pac.js'
+import { featureName, inHa, surface } from '@/components/Features/index.js'
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
+import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 const route = useRoute()
 
@@ -77,10 +78,7 @@ const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:sing
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
 const open = ref(featureIds.value.includes(Number(route.query?.new)))
 const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
-const groupValidationClass = computed(() => {
-  const validation = applyValidationRules(props.validationRules.rules, ...props.featureGroup.features)
-  return validation.total === validation.success ? `fr-icon-success-line ${props.validationRules.success}` : `fr-icon-warning-fill ${props.validationRules.error}`
-})
+const validation = applyValidationRules(props.validationRules.rules, ...props.featureGroup.features)
 
 function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
@@ -164,29 +162,22 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
   .subtable {
     padding: 0;
   }
-    .subtable table,
-    .subtable tbody {
-      width: 100%;
-    }
 
-  .fr-icon[aria-checked="true"]::before {
-    transform: rotate(180deg);
+  .subtable table,
+  .subtable tbody {
+    width: 100%;
   }
 
-  table tr[aria-current="location"] {
-    background-color: var(--background-alt-blue-france-hover) !important;
-  }
-
-  .actions {
-    text-align: center;
-  }
-
-.fr-icon--success {
-  color: var(--text-default-success);
+.fr-icon[aria-checked="true"]::before {
+  transform: rotate(180deg);
 }
 
-.fr-icon--neutral {
-  color: transparent;
+table tr[aria-current="location"] {
+  background-color: var(--background-alt-blue-france-hover) !important;
+}
+
+.actions {
+  text-align: center;
 }
 
 .fr-icon--warning {

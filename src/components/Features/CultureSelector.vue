@@ -1,18 +1,50 @@
 <template>
-  <div ref="autocompleteRef"></div>
-  <div class="fr-hint-text">Saisissez le nom d'une culture</div>
+  <div class="fr-input-group" :class="{ 'fr-input-group-error': requirePrecision }">
+    <label class="fr-label">Type de culture</label>
+    <div v-if="requirePrecision && fromCodeCpf(modelValue)" class="fr-hint-text">
+      Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
+    </div>
+    <div ref="autocompleteRef"></div>
+    <div v-if="requirePrecision" class="fr-hint-text fr-error-text">
+      La culture a besoin d'être précisée
+    </div>
+    <div v-else class="fr-hint-text">Saisissez le nom d'une culture</div>
+  </div>
 </template>
 
 <script setup>
-import { liste as codesPac } from '@/referentiels/pac.js'
-import { Fragment, h, onMounted, ref, render } from 'vue'
+import { computed, Fragment, h, nextTick, onMounted, ref, render } from 'vue'
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic';
+import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
+import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
 
 const autocompleteRef = ref(null)
 
-const props = defineProps(['modelValue'])
+const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true
+  },
+  fromPac: {
+    type: String,
+    required: false
+  }
+})
 const emit = defineEmits(['update:modelValue'])
+
+const requirePrecision = computed(() => !(fromCodeCpf(props.modelValue)?.is_selectable))
+
+const showMore = ref(false)
+
+const choices = computed(() => {
+  const selectableCpf = cpf.filter(({ is_selectable }) => is_selectable)
+
+  if (!requirePrecision.value || !props.fromPac || showMore.value) return selectableCpf
+
+  return fromCodePacAll(props.fromPac)
+      .filter(c => c.is_selectable)
+})
 
 onMounted(() => {
   const { setQuery } = autocomplete({
@@ -24,17 +56,40 @@ onMounted(() => {
         {
           sourceId: 'cultures',
           getItems ({ query }) {
-            return codesPac
-                .filter(([, libelle]) => libelle.toLowerCase().includes((query || '').toLowerCase()))
-                .map(([code, libelle]) => ({code: code, libelle: libelle}))
+            const cultureChoices = choices.value
+                .filter(({ libelle_code_cpf: libelle }) => libelle.toLowerCase().includes((query || '').toLowerCase()))
+                .map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }))
                 .sort((a, b) => a.libelle.localeCompare(b.libelle))
+
+            if (requirePrecision.value && !(showMore.value)) {
+              cultureChoices.push({
+                libelle: 'Voir toutes les cultures',
+                code: 'showMore'
+              })
+            }
+
+            return cultureChoices
           },
           templates: {
             item ({ item, html }) {
-              return html`<li>${ item.libelle }</li>`
+              if (item.code === 'showMore') {
+                return html`<span class="fr-link">Voir toutes les cultures</span>`
+              }
+
+              return item.libelle
             }
+
           },
           onSelect: function(event) {
+            if (event.item.code === 'showMore') {
+              showMore.value = true
+              event.setQuery('')
+              event.setIsOpen(true)
+              return nextTick(() => {
+                event.refresh()
+              })
+            }
+
             event.setQuery(event.item.libelle);
             emit('update:modelValue', event.item.code);
           },
@@ -44,13 +99,17 @@ onMounted(() => {
     renderer: { createElement: h, Fragment, render }
   })
 
-  setQuery(codesPac.find(([code,]) => code === props.modelValue)?.[1] || '')
+  setQuery?.(requirePrecision.value ? '' : fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
 })
 </script>
 
 <style>
 .aa-Panel {
   z-index: 2000;
+}
+
+.aa-Autocomplete {
+  margin-top: 0.5rem;
 }
 
 .aa-Item:hover {
@@ -62,6 +121,6 @@ onMounted(() => {
 }
 
 .aa-InputWrapper {
-  padding-left: 0.75rem
+  padding-left: 0.75rem;
 }
 </style>

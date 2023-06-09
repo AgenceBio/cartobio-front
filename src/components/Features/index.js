@@ -3,9 +3,9 @@ import { featureCollection, feature } from '@turf/helpers'
 import difference from '@turf/difference'
 import intersect from '@turf/intersect'
 import area from '@turf/area'
-import { libelléFromCode } from '@/referentiels/pac.js'
 import { conversionLevels } from '@/referentiels/ab.js'
-import { parseReference } from "@/components/cadastre.js";
+import { parseReference } from "@/components/cadastre.js"
+import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -91,8 +91,8 @@ export const groupingChoices = {
   },
   [GROUPE_CULTURE]: {
     label: 'type de culture',
-    datapoint: (d) => d.properties.TYPE,
-    groupLabelFn: (d) => libelléFromCode(d.properties.TYPE),
+    datapoint: (d) => d.properties.CPF,
+    groupLabelFn: (d) => fromCodeCpf(d.properties.CPF)?.libelle_code_cpf || 'Type de culture inconnu',
     sortFn: sortByAscendingLabel
   },
   [GROUPE_NIVEAU_CONVERSION]: {

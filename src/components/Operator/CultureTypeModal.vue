@@ -10,8 +10,7 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <label class="fr-label">Nouveau type de culture</label>
-        <CultureSelector v-model="patch.TYPE" />
+        <CultureSelector v-model="patch.CPF" />
       </div>
     </form>
 
@@ -42,6 +41,6 @@ const store = useFeaturesStore()
 const { selectedIds } = storeToRefs(store)
 
 const patch = reactive({
-  TYPE: '',
+  CPF: '',
 })
 </script>
