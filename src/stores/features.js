@@ -44,7 +44,7 @@ export const useFeaturesStore = defineStore('features', () => {
         ...feature,
         properties: {
           ...feature.properties,
-          CPF: fromCodePacStrict(feature.properties.TYPE).code_cpf
+          CPF: feature.properties.TYPE && fromCodePacStrict(feature.properties.TYPE).code_cpf
         }
       }
     })

@@ -36,10 +36,10 @@ export const RULE_CPF = 'CPF'
 
 const VALIDATION_RULES = {
   [RULE_NOT_EMPTY] (feature) {
-    return Boolean(feature.properties.CPF)
+    return Boolean(feature.properties.TYPE)
   },
   [RULE_CPF] (feature) {
-    return fromCodeCpf(feature.properties.CPF).is_selectable
+    return !!feature.properties.CPF && fromCodeCpf(feature.properties.CPF).is_selectable
   },
   [RULE_ENGAGEMENT_DATE] (feature) {
     const { conversion_niveau, engagement_date } = feature.properties
@@ -74,7 +74,7 @@ export function applyValidationRules (rules, ...features) {
   }), {})
   const featuresResults = features.reduce((obj, feature) => ({
     ...obj,
-    [feature.properties.id]: { success: 0, failures: 0 }
+    [feature.id]: { success: 0, failures: 0 }
   }), {})
 
   features.forEach(feature => {
