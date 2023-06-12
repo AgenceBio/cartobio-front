@@ -12,13 +12,8 @@ on:
     - '*.example'
     - 'netlify.toml'
     - '*.md'
-  # workflow_run:
-  #   workflows: ['Build and deploy (v2)']
-  #   types: ['completed']
 
 jobs:
-  # if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref_type == 'tag' }}
-
   build:
     runs-on: ubuntu-latest
     environment: production
