@@ -1,7 +1,6 @@
 name: Build and deploy (staging)
 
 on:
-  pull_request:
   push:
     branches:
     - "v2"
@@ -14,7 +13,7 @@ on:
     - '*.md'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -42,13 +41,11 @@ jobs:
 
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2
-      if: github.ref == 'refs/heads/v2'
       with:
         key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
         known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
 
     - name: rsync
-      if: github.ref == 'refs/heads/v2'
       run: |
         rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
       env:
