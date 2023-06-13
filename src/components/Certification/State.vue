@@ -21,11 +21,15 @@ const STATE_MAP = readonly({
     color: 'fr-badge--warning'
   },
   [CERTIFICATION_STATE.OPERATOR_DRAFT]: {
-    label: 'Brouillon',
+    label: 'Parcellaire importé',
     color: 'fr-badge--info'
   },
   [CERTIFICATION_STATE.AUDITED]: {
     label: 'Audit terminé',
+    color: 'fr-badge--new'
+  },
+  [CERTIFICATION_STATE.PENDING_CERTIFICATION]: {
+    label: 'Certification en cours',
     color: 'fr-badge--new'
   },
   [CERTIFICATION_STATE.CERTIFIED]: {

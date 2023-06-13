@@ -3,23 +3,36 @@
     <ValidationErrors :validation-result="validationResult" />
   </div>
 
-  <div class="fr-callout fr-callout--blue-ecume" v-else-if="!isAudited && isComplete">
-    <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden>🎉</span></h3>
+  <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
+    <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
-    <button class="fr-btn" @click="sendOffModal = true">Terminer l'audit</button>
+    <button class="fr-btn" @click="handleSaveAudit">Terminer l'audit</button>
+  </div>
+
+  <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.AUDITED">
+    <h3 class="fr-callout__title">Audit terminé</h3>
+
+    <button class="fr-btn" @click="showSendOffModal = true">Envoyer l'audit</button>
+  </div>
+
+  <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.PENDING_CERTIFICATION">
+    <h3 class="fr-callout__title">Certification en cours</h3>
+
+    <button class="fr-btn" @click="handleCertify">Certifier le parcellaire</button>
   </div>
 
   <Teleport to="body">
-    <SendOffModal :operator="operator" :record="record" v-if="sendOffModal" v-model="sendOffModal" @submit="handleSendOff" />
+    <SendOffModal :operator="operator" :record="record" v-if="showSendOffModal" v-model="showSendOffModal" @submit="handleSendAudit" />
   </Teleport>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import { applyValidationRules, CERTIFICATION_STATE, isCertificationImmutable } from '@/referentiels/ab.js'
+import { applyValidationRules, CERTIFICATION_STATE } from '@/referentiels/ab.js'
 import { updateAuditState } from '@/cartobio-api.js'
 import { useRecordStore } from '@/stores/index.js'
 import ValidationErrors from "@/components/Features/ValidationErrors.vue"
+import SendOffModal from "@/components/Certification/SendOffModal.vue"
 
 const recordStore = useRecordStore()
 
@@ -42,19 +55,39 @@ const props = defineProps({
   }
 })
 
-const sendOffModal = ref(false)
+const showSendOffModal = ref(false)
 const validationResult = computed(() => applyValidationRules(props.validationRules.rules, ...props.features.features))
 const hasFailures = computed(() => Boolean(validationResult.value.failures))
-const isComplete = computed(() => hasFailures.value === false)
-const isAudited = computed(() => isCertificationImmutable(props.record.certification_state))
 
-async function handleSendOff ({ record_id: recordId, patch }) {
+async function handleSaveAudit () {
+  const record = await updateAuditState(
+    { recordId : props.record.record_id },
+    {
+      certification_state: CERTIFICATION_STATE.AUDITED
+    }
+  )
+
+  recordStore.update(record)
+}
+
+async function handleSendAudit ({ record_id: recordId, patch }) {
   const record = await updateAuditState({ recordId }, {
     ...patch,
-    certification_state: CERTIFICATION_STATE.AUDITED
+    certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION
   })
 
   recordStore.update(record)
-  sendOffModal.value = false
+  showSendOffModal.value = false
+}
+
+async function handleCertify () {
+  const record = await updateAuditState(
+    { recordId : props.record.record_id },
+    {
+      certification_state: CERTIFICATION_STATE.CERTIFIED
+    }
+  )
+
+  recordStore.update(record)
 }
 </script>

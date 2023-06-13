@@ -9,13 +9,17 @@ export const LEVEL_AB = 'AB'
 
 /** @enum {string} */
 export const CERTIFICATION_STATE = {
-  OPERATOR_DRAFT: 'OPERATOR_DRAFT',
-  AUDITED: 'AUDITED',
-  CERTIFIED: 'CERTIFIED',
+  OPERATOR_DRAFT: 'OPERATOR_DRAFT', // Phase 2
+  AUDITED: 'AUDITED', // Phase 3
+  PENDING_CERTIFICATION: 'PENDING_CERTIFICATION', // Phase 4
+  CERTIFIED: 'CERTIFIED', // Phase 5
 }
 
 export function isCertificationImmutable (state) {
-  return [CERTIFICATION_STATE.AUDITED, CERTIFICATION_STATE.CERTIFIED].includes(state)
+  return [
+    CERTIFICATION_STATE.PENDING_CERTIFICATION,
+    CERTIFICATION_STATE.CERTIFIED,
+  ].includes(state)
 }
 
 export const conversionLevels = [
