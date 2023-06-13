@@ -13,7 +13,7 @@ export const useFeaturesStore = defineStore('features', () => {
   const all = reactive([])
 
   function getFeatureById (id) {
-    return collection.value.find(feature => feature.id === id)
+    return collection.value.features.find(feature => feature.id === id)
   }
 
   const allSelected = computed(() => {

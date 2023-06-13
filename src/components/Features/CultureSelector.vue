@@ -33,7 +33,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 
-const requirePrecision = computed(() => !(fromCodeCpf(props.modelValue)?.is_selectable))
+const requirePrecision = computed(() => props.modelValue && !(fromCodeCpf(props.modelValue)?.is_selectable))
 
 const showMore = ref(false)
 
