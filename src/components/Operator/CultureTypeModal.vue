@@ -10,7 +10,7 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <CultureSelector v-model="patch.CPF" />
+        <CultureSelector v-model="patch.CPF" :from-pac="commonValues.TYPE" />
       </div>
     </form>
 
@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFeaturesStore } from '@/stores/features.js'
 
@@ -38,9 +38,26 @@ defineProps({ })
 const emit = defineEmits(['submit'])
 
 const store = useFeaturesStore()
-const { selectedIds } = storeToRefs(store)
+const { selectedIds, selectedFeatures } = storeToRefs(store)
+
+const commonValues = computed(() => {
+  return selectedFeatures.value.reduce((acc, feature) => {
+    if (acc === null) {
+      return {
+        CPF: feature.properties.CPF,
+        TYPE: feature.properties.TYPE
+      }
+    }
+
+    return {
+      CPF: acc.CPF === feature.properties.CPF ? acc.CPF : '',
+      TYPE: acc.TYPE === feature.properties.TYPE ? acc.TYPE : ''
+    }
+  }, null)
+})
+
 
 const patch = reactive({
-  CPF: '',
+  CPF: commonValues.value.CPF,
 })
 </script>
