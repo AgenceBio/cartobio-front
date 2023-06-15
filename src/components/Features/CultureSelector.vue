@@ -108,6 +108,10 @@ onMounted(() => {
   z-index: 2000;
 }
 
+.aa-PanelLayout {
+  max-height: calc(100vh - 25rem);
+}
+
 .aa-Autocomplete {
   margin-top: 0.5rem;
 }
