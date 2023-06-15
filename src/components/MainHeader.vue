@@ -30,10 +30,10 @@
           <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="user.numeroBio">
             <div class="fr-header__tools-links">
               <ul class="fr-btns-group" v-if="isLogged">
-                <li class="tool-username">
-                  <span :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]" aria-hidden>
+                <li class="tool-username" aria-hidden="true">
+                  <router-link :to="rolePage" :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]">
                     {{ user.nom }}
-                  </span>
+                  </router-link>
                 </li>
                 <li class="tool-logout">
                   <router-link to="/logout" custom v-slot="{ href }">
@@ -137,6 +137,16 @@ const ROLE_ICONS = new Map([
 
 const { user, role, isLogged } = storeToRefs(userStore)
 const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-circle-fill')
+const rolePage = computed(() => {
+  switch (role.value) {
+    case ROLES.OC:
+      return '/certification/exploitations'
+    case ROLES.OPERATEUR:
+      return '/exploitation/parcellaire'
+    default:
+      return '/'
+  }
+})
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 
 async function logout() {
