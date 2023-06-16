@@ -4,15 +4,22 @@ import { reactive } from 'vue'
 /** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
 
 export const useRecordStore = defineStore('record', () => {
-  /** @type {reactive<StrictRecord>} */
-  const record = reactive({
+  const initialState = {
     record_id: null,
     certification_state: null,
     created_at: null,
     updated_at: null,
     audit_notes: '',
     audit_demandes: '',
-    audit_history: []
+    audit_history: [],
+    metadata: {}
+  }
+
+  /** @type {reactive<StrictRecord>} */
+  const record = reactive({
+    ...initialState,
+    audit_history: [ ...initialState.audit_history ],
+    metadata: { ...initialState.metadata }
   })
 
   /**
@@ -26,9 +33,14 @@ export const useRecordStore = defineStore('record', () => {
     })
   }
 
+  function reset() {
+    update({ ...initialState, metadata: { ...initialState.metadata } })
+  }
+
   return {
     record,
     // methods
     update,
+    reset
   }
 })
