@@ -160,6 +160,17 @@ export async function updateAuditState ({ recordId }, patch) {
 }
 
 /**
+ * @param {number} operatorId
+ * @param operatorId
+ * @returns {Promise<undefined>}
+ */
+export async function deleteRecord (operatorId) {
+  const { data } = await cartobioApi.delete(`/v2/operator/${operatorId}`)
+
+  return data
+}
+
+/**
  * Add a new plot without id to a feature collection
  *
  * @param {{ operatorId: String } options
