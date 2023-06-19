@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { setAuthorization } from '@/cartobio-api'
 
 export const ROLES = Object.freeze({
@@ -24,6 +24,7 @@ export function parseJwt (token) {
 }
 
 export const useUserStore = defineStore('user', () => {
+  const storageName = 'cartobio.v2'
   const token = ref('')
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
@@ -57,15 +58,15 @@ export const useUserStore = defineStore('user', () => {
     token.value = null
   }
 
-  function enablePersistance (storageName = 'cartobio.v2') {
-    watch(token, function (newToken) {
-      window.localStorage.setItem(storageName, newToken || '')
-    })
-
+  function enablePersistance () {
     token.value = window.localStorage.getItem(storageName) || ''
+
+    watchEffect(function () {
+      window.localStorage.setItem(storageName, token.value || '')
+    }, { flush: 'sync' })
   }
 
-  watch(token, newToken=> setAuthorization(newToken ? newToken : ''))
+  watch(token, newToken => setAuthorization(newToken ? newToken : ''))
 
   return {
     token,
