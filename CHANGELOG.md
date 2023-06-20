@@ -1,3 +1,8 @@
+# [2.7.1](https://github.com/AgenceBio/cartobio-front/compare/v2.7.0...v2.7.1) (2023-06-20)
+
+* corrige un bug qui faisait échouer la déconnexion occasionellement
+* corrige un bug de chargement du fond de carte pour les exploitations à risques
+
 # [2.7.0](https://github.com/AgenceBio/cartobio-front/compare/v2.6.0...v2.7.0) (2023-06-20)
 
 * début de la migration des cultures vers les codes CPF plutôt que PAC : les cultures
