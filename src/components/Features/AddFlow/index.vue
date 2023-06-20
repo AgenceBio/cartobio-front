@@ -66,9 +66,9 @@ import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api';
 import { featureCollection } from '@turf/helpers'
 import { diff } from '../index.js'
-import store from '@/store.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
+import { useFeaturesStore } from "@/stores/index.js"
 
 const props = defineProps({
   operator: {
@@ -141,15 +141,12 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
   emit('update', markRaw(featureCollection([toRaw(feature)])))
 }
 
+const featuresStore = useFeaturesStore()
 async function saveFeature ({ patch }) {
   feature.properties = { ...feature.properties, ...patch }
   const record = await submitNewParcelle({ operatorId: props.operator.id }, feature)
 
-  store.setParcelles({
-    record_id: record.record_id,
-    geojson: record.parcelles,
-    ...record.metadata
-  })
+  featuresStore.setAll(record.parcelles.features)
 
   showDetailsModal.value = false
   await router.push({

@@ -33,13 +33,37 @@
 </template>
 
 <script setup>
-import { toRef, onMounted } from 'vue'
+import { onMounted, reactive } from 'vue'
 
-import store from '@/store.js'
+import axios from "axios"
 
-const stats = toRef(store.state, 'stats')
+const DEFAULT_STATS = {
+  surfaceCartobioCouverte: 0,
+  surfaceBioCouverte: 2776553,
+  surfaceRpgBioCouverte: 2360070,
+  get surfaceCartographiéConnuee () {
+    return (this.surfaceRpgBioCouverte / this.surfaceBioCouverte * 100).toLocaleString('fr-FR')
+  },
+  cartobioExploitationsCount: 0,
+  cartobioParcellesCount: 0,
+  opendataDownloadCount: 518, // datapass.api.gouv.fr + demandes manuelles
+}
 
-onMounted(() => store.fetchStats())
+const stats = reactive(structuredClone(DEFAULT_STATS))
+
+onMounted(async () => {
+  const [ dataGouv, cartobioStats ] = await Promise.all([
+    axios.get('https://www.data.gouv.fr/api/1/datasets/616d6531c2951bbe8bd97771/'),
+    axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
+  ])
+
+  stats.opendataDownloadCount = dataGouv.data.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), DEFAULT_STATS.opendataDownloadCount)
+  stats.cartobioExploitationsCount = cartobioStats.data.stats.count
+  stats.cartobioParcellesCount = cartobioStats.data.stats.parcelles_count
+})
+
+
+
 </script>
 
 <style scoped>
