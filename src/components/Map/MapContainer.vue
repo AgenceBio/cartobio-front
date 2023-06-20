@@ -9,6 +9,7 @@
 <script setup>
 import { provide, shallowRef, ref, onMounted, onUpdated } from 'vue'
 import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
+import warningImg from '@/assets/map/warning.png'
 
 const map = shallowRef(null)
 const mapContainer = ref(null)
@@ -56,7 +57,7 @@ onMounted(() => {
 
   map.value.on('styleimagemissing', ({ target: map, id }) => {
     if (id !== 'warning') return
-    map.loadImage('/src/assets/map/warning.png', (error, image) => {
+    map.loadImage(warningImg, (error, image) => {
       if (error) throw error
       map.addImage('warning', image)
     })
