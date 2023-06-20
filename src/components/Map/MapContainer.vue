@@ -9,7 +9,7 @@
 <script setup>
 import { provide, shallowRef, ref, onMounted, onUpdated } from 'vue'
 import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
-import warningImg from '@/assets/map/warning.png'
+import warningImg from '@/assets/map/warning.png?url'
 
 const map = shallowRef(null)
 const mapContainer = ref(null)
