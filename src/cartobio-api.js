@@ -1,5 +1,4 @@
 import axios from 'axios'
-import store from '@/store.js'
 
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
@@ -136,13 +135,6 @@ export async function fetchLatestOperators () {
  */
 export async function submitParcellesChanges ({ operatorId, ...params }) {
   const { data } = await cartobioApi.put(`/v2/operator/${operatorId}/parcelles`, { ...params })
-
-  // @todo move this wherever `submitParcellesChanges()`, as the general state should be managed at the app level
-  store.setParcelles({
-    record_id: data.record_id,
-    geojson: data.parcelles,
-    ...data.metadata
-  })
 
   return data
 }

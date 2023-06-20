@@ -123,7 +123,6 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
-import store from '../store.js'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -150,7 +149,7 @@ const rolePage = computed(() => {
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 
 async function logout() {
-  await Promise.all([store.logoutUser(), userStore.logout()])
+  await userStore.logout()
   router.push('/')
 }
 </script>

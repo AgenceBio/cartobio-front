@@ -6,9 +6,7 @@ import * as Sentry from '@sentry/vue'
 import routes from '~pages'
 import Matomo from 'vue-matomo'
 
-import store from './store.js'
 import { useUserStore } from '@/stores/index.js'
-import { getOperatorParcelles } from './cartobio-api.js'
 import App from './App.vue'
 import { version } from "../package.json"
 
@@ -104,34 +102,6 @@ router.beforeEach(async (to, from) => {
 
   if (to.path === '/login' && userStore.isLogged) {
     return { path: '/', replace: true }
-  }
-
-  if (to.meta.requiresGeodata) {
-    try {
-      // @todo fetch route related operator data
-      const record = await getOperatorParcelles(userStore.user.id)
-
-      if (!record || !record.parcelles || !record.metadata.source) {
-        return { path: '/exploitation/setup' }
-      }
-      else {
-        store.setCurrentUser(record.operator, { persist: false })
-        store.setRecord(record)
-        store.setParcelles({
-          geojson: record.parcelles,
-          ...record.metadata
-        })
-      }
-    } catch (error) {
-      // token has expired
-      if (error.response.status === 401) {
-        userStore.logout()
-        store.logoutUser()
-        return { path: '/login' }
-      }
-
-      throw error
-    }
   }
 })
 
