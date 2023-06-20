@@ -1,4 +1,4 @@
-# [2.7.1](https://github.com/AgenceBio/cartobio-front/compare/v2.7.0...v2.7.1) (2023-06-20)
+# [2.7.2](https://github.com/AgenceBio/cartobio-front/compare/v2.7.0...v2.7.2) (2023-06-20)
 
 * corrige un bug qui faisait échouer la déconnexion occasionellement
 * corrige un bug de chargement du fond de carte pour les exploitations à risques
