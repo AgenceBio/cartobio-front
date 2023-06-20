@@ -1,6 +1,10 @@
----
-title: Journal d'évolution
----
+# [2.7.0](https://github.com/AgenceBio/cartobio-front/compare/v2.6.0...v2.7.0) (2023-06-20)
+
+* début de la migration des cultures vers les codes CPF plutôt que PAC : les cultures
+  nécessitant une précision à la conversion PAC -> CPF sont signalées aux opérateurs
+* passage à 5 statuts dans le processus de certification (import et création, avant
+  audit, audit enregistré mais modifiable, audit validé, certifié)
+* permet d'effacer un parcellaire
 
 ## Semaine du 30 novembre au 4 décembre 2020
 
