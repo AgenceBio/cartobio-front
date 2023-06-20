@@ -1,7 +1,7 @@
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 import { utils, write } from "xlsx";
 import { surface } from "@/components/Features/index.js"
-import { fromCodePac } from "@agencebio/rosetta-cultures"
+import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
@@ -32,7 +32,7 @@ const getSheet = ({ featureCollection, operator }) => {
 
   utils.sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props }) => {
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodePac(props.TYPE)
+    const culture = fromCodeCpf(props.CPF)
 
     return [
       '',

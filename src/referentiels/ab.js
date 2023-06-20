@@ -40,20 +40,24 @@ export const RULE_CPF = 'CPF'
 
 const VALIDATION_RULES = {
   [RULE_NOT_EMPTY] (feature) {
-    return Boolean(feature.properties.TYPE)
+    return Boolean(feature.properties.CPF)
   },
   [RULE_CPF] (feature) {
-    return !!feature.properties.CPF && fromCodeCpf(feature.properties.CPF).is_selectable
+    return Boolean(!feature.properties.CPF) || fromCodeCpf(feature.properties.CPF).is_selectable
   },
   [RULE_ENGAGEMENT_DATE] (feature) {
     const { conversion_niveau, engagement_date } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
-    if (conversionLevel.value === LEVEL_UNKNOWN || (isABLevel(conversion_niveau) && conversion_niveau !== LEVEL_AB && !engagement_date)) {
+    if (conversionLevel.value === LEVEL_UNKNOWN) {
       return false
     }
 
-    return true
+    if ([LEVEL_CONVENTIONAL, LEVEL_AB].includes(conversionLevel.value)) {
+      return true
+    }
+
+    return Boolean(engagement_date)
   }
 }
 

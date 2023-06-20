@@ -1,6 +1,12 @@
 import { utils, write } from 'xlsx'
-import { fromCodePac } from '@agencebio/rosetta-cultures'
-import { GROUPE_DATE_ENGAGEMENT, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, featureName, getFeatureGroups } from '@/components/Features/index.js'
+import { fromCodeCpf } from '@agencebio/rosetta-cultures'
+import {
+  featureName,
+  getFeatureGroups,
+  GROUPE_CULTURE,
+  GROUPE_DATE_ENGAGEMENT,
+  GROUPE_NIVEAU_CONVERSION
+} from '@/components/Features/index.js'
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
@@ -48,7 +54,7 @@ const getSheet = ({ featureCollection, operator }) => {
   ]
 
   getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ key, surface, features }, index) => {
-    const culture = fromCodePac(key)
+    const culture = fromCodeCpf(key)
 
     sheet_add_aoa(sheet, [
       [
