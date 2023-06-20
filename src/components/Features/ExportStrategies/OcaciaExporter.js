@@ -1,17 +1,16 @@
 import { utils, write } from 'xlsx'
-import { fromCodePac } from '@agencebio/rosetta-cultures'
+import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { surface } from '@/components/Features/index.js'
 
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_to_csv } = utils
-const cultureCpf = (culture, TYPE) => culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${TYPE}`
 
-const getSheet = ({ featureCollection, operator }) => {
-  const sheet = aoa_to_sheet(featureCollection.features.map(({ geometry, properties: props, id }) => {
+const getSheet = ({ featureCollection }) => {
+  const sheet = aoa_to_sheet(featureCollection.features.map(({ geometry, properties: props }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodePac(props.TYPE)
+    const culture = fromCodeCpf(props.CPF)
 
     return [
       // Commune
@@ -19,7 +18,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Ilot
       `${ilotId}.${parcelleId}`,
       // Culture
-      cultureCpf(culture, props.TYPE),
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
       // N° Cadastre
       props.cadastre,
       // Variété / infos

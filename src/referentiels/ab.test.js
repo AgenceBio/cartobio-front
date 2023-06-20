@@ -4,7 +4,7 @@ import { applyValidationRules, OPERATOR_RULES, AUDITOR_RULES } from './ab.js'
 import { useFeaturesStore } from "@/stores/index.js"
 
 describe('applyValidationRules', () => {
-  test('operator requires culture type and cpf', () => {
+  test('operator requires culture cpf', () => {
     const features = [
       { id: 1, properties: { TYPE: 'BTH' }},
       { id: 2, properties: { TYPE: '' }}
@@ -14,15 +14,15 @@ describe('applyValidationRules', () => {
     const result = applyValidationRules(OPERATOR_RULES, ...store.collection.features)
 
     expect(result).toEqual({
-      failures: 2,
-      success: 2,
+      failures: 1,
+      success: 3,
       total: 4,
       features: {
         1: { success: 2, failures: 0 },
-        2: { success: 0, failures: 2 }
+        2: { success: 1, failures: 1 }
       },
       rules: {
-        CPF: { success: 1, failures: 1 },
+        CPF: { success: 2, failures: 0 },
         NOT_EMPTY: { success: 1, failures: 1 },
       }
     })
@@ -30,6 +30,7 @@ describe('applyValidationRules', () => {
 
   test('operator requires culture type, and engagement_date only if Cx', () => {
     const features = [
+      // NOT_EMPTY not ok CPF ok
       { id: 1, properties: { TYPE: '' }},
       // below is NOT_EMPTY ok but CPF is not
       { id: 2, properties: { TYPE: 'AGR' }},
@@ -44,16 +45,16 @@ describe('applyValidationRules', () => {
     const result = applyValidationRules(AUDITOR_RULES, ...store.collection.features)
 
     expect(result).toEqual({
-      failures: 6,
-      success: 9,
+      failures: 5,
+      success: 10,
       total: 15,
       rules: {
         NOT_EMPTY: { success: 4, failures: 1 },
-        CPF: { success: 3, failures: 2 },
+        CPF: { success: 4, failures: 1 },
         ENGAGEMENT_DATE: { success: 2, failures: 3 }
       },
       features: {
-        1: { success: 0, failures: 3 },
+        1: { success: 1, failures: 2 },
         2: { success: 1, failures: 2 },
         3: { success: 2, failures: 1 },
         4: { success: 3, failures: 0 },

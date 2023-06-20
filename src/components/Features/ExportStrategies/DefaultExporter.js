@@ -1,5 +1,5 @@
 import { utils, write } from 'xlsx'
-import { fromCodePac } from '@agencebio/rosetta-cultures'
+import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { surface } from '@/components/Features/index.js'
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -40,10 +40,10 @@ const getSheet = ({ featureCollection, operator }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
-    const label = props.TYPE_LIBELLE ?? fromCodePac(props.TYPE)?.libelle_code_cpf
+    const label = props.TYPE_LIBELLE ?? fromCodeCpf(props.CPF)?.libelle_code_cpf
     const surfaceHa = surface(geometry) / 10_000
     const isPac = Boolean(props.PACAGE)
-    const culture = props.TYPE
+    const culture = props.TYPE ?? fromCodeCpf(props.CPF)?.cultures_pac[0]?.code
 
     return [
       id,

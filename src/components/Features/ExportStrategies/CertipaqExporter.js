@@ -1,12 +1,11 @@
 import { utils } from 'xlsx'
-import { fromCodePac } from '@agencebio/rosetta-cultures'
-import { surface, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, getFeatureGroups } from '@/components/Features/index.js'
+import { fromCodeCpf } from '@agencebio/rosetta-cultures'
+import { getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
 
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R, sheet_to_json, json_to_sheet } = utils
-const cultureCpf = (culture, TYPE) => culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${TYPE}`
 
 const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
@@ -65,7 +64,7 @@ const getSheet = ({ featureCollection, operator }) => {
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodePac(props.TYPE)
+    const culture = fromCodeCpf(props.CPF)
 
     return [
       // Commune
@@ -73,7 +72,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Ilot
       `${ilotId}_${parcelleId}`,
       // Culture
-      cultureCpf(culture, props.TYPE),
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
       // Variété / infos
       '',
       // C0 - AB - C1 - C2 - C3
@@ -135,15 +134,20 @@ const getSheet = ({ featureCollection, operator }) => {
   ], { origin: 'R7'})
 
   getFeatureGroups(featureCollection, GROUPE_CULTURE).forEach(({ key, features }, index) => {
-    const culture = fromCodePac(key)
+    const culture = fromCodeCpf(key)
     const groups = Object.fromEntries(
       getFeatureGroups({ type: 'FeatureCollection', features }, GROUPE_NIVEAU_CONVERSION)
         .map(({ key, features }) => ([key, surface({ type: 'FeatureCollection', features }) / 10_000]))
     )
 
-    sheet_add_aoa(sheet, [
-      [cultureCpf(culture, key),   groups.AB ?? 0,  groups.C1 ?? 0, groups.C2 ?? 0, groups.C3 ?? 0, groups.CONV ?? 0],
-    ], { origin: `R${9 + index}`});
+    sheet_add_aoa(sheet, [[
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      groups.AB ?? 0,
+      groups.C1 ?? 0,
+      groups.C2 ?? 0,
+      groups.C3 ?? 0,
+      groups.CONV ?? 0
+    ]], { origin: `R${9 + index}`});
 
     // Formattage des totaux
     ['S', 'T', 'U', 'V', 'W']
