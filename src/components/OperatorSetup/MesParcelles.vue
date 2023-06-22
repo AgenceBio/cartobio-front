@@ -5,6 +5,11 @@
       <p>Nous importons les parcelles de l'exploitation principale, pour l'instant.</p>
     </div>
 
+    <div  v-if="errors.length" class="fr-alert fr-alert--error fr-mb-5w">
+      <p class="fr-alert__title">Erreur</p>
+      <p v-for="error in errors" :key="error">{{ error }}</p>
+    </div>
+
     <form @submit.prevent="handleLoginImport(mesParcellesUser)">
       <div class="fr-input-group">
         <label for="mp-email" class="fr-label">Adresse e-mail MesParcelles</label>
@@ -56,6 +61,7 @@ const { VUE_APP_API_ENDPOINT } = import.meta.env
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
 const source = 'mesparcelles'
+const errors = ref([])
 
 const mesParcellesUser = ref({
   email: '',
@@ -86,7 +92,17 @@ const mesParcellesServers = readonly({
 async function handleLoginImport ({ email, millesime, password, server }) {
   emit('upload:start')
 
-  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, millesime, password, server })
+  try {
+    const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, millesime, password, server })
+  } catch (error) {
+    if (error.response.status === 401) {
+      return errors.value = ['Identifiants incorrects.']
+    }
+
+    if (error.response.status === 500) {
+      return errors.value = ['Erreur interne au serveur MesParcelles.']
+    }
+  }
 
   emit('upload:complete', { geojson, source, warnings: [] })
 }
