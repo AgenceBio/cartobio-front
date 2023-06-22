@@ -53,13 +53,11 @@ async function handleDelete() {
   await deleteRecord(props.operator.id)
 
   if (userStore.role === ROLES.OPERATEUR) {
-    await router.push('/exploitation/setup')
-  } else {
-    console.log('reset')
-    recordStore.reset()
-    featuresStore.setAll([])
+    return router.push('/exploitation/setup')
   }
 
-  modal.value.$emit('update:modelValue', false)
+  recordStore.reset()
+  featuresStore.setAll([])
+  modal.value?.$emit('update:modelValue', false)
 }
 </script>
