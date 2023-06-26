@@ -68,7 +68,8 @@ import { featureCollection } from '@turf/helpers'
 import { diff } from '../index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
-import { useFeaturesStore } from "@/stores/index.js"
+import { useFeaturesStore, useUserStore } from "@/stores/index.js"
+import { ROLES } from "@/stores/user.js"
 
 const props = defineProps({
   operator: {
@@ -142,6 +143,7 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
 }
 
 const featuresStore = useFeaturesStore()
+const userStore = useUserStore()
 async function saveFeature ({ patch }) {
   feature.properties = { ...feature.properties, ...patch }
   const record = await submitNewParcelle({ operatorId: props.operator.id }, feature)
@@ -149,10 +151,13 @@ async function saveFeature ({ patch }) {
   featuresStore.setAll(record.parcelles.features)
 
   showDetailsModal.value = false
-  await router.push({
+  const route = userStore.role === ROLES.OC ? {
     name: 'certification-exploitations-id',
     params: { id: props.operator.id },
-    query: { new: record.audit_history.at(-1).parcelleId }
+  } : { name: 'exploitation-parcellaire' }
+  await router.push({
+    query: { new: record.audit_history.at(-1).parcelleId },
+    ...route,
   })
 }
 </script>

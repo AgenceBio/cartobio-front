@@ -9,6 +9,7 @@ export const useRecordStore = defineStore('record', () => {
     certification_state: null,
     created_at: null,
     updated_at: null,
+    operator: {},
     audit_notes: '',
     audit_demandes: '',
     audit_history: [],

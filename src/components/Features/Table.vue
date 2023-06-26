@@ -54,13 +54,13 @@
       <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
     </table>
 
-    <p class="fr-my-3w" v-if="addParcelRouteName">
-      <router-link :to="{ name: addParcelRouteName, id: operator.id }" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+    <p class="fr-my-3w" v-if="permissions.canAddParcelle">
+      <router-link :to="{ name: 'exploitations-id-ajout-parcelle', params: { id: operator.id || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
     </p>
   </div>
 
   <Teleport to="body">
-    <Modal v-if="editedFeatureId && editForm" v-model="modal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
+    <Modal v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
       <template #title>Modification de parcelle</template>
 
       <Component :is="editForm" :feature="editedFeature" @submit="handleFeaturesEdit" />
@@ -84,6 +84,7 @@ import Modal from '@/components/Modal.vue'
 
 import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from './index.js'
 import { submitParcellesChanges } from '@/cartobio-api.js'
+import { usePermissions } from "@/stores/permissions.js"
 
 const props = defineProps({
   operator: {
@@ -97,20 +98,17 @@ const props = defineProps({
   'edit-form': Object,
   'validation-rules': Object,
   'mass-actions': Array,
-  'add-parcel-route-name': {
-    type: String,
-    default: ''
-  }
 })
 
 const isSaving = ref(false)
 const savingResult = ref(null)
-const modal = computed(() => Boolean(editedFeatureId.value))
+const showModal = computed(() => Boolean(editedFeatureId.value))
 const store = useFeaturesStore()
 
 const { hoveredId:hoveredFeatureId } = storeToRefs(store)
 const { selectedIds:selectedFeatureIds, allSelected } = storeToRefs(store)
 const { toggleSingleSelected, toggleAllSelected } = store
+const permissions = usePermissions()
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)

@@ -11,7 +11,7 @@
         Exporter
       </button>
 
-      <button v-if="canDelete" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-delete-bin-line" @click="deleteModal = true">
+      <button v-if="permissions.canDeleteParcellaire" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-delete-bin-line" @click="deleteModal = true">
         Supprimer
       </button>
     </div>
@@ -52,6 +52,7 @@ import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.
 
 import { isCertificationImmutable } from '@/referentiels/ab.js'
 import { useFeaturesStore } from '@/stores/index.js'
+import { usePermissions } from "@/stores/permissions.js"
 
 const props = defineProps({
   operator: {
@@ -72,10 +73,11 @@ const exportModal = ref(false)
 const historyModal = ref(false)
 const deleteModal = ref(false)
 const featuresStore = useFeaturesStore()
+const permissions = usePermissions()
 const { collection } = storeToRefs(featuresStore)
 const displayCallout = computed(() => props.record.audit_demandes && isCertificationImmutable(props.record.certification_state))
 const canDisplayHistory = computed(() => Array.isArray(props.record.audit_history) && props.record.audit_history.length)
-const canDelete = computed(() => props.record.certification_state)
+
 </script>
 
 <style scoped>
