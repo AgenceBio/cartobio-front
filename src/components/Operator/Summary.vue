@@ -52,7 +52,7 @@ import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.
 
 import { isCertificationImmutable } from '@/referentiels/ab.js'
 import { useFeaturesStore } from '@/stores/index.js'
-import { usePermissions } from "@/permissions.js"
+import { usePermissions } from "@/stores/permissions.js"
 
 const props = defineProps({
   operator: {

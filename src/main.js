@@ -6,9 +6,11 @@ import * as Sentry from '@sentry/vue'
 import routes from '~pages'
 import Matomo from 'vue-matomo'
 
-import { useUserStore } from '@/stores/index.js'
+import { useFeaturesStore, useRecordStore, useUserStore } from '@/stores/index.js'
 import App from './App.vue'
 import { version } from "../package.json"
+import { usePermissions } from "@/stores/permissions.js"
+import { getOperatorParcelles } from "@/cartobio-api.js"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -47,6 +49,7 @@ const app = createApp(App)
     trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
   })
 
+// this is sync because we need to know the user role before rendering the app
 const userStore = useUserStore()
 userStore.enablePersistance()
 
@@ -84,6 +87,14 @@ router.isReady().then(() => {
 })
 
 router.beforeEach(async (to, from) => {
+  if (to.params.id) {
+    const recordStore = useRecordStore()
+    const featuresStore = useFeaturesStore()
+    const record = await getOperatorParcelles(to.params.id)
+    recordStore.update(record)
+    featuresStore.setAll(record.parcelles.features)
+  }
+
   if (to.path === '/login/agencebio') {
     // forwards the user selected tab to the callback URI
     // this way, we come back to the same tab
@@ -94,6 +105,16 @@ router.beforeEach(async (to, from) => {
 
   if (to.meta.requiredRoles && !to.meta.requiredRoles.includes(userStore.role)) {
     return { path: '/login', query: { mode: 'certification' } }
+  }
+
+  if (to.meta.requiredPermissions) {
+    const permissions = usePermissions()
+    const hasPermission = to.meta.requiredPermissions
+        .every(permission => permissions[permission])
+
+    if (!hasPermission) {
+      return { path: '/login' }
+    }
   }
 
   if (to.meta.requiresAuth && !userStore.isLogged) {

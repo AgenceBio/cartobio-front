@@ -2,8 +2,9 @@ import { useRecordStore, useUserStore } from "@/stores/index.js"
 import { ROLES } from "@/stores/user.js"
 import { CERTIFICATION_STATE } from "@/referentiels/ab.js"
 import { computed } from "vue"
+import { defineStore } from "pinia"
 
-export const usePermissions = () => {
+export const usePermissions = defineStore('permissions', () => {
   const userStore = useUserStore();
   const recordStore = useRecordStore();
 
@@ -23,7 +24,6 @@ export const usePermissions = () => {
     }
 
     if (isAgri()) {
-      console.log(recordStore.record.certification_state)
       return recordStore.record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT;
     }
 
@@ -59,4 +59,4 @@ export const usePermissions = () => {
     canAddParcelleNote,
     canChangeConversionLevel
   }
-}
+})
