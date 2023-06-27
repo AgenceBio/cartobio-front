@@ -46,7 +46,7 @@
           </td>
           <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
           <td colspan="2">
-            <MassActionsSelector :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
+            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
           </td>
         </tr>
       </thead>
@@ -97,7 +97,7 @@ const props = defineProps({
   },
   'edit-form': Object,
   'validation-rules': Object,
-  'mass-actions': Array,
+  massActions: Array,
 })
 
 const isSaving = ref(false)
