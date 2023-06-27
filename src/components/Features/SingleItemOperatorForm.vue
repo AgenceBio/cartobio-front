@@ -5,7 +5,7 @@
   </p>
 
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
-    <div class="fr-input-group">
+    <div v-if="permissions.canChangeCulture" class="fr-input-group">
       <CultureSelector v-model="patch.CPF" :from-pac="feature.properties.TYPE" />
     </div>
 
@@ -28,6 +28,7 @@ import { reactive } from 'vue';
 
 import { featureName } from '@/components/Features/index.js'
 import CultureSelector from '@/components/Features/CultureSelector.vue'
+import { usePermissions } from "@/stores/permissions.js"
 
 const props = defineProps({
   feature: {
@@ -42,4 +43,6 @@ const patch = reactive({
 })
 
 const emit = defineEmits(['submit'])
+
+const permissions = usePermissions()
 </script>
