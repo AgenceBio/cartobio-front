@@ -10,20 +10,12 @@ export const usePermissions = defineStore('permissions', () => {
 
   // Tests
 
-  const isOc = () => {
-    return userStore.role === ROLES.OC;
-  }
-
-  const isAgri = () => {
-    return userStore.role === ROLES.OPERATEUR;
-  }
-
-  const canEditParcellaire = () => {
-    if (isOc()) {
+  function canEditParcellaire () {
+    if (isOc.value) {
       return true;
     }
 
-    if (isAgri()) {
+    if (isAgri.value) {
       return recordStore.record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT;
     }
 
@@ -31,6 +23,14 @@ export const usePermissions = defineStore('permissions', () => {
   }
 
   // Returned permissions
+
+  const isOc = computed(() => {
+    return [ROLES.OC_CERTIF, ROLES.OC_AUDIT].includes(userStore.role);
+  })
+
+  const isAgri = computed(() => {
+    return userStore.role === ROLES.OPERATEUR;
+  })
 
   const canAddParcelle = computed(() => {
     return canEditParcellaire();
@@ -53,6 +53,8 @@ export const usePermissions = defineStore('permissions', () => {
   })
 
   return {
+    isOc,
+    isAgri,
     canAddParcelle,
     canDeleteParcellaire,
     canChangeCulture,

@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <div class="fr-header__menu" v-if="(isLogged && role === ROLES.OC)">
+      <div class="fr-header__menu" v-if="isLogged && permissions.isOc">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
@@ -123,12 +123,15 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
+import { usePermissions } from "@/stores/permissions.js"
 
 const userStore = useUserStore()
+const permissions = usePermissions()
 const router = useRouter()
 
 const ROLE_ICONS = new Map([
-  [ROLES.OC, 'fr-icon-medal-fill'],
+  [ROLES.OC_AUDIT, 'fr-icon-medal-fill'],
+  [ROLES.OC_CERTIF, 'fr-icon-medal-fill'],
   [ROLES.OPERATEUR, 'fr-icon-plant-fill'],
   [ROLES.ADMIN, 'fr-icon-shield-fill'],
   [ROLES.UNKNOWN, 'fr-icon-warning-fill']
@@ -138,7 +141,8 @@ const { user, role, isLogged } = storeToRefs(userStore)
 const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-circle-fill')
 const rolePage = computed(() => {
   switch (role.value) {
-    case ROLES.OC:
+    case ROLES.OC_CERTIF:
+    case ROLES.OC_AUDIT:
       return '/certification/exploitations'
     case ROLES.OPERATEUR:
       return '/exploitation/parcellaire'
