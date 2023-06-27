@@ -11,6 +11,7 @@ import App from './App.vue'
 import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
 import { getOperatorParcelles } from "@/cartobio-api.js"
+import { ROLES } from "@/stores/user.js"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -87,12 +88,15 @@ router.isReady().then(() => {
 })
 
 router.beforeEach(async (to, from) => {
-  if (to.params.id) {
+  // Preload store for checking permissions
+  if (to.params.id || userStore.role === ROLES.OPERATEUR) {
     const recordStore = useRecordStore()
     const featuresStore = useFeaturesStore()
-    const record = await getOperatorParcelles(to.params.id)
+    const record = await getOperatorParcelles(to.params.id || userStore.user.id)
     recordStore.update(record)
-    featuresStore.setAll(record.parcelles.features)
+    if (record.parcelles) {
+      featuresStore.setAll(record.parcelles.features)
+    }
   }
 
   if (to.path === '/login/agencebio') {
