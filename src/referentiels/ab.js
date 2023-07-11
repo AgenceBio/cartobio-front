@@ -6,6 +6,7 @@ export const LEVEL_C1 = 'C1'
 export const LEVEL_C2 = 'C2'
 export const LEVEL_C3 = 'C3'
 export const LEVEL_AB = 'AB'
+export const LEVEL_MAYBE_AB = 'AB?'
 
 /** @enum {string} */
 export const CERTIFICATION_STATE = {
@@ -23,15 +24,16 @@ export function isCertificationImmutable (state) {
 }
 
 export const conversionLevels = [
-  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Inconnue' },
+  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Inconnue', is_selectable: false },
   { value: LEVEL_CONVENTIONAL, label: 'Conventionnel', shortLabel: 'Conventionnel' },
+  { value: LEVEL_MAYBE_AB, label: 'AB — niveau de conversion à préciser', shortLabel: 'à préciser', is_selectable: false },
   { value: LEVEL_C1, label: 'C1 — Première année de conversion', shortLabel: 'C1' },
   { value: LEVEL_C2, label: 'C2 — Deuxième année de conversion', shortLabel: 'C2' },
   { value: LEVEL_C3, label: 'C3 — Troisième année de conversion', shortLabel: 'C3' },
   { value: LEVEL_AB, label: 'AB — Agriculture biologique', shortLabel: 'AB' },
 ]
 
-export const userFacingConversionLevels = conversionLevels.filter(({ value }) => value !== undefined)
+export const userFacingConversionLevels = conversionLevels.filter(({ is_selectable }) => is_selectable !== false)
 
 export const RULE_NOT_EMPTY = 'NOT_EMPTY'
 export const RULE_ENGAGEMENT_DATE = 'ENGAGEMENT_DATE'

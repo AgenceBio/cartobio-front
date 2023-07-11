@@ -9,16 +9,7 @@
     </div>
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
-      <div class="fr-input-group">
-        <label class="fr-label">Niveau de conversion</label>
-
-        <div class="fr-radio-group fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
-          <input type="radio" :id="'conversion-' + niveau.value" :value="niveau.value" v-model="patch.conversion_niveau" name="conversion_niveau">
-          <label class="fr-label" :for="'conversion-' + niveau.value">
-            {{ niveau.label }}
-          </label>
-        </div>
-      </div>
+      <ConversionLevelSelector v-model="patch.conversion_niveau" />
     </form>
 
     <template #footer>
@@ -36,10 +27,10 @@
 <script setup>
 import { reactive } from 'vue'
 import { storeToRefs } from 'pinia'
-import { userFacingConversionLevels as conversionLevels } from '@/referentiels/ab.js'
 import { useFeaturesStore } from '@/stores/features.js'
 
 import Modal from '@/components/Modal.vue'
+import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
 
 defineProps({ })
 const emit = defineEmits(['submit'])
