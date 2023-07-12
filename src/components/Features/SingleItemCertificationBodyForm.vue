@@ -18,16 +18,7 @@
       <CultureSelector v-model="patch.CPF" :from-pac="feature.properties.TYPE" />
     </div>
 
-    <div class="fr-input-group">
-      <label class="fr-label">Niveau de conversion</label>
-
-      <div class="fr-radio-group fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
-        <input type="radio" :id="'conversion-' + niveau.value" :value="niveau.value" v-model="patch.conversion_niveau" name="conversion_niveau">
-        <label class="fr-label" :for="'conversion-' + niveau.value">
-          {{ niveau.label }}
-        </label>
-      </div>
-    </div>
+    <ConversionLevelSelector v-model="patch.conversion_niveau" />
 
     <div :class="{'fr-input-group': true, 'fr-input-group--disabled': !isAB}">
       <label class="fr-label">Date d'engagement</label>
@@ -51,8 +42,9 @@
 import { reactive, computed } from 'vue';
 
 import { featureName } from '@/components/Features/index.js'
-import { userFacingConversionLevels as conversionLevels, isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
+import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
 import CultureSelector from "@/components/Features/CultureSelector.vue";
+import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
 
 const props = defineProps({
   feature: {
