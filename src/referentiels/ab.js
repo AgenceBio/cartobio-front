@@ -24,16 +24,49 @@ export function isCertificationImmutable (state) {
 }
 
 export const conversionLevels = [
-  { value: LEVEL_UNKNOWN, label: 'Niveau de conversion inconnu', shortLabel: 'Inconnue', is_selectable: false },
-  { value: LEVEL_CONVENTIONAL, label: 'Conventionnel', shortLabel: 'Conventionnel' },
-  { value: LEVEL_MAYBE_AB, label: 'AB — niveau de conversion à préciser', shortLabel: 'AB — à préciser', is_selectable: false },
-  { value: LEVEL_C1, label: 'C1 — Première année de conversion', shortLabel: 'C1' },
-  { value: LEVEL_C2, label: 'C2 — Deuxième année de conversion', shortLabel: 'C2' },
-  { value: LEVEL_C3, label: 'C3 — Troisième année de conversion', shortLabel: 'C3' },
-  { value: LEVEL_AB, label: 'AB — Agriculture biologique', shortLabel: 'AB' },
+  {
+    value: LEVEL_UNKNOWN,
+    label: 'Niveau de conversion inconnu',
+    shortLabel: 'Inconnue',
+  },
+  {
+    value: LEVEL_CONVENTIONAL,
+    label: 'Conventionnel',
+    shortLabel: 'Conventionnel',
+    is_selectable: true,
+  },
+  {
+    value: LEVEL_MAYBE_AB,
+    label: 'AB — niveau de conversion à préciser',
+    shortLabel: 'AB',
+  },
+  {
+    value: LEVEL_C1,
+    label: 'C1 — Première année de conversion',
+    shortLabel: 'C1',
+    is_selectable: true,
+  },
+  {
+    value: LEVEL_C2,
+    label: 'C2 — Deuxième année de conversion',
+    shortLabel: 'C2',
+    is_selectable: true,
+  },
+  {
+    value: LEVEL_C3,
+    label: 'C3 — Troisième année de conversion',
+    shortLabel: 'C3',
+    is_selectable: true,
+  },
+  {
+    value: LEVEL_AB,
+    label: 'AB — Agriculture biologique',
+    shortLabel: 'AB',
+    is_selectable: true,
+  },
 ]
 
-export const userFacingConversionLevels = conversionLevels.filter(({ is_selectable }) => is_selectable !== false)
+export const userFacingConversionLevels = conversionLevels.filter(({ is_selectable }) => is_selectable)
 
 export const RULE_NOT_EMPTY = 'NOT_EMPTY'
 export const RULE_CONVERSION_LEVEL = 'CONVERSION_LEVEL'

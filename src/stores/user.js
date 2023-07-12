@@ -49,6 +49,9 @@ export const useUserStore = defineStore('user', () => {
     }
   })
 
+  function isRole (expectedRoleId) {
+    return role.value === expectedRoleId
+  }
 
   function login (userToken) {
     token.value = userToken
@@ -72,6 +75,7 @@ export const useUserStore = defineStore('user', () => {
     token,
     // getters
     isLogged,
+    isRole,
     user,
     role,
     // methods
