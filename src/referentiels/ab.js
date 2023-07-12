@@ -43,24 +43,30 @@ export const RULE_MAYBE_AB = 'MAYBE_AB'
 export const RULE_CPF = 'CPF'
 
 const VALIDATION_RULES = {
+  // la culture est renseignée
   [RULE_NOT_EMPTY] (feature) {
     return Boolean(feature.properties.CPF)
   },
+  // le code CPF est explicite (il n'y a pas plusieurs choix possibles pour un code)
   [RULE_CPF] (feature) {
     return Boolean(!feature.properties.CPF) || fromCodeCpf(feature.properties.CPF).is_selectable
   },
+  // le niveau de conversion n'est pas renseigné si une culture existe
   [RULE_CONVERSION_LEVEL] (feature) {
     const { conversion_niveau } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
-    return (conversionLevel.value === LEVEL_UNKNOWN) === false
+    return (Boolean(feature.properties.CPF) && conversionLevel.value === LEVEL_UNKNOWN) === false
   },
+  // le produit est "bio", mais on ne sait pas de quel niveau de bio il s'agit
   [RULE_MAYBE_AB] (feature) {
     const { conversion_niveau } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
     return (conversionLevel.value === LEVEL_MAYBE_AB) === false
   },
+  // la date d'engagement est manquante pour des conversions récentes
+  // on dit que c'est OK de ne pas l'avoir en AB, pour accepter des parcellaires certifiés depuis longtemps, avant l'obligation de tracer leur date d'engagement ou de passage en bio
   [RULE_ENGAGEMENT_DATE] (feature) {
     const { conversion_niveau, engagement_date } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)

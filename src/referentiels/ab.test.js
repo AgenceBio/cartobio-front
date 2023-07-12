@@ -32,13 +32,15 @@ describe('applyValidationRules', () => {
     const features = [
       // NOT_EMPTY not ok CPF ok
       { id: 1, properties: { TYPE: '' }},
-      // below is NOT_EMPTY ok but CPF is not
+      // below is NOT_EMPTY ok but CPF and CONVERSION_LEVEL are not
       { id: 2, properties: { TYPE: 'AGR' }},
-      // below is NOT_EMPTY and CPF ok
+      // below is NOT_EMPTY and CPF ok, but CONVERSION_LEVEL fails
       { id: 3, properties: { TYPE: 'AIL', conversion_niveau: 'C1' }},
-      // below are okay
-      { id: 4, properties: { TYPE: 'AIL', conversion_niveau: 'AB' }},
-      { id: 5, properties: { TYPE: 'AIL', conversion_niveau: 'C1', engagement_date: '2023-04-23' }},
+      // below is MAYBE_AB
+      { id: 4, properties: { TYPE: 'AIL', conversion_niveau: 'AB?' }},
+      // below are okay (CONVERSION_LEVEL succeeds)
+      { id: 5, properties: { TYPE: 'AIL', conversion_niveau: 'AB' }},
+      { id: 6, properties: { TYPE: 'AIL', conversion_niveau: 'C1', engagement_date: '2023-04-23' }},
     ]
     const store = useFeaturesStore()
     store.setAll(features)
@@ -46,19 +48,22 @@ describe('applyValidationRules', () => {
 
     expect(result).toEqual({
       failures: 5,
-      success: 10,
-      total: 15,
+      success: 25,
+      total: 30,
       rules: {
-        NOT_EMPTY: { success: 4, failures: 1 },
-        CPF: { success: 4, failures: 1 },
-        ENGAGEMENT_DATE: { success: 2, failures: 3 }
+        NOT_EMPTY: { success: 5, failures: 1 },
+        CPF: { success: 5, failures: 1 },
+        MAYBE_AB: { success: 5, failures: 1 },
+        ENGAGEMENT_DATE: { success: 5, failures: 1 },
+        CONVERSION_LEVEL: { success: 5, failures: 1 },
       },
       features: {
-        1: { success: 1, failures: 2 },
-        2: { success: 1, failures: 2 },
-        3: { success: 2, failures: 1 },
-        4: { success: 3, failures: 0 },
-        5: { success: 3, failures: 0 },
+        1: { success: 4, failures: 1 },
+        2: { success: 3, failures: 2 },
+        3: { success: 4, failures: 1 },
+        4: { success: 4, failures: 1 },
+        5: { success: 5, failures: 0 },
+        6: { success: 5, failures: 0 },
       },
     })
   })
