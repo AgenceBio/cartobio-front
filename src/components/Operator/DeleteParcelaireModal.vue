@@ -50,14 +50,17 @@ const userStore = useUserStore()
 const router = useRouter()
 
 async function handleDelete() {
-  await deleteRecord(props.operator.id)
+  const record = await deleteRecord(props.operator.id)
 
   if (userStore.role === ROLES.OPERATEUR) {
     return router.push('/exploitation/setup')
   }
 
+  // we reset the current state of operator and features
   recordStore.reset()
   featuresStore.setAll([])
+  // ... then restore the operator data (otherwise we loose the initial context)
+  recordStore.update(record)
   modal.value?.$emit('update:modelValue', false)
 }
 </script>
