@@ -1,5 +1,5 @@
 <template>
-  <MapContainer :controls="controls" :options="{ interactive: false, hash: false }" :bounds="mapBounds">
+  <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false }" :bounds="mapBounds">
     <GeojsonLayer :style="baseStyle" name="base" />
     <GeojsonLayer :data="collection" name="parcellaire-operateur" />
   </MapContainer>
@@ -22,5 +22,13 @@ const props = defineProps({
 })
 
 const mapBounds = computed(() => bbox(props.collection))
-
 </script>
+
+<style scoped>
+.map {
+  background: #ccc;
+  height: 276px;
+  max-width: 40vw;
+  width: 100%;
+}
+</style>

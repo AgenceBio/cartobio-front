@@ -8,7 +8,7 @@
       <p>{{ warning }}</p>
     </div>
 
-    <MapPreview :controls="false" :collection="featureCollection" class="map fr-mb-3w" />
+    <MapPreview :controls="false" :collection="featureCollection" class="fr-mb-3w" />
 
     <p>
       <button class="fr-btn" @click="emit('submit')">
@@ -39,11 +39,3 @@ const emit = defineEmits(['submit', 'cancel'])
 const surfaceTotale = computed(() => inHa(surface(featureCollection.value)))
 const hasErrors = computed(() => warnings.value.length > 0)
 </script>
-
-<style scoped>
-.map {
-  background: #ccc;
-  height: 450px;
-  width: 450px;
-}
-</style>
