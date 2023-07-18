@@ -52,14 +52,12 @@ const DEFAULT_STATS = {
 const stats = reactive(structuredClone(DEFAULT_STATS))
 
 onMounted(async () => {
-  const [ dataGouv, cartobioStats ] = await Promise.all([
-    axios.get('https://www.data.gouv.fr/api/1/datasets/616d6531c2951bbe8bd97771/'),
-    axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
-  ])
+  const { data } = await axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
+  const { dataGouv, stats: cartobio } = data
 
-  stats.opendataDownloadCount = dataGouv.data.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), DEFAULT_STATS.opendataDownloadCount)
-  stats.cartobioExploitationsCount = cartobioStats.data.stats.count
-  stats.cartobioParcellesCount = cartobioStats.data.stats.parcelles_count
+  stats.opendataDownloadCount = dataGouv.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), DEFAULT_STATS.opendataDownloadCount)
+  stats.cartobioExploitationsCount = cartobio.count
+  stats.cartobioParcellesCount = cartobio.parcelles_count
 })
 
 
