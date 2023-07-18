@@ -23,6 +23,7 @@ const getSheet = ({ featureCollection, operator }) => {
   sheet['B1'].t = 's'
   sheet['B2'].t = 'd'
   sheet['B2'].z = 'dd/mm/yyyy'
+  delete sheet['B2'].w
 
   sheet['!merges'] = [
     R('E4:I4'), R('O4:P4'),
@@ -63,7 +64,7 @@ const getSheet = ({ featureCollection, operator }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
-    const surfaceHa = surface(geometry) / 10_000
+    const surfaceHa = (surface(geometry) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
     const culture = fromCodeCpf(props.CPF)
 
     return [
@@ -109,6 +110,7 @@ const getSheet = ({ featureCollection, operator }) => {
     if (sheet[`J${6 + index}`].v) {
       sheet[`J${6 + index}`].t = 'd'
       sheet[`J${6 + index}`].z = 'dd/mm/yyyy'
+      delete sheet[`J${6 + index}`].w
     }
   })
 
