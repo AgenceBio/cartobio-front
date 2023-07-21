@@ -49,7 +49,7 @@ export const usePermissions = defineStore('permissions', () => {
   })
 
   const canChangeConversionLevel = computed(() => {
-    return isOc()
+    return isOc.value;
   })
 
   const canSaveAudit = computed(() => {
