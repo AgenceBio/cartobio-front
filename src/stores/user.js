@@ -3,7 +3,8 @@ import { computed, ref, watch, watchEffect } from 'vue'
 import { setAuthorization } from '@/cartobio-api'
 
 export const ROLES = Object.freeze({
-  OC: 'oc',
+  OC_AUDIT: 'audit',
+  OC_CERTIF: 'certif',
   OPERATEUR: 'agri',
   ADMIN: 'admin',
   GUEST: 'guest',
@@ -35,8 +36,11 @@ export const useUserStore = defineStore('user', () => {
     if (!isLogged.value) {
       return ROLES.GUEST
     }
-    else if (['Super OC', 'OC CartoBio', 'OC'].includes(groupName)) {
-      return ROLES.OC
+    else if (groupName === 'OC CartoBio') {
+      return ROLES.OC_AUDIT
+    }
+    else if (['Super OC', 'OC'].includes(groupName)) {
+      return ROLES.OC_CERTIF
     }
     else if (groupName === 'Admin') {
       return ROLES.ADMIN

@@ -2,7 +2,7 @@
   <div>
     <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
 
-    <Spinner v-else-if="(!isVerifying && isLogged && hasCertificationBodyRole)">Chargement de votre liste clients…</Spinner>
+    <Spinner v-else-if="(!isVerifying && isLogged && permissions.isOc)">Chargement de votre liste clients…</Spinner>
 
     <div class="fr-connect-group" v-else-if="!isLogged">
       <p>
@@ -41,22 +41,23 @@
 
 <script setup>
 
-import { computed, ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useUserStore, ROLES } from '@/stores/user.js'
+import { useUserStore } from '@/stores/user.js'
 
 import { verifyToken } from '@/cartobio-api.js'
 
 import Spinner from '@/components/Spinner.vue'
+import { usePermissions } from "@/stores/permissions.js"
 
 const store = useUserStore()
+const permissions = usePermissions()
 const route = useRoute()
 const router = useRouter()
 
-const { token, isLogged, role } = storeToRefs(store)
+const { token, isLogged } = storeToRefs(store)
 const isVerifying = ref(false)
-const hasCertificationBodyRole = computed(() => role.value === ROLES.OC)
 
 onMounted(async () => {
   const hashOrUserToken = route.hash ? (new URLSearchParams(route.hash)).get('#token') : token.value
@@ -78,7 +79,7 @@ onMounted(async () => {
       router.replace('/login')
     }
 
-    if (role.value === ROLES.OC) {
+    if (permissions.isOc) {
       router.replace(route.query.returnto || '/certification/exploitations')
     }
   }

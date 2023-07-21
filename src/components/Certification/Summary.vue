@@ -6,19 +6,22 @@
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
-    <button class="fr-btn" @click="handleSaveAudit">Terminer l'audit</button>
+    <button v-if="permissions.canSaveAudit" class="fr-btn" @click="handleSaveAudit">Terminer l'audit</button>
+    <span v-else>L'auditeur doit maintenant envoyer l'audit.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.AUDITED">
     <h3 class="fr-callout__title">Audit terminé</h3>
 
-    <button class="fr-btn" @click="showSendOffModal = true">Envoyer l'audit</button>
+    <button v-if="permissions.canSendAudit" class="fr-btn" @click="showSendOffModal = true">Envoyer l'audit</button>
+    <span v-else>L'auditeur doit maintenant envoyer l'audit.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.PENDING_CERTIFICATION">
     <h3 class="fr-callout__title">Certification en cours</h3>
 
-    <button class="fr-btn" @click="handleCertify">Certifier le parcellaire</button>
+    <button v-if="permissions.canCertify" class="fr-btn" @click="handleCertify">Certifier le parcellaire</button>
+    <span v-else>Le chargé de certification doit maintenant certifier le parcellaire.</span>
   </div>
 
   <Teleport to="body">
@@ -33,8 +36,10 @@ import { updateAuditState } from '@/cartobio-api.js'
 import { useRecordStore } from '@/stores/index.js'
 import ValidationErrors from "@/components/Features/ValidationErrors.vue"
 import SendOffModal from "@/components/Certification/SendOffModal.vue"
+import { usePermissions } from "@/stores/permissions.js"
 
 const recordStore = useRecordStore()
+const permissions = usePermissions()
 
 const props = defineProps({
   operator: {

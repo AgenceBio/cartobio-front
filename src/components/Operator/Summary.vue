@@ -16,11 +16,11 @@
       </button>
     </div>
 
-    <p class="fr-subtitle">
+    <p class="state fr-subtitle">
       <ParcellaireState :state="record.certification_state" :date="record.created_at" />
     </p>
 
-    <div class="fr-callout fr-callout--blue-ecume" v-if="displayCallout">
+    <div class="demandes fr-callout fr-callout--blue-ecume" v-if="displayCallout">
       <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
 
       <div v-html="record.audit_demandes" />
@@ -90,6 +90,15 @@ header > h2 {
   grid-column: 1;
 }
 
+header > p.state {
+  grid-column: 1 / span 2;
+  margin-top: 0;
+}
+
+header > div.demandes {
+  grid-column: 1 / span 2;
+  margin-top: 0;
+}
 
 @media screen and (min-width: 62em) {
   div.actions {
