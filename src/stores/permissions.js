@@ -25,11 +25,12 @@ export const usePermissions = defineStore('permissions', () => {
   // Returned permissions
 
   const isOc = computed(() => {
-    return [ROLES.OC_CERTIF, ROLES.OC_AUDIT].includes(userStore.role);
+    return [ROLES.OC_CERTIF, ROLES.OC_AUDIT]
+        .some(role => userStore.roles.includes(role));
   })
 
   const isAgri = computed(() => {
-    return userStore.role === ROLES.OPERATEUR;
+    return userStore.roles.includes(ROLES.OPERATEUR);
   })
 
   const canAddParcelle = computed(() => {
@@ -53,15 +54,15 @@ export const usePermissions = defineStore('permissions', () => {
   })
 
   const canSaveAudit = computed(() => {
-    return userStore.role === ROLES.OC_AUDIT;
+    return userStore.roles.includes(ROLES.OC_AUDIT);
   })
 
   const canSendAudit = computed(() => {
-    return userStore.role === ROLES.OC_AUDIT;
+    return userStore.roles.includes(ROLES.OC_AUDIT);
   })
 
   const canCertify = computed(() => {
-    return userStore.role === ROLES.OC_CERTIF;
+    return userStore.roles.includes(ROLES.OC_CERTIF);
   })
 
   return {

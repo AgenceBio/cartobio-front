@@ -30,31 +30,34 @@ export const useUserStore = defineStore('user', () => {
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
 
-  const role = computed(() => {
+  const roles = computed(() => {
     const groupName = user.value?.mainGroup?.nom
 
     if (!isLogged.value) {
-      return ROLES.GUEST
+      return [ROLES.GUEST]
+    }
+    else if (groupName === 'Super OC') {
+      return [ROLES.OC_CERTIF, ROLES.OC_AUDIT]
     }
     else if (groupName === 'OC CartoBio') {
-      return ROLES.OC_AUDIT
+      return [ROLES.OC_AUDIT]
     }
-    else if (['Super OC', 'OC'].includes(groupName)) {
-      return ROLES.OC_CERTIF
+    else if (groupName === 'OC') {
+      return [ROLES.OC_CERTIF]
     }
     else if (groupName === 'Admin') {
-      return ROLES.ADMIN
+      return [ROLES.ADMIN]
     }
     else if (groupName === 'Opérateur' || user.value.numeroBio) {
-      return ROLES.OPERATEUR
+      return [ROLES.OPERATEUR]
     }
     else {
-      return ROLES.UNKNOWN
+      return [ROLES.UNKNOWN]
     }
   })
 
   function isRole (expectedRoleId) {
-    return role.value === expectedRoleId
+    return roles.value.includes(expectedRoleId)
   }
 
   function login (userToken) {
@@ -81,7 +84,7 @@ export const useUserStore = defineStore('user', () => {
     isLogged,
     isRole,
     user,
-    role,
+    roles,
     // methods
     enablePersistance,
     login,

@@ -52,7 +52,7 @@ const router = useRouter()
 async function handleDelete() {
   const record = await deleteRecord(props.operator.id)
 
-  if (userStore.role === ROLES.OPERATEUR) {
+  if (userStore.roles.includes(ROLES.OPERATEUR)) {
     return router.push('/exploitation/setup')
   }
 
