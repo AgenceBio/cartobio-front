@@ -1,4 +1,4 @@
-import { utils } from 'xlsx'
+import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
 
@@ -172,7 +172,11 @@ class CertipaqExporter extends BaseExporter {
 
   toFileData() {
     const sheet = this.getSheet()
-    return new Blob([sheet_to_csv(sheet, { FS: ';' })])
+    const workbook = utils.book_new()
+    utils.book_append_sheet(workbook, sheet, 'Export Certipaq')
+    // Cette fonction ajoute un BOM ce que sheet_to_csv ne fait pas
+    const data = write(workbook, { type: "array", bookType: 'csv', FS: ';' })
+    return new Blob([data])
   }
 
   toClipboard() {
