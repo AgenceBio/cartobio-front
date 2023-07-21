@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
     if (!isLogged.value) {
       return ROLES.GUEST
     }
-    else if (groupName === 'OC Cartobio') {
+    else if (groupName === 'OC CartoBio') {
       return ROLES.OC_AUDIT
     }
     else if (['Super OC', 'OC'].includes(groupName)) {

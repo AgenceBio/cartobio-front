@@ -52,6 +52,18 @@ export const usePermissions = defineStore('permissions', () => {
     return isOc()
   })
 
+  const canSaveAudit = computed(() => {
+    return userStore.role === ROLES.OC_AUDIT;
+  })
+
+  const canSendAudit = computed(() => {
+    return userStore.role === ROLES.OC_AUDIT;
+  })
+
+  const canCertify = computed(() => {
+    return userStore.role === ROLES.OC_CERTIF;
+  })
+
   return {
     isOc,
     isAgri,
@@ -59,6 +71,9 @@ export const usePermissions = defineStore('permissions', () => {
     canDeleteParcellaire,
     canChangeCulture,
     canAddParcelleNote,
-    canChangeConversionLevel
+    canChangeConversionLevel,
+    canSaveAudit,
+    canSendAudit,
+    canCertify,
   }
 })
