@@ -137,18 +137,13 @@ const ROLE_ICONS = new Map([
   [ROLES.UNKNOWN, 'fr-icon-warning-fill']
 ])
 
-const { user, role, isLogged } = storeToRefs(userStore)
-const roleIcon = computed(() => ROLE_ICONS.get(role.value) ?? 'fr-icon-account-circle-fill')
+const { user, roles, isLogged } = storeToRefs(userStore)
+const roleIcon = computed(() => ROLE_ICONS.get(roles.value[0]) ?? 'fr-icon-account-circle-fill')
 const rolePage = computed(() => {
-  switch (role.value) {
-    case ROLES.OC_CERTIF:
-    case ROLES.OC_AUDIT:
-      return '/certification/exploitations'
-    case ROLES.OPERATEUR:
-      return '/exploitation/parcellaire'
-    default:
-      return '/'
-  }
+  if (permissions.isOc) return '/certification/exploitations'
+  if (permissions.isAgri) return '/exploitation/parcellaire'
+
+  return '/'
 })
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 

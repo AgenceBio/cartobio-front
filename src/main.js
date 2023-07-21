@@ -89,7 +89,7 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to, from) => {
   // Preload store for checking permissions
-  if (to.params.id || userStore.role === ROLES.OPERATEUR) {
+  if (to.params.id || userStore.roles.includes(ROLES.OPERATEUR)) {
     const recordStore = useRecordStore()
     const featuresStore = useFeaturesStore()
     const record = await getOperatorParcelles(to.params.id || userStore.user.id)
@@ -107,7 +107,8 @@ router.beforeEach(async (to, from) => {
     return false
   }
 
-  if (to.meta.requiredRoles && !to.meta.requiredRoles.includes(userStore.role)) {
+  if (to.meta.requiredRoles
+      && !to.meta.requiredRoles.some(role => userStore.roles.includes(role))) {
     return { path: '/login', query: { mode: 'certification' } }
   }
 
