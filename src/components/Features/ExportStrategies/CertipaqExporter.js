@@ -103,10 +103,6 @@ const getSheet = ({ featureCollection, operator }) => {
   featureCollection.features.forEach((feature, index) => {
     sheet[`P${6 + index}`].t = 's';
 
-    ['E', 'F', 'G', 'H', 'I']
-      .filter(col => sheet[`${col}${6 + index}`].v !== '')
-      .forEach(col => Object.assign(sheet[`${col}${6 + index}`], { t: 'n', z: '0.00' }))
-
     if (sheet[`J${6 + index}`].v) {
       sheet[`J${6 + index}`].t = 'd'
       sheet[`J${6 + index}`].z = 'dd/mm/yyyy'
@@ -121,13 +117,17 @@ const getSheet = ({ featureCollection, operator }) => {
   )
 
   sheet_add_aoa(sheet, [
-    ['',          'AB',           'C1',             'C2',               'C3',             'C0',                 'Total'],
-    ['TOTAUX :',  groups.AB ?? 0, groups.C1 ?? 0,    groups.C2 ?? 0,    groups.C3 ?? 0,    groups.CONV ?? 0,    surface(featureCollection) / 10_000],
+    ['', 'AB', 'C1', 'C2', 'C3', 'C0', 'Total'],
+    [
+      'TOTAUX :',
+      groups.AB?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.C1?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.C2?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.C3?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.CONV?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      (surface(featureCollection) / 10_000)?.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
+    ],
   ], { origin: 'R4'});
-
-    // Formattage des totaux
-  ['S', 'T', 'U', 'V', 'W', 'X']
-    .forEach(col => Object.assign(sheet[`${col}5`], sheet[`${col}5`].v ? { t: 'n', z: '0.00' } : { z: '-' }))
 
   // Totaux par niveau de conversion ET par type de culture
   sheet_add_aoa(sheet, [
@@ -144,17 +144,12 @@ const getSheet = ({ featureCollection, operator }) => {
 
     sheet_add_aoa(sheet, [[
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
-      groups.AB ?? 0,
-      groups.C1 ?? 0,
-      groups.C2 ?? 0,
-      groups.C3 ?? 0,
-      groups.CONV ?? 0
+      groups.AB?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.C1?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.C2?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.C3?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
+      groups.CONV?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0
     ]], { origin: `R${9 + index}`});
-
-    // Formattage des totaux
-    ['S', 'T', 'U', 'V', 'W']
-      .filter(col => sheet[`${col}${9 + index}`].v !== 0)
-      .forEach(col => Object.assign(sheet[`${col}${9 + index}`], { t: 'n', z: '0.00' }))
   })
 
   return sheet;
