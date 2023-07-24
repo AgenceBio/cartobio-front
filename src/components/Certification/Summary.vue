@@ -24,6 +24,12 @@
     <span v-else>Le chargé de certification doit maintenant certifier le parcellaire.</span>
   </div>
 
+  <div class="fr-callout fr-callout--blue-ecume" v-if="record.audit_notes">
+    <h3 class="fr-callout__title">Notes finales de l'audit</h3>
+
+    <div v-html="record.audit_notes" />
+  </div>
+
   <Teleport to="body">
     <SendOffModal :operator="operator" :record="record" v-if="showSendOffModal" v-model="showSendOffModal" @submit="handleSendAudit" />
   </Teleport>
