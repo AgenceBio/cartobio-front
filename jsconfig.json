@@ -1,4 +1,6 @@
 {
+  "module": "ES2020",
+  "include": ["src/**/*.js", "src/**/*.vue"],
   "compilerOptions": {
     "baseUrl": ".",
     "target": "es6",

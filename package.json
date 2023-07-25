@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "start": "vite",
     "test": "vitest",
-    "posttest": "eslint ./src"
+    "posttest": "eslint --ext .js,.vue  ./src"
   },
   "engines": {
     "node": "^18.0.0"
@@ -48,6 +48,7 @@
     "@vue/test-utils": "^2.3.2",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.6.0",
+    "eslint-plugin-vue": "^9.15.1",
     "jsdom": "^22.0.0",
     "postcss-preset-env": "^8.3.2",
     "typescript": "^5.0.4",
@@ -57,12 +58,9 @@
   },
   "eslintConfig": {
     "root": true,
-    "env": {
-      "node": true
-    },
     "extends": [
-      "plugin:vue/vue3-essential",
       "eslint:recommended",
+      "plugin:vue/vue3-essential",
       "@vue/eslint-config-typescript/recommended"
     ],
     "rules": {
@@ -72,6 +70,15 @@
       "vue/no-multiple-template-root": "off",
       "vue/script-setup-uses-vars": "error"
     },
+    "overrides": [
+      {
+        "files": ["vite*.config.js"],
+        "env": {
+          "node": true
+        }
+      }
+    ],
+    "parser": "vue-eslint-parser",
     "parserOptions": {
       "ecmaVersion": "latest",
       "sourceType": "module"
