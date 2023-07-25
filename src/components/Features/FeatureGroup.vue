@@ -29,7 +29,7 @@
       <td @click="toggleEditForm(feature.id)"></td>
       <td @click="toggleEditForm(feature.id)" v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
       <td @click="toggleEditForm(feature.id)" v-else>
-        <span class="culture-type">{{ fromCodeCpf(feature.properties.CPF).libelle_code_cpf || 'Culture inconnue' }}</span>
+        <span class="culture-type">{{ fromCodeCpf(feature.properties.CPF)?.libelle_code_cpf || 'Culture inconnue' }}</span>
         <small class="culture-precision">{{ featureName(feature) }}</small>
       </td>
       <td @click="toggleEditForm(feature.id)">
