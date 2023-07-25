@@ -11,7 +11,7 @@
 
         <h2 class="fr-h6">Connexion à CartoBio</h2>
 
-        <div class="fr-tabs" style="--tabs-height: 95%;">
+        <div class="fr-tabs" style="--tabs-height: 99.5%;">
           <ul class="fr-tabs__list" role="tablist">
             <li role="presentation">
               <router-link to="/login?mode=exploitation" class="fr-tabs__tab" role="button" :aria-selected="mode === MODES_EXPLOITATION" @click="mode = MODES_EXPLOITATION" :aria-controls="MODES_EXPLOITATION">
