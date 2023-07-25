@@ -82,7 +82,7 @@ const VALIDATION_RULES = {
   },
   // le code CPF est explicite (il n'y a pas plusieurs choix possibles pour un code)
   [RULE_CPF] (feature) {
-    return Boolean(!feature.properties.CPF) || fromCodeCpf(feature.properties.CPF).is_selectable
+    return Boolean(!feature.properties.CPF) || fromCodeCpf(feature.properties.CPF)?.is_selectable
   },
   // le niveau de conversion n'est pas renseigné si une culture existe
   [RULE_CONVERSION_LEVEL] (feature) {

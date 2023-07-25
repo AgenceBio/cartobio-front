@@ -36,7 +36,7 @@ const getSheet = ({ featureCollection, operator }) => {
 
     return [
       '',
-      culture.libelle_code_cpf,
+      culture?.libelle_code_cpf,
       surfaceHa,
       props.engagement_date ? new Date(props.engagement_date) : '',
       props.niveau_conversion
