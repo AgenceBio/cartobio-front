@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h2 class="fr-h4 fr-mb-1w" :data-operator-id="operator.id">{{ operator.nom }}</h2>
+    <h2 class="fr-h4 fr-mb-1w" :data-operator-id="operator.id" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h2>
 
     <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
       <button v-if="canDisplayHistory" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">

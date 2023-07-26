@@ -8,7 +8,7 @@
         </div>
       </td>
       <td><span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" /></td>
-      <th scope="row" colspan="2">{{ featureGroup.label }}</th>
+      <th scope="row" colspan="2" :data-group-id="featureGroup.key">{{ featureGroup.label }}</th>
       <td class="numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
       <td class="actions"><span :class="{ 'fr-icon fr-icon-warning-fill fr-icon--warning': validation.total !== validation.success }" /></td>
     </tr>
@@ -28,7 +28,7 @@
       </th>
       <td @click="toggleEditForm(feature.id)"></td>
       <td @click="toggleEditForm(feature.id)" v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
-      <td @click="toggleEditForm(feature.id)" v-else>
+      <td @click="toggleEditForm(feature.id)" :data-cpf-code="feature.properties.CPF" v-else>
         <span class="culture-type">{{ fromCodeCpf(feature.properties.CPF)?.libelle_code_cpf || 'Culture inconnue' }}</span>
         <small class="culture-precision">{{ featureName(feature) }}</small>
       </td>
