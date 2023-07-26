@@ -1,5 +1,33 @@
 import { describe, test, expect } from 'vitest'
-import { diff } from './index.js'
+import { createGroupingKeys, diff, getFeatureGroups, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
+
+const geometry = {
+  type: "Polygon",
+  coordinates: [
+    [
+      [
+        5.00742078063729,
+        44.71418584175069
+      ],
+      [
+        5.00619098801252,
+        44.71418584175069
+      ],
+      [
+        5.00619098801252,
+        44.71353436914191
+      ],
+      [
+        5.00742078063729,
+        44.71353436914191
+      ],
+      [
+        5.00742078063729,
+        44.71418584175069
+      ]
+    ]
+  ]
+}
 
 const feature = {
   "type": "Feature",
@@ -151,5 +179,160 @@ describe('diff', () => {
         "type": "Polygon"
       }
     })
+  })
+})
+
+describe('createGroupingKeys', () => {
+  test('group on single items', () => {
+    expect(createGroupingKeys(['01.92', 'AB', 2019])).toEqual(['01.92-AB-2019'])
+  })
+
+  test('group on multiple items', () => {
+    expect(createGroupingKeys([['01.92', '01.26.1'], 'AB', 2019])).toEqual(['01.92-AB-2019', '01.26.1-AB-2019'])
+    expect(createGroupingKeys([['01.21.12', '01.21.12'], 'AB', 2019])).toEqual(['01.21.12-AB-2019'])
+  })
+})
+
+describe('getFeatureGroups()', () => {
+  const feature1 = {
+    geometry,
+    properties: {
+      conversion_niveau: 'AB',
+      NUMERO_I: '1',
+      CPF: '01.26.1'
+    }
+  }
+  const feature2 = {
+    geometry,
+    properties: {
+      NUMERO_I: '2',
+      CPF: '01.21.12',
+      conversion_niveau: 'AB',
+      cultures: [
+        {
+          CPF: '01.21.12',
+          surface: '7.0000'
+        },
+        {
+          CPF: '01.92',
+          surface: '1.0000'
+        }
+      ]
+    }
+  }
+
+  const feature3 = {
+    geometry,
+    properties: {
+      NUMERO_I: '2',
+      CPF: '01.21.12',
+      conversion_niveau: 'C1',
+      cultures: [
+        {
+          CPF: '01.21.12',
+          surface: '7.0000'
+        }
+      ]
+    }
+  }
+
+  test('collection is split in two groups based on a single value field', async () => {
+    const collection = {
+      type: "FeatureCollection",
+      features: [feature1, feature2]
+    }
+
+    const expectation = [
+      {
+        label: 'Îlot 1',
+        key: '1',
+        pivot: GROUPE_ILOT,
+        features: [feature1],
+        surface: 7055.2689844296965,
+      },
+      {
+        label: 'Îlot 2',
+        key: '2',
+        pivot: GROUPE_ILOT,
+        features: [feature2],
+        surface: 7055.2689844296965,
+      }
+    ]
+
+    expect(getFeatureGroups(collection, GROUPE_ILOT)).toEqual(expectation)
+  })
+
+  test('collection is split in two groups, based on multiple value field', () => {
+    const collection = {
+      type: "FeatureCollection",
+      features: [feature1, feature2]
+    }
+
+    const expectation = [
+      {
+        label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
+        key: '01.92',
+        pivot: GROUPE_CULTURE,
+        features: [feature2],
+        surface: 7055.2689844296965,
+      },
+      {
+        label: 'Olives',
+        key: '01.26.1',
+        pivot: GROUPE_CULTURE,
+        features: [feature1],
+        surface: 7055.2689844296965,
+      },
+      {
+        label: 'Raisin de cuve',
+        key: '01.21.12',
+        pivot: GROUPE_CULTURE,
+        features: [feature2],
+        surface: 7055.2689844296965,
+      }
+    ]
+
+    expect(getFeatureGroups(collection, GROUPE_CULTURE)).toEqual(expectation)
+  })
+
+  test('collection is split in four groups, based on multiple value field and multiple pivot', () => {
+    const collection = {
+      type: "FeatureCollection",
+      features: [feature1, feature2, feature3]
+    }
+
+    const expectation = [
+      {
+        label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
+        key: '01.92-AB',
+        pivot: GROUPE_CULTURE,
+        features: [feature2],
+        surface: 7055.2689844296965,
+      },
+      {
+        label: 'Olives',
+        key: '01.26.1-AB',
+        pivot: GROUPE_CULTURE,
+        features: [feature1],
+        surface: 7055.2689844296965,
+      },
+      {
+        label: 'Raisin de cuve',
+        key: '01.21.12-AB',
+        pivot: GROUPE_CULTURE,
+        features: [feature2],
+        surface: 7055.2689844296965,
+      },
+      {
+        label: 'Raisin de cuve',
+        key: '01.21.12-C1',
+        pivot: GROUPE_CULTURE,
+        features: [feature3],
+        surface: 7055.2689844296965,
+      }
+    ]
+
+    expect(getFeatureGroups(collection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION])).toEqual(expectation)
+
   })
 })

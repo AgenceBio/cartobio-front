@@ -1,4 +1,3 @@
-import groupBy from 'array.prototype.groupby'
 import { featureCollection, feature } from '@turf/helpers'
 import difference from '@turf/difference'
 import intersect from '@turf/intersect'
@@ -73,7 +72,7 @@ export const groupingChoices = {
   [GROUPE_COMMUNE]: {
     label: 'commune',
     datapoint: (d) => d.properties.COMMUNE,
-    groupLabelFn: (d) => {
+    groupLabelFn: ({ featureSample: d }) => {
       if (d.properties.COMMUNE_LABEL) {
         return `${d.properties.COMMUNE_LABEL} (${d.properties.COMMUNE.slice(0, -3)})`
       }
@@ -86,25 +85,25 @@ export const groupingChoices = {
   [GROUPE_ILOT]: {
     label: 'îlot PAC',
     datapoint: (d) => d.properties.NUMERO_I || '',
-    groupLabelFn: (d) => d.properties.NUMERO_I ? `Îlot ${d.properties.NUMERO_I}` : 'Numéro d\'îlot non-précisé',
+    groupLabelFn: ({ featureSample: d }) => d.properties.NUMERO_I ? `Îlot ${d.properties.NUMERO_I}` : 'Numéro d\'îlot non-précisé',
     sortFn: sortByAscendingFeatureProperty((d) => d.properties.NUMERO_I || '')
   },
   [GROUPE_CULTURE]: {
     label: 'type de culture',
-    datapoint: (d) => d.properties.CPF,
-    groupLabelFn: (d) => fromCodeCpf(d.properties.CPF)?.libelle_code_cpf || 'Type de culture inconnu',
+    datapoint: (d) => (d.properties.cultures ?? [{ CPF: d.properties.CPF }]).map(({ CPF }) => CPF),
+    groupLabelFn: ({ datapoint }) => fromCodeCpf(datapoint)?.libelle_code_cpf || 'Type de culture inconnu',
     sortFn: sortByAscendingLabel
   },
   [GROUPE_NIVEAU_CONVERSION]: {
     label: 'niveau de conversion',
     datapoint: (d) => d.properties.conversion_niveau || '',
-    groupLabelFn: (d, groupingKey) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu',
+    groupLabelFn: ({ groupingKey }) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu',
     sortFn: sortBySurface
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
     label: 'année d\'engagement',
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
-    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue',
+    groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByDescendingKey
   },
 }
@@ -114,10 +113,30 @@ Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
   value: {
     label: null,
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).toISOString().split('T').at(0) : '',
-    groupLabelFn: (d, groupingKey) => groupingKey || 'Année d\'engagement inconnue',
+    groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByDescendingKey
   },
 })
+
+export function createGroupingKeys (elements) {
+  const keys = elements.reduce((keys, item, i) => {
+    if (Array.isArray(item)) {
+      keys = item.map(subkey => [...keys, subkey])
+    }
+    else {
+      // we init for the first item
+      if (i === 0) {
+        keys.push([])
+      }
+
+      keys.forEach(k => k.push(item))
+    }
+
+    return keys
+  }, [])
+
+  return Array.from( new Set(keys.map(key => key.join('-'))) )
+}
 
 /**
  *
@@ -138,16 +157,36 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
   }
 
   const pivots = Array.isArray(pivot) ? pivot : [pivot]
-  const groups = groupBy(collection.features, (feature) => {
-    return pivots
-      .map(pivot => groupingChoices[pivot].datapoint(feature))
-      .join('-')
-  })
 
-  return Object.entries(groups).map(([key, features]) => ({
-    label: groupingChoices[pivots.at(0)].groupLabelFn(features[0], key),
-    key: key.split('-').at(0),
-    pivot,
+  /**
+   * If [CULTURE, NIVEAU_CONVERSION, ANNEE_CONVERSION]
+   * With [ [1a, [01.92, 01.26.1], AB, 2019], [1b, [01.92], AB, 2010] ]
+   * Should expand to [ ['01.92-AB-2019', ...], ['01.26.1-AB-2019', ...], ['01.92-AB-2010', ...] ]
+   * With step 1 [ [01.92, AB, 2019], [01.26.1, AB, 2019], [01.92, AB, 2010] ]
+   */
+  const groups = collection.features.reduce((groups, feature) => {
+    const groupingKeys = createGroupingKeys(pivots.map(pivot => groupingChoices[pivot].datapoint(feature)))
+
+    groupingKeys.forEach(groupKey => {
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, [])
+      }
+
+      groups.set(groupKey, [...groups.get(groupKey), feature])
+    })
+
+    return groups
+  }, new Map())
+
+
+  return Array.from(groups).map(([groupingKey, features]) => ({
+    label: groupingChoices[pivots.at(0)].groupLabelFn({
+      featureSample: features[0],
+      groupingKey,
+      datapoint: groupingKey.split('-').at(0)
+    }),
+    key: groupingKey,
+    pivot: pivots.at(0),
     features,
     surface: area(featureCollection(features)),
   })).sort(groupingChoices[pivots.at(0)].sortFn)
