@@ -78,7 +78,7 @@
           </nav>
         </div>
       </div>
-      <div class="fr-header__menu" v-else-if="(isLogged && role === ROLES.OPERATEUR)">
+      <div class="fr-header__menu" v-else-if="(isLogged && permissions.isAgri)">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
