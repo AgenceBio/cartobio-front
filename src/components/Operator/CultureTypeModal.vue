@@ -10,7 +10,7 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <CultureSelector v-model="patch.CPF" :from-pac="commonValues.TYPE" />
+        <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
       </div>
     </form>
 
@@ -59,5 +59,6 @@ const commonValues = computed(() => {
 
 const patch = reactive({
   CPF: commonValues.value.CPF,
+  cultures: []
 })
 </script>

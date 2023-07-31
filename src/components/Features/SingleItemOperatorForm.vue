@@ -6,7 +6,7 @@
 
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
     <div v-if="permissions.canChangeCulture" class="fr-input-group">
-      <CultureSelector v-model="patch.CPF" :from-pac="feature.properties.TYPE" />
+      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
     </div>
 
     <div class="fr-input-group">
@@ -38,7 +38,7 @@ const props = defineProps({
 })
 
 const patch = reactive({
-  CPF: props.feature.properties.CPF,
+  cultures: props.feature.properties.cultures,
   commentaires: props.feature.properties.commentaires || '',
 })
 
