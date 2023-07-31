@@ -226,6 +226,21 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
   }
 }
 
+const cultureList = new Intl.ListFormat('fr', {
+  style: 'short',
+  type: 'conjunction' // "et"
+})
+
+export function cultureLabel (culture) {
+  return fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
+}
+
+export function cultureLabels (cultures) {
+  const labels = new Set(cultures.map(cultureLabel))
+
+  return cultureList.format(labels)
+}
+
 /**
  * @param {String|Number} value
  * @returns {String}
