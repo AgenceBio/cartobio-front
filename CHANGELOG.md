@@ -1,11 +1,11 @@
-## 2.8.0 (2023-07-31)
+# [2.8.0](https://github.com/AgenceBio/cartobio-front/compare/v2.7.3...v2.8.0) (2023-07-31)
 
 * correction de bugs divers d'affichage et d'export
 * ajoute des permissions différenciées pour agriculteurs, chargés de certficiation et auditeurs
 * mise en cache des stats dataGouv côté serveur
 * ajout d'un statut de parcelle 'niveau de conversion à définir'
 
-# 2.7.3 (2023-07-11)
+# [2.7.3](https://github.com/AgenceBio/cartobio-front/compare/v2.7.2...v2.7.3) (2023-07-11)
 
 * interdit la modification de culture aux agriculteurs après la phase 2
 * ajout d'un message d'erreur sur import Mes Parcelles
