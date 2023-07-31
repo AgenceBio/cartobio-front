@@ -39,6 +39,7 @@
     "vue": "^3.2.25",
     "vue-matomo": "^4.1.0",
     "vue-router": "^4.0.12",
+    "vue3-toastify": "^0.1.11",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

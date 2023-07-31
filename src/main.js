@@ -5,6 +5,8 @@ import { createHead } from '@unhead/vue'
 import * as Sentry from '@sentry/vue'
 import routes from '~pages'
 import Matomo from 'vue-matomo'
+import Vue3Toastify, { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css';
 
 import { useFeaturesStore, useRecordStore, useUserStore } from '@/stores/index.js'
 import App from './App.vue'
@@ -39,6 +41,13 @@ const app = createApp(App)
   .use(router)
   .use(head)
   .use(pinia)
+  .use(
+    Vue3Toastify,
+    {
+      autoClose: 5000,
+      position: toast.POSITION.BOTTOM_RIGHT,
+    }
+  )
   .use(Matomo, {
     router,
     siteId,
@@ -49,6 +58,16 @@ const app = createApp(App)
     trackerUrl: 'https://cartobio.agencebio.org/s/',
     trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
   })
+
+app.config.errorHandler = (err) => {
+  if (err.code === "ERR_NETWORK") {
+    toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
+  }
+
+  toast.error('Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.')
+
+  throw err;
+}
 
 // this is sync because we need to know the user role before rendering the app
 const userStore = useUserStore()
@@ -131,3 +150,13 @@ router.beforeEach(async (to, from) => {
   }
 })
 
+router.onError((error) => {
+  console.error(error)
+
+  if (error.name === "TypeError" || error.code === "ERR_NETWORK") {
+    toast.error('La page n\'a pas pu être chargée. Vérifiez votre connexion internet.')
+    return
+  }
+
+  toast.error('Une erreur est survenue. La page n\'a pas pu être chargée.')
+})

@@ -85,6 +85,7 @@ import Modal from '@/components/Modal.vue'
 import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from './index.js'
 import { submitParcellesChanges } from '@/cartobio-api.js'
 import { usePermissions } from "@/stores/permissions.js"
+import { toast } from "vue3-toastify"
 
 const props = defineProps({
   operator: {
@@ -101,7 +102,6 @@ const props = defineProps({
 })
 
 const isSaving = ref(false)
-const savingResult = ref(null)
 const showModal = computed(() => Boolean(editedFeatureId.value))
 const store = useFeaturesStore()
 
@@ -142,17 +142,15 @@ function doSave (geojson) {
   setTimeout(async () => {
     try {
       await submitParcellesChanges ({ geojson, operatorId, ocId, ocLabel, numeroBio })
-      savingResult.value = {
-        type: 'success',
-        message: "Parcellaire correctement sauvegardé sur les serveurs CartoBio."
-      }
+      toast.success(
+        "Modification enregistrée."
+      )
     }
     catch (error) {
       console.error(error)
-      savingResult.value = {
-        type: 'error',
-        message: "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
-      }
+      toast.error(
+        "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
+      )
     }
 
     isSaving.value = false

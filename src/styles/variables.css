@@ -806,3 +806,39 @@
   --map-legend-conventionnelle: #ffd6a4;
   --map-legend-conventionnelle-border: #ffc177;
 }
+
+:root {
+  --toastify-color-light: #fff;
+  --toastify-color-dark: #121212;
+  --toastify-color-info: var(--info-425-625);
+  --toastify-color-success: var(--success-425-625);
+  --toastify-color-warning: var(--warning-425-625);
+  --toastify-color-error: var(--error-425-625);
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
+
+  --toastify-icon-color-info: var(--info-425-625);
+  --toastify-icon-color-success: var(--success-425-625);
+  --toastify-icon-color-warning: var(--warning-425-625);
+  --toastify-icon-color-error: var(--error-425-625);
+
+  --toastify-toast-width: 320px;
+  --toastify-toast-background: #fff;
+  --toastify-toast-min-height: 64px;
+  --toastify-toast-max-height: 800px;
+  --toastify-font-family: "Marianne", arial, sans-serif;
+  --toastify-z-index: 9999;
+
+  --toastify-text-color-light: var(--text-default-grey);
+  --toastify-text-color-dark: #cecece;
+
+  --toastify-text-color-info: var(--text-default-info);
+  --toastify-text-color-success: var(--text-default-success);
+  --toastify-text-color-warning: var(--text-default-warning);
+  --toastify-text-color-error: var(--text-default-error);
+
+  --toastify-spinner-color: var(--text-default-grey);
+  --toastify-spinner-color-empty-area: #e0e0e0;
+
+  /* For messages with no level */
+  --toastify-color-progress-light: var(--border-active-blue-france);
+}
