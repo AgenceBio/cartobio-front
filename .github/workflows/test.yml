@@ -1,0 +1,76 @@
+name: Build and deploy (test)
+
+on:
+  push:
+    branches:
+      - "test"
+    paths-ignore:
+      - 'docs/**'
+      - 'bin/**'
+      - 'infrastructure/**'
+      - '*.example'
+      - 'netlify.toml'
+      - '*.md'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+      url: https://cartobio-test.agencebio.org
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Assign env variables to a .env file
+        run: env | grep VUE_APP > .env.local
+        env:
+          VUE_APP_MATOMO_SITE_ID: 245
+          VUE_APP_API_ENDPOINT: "https://cartobio-test.agencebio.org/api"
+          VUE_APP_PRELOADED_CAMPAGNE_PAC: 2021
+          VUE_APP_ENVIRONMENT: test
+          VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
+          VUE_APP_GIT_COMMIT_SHA: ${{ github.sha }}
+
+      - run: npm clean-install-test
+      - run: |
+          npm run build:app
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
+
+      - name: rsync
+        run: |
+          rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
+        env:
+          REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
+          REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+          REMOTE_PATH: /var/www/cartobio-test.agencebio.org/
+
+      - id: version
+        run: echo v=$(node -p "require('./package.json').version") >> "$GITHUB_OUTPUT"
+
+      - name: Create Sentry ${{ env.DEPLOY_ENV }} release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: betagouv
+          SENTRY_PROJECT: cartobio-front
+          SENTRY_URL: https://sentry.incubateur.net/
+        with:
+          environment: test
+          sourcemaps: dist/assets/
+          # On a pas l'intégration GitHub qui permet que Sentry récupère dans
+          # l'autre sens les commits liés à la release, donc on skip
+          set_commits: skip
+          # Permet d'avoir le nom de la dernière release de prod
+          # dans le nom affiché sur Sentry tout en gardant un
+          # identifiant unique à ce commit
+          version: "${{ steps.version.outputs.v }}-dev-${{ github.sha }}"
