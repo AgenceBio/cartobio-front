@@ -11,6 +11,18 @@
         <col width="10%" />
       </colgroup>
       <thead>
+        <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
+          <td colspan="2">
+            <div class="fr-checkbox-group single-checkbox">
+              <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
+              <label class="fr-label" for="radio-mass-edit" />
+            </div>
+          </td>
+          <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
+          <td colspan="2">
+            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
+          </td>
+        </tr>
         <tr class="legend">
           <th colspan="2">
             <div class="fr-checkbox-group single-checkbox">
@@ -36,18 +48,6 @@
           <td colspan="2">{{ features.features.length }} parcelles</td>
           <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
           <td></td>
-        </tr>
-        <tr v-else class="summary summary__mass-actions">
-          <td colspan="2">
-            <div class="fr-checkbox-group single-checkbox">
-              <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
-              <label class="fr-label" for="radio-mass-edit" />
-            </div>
-          </td>
-          <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
-          <td colspan="2">
-            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
-          </td>
         </tr>
       </thead>
 

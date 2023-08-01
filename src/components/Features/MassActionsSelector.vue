@@ -1,7 +1,7 @@
 <template>
   <nav ref="openerElement" role="navigation" class="fr-translate fr-nav" data-fr-js-navigation="true">
     <div class="fr-nav__item" data-fr-js-navigation-item="true">
-      <button type="button" class="fr-btn fr-translate__btn" aria-controls="mass-actions__actions" :aria-expanded="isMenuOpen" @click="(isMenuOpen = !isMenuOpen)" data-fr-js-collapse-button="true">
+      <button type="button" class="fr-btn fr-btn--secondary fr-translate__btn" aria-controls="mass-actions__actions" :aria-expanded="isMenuOpen" @click="(isMenuOpen = !isMenuOpen)" data-fr-js-collapse-button="true">
         {{ label }}
       </button>
       <div :class="['fr-collapse', 'fr-translate__menu', 'fr-menu', isMenuOpen && 'fr-collapse--expanded']" id="mass-actions__actions" data-fr-js-collapse="true" style="--collapse-max-height: none; --collapse: -148px">
@@ -72,8 +72,10 @@ function handleSubmit ({ ids, patch }) {
     text-align: left;
   }
   .fr-translate .fr-translate__btn {
-    border: 1px solid currentColor;
+    border: 1px solid #fff;
+    background-color: #fff;
     margin-bottom: 0;
+    box-shadow: none;
   }
 
   .fr-translate .fr-translate__btn::before {
