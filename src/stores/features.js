@@ -34,19 +34,29 @@ export const useFeaturesStore = defineStore('features', () => {
     return selectedIds.value.map(getFeatureById)
   })
 
+  /**
+   * The intent of this computed collection is to *always* provide a CPF value to features.
+   * 1. Because they are explitly set from a controlled-list via the UI (the `is_selectable` crop attribute)
+   * 2. Because they are translated from a PAC code (the `TYPE` feature property)
+   * 3. Or because they are set from an external system (the crop may or may not be selectable via the UI)
+   */
   const collection = computed(() => {
     const featuresWithCPF = all.value.map(feature => {
       if (fromCodeCpf(feature.properties.CPF || '')?.is_selectable) {
         return feature
       }
 
-      return {
-        ...feature,
-        properties: {
-          ...feature.properties,
-          CPF: feature.properties.TYPE && fromCodePacStrict(feature.properties.TYPE)?.code_cpf
+      if (feature.properties.TYPE) {
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            CPF: fromCodePacStrict(feature.properties.TYPE)?.code_cpf
+          }
         }
       }
+
+      return feature
     })
 
     return ({ type: 'FeatureCollection', features: featuresWithCPF })
