@@ -178,6 +178,7 @@ function doSave (geojson) {
     background-position: right center;
     background-repeat: no-repeat;
     font-weight: bold;
+    padding-right: 1rem;
   }
 
 .rowIdCell small {
