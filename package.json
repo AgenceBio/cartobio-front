@@ -33,6 +33,7 @@
     "@unhead/vue": "^1.0.6",
     "@vueuse/core": "^9.6.0",
     "axios": "^1.4.0",
+    "fuse.js": "^6.6.2",
     "maplibre-gl": "^3.0.0",
     "pinia": "^2.0.26",
     "vue": "^3.2.25",

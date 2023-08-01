@@ -15,7 +15,8 @@
 import { computed, Fragment, h, nextTick, onMounted, ref, render } from 'vue'
 
 import { autocomplete } from '@algolia/autocomplete-js'
-import '@algolia/autocomplete-theme-classic';
+import '@algolia/autocomplete-theme-classic'
+import Fuse from 'fuse.js'
 import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
 import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
 
@@ -56,10 +57,15 @@ onMounted(() => {
         {
           sourceId: 'cultures',
           getItems ({ query }) {
-            const cultureChoices = choices.value
-                .filter(({ libelle_code_cpf: libelle }) => libelle.toLowerCase().includes((query || '').toLowerCase()))
-                .map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }))
-                .sort((a, b) => a.libelle.localeCompare(b.libelle))
+            const fuse = new Fuse(choices.value, {
+              keys: ['libelle_code_cpf'],
+              minMatchCharLength: 2,
+              threshold: 0.4,
+            })
+
+            const cultureChoices = fuse
+              .search(query)
+              .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }))
 
             if (requirePrecision.value && !(showMore.value)) {
               cultureChoices.push({
