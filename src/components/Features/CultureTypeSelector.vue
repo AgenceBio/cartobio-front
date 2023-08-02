@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { computed, Fragment, h, nextTick, onMounted, ref, render } from 'vue'
+import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from 'vue'
 
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic';
@@ -20,6 +20,10 @@ import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
 import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
 
 const props = defineProps({
+  placeholder: {
+    type: String,
+    default: '',
+  },
   modelValue: {
     type: String,
     required: true
@@ -32,6 +36,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+const autocompleteProps = shallowRef(null)
 const autocompleteRef = ref(null)
 const showMore = ref(false)
 
@@ -47,9 +52,9 @@ const choices = computed(() => {
 const requirePrecision = computed(() => props.modelValue && !(fromCodeCpf(props.modelValue)?.is_selectable))
 
 onMounted(() => {
-  const { setQuery } = autocomplete({
+  autocompleteProps.value = autocomplete({
     container: autocompleteRef.value,
-    placeholder: 'Saisissez le nom d’une culture',
+    placeholder: props.placeholder,
     openOnFocus: true,
     getSources() {
       return [
@@ -100,8 +105,10 @@ onMounted(() => {
     renderer: { createElement: h, Fragment, render }
   })
 
-  setQuery?.(requirePrecision.value ? '' : fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
+  autocompleteProps.value.setQuery?.(requirePrecision.value ? '' : fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
 })
+
+onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false))
 </script>
 
 <style>
