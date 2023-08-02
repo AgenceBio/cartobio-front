@@ -29,6 +29,14 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures"
  * @property {Number} surface
  */
 
+/**
+ * @typedef FeaturePropertyCulture
+ * @property {String} CPF
+ * @property {=String} TYPE
+ * @property {=String} variete
+ * @property {Number} surface
+ */
+
 export const GROUPE_COMMUNE = 'COMMUNE'
 export const GROUPE_CULTURE = 'CULTURE'
 export const GROUPE_ILOT = 'ILOT'
@@ -84,24 +92,28 @@ export const groupingChoices = {
   },
   [GROUPE_ILOT]: {
     label: 'îlot PAC',
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.NUMERO_I || '',
     groupLabelFn: ({ featureSample: d }) => d.properties.NUMERO_I ? `Îlot ${d.properties.NUMERO_I}` : 'Numéro d\'îlot non-précisé',
     sortFn: sortByAscendingFeatureProperty((d) => d.properties.NUMERO_I || '')
   },
   [GROUPE_CULTURE]: {
     label: 'type de culture',
-    datapoint: (d) => (d.properties.cultures ?? [{ CPF: d.properties.CPF }]).map(({ CPF }) => CPF),
+    /** @param {GeoJSONFeature} */
+    datapoint: (d) => d.properties.cultures.map(({ CPF }) => CPF),
     groupLabelFn: ({ datapoint }) => fromCodeCpf(datapoint)?.libelle_code_cpf || 'Type de culture inconnu',
     sortFn: sortByAscendingLabel
   },
   [GROUPE_NIVEAU_CONVERSION]: {
     label: 'niveau de conversion',
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.conversion_niveau || '',
     groupLabelFn: ({ groupingKey }) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu',
     sortFn: sortBySurface
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
     label: 'année d\'engagement',
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
     groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByDescendingKey
@@ -112,6 +124,7 @@ Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
   enumerable: false,
   value: {
     label: null,
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).toISOString().split('T').at(0) : '',
     groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByDescendingKey
@@ -231,10 +244,20 @@ const cultureList = new Intl.ListFormat('fr', {
   type: 'conjunction' // "et"
 })
 
+/**
+ *
+ * @param {FeaturePropertyCulture} culture
+ * @returns {string}
+ */
 export function cultureLabel (culture) {
   return fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
 }
 
+/**
+ *
+ * @param {FeaturePropertyCulture[]} cultures
+ * @returns {string}
+ */
 export function cultureLabels (cultures) {
   const labels = new Set(cultures.map(cultureLabel))
 
