@@ -23,7 +23,7 @@
 
             <div class="fr-card__start">
               <ul class="fr-tags-group">
-                <li>
+                <li v-if="entry.state">
                   <CertificationState :state="entry.state" />
                 </li>
               </ul>
