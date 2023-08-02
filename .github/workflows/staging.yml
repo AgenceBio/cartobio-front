@@ -6,6 +6,7 @@ on:
     - "v2"
     paths-ignore:
     - 'docs/**'
+    - 'CHANGELOG.md'
     - 'bin/**'
     - 'infrastructure/**'
     - '*.example'
