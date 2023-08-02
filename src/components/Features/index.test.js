@@ -199,14 +199,17 @@ describe('getFeatureGroups()', () => {
     properties: {
       conversion_niveau: 'AB',
       NUMERO_I: '1',
-      CPF: '01.26.1'
+      cultures: [
+        {
+          CPF: '01.26.1'
+        }
+      ]
     }
   }
   const feature2 = {
     geometry,
     properties: {
       NUMERO_I: '2',
-      CPF: '01.21.12',
       conversion_niveau: 'AB',
       cultures: [
         {
@@ -225,7 +228,6 @@ describe('getFeatureGroups()', () => {
     geometry,
     properties: {
       NUMERO_I: '2',
-      CPF: '01.21.12',
       conversion_niveau: 'C1',
       cultures: [
         {
@@ -246,6 +248,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Îlot 1',
         key: '1',
+        mainKey: '1',
         pivot: GROUPE_ILOT,
         features: [feature1],
         surface: 7055.2689844296965,
@@ -253,6 +256,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Îlot 2',
         key: '2',
+        mainKey: '2',
         pivot: GROUPE_ILOT,
         features: [feature2],
         surface: 7055.2689844296965,
@@ -272,6 +276,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
         key: '01.92',
+        mainKey: '01.92',
         pivot: GROUPE_CULTURE,
         features: [feature2],
         surface: 7055.2689844296965,
@@ -279,6 +284,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Olives',
         key: '01.26.1',
+        mainKey: '01.26.1',
         pivot: GROUPE_CULTURE,
         features: [feature1],
         surface: 7055.2689844296965,
@@ -286,6 +292,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Raisin de cuve',
         key: '01.21.12',
+        mainKey: '01.21.12',
         pivot: GROUPE_CULTURE,
         features: [feature2],
         surface: 7055.2689844296965,
@@ -305,6 +312,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
         key: '01.92-AB',
+        mainKey: '01.92',
         pivot: GROUPE_CULTURE,
         features: [feature2],
         surface: 7055.2689844296965,
@@ -312,6 +320,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Olives',
         key: '01.26.1-AB',
+        mainKey: '01.26.1',
         pivot: GROUPE_CULTURE,
         features: [feature1],
         surface: 7055.2689844296965,
@@ -319,6 +328,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Raisin de cuve',
         key: '01.21.12-AB',
+        mainKey: '01.21.12',
         pivot: GROUPE_CULTURE,
         features: [feature2],
         surface: 7055.2689844296965,
@@ -326,6 +336,7 @@ describe('getFeatureGroups()', () => {
       {
         label: 'Raisin de cuve',
         key: '01.21.12-C1',
+        mainKey: '01.21.12',
         pivot: GROUPE_CULTURE,
         features: [feature3],
         surface: 7055.2689844296965,
