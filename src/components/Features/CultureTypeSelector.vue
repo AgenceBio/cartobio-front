@@ -6,9 +6,11 @@
   <div ref="autocompleteRef"></div>
 
   <div v-if="requirePrecision" class="fr-hint-text fr-error-text">
-    La culture a besoin d'être précisée
+    La culture a besoin d'être précisée.
   </div>
-  <div v-else class="fr-hint-text">Saisissez le nom d'une culture</div>
+  <div v-else-if="!query" class="fr-hint-text">
+    Saisissez le nom d'une culture pour la sélectionner parmi une liste.
+  </div>
 </template>
 
 <script setup>
@@ -20,6 +22,10 @@ import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
 import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
 
 const props = defineProps({
+  id: {
+    type: String,
+    default: ''
+  },
   placeholder: {
     type: String,
     default: '',
@@ -40,6 +46,8 @@ const autocompleteProps = shallowRef(null)
 const autocompleteRef = ref(null)
 const showMore = ref(false)
 
+const query = ref(fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
+
 const choices = computed(() => {
   const selectableCpf = cpf.filter(({ is_selectable }) => is_selectable)
 
@@ -56,6 +64,17 @@ onMounted(() => {
     container: autocompleteRef.value,
     placeholder: props.placeholder,
     openOnFocus: true,
+    id: props.id,
+    classNames: {
+      // input: 'fr-input',
+      // inputWrapper: 'fr-input-wrap',
+    },
+
+    // helps react to query and isOpen changes
+    onStateChange ({ state }) {
+      query.value = state.query
+    },
+
     getSources() {
       return [
         {
@@ -97,7 +116,7 @@ onMounted(() => {
 
             event.setQuery(event.item.libelle);
             emit('update:modelValue', event.item.code);
-          },
+          }
         }
       ]
     },
@@ -105,7 +124,7 @@ onMounted(() => {
     renderer: { createElement: h, Fragment, render }
   })
 
-  autocompleteProps.value.setQuery?.(requirePrecision.value ? '' : fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
+  autocompleteProps.value.setQuery?.(requirePrecision.value ? '' : query.value)
 })
 
 onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false))
