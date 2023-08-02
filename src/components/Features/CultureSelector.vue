@@ -1,8 +1,34 @@
 <template>
-  <fieldset class="fr-input-group" v-for="(culture) in uuidedCultures" :key="culture.id">
-    <label class="fr-label">Type de culture</label>
+  <fieldset class="culture-group fr-mb-1w fr-p-3w" v-for="(culture) in uuidedCultures" :key="culture.id">
+    <div class="fr-input-group">
+      <label class="fr-label" :for="`cpf-${culture.id}-input`">Type de culture</label>
+      <CultureTypeSelector :id="`cpf-${culture.id}`" :from-pac="culture.TYPE" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
+    </div>
 
-    <CultureTypeSelector :from-pac="culture.TYPE" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
+    <div class="fr-input-group">
+      <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>
+      <div class="fr-hint-text">
+        Précisions sur la culture, le cépage, etc.
+      </div>
+      <div class="fr-input-wrap">
+        <input type="text" autocomplete="cartobio-variete" class="fr-input" :id="`variete-${culture.id}`" :value="culture.variete" @input="updateCulture(culture.id, 'variete', $event.target.value)" name="variete" />
+      </div>
+    </div>
+
+    <div class="horizontal-stack">
+      <div class="fr-input-group">
+        <label class="fr-label" :for="`superficie-${culture.id}`">Superficie (facultatif)</label>
+        <input type="number" min="0" step="0.1" class="fr-input" :id="`superficie-${culture.id}`" :value="culture.surface" @input="updateCulture(culture.id, 'surface', $event.target.value)" name="surface" />
+        <div class="fr-hint-text">
+          Exprimée en <abbr title="hectare">ha</abbr>.
+        </div>
+      </div>
+
+      <div class="fr-input-group">
+        <label class="fr-label" :for="`date_semis-${culture.id}`">Date des semis (facultatif)</label>
+        <input type="date" class="fr-input" :id="`date_semis-${culture.id}`" :value="culture.date_semis" @input="updateCulture(culture.id, 'date_semis', $event.target.value)" name="date_semis" />
+      </div>
+    </div>
 
     <button type="button" class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line fr-btn--icon-left" :disabled="!canBeDeleted" @click="removeCulture(culture.id)">
       Supprimer
@@ -30,14 +56,23 @@ const emit = defineEmits(['change'])
 const uuidedCultures = computed(() => {
   return props.cultures.map(culture => ({
     ...culture,
-    id: culture.id ?? self.crypto.randomUUID()
+    id: culture.id ?? self.crypto.randomUUID(),
+    // variete: '',
+    // date_semis: '',
+    // superficie: ''
   }))
 })
 
 const canBeDeleted = computed(() => uuidedCultures.value.length > 1)
 
 function appendEmptyCulture () {
-  const appendedCultures = [...uuidedCultures.value, { CPF: '', id: self.crypto.randomUUID() }]
+  const appendedCultures = [
+    ...uuidedCultures.value,
+    {
+      CPF: '',
+      id: self.crypto.randomUUID()
+    }
+  ]
 
   emit('change', appendedCultures)
 }
@@ -57,3 +92,19 @@ function updateCulture (cultureId, field, value) {
   emit('change', updatedCultures)
 }
 </script>
+
+<style scoped>
+.culture-group {
+  border: 1px solid var(--light-border-default-grey, #E5E5E5);
+}
+
+.horizontal-stack {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  margin-bottom: 1rem;
+}
+  .horizontal-stack > .fr-input-group {
+    flex-grow: 1;
+  }
+</style>

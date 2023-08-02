@@ -93,7 +93,13 @@ const showDetailsModal = ref(false)
 const commune = ref('')
 const cadastreReferences = reactive([''])
 const cadastreHelp = reactive([{message: '', error: false}])
-const feature = reactive({ type: "Feature", geometry: null, properties: {} })
+const feature = reactive({
+  type: "Feature",
+  geometry: null,
+  properties: {
+    cultures: [{ CPF: '' }]
+  }
+})
 
 const canReachDetailsStep = computed(() => cadastreReferences.filter(d => d).length > 0)
 const router = useRouter()
@@ -101,7 +107,11 @@ const router = useRouter()
 function updateReference (index, { reference, feature: cadastreFeature }) {
   if (cadastreFeature === null) {
     cadastreReferences[index] = ''
-    cadastreHelp[index] = ''
+    cadastreHelp[index] = {
+      message: '',
+      error: false
+    }
+
     return
   }
 

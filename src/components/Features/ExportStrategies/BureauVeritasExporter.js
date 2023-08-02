@@ -53,15 +53,15 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 10 }
   ]
 
-  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ key, surface, features }, index) => {
-    const culture = fromCodeCpf(key)
+  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
+    const culture = fromCodeCpf(mainKey)
 
     sheet_add_aoa(sheet, [
       [
         culture?.groupe,
-        culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${key}`,
+        culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
         culture?.code_bureau_veritas,
-        `Ilots : ${features.map(feature => featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).join(', ')}`,
+        `Ilots : ${features.map(feature => featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' })).filter(d => d).join(', ')}`,
         surface / 10_000,
         'ha',
         features.at(0).properties.conversion_niveau,

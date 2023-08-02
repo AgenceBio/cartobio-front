@@ -23,9 +23,18 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 /**
  * @typedef FeatureGroup
  * @property {String} label
- * @property {String} key
- * @property {String} pivot
+ * @property {String} key the datapoint in common with grouped items
+ * @property {String} mainKey in case of multiple pivots, this ; otherwise it has the same value as key
+ * @property {String} pivot grouping strategy identifier
  * @property {Feature[]} features
+ * @property {Number} surface
+ */
+
+/**
+ * @typedef FeaturePropertyCulture
+ * @property {String} CPF
+ * @property {=String} TYPE
+ * @property {=String} variete
  * @property {Number} surface
  */
 
@@ -84,24 +93,28 @@ export const groupingChoices = {
   },
   [GROUPE_ILOT]: {
     label: 'îlot PAC',
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.NUMERO_I || '',
     groupLabelFn: ({ featureSample: d }) => d.properties.NUMERO_I ? `Îlot ${d.properties.NUMERO_I}` : 'Numéro d\'îlot non-précisé',
     sortFn: sortByAscendingFeatureProperty((d) => d.properties.NUMERO_I || '')
   },
   [GROUPE_CULTURE]: {
     label: 'type de culture',
-    datapoint: (d) => (d.properties.cultures ?? [{ CPF: d.properties.CPF }]).map(({ CPF }) => CPF),
+    /** @param {GeoJSONFeature} */
+    datapoint: (d) => d.properties.cultures.map(({ CPF }) => CPF),
     groupLabelFn: ({ datapoint }) => fromCodeCpf(datapoint)?.libelle_code_cpf || 'Type de culture inconnu',
     sortFn: sortByAscendingLabel
   },
   [GROUPE_NIVEAU_CONVERSION]: {
     label: 'niveau de conversion',
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.conversion_niveau || '',
     groupLabelFn: ({ groupingKey }) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu',
     sortFn: sortBySurface
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
     label: 'année d\'engagement',
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
     groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByDescendingKey
@@ -112,6 +125,7 @@ Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
   enumerable: false,
   value: {
     label: null,
+    /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).toISOString().split('T').at(0) : '',
     groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByDescendingKey
@@ -186,6 +200,7 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
       datapoint: groupingKey.split('-').at(0)
     }),
     key: groupingKey,
+    mainKey: groupingKey.split('-').at(0),
     pivot: pivots.at(0),
     features,
     surface: area(featureCollection(features)),
@@ -205,7 +220,7 @@ export function getFeatureById (features, id) {
  * @param {Feature} feature
  * @returns {String}
  */
-export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', '} = {}) {
+export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', ', placeholder = '-'} = {}) {
   if (feature.properties.NOM) {
     return feature.properties.NOM
   }
@@ -222,7 +237,7 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     return `Reférence cadastrale ${prefix !== '000' ? prefix : ''} ${section} ${number}`
   }
   else {
-    return '-'
+    return placeholder
   }
 }
 
@@ -231,12 +246,25 @@ const cultureList = new Intl.ListFormat('fr', {
   type: 'conjunction' // "et"
 })
 
-export function cultureLabel (culture) {
-  return fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
+/**
+ *
+ * @param {FeaturePropertyCulture} culture
+ * @param {{ withCode: boolean }} options
+ * @returns {string}
+ */
+export function cultureLabel (culture, { withCode = false } = {}) {
+  const label = fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
+
+  return withCode ? `${culture.CPF ?? culture.TYPE} ${label}` : label
 }
 
-export function cultureLabels (cultures) {
-  const labels = new Set(cultures.map(cultureLabel))
+/**
+ *
+ * @param {FeaturePropertyCulture[]} cultures
+ * @returns {string}
+ */
+export function cultureLabels (cultures, options) {
+  const labels = new Set(cultures.map(culture => cultureLabel(culture, options)))
 
   return cultureList.format(labels)
 }

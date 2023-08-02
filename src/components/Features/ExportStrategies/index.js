@@ -7,10 +7,12 @@ import ControlUnionExporter from "@/components/Features/ExportStrategies/Control
 export default DefaultExporter
 export { CertipaqExporter, BureauVeritasExporter, OcaciaExporter, ControlUnionExporter }
 
+const isProduction = Boolean(import.meta.env.PROD)
 
 const exporters = new Map([
-  // Temporary, use it with Ecocert test account
-  [1, CertipaqExporter],
+  // Use a custom exporter in development to ease testing
+  [1, isProduction ? DefaultExporter : CertipaqExporter],
+  // Production exports
   [2, BureauVeritasExporter],
   [3, CertipaqExporter],
   [10, ControlUnionExporter],
