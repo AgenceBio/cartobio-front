@@ -15,7 +15,7 @@
     </figure>
 
     <div class="fr-input-group">
-      <CultureSelector v-model="patch.CPF" :from-pac="feature.properties.TYPE" />
+      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
     </div>
 
     <ConversionLevelSelector v-model="patch.conversion_niveau" />
@@ -54,8 +54,8 @@ const props = defineProps({
 })
 
 const patch = reactive({
-  CPF: props.feature.properties.CPF,
   conversion_niveau: props.feature.properties.conversion_niveau,
+  cultures: props.feature.properties.cultures,
   engagement_date: props.feature.properties.engagement_date,
   auditeur_notes: props.feature.properties.auditeur_notes || '',
 })

@@ -32,7 +32,6 @@
     "@turf/intersect": "^6.5.0",
     "@unhead/vue": "^1.0.6",
     "@vueuse/core": "^9.6.0",
-    "array.prototype.groupby": "^1.0.0",
     "axios": "^1.4.0",
     "maplibre-gl": "^3.0.0",
     "pinia": "^2.0.26",

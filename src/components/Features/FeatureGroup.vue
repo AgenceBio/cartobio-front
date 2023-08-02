@@ -14,7 +14,7 @@
     </tr>
     <tr :hidden="!open" class="intermediate-header">
       <th scope="col" colspan="2"></th>
-      <th scope="col" v-if="featureGroup.pivot === 'CULTURE'">Nom</th>
+      <th scope="col" v-if="isGroupedByCulture">Nom</th>
       <th scope="col" v-else>Culture</th>
       <th scope="col">Certification</th>
       <th scope="col" colspan="2"></th>
@@ -27,10 +27,18 @@
         </div>
       </th>
       <td @click="toggleEditForm(feature.id)"></td>
-      <td @click="toggleEditForm(feature.id)" v-if="featureGroup.pivot === 'CULTURE'">{{ featureName(feature) }}</td>
+      <td @click="toggleEditForm(feature.id)" v-if="isGroupedByCulture">
+        <span class="culture-name">{{ featureName(feature) }}</span>
+        <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
+      </td>
       <td @click="toggleEditForm(feature.id)" :data-cpf-code="feature.properties.CPF" v-else>
-        <span class="culture-type">{{ fromCodeCpf(feature.properties.CPF)?.libelle_code_cpf || 'Culture inconnue' }}</span>
-        <small class="culture-precision">{{ featureName(feature) }}</small>
+        <span class="culture-type" v-if="feature.properties.cultures.length > 1">
+          Multi-cultures
+          <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
+            {{ cultureLabel(culture) }}
+          </small>
+        </span>
+        <small class="feature-precision">{{ featureName(feature) }}</small>
       </td>
       <td @click="toggleEditForm(feature.id)">
         <ConversionLevel :feature="feature" with-date />
@@ -46,11 +54,10 @@
 
 <script setup>
 import { computed, ref, unref, watch } from 'vue'
-import { featureName, inHa, surface } from '@/components/Features/index.js'
+import { featureName, cultureLabel, inHa, surface } from '@/components/Features/index.js'
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
-import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 const route = useRoute()
 
@@ -78,6 +85,7 @@ const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:sing
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
 const open = ref(featureIds.value.includes(Number(route.query?.new)))
 const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
+const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
 const validation = applyValidationRules(props.validationRules.rules, ...props.featureGroup.features)
 
 function toggleEditForm (featureId) {
@@ -146,11 +154,15 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
     background-image: linear-gradient(180deg, var(--grey-625-425), var(--grey-625-425));
   }
 
-  .fr-table tr.parcelle .culture-type {
+  .fr-table tr.parcelle :where(.culture-type, .culture-name) {
     display: block;
   }
 
-  .fr-table tr.parcelle .culture-precision {
+  .fr-table tr.parcelle span > .feature-precision {
+    display: block;
+  }
+
+  .fr-table tr.parcelle td > .feature-precision {
     color: var(--text-mention-grey);
   }
 
