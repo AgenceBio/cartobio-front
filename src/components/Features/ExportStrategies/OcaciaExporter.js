@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { surface } from '@/components/Features/index.js'
+import { cultureLabels, featureName, surface } from '@/components/Features/index.js'
 
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -8,21 +8,20 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_to_csv } = utils
 
 const getSheet = ({ featureCollection }) => {
   const sheet = aoa_to_sheet(featureCollection.features.map(({ geometry, properties: props }) => {
-    const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodeCpf(props.CPF)
+    const culture = fromCodeCpf(props.cultures.at(0)?.CPF)
 
     return [
       // Commune
       props.COMMUNE_LABEL,
       // Ilot
-      `${ilotId}.${parcelleId}`,
+      featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }),
       // Culture
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
       // N° Cadastre
       props.cadastre,
       // Variété / infos
-      '',
+      cultureLabels(props.cultures.slice(1), { withCode: true }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',

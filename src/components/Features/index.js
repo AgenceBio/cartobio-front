@@ -23,8 +23,9 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 /**
  * @typedef FeatureGroup
  * @property {String} label
- * @property {String} key
- * @property {String} pivot
+ * @property {String} key the datapoint in common with grouped items
+ * @property {String} mainKey in case of multiple pivots, this ; otherwise it has the same value as key
+ * @property {String} pivot grouping strategy identifier
  * @property {Feature[]} features
  * @property {Number} surface
  */
@@ -199,6 +200,7 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
       datapoint: groupingKey.split('-').at(0)
     }),
     key: groupingKey,
+    mainKey: groupingKey.split('-').at(0),
     pivot: pivots.at(0),
     features,
     surface: area(featureCollection(features)),
@@ -218,7 +220,7 @@ export function getFeatureById (features, id) {
  * @param {Feature} feature
  * @returns {String}
  */
-export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', '} = {}) {
+export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', ', placeholder = '-'} = {}) {
   if (feature.properties.NOM) {
     return feature.properties.NOM
   }
@@ -235,7 +237,7 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     return `Reférence cadastrale ${prefix !== '000' ? prefix : ''} ${section} ${number}`
   }
   else {
-    return '-'
+    return placeholder
   }
 }
 
@@ -247,10 +249,13 @@ const cultureList = new Intl.ListFormat('fr', {
 /**
  *
  * @param {FeaturePropertyCulture} culture
+ * @param {{ withCode: boolean }} options
  * @returns {string}
  */
-export function cultureLabel (culture) {
-  return fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
+export function cultureLabel (culture, { withCode = false } = {}) {
+  const label = fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
+
+  return withCode ? `${culture.CPF ?? culture.TYPE} ${label}` : label
 }
 
 /**
@@ -258,8 +263,8 @@ export function cultureLabel (culture) {
  * @param {FeaturePropertyCulture[]} cultures
  * @returns {string}
  */
-export function cultureLabels (cultures) {
-  const labels = new Set(cultures.map(cultureLabel))
+export function cultureLabels (cultures, options) {
+  const labels = new Set(cultures.map(culture => cultureLabel(culture, options)))
 
   return cultureList.format(labels)
 }

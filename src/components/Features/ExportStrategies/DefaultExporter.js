@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { surface } from '@/components/Features/index.js'
+import { cultureLabels, surface } from '@/components/Features/index.js'
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
@@ -40,10 +40,11 @@ const getSheet = ({ featureCollection, operator }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
-    const label = props.TYPE_LIBELLE ?? fromCodeCpf(props.CPF)?.libelle_code_cpf
+    const firstCulture = props.cultures.at(0)
+    const label = firstCulture?.TYPE_LIBELLE ?? fromCodeCpf(firstCulture?.CPF)?.libelle_code_cpf ?? ''
     const surfaceHa = surface(geometry) / 10_000
     const isPac = Boolean(props.PACAGE)
-    const culture = props.TYPE ?? fromCodeCpf(props.CPF)?.cultures_pac[0]?.code
+    const culture = firstCulture.CPF ?? firstCulture.TYPE ?? ''
 
     return [
       id,
@@ -56,7 +57,7 @@ const getSheet = ({ featureCollection, operator }) => {
       props.conversion_niveau,
       props.engagement_date,
       (isPac ? 'PAC' : ''),
-      props.commentaires ?? '',
+      `${cultureLabels(props.cultures.slice(1), { withCode: true })} ${props.commentaires ?? ''}`,
       props.auditeur_notes ?? ''
     ]
   }), { origin: 'A7', cellDates: true })

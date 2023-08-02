@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
+import { cultureLabels, featureName, getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
 
 import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -63,15 +63,14 @@ const getSheet = ({ featureCollection, operator }) => {
   ], { origin: 'A4'})
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
-    const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const surfaceHa = (surface(geometry) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
-    const culture = fromCodeCpf(props.CPF)
+    const culture = fromCodeCpf(props.cultures.at(0)?.CPF)
 
     return [
       // Commune
       props.COMMUNE_LABEL,
       // Ilot
-      `${ilotId}_${parcelleId}`,
+      featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '_', placeholder: '' }),
       // Culture
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
       // Variété / infos
@@ -85,7 +84,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Date conv
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis
-      props.auditeur_notes ?? '',
+      `${cultureLabels(props.cultures.slice(1), { withCode: true })} ${props.auditeur_notes ?? ''}`,
       // Précédent
       '',
       // Anté précédent

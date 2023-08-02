@@ -32,7 +32,7 @@ const getSheet = ({ featureCollection, operator }) => {
 
   utils.sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props }) => {
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodeCpf(props.CPF)
+    const culture = fromCodeCpf(props.cultures.at(0)?.CPF)
 
     return [
       '',
