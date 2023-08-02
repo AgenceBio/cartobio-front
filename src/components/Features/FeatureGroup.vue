@@ -31,7 +31,7 @@
         <span class="culture-name">{{ featureName(feature) }}</span>
         <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
       </td>
-      <td @click="toggleEditForm(feature.id)" :data-cpf-code="feature.properties.CPF" v-else>
+      <td @click="toggleEditForm(feature.id)" v-else>
         <span class="culture-type" v-if="feature.properties.cultures.length > 1">
           Multi-cultures
           <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
