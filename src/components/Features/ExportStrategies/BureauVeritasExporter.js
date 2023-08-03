@@ -29,6 +29,9 @@ const getSheet = ({ featureCollection, operator }) => {
     ],
     [
       notification.numeroClient ?? ''
+    ],
+    [
+      'PV'
     ]
   ])
 
