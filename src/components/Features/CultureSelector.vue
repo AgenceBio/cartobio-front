@@ -1,9 +1,6 @@
 <template>
   <fieldset class="culture-group fr-mb-1w fr-p-3w" v-for="(culture) in uuidedCultures" :key="culture.id">
-    <div class="fr-input-group">
-      <label class="fr-label" :for="`cpf-${culture.id}-input`">Type de culture</label>
-      <CultureTypeSelector :id="`cpf-${culture.id}`" :from-pac="culture.TYPE" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
-    </div>
+    <CultureTypeSelector :id="`cpf-${culture.id}`" :from-pac="culture.TYPE" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
 
     <div class="fr-input-group">
       <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>

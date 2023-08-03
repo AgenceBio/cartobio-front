@@ -5,9 +5,7 @@
   </p>
 
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
-    <div v-if="permissions.canChangeCulture" class="fr-input-group">
-      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
-    </div>
+    <CultureSelector v-if="permissions.canChangeCulture" :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
 
     <div class="fr-input-group">
       <label class="fr-label" for="commentaires">

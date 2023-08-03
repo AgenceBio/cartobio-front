@@ -14,9 +14,7 @@
       </figcaption>
     </figure>
 
-    <div class="fr-input-group">
-      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
-    </div>
+    <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
 
     <ConversionLevelSelector v-model="patch.conversion_niveau" />
 

@@ -9,9 +9,7 @@
     </div>
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
-      <div class="fr-input-group">
-        <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
-      </div>
+      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
     </form>
 
     <template #footer>
