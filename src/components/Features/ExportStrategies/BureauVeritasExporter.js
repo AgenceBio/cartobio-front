@@ -1,13 +1,12 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import {
-  featureName,
   getFeatureGroups,
   GROUPE_CULTURE,
   GROUPE_DATE_ENGAGEMENT,
   GROUPE_NIVEAU_CONVERSION
 } from '@/components/Features/index.js'
-import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
+import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
 
@@ -16,22 +15,6 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @typedef {import('geojson').FeatureCollection} FeatureCollection
  * @typedef {import('xlsx').WorkSheet } WorkSheet
  */
-
-/**
- *
- * @param {Feature[]} features
- * @returns {String}
- */
-export function generateAutresInfos (features) {
-  return features.map(feature => {
-    const name = featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' })
-    const dateSemis = feature.properties.cultures.map(c => c.date_semis).filter(d => d).join(', ')
-
-    return [name, dateSemis, feature.properties.auditeur_notes].filter(d => d).join(' ')
-  })
-  .filter(d => d)
-  .join(' ; ')
-}
 
 /**
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params

@@ -2,7 +2,7 @@ import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { cultureLabels, featureName, getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
 
-import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
+import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R, sheet_to_json, json_to_sheet } = utils
@@ -84,7 +84,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Date conv
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis
-      `${cultureLabels(props.cultures.slice(1), { withCode: true })} ${props.auditeur_notes ?? ''}`,
+      generateAutresInfos([ { id, geometry, properties: props }], { withName: false }),
       // Précédent
       '',
       // Anté précédent

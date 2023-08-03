@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { generateAutresInfos } from './BureauVeritasExporter.js'
+import { generateAutresInfos } from './BaseExporter.js'
 
 describe('generateAutresInfos', () => {
   test('with two features and one culture each', () => {
@@ -31,7 +31,7 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features)).toBe('1.1 2023-03-31 ; 1.2 Coucou')
+    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 1.2, 01.13.41.1 Carottes, Coucou')
   })
 
   test('with two features with multiple cultures each', () => {
@@ -72,6 +72,6 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features)).toBe('1.1 2023-03-31 ; 1.2 2022-02-01 Coucou')
+    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 1.2, 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, 2022-02-01, Coucou')
   })
 })
