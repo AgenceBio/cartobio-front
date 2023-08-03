@@ -11,6 +11,32 @@ import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
 
+/**
+ * @typedef {import('geojson').Feature} Feature
+ * @typedef {import('geojson').FeatureCollection} FeatureCollection
+ * @typedef {import('xlsx').WorkSheet } WorkSheet
+ */
+
+/**
+ *
+ * @param {Feature[]} features
+ * @returns {String}
+ */
+export function generateAutresInfos (features) {
+  return features.map(feature => {
+    const name = featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' })
+    const dateSemis = feature.properties.cultures.map(c => c.date_semis).filter(d => d).join(', ')
+
+    return [name, dateSemis, feature.properties.auditeur_notes].filter(d => d).join(' ')
+  })
+  .filter(d => d)
+  .join(' ; ')
+}
+
+/**
+ * @param {{ featureCollection: FeatureCollection, operator: {}}} params
+ * @returns {WorkSheet}
+ */
 const getSheet = ({ featureCollection, operator }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
@@ -21,7 +47,8 @@ const getSheet = ({ featureCollection, operator }) => {
       'SITE ID de l\'opérateur',
       'Catégorie', 'Produit',
       'Code Produit',
-      'Détail Produit',
+      'Complément certificat',
+      'Autres infos',
       'Surface',
       'Unité',
       'Classement',
@@ -44,7 +71,9 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 40 },
     // Code Produit
     { wch: 16 },
-    // Détail produit
+    // Complément certificat (variété)
+    { wch: 40 },
+    // Autres infos (ilot.parcelle date de semis)
     { wch: 40 },
     // Surface
     { wch: 12 },
@@ -59,12 +88,17 @@ const getSheet = ({ featureCollection, operator }) => {
   getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
     const culture = fromCodeCpf(mainKey)
 
+    const autresInfos = generateAutresInfos(features)
+
     sheet_add_aoa(sheet, [
       [
         culture?.groupe,
         culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
         culture?.code_bureau_veritas,
-        `Ilots : ${features.map(feature => featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' })).filter(d => d).join(', ')}`,
+        // Complément certificat (variété)
+        features.flatMap(f => f.properties.cultures.map(c => c.variete)).filter(d => d).join(', '),
+        // Autres infos (ilot.parcelle date de semis Notes de certification)
+        `Ilots : ${autresInfos}`,
         surface / 10_000,
         'ha',
         features.at(0).properties.conversion_niveau,
@@ -73,8 +107,8 @@ const getSheet = ({ featureCollection, operator }) => {
     ], { origin: `B${2 + index}`, cellDates: true });
 
     // Formattage des totaux
-    sheet[`F${2 + index}`].t = 'n'
-    sheet[`F${2 + index}`].z = '0.00'
+    sheet[`G${2 + index}`].t = 'n'
+    sheet[`G${2 + index}`].z = '0.00'
   })
 
   return sheet
