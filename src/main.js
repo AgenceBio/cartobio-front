@@ -44,7 +44,7 @@ const app = createApp(App)
   .use(
     Vue3Toastify,
     {
-      autoClose: 5000,
+      autoClose: false,
       position: toast.POSITION.BOTTOM_RIGHT,
     }
   )
