@@ -1,4 +1,10 @@
 <template>
+  <div v-if="showSuccess" class="fr-alert fr-alert--success fr-alert--sm fr-mb-2w">
+    <p>Modification enregistrée</p>
+    <button class="fr-btn--close fr-btn" title="Masquer le message" @click="showSuccess = false">
+      Masquer le message
+    </button>
+  </div>
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
@@ -74,7 +80,7 @@
   </p>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useFeaturesStore } from '@/stores/features.js'
@@ -101,14 +107,12 @@ const props = defineProps({
   massActions: Array,
 })
 
-const isSaving = ref(false)
-const showModal = computed(() => Boolean(editedFeatureId.value))
 const store = useFeaturesStore()
+const permissions = usePermissions()
 
 const { hoveredId:hoveredFeatureId } = storeToRefs(store)
 const { selectedIds:selectedFeatureIds, allSelected } = storeToRefs(store)
 const { toggleSingleSelected, toggleAllSelected } = store
-const permissions = usePermissions()
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
@@ -117,6 +121,16 @@ const userGroupingChoice = ref('CULTURE')
 
 // hence, feature groups
 const featureGroups = computed(() => getFeatureGroups(props.features, userGroupingChoice.value))
+
+const isSaving = ref(false)
+const showModal = computed(() => Boolean(editedFeatureId.value))
+const showSuccess = ref(false)
+watch(showModal, (value) => {
+  if (value) {
+    showSuccess.value = false
+  }
+})
+
 
 function handleFeaturesEdit ({ ids, patch }) {
   props.features.features
@@ -142,9 +156,7 @@ function doSave (geojson) {
   setTimeout(async () => {
     try {
       await submitParcellesChanges ({ geojson, operatorId, ocId, ocLabel, numeroBio })
-      toast.success(
-        "Modification enregistrée."
-      )
+      showSuccess.value = true
     }
     catch (error) {
       console.error(error)
