@@ -24,6 +24,10 @@
       {{ error }}
     </p>
 
+    <div class="fr-alert fr-alert--info fr-mt-2w fr-mb-2w fr-alert--waiting" v-if="isLoading" role="alert">
+      <p><em>Recherche en cours</em></p>
+    </div>
+
     <section class="fr-grid-row fr-grid-row--gutters" v-if="hasCandidateUsers">
       <article class="fr-col-12 fr-col-md-4" v-for="candidateUser in candidateUsers" :key="candidateUser.id">
         <div class="fr-card fr-card--horizontal">
@@ -93,6 +97,7 @@ function resetSearch () {
 async function tryLogin () {
   isLoading.value = true
   error.value = ''
+  candidateUsers.value = []
 
   try {
     candidateUsers.value = await fetch(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/tryLogin`, {
@@ -162,6 +167,10 @@ dl.candidateUser {
 .list-unstyled {
   --ul-type: none;
   --ul-start: 0;
+}
+
+.fr-alert--waiting::before {
+  mask-image: url(@gouvfr/dsfr/icons/system/time-fill.svg);
 }
 
 </style>
