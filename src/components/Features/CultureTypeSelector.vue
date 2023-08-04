@@ -67,7 +67,7 @@ onMounted(() => {
     openOnFocus: true,
     id: props.id,
     classNames: {
-      // input: 'fr-input',
+      form: 'fr-input',
       // inputWrapper: 'fr-input-wrap',
     },
 
@@ -139,6 +139,19 @@ onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false))
 <style>
 .aa-Panel {
   z-index: 2000;
+}
+
+.aa-Form {
+  background-color: var(--background-contrast-grey);
+  border: none;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.aa-Form:focus-within {
+  box-shadow: none;
+  outline-offset: 2px;
+  outline-width: 2px;
+  outline-color: #0a76f6;
 }
 
 .aa-PanelLayout {
