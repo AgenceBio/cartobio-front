@@ -94,6 +94,7 @@ async function handleLoginImport ({ email, millesime, password, server }) {
 
   try {
     const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/import/mesparcelles/login`, { email, millesime, password, server })
+    emit('upload:complete', { geojson, source, warnings: [] })
   } catch (error) {
     if (error.response.status === 401) {
       return errors.value = ['Identifiants incorrects.']
@@ -104,7 +105,6 @@ async function handleLoginImport ({ email, millesime, password, server }) {
     }
   }
 
-  emit('upload:complete', { geojson, source, warnings: [] })
 }
 
 </script>

@@ -7,7 +7,7 @@ const cwd = process.cwd()
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  loadEnv(mode, process.cwd(), '')
 
   return {
     envPrefix: 'VUE_APP_',

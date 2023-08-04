@@ -102,8 +102,8 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  'edit-form': Object,
-  'validation-rules': Object,
+  editForm: Object,
+  validationRules: Object,
   massActions: Array,
 })
 

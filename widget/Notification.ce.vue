@@ -25,7 +25,7 @@ import { useUserStore } from '@/stores/user.js'
 import { exchangeNotificationToken } from '@/cartobio-api.js'
 import { sources } from '@/referentiels/imports.js'
 
-const props = defineProps({ 'auth-token': String })
+const props = defineProps({ authToken: String })
 const emit = defineEmits(['error', 'import:ready', 'import:started', 'import:complete', 'import:errored'])
 
 const uploadState = ref(null)

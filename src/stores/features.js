@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref, watch } from 'vue'
-import { fromCodeCpf, fromCodePacStrict } from "@agencebio/rosetta-cultures"
 
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()
