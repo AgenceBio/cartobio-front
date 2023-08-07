@@ -1,7 +1,7 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { cultureLabels, surface } from '@/components/Features/index.js'
-import BaseExporter from "@/components/Features/ExportStrategies/BaseExporter.js";
+import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
@@ -57,7 +57,7 @@ const getSheet = ({ featureCollection, operator }) => {
       props.conversion_niveau,
       props.engagement_date,
       (isPac ? 'PAC' : ''),
-      `${cultureLabels(props.cultures.slice(1), { withCode: true })} ${props.commentaires ?? ''}`,
+      generateAutresInfos([ { id, geometry, properties: props }], { withName: false, withNotes: false }),
       props.auditeur_notes ?? ''
     ]
   }), { origin: 'A7', cellDates: true })

@@ -18,7 +18,7 @@
     <div class="horizontal-stack">
       <div class="fr-input-group">
         <label class="fr-label" :for="`superficie-${culture.id}`">Superficie (facultatif)</label>
-        <input type="number" min="0" step="0.0001" class="fr-input" :id="`superficie-${culture.id}`" :value="culture.surface" @input="updateCulture(culture.id, 'surface', $event.target.value)" name="surface" />
+        <input type="number" min="0" step="0.00001" class="fr-input" :id="`superficie-${culture.id}`" :value="culture.surface" @input="updateCulture(culture.id, 'surface', $event.target.value)" name="surface" />
         <div class="fr-hint-text">
           Exprimée en <abbr title="hectare">ha</abbr>.
         </div>
