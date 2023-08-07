@@ -37,5 +37,4 @@ const warnings = inject('importWarnings')
 const emit = defineEmits(['submit', 'cancel'])
 
 const surfaceTotale = computed(() => inHa(surface(featureCollection.value)))
-const hasErrors = computed(() => warnings.value.length > 0)
 </script>

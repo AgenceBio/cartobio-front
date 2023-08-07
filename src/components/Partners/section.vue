@@ -57,9 +57,9 @@
 
 <script setup>
 defineProps({
-  'section-administrations': Boolean,
-  'section-oc': Boolean,
-  'section-business': Boolean
+  sectionAdministrations: Boolean,
+  sectionOc: Boolean,
+  sectionBusiness: Boolean
 })
 </script>
 

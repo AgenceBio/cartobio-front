@@ -23,7 +23,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="excelExport" form="sendoff-form">
+          <button class="fr-btn" form="sendoff-form">
             Enregistrer
           </button>
         </li>

@@ -62,8 +62,8 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/vue3-essential",
       "eslint:recommended",
+      "plugin:vue/vue3-essential",
       "@vue/eslint-config-typescript/recommended"
     ],
     "rules": {
@@ -71,6 +71,7 @@
       "vue/multi-word-component-names": "off",
       "vue/no-mutating-props": "warn",
       "vue/no-multiple-template-root": "off",
+      "vue/no-undef-properties": "warn",
       "vue/script-setup-uses-vars": "error"
     },
     "parserOptions": {

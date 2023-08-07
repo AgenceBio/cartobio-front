@@ -34,7 +34,7 @@ const erreur = ref('')
 async function handleFileUpload () {
   const warnings = []
   const [archive] = fileInput.value.files
-  const { campagne, pacage } = deriveFromFilename(archive?.name)
+  const { campagne } = deriveFromFilename(archive?.name)
 
   emit('upload:start')
 
