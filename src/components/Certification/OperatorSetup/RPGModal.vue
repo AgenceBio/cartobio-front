@@ -1,17 +1,39 @@
 <template>
-  <component :is="Modal" v-bind="$attrs">
-    <template #title>Import des données PAC de {{ télépac.preloadedCampagne }}</template>
+  <component
+    :is="Modal"
+    v-bind="$attrs"
+  >
+    <template #title>
+      Import des données PAC de {{ télépac.preloadedCampagne }}
+    </template>
 
-    <form id="rpg-lookup-form" @submit.prevent="handleLookup">
+    <form
+      id="rpg-lookup-form"
+      @submit.prevent="handleLookup"
+    >
       <div :class="{'fr-input-group': true, 'fr-input-group--valid': isPacageValid}">
-        <label class="fr-label" for="pacage">
+        <label
+          class="fr-label"
+          for="pacage"
+        >
           Numéro PACAGE
         </label>
-        <input type="text" pattern="\d{8,9}" maxlength="9" class="fr-input fr-input--pacage" id="pacage" name="pacage" v-model="numeroPacage" />
+        <input
+          type="text"
+          pattern="\d{8,9}"
+          maxlength="9"
+          class="fr-input fr-input--pacage"
+          id="pacage"
+          name="pacage"
+          v-model="numeroPacage"
+        >
       </div>
     </form>
 
-    <section class="fr-my-3w" v-if="(collection && collection.features.length)">
+    <section
+      class="fr-my-3w"
+      v-if="(collection && collection.features.length)"
+    >
       <p>
         Nous avons trouvé {{ collection.features.length }} parcelles,
         pour une surface graphique totale de {{ inHa(surface(collection)) }}&nbsp;ha.
@@ -19,8 +41,13 @@
 
       <MapPreview :collection="collection" />
     </section>
-    <div class="fr-alert fr-alert--info fr-my-3w" v-else-if="(collection && !collection.features.length)">
-      <h3 class="fr-alert__title">Aucune parcelle trouvée</h3>
+    <div
+      class="fr-alert fr-alert--info fr-my-3w"
+      v-else-if="(collection && !collection.features.length)"
+    >
+      <h3 class="fr-alert__title">
+        Aucune parcelle trouvée
+      </h3>
       <p>
         Nous n'avons pas connaissance de parcelles déclarées
         à la PAC en {{ télépac.preloadedCampagne }} pour le PACAGE {{ numeroPacage }}.
@@ -30,17 +57,27 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
         <li v-if="!collection">
-          <button :disabled="(isLoading || !isPacageValid)" class="fr-btn fr-btn--secondary" form="rpg-lookup-form">
+          <button
+            :disabled="(isLoading || !isPacageValid)"
+            class="fr-btn fr-btn--secondary"
+            form="rpg-lookup-form"
+          >
             Vérifier la disponibilité des parcelles
           </button>
         </li>
         <li v-else-if="(collection && collection.features.length)">
-          <button class="fr-btn fr-btn--icon-left fr-icon-thumb-up-line" @click="confirmImport">
+          <button
+            class="fr-btn fr-btn--icon-left fr-icon-thumb-up-line"
+            @click="confirmImport"
+          >
             Confirmer l'import de ces données
           </button>
         </li>
         <li v-if="collection">
-          <button class="fr-btn fr-btn--secondary" @click="reset">
+          <button
+            class="fr-btn fr-btn--secondary"
+            @click="reset"
+          >
             Annuler et recommencer
           </button>
         </li>

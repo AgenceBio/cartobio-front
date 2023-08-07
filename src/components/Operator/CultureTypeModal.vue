@@ -1,6 +1,8 @@
 <template>
   <Modal v-bind="$attrs">
-    <template #title>Modification du type de culture</template>
+    <template #title>
+      Modification du type de culture
+    </template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -8,16 +10,25 @@
       </p>
     </div>
 
-    <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
+    <form
+      id="mass-edit-form"
+      @submit.prevent="emit('submit', { ids: selectedIds, patch })"
+    >
       <div class="fr-input-group">
-        <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+        <CultureSelector
+          :cultures="patch.cultures"
+          @change="$cultures => patch.cultures = $cultures"
+        />
       </div>
     </form>
 
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="mass-edit-form">
+          <button
+            class="fr-btn"
+            form="mass-edit-form"
+          >
             Enregistrer
           </button>
         </li>

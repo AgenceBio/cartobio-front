@@ -1,14 +1,23 @@
 <template>
-  <div v-if="requirePrecision && fromCodeCpf(modelValue)" class="fr-hint-text">
+  <div
+    v-if="requirePrecision && fromCodeCpf(modelValue)"
+    class="fr-hint-text"
+  >
     Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
   </div>
 
-  <div ref="autocompleteRef"></div>
+  <div ref="autocompleteRef" />
 
-  <div v-if="requirePrecision" class="fr-hint-text fr-error-text">
+  <div
+    v-if="requirePrecision"
+    class="fr-hint-text fr-error-text"
+  >
     La culture a besoin d'être précisée.
   </div>
-  <div v-else-if="!query" class="fr-hint-text">
+  <div
+    v-else-if="!query"
+    class="fr-hint-text"
+  >
     Saisissez le nom d'une culture pour la sélectionner parmi une liste.
   </div>
 </template>
@@ -37,7 +46,8 @@ const props = defineProps({
   },
   fromPac: {
     type: String,
-    required: false
+    required: false,
+    default: ''
   }
 })
 

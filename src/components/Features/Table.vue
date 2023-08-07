@@ -1,7 +1,14 @@
 <template>
-  <div v-if="showSuccess" class="fr-alert fr-alert--success fr-alert--sm fr-mb-2w">
+  <div
+    v-if="showSuccess"
+    class="fr-alert fr-alert--success fr-alert--sm fr-mb-2w"
+  >
     <p>Modification enregistrée</p>
-    <button class="fr-btn--close fr-btn" title="Masquer le message" @click="showSuccess = false">
+    <button
+      class="fr-btn--close fr-btn"
+      title="Masquer le message"
+      @click="showSuccess = false"
+    >
       Masquer le message
     </button>
   </div>
@@ -9,72 +16,156 @@
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
-        <col width="10%" />
-        <col width="10%" />
-        <col width="30%" />
-        <col width="22%" />
-        <col width="18%" />
-        <col width="10%" />
+        <col width="10%">
+        <col width="10%">
+        <col width="30%">
+        <col width="22%">
+        <col width="18%">
+        <col width="10%">
       </colgroup>
       <thead>
-        <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
+        <tr
+          v-if="(selectedFeatureIds.length > 0)"
+          class="summary summary__mass-actions"
+        >
           <td colspan="2">
             <div class="fr-checkbox-group single-checkbox">
-              <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
-              <label class="fr-label" for="radio-mass-edit" />
+              <input
+                type="checkbox"
+                id="radio-mass-edit"
+                checked
+                @click="selectedFeatureIds = []"
+              >
+              <label
+                class="fr-label"
+                for="radio-mass-edit"
+              />
             </div>
           </td>
-          <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
           <td colspan="2">
-            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
+            {{ selectedFeatureIds.length }} parcelles sélectionnées
+          </td>
+          <td colspan="2">
+            <MassActionsSelector
+              v-if="massActions.length"
+              :actions="massActions"
+              label="Modifier"
+              @submit="handleFeaturesEdit"
+            />
           </td>
         </tr>
         <tr class="legend">
           <th colspan="2">
             <div class="fr-checkbox-group single-checkbox">
-              <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
-              <label class="fr-label" for="radio-select-all" />
+              <input
+                type="checkbox"
+                id="radio-select-all"
+                :checked="allSelected"
+                @click="toggleAllSelected"
+              >
+              <label
+                class="fr-label"
+                for="radio-select-all"
+              />
             </div>
           </th>
-          <th colspan="2" scope="col">
+          <th
+            colspan="2"
+            scope="col"
+          >
             <div class="seemless-select">
               <label for="plots-group-by">Parcelles par</label>
-              <select id="plots-group-by" v-model="userGroupingChoice">
-                <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
+              <select
+                id="plots-group-by"
+                v-model="userGroupingChoice"
+              >
+                <option
+                  :value="key"
+                  v-for="({ label }, key) in groupingChoices"
+                  :key="key"
+                >
                   {{ label }}
                 </option>
               </select>
             </div>
           </th>
-          <th scope="col" class="numeric">Surface</th>
-          <th scope="col" class="numeric">Détails</th>
+          <th
+            scope="col"
+            class="numeric"
+          >
+            Surface
+          </th>
+          <th
+            scope="col"
+            class="numeric"
+          >
+            Détails
+          </th>
         </tr>
-        <tr class="summary" v-if="(selectedFeatureIds.length === 0)">
-          <td colspan="2"></td>
-          <td colspan="2">{{ features.features.length }} parcelles</td>
-          <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
-          <td></td>
+        <tr
+          class="summary"
+          v-if="(selectedFeatureIds.length === 0)"
+        >
+          <td colspan="2" />
+          <td colspan="2">
+            {{ features.features.length }} parcelles
+          </td>
+          <td class="numeric">
+            {{ inHa(surface(features)) }}&nbsp;ha
+          </td>
+          <td />
         </tr>
       </thead>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
+      <FeatureGroup
+        v-for="featureGroup in featureGroups"
+        :feature-group="featureGroup"
+        :key="featureGroup.key"
+        v-model:hoveredId="hoveredFeatureId"
+        v-model:selectedIds="selectedFeatureIds"
+        @edit:feature-id="(featuredId) => editedFeatureId = featuredId"
+        @toggle:single-feature-id="toggleSingleSelected"
+        :validation-rules="validationRules"
+      />
     </table>
 
-    <p class="fr-my-3w" v-if="permissions.canAddParcelle">
-      <router-link :to="{ name: 'exploitations-id-ajout-parcelle', params: { id: operator.id || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+    <p
+      class="fr-my-3w"
+      v-if="permissions.canAddParcelle"
+    >
+      <router-link
+        :to="{ name: 'exploitations-id-ajout-parcelle', params: { id: operator.id || 1 }}"
+        class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line"
+      >
+        Ajouter une parcelle
+      </router-link>
     </p>
   </div>
 
   <Teleport to="body">
-    <Modal v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
-      <template #title>Modification de parcelle</template>
+    <Modal
+      v-if="editedFeatureId && editForm"
+      v-model="showModal"
+      icon="fr-icon-file-text-fill"
+      @update:model-value="editedFeatureId = null"
+    >
+      <template #title>
+        Modification de parcelle
+      </template>
 
-      <Component :is="editForm" :feature="editedFeature" @submit="handleFeaturesEdit" />
+      <Component
+        :is="editForm"
+        :feature="editedFeature"
+        @submit="handleFeaturesEdit"
+      />
     </Modal>
   </Teleport>
 
   <p>
-    <a href="#top" class="fr-icon--sm fr-icon-arrow-up-fill">
+    <a
+      href="#top"
+      class="fr-icon--sm fr-icon-arrow-up-fill"
+    >
       retour en haut de page
     </a>
   </p>
@@ -102,9 +193,18 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  editForm: Object,
-  validationRules: Object,
-  massActions: Array,
+  editForm: {
+    type: Object,
+    default: null
+  },
+  validationRules: {
+    type: Object,
+    default: () => ({ rules: [] })
+  },
+  massActions: {
+    type: Array,
+    default: () => ([])
+  },
 })
 
 const store = useFeaturesStore()

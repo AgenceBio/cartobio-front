@@ -1,10 +1,18 @@
 <template>
-  <component :is="Modal" v-bind="$attrs">
-    <template #title>Import des données PAC de {{ télépac.campagne }}</template>
+  <component
+    :is="Modal"
+    v-bind="$attrs"
+  >
+    <template #title>
+      Import des données PAC de {{ télépac.campagne }}
+    </template>
 
     <div v-if="!collection">
       <p class="fr-text-sm">
-        <span class="fr-icon fr-icon-questionnaire-fill fr-mr-1w" aria-hidden />
+        <span
+          class="fr-icon fr-icon-questionnaire-fill fr-mr-1w"
+          aria-hidden
+        />
         Le nom du fichier ressemble à <code>{{ pacageFilename }}</code>
       </p>
     </div>
@@ -21,17 +29,26 @@
     <template #footer>
       <ul class="fr-btns-group  fr-btns-group--inline fr-btns-group--icon-left">
         <li v-if="!collection">
-          <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-upload-2-fill" @click="open">
+          <button
+            class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-upload-2-fill"
+            @click="open"
+          >
             Sélectionner l'export Télépac au format .zip
           </button>
         </li>
         <li v-else>
-          <button class="fr-btn fr-btn--icon-left fr-icon-thumb-up-line" @click="confirmImport">
+          <button
+            class="fr-btn fr-btn--icon-left fr-icon-thumb-up-line"
+            @click="confirmImport"
+          >
             Confirmer l'import de ces données
           </button>
         </li>
         <li v-if="collection">
-          <button class="fr-btn fr-btn--secondary" @click="reset">
+          <button
+            class="fr-btn fr-btn--secondary"
+            @click="reset"
+          >
             Annuler et recommencer
           </button>
         </li>

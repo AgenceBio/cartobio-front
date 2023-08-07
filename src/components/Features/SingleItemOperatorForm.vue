@@ -1,24 +1,46 @@
 <template>
   <p>
-    <span class="fr-icon-info-line" aria-hidden="true" />
+    <span
+      class="fr-icon-info-line"
+      aria-hidden="true"
+    />
     {{ featureName(feature) }}
   </p>
 
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
-    <div v-if="permissions.canChangeCulture" class="fr-input-group">
-      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+    <div
+      v-if="permissions.canChangeCulture"
+      class="fr-input-group"
+    >
+      <CultureSelector
+        :cultures="patch.cultures"
+        @change="$cultures => patch.cultures = $cultures"
+      />
     </div>
 
     <div class="fr-input-group">
-      <label class="fr-label" for="commentaires">
+      <label
+        class="fr-label"
+        for="commentaires"
+      >
         Vos notes
         <span class="fr-hint-text">Elles seront visibles par votre organisme de certification.</span>
       </label>
-      <textarea class="fr-input" id="commentaires" name="commentaires" v-model="patch.commentaires" />
+      <textarea
+        class="fr-input"
+        id="commentaires"
+        name="commentaires"
+        v-model="patch.commentaires"
+      />
     </div>
 
     <div class="fr-input-group fr-mt-4w">
-      <button class="fr-btn" type="submit">Enregistrer</button>
+      <button
+        class="fr-btn"
+        type="submit"
+      >
+        Enregistrer
+      </button>
     </div>
   </form>
 </template>

@@ -1,12 +1,18 @@
 <template>
   <Legend class="map-legend">
     <ul class="legend-list fr-my-1w">
-      <li><div class="legend-square legend-square--mes-parcelles" />{{
-        $props.operateur ? 'Mes parcelles' : 'Parcelles de l\'exploitation'
-        }}</li>
+      <li>
+        <div class="legend-square legend-square--mes-parcelles" />{{
+          $props.operateur ? 'Mes parcelles' : 'Parcelles de l\'exploitation'
+        }}
+      </li>
       <li>
         <div class="legend-square legend-square--risque">
-          <img src="/src/assets/map/warning.png" alt="Parcelle conventionnelle à risque" class="legend-square__icon" />
+          <img
+            src="/src/assets/map/warning.png"
+            alt="Parcelle conventionnelle à risque"
+            class="legend-square__icon"
+          >
         </div>
         Conv. à risque
       </li>

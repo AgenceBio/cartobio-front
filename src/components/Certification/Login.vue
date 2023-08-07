@@ -1,21 +1,36 @@
 <template>
   <div>
-    <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
+    <Spinner v-if="isVerifying">
+      Vérification des informations en cours
+    </Spinner>
 
-    <Spinner v-else-if="(!isVerifying && isLogged && permissions.isOc)">Chargement de votre liste clients…</Spinner>
+    <Spinner v-else-if="(!isVerifying && isLogged && permissions.isOc)">
+      Chargement de votre liste clients…
+    </Spinner>
 
-    <div class="fr-connect-group" v-else-if="!isLogged">
+    <div
+      class="fr-connect-group"
+      v-else-if="!isLogged"
+    >
       <p>
         L'accès à CartoBio s'effectue avec l'aide de votre compte Agence Bio&nbsp;:
       </p>
 
-      <button class="fr-connect fr-connect--agence-bio" @click="router.push('/login/agencebio?mode=certification')">
+      <button
+        class="fr-connect fr-connect--agence-bio"
+        @click="router.push('/login/agencebio?mode=certification')"
+      >
         <span class="fr-connect__login">S'identifier avec</span>
         <span class="fr-connect__brand">Agence Bio</span>
       </button>
 
       <p>
-        <a href="https://notification.agencebio.org/faq" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
+        <a
+          href="https://notification.agencebio.org/faq"
+          target="_blank"
+          rel="noopener"
+          title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre"
+        >
           Qu'est-ce que mon compte Agence Bio ?
         </a>
       </p>
@@ -23,7 +38,9 @@
 
     <div v-else-if="isLogged">
       <div class="fr-alert fr-alert--warning">
-        <h3 class="fr-alert__title">Droits d'accès inadaptés</h3>
+        <h3 class="fr-alert__title">
+          Droits d'accès inadaptés
+        </h3>
         <p>
           Votre connexion a correctement abouti.
           Malheureusement nous ne sommes pas en mesure de vous identifier comme
