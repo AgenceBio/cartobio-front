@@ -1,15 +1,17 @@
 <!-- eslint-disable vue/valid-template-root -->
-<template></template>
+<template />
 
 <script>
 export default {
   props: {
     // Either style or (data and (fill or line)) must be provided
     style: {
-      type: Object
+      type: Object,
+      default: () => ({}),
     },
     data: {
       type: Object,
+      default: () => ({ type: 'FeatureCollection', features: [] })
     },
     name: {
       type: String,

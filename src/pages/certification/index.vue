@@ -12,17 +12,20 @@ meta:
           <h1>Visualisez le parcellaire opérateur</h1>
 
           <p>
-            <strong>Récupérez le parcellaire en amont du contrôle</strong><br />
+            <strong>Récupérez le parcellaire en amont du contrôle</strong><br>
             Vous gagnez en temps et en fiabilité.
           </p>
 
           <p>
-            <strong>Explorez, modifiez et validez le parcellaire</strong><br />
+            <strong>Explorez, modifiez et validez le parcellaire</strong><br>
             Pendant le contrôle avec l’opérateur.
           </p>
 
           <p>
-            <router-link class="fr-btn" to="/certification/exploitations">
+            <router-link
+              class="fr-btn"
+              to="/certification/exploitations"
+            >
               Chercher un opérateur
             </router-link>
           </p>
@@ -34,9 +37,14 @@ meta:
   <div class="fr-container fr-py-5w">
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
       <div class="fr-col-md-4 fr-col--center">
-        <span class="fr-icon-time-fill fr-icon--lg" aria-hidden="true"></span>
+        <span
+          class="fr-icon-time-fill fr-icon--lg"
+          aria-hidden="true"
+        />
 
-        <h3 class="fr-h4">Gain de temps</h3>
+        <h3 class="fr-h4">
+          Gain de temps
+        </h3>
 
         <p>
           Passez moins de temps à recopier ou actualiser le parcellaire pendant l’audit.
@@ -44,9 +52,14 @@ meta:
       </div>
 
       <div class="fr-col-md-4 fr-col--center">
-        <span class="fr-icon-france-fill fr-icon--lg" aria-hidden="true"></span>
+        <span
+          class="fr-icon-france-fill fr-icon--lg"
+          aria-hidden="true"
+        />
 
-        <h3 class="fr-h4">Dimension géographique</h3>
+        <h3 class="fr-h4">
+          Dimension géographique
+        </h3>
 
         <p>
           Ajoutez la dimension géographique à votre contrôle :
@@ -55,35 +68,56 @@ meta:
       </div>
 
       <div class="fr-col-md-4 fr-col--center">
-        <span class="fr-icon-money-euro-circle-fill fr-icon--lg" aria-hidden="true"></span>
+        <span
+          class="fr-icon-money-euro-circle-fill fr-icon--lg"
+          aria-hidden="true"
+        />
 
-        <h3 class="fr-h4">Intégré à vos outils</h3>
+        <h3 class="fr-h4">
+          Intégré à vos outils
+        </h3>
 
         <p>
-          CartoBio communique avec votre outil métier<br/>
+          CartoBio communique avec votre outil métier<br>
           pour une gestion faciloitée des dossiers opérateurs
         </p>
       </div>
 
       <p class="fr-col-md-12">
-        <router-link to="/certication/avantages" class="fr-btn fr-btn--secondary">
+        <router-link
+          to="/certication/avantages"
+          class="fr-btn fr-btn--secondary"
+        >
           En savoir plus sur les avantages
         </router-link>
       </p>
     </div>
   </div>
 
-  <ProductflowSection class="fr-background-alt--blue-france" expanded>
-    <template #step-1>Import du parcellaire par l’agriculteur·ice en amont du contrôle</template>
-    <template #step-1b>Création du parcellaire en ligne par l’agriculteur·ice</template>
-    <template #step-2>Le parcellaire de l’année est validé par le contrôleur·se pendant l'audit Bio</template>
-    <template #step-2b>Le parcellaire peut être mis à jour si besoin</template>
+  <ProductflowSection
+    class="fr-background-alt--blue-france"
+    expanded
+  >
+    <template #step-1>
+      Import du parcellaire par l’agriculteur·ice en amont du contrôle
+    </template>
+    <template #step-1b>
+      Création du parcellaire en ligne par l’agriculteur·ice
+    </template>
+    <template #step-2>
+      Le parcellaire de l’année est validé par le contrôleur·se pendant l'audit Bio
+    </template>
+    <template #step-2b>
+      Le parcellaire peut être mis à jour si besoin
+    </template>
   </ProductflowSection>
 
   <div class="fr-container fr-py-5w">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-md-6">
-        <h3 class="fr-h4">Les fonctionnalités</h3>
+        <h3 class="fr-h4">
+          Les fonctionnalités
+        </h3>
 
         <ul class="fr-list fr-mb-3w">
           <li>Import et modification du parcellaire des opérateurs</li>
@@ -94,19 +128,30 @@ meta:
         </ul>
 
         <p>
-          <a class="fr-btn fr-btn--secondary" href="mailto:support-cartobio@agencebio.org?subject=Demande%20de%20démo">
+          <a
+            class="fr-btn fr-btn--secondary"
+            href="mailto:support-cartobio@agencebio.org?subject=Demande%20de%20démo"
+          >
             Demandez une démo de CartoBio
           </a>
         </p>
       </div>
 
       <div class="fr-col-md-6 fr-m-md-auto">
-        <img src="@/assets/screenshots/screenshot-exploitation-parcellaire.png" class="fr-responsive-img" alt="">
+        <img
+          src="@/assets/screenshots/screenshot-exploitation-parcellaire.png"
+          class="fr-responsive-img"
+          alt=""
+        >
       </div>
     </div>
   </div>
 
-  <PartnersSection class="fr-background-alt--blue-france" section-oc section-administrations />
+  <PartnersSection
+    class="fr-background-alt--blue-france"
+    section-oc
+    section-administrations
+  />
   <TestimoniesSection v-if="false" />
   <ContributeSection />
 </template>

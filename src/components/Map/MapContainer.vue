@@ -17,13 +17,17 @@ const mapContainer = ref(null)
 provide('map', map)
 
 const props = defineProps({
-  bounds: Array,
+  bounds: {
+    type: Array,
+    default: () => ([[-9.86, 41.15], [10.38, 51.56]]),
+  },
   controls: {
     type: Boolean,
     default: true
   },
   mode: {
     type: String,
+    default: 'compact'
   },
   options: {
     type: Object,

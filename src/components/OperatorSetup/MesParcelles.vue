@@ -1,53 +1,116 @@
 <template>
   <div>
     <div class="fr-alert fr-alert--info fr-mb-5w">
-      <p class="fr-alert__title">Remarque</p>
+      <p class="fr-alert__title">
+        Remarque
+      </p>
       <p>Nous importons les parcelles de l'exploitation principale, pour l'instant.</p>
     </div>
 
-    <div  v-if="errors.length" class="fr-alert fr-alert--error fr-mb-5w">
-      <p class="fr-alert__title">Erreur</p>
-      <p v-for="error in errors" :key="error">{{ error }}</p>
+    <div
+      v-if="errors.length"
+      class="fr-alert fr-alert--error fr-mb-5w"
+    >
+      <p class="fr-alert__title">
+        Erreur
+      </p>
+      <p
+        v-for="error in errors"
+        :key="error"
+      >
+        {{ error }}
+      </p>
     </div>
 
     <form @submit.prevent="handleLoginImport(mesParcellesUser)">
       <div class="fr-input-group">
-        <label for="mp-email" class="fr-label">Adresse e-mail MesParcelles</label>
+        <label
+          for="mp-email"
+          class="fr-label"
+        >Adresse e-mail MesParcelles</label>
 
         <div class="fr-input-wrap fr-icon-mail-line">
-          <input type="email" class="fr-input" id="mp-email" v-model="mesParcellesUser.email" ref="loginInput" required
-            autofocus />
+          <input
+            type="email"
+            class="fr-input"
+            id="mp-email"
+            v-model="mesParcellesUser.email"
+            ref="loginInput"
+            required
+            autofocus
+          >
         </div>
       </div>
 
       <div class="fr-input-group">
-        <label for="mp-password" class="fr-label">Mot de passe</label>
+        <label
+          for="mp-password"
+          class="fr-label"
+        >Mot de passe</label>
         <div class="fr-input-wrap fr-icon-shield-line">
-          <input type="password" class="fr-input" id="mp-password" v-model="mesParcellesUser.password" required
-            autocomplete="off" />
+          <input
+            type="password"
+            class="fr-input"
+            id="mp-password"
+            v-model="mesParcellesUser.password"
+            required
+            autocomplete="off"
+          >
         </div>
       </div>
 
       <div class="fr-input-group">
-        <label for="mp-server" class="fr-label">Choix du serveur régional</label>
-        <select id="mp-server" class="fr-select" v-model="mesParcellesUser.server" required>
-          <option v-for="(label, key) in mesParcellesServers" :value="key" :key="key" selected="selected">{{ label }}
+        <label
+          for="mp-server"
+          class="fr-label"
+        >Choix du serveur régional</label>
+        <select
+          id="mp-server"
+          class="fr-select"
+          v-model="mesParcellesUser.server"
+          required
+        >
+          <option
+            v-for="(label, key) in mesParcellesServers"
+            :value="key"
+            :key="key"
+            selected="selected"
+          >
+            {{ label }}
           </option>
         </select>
       </div>
 
       <div class="fr-input-group">
-        <label for="mp-server" class="fr-label">Millésime</label>
-        <select id="mp-server" class="fr-select" v-model="mesParcellesUser.millesime" required>
-          <option v-for="(year) in [2022, 2023]" :value="year" :key="year" selected="selected">{{ year }}
+        <label
+          for="mp-server"
+          class="fr-label"
+        >Millésime</label>
+        <select
+          id="mp-server"
+          class="fr-select"
+          v-model="mesParcellesUser.millesime"
+          required
+        >
+          <option
+            v-for="(year) in [2022, 2023]"
+            :value="year"
+            :key="year"
+            selected="selected"
+          >
+            {{ year }}
           </option>
         </select>
       </div>
 
       <div class="fr-input-group">
-        <button class="fr-btn"
-          :disabled="!mesParcellesUser.server || !mesParcellesUser.password || !mesParcellesUser.email">Collecter les
-          parcelles</button>
+        <button
+          class="fr-btn"
+          :disabled="!mesParcellesUser.server || !mesParcellesUser.password || !mesParcellesUser.email"
+        >
+          Collecter les
+          parcelles
+        </button>
       </div>
     </form>
   </div>
