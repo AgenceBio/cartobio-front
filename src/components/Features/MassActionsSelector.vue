@@ -1,41 +1,13 @@
 <template>
-  <nav
-    ref="openerElement"
-    role="navigation"
-    class="fr-translate fr-nav"
-    data-fr-js-navigation="true"
-  >
-    <div
-      class="fr-nav__item"
-      data-fr-js-navigation-item="true"
-    >
-      <button
-        type="button"
-        class="fr-btn fr-btn--secondary fr-translate__btn"
-        aria-controls="mass-actions__actions"
-        :aria-expanded="isMenuOpen"
-        @click="(isMenuOpen = !isMenuOpen)"
-        data-fr-js-collapse-button="true"
-      >
+  <nav ref="openerElement" role="navigation" class="fr-translate fr-nav" data-fr-js-navigation="true">
+    <div class="fr-nav__item" data-fr-js-navigation-item="true">
+      <button type="button" class="fr-btn fr-btn--secondary fr-translate__btn" aria-controls="mass-actions__actions" :aria-expanded="isMenuOpen" @click="(isMenuOpen = !isMenuOpen)" data-fr-js-collapse-button="true">
         {{ label }}
       </button>
-      <div
-        :class="['fr-collapse', 'fr-translate__menu', 'fr-menu', isMenuOpen && 'fr-collapse--expanded']"
-        id="mass-actions__actions"
-        data-fr-js-collapse="true"
-        style="--collapse-max-height: none; --collapse: -148px"
-      >
+      <div :class="['fr-collapse', 'fr-translate__menu', 'fr-menu', isMenuOpen && 'fr-collapse--expanded']" id="mass-actions__actions" data-fr-js-collapse="true" style="--collapse-max-height: none; --collapse: -148px">
         <ul class="fr-menu__list">
-          <li
-            class="w-full"
-            v-for="({ label: actionLabel, component }) in actions"
-            :key="actionLabel"
-          >
-            <button
-              class="fr-btn fr-btn--tertiary-no-outline w-full"
-              type="button"
-              @click="openModalWithComponent(component)"
-            >
+          <li class="w-full" v-for="({ label, component }) in actions" :key="label">
+            <button class="fr-btn fr-btn--tertiary-no-outline w-full" type="button" @click="openModalWithComponent(component)">
               {{ label }}
             </button>
           </li>
@@ -45,12 +17,7 @@
   </nav>
 
   <Teleport to="body">
-    <Component
-      :is="modalComponent"
-      v-if="(modalComponent && isModalOpen)"
-      v-model="isModalOpen"
-      @submit="handleSubmit"
-    />
+    <Component :is="modalComponent" v-if="(modalComponent && isModalOpen)" v-model="isModalOpen" @submit="handleSubmit" />
   </Teleport>
 </template>
 

@@ -1,19 +1,17 @@
 <template>
   <MainHeader />
 
-  <RouterView v-slot="{ Component, route: currentRoute }">
+  <RouterView v-slot="{ Component, route }">
     <Suspense>
       <component
         :is="Component"
-        :key="currentRoute.meta.usePathKey ? currentRoute.path : undefined"
+        :key="route.meta.usePathKey ? route.path : undefined"
       />
       <template #fallback>
         <div class="fr-container fr-py-6w">
           <div class="fr-grid-row">
             <div class="fr-col-12">
-              <Spinner class="fr-h5">
-                Chargement des données…
-              </Spinner>
+              <Spinner class="fr-h5">Chargement des données…</Spinner>
             </div>
           </div>
         </div>

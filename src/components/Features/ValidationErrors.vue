@@ -1,8 +1,5 @@
 <template>
-  <p
-    v-for="([ruleId, result]) in validationRulesWithFailures"
-    :key="ruleId"
-  >
+  <p v-for="([ruleId, result]) in validationRulesWithFailures" :key="ruleId">
     {{ ruleId === 'NOT_EMPTY' ? `Il manque un type de culture pour ${result.failures} parcelles.` : '' }}
     {{ ruleId === 'ENGAGEMENT_DATE' ? `Il manque une date d'engagement pour ${result.failures} parcelles.` : '' }}
     {{ ruleId === 'CONVERSION_LEVEL' ? `Il manque un niveau de conversion pour ${result.failures} parcelles.` : '' }}

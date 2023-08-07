@@ -1,10 +1,7 @@
 <template>
   <span :class="['fr-badge', stateInfo.color]">
     {{ stateInfo.label }}
-    <span
-      v-if="date"
-      class="year"
-    >{{ dateLabel }}</span>
+    <span v-if="date" class="year">{{ dateLabel }}</span>
   </span>
 </template>
 
@@ -14,14 +11,8 @@ import { readonly, computed } from 'vue'
 import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 
 const props = defineProps({
-  state: {
-    type: String,
-    default: ''
-  },
-  date: {
-    type: String,
-    default: ''
-  }
+  state: String,
+  date: String
 })
 
 const STATE_MAP = readonly({

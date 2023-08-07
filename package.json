@@ -63,7 +63,7 @@
     },
     "extends": [
       "eslint:recommended",
-      "plugin:vue/vue3-strongly-recommended",
+      "plugin:vue/vue3-essential",
       "@vue/eslint-config-typescript/recommended"
     ],
     "rules": {

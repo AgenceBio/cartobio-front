@@ -1,22 +1,14 @@
 <template>
-  <div
-    :class="{
-      'fr-card--bottom-left': !position || position === 'bottom-left',
-      'fr-card--top-left': position === 'top-left',
-      'fr-card--bottom-right': position === 'bottom-right',
-      'fr-card--top-right': position === 'top-right'
-    }"
-    class="fr-card fr-card--horizontal fr-card--shadow fr-m-3w"
-  >
+  <div :class="{
+    'fr-card--bottom-left': !position || position === 'bottom-left',
+    'fr-card--top-left': position === 'top-left',
+    'fr-card--bottom-right': position === 'bottom-right',
+    'fr-card--top-right': position === 'top-right'
+  }" class="fr-card fr-card--horizontal fr-card--shadow fr-m-3w">
     <div class="fr-card__body">
       <div class="fr-card__content fr-p-1w">
-        <div class="fr-card__desc fr-m-0">
-          <slot />
-        </div>
-        <div
-          class="fr-card__start"
-          v-if="$slots.start"
-        >
+        <div class="fr-card__desc fr-m-0"><slot /></div>
+        <div class="fr-card__start" v-if="$slots.start">
           <slot name="start" />
         </div>
       </div>
@@ -25,12 +17,7 @@
 </template>
 
 <script setup>
-defineProps({
-  position: {
-    type: String,
-    default: 'bottom-left'
-  }
-})
+defineProps(['position'])
 </script>
 
 <style scoped>

@@ -1,152 +1,52 @@
 <template>
   <tbody>
-    <tr
-      @click.stop="open = !open"
-      class="clickable group-header"
-    >
+    <tr @click.stop="open = !open" class="clickable group-header">
       <td>
         <div class="fr-checkbox-group single-checkbox">
-          <input
-            type="checkbox"
-            :id="'radio-'+ featureGroup.key"
-            :checked="allSelected"
-            @click="toggleFeatureGroup"
-          >
-          <label
-            class="fr-label"
-            :for="'radio-'+ featureGroup.key"
-          />
+          <input type="checkbox" :id="'radio-'+ featureGroup.key" :checked="allSelected" @click="toggleFeatureGroup" />
+          <label class="fr-label" :for="'radio-'+ featureGroup.key" />
         </div>
       </td>
-      <td>
-        <span
-          class="fr-icon fr-icon-arrow-down-s-line"
-          :aria-checked="open"
-          aria-role="button"
-        />
-      </td>
-      <th
-        scope="row"
-        colspan="2"
-        :data-group-id="featureGroup.key"
-      >
-        {{ featureGroup.label }}
-      </th>
-      <td class="numeric">
-        {{ inHa(featureGroup.surface) }}&nbsp;ha
-      </td>
-      <td class="actions">
-        <span :class="{ 'fr-icon fr-icon-warning-fill fr-icon--warning': validation.total !== validation.success }" />
-      </td>
+      <td><span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" /></td>
+      <th scope="row" colspan="2" :data-group-id="featureGroup.key">{{ featureGroup.label }}</th>
+      <td class="numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
+      <td class="actions"><span :class="{ 'fr-icon fr-icon-warning-fill fr-icon--warning': validation.total !== validation.success }" /></td>
     </tr>
-    <tr
-      :hidden="!open"
-      class="intermediate-header"
-    >
-      <th
-        scope="col"
-        colspan="2"
-      />
-      <th
-        scope="col"
-        v-if="isGroupedByCulture"
-      >
-        Nom
-      </th>
-      <th
-        scope="col"
-        v-else
-      >
-        Culture
-      </th>
-      <th scope="col">
-        Certification
-      </th>
-      <th
-        scope="col"
-        colspan="2"
-      />
+    <tr :hidden="!open" class="intermediate-header">
+      <th scope="col" colspan="2"></th>
+      <th scope="col" v-if="isGroupedByCulture">Nom</th>
+      <th scope="col" v-else>Culture</th>
+      <th scope="col">Certification</th>
+      <th scope="col" colspan="2"></th>
     </tr>
-    <tr
-      class="parcelle clickable"
-      :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}"
-      :id="'parcelle-' + feature.id"
-      :hidden="!open"
-      v-for="feature in featureGroup.features"
-      :key="feature.id"
-      @mouseover="emit('update:hoveredId', feature.id)"
-      :aria-current="feature.id === hoveredId ? 'location' : null"
-    >
+    <tr class="parcelle clickable" :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
-          <input
-            type="checkbox"
-            :id="'radio-' + feature.id"
-            :checked="selectedIds.includes(feature.id)"
-            @click="emit('toggle:singleFeatureId', feature.id)"
-          >
-          <label
-            class="fr-label"
-            :for="'radio-' + feature.id"
-          />
+          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click="emit('toggle:singleFeatureId', feature.id)" />
+          <label class="fr-label" :for="'radio-' + feature.id" />
         </div>
       </th>
-      <td @click="toggleEditForm(feature.id)" />
-      <td
-        @click="toggleEditForm(feature.id)"
-        v-if="isGroupedByCulture"
-      >
+      <td @click="toggleEditForm(feature.id)"></td>
+      <td @click="toggleEditForm(feature.id)" v-if="isGroupedByCulture">
         <span class="culture-name">{{ featureName(feature) }}</span>
-        <small
-          class="feature-precision"
-          v-if="feature.properties.cultures.length > 1"
-        >Multi-culture</small>
+        <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
       </td>
-      <td
-        @click="toggleEditForm(feature.id)"
-        v-else
-      >
-        <span
-          class="culture-type"
-          v-if="feature.properties.cultures.length > 1"
-        >
+      <td @click="toggleEditForm(feature.id)" v-else>
+        <span class="culture-type" v-if="feature.properties.cultures.length > 1">
           Multi-cultures
-          <small
-            class="feature-precision"
-            v-for="(culture, i) in feature.properties.cultures"
-            :key="i"
-          >
+          <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
             {{ cultureLabel(culture) }}
           </small>
         </span>
         <small class="feature-precision">{{ featureName(feature) }}</small>
       </td>
       <td @click="toggleEditForm(feature.id)">
-        <ConversionLevel
-          :feature="feature"
-          with-date
-        />
+        <ConversionLevel :feature="feature" with-date />
       </td>
-      <td
-        @click="toggleEditForm(feature.id)"
-        class="numeric"
-      >
-        {{ inHa(surface(feature)) }}&nbsp;ha
-      </td>
-      <td
-        @click="toggleEditForm(feature.id)"
-        class="actions"
-      >
-        <span
-          v-if="validation.features[feature.id]?.failures"
-          class="fr-icon fr-icon-edit-box-fill fr-icon--warning"
-          aria-role="button"
-        />
-        <span
-          v-else
-          class="fr-icon fr-icon-edit-line"
-          aria-role="button"
-        />
+      <td @click="toggleEditForm(feature.id)" class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
+      <td @click="toggleEditForm(feature.id)" class="actions">
+        <span v-if="validation.features[feature.id]?.failures" class="fr-icon fr-icon-edit-box-fill fr-icon--warning" aria-role="button" />
+        <span v-else class="fr-icon fr-icon-edit-line" aria-role="button" />
       </td>
     </tr>
   </tbody>

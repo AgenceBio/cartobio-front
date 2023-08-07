@@ -12,9 +12,7 @@ meta:
       </div>
 
       <section class="fr-col-md-8">
-        <h2 class="fr-h3">
-          Le problème
-        </h2>
+        <h2 class="fr-h3">Le problème</h2>
 
         <p>
           CartoBio répond à un problème auprès de différents acteurs.
@@ -39,9 +37,7 @@ meta:
       </section>
 
       <section class="fr-col-md-8">
-        <h2 class="fr-h3">
-          La solution apportée
-        </h2>
+        <h2 class="fr-h3">La solution apportée</h2>
 
         <p>
           CartoBio constitue et diffuse des données géographiques du parcellaire bio ; certifiées et interopérables entre les acteurs de la certification en agriculture biologique.
@@ -57,9 +53,7 @@ meta:
       </section>
 
       <section class="fr-col-md-8">
-        <h2 class="fr-h3">
-          Les partenaires
-        </h2>
+        <h2 class="fr-h3">Les partenaires</h2>
 
         <p>
           CartoBio est initié et porté par l’Agence Bio et l’Institut Nationale de l’Origine et de la Qualité (INAO).
@@ -67,7 +61,7 @@ meta:
 
         <p>
           Le projet est soutenu par la Direction du Numérique (DINUM), le Ministère de l’Agriculture et de la Souveraineté Alimentaire (MASA) et le Ministère de la Transition Écologique et de la Cohésion des Territoires (MTECT).
-          <br>
+          <br />
           Le projet est soutenu financièrement par l’Office Français de la Biodiversité (OFB) dans le cadre du Plan Ecophyto.
         </p>
 
@@ -77,9 +71,7 @@ meta:
       </section>
 
       <section class="fr-col-md-8">
-        <h2 class="fr-h3">
-          Stratégie
-        </h2>
+        <h2 class="fr-h3">Stratégie</h2>
 
         <p>CartoBio s’appuie sur la collaboration avec les Organismes Certificateurs pour constituer sa base de données géographique. Nous nous basons sur l’annualité du contrôle bio pour atteindre un parcellaire complet d’ici la fin de la campagne PAC 2024.</p>
         <p>Afin d’éviter la recopie de données, CartoBio cherche à se connecter à tous les services contenant de l’information géographique utilisés par les agriculteurs — des références cadastrales textuelles du nCVI jusqu’aux découpes précises des outils de gestion de parcellaires.</p>
@@ -87,25 +79,17 @@ meta:
       </section>
 
       <section class="fr-col-md-8">
-        <h2 class="fr-h3">
-          Historique du projet
-        </h2>
+        <h2 class="fr-h3">Historique du projet</h2>
 
         <p>
           CartoBio a été initialement proposé par l’Agence Bio & INAO auprès du programme Entrepreneur d’Intérêt Général (EIG), avant d’être incubé par la DINUM sous le programme Beta.gouv.fr.
-          <br>
-          <a
-            href="https://eig.etalab.gouv.fr/defis/cartobio/"
-            target="_blank"
-          >Découvrir le défi EIG 2019</a>
+          <br />
+          <a href="https://eig.etalab.gouv.fr/defis/cartobio/" target="_blank">Découvrir le défi EIG 2019</a>
         </p>
         <p>
           Beta.gouv.fr est l’incubateur des services numériques de l’État. Il a recours à des équipes pluridisciplinaires et une résolution de problèmes d’usages grâce à des solutions numériques innovantes construites petit à petit.
-          <br>
-          <a
-            href="https://beta.gouv.fr/approche"
-            target="_blank"
-          >En savoir plus sur l’approche</a>
+          <br />
+          <a href="https://beta.gouv.fr/approche" target="_blank">En savoir plus sur l’approche</a>
         </p>
         <p>La première version du projet est d’abord destinée uniquement aux Organismes de Certification, comme un outil supplémentaire de préparation de leur contrôle. L’impact n’a pas été concluant, expliqué par un manque de prise en main de l’outil par les utilisateurs.</p>
         <p>En 2021, le projet est redéveloppé en étroite collaboration avec le MASA et le Cebio dans le cadre des aides PAC Bio. CartoBio vise à remplacer l'attestation de production végétale, et d’anticiper l’augmentation du nombre d’engagements en bio.</p>

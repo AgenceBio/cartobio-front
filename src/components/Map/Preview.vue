@@ -1,18 +1,7 @@
 <template>
-  <MapContainer
-    :controls="controls"
-    class="map map--preview"
-    :options="{ interactive: false, hash: false, trackResize: false }"
-    :bounds="mapBounds"
-  >
-    <GeojsonLayer
-      :style="baseStyle"
-      name="base"
-    />
-    <GeojsonLayer
-      :data="collection"
-      name="parcellaire-operateur"
-    />
+  <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false, trackResize: false }" :bounds="mapBounds">
+    <GeojsonLayer :style="baseStyle" name="base" />
+    <GeojsonLayer :data="collection" name="parcellaire-operateur" />
   </MapContainer>
 </template>
 

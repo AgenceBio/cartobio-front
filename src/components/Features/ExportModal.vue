@@ -1,12 +1,6 @@
 <template>
-  <component
-    :is="Modal"
-    v-bind="$attrs"
-    icon="fr-icon-road-map-line"
-  >
-    <template #title>
-      Export de parcellaire
-    </template>
+  <component :is="Modal" v-bind="$attrs" icon="fr-icon-road-map-line">
+    <template #title>Export de parcellaire</template>
 
     <p>
       Réutilisez vos données dans
@@ -21,38 +15,22 @@
       <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
           <div class="fr-grid-row">
-            <div
-              class="fr-col"
-              v-if="exporter.toFileData"
-            >
-              <button
-                class="fr-btn fr-icon-table-line fr-btn--secondary"
-                @click="ocExport"
-              >
+            <div class="fr-col" v-if="exporter.toFileData">
+              <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
                 {{ exporter.label }}&nbsp;<small>(<code :aria-label="exporter.label">.{{
                   exporter.extension
                 }}</code>)</small>
               </button>
             </div>
-            <div
-              class="fr-col"
-              v-if="exporter.toClipboard"
-            >
-              <button
-                class="fr-btn fr-btn--secondary"
-                :class="{'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied}"
-                @click="ocClipboardExport"
-              >
+            <div class="fr-col" v-if="exporter.toClipboard">
+              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied}" @click="ocClipboardExport">
                 Copier dans le presse-papier
               </button>
             </div>
           </div>
         </li>
         <li>
-          <button
-            class="fr-btn fr-icon-france-line fr-btn--secondary"
-            @click="geojsonExport"
-          >
+          <button class="fr-btn fr-icon-france-line fr-btn--secondary" @click="geojsonExport">
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>
         </li>

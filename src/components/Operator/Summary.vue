@@ -1,86 +1,43 @@
 <template>
   <header>
-    <h2
-      class="fr-h4 fr-mb-1w"
-      :data-operator-id="operator.id"
-      :data-numerobio="operator.numeroBio"
-    >
-      {{ operator.nom }}
-    </h2>
+    <h2 class="fr-h4 fr-mb-1w" :data-operator-id="operator.id" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h2>
 
-    <div
-      v-if="disableActions === false"
-      class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left"
-    >
-      <button
-        v-if="canDisplayHistory"
-        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line"
-        @click="historyModal = true"
-      >
+    <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
+      <button v-if="canDisplayHistory" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
         Historique
       </button>
 
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line"
-        @click="exportModal = true"
-      >
+      <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line" @click="exportModal = true">
         Exporter
       </button>
 
-      <button
-        v-if="permissions.canDeleteParcellaire"
-        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-delete-bin-line"
-        @click="deleteModal = true"
-      >
+      <button v-if="permissions.canDeleteParcellaire" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-delete-bin-line" @click="deleteModal = true">
         Supprimer
       </button>
     </div>
 
     <p class="state fr-subtitle">
-      <ParcellaireState
-        :state="record.certification_state"
-        :date="record.created_at"
-      />
+      <ParcellaireState :state="record.certification_state" :date="record.created_at" />
     </p>
 
-    <div
-      class="demandes fr-callout fr-callout--blue-ecume"
-      v-if="displayCallout"
-    >
-      <h3 class="fr-callout__title">
-        Demandes formulées lors de l'audit
-      </h3>
+    <div class="demandes fr-callout fr-callout--blue-ecume" v-if="displayCallout">
+      <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
 
       <div v-html="record.audit_demandes" />
     </div>
   </header>
 
   <Teleport to="body">
-    <OperatorHistoryModal
-      :record="record"
-      :operator="operator"
-      v-if="historyModal"
-      v-model="historyModal"
-    />
+    <OperatorHistoryModal :record="record" :operator="operator" v-if="historyModal" v-model="historyModal" />
   </Teleport>
 
 
   <Teleport to="body">
-    <FeaturesExportModal
-      :operator="operator"
-      :collection="collection"
-      v-if="exportModal"
-      v-model="exportModal"
-    />
+    <FeaturesExportModal :operator="operator" :collection="collection" v-if="exportModal" v-model="exportModal" />
   </Teleport>
 
   <Teleport to="body">
-    <DeleteParcellaireModal
-      :record="record"
-      :operator="operator"
-      v-if="deleteModal"
-      v-model="deleteModal"
-    />
+    <DeleteParcellaireModal :record="record" :operator="operator" v-if="deleteModal" v-model="deleteModal" />
   </Teleport>
 </template>
 

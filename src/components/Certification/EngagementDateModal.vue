@@ -1,8 +1,6 @@
 <template>
   <Modal v-bind="$attrs">
-    <template #title>
-      Modification de la date d'engagement
-    </template>
+    <template #title>Modification de la date d'engagement</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -10,22 +8,11 @@
       </p>
     </div>
 
-    <form
-      id="mass-edit-form"
-      @submit.prevent="emit('submit', { ids: selectedIds, patch })"
-    >
+    <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
         <label class="fr-label">Date d'engagement</label>
         <div class="fr-input-wrap fr-icon-calendar-line">
-          <input
-            type="date"
-            class="fr-input"
-            v-model="patch.engagement_date"
-            name="engagement_date"
-            min="1985-01-01"
-            :max="maxDate"
-            required
-          >
+          <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" required />
         </div>
       </div>
     </form>
@@ -33,10 +20,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button
-            class="fr-btn"
-            form="mass-edit-form"
-          >
+          <button class="fr-btn" form="mass-edit-form">
             Enregistrer
           </button>
         </li>

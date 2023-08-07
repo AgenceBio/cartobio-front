@@ -1,7 +1,5 @@
 <template>
-  <p class="fr-text--lead">
-    Importer un parcellaire d'exploitation agricole.
-  </p>
+  <p class="fr-text--lead">Importer un parcellaire d'exploitation agricole.</p>
 
   <div class="actions">
     <div class="fr-card fr-card--horizontal fr-mb-3w">
@@ -18,9 +16,7 @@
           <div class="fr-card__start">
             <ul class="fr-tags-group">
               <li>
-                <p class="fr-badge fr-badge--info fr-badge--no-icon">
-                  recommandé
-                </p>
+                <p class="fr-badge fr-badge--info fr-badge--no-icon">recommandé</p>
               </li>
             </ul>
           </div>
@@ -48,19 +44,12 @@
         <div class="fr-card__footer">
           <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
             <li>
-              <button
-                class="fr-btn"
-                @click.prevent="setupFromTelepacModal = true"
-              >
+              <button class="fr-btn" @click.prevent="setupFromTelepacModal = true">
                 démarrer l'import
               </button>
             </li>
             <li>
-              <a
-                class="fr-btn fr-btn--tertiary"
-                href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#1-import-de-la-declaration-pac"
-                target="_blank"
-              >
+              <a class="fr-btn fr-btn--tertiary" href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#1-import-de-la-declaration-pac" target="_blank">
                 besoin d'aide&nbsp;?
               </a>
             </li>
@@ -86,9 +75,7 @@
           <div class="fr-card__start">
             <ul class="fr-tags-group">
               <li>
-                <p class="fr-badge fr-badge--success fr-badge--no-icon">
-                  en un clic
-                </p>
+                <p class="fr-badge fr-badge--success fr-badge--no-icon">en un clic</p>
               </li>
             </ul>
           </div>
@@ -96,19 +83,12 @@
         <div class="fr-card__footer">
           <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
             <li>
-              <button
-                class="fr-btn"
-                @click.prevent="setupFromRPGModal = true"
-              >
+              <button class="fr-btn" @click.prevent="setupFromRPGModal = true">
                 démarrer l'import
               </button>
             </li>
             <li>
-              <a
-                class="fr-btn fr-btn--tertiary"
-                href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#2-import-par-numero-de-pac"
-                target="_blank"
-              >
+              <a class="fr-btn fr-btn--tertiary" href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/ajout-des-donnees-dun-parcellaire#2-import-par-numero-de-pac" target="_blank">
                 besoin d'aide&nbsp;?
               </a>
             </li>
@@ -119,21 +99,11 @@
   </div>
 
   <Teleport to="body">
-    <telepacModal
-      :operator="operator"
-      @upload="handleUpload"
-      v-model="setupFromTelepacModal"
-      v-if="setupFromTelepacModal"
-    />
+    <telepacModal :operator="operator" @upload="handleUpload" v-model="setupFromTelepacModal" v-if="setupFromTelepacModal" />
   </Teleport>
 
   <Teleport to="body">
-    <RPGModal
-      :operator="operator"
-      @upload="handleUpload"
-      v-model="setupFromRPGModal"
-      v-if="setupFromRPGModal"
-    />
+    <RPGModal :operator="operator" @upload="handleUpload" v-model="setupFromRPGModal" v-if="setupFromRPGModal" />
   </Teleport>
 </template>
 

@@ -1,9 +1,6 @@
 <template>
   <p class="loading-message">
-    <span
-      class="loader-animation"
-      aria-hidden
-    >...</span>
+    <span class="loader-animation" aria-hidden>...</span>
 
     <slot />
   </p>

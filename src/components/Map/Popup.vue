@@ -1,11 +1,7 @@
 <template>
-  <div
-    class="popup"
-    id="popup-content"
-    :style="{ maxWidth }"
-  >
+  <div class="popup" id="popup-content" :style="{ maxWidth }">
     <div ref="popupRef">
-      <slot />
+      <slot  />
     </div>
   </div>
 </template>

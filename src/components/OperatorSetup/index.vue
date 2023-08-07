@@ -1,47 +1,19 @@
 <template>
-  <div
-    class="fr-tabs"
-    v-if="!hasFeatureCollection"
-  >
+  <div class="fr-tabs" v-if="!hasFeatureCollection">
     <p>
       Sélectionner l'outil informatisé qui est au plus proche de la réalité de votre terrain.
     </p>
 
-    <ul
-      class="fr-tabs__list"
-      role="tablist"
-    >
-      <li
-        v-for="(source, sourceId) in sourcesTabs"
-        role="presentation"
-        :key="sourceId"
-      >
-        <button
-          class="fr-tabs__tab"
-          :disabled="!source.component"
-          type="button"
-          :aria-selected="sourceId === featureSource"
-          @click="featureSource = sourceId"
-        >
-          {{ source.label }}
-        </button>
+    <ul class="fr-tabs__list" role="tablist">
+      <li v-for="(source, sourceId) in sourcesTabs" role="presentation" :key="sourceId">
+        <button class="fr-tabs__tab" :disabled="!source.component" type="button" :aria-selected="sourceId === featureSource" @click="featureSource = sourceId">{{ source.label }}</button>
       </li>
     </ul>
 
-    <Component
-      :is="sourcesTabs[featureSource].component"
-      @upload:start="emit('import:start')"
-      @upload:complete="handleSelection"
-      :class="{ 'fr-tabs__panel': true, 'fr-tabs__panel--selected': true }"
-      role="tabpanel"
-    />
+    <Component :is="sourcesTabs[featureSource].component" @upload:start="emit('import:start')" @upload:complete="handleSelection" :class="{ 'fr-tabs__panel': true, 'fr-tabs__panel--selected': true }" role="tabpanel" />
   </div>
 
-  <ImportPreview
-    @submit="handleUpload"
-    @cancel="handleCancel"
-    v-else
-  />
+  <ImportPreview @submit="handleUpload" @cancel="handleCancel" v-else />
 </template>
 
 <script setup>

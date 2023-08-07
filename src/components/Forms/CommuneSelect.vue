@@ -1,8 +1,6 @@
 <template>
-  <div ref="autocompleteRef" />
-  <div class="fr-hint-text">
-    Saisissez le nom d'une commune
-  </div>
+  <div ref="autocompleteRef"></div>
+  <div class="fr-hint-text">Saisissez le nom d'une commune</div>
 </template>
 
 <script setup>
@@ -13,12 +11,7 @@ import axios from "axios";
 
 const autocompleteRef = ref(null)
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: ''
-  }
-})
+const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 const setQueryRef = ref(null)
 

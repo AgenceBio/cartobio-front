@@ -1,11 +1,6 @@
 <template>
-  <Modal
-    v-bind="$attrs"
-    ref="modal"
-  >
-    <template #title>
-      Suppression du parcellaire
-    </template>
+  <Modal v-bind="$attrs" ref="modal">
+    <template #title>Suppression du parcellaire</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -23,10 +18,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button
-            class="fr-btn"
-            @click="handleDelete"
-          >
+          <button class="fr-btn" @click="handleDelete">
             Supprimer le parcellaire
           </button>
         </li>

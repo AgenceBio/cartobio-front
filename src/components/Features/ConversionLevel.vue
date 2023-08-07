@@ -1,30 +1,16 @@
 <template>
-  <span
-    v-if="conversionLevel.value === LEVEL_UNKNOWN"
-    class="fr-badge fr-badge--warning"
-  >
+  <span v-if="conversionLevel.value === LEVEL_UNKNOWN" class="fr-badge fr-badge--warning">
     {{ conversionLevel.shortLabel }}
   </span>
-  <span
-    v-else-if="conversionLevel.value === LEVEL_MAYBE_AB"
-    :class="{'fr-badge': isOc, 'fr-badge--warning': isOc, 'fr-badge--no-icon': isOc }"
-  >
+  <span v-else-if="conversionLevel.value === LEVEL_MAYBE_AB" :class="{'fr-badge': isOc, 'fr-badge--warning': isOc, 'fr-badge--no-icon': isOc }">
     <span v-if="isOc">à préciser</span>
     <span v-else>{{ conversionLevel.shortLabel }}</span>
 
-    <small
-      v-if="!isOc"
-      class="help"
-    >à préciser par l'OC</small>
+    <small v-if="!isOc" class="help">à préciser par l'OC</small>
   </span>
   <span v-else>
     {{ conversionLevel.shortLabel }}
-    <time
-      class="fr-text--xs"
-      :datetime="conversionDate"
-      v-if="(withDate && conversionDate && isAB)"
-      :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`"
-    >
+    <time class="fr-text--xs" :datetime="conversionDate" v-if="(withDate && conversionDate && isAB)" :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`">
       {{ mmyyyy(conversionDate) }}
     </time>
   </span>

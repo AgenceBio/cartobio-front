@@ -1,8 +1,6 @@
 <template>
   <section>
-    <h5 class="fr-h5">
-      Nouvelle parcelle
-    </h5>
+    <h5 class="fr-h5">Nouvelle parcelle</h5>
 
     <form @submit.prevent="">
       <p class="fr-h6">
@@ -10,10 +8,7 @@
       </p>
 
       <div class="fr-input-group">
-        <label
-          for="form-commune"
-          class="fr-label"
-        >Commune</label>
+        <label for="form-commune" class="fr-label">Commune</label>
 
         <div class="fr-input-wrap fr-icon-road-map-fill">
           <CommuneSelect v-model="commune" />
@@ -26,76 +21,39 @@
 
       <article class="fr-pl-5w fr-mb-5w">
         <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
-          <input
-            type="radio"
-            id="radio-source-cadastre"
-            name="source"
-            value="cadastre"
-            v-model="flowSource"
-          >
-          <label
-            class="fr-label"
-            for="radio-source-cadastre"
-          >
+          <input type="radio" id="radio-source-cadastre" name="source" value="cadastre" v-model="flowSource">
+          <label class="fr-label" for="radio-source-cadastre">
             Par référence cadastrale
           </label>
         </div>
 
-        <CadastreField
-          v-for="(reference, index) in cadastreReferences"
-          :key="index"
-          :reference="reference"
-          :commune="commune"
-          :help-text="cadastreHelp[index]"
-          @feature="updateReference(index, $event)"
+        <CadastreField v-for="(reference, index) in cadastreReferences" :key="index"
+                       :reference="reference"
+                       :commune="commune"
+                       :helpText="cadastreHelp[index]"
+                       @feature="updateReference(index, $event)"
         />
       </article>
 
       <article class="fr-pl-5w fr-mb-5w">
         <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
-          <input
-            type="radio"
-            id="radio-source-telepac"
-            name="source"
-            value="telepac"
-            disabled
-            v-model="flowSource"
-          >
-          <label
-            class="fr-label"
-            for="radio-source-telepac"
-          >
+          <input type="radio" id="radio-source-telepac" name="source" value="telepac" disabled v-model="flowSource">
+          <label class="fr-label" for="radio-source-telepac">
             Par référence Telepac (<i>prochainement</i>)
           </label>
         </div>
       </article>
 
       <div class="fr-input-group fr-mt-5w">
-        <button
-          class="fr-btn"
-          type="submit"
-          :disabled="!canReachDetailsStep"
-          @click="showDetailsModal = true"
-        >
-          Suivant
-        </button>
+        <button class="fr-btn" type="submit" :disabled="!canReachDetailsStep" @click="showDetailsModal = true">Suivant</button>
       </div>
     </form>
   </section>
 
   <Teleport to="body">
-    <Modal
-      v-if="showDetailsModal"
-      v-model="showDetailsModal"
-      icon="fr-icon-file-text-fill"
-    >
-      <template #title>
-        Ajouter une parcelle
-      </template>
-      <EditForm
-        :feature="feature"
-        @submit="saveFeature"
-      />
+    <Modal v-if="showDetailsModal" v-model="showDetailsModal" icon="fr-icon-file-text-fill">
+      <template #title>Ajouter une parcelle</template>
+      <EditForm :feature="feature" @submit="saveFeature"/>
     </Modal>
   </Teleport>
 </template>
