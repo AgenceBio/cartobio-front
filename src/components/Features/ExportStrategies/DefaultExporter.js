@@ -57,7 +57,7 @@ const getSheet = ({ featureCollection, operator }) => {
       props.conversion_niveau,
       props.engagement_date,
       (isPac ? 'PAC' : ''),
-      generateAutresInfos([ { id, geometry, properties: props }], { withName: false, withNotes: false }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withName: false, withNotes: false, initialCulture: firstCulture?.code_cpf }),
       props.auditeur_notes ?? ''
     ]
   }), { origin: 'A7', cellDates: true })

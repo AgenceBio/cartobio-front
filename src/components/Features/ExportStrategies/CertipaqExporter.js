@@ -84,7 +84,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Date conv
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis
-      generateAutresInfos([ { id, geometry, properties: props }], { withName: false }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withName: false, initialCulture: culture?.code_cpf }),
       // Précédent
       '',
       // Anté précédent
