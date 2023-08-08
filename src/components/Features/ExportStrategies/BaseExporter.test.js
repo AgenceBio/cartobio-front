@@ -34,6 +34,7 @@ describe('generateAutresInfos', () => {
     expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 1.2, 01.13.41.1 Carottes, Coucou')
     expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 1.2, 01.13.41.1 Carottes')
     expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
   })
 
   test('with two features with multiple cultures each', () => {
@@ -83,6 +84,7 @@ describe('generateAutresInfos', () => {
     const features = [
       {
         properties: {
+          auditeur_notes: 'Coucou !',
           NUMERO_I: '1',
           NUMERO_P: '1',
           cultures: [
@@ -116,6 +118,7 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features, { pivot: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, 2023-03-31 / Nantaise de Grasseval ; 1.2')
+    expect(generateAutresInfos(features, { pivot: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, 2023-03-31 / Nantaise de Grasseval, Coucou ! ; 1.2')
+    expect(generateAutresInfos(features, { pivot: '01.13.41.1', withDate: false, withNotes: false })).toBe('1.1, Chantenay à cœur rouge / Nantaise de Grasseval ; 1.2')
   })
 })

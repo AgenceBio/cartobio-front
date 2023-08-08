@@ -71,6 +71,7 @@ const getSheet = ({ featureCollection, operator }) => {
   getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
     const culture = fromCodeCpf(mainKey)
     const autresInfos = generateAutresInfos(features, { pivot: mainKey })
+    const varietes = generateAutresInfos(features, { pivot: mainKey, withNotes: false, withDate: false })
 
     sheet_add_aoa(sheet, [
       [
@@ -78,7 +79,7 @@ const getSheet = ({ featureCollection, operator }) => {
         culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
         culture?.code_bureau_veritas,
         // Complément certificat (variété)
-        features.flatMap(f => f.properties.cultures.map(c => c.variete)).filter(d => d).join(', '),
+        varietes,
         // Autres infos (ilot.parcelle date de semis Notes de certification)
         `Ilots : ${autresInfos}`,
         surface / 10_000,
