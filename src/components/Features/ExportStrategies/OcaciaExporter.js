@@ -57,7 +57,7 @@ const getSheet = ({ featureCollection }) => {
       // N° Cadastre
       props.cadastre,
       // Variété / infos
-      generateAutresInfos([ { id, geometry, properties: props }], { withName: false, withNotes: false }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withName: false, withNotes: false, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',
