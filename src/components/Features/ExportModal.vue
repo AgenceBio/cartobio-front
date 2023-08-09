@@ -53,6 +53,10 @@ const props = defineProps({
   collection: {
     type: Object,
     required: true
+  },
+  record: {
+    type: Object,
+    required: true
   }
 })
 
@@ -62,7 +66,8 @@ const exporter = computed(function () {
   const exporterClass = fromId(organismeCertificateurId.value)
   return new exporterClass({
     featureCollection: props.collection,
-    operator: props.operator
+    operator: props.operator,
+    record: props.record
   })
 })
 const copied = ref(false)

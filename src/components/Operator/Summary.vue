@@ -33,7 +33,7 @@
 
 
   <Teleport to="body">
-    <FeaturesExportModal :operator="operator" :collection="collection" v-if="exportModal" v-model="exportModal" />
+    <FeaturesExportModal :operator="operator" :collection="collection" :record="record" v-if="exportModal" v-model="exportModal" />
   </Teleport>
 
   <Teleport to="body">
