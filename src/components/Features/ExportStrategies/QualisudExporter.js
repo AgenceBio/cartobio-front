@@ -16,7 +16,7 @@ const { sheet_to_json, json_to_sheet } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection }) => {
   const sheet = aoa_to_sheet([
     [
       'Production (code CPF)',
@@ -48,7 +48,7 @@ const getSheet = ({ featureCollection, operator }) => {
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
     const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
-    const autresInfos = generateAutresInfos([ { properties }], { initialCulture: firstCulture?.code_cpf, withName: false })
+    const autresInfos = generateAutresInfos([ { properties }], { initialCulture: firstCulture?.code_cpf })
     const rowIndex = 2 + index
 
     sheet_add_aoa(sheet, [
