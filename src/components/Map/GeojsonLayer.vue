@@ -49,14 +49,16 @@ export default {
         .map(node => node.props.name)
     const nextSiblings = siblingNames.slice(siblingNames.indexOf(this.name) + 1)
 
+    // always create the data layer
+    // otherwise the watch() fails (if empty at first, it cannot be updated)
+    this.map
+      .addSource(`${this.name}/data`, {
+        type: 'geojson',
+        data: this.data ?? { type: 'FeatureCollection', features: [] }
+      })
+
     if (this.data && (this.fill || this.line)) {
       if (this.map.getLayer(`${this.name}/geometry`)) return;
-
-      this.map
-          .addSource(`${this.name}/data`, {
-            type: 'geojson',
-            data: this.data ?? { type: 'FeatureCollection', features: [] }
-          })
 
       if (this.fill) {
         this.map.addLayer({

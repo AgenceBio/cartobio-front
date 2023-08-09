@@ -12,7 +12,8 @@ describe('generateAutresInfos', () => {
             {
               CPF: '01.13.41.1',
               variete: 'Chantenay à cœur rouge',
-              date_semis: '2023-03-31'
+              date_semis: '2023-03-31',
+              surface: '1'
             }
           ]
         }
@@ -31,15 +32,16 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 1.2, 01.13.41.1 Carottes, Coucou')
+    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes, Coucou')
 
     // in case we display by feature, and we have
-    expect(generateAutresInfos(features, { initialCulture: undefined })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 1.2, 01.13.41.1 Carottes, Coucou')
-    expect(generateAutresInfos(features, { initialCulture: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, 2023-03-31 ; 1.2, Coucou')
+    expect(generateAutresInfos(features, { initialCulture: undefined })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes, Coucou')
+    expect(generateAutresInfos(features, { initialCulture: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, 2023-03-31, 1ha ; 1.2, Coucou')
 
-    expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 1.2, 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31 ; 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false, withSurface: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
   })
 
   test('with two features with multiple cultures each', () => {

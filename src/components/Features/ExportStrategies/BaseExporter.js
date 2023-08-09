@@ -16,7 +16,7 @@ export default class BaseExporter {
  * @param {Feature[]} features
  * @returns {String}
  */
-export function generateAutresInfos (features, { withName = true, withNotes = true, withDate = true, pivot = null, initialCulture } = {}) {
+export function generateAutresInfos (features, { withName = true, withNotes = true, withDate = true, withSurface = true, pivot = null, initialCulture } = {}) {
   return features.map(feature => {
     const name = withName ? featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }) : ''
     const notes = withNotes ? feature.properties.auditeur_notes : ''
@@ -32,7 +32,7 @@ export function generateAutresInfos (features, { withName = true, withNotes = tr
           pivot || (initialCulture === c.CPF) ? '' : cultureLabel(c, { withCode: true }),
           c.variete,
           withDate ? c.date_semis : '',
-          c.surface ? `${c.surface}ha` : ''
+          withSurface && c.surface ? `${c.surface}ha` : ''
         ].filter(d => d).join(', '))
       )
       .join(' / ')

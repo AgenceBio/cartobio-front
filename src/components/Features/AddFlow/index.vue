@@ -53,15 +53,14 @@
   <Teleport to="body">
     <Modal v-if="showDetailsModal" v-model="showDetailsModal" icon="fr-icon-file-text-fill">
       <template #title>Ajouter une parcelle</template>
-      <EditForm :feature="feature" @submit="saveFeature"/>
+      <Component :is="editForm" :feature="feature" @submit="saveFeature"/>
     </Modal>
   </Teleport>
 </template>
 
 <script setup>
 import { computed, markRaw, reactive, ref, toRaw } from 'vue'
-import CadastreField from '@/components/Forms/CadastreField.vue';
-import EditForm from '@/components/Features/SingleItemCertificationBodyForm.vue'
+import CadastreField from '@/components/Forms/CadastreField.vue'
 import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api';
 import { featureCollection } from '@turf/helpers'
@@ -81,6 +80,10 @@ const props = defineProps({
     required: true
   },
   collection: {
+    type: Object,
+    required: true
+  },
+  editForm: {
     type: Object,
     required: true
   }
