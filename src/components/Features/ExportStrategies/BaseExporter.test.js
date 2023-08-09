@@ -40,6 +40,7 @@ describe('generateAutresInfos', () => {
 
     expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes')
     expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 2023-03-31, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false, withVariete: false })).toBe('01.13.41.1 Carottes, 2023-03-31, 1ha ; 01.13.41.1 Carottes')
     expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 1ha ; 01.13.41.1 Carottes')
     expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false, withSurface: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
   })
