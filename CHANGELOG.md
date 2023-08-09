@@ -1,3 +1,12 @@
+# [2.9.0](https://github.com/AgenceBio/cartobio-front/compare/v2.8.0...v2.9.0) (2023-08-09)
+
+* gestion de plusieurs cultures par parcelle (multi-cultures)
+* détails supplémentaires des cultures (dates de semis, variété, superficie)
+* le champ de recherche par culture est plus souple sur l'orthographe des mots
+* les tris par commune, niveau de conversion et année d'engagement est de nouveau opérationnel
+* affichage de messages confirmant le déroulé d'une action
+* correction de bugs divers d'affichage et d'export
+
 # [2.8.0](https://github.com/AgenceBio/cartobio-front/compare/v2.7.3...v2.8.0) (2023-07-31)
 
 * correction de bugs divers d'affichage et d'export
