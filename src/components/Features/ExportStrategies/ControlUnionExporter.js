@@ -56,7 +56,7 @@ const getSheet = ({ featureCollection, operator }) => {
       culture?.libelle_code_cpf,
       surfaceHa,
       props.engagement_date ? new Date(props.engagement_date) : '',
-      props.niveau_conversion,
+      props.conversion_niveau ?? '',
       generateAutresInfos([{ properties: props }], { initialCulture: culture?.code_cpf }),
       props.id
     ]
