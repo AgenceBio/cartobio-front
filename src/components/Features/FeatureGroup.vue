@@ -86,7 +86,7 @@ const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id
 const open = ref(featureIds.value.includes(Number(route.query?.new)))
 const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
-const validation = applyValidationRules(props.validationRules.rules, ...props.featureGroup.features)
+const validation = computed(() => applyValidationRules(props.validationRules.rules, ...props.featureGroup.features))
 
 function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
