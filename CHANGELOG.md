@@ -1,3 +1,8 @@
+# [2.9.1](https://github.com/AgenceBio/cartobio-front/compare/v2.9.0...v2.9.1) (2023-08-10)
+
+* ajout des exports Certis et Qualisud
+* corrige un bug d'affichage dans le tableau des cultures (affichage pas à jour des messages d'alerte)
+
 # [2.9.0](https://github.com/AgenceBio/cartobio-front/compare/v2.8.0...v2.9.0) (2023-08-09)
 
 * gestion de plusieurs cultures par parcelle (multi-cultures)
