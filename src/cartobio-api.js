@@ -130,11 +130,11 @@ export async function fetchLatestOperators () {
 /**
  * Creates or updates a record based on geographical informations
  *
- * @param {{ geojson: GeoJSON.FeatureCollection, operatorId: number, ocId: number, ocLabel: number, metadata: Object, numeroBio: string }} param0
+ * @param {{ featureCollection: GeoJSON.FeatureCollection, operatorId: number }} param0
  * @returns {Promise<Record>}
  */
-export async function submitParcellesChanges ({ operatorId, ...params }) {
-  const { data } = await cartobioApi.put(`/v2/operator/${operatorId}/parcelles`, { ...params })
+export async function submitParcellesChanges ({ operatorId, featureCollection }) {
+  const { data } = await cartobioApi.patch(`/v2/operator/${operatorId}/parcelles`, featureCollection)
 
   return data
 }

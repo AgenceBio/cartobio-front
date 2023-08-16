@@ -150,6 +150,11 @@ watch(showModal, (value) => {
 
 function handleFeaturesEdit ({ ids, patch }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
+  const featureCollection = {
+    type: 'FeatureCollection',
+    features: []
+  }
+
   props.features.features
     .filter(feature => ids.includes(feature.id))
     .forEach(feature => {
@@ -157,22 +162,25 @@ function handleFeaturesEdit ({ ids, patch }) {
         ...feature.properties,
         ...patch
       }
+
+      featureCollection.features.push({
+        id: feature.id,
+        properties: { ...patch }
+      })
     })
 
   editedFeatureId.value = null
   store.setAll(props.features.features)
-  doSave(props.features)
+
+  doSave({ featureCollection, operatorId: props.operator.id })
 }
 
-function doSave (geojson) {
-  const { id: operatorId, numeroBio, organismeCertificateur } = props.operator
-  const { id: ocId, nom: ocLabel } = organismeCertificateur
-
+function doSave ({ featureCollection, operatorId }) {
   isSaving.value = true
 
   setTimeout(async () => {
     try {
-      await submitParcellesChanges ({ geojson, operatorId, ocId, ocLabel, numeroBio })
+      await submitParcellesChanges ({ featureCollection, operatorId })
       messages.addMessage({ type: 'success', text: 'Modification enregistrée.' })
     }
     catch (error) {
