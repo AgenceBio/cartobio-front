@@ -59,19 +59,28 @@ const app = createApp(App)
     trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
   })
 
-app.config.errorHandler = (err) => {
-  if (err.code === "ERR_NETWORK") {
+// this is sync because we need to know the user role before rendering the app
+const userStore = useUserStore()
+userStore.enablePersistance()
+
+app.config.errorHandler = (error) => {
+  if (error.code === "ERR_NETWORK") {
     toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
+  }
+
+  // Token has expired: we disconnect and force render the current page to trigger the login mechanism
+  if (error.name === "AxiosError" && error.response.status === 401) {
+    const { path, params } = router.currentRoute.value
+
+    userStore.logout()
+    router.push({ path, params, force: true })
+    return false
   }
 
   toast.error('Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.')
 
-  throw err;
+  throw error;
 }
-
-// this is sync because we need to know the user role before rendering the app
-const userStore = useUserStore()
-userStore.enablePersistance()
 
 router.isReady().then(() => {
   if (import.meta.env.PROD && VUE_APP_SENTRY_DSN) {
