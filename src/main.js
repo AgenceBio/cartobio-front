@@ -8,7 +8,7 @@ import Matomo from 'vue-matomo'
 import Vue3Toastify, { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css';
 
-import { useFeaturesStore, useRecordStore, useUserStore } from '@/stores/index.js'
+import { useRecordStore, useUserStore } from '@/stores/index.js'
 import App from './App.vue'
 import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
@@ -119,12 +119,8 @@ router.beforeEach(async (to, from) => {
   // Preload store for checking permissions
   if (to.params.id || userStore.roles.includes(ROLES.OPERATEUR)) {
     const recordStore = useRecordStore()
-    const featuresStore = useFeaturesStore()
     const record = await getOperatorParcelles(to.params.id || userStore.user.id)
     recordStore.update(record)
-    if (record.parcelles) {
-      featuresStore.setAll(record.parcelles.features)
-    }
   }
 
   if (to.path === '/login/agencebio') {

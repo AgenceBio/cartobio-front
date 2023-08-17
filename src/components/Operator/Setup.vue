@@ -1,11 +1,3 @@
-<route lang="yaml">
-classNames: fr-container fr-my-5w
-meta:
-  requiresAuth: true
-  seo:
-    title: Importer mon parcellaire existant
-</route>
-
 <template>
   <div class="fr-container fr-my-5w">
     <div class="fr-stepper">
@@ -50,9 +42,9 @@ meta:
         Votre organisme de certification y aura accès pour votre audit.
       </p>
 
-      <router-link to="/exploitation/parcellaire" class="fr-btn">
+      <button type="button" @click="emit('submit', record)" class="fr-btn">
         Accéder à mon parcellaire
-      </router-link>
+      </button>
     </section>
   </div>
 </template>
@@ -62,6 +54,9 @@ import { computed, readonly, ref } from 'vue'
 import { statsPush } from '@/stats.js'
 
 import OperatorSetup from '@/components/OperatorSetup/index.vue'
+
+const emit = defineEmits(['submit'])
+const record = ref(null)
 
 const importTool = ref('')
 
@@ -90,9 +85,12 @@ function onUploadPreview () {
   currentStepIndex.value += 1
 }
 
-function onSuccess () {
+function onSuccess ({ record: newRecord }) {
   statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'ok'])
   currentStepIndex.value += 1
+
+  // we store the record to delay the propagation of the record
+  record.value = newRecord
 }
 
 function onError () {
@@ -107,20 +105,5 @@ function onError () {
 
 .fr-text--lg {
   max-width: 40rem;
-}
-
-.sources {
-  display: flex;
-  gap: 1rem;
-  list-style: none;
-  padding: 0;
-}
-
-article .screenshot {
-  max-width: min(500px, 50vw);
-}
-
-details.help summary {
-  display: block;
 }
 </style>

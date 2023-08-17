@@ -71,15 +71,20 @@ function handleCancel () {
 }
 
 async function handleUpload () {
+  const { id: operatorId, numeroBio, organismeCertificateur } = user.value
+  const { id: ocId, nom: ocLabel } = organismeCertificateur
+
   const geojson = toRaw(featureCollection.value)
   const source = toRaw(featureSource.value)
 
   try {
-    await submitParcellesChanges({
+    const record = await submitParcellesChanges({
       geojson,
+      ocId,
+      ocLabel,
       // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
-      operatorId: user.value.id,
-      numeroBio: user.value.numeroBio,
+      operatorId,
+      numeroBio,
       metadata: {
         source,
         sourceLastUpdate: now(),
@@ -87,7 +92,7 @@ async function handleUpload () {
       }
     })
 
-    emit('import:complete', { geojson, source })
+    emit('import:complete', { geojson, source, record })
   }
   catch (error) {
     emit('import:error', error)
