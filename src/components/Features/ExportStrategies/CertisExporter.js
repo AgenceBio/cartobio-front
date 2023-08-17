@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { GROUPE_NIVEAU_CONVERSION, featureName, getFeatureGroups, surface } from '@/components/Features/index.js'
+import { GROUPE_NIVEAU_CONVERSION, getFeatureGroups, surface } from '@/components/Features/index.js'
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -75,7 +75,7 @@ const getSheet = ({ featureCollection, operator, record }) => {
     { wch: 40 },
   ]
 
-  sheet_add_aoa(sheet, featureCollection.features.map(({ id, geometry, properties }) => {
+  sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties }) => {
     const surfaceHa = surface(geometry) / 10_000
     const culture = fromCodeCpf(properties.cultures.at(0)?.CPF)
 

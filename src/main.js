@@ -8,7 +8,7 @@ import Matomo from 'vue-matomo'
 import Vue3Toastify, { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css';
 
-import { useFeaturesStore, useRecordStore, useUserStore } from '@/stores/index.js'
+import { useRecordStore, useUserStore } from '@/stores/index.js'
 import App from './App.vue'
 import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
