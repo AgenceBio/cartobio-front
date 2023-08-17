@@ -114,11 +114,10 @@ import telepacModal from '@/components/Certification/OperatorSetup/TelepacModal.
 import RPGModal from '@/components/Certification/OperatorSetup/RPGModal.vue'
 
 import { useTélépac } from '@/referentiels/pac.js'
-import { useFeaturesStore, useRecordStore } from '@/stores/index.js'
+import { useRecordStore } from '@/stores/index.js'
 import { submitParcellesChanges } from '@/cartobio-api.js'
 import { now } from '@/components/dates.js'
 
-const featureStore = useFeaturesStore()
 const recordStore = useRecordStore()
 const télépac = useTélépac()
 
@@ -149,7 +148,6 @@ async function handleUpload ({ geojson, source }) {
   })
 
   recordStore.update(record)
-  featureStore.setAll(record.parcelles.features)
 
   setupFromTelepacModal.value = false
   setupFromRPGModal.value = false

@@ -30,10 +30,7 @@
 <script setup>
 import Modal from "@/components/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
-import { useRecordStore, useUserStore } from "@/stores/index.js"
-import { useFeaturesStore } from "@/stores/features.js"
-import { ROLES } from "@/stores/user.js"
-import { useRouter } from "vue-router"
+import { useRecordStore } from "@/stores/index.js"
 import { ref } from "vue"
 
 const props = defineProps({
@@ -45,20 +42,12 @@ const props = defineProps({
 
 const modal = ref(null)
 const recordStore = useRecordStore()
-const featuresStore = useFeaturesStore()
-const userStore = useUserStore()
-const router = useRouter()
 
 async function handleDelete() {
   const record = await deleteRecord(props.operator.id)
 
-  if (userStore.roles.includes(ROLES.OPERATEUR)) {
-    return router.push('/exploitation/setup')
-  }
-
   // we reset the current state of operator and features
   recordStore.reset()
-  featuresStore.setAll([])
   // ... then restore the operator data (otherwise we loose the initial context)
   recordStore.update(record)
   modal.value?.$emit('update:modelValue', false)

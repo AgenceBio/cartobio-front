@@ -119,12 +119,8 @@ router.beforeEach(async (to, from) => {
   // Preload store for checking permissions
   if (to.params.id || userStore.roles.includes(ROLES.OPERATEUR)) {
     const recordStore = useRecordStore()
-    const featuresStore = useFeaturesStore()
     const record = await getOperatorParcelles(to.params.id || userStore.user.id)
     recordStore.update(record)
-    if (record.parcelles) {
-      featuresStore.setAll(record.parcelles.features)
-    }
   }
 
   if (to.path === '/login/agencebio') {
