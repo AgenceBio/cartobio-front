@@ -37,7 +37,7 @@ import { onMounted, reactive } from 'vue'
 
 import axios from "axios"
 
-const DEFAULT_STATS = {
+const stats = reactive({
   surfaceCartobioCouverte: 0,
   surfaceBioCouverte: 2776553,
   surfaceRpgBioCouverte: 2360070,
@@ -47,15 +47,13 @@ const DEFAULT_STATS = {
   cartobioExploitationsCount: 0,
   cartobioParcellesCount: 0,
   opendataDownloadCount: 518, // datapass.api.gouv.fr + demandes manuelles
-}
-
-const stats = reactive(structuredClone(DEFAULT_STATS))
+})
 
 onMounted(async () => {
   const { data } = await axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
   const { dataGouv, stats: cartobio } = data
 
-  stats.opendataDownloadCount = dataGouv.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), DEFAULT_STATS.opendataDownloadCount)
+  stats.opendataDownloadCount = dataGouv.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), stats.opendataDownloadCount)
   stats.cartobioExploitationsCount = cartobio.count
   stats.cartobioParcellesCount = cartobio.parcelles_count
 })
