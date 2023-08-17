@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
+import { useFeaturesStore } from "@/stores/index.js"
 
 /** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
 
 export const useRecordStore = defineStore('record', () => {
+  const featuresStore = useFeaturesStore()
+
   const initialState = {
     record_id: null,
     certification_state: null,
@@ -32,14 +35,25 @@ export const useRecordStore = defineStore('record', () => {
         record[key] = updatedRecord[key]
       }
     })
+
+    if (updatedRecord.parcelles) {
+      featuresStore.setAll(updatedRecord.parcelles.features)
+    }
   }
 
   function reset() {
     update({ ...initialState, metadata: { ...initialState.metadata } })
+    featuresStore.setAll([])
   }
+
+  const exists = computed(() => record.record_id)
+  const isSetup = computed(() => record.record_id && record.metadata.source)
 
   return {
     record,
+    // computed
+    exists,
+    isSetup,
     // methods
     update,
     reset

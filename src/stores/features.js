@@ -25,6 +25,8 @@ export const useFeaturesStore = defineStore('features', () => {
     return activeId.value ? getFeatureById(activeId.value) : null
   })
 
+  const hasFeatures = computed(() => all.value.length > 0)
+
   const hoveredFeature = computed(() => {
     return hoveredId.value ? getFeatureById(hoveredId.value) : null
   })
@@ -136,6 +138,7 @@ export const useFeaturesStore = defineStore('features', () => {
     selectedIds,
     // computed
     activeFeature,
+    hasFeatures,
     hoveredFeature,
     selectedFeatures,
     allSelected,
