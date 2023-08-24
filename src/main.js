@@ -69,7 +69,7 @@ app.config.errorHandler = (error) => {
   }
 
   // Token has expired: we disconnect and force render the current page to trigger the login mechanism
-  if (error.name === "AxiosError" && error.response.status === 401) {
+  if (error.name === "AxiosError" && error.response?.status === 401) {
     const { path, params } = router.currentRoute.value
 
     userStore.logout()
