@@ -22,7 +22,7 @@ import { storeToRefs } from 'pinia'
 
 import ImportPreview from '@/components/OperatorSetup/ImportPre.vue'
 
-import { submitParcellesChanges } from '@/cartobio-api.js'
+import { createOperatorRecord } from '@/cartobio-api.js'
 import { now } from '@/components/dates.js'
 import featureSources from '@/components/OperatorSetup/index.js'
 import { useUserStore } from '@/stores/user.js'
@@ -78,12 +78,11 @@ async function handleUpload () {
   const source = toRaw(featureSource.value)
 
   try {
-    const record = await submitParcellesChanges({
+    // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
+    const record = await createOperatorRecord(operatorId, {
       geojson,
       ocId,
       ocLabel,
-      // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
-      operatorId,
       numeroBio,
       metadata: {
         source,

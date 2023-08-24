@@ -7,11 +7,11 @@
         Historique
       </button>
 
-      <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line" @click="exportModal = true">
+      <button v-if="hasFeatures" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line" @click="exportModal = true">
         Exporter
       </button>
 
-      <button v-if="permissions.canDeleteParcellaire" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-delete-bin-line" @click="deleteModal = true">
+      <button v-if="permissions.canDeleteParcellaire && isSetup" class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-delete-bin-line" @click="deleteModal = true">
         Supprimer
       </button>
     </div>
@@ -37,7 +37,7 @@
   </Teleport>
 
   <Teleport to="body">
-    <DeleteParcellaireModal :record="record" :operator="operator" v-if="deleteModal" v-model="deleteModal" />
+    <DeleteParcellaireModal :record="record" v-if="deleteModal" v-model="deleteModal" />
   </Teleport>
 </template>
 
@@ -51,8 +51,7 @@ import FeaturesExportModal from '@/components/Features/ExportModal.vue'
 import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.vue'
 
 import { isCertificationImmutable } from '@/referentiels/ab.js'
-import { useFeaturesStore } from '@/stores/index.js'
-import { usePermissions } from "@/stores/permissions.js"
+import { useFeaturesStore, usePermissions, useRecordStore } from '@/stores/index.js'
 
 const props = defineProps({
   operator: {
@@ -72,9 +71,11 @@ const props = defineProps({
 const exportModal = ref(false)
 const historyModal = ref(false)
 const deleteModal = ref(false)
+const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
-const { collection } = storeToRefs(featuresStore)
+const { collection, hasFeatures } = storeToRefs(featuresStore)
+const { isSetup } = storeToRefs(recordStore)
 const displayCallout = computed(() => props.record.audit_demandes && isCertificationImmutable(props.record.certification_state))
 const canDisplayHistory = computed(() => Array.isArray(props.record.audit_history) && props.record.audit_history.length)
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, toRaw, unref, watch } from 'vue'
 
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()
@@ -43,7 +43,9 @@ export const useFeaturesStore = defineStore('features', () => {
    */
   const collection = computed(() => ({
     type: 'FeatureCollection',
-    features: all.value
+    // BUG this line side effect is any view depending on it is not reactively refreshed
+    // problem is, some other (vanilla JS) code breaks when features are reactive/proxy
+    features: unref(all.value).map(feature => toRaw(feature))
   }))
 
   function setAll (features) {
@@ -132,6 +134,21 @@ export const useFeaturesStore = defineStore('features', () => {
     })
   }
 
+  function updateMatchingFeatures (features) {
+    all.value = all.value.map(feature => {
+      const matchingFeature = features.find(({ id }) => feature.id === id)
+
+      if (matchingFeature) {
+        feature.properties = {
+          ...feature.properties,
+          ...matchingFeature.properties
+        }
+      }
+
+      return feature
+    })
+  }
+
   return {
     activeId,
     hoveredId,
@@ -149,5 +166,6 @@ export const useFeaturesStore = defineStore('features', () => {
     toggleSingleSelected,
     bindMaplibreFeatureState,
     bindMaplibreInteractions,
+    updateMatchingFeatures
   }
 })

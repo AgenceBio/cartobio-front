@@ -53,7 +53,9 @@
       </article>
 
       <div class="fr-input-group fr-mt-5w">
-        <button class="fr-btn" type="submit" :disabled="!feature || multipolygon" @click="showDetailsModal = true">Ajouter</button>
+        <button class="fr-btn" type="submit" :disabled="!feature || multipolygon" @click="showDetailsModal = true">
+          Renseigner l'assolement
+        </button>
       </div>
     </form>
   </section>
@@ -184,9 +186,9 @@ watch(feature, () => {
   emit('update', markRaw(featureCollection([toRaw(feature.value)])))
 })
 
-async function saveFeature ({ patch }) {
-  feature.value.properties = { ...feature.value.properties, ...patch }
-  const record = await submitNewParcelle({ operatorId: recordStore.record.operator.id }, feature.value)
+async function saveFeature ({ properties }) {
+  feature.value.properties = { ...feature.value.properties, ...properties }
+  const record = await submitNewParcelle({ recordId: recordStore.record.record_id }, feature.value)
 
   messages.addMessage({ type: 'success', text: 'Parcelle ajoutée.' })
 

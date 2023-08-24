@@ -7,7 +7,7 @@
     </li>
   </ul>
 
-  <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
+  <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })">
     <div v-if="permissions.canChangeCulture" class="fr-input-group">
       <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
     </div>
