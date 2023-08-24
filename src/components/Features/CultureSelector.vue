@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="culture-group fr-mb-1w fr-p-3w" v-for="(culture) in uuidedCultures" :key="culture.id">
+  <fieldset class="culture-group fr-card fr-mb-1w fr-p-3w" v-for="(culture) in uuidedCultures" :key="culture.id">
     <div class="fr-input-group">
       <label class="fr-label" :for="`cpf-${culture.id}-input`">Type de culture</label>
       <CultureTypeSelector :id="`cpf-${culture.id}`" :from-pac="culture.TYPE" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
@@ -95,7 +95,9 @@ function updateCulture (cultureId, field, value) {
 
 <style scoped>
 .culture-group {
-  border: 1px solid var(--light-border-default-grey, #E5E5E5);
+  margin-left: 0;
+  margin-right: 0;
+  border: 0;
 }
 
 .horizontal-stack {

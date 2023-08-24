@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { provide, shallowRef, ref, onMounted, onUpdated } from 'vue'
+import { provide, shallowRef, ref, onMounted, onUpdated, watch } from 'vue'
 import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
 import warningImg from '@/assets/map/warning.png?url'
 
@@ -65,6 +65,11 @@ onMounted(() => {
 })
 
 onUpdated(() => map.value.resize())
+
+watch(() => props.bounds, (bounds) => {
+  if (!bounds) return
+  map.value.fitBounds(bounds, { padding: 50 })
+})
 </script>
 
 <style>
