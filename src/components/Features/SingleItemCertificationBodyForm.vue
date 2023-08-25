@@ -1,7 +1,7 @@
 <template>
   <div class="fr-card fr-p-3w fr-mb-3w">
     <h6 class="fr-mb-0">{{ featureName(feature) }}
-      ({{ (surface(feature) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) }} ha)</h6>
+      ({{ inHa(surface(feature)) }} ha)</h6>
     <ul v-if="details.length">
       <li v-for="(detail, index) in details" :key="index">
         {{ detail }}
@@ -46,7 +46,7 @@
 <script setup>
 import { reactive, computed } from 'vue';
 
-import { featureDetails, featureName, surface } from '@/components/Features/index.js'
+import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
 import CultureSelector from "@/components/Features/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";

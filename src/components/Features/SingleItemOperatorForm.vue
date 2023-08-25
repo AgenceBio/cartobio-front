@@ -1,6 +1,6 @@
 <template>
   <h6 class="fr-mb-0">{{ featureName(feature) }}
-    ({{ (surface(feature) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) }} ha)</h6>
+    ({{ inHa(surface(feature)) }} ha)</h6>
   <ul v-if="details.length">
     <li v-for="(detail, index) in details" :key="index">
       {{ detail }}
@@ -29,7 +29,7 @@
 <script setup>
 import { reactive } from 'vue';
 
-import { featureDetails, featureName, surface } from '@/components/Features/index.js'
+import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import CultureSelector from '@/components/Features/CultureSelector.vue'
 import { usePermissions } from "@/stores/permissions.js"
 

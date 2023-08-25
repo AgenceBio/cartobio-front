@@ -31,7 +31,9 @@
             />
           </div>
         </div>
-        <span v-if="multipolygon" class="fr-hint-text fr-message--error fr-mb-3v">La parcelle résultante est disjointe.</span>
+        <span v-if="multipolygon" class="fr-hint-text fr-message--error fr-mb-3v">
+          Les références cadastrales renseignées sont disjointes. Afin de pouvoir ajouter cette parcelle, les références cadastrales doivent se toucher.
+        </span>
 
         <div v-if="canAddReference" class="fr-input-group">
           <button class="fr-btn fr-btn--secondary fr-btn--sm" type="button" @click="addReference">Ajouter une référence</button>
@@ -75,6 +77,13 @@ import { usePermissions } from "@/stores/permissions.js"
 import CertificationBodyEditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
 import OperatorEditForm from "@/components/Features/SingleItemOperatorForm.vue"
 
+const props = defineProps({
+  backLink: {
+    type: String,
+    required: true
+  }
+})
+
 const emit = defineEmits(['update'])
 const router = useRouter()
 
@@ -91,7 +100,7 @@ const editForm = computed(() => markRaw(permissions.isOc ? CertificationBodyEdit
 // Cadastre references
 const cadastreParcelles = reactive([{ commune: '', reference: '', feature: null, error: '', key: crypto.randomUUID() }])
 const feature = ref(null)
-const canAddReference = computed(() => cadastreParcelles.every(p => p.feature !== null))
+const canAddReference = computed(() => cadastreParcelles.length > 0 && cadastreParcelles.every(p => p.feature !== null))
 const multipolygon = ref(false)
 
 function addReference () {
@@ -99,7 +108,11 @@ function addReference () {
 }
 
 function updateReference (index, { reference, feature: cadastreFeature }) {
-  if (cadastreFeature === null) return;
+  if (cadastreFeature === null) {
+    cadastreParcelles[index].reference = ''
+    cadastreParcelles[index].feature = null
+    return;
+  }
 
   // 1. filter incoming geometry with known geometries
   const filteredFeature = diff(
@@ -125,6 +138,7 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
 watch(cadastreParcelles, () => {
 
   const features = cadastreParcelles.map(p => p.feature).filter(feature => feature !== null)
+  const references = cadastreParcelles.filter(p => p.feature !== null).map(p => p.reference)
 
   // if no cadastre references, reset feature
   if (features.length === 0) {
@@ -137,9 +151,9 @@ watch(cadastreParcelles, () => {
   if (features.length === 1) {
     multipolygon.value = false
     feature.value = {
-      ...cadastreParcelles[0].feature,
+      ...features[0],
       properties: {
-        cadastre: [cadastreParcelles[0].reference],
+        cadastre: [references[0]],
         cultures: [{ CPF: '', id: crypto.randomUUID() }]
       }
     }
@@ -154,7 +168,7 @@ watch(cadastreParcelles, () => {
   // we still set features ref even if multipolygon to allow the user to view it
   multipolygon.value = combinedFeature.geometry.type === 'MultiPolygon' && combinedFeature.geometry.coordinates.length > 1;
 
-  combinedFeature.properties.cadastre = cadastreParcelles.map(p => p.reference).filter(ref => ref !== '')
+  combinedFeature.properties.cadastre = references
   combinedFeature.properties.cultures = [{ CPF: '', id: crypto.randomUUID() }]
 
   feature.value = combinedFeature
@@ -175,13 +189,9 @@ async function saveFeature ({ patch }) {
   featuresStore.setAll(record.parcelles.features)
 
   showDetailsModal.value = false
-  const route = permissions.isOc ? {
-    name: 'certification-exploitations-id',
-    params: { id: recordStore.record.operator.id },
-  } : { name: 'exploitation-parcellaire' }
   await router.push({
     query: { new: record.audit_history.at(-1).parcelleId },
-    ...route,
+    path: props.backLink,
   })
 }
 </script>

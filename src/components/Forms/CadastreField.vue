@@ -6,7 +6,7 @@
           Préfixe (facultatif)
           <span class="fr-hint-text">Exemple : 000, 011</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="\d{2,3}" :disabled="commune === ''" v-model="prefix" />
+        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="\d{2,3}" :disabled="commune === ''" v-model="prefix" @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -16,7 +16,7 @@
           Section
           <span class="fr-hint-text">Exemple : A, AD</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="commune === ''" pattern="[a-zA-Z\d]{1,2}" v-model="section" required />
+        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="commune === ''" pattern="[a-zA-Z\d]{1,2}" v-model="section" required @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -26,16 +26,17 @@
           N° de parcelle
           <span class="fr-hint-text">Exemple : 250, 1</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="\d{1,4}" :disabled="commune === ''" v-model="number" required />
+        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="\d{1,4}" :disabled="commune === ''" v-model="number" required @keydown.enter="searchReference" />
       </div>
     </div>
 
     <div class="fr-fieldset__element">
       <button v-if="feature && canDelete" class="fr-btn fr-btn--secondary fr-icon-delete-line" @click="emit('delete')">Supprimer</button>
+      <button v-else-if="isFetchingGeometry" class="fr-btn fr-btn--secondary fr-icon-time-fill" disabled>Recherche en cours</button>
       <button v-else class="fr-btn fr-icon-search-line" @click="searchReference">Rechercher</button>
     </div>
   </fieldset>
-  <span v-if="feature && !isError" class="fr-hint-text fr-message--valid">Parcelle cadastrale sélectionnée</span>
+  <span v-if="feature && !isError" class="fr-hint-text fr-message--valid">Parcelle cadastrale sélectionnée ({{ inHa(surface(feature)) }} ha)</span>
   <span v-if="searchError" class="fr-hint-text fr-message--error">{{ searchError }}</span>
   <span v-if="formError" class="fr-hint-text fr-message--error">{{ formError }}</span>
 </template>
@@ -46,6 +47,7 @@ import axios from 'axios'
 import { computed, ref, watch } from 'vue'
 import { isValidReference, parseReference, toString } from '../cadastre.js';
 import { toast } from "vue3-toastify"
+import { inHa, surface } from "../Features/index.js"
 
 const props = defineProps({
   commune: {
@@ -83,20 +85,25 @@ const isError = computed(() => !!searchError.value || props.formError)
 // Exposed values
 const inputReference = computed(() => toString({
   commune: props.commune,
-  prefix: prefix.value,
-  section: section.value,
-  number: number.value
+  prefix: prefix.value.trim(),
+  section: section.value.trim(),
+  number: number.value.trim()
 }))
 const feature = ref(null)
 
 // Search logic
 const cadastreRequestController = ref(null)
-const searchReference = async () => {
-  if (!isValidReference(inputReference.value)) {
+const searchReference = async (event) => {
+  if (event.preventDefault) {
+    event.preventDefault()
+  }
+
+  if (section.value === '' || number.value === '' || !isValidReference(inputReference.value)) {
+    searchError.value = "La référence cadastrale n'est pas valide."
     return
   }
 
-  const { commune: code_insee, section, prefix: com_abs, number: numero } = parseReference(inputReference.value)
+  const { commune: code_insee, section: parsedSection, prefix: com_abs, number: numero } = parseReference(inputReference.value)
   const _limit = 1
   const source_ign = 'PCI'
   isFetchingGeometry.value = true
@@ -109,7 +116,7 @@ const searchReference = async () => {
   let featureCollection;
   try {
     ({ data: featureCollection } = await axios.get('https://apicarto.ign.fr/api/cadastre/parcelle', {
-      params: { code_insee, section, numero, com_abs, _limit, source_ign },
+      params: { code_insee, section: parsedSection, numero, com_abs, _limit, source_ign },
       signal: cadastreRequestController.value.signal
     }))
   } catch (error) {
@@ -137,6 +144,12 @@ watch([prefix, section, number], () => {
   if (feature.value !== null) {
     feature.value = null
   }
+
+  if (cadastreRequestController.value) {
+    cadastreRequestController.value.abort()
+  }
+
+  isFetchingGeometry.value = false
 })
 
 // Emit signal when feature value changes
