@@ -212,13 +212,18 @@ function doSave (geojson) {
   background-position: top, bottom;
   background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
 }
+
 .fr-table .summary.summary__mass-actions {
   color: var(--text-inverted-blue-france);
   background-color: var(--background-action-high-blue-france);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
-  .fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before{
-    box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
-  }
+
+.fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before{
+  box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
+}
 
 .fr-text--align-right {
   text-align: right !important;
