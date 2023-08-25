@@ -13,6 +13,7 @@
       </button>
     </div>
   </div>
+
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
