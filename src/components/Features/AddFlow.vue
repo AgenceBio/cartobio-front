@@ -101,10 +101,6 @@ function addReference () {
 function updateReference (index, { reference, feature: cadastreFeature }) {
   if (cadastreFeature === null) return;
 
-  cadastreParcelles[index].reference = ''
-  cadastreParcelles[index].feature = null
-  cadastreParcelles[index].error = ''
-
   // 1. filter incoming geometry with known geometries
   const filteredFeature = diff(
       toRaw(cadastreFeature),
@@ -112,6 +108,8 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
   )
 
   if (filteredFeature === null) {
+    cadastreParcelles[index].reference = ''
+    cadastreParcelles[index].feature = null
     cadastreParcelles[index].error = 'La parcelle est déjà incluse dans les autres parcelles.'
 
     return
@@ -120,32 +118,37 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
   // 2. track changes
   cadastreParcelles[index].reference = reference
   cadastreParcelles[index].feature = filteredFeature
+  cadastreParcelles[index].error = ''
 }
 
 // Merge all cadastre references into a single feature
 watch(cadastreParcelles, () => {
-  multipolygon.value = false
-  feature.value = null
 
   const features = cadastreParcelles.map(p => p.feature).filter(feature => feature !== null)
 
-  // do nothing if no feature
-  if (features.length === 0) return
+  // if no cadastre references, reset feature
+  if (features.length === 0) {
+    multipolygon.value = false
+    feature.value = null
+    return
+  }
 
-  // update immediately if only one feature
+  // if only one feature, use it as is
   if (features.length === 1) {
     multipolygon.value = false
-    feature.value = cadastreParcelles[0].feature
-    feature.value.properties.cadastre = [cadastreParcelles[0].reference]
-    feature.value.properties.cultures = [{ CPF: '', id: crypto.randomUUID() }]
+    feature.value = {
+      ...cadastreParcelles[0].feature,
+      properties: {
+        cadastre: [cadastreParcelles[0].reference],
+        cultures: [{ CPF: '', id: crypto.randomUUID() }]
+      }
+    }
 
     return
   }
 
   // merge features into one otherwise
   const combinedFeature = merge(toRaw(features))
-
-  if (combinedFeature === null) return
 
   // check if resulting feature is a multipolygon
   // we still set features ref even if multipolygon to allow the user to view it
