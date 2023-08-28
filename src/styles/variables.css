@@ -808,6 +808,12 @@
 }
 
 :root {
+  --z-index-map: calc(var(--ground) + 10);
+  --z-index-mass-actions: calc(var(--ground) + 50);
+  --z-index-map-large: calc(var(--ground) + 100);
+}
+
+:root {
   --toastify-color-light: #fff;
   --toastify-color-dark: #121212;
   --toastify-color-info: var(--info-425-625);

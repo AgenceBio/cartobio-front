@@ -218,7 +218,7 @@ function doSave (geojson) {
   background-color: var(--background-action-high-blue-france);
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: var(--z-index-mass-actions);
 }
 
 .fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before{
