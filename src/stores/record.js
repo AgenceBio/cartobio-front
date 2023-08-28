@@ -9,6 +9,8 @@ export const useRecordStore = defineStore('record', () => {
 
   const initialState = {
     record_id: null,
+    certification_date_debut: null,
+    certification_date_fin: null,
     certification_state: null,
     created_at: null,
     updated_at: null,
