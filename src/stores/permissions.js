@@ -22,6 +22,11 @@ export const usePermissions = defineStore('permissions', () => {
     return false;
   }
 
+  function $reset () {
+    userStore.$reset()
+    recordStore.$reset()
+  }
+
   // Returned permissions
 
   const isOc = computed(() => {
@@ -76,5 +81,6 @@ export const usePermissions = defineStore('permissions', () => {
     canSaveAudit,
     canSendAudit,
     canCertify,
+    $reset
   }
 })

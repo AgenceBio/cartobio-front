@@ -56,6 +56,7 @@ export const useRecordStore = defineStore('record', () => {
     isSetup,
     // methods
     update,
-    reset
+    reset,
+    $reset: reset
   }
 })

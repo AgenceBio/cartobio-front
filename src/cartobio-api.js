@@ -3,6 +3,20 @@ import axios from 'axios'
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
 /**
+ * @enum {String}
+ * Duplicate of api/cartobio.js#EventType
+ */
+export const EventType = {
+  CERTIFICATION_STATE_CHANGE: 'CertificationStateChange',
+  FEATURE_COLLECTION_CREATE: 'FeatureCollectionCreation',
+  FEATURE_COLLECTION_DELETE: 'FeatureCollectionDeletion',
+  FEATURE_COLLECTION_UPDATE: 'FeatureCollectionUpdate',
+  FEATURE_CREATE: 'FeatureCreation',
+  FEATURE_DELETE: 'FeatureDeletion',
+  FEATURE_UPDATE: 'FeatureUpdate'
+}
+
+/**
  * @typedef {import('@types/geojson').FeatureCollection} FeatureCollection
  * @typedef {import('@/referentiels/imports.js').sources} SourceType
  * @typedef {import('@/referentiels/ab.js').CERTIFICATION_STATE} CertificationState
