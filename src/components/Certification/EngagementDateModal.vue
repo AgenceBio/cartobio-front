@@ -1,5 +1,5 @@
 <template>
-  <Modal v-bind="$attrs">
+  <Modal v-bind="$attrs" data-track-content data-content-name="Modale de modification multiple de la date d'engagement">
     <template #title>Modification de la date d'engagement</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">

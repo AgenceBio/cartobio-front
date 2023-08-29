@@ -57,6 +57,11 @@ const app = createApp(App)
     enableHeartBeatTimer: 15,
     trackerUrl: 'https://cartobio.agencebio.org/s/',
     trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
+    trackSiteSearch: (to) => to.path === '/certification/exploitations' && to.query.search || null,
+  })
+  .use(() => {
+    window._paq = window._paq || [];
+    window._paq.push(['trackAllContentImpressions']);
   })
 
 // this is sync because we need to know the user role before rendering the app

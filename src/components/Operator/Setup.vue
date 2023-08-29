@@ -73,11 +73,11 @@ const nextStep = computed(() => currentStepIndex.value + 1 < allSteps.length ? a
 
 function onSourceChange (source) {
   importTool.value = source
-  statsPush(['trackEvent', 'setup', 'sourceSelect', importTool.value])
+  statsPush(['trackEvent', 'Import', 'Sélection de source', importTool.value])
 }
 
 function onUploadStart () {
-  statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'start'])
+  statsPush(['trackEvent', 'Import', `Début de l'import (${importTool.value})`])
   currentStepIndex.value = 1
 }
 
@@ -86,7 +86,7 @@ function onUploadPreview () {
 }
 
 function onSuccess ({ record: newRecord }) {
-  statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'ok'])
+  statsPush(['trackEvent', 'Import', `Fin de l'import (${importTool.value})`])
   currentStepIndex.value += 1
 
   // we store the record to delay the propagation of the record
@@ -94,7 +94,7 @@ function onSuccess ({ record: newRecord }) {
 }
 
 function onError () {
-  statsPush(['trackEvent', 'setup', `import:${importTool.value}`, 'error'])
+  statsPush(['trackEvent', 'Import', `Erreur d'import (${importTool.value})`])
 }
 </script>
 

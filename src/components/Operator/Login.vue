@@ -73,6 +73,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.js'
+import { statsPush } from "@/stats.js"
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -91,7 +92,7 @@ function resetSearch () {
   candidateUsers.value = []
   userLogin.value = ''
   loginInput.value.focus()
-  window._paq.push(['trackEvent', 'login', `search`, 'reset'])
+  statsPush(['trackEvent', 'Login', 'Réinitialiser la recherche'])
 }
 
 async function tryLogin () {
@@ -108,7 +109,7 @@ async function tryLogin () {
       }
     }).then(res => res.json())
 
-    window._paq.push(['trackEvent', 'login', `search`, 'results'])
+    statsPush(['trackEvent', 'Login', 'Recherche opérateur', cleanedInput.value])
   }
   catch (e) {
     error.value = 'La requête n\'a pas pu aboutir. Pouvez-vous réessayer dans quelques secondes ?'
@@ -132,7 +133,7 @@ async function loginCandidateUser (candidateUser) {
     }
   }).then(res => res.text())
 
-  window._paq.push(['trackEvent', 'login', `search`, 'selectOperator'])
+  statsPush(['trackEvent', 'Login', "Sélection d'opérateur"])
 
   userStore.login(persistentToken)
   router.push('/exploitation/parcellaire')
@@ -147,22 +148,6 @@ span[aria-selected="true"] {
 .help span:not(:last-of-type)::after {
   content: ", ";
 }
-
-dl.candidateUser {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr 2fr;
-  max-width: 640px;
-}
-
-  dl.candidateUser dt {
-    font-weight: bold;
-    text-align: right;
-  }
-
-  dl.candidateUser dd {
-    margin: 0;
-  }
 
 .list-unstyled {
   --ul-type: none;

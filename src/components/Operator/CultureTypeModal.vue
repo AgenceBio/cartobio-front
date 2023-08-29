@@ -1,5 +1,5 @@
 <template>
-  <Modal v-bind="$attrs">
+  <Modal v-bind="$attrs" data-track-content data-content-name="Modale de modification multiple de la culture">
     <template #title>Modification du type de culture</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">

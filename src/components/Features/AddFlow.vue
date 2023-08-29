@@ -56,7 +56,7 @@
   </section>
 
   <Teleport to="body">
-    <Modal v-if="showDetailsModal" v-model="showDetailsModal" icon="fr-icon-file-text-fill">
+    <Modal v-if="showDetailsModal" v-model="showDetailsModal" icon="fr-icon-file-text-fill" data-track-content data-content-name="Modale de confirmation d'ajout">
       <template #title>Ajouter une parcelle</template>
       <Component :is="editForm" :feature="feature" @submit="saveFeature"/>
     </Modal>
@@ -76,6 +76,7 @@ import { useFeaturesStore, useMessages, useRecordStore } from "@/stores/index.js
 import { usePermissions } from "@/stores/permissions.js"
 import CertificationBodyEditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
 import OperatorEditForm from "@/components/Features/SingleItemOperatorForm.vue"
+import { statsPush } from "@/stats.js"
 
 const props = defineProps({
   backLink: {
@@ -189,6 +190,7 @@ async function saveFeature ({ patch }) {
   featuresStore.setAll(record.parcelles.features)
 
   showDetailsModal.value = false
+  statsPush(['trackEvent', 'Parcelles', 'Ajout (sauvegarde)'])
   await router.push({
     query: { new: record.audit_history.at(-1).parcelleId },
     path: props.backLink,
