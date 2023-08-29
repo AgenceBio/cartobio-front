@@ -1,8 +1,11 @@
 <template>
-  <p>
-    <span class="fr-icon-info-line" aria-hidden="true" />
-    {{ featureName(feature) }}
-  </p>
+  <h6 class="fr-mb-0">{{ featureName(feature) }}
+    ({{ inHa(surface(feature)) }} ha)</h6>
+  <ul v-if="details.length">
+    <li v-for="(detail, index) in details" :key="index">
+      {{ detail }}
+    </li>
+  </ul>
 
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
     <div v-if="permissions.canChangeCulture" class="fr-input-group">
@@ -26,7 +29,7 @@
 <script setup>
 import { reactive } from 'vue';
 
-import { featureName } from '@/components/Features/index.js'
+import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import CultureSelector from '@/components/Features/CultureSelector.vue'
 import { usePermissions } from "@/stores/permissions.js"
 
@@ -45,4 +48,6 @@ const patch = reactive({
 const emit = defineEmits(['submit'])
 
 const permissions = usePermissions()
+
+const details = await featureDetails(props.feature)
 </script>

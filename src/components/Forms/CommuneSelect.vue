@@ -37,6 +37,12 @@ onMounted(async () => {
     container: autocompleteRef.value,
     placeholder: 'Saisissez le nom d’une commune',
     openOnFocus: true,
+    classNames: {
+      form: 'fr-input',
+    },
+    onReset() {
+      emit('update:modelValue', "")
+    },
     getSources() {
       return [
         {
@@ -83,6 +89,28 @@ onMounted(async () => {
   z-index: 2000;
 }
 
+.aa-Form {
+  background-color: var(--background-contrast-grey);
+  border: none;
+  border-radius: 0.25rem 0.25rem 0 0;
+  padding-right: 0;
+}
+
+.aa-Form:focus-within {
+  box-shadow: none;
+  outline-offset: 2px;
+  outline-width: 2px;
+  outline-color: #0a76f6;
+}
+
+.aa-PanelLayout {
+  max-height: calc(100vh - 25rem);
+}
+
+.aa-Autocomplete {
+  margin-top: 0.5rem;
+}
+
 .aa-Item:hover {
   background-color: #ececfe;
 }
@@ -90,7 +118,14 @@ onMounted(async () => {
 .aa-InputWrapperPrefix {
   display: none;
 }
-.aa-InputWrapper {
-  padding-left: 0.75rem
+
+.aa-InputWrapperSuffix {
+  --border-width: 2px;
+  --aa-search-input-height: calc((0.5rem * 2) + 1.5rem - var(--border-width));
+  align-items: flex-start;
+  margin-top: calc(var(--border-width) * -1); /* to counteract the align-items: center of the container */
+}
+.aa-ClearButton {
+  border-radius: 0 .25rem 0 0;
 }
 </style>

@@ -1,8 +1,13 @@
 <template>
-  <p>
-    <span class="fr-icon-info-line" aria-hidden="true" />
-    {{ featureName(feature) }}
-  </p>
+  <div class="fr-card fr-p-3w fr-mb-3w">
+    <h6 class="fr-mb-0">{{ featureName(feature) }}
+      ({{ inHa(surface(feature)) }} ha)</h6>
+    <ul v-if="details.length">
+      <li v-for="(detail, index) in details" :key="index">
+        {{ detail }}
+      </li>
+    </ul>
+  </div>
 
   <form @submit.prevent="emit('submit', { ids: [feature.id], patch })">
     <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
@@ -41,7 +46,7 @@
 <script setup>
 import { reactive, computed } from 'vue';
 
-import { featureName } from '@/components/Features/index.js'
+import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
 import CultureSelector from "@/components/Features/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
@@ -54,7 +59,7 @@ const props = defineProps({
 })
 
 const patch = reactive({
-  conversion_niveau: props.feature.properties.conversion_niveau,
+  conversion_niveau: props.feature.properties.conversion_niveau || '',
   cultures: props.feature.properties.cultures,
   engagement_date: props.feature.properties.engagement_date,
   auditeur_notes: props.feature.properties.auditeur_notes || '',
@@ -64,6 +69,7 @@ const emit = defineEmits(['submit'])
 const isAB = computed(() => isABLevel(patch.conversion_niveau))
 const maxDate = computed(() => new Date().toISOString().split('T').at(0))
 const isEngagementDateRequired = computed(() => applyValidationRules([RULE_ENGAGEMENT_DATE], { properties: patch }).success === 0)
+const details = await featureDetails(props.feature)
 </script>
 
 <style scoped>

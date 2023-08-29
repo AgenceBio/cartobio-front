@@ -1,9 +1,17 @@
 <template>
-  <div v-if="showSuccess" class="fr-alert fr-alert--success fr-alert--sm fr-mb-2w">
-    <p>Modification enregistrée</p>
-    <button class="fr-btn--close fr-btn" title="Masquer le message" @click="showSuccess = false">
-      Masquer le message
-    </button>
+  <div v-for="(message, index) in displayedMessages" :key="index">
+    <div v-if="message.type === 'success'" class="fr-alert fr-alert--success fr-alert--sm fr-mb-2w">
+      <p>{{ message.text }}</p>
+      <button class="fr-btn--close fr-btn" title="Masquer le message" @click="displayedMessages.splice(index, 1)">
+        Masquer le message
+      </button>
+    </div>
+    <div v-if="message.type === 'error'" class="fr-alert fr-alert--error fr-alert--sm fr-mb-2w">
+      <p>{{ message.text }}</p>
+      <button class="fr-btn--close fr-btn" title="Masquer le message" @click="displayedMessages.splice(index, 1)">
+        Masquer le message
+      </button>
+    </div>
   </div>
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
     <table @mouseout="hoveredFeatureId = null">
@@ -92,6 +100,7 @@ import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from
 import { submitParcellesChanges } from '@/cartobio-api.js'
 import { usePermissions } from "@/stores/permissions.js"
 import { toast } from "vue3-toastify"
+import { useMessages } from "@/stores/index.js"
 
 const props = defineProps({
   operator: {
@@ -109,6 +118,7 @@ const props = defineProps({
 
 const store = useFeaturesStore()
 const permissions = usePermissions()
+const messages = useMessages()
 
 const { hoveredId:hoveredFeatureId } = storeToRefs(store)
 const { selectedIds:selectedFeatureIds, allSelected } = storeToRefs(store)
@@ -124,10 +134,15 @@ const featureGroups = computed(() => getFeatureGroups(props.features, userGroupi
 
 const isSaving = ref(false)
 const showModal = computed(() => Boolean(editedFeatureId.value))
-const showSuccess = ref(false)
+
+// Messages
+const displayedMessages = ref(messages.popMessages())
+watch(messages.queue, () => {
+  displayedMessages.value.push(...messages.popMessages())
+})
 watch(showModal, (value) => {
   if (value) {
-    showSuccess.value = false
+    displayedMessages.value = []
   }
 })
 
@@ -156,7 +171,7 @@ function doSave (geojson) {
   setTimeout(async () => {
     try {
       await submitParcellesChanges ({ geojson, operatorId, ocId, ocLabel, numeroBio })
-      showSuccess.value = true
+      messages.addMessage({ type: 'success', text: 'Modification enregistrée.' })
     }
     catch (error) {
       console.error(error)

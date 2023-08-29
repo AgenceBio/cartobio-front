@@ -5,6 +5,8 @@ import area from '@turf/area'
 import { conversionLevels } from '@/referentiels/ab.js'
 import { parseReference } from "@/components/cadastre.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
+import union from "@turf/union"
+import axios from "axios"
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -224,7 +226,8 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
   if (feature.properties.NOM) {
     return feature.properties.NOM
   }
-  else if (feature.properties.NUMERO_I || feature.properties.NUMERO_P) {
+
+  if (feature.properties.NUMERO_I || feature.properties.NUMERO_P) {
     return [
       feature.properties.NUMERO_I ? `${ilotLabel}${feature.properties.NUMERO_I}` : '',
       feature.properties.NUMERO_P ? `${parcelleLabel}${feature.properties.NUMERO_P}` : '',
@@ -232,13 +235,40 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     .filter(d => d)
     .join(separator)
   }
-  else if (feature.properties.cadastre) {
+
+  if (feature.properties.cadastre) {
+    if (Array.isArray(feature.properties.cadastre)) {
+      const references = feature.properties.cadastre.map(cadastre => parseReference(cadastre))
+      return `Parcelles ${references.map(cadastre => cadastre.number).join(separator)}`
+    }
+
     const {prefix, section, number} = parseReference(feature.properties.cadastre)
     return `Reférence cadastrale ${prefix !== '000' ? prefix : ''} ${section} ${number}`
   }
   else {
     return placeholder
   }
+}
+
+export async function featureDetails (feature) {
+  const details = []
+
+  if (feature.properties.cadastre) {
+    const cadastre = Array.isArray(feature.properties.cadastre) ? feature.properties.cadastre : [feature.properties.cadastre]
+    const references = cadastre
+        .map(ref => parseReference(ref))
+
+    const communes = (await Promise.all(
+        references
+        .map(({ commune }) => axios.get(`https://geo.api.gouv.fr/communes/${commune}`))
+    )).map(({ data }) => data.nom)
+
+    details.push(...references.map(
+        ({ section, number }, index) => `Parcelle cadastrale ${number} (Section ${section}, ${communes[index]})`
+    ))
+  }
+
+  return details
 }
 
 const cultureList = new Intl.ListFormat('fr', {
@@ -296,7 +326,7 @@ export function surface (geometryOrFeature) {
 /**
  * Returns a geometry, without any content part of a feature collection
  *
- * @param {Feature} geometry
+ * @param {Feature} feature
  * @param {FeatureCollection} featureCollection
  * @returns {Feature}
  */
@@ -312,4 +342,20 @@ export function diff (feature, featureCollection) {
 
     return difference(reducedFeature, target)
   }, feature)
+}
+
+/**
+ * Merge all features into one single feature (union)
+ *
+ * @param {Array<Feature>} features
+ * @returns {Feature}
+ */
+export function merge(features) {
+  return features.reduce((mergedFeature, feature) => {
+    if (mergedFeature === null) {
+      return feature
+    }
+
+    return union(mergedFeature, feature)
+  }, null)
 }
