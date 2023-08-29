@@ -19,6 +19,9 @@
 
 <script setup>
 import Legend from "@/components/Map/Legend.vue";
+import { useContentTracking } from "@/stats.js"
+
+useContentTracking()
 
 defineProps({
   operateur: {

@@ -30,6 +30,9 @@
 import { onBeforeUnmount, ref, watchEffect } from 'vue'
 import { useHead } from '@unhead/vue'
 import { onKeyStroke } from '@vueuse/core'
+import { useContentTracking } from "@/stats.js"
+
+useContentTracking()
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
