@@ -60,7 +60,14 @@ const télépac = useTélépac()
 const pacageFilename = readonly(télépac.pacageFilename())
 
 function confirmImport () {
-  emit('upload', { geojson: collection.value, source: sources.TELEPAC })
+  emit('upload', {
+    geojson: collection.value,
+    source: sources.TELEPAC,
+    metadata: {
+      campagne: collection.value.features.at(0)?.properties?.CAMPAGNE,
+      pacage: collection.value.features.at(0)?.properties?.PACAGE,
+    }
+  })
 }
 
 watch(files, async (newFiles) => {

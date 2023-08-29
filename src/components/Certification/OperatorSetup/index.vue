@@ -131,7 +131,7 @@ const props = defineProps({
 const setupFromTelepacModal = ref(false)
 const setupFromRPGModal = ref(false)
 
-async function handleUpload ({ geojson, source }) {
+async function handleUpload ({ geojson, source, metadata = {} }) {
   const { id: operatorId, numeroBio, organismeCertificateur } = props.operator
   const { id: ocId, nom: ocLabel } = organismeCertificateur
 
@@ -141,6 +141,7 @@ async function handleUpload ({ geojson, source }) {
     ocLabel,
     geojson,
     metadata: {
+      ...metadata,
       source,
       sourceLastUpdate: now()
     }

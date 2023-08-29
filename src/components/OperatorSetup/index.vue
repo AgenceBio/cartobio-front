@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { computed, provide, ref, toRaw, watchEffect } from 'vue'
+import { computed, provide, ref, toRaw, unref, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import ImportPreview from '@/components/OperatorSetup/ImportPre.vue'
@@ -40,10 +40,12 @@ const props = defineProps({
 const featureSource = ref('telepac')
 const featureCollection = ref(null)
 const importWarnings = ref([])
+const extraMetadata = ref({})
 
 provide('featureSource', featureSource)
 provide('featureCollection', featureCollection)
 provide('importWarnings', importWarnings)
+provide('extraMetadata', extraMetadata)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -58,15 +60,17 @@ watchEffect(() => emit('source:change', featureSource.value))
 
 defineExpose({ featureSource })
 
-function handleSelection ({ geojson, warnings }) {
+function handleSelection ({ geojson, warnings = [], metadata = {} }) {
   featureCollection.value = geojson
   importWarnings.value = warnings
-  emit('import:preview')
+  extraMetadata.value = metadata
+  emit('import:preview', { geojson, warnings, metadata })
 }
 
 function handleCancel () {
   featureCollection.value = {}
   importWarnings.value = []
+  extraMetadata.value = {}
   emit('import:start')
 }
 
@@ -85,13 +89,14 @@ async function handleUpload () {
       ocLabel,
       numeroBio,
       metadata: {
+        ...extraMetadata.value,
         source,
         sourceLastUpdate: now(),
         provenance: provenance.value
       }
     })
 
-    emit('import:complete', { geojson, source, record })
+    emit('import:complete', { geojson, source, record, metadata: unref(extraMetadata) })
   }
   catch (error) {
     emit('import:error', error)
