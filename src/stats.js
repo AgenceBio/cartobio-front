@@ -7,3 +7,7 @@ export function statsPush (args) {
     window._paq.push(args)
   }
 }
+
+export function useContentTracking () {
+  statsPush(['trackContentImpressionsWithinNode', document.getElementById('app')]);
+}

@@ -59,10 +59,6 @@ const app = createApp(App)
     trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
     trackSiteSearch: (to) => to.path === '/certification/exploitations' && to.query.search || null,
   })
-  .use(() => {
-    window._paq = window._paq || [];
-    window._paq.push(['trackContentImpressionsWithinNode', document.getElementById('app')]);
-  })
 
 // this is sync because we need to know the user role before rendering the app
 const userStore = useUserStore()
