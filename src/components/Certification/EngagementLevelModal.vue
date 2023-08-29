@@ -1,5 +1,6 @@
+
 <template>
-  <Modal v-bind="$attrs" icon="fr-icon-calendar-2-line">
+  <Modal v-bind="$attrs" icon="fr-icon-calendar-2-line" data-track-content data-content-name="Modale de modification multiple du niveau de conversion">
     <template #title>Modification du niveau de conversion</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">

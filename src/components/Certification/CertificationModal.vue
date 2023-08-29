@@ -1,5 +1,5 @@
 <template>
-  <component :is="Modal" v-bind="$attrs" icon="fr-icon-checkbox-circle-fill">
+  <component :is="Modal" v-bind="$attrs" icon="fr-icon-checkbox-circle-fill" data-track-content data-content-name="Modale de certification">
     <template #title>Certifier ce parcellaire</template>
 
     <h2 class="fr-text--lead">{{ operator.nom }}</h2>

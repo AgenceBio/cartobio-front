@@ -1,5 +1,5 @@
 <template>
-  <component :is="Modal" v-bind="$attrs" icon="fr-icon-road-map-line">
+  <component :is="Modal" v-bind="$attrs" icon="fr-icon-road-map-line" data-track-content data-content-name="Modale d'export">
     <template #title>Export de parcellaire</template>
 
     <p>
@@ -16,21 +16,21 @@
         <li>
           <div class="fr-grid-row">
             <div class="fr-col" v-if="exporter.toFileData">
-              <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport">
+              <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport" data-content-piece="Export OC">
                 {{ exporter.label }}&nbsp;<small>(<code :aria-label="exporter.label">.{{
                   exporter.extension
                 }}</code>)</small>
               </button>
             </div>
             <div class="fr-col" v-if="exporter.toClipboard">
-              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied}" @click="ocClipboardExport">
+              <button class="fr-btn fr-btn--secondary" :class="{'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied}" @click="ocClipboardExport" data-content-piece="Export presse-papier">
                 Copier dans le presse-papier
               </button>
             </div>
           </div>
         </li>
         <li>
-          <button class="fr-btn fr-icon-france-line fr-btn--secondary" @click="geojsonExport">
+          <button class="fr-btn fr-icon-france-line fr-btn--secondary" @click="geojsonExport" data-content-piece="Export GeoJson">
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>
         </li>
@@ -44,6 +44,7 @@ import { computed, ref, toRaw } from 'vue'
 import { fromId } from './ExportStrategies/index.js'
 
 import Modal from '@/components/Modal.vue'
+import { statsPush } from "@/stats.js"
 
 const props = defineProps({
   operator: {
@@ -73,6 +74,7 @@ const exporter = computed(function () {
 const copied = ref(false)
 
 function geojsonExport() {
+  statsPush(['trackEvent', 'Export', 'Export GeoJSON'])
   const blob = new Blob(
     [JSON.stringify(toRaw(props.collection), null, 2)],
     { type: 'application/json'}
@@ -85,6 +87,7 @@ function geojsonExport() {
 }
 
 function ocExport () {
+  statsPush(['trackEvent', 'Export', `Export OC (${props.operator.organismeCertificateur.nom})`])
   const data = exporter.value.toFileData()
   const link = document.createElement('a')
   link.href = URL.createObjectURL(data)
@@ -94,6 +97,7 @@ function ocExport () {
 }
 
 function ocClipboardExport () {
+  statsPush(['trackEvent', 'Export', `Export presse-papier (${props.operator.organismeCertificateur.nom})`])
   exporter.value.toClipboard()
   copied.value = true
 

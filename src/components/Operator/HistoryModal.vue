@@ -1,5 +1,5 @@
 <template>
-  <component :is="Modal" v-bind="$attrs" icon="fr-icon-calendar-2-line">
+  <component :is="Modal" v-bind="$attrs" icon="fr-icon-calendar-2-line" data-track-content data-content-name="Modale d'historique">
     <template #title>{{ operator.nom }}</template>
 
     <div class="history-cards" role="list">

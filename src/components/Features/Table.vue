@@ -101,6 +101,7 @@ import { submitParcellesChanges } from '@/cartobio-api.js'
 import { usePermissions } from "@/stores/permissions.js"
 import { toast } from "vue3-toastify"
 import { useMessages } from "@/stores/index.js"
+import { statsPush } from "@/stats.js"
 
 const props = defineProps({
   operator: {
@@ -148,6 +149,7 @@ watch(showModal, (value) => {
 
 
 function handleFeaturesEdit ({ ids, patch }) {
+  statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
   props.features.features
     .filter(feature => ids.includes(feature.id))
     .forEach(feature => {

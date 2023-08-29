@@ -1,6 +1,6 @@
 <template>
   <Legend class="map-legend">
-    <ul class="legend-list fr-my-1w">
+    <ul class="legend-list fr-my-1w" data-content-name="Parcelles environnantes" data-content-piece="Légende">
       <li><div class="legend-square legend-square--mes-parcelles" />{{
         $props.operateur ? 'Mes parcelles' : 'Parcelles de l\'exploitation'
         }}</li>

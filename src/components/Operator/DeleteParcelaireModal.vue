@@ -1,5 +1,5 @@
 <template>
-  <Modal v-bind="$attrs" ref="modal">
+  <Modal v-bind="$attrs" ref="modal" data-track-content data-content-name="Modale de suppression du parcellaire">
     <template #title>Suppression du parcellaire</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
