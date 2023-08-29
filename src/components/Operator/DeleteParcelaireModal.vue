@@ -45,10 +45,6 @@ const recordStore = useRecordStore()
 
 async function handleDelete() {
   const record = await deleteRecord(props.record.record_id)
-
-  // we reset the current state of the record and its features
-  recordStore.reset()
-  // ... then restore the record data (otherwise we loose the initial context)
   recordStore.update(record)
   modal.value?.$emit('update:modelValue', false)
 }
