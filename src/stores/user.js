@@ -11,6 +11,13 @@ export const ROLES = Object.freeze({
   UNKNOWN: 'unknown'
 })
 
+const rolesMap = {
+  'Super OC': [ROLES.OC_CERTIF, ROLES.OC_AUDIT],
+  'OC CartoBio': [ROLES.OC_AUDIT],
+  'OC': [ROLES.OC_CERTIF],
+  'Admin': [ROLES.ADMIN]
+}
+
 export function parseJwt (token) {
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -31,29 +38,26 @@ export const useUserStore = defineStore('user', () => {
   const isLogged = computed(() => Boolean(user.value.id))
 
   const roles = computed(() => {
-    const groupName = user.value?.mainGroup?.nom
-
     if (!isLogged.value) {
       return [ROLES.GUEST]
     }
-    else if (groupName === 'Super OC') {
-      return [ROLES.OC_CERTIF, ROLES.OC_AUDIT]
-    }
-    else if (groupName === 'OC CartoBio') {
-      return [ROLES.OC_AUDIT]
-    }
-    else if (groupName === 'OC') {
-      return [ROLES.OC_CERTIF]
-    }
-    else if (groupName === 'Admin') {
-      return [ROLES.ADMIN]
-    }
-    else if (groupName === 'Opérateur' || user.value.numeroBio) {
+
+    const groupNames = user.value?.groups?.map(group => group.nom) ?? []
+
+    if (groupNames.includes('Opérateur') || user.value.numeroBio) {
       return [ROLES.OPERATEUR]
     }
-    else {
+
+    if (groupNames.length === 0) {
       return [ROLES.UNKNOWN]
     }
+
+    const roles = new Set()
+    groupNames.forEach(groupName => {
+        rolesMap[groupName].forEach(role => roles.add(role))
+    })
+
+    return Array.from(roles)
   })
 
   function isRole (expectedRoleId) {
