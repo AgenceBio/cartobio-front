@@ -61,7 +61,7 @@ const app = createApp(App)
   })
   .use(() => {
     window._paq = window._paq || [];
-    window._paq.push(['trackAllContentImpressions']);
+    window._paq.push(['trackContentImpressionsWithinNode', document.getElementById('app')]);
   })
 
 // this is sync because we need to know the user role before rendering the app
