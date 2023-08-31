@@ -36,7 +36,6 @@
       <button v-else class="fr-btn fr-icon-search-line" @click="searchReference">Rechercher</button>
     </div>
   </fieldset>
-  <span v-if="feature && !isError" class="fr-hint-text fr-message--valid">Parcelle cadastrale sélectionnée ({{ inHa(surface(feature)) }} ha)</span>
   <span v-if="searchError" class="fr-hint-text fr-message--error">{{ searchError }}</span>
   <span v-if="formError" class="fr-hint-text fr-message--error">{{ formError }}</span>
 </template>
@@ -47,7 +46,6 @@ import axios from 'axios'
 import { computed, ref, watch } from 'vue'
 import { isValidReference, parseReference, toString } from '../cadastre.js';
 import { toast } from "vue3-toastify"
-import { inHa, surface } from "../Features/index.js"
 
 const props = defineProps({
   commune: {

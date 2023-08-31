@@ -29,6 +29,9 @@
                            @feature="updateReference(index, $event)"
                            @delete="cadastreParcelles.splice(index, 1)"
             />
+            <span v-if="cadastreParcelles[index].feature" class="fr-hint-text fr-message--valid">
+              Parcelle cadastrale sélectionnée ({{ inHa(surface(cadastreParcelles[index].feature)) }} ha)
+            </span>
           </div>
         </div>
         <span v-if="multipolygon" class="fr-hint-text fr-message--error fr-mb-3v">
@@ -69,7 +72,7 @@ import CadastreField from '@/components/Forms/CadastreField.vue'
 import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api.js';
 import { featureCollection } from '@turf/helpers'
-import { diff, merge } from './index.js'
+import { diff, inHa, merge, surface } from './index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
 import { useFeaturesStore, useMessages, useRecordStore } from "@/stores/index.js"
