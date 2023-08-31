@@ -11,6 +11,6 @@ export function statsPush (args) {
 
 export function useContentTracking () {
   onMounted(() => {
-    statsPush(['trackContentImpressionsWithinNode', document.getElementById('app')]);
+    statsPush(['trackAllContentImpressions']);
   })
 }
