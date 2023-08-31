@@ -1,3 +1,4 @@
+import { onMounted } from "vue"
 
 /**
  * @param {Array} args
@@ -9,5 +10,7 @@ export function statsPush (args) {
 }
 
 export function useContentTracking () {
-  statsPush(['trackContentImpressionsWithinNode', document.getElementById('app')]);
+  onMounted(() => {
+    statsPush(['trackContentImpressionsWithinNode', document.getElementById('app')]);
+  })
 }
