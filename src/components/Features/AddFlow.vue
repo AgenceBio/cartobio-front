@@ -153,7 +153,7 @@ watch(cadastreParcelles, () => {
 
   // if only one feature, use it as is
   if (features.length === 1) {
-    multipolygon.value = false
+    multipolygon.value = features[0].geometry.type === 'MultiPolygon' && features[0].geometry.coordinates.length > 1;
     feature.value = {
       ...features[0],
       properties: {
