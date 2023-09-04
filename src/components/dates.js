@@ -45,6 +45,8 @@ export function dateFormat (date) {
  * @returns {String} formatted date as MM YYYY
  */
 export function monthYearDateFormat (date) {
+  if (!date) return null
+
   return mmmmyyIntl.format(new Date(date))
 }
 
