@@ -7,7 +7,7 @@
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
     <button v-if="permissions.canSaveAudit" class="fr-btn" @click="handleSaveAudit">Terminer l'audit</button>
-    <span v-else>L'auditeur doit maintenant envoyer l'audit.</span>
+    <span v-else>L'auditeur doit maintenant terminer l'audit.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.AUDITED">
