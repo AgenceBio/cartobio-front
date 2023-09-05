@@ -158,6 +158,7 @@ watch(cadastreParcelles, () => {
     multipolygon.value = features[0].geometry.type === 'MultiPolygon' && features[0].geometry.coordinates.length > 1;
     feature.value = {
       ...features[0],
+      id: 1, // it will be replaced server-side, but we want to go through API Schema validation
       properties: {
         cadastre: [references[0]],
         cultures: [{ CPF: '', id: crypto.randomUUID() }]
@@ -174,6 +175,7 @@ watch(cadastreParcelles, () => {
   // we still set features ref even if multipolygon to allow the user to view it
   multipolygon.value = combinedFeature.geometry.type === 'MultiPolygon' && combinedFeature.geometry.coordinates.length > 1;
 
+  combinedFeature.id = 1 // it will be replaced server-side, but we want to go through API Schema validation
   combinedFeature.properties.cadastre = references
   combinedFeature.properties.cultures = [{ CPF: '', id: crypto.randomUUID() }]
 
