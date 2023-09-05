@@ -21,7 +21,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import { convertGeofoliaArchiveToGeoJSON } from '@/cartobio-api.js'
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env
 
@@ -34,10 +34,13 @@ async function handleFileUpload () {
   const [archive] = fileInput.value.files
   emit('upload:start')
 
-  const form = new FormData()
-  form.append('archive', archive)
-  const { data: geojson } = await axios.post(`${VUE_APP_API_ENDPOINT}/v2/convert/geofolia/geojson`, form)
+  try {
+    const geojson = await convertGeofoliaArchiveToGeoJSON(archive)
 
-  emit('upload:complete', { geojson, source, warnings: [] })
+    emit('upload:complete', { geojson, source, warnings: [], metadata: {} })
+  } catch (error) {
+    console.error(error)
+    erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
+  }
 }
 </script>
