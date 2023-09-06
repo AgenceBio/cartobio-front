@@ -46,8 +46,8 @@ export const useRecordStore = defineStore('record', () => {
     featuresStore.setAll([])
   }
 
-  const exists = computed(() => record.record_id)
-  const isSetup = computed(() => record.record_id && record.metadata.source)
+  const exists = computed(() => Boolean(record.record_id))
+  const isSetup = computed(() => Boolean(record.record_id && record.metadata.source))
 
   return {
     record,
@@ -56,6 +56,7 @@ export const useRecordStore = defineStore('record', () => {
     isSetup,
     // methods
     update,
-    reset
+    reset,
+    $reset: reset
   }
 })

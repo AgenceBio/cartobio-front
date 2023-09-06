@@ -53,7 +53,9 @@
       </article>
 
       <div class="fr-input-group fr-mt-5w">
-        <button class="fr-btn" type="submit" :disabled="!feature || multipolygon" @click="showDetailsModal = true">Ajouter</button>
+        <button class="fr-btn" type="submit" :disabled="!feature || multipolygon" @click="showDetailsModal = true">
+          Renseigner l'assolement
+        </button>
       </div>
     </form>
   </section>
@@ -156,6 +158,7 @@ watch(cadastreParcelles, () => {
     multipolygon.value = features[0].geometry.type === 'MultiPolygon' && features[0].geometry.coordinates.length > 1;
     feature.value = {
       ...features[0],
+      id: 1, // it will be replaced server-side, but we want to go through API Schema validation
       properties: {
         cadastre: [references[0]],
         cultures: [{ CPF: '', id: crypto.randomUUID() }]
@@ -172,6 +175,7 @@ watch(cadastreParcelles, () => {
   // we still set features ref even if multipolygon to allow the user to view it
   multipolygon.value = combinedFeature.geometry.type === 'MultiPolygon' && combinedFeature.geometry.coordinates.length > 1;
 
+  combinedFeature.id = 1 // it will be replaced server-side, but we want to go through API Schema validation
   combinedFeature.properties.cadastre = references
   combinedFeature.properties.cultures = [{ CPF: '', id: crypto.randomUUID() }]
 
@@ -184,9 +188,9 @@ watch(feature, () => {
   emit('update', markRaw(featureCollection([toRaw(feature.value)])))
 })
 
-async function saveFeature ({ patch }) {
-  feature.value.properties = { ...feature.value.properties, ...patch }
-  const record = await submitNewParcelle({ operatorId: recordStore.record.operator.id }, feature.value)
+async function saveFeature ({ properties }) {
+  feature.value.properties = { ...feature.value.properties, ...properties }
+  const record = await submitNewParcelle({ recordId: recordStore.record.record_id }, feature.value)
 
   messages.addMessage({ type: 'success', text: 'Parcelle ajoutée.' })
 

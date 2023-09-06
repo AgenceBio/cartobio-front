@@ -89,7 +89,14 @@ function reset () {
 }
 
 function confirmImport () {
-  emit('upload', { geojson: collection.value, source: sources.RPG })
+  emit('upload', {
+    geojson: collection.value,
+    source: sources.RPG,
+    metadata: {
+      pacage: numeroPacage.value,
+      campagne: télépac.campagne.value
+    }
+  })
 }
 </script>
 

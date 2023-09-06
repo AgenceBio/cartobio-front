@@ -115,7 +115,7 @@ import RPGModal from '@/components/Certification/OperatorSetup/RPGModal.vue'
 
 import { useTélépac } from '@/referentiels/pac.js'
 import { useRecordStore } from '@/stores/index.js'
-import { submitParcellesChanges } from '@/cartobio-api.js'
+import { createOperatorRecord } from '@/cartobio-api.js'
 import { now } from '@/components/dates.js'
 
 const recordStore = useRecordStore()
@@ -131,17 +131,17 @@ const props = defineProps({
 const setupFromTelepacModal = ref(false)
 const setupFromRPGModal = ref(false)
 
-async function handleUpload ({ geojson, source }) {
+async function handleUpload ({ geojson, source, metadata = {} }) {
   const { id: operatorId, numeroBio, organismeCertificateur } = props.operator
   const { id: ocId, nom: ocLabel } = organismeCertificateur
 
-  const record = await submitParcellesChanges({
-    operatorId,
+  const record = await createOperatorRecord(operatorId, {
     numeroBio,
     ocId,
     ocLabel,
     geojson,
     metadata: {
+      ...metadata,
       source,
       sourceLastUpdate: now()
     }

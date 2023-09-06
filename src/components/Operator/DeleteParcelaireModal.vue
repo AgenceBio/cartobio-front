@@ -34,7 +34,7 @@ import { useRecordStore } from "@/stores/index.js"
 import { ref } from "vue"
 
 const props = defineProps({
-  operator: {
+  record: {
     type: Object,
     required: true
   },
@@ -44,11 +44,7 @@ const modal = ref(null)
 const recordStore = useRecordStore()
 
 async function handleDelete() {
-  const record = await deleteRecord(props.operator.id)
-
-  // we reset the current state of operator and features
-  recordStore.reset()
-  // ... then restore the operator data (otherwise we loose the initial context)
+  const record = await deleteRecord(props.record.record_id)
   recordStore.update(record)
   modal.value?.$emit('update:modelValue', false)
 }

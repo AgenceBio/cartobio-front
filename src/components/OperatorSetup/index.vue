@@ -17,12 +17,12 @@
 </template>
 
 <script setup>
-import { computed, provide, ref, toRaw, watchEffect } from 'vue'
+import { computed, provide, ref, toRaw, unref, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import ImportPreview from '@/components/OperatorSetup/ImportPre.vue'
 
-import { submitParcellesChanges } from '@/cartobio-api.js'
+import { createOperatorRecord } from '@/cartobio-api.js'
 import { now } from '@/components/dates.js'
 import featureSources from '@/components/OperatorSetup/index.js'
 import { useUserStore } from '@/stores/user.js'
@@ -40,10 +40,12 @@ const props = defineProps({
 const featureSource = ref('telepac')
 const featureCollection = ref(null)
 const importWarnings = ref([])
+const extraMetadata = ref({})
 
 provide('featureSource', featureSource)
 provide('featureCollection', featureCollection)
 provide('importWarnings', importWarnings)
+provide('extraMetadata', extraMetadata)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -58,15 +60,17 @@ watchEffect(() => emit('source:change', featureSource.value))
 
 defineExpose({ featureSource })
 
-function handleSelection ({ geojson, warnings }) {
+function handleSelection ({ geojson, warnings = [], metadata = {} }) {
   featureCollection.value = geojson
   importWarnings.value = warnings
-  emit('import:preview')
+  extraMetadata.value = metadata
+  emit('import:preview', { geojson, warnings, metadata })
 }
 
 function handleCancel () {
   featureCollection.value = {}
   importWarnings.value = []
+  extraMetadata.value = {}
   emit('import:start')
 }
 
@@ -78,21 +82,21 @@ async function handleUpload () {
   const source = toRaw(featureSource.value)
 
   try {
-    const record = await submitParcellesChanges({
+    // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
+    const record = await createOperatorRecord(operatorId, {
       geojson,
       ocId,
       ocLabel,
-      // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
-      operatorId,
       numeroBio,
       metadata: {
+        ...extraMetadata.value,
         source,
         sourceLastUpdate: now(),
         provenance: provenance.value
       }
     })
 
-    emit('import:complete', { geojson, source, record })
+    emit('import:complete', { geojson, source, record, metadata: unref(extraMetadata) })
   }
   catch (error) {
     emit('import:error', error)

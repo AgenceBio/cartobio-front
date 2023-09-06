@@ -77,6 +77,10 @@ export const useUserStore = defineStore('user', () => {
     }, { flush: 'sync' })
   }
 
+  function $reset () {
+    logout()
+  }
+
   watch(token, newToken => setAuthorization(newToken ? newToken : ''))
   watch(user, () => statsPush(['setCustomVariable', 1, "Rôle de l'utilisateur", roles.value.join(', '), 'visit']))
 
@@ -90,5 +94,6 @@ export const useUserStore = defineStore('user', () => {
     enablePersistance,
     login,
     logout,
+    $reset
   }
 })

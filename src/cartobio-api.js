@@ -3,6 +3,20 @@ import axios from 'axios'
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
 /**
+ * @enum {String}
+ * Duplicate of api/cartobio.js#EventType
+ */
+export const EventType = {
+  CERTIFICATION_STATE_CHANGE: 'CertificationStateChange',
+  FEATURE_COLLECTION_CREATE: 'FeatureCollectionCreation',
+  FEATURE_COLLECTION_DELETE: 'FeatureCollectionDeletion',
+  FEATURE_COLLECTION_UPDATE: 'FeatureCollectionUpdate',
+  FEATURE_CREATE: 'FeatureCreation',
+  FEATURE_DELETE: 'FeatureDeletion',
+  FEATURE_UPDATE: 'FeatureUpdate'
+}
+
+/**
  * @typedef {import('@types/geojson').FeatureCollection} FeatureCollection
  * @typedef {import('@/referentiels/imports.js').sources} SourceType
  * @typedef {import('@/referentiels/ab.js').CERTIFICATION_STATE} CertificationState
@@ -128,36 +142,61 @@ export async function fetchLatestOperators () {
 }
 
 /**
- * Creates or updates a record based on geographical informations
+ * Creates a new operator Record
  *
- * @param {{ geojson: GeoJSON.FeatureCollection, operatorId: number, ocId: number, ocLabel: number, metadata: Object, numeroBio: string }} param0
+ * @param {{ featureCollection: GeoJSON.FeatureCollection, operatorId: number }} param0
  * @returns {Promise<Record>}
  */
-export async function submitParcellesChanges ({ operatorId, ...params }) {
-  const { data } = await cartobioApi.put(`/v2/operator/${operatorId}/parcelles`, { ...params })
+export async function createOperatorRecord (operatorId, payload) {
+  const { data } = await cartobioApi.post(`/v2/audits/${operatorId}`, payload)
+
+  return data
+}
+
+/**
+ * Creates or updates a record based on geographical informations
+ *
+ * @param {{ recordId: string }} identifiers
+ * @param {GeoJSON.FeatureCollection} featureCollection
+ * @returns {Promise<Record>}
+ */
+export async function updateFeatureCollectionProperties ({ recordId }, featureCollection) {
+  const { data } = await cartobioApi.patch(`/v2/audits/${recordId}/parcelles`, featureCollection)
+
+  return data
+}
+
+/**
+ * Update/replace properties of a single feature
+ *
+ * @param {{ recordId: string, featureId: string }} identifiers
+ * @param {GeoJSON.Feature} feature
+ * @returns {Promise<Record>}
+ */
+export async function updateSingleFeatureProperties ({ recordId }, { id, properties }) {
+  const { data } = await cartobioApi.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties })
 
   return data
 }
 
 /**
  *
- * @param {{ recordId: number }} param0
+ * @param {{ recordId: string }} identifiers
  * @param {Object} patch
  * @returns {Promise<Record>}
  */
 export async function updateAuditState ({ recordId }, patch) {
-  const { data } = await cartobioApi.patch(`/v2/certification/audits/${recordId}`, patch)
+  const { data } = await cartobioApi.patch(`/v2/audits/${recordId}`, patch)
 
   return data
 }
 
 /**
- * @param {number} operatorId
- * @param operatorId
- * @returns {Promise<undefined>}
+ * @param {string} recordId
+ * @returns {Promise<Record>}
  */
-export async function deleteRecord (operatorId) {
-  const { data } = await cartobioApi.delete(`/v2/operator/${operatorId}`)
+export async function deleteRecord (recordId) {
+  const { data } = await cartobioApi.delete(`/v2/audits/${recordId}`)
 
   return data
 }
@@ -165,12 +204,12 @@ export async function deleteRecord (operatorId) {
 /**
  * Add a new plot without id to a feature collection
  *
- * @param {{ operatorId: String } options
- * @param {feature: GeoJSON.Feature } feature
- * @returns {Promise<{record_id: String, parcelles: GeoJSON.FeatureCollection, metadata: Object}>}
+ * @param {{ recordId: String }} identifiers
+ * @param {feature: GeoJSON.Feature} feature
+ * @returns {Promise<Record>}
  */
-export async function submitNewParcelle ({ operatorId }, feature) {
-  const { data } = await cartobioApi.post(`/v2/operator/${operatorId}/parcelles`, {
+export async function submitNewParcelle ({ recordId }, feature) {
+  const { data } = await cartobioApi.post(`/v2/audits/${recordId}/parcelles`, {
     feature
   })
 

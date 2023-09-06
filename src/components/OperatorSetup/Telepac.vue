@@ -22,7 +22,7 @@
 <script setup>
 import { ref } from 'vue'
 import { convertShapefileArchiveToGeoJSON } from '@/cartobio-api.js'
-import { deriveFromFilename, useTélépac } from '@/referentiels/pac.js'
+import { useTélépac } from '@/referentiels/pac.js'
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
 
@@ -34,22 +34,27 @@ const erreur = ref('')
 async function handleFileUpload () {
   const warnings = []
   const [archive] = fileInput.value.files
-  const { campagne } = deriveFromFilename(archive?.name)
 
   emit('upload:start')
 
-  if (campagne !== currentCampagne.value) {
-    warnings.push(`Le fichier contient des données datant de la campagne ${campagne}. Peut-être disposez-vous d'un export plus récent, par exemple de la campagne ${currentCampagne.value} ?`)
-  }
-
   try {
     const geojson = await convertShapefileArchiveToGeoJSON(archive)
-    emit('upload:complete', { geojson, source, warnings })
+    const metadata = {
+      campagne: geojson.features.at(0)?.properties?.CAMPAGNE,
+      pacage: geojson.features.at(0)?.properties?.PACAGE,
+    }
+
+    if (parseInt(metadata.campagne, 10) < currentCampagne.value) {
+      warnings.push(`Le fichier contient des données datant de la campagne ${metadata.campagne}. Peut-être disposez-vous d'un export plus récent, par exemple de la campagne ${currentCampagne.value} ?`)
+    }
+
+    emit('upload:complete', { geojson, source, warnings, metadata })
   } catch (error) {
     if (error.response?.status === 500 && error.response?.status === 400) {
       erreur.value = 'Le fichier sélectionné ne semble pas être un fichier de déclaration PAC valide.'
     }
 
+    console.error(error)
     erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
   }
 }

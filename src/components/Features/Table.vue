@@ -13,6 +13,7 @@
       </button>
     </div>
   </div>
+
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
@@ -34,7 +35,7 @@
           </td>
           <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
           <td colspan="2">
-            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeaturesEdit" />
+            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeatureCollectionSubmit" />
           </td>
         </tr>
         <tr class="legend">
@@ -77,7 +78,7 @@
     <Modal v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
       <template #title>Modification de parcelle</template>
 
-      <Component :is="editForm" :feature="editedFeature" @submit="handleFeaturesEdit" />
+      <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" />
     </Modal>
   </Teleport>
 
@@ -97,7 +98,7 @@ import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 import Modal from '@/components/Modal.vue'
 
 import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from './index.js'
-import { submitParcellesChanges } from '@/cartobio-api.js'
+import { updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
 import { usePermissions } from "@/stores/permissions.js"
 import { toast } from "vue3-toastify"
 import { useMessages } from "@/stores/index.js"
@@ -105,6 +106,10 @@ import { statsPush } from "@/stats.js"
 
 const props = defineProps({
   operator: {
+    type: Object,
+    required: true,
+  },
+  record: {
     type: Object,
     required: true,
   },
@@ -147,43 +152,53 @@ watch(showModal, (value) => {
   }
 })
 
+function handleSingleFeatureSubmit ({ id, properties }) {
+  statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
 
-function handleFeaturesEdit ({ ids, patch }) {
-  statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
-  props.features.features
-    .filter(feature => ids.includes(feature.id))
-    .forEach(feature => {
-      feature.properties = {
-        ...feature.properties,
-        ...patch
-      }
-    })
-
+  store.updateMatchingFeatures([{id, properties }])
   editedFeatureId.value = null
-  store.setAll(props.features.features)
-  doSave(props.features)
+
+  performAsyncAction(
+    updateSingleFeatureProperties({ recordId: props.record.record_id }, { id, properties })
+  )
 }
 
-function doSave (geojson) {
-  const { id: operatorId, numeroBio, organismeCertificateur } = props.operator
-  const { id: ocId, nom: ocLabel } = organismeCertificateur
+function handleFeatureCollectionSubmit ({ ids, patch }) {
+  statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
+  const featureCollection = {
+    type: 'FeatureCollection',
+    features: ids.map(id => ({
+      id,
+      properties: { ...patch }
+    }))
+  }
 
+  store.updateMatchingFeatures(featureCollection.features)
+  editedFeatureId.value = null
+
+  performAsyncAction(
+    updateFeatureCollectionProperties({ recordId: props.record.record_id }, featureCollection)
+  )
+}
+
+function performAsyncAction (promise) {
   isSaving.value = true
 
-  setTimeout(async () => {
-    try {
-      await submitParcellesChanges ({ geojson, operatorId, ocId, ocLabel, numeroBio })
-      messages.addMessage({ type: 'success', text: 'Modification enregistrée.' })
-    }
-    catch (error) {
-      console.error(error)
-      toast.error(
-        "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
-      )
-    }
-
-    isSaving.value = false
-  }, 300)
+  return new Promise((resolve, reject) => {
+    promise
+      .then(record => {
+        messages.addMessage({ type: 'success', text: 'Modification enregistrée.' })
+        resolve(record)
+      })
+      .catch(error => {
+        console.error(error)
+        toast.error(
+          "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
+        )
+        //reject(error)
+      })
+      .finally(() => isSaving.value = false)
+  })
 }
 </script>
 
