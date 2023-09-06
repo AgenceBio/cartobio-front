@@ -1,3 +1,22 @@
+# [2.10.0](https://github.com/AgenceBio/cartobio-front/compare/v2.9.2...v2.10.0) (2023-09-06)
+
+* ajout d'un formulaire de certification pour renseigner les dates de validité du certificat
+* la barre d'actions sur de multiples parcelles suit désormais le défilement de l'écran
+* l'affichage d'actions dans l'interface tient compte des rôles de la personne connectée (agriculteur·ice, auditeur·ice et/ou chargé·e de certification)
+* ajout de parcelle revisité
+  * vérification de référence cadastrale moins frustrante
+  * possibilité de combiner plusieurs parcelles cadastrales en une seule parcelle agricole
+  * prise en compte de cas supplémentaires (parcelles non-contigües, parcelles disjointes, etc.)
+  * affichage de la surface totale de la parcelle agricole ajoutée
+* corrections de l'affichage des dates d'engagement dans la liste des opérateurs
+* correction de l'import de données Geofolia
+
+# [2.9.2](https://github.com/AgenceBio/cartobio-front/compare/v2.9.1...v2.9.2) (2023-08-18)
+
+* les connexions à CartoBio durent désormais 30 jours
+* corrige un bug qui affichait un parcellaire vide au lieu de l'écran guidé d'import
+* corrige un bug qui empêchait les statistiques de s'afficher sur des navigateurs exotiques
+
 # [2.9.1](https://github.com/AgenceBio/cartobio-front/compare/v2.9.0...v2.9.1) (2023-08-10)
 
 * ajout des exports Certis et Qualisud
