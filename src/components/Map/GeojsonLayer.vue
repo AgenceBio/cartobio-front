@@ -49,7 +49,7 @@ export default {
         .map(node => node.props.name)
     const nextSiblings = siblingNames.slice(siblingNames.indexOf(this.name) + 1)
 
-    // always create the data layer
+    // always create the data layer even if data is empty at first,
     // otherwise the watch() fails (if empty at first, it cannot be updated)
     this.map
       .addSource(`${this.name}/data`, {
@@ -57,28 +57,26 @@ export default {
         data: this.data ?? { type: 'FeatureCollection', features: [] }
       })
 
-    if (this.data && (this.fill || this.line)) {
-      if (this.map.getLayer(`${this.name}/geometry`)) return;
-
-      if (this.fill) {
-        this.map.addLayer({
-          id: `${this.name}/geometry`,
-          source: `${this.name}/data`,
-          type: 'fill',
-          paint: this.fill
-        })
-      }
-
-      if (this.line) {
-        this.map.addLayer({
-          id: `${this.name}/geometry-outline`,
-          source: `${this.name}/data`,
-          type: 'line',
-          paint: this.line
-        })
-      }
+    // If we use a data and fill / line props, we create the geometry layers
+    if (this.data && this.fill && !this.map.getLayer(`${this.name}/geometry`)) {
+      this.map.addLayer({
+        id: `${this.name}/geometry`,
+        source: `${this.name}/data`,
+        type: 'fill',
+        paint: this.fill
+      })
     }
 
+    if (this.data && this.line && !this.map.getLayer(`${this.name}/geometry-outline`)) {
+      this.map.addLayer({
+        id: `${this.name}/geometry-outline`,
+        source: `${this.name}/data`,
+        type: 'line',
+        paint: this.line
+      })
+    }
+
+    // If we use a style prop, we create the layers
     if (!this.style) return
 
     if (this.style.sprite) {
@@ -115,6 +113,14 @@ export default {
     })
   },
   unmounted() {
+    if (this.map.getLayer(`${this.name}/geometry`)) {
+      this.map.removeLayer(`${this.name}/geometry`)
+    }
+    if (this.map.getLayer(`${this.name}/geometry-outline`)) {
+      this.map.removeLayer(`${this.name}/geometry-outline`)
+    }
+    this.map.removeSource(`${this.name}/data`)
+
     if (!this.style) return
 
     this.style.layers.map(layer => this.map.removeLayer(`${this.name}/${layer.id}`))
