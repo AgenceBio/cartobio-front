@@ -6,14 +6,14 @@
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
-    <button v-if="permissions.canSaveAudit" class="fr-btn" @click="handleSaveAudit">Terminer l'audit</button>
+    <button v-if="permissions.canSaveAudit" class="fr-btn" @click="showSendOffModal = true">Terminer l'audit</button>
     <span v-else>L'auditeur doit maintenant terminer l'audit.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.AUDITED">
     <h3 class="fr-callout__title">Audit terminé</h3>
 
-    <button v-if="permissions.canSendAudit" class="fr-btn" @click="showSendOffModal = true">Envoyer l'audit</button>
+    <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">Envoyer l'audit</button>
     <span v-else>L'auditeur doit maintenant envoyer l'audit.</span>
   </div>
 
@@ -31,7 +31,7 @@
   </div>
 
   <Teleport to="body">
-    <SendOffModal :operator="operator" :record="record" v-if="showSendOffModal" v-model="showSendOffModal" @submit="handleSendAudit" />
+    <SendOffModal :operator="operator" :record="record" v-if="showSendOffModal" v-model="showSendOffModal" @submit="handleSaveAudit" />
     <CertificationModal :operator="operator" :record="record" v-if="showCertificationModal" v-model="showCertificationModal" @submit="handleCertify" />
   </Teleport>
 </template>
@@ -73,25 +73,24 @@ const showCertificationModal = ref(false)
 const validationResult = computed(() => applyValidationRules(props.validationRules.rules, ...props.features.features))
 const hasFailures = computed(() => Boolean(validationResult.value.failures))
 
-async function handleSaveAudit () {
-  const record = await updateAuditState(
-    { recordId : props.record.record_id },
-    {
+async function handleSaveAudit ({ record_id: recordId, patch }) {
+  const record = await updateAuditState({ recordId }, {
+    ...patch,
       certification_state: CERTIFICATION_STATE.AUDITED
     }
   )
 
   recordStore.update(record)
+  showSendOffModal.value = false
 }
 
-async function handleSendAudit ({ record_id: recordId, patch }) {
-  const record = await updateAuditState({ recordId }, {
-    ...patch,
-    certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION
-  })
+async function handleSendAudit () {
+  const record = await updateAuditState(
+    { recordId : props.record.record_id },
+    { certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION }
+  )
 
   recordStore.update(record)
-  showSendOffModal.value = false
 }
 
 async function handleCertify ({ record_id: recordId, patch }) {
