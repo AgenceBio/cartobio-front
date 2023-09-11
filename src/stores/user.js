@@ -14,8 +14,14 @@ export const ROLES = Object.freeze({
 
 const rolesMap = {
   'Super OC': [ROLES.OC_CERTIF, ROLES.OC_AUDIT],
+  // Legacy
   'OC CartoBio': [ROLES.OC_AUDIT],
+  // Depuis 09/2023
+  'Auditeur': [ROLES.OC_AUDIT],
+  // Legacy
   'OC': [ROLES.OC_CERTIF],
+  // Depuis 09/2023
+  'Chargé de certification': [ROLES.OC_CERTIF],
   'Admin': [ROLES.ADMIN]
 }
 
@@ -32,34 +38,38 @@ export function parseJwt (token) {
   return JSON.parse(jsonPayload);
 }
 
+export function deriveRolesFromGroups (user) {
+  if (Boolean(user.id) === false) {
+    return [ROLES.GUEST]
+  }
+
+  const groupNames = user?.groups?.map(group => group.nom) ?? []
+
+  if (groupNames.includes('Opérateur') || user.numeroBio) {
+    return [ROLES.OPERATEUR]
+  }
+
+  const roles = new Set()
+  groupNames.forEach(groupName => {
+    if (Object.hasOwn(rolesMap, groupName)) {
+      rolesMap[groupName].forEach(role => roles.add(role))
+    }
+  })
+
+  if (roles.size === 0) {
+    return [ROLES.UNKNOWN]
+  }
+
+  return Array.from(roles)
+}
+
 export const useUserStore = defineStore('user', () => {
   const storageName = 'cartobio.v2'
   const token = ref('')
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
 
-  const roles = computed(() => {
-    if (!isLogged.value) {
-      return [ROLES.GUEST]
-    }
-
-    const groupNames = user.value?.groups?.map(group => group.nom) ?? []
-
-    if (groupNames.includes('Opérateur') || user.value.numeroBio) {
-      return [ROLES.OPERATEUR]
-    }
-
-    if (groupNames.length === 0) {
-      return [ROLES.UNKNOWN]
-    }
-
-    const roles = new Set()
-    groupNames.forEach(groupName => {
-        rolesMap[groupName].forEach(role => roles.add(role))
-    })
-
-    return Array.from(roles)
-  })
+  const roles = computed(() => deriveRolesFromGroups(user.value))
 
   function login (userToken) {
     token.value = userToken
