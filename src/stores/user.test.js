@@ -46,6 +46,6 @@ describe('deriveRolesFromGroups()', () => {
         id: 1,
         nom: "Super OC"
       }
-    })).toEqual([ROLES.UNKNOWN])
+    })).toEqual([ROLES.OC_CERTIF, ROLES.OC_AUDIT])
   })
 })
