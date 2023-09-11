@@ -9,14 +9,17 @@ export const useFeaturesStore = defineStore('features', () => {
   const selectedIds = ref([])
   const activeId = ref(null)
   const hoveredId = ref(null)
-  const all = reactive([])
+  const collection = ref({
+    type: 'FeatureCollection',
+    features: []
+  })
 
   function getFeatureById (id) {
     return collection.value.features.find(feature => feature.id === id)
   }
 
   const allSelected = computed(() => {
-    const collectedIds = collectIds(all.value)
+    const collectedIds = collectIds(collection.value.features)
 
     return collectedIds.toString() === selectedIds.value.sort().toString()
   })
@@ -25,7 +28,7 @@ export const useFeaturesStore = defineStore('features', () => {
     return activeId.value ? getFeatureById(activeId.value) : null
   })
 
-  const hasFeatures = computed(() => all.value.length > 0)
+  const hasFeatures = computed(() => collection.value.features.length > 0)
 
   const hoveredFeature = computed(() => {
     return hoveredId.value ? getFeatureById(hoveredId.value) : null
@@ -35,25 +38,12 @@ export const useFeaturesStore = defineStore('features', () => {
     return selectedIds.value.map(getFeatureById)
   })
 
-  /**
-   * The intent of this computed collection is to *always* provide a CPF value to features.
-   * 1. Because they are explitly set from a controlled-list via the UI (the `is_selectable` crop attribute)
-   * 2. Because they are translated from a PAC code (the `TYPE` feature property)
-   * 3. Or because they are set from an external system (the crop may or may not be selectable via the UI)
-   */
-  const collection = computed(() => ({
-    type: 'FeatureCollection',
-    // BUG this line side effect is any view depending on it is not reactively refreshed
-    // problem is, some other (vanilla JS) code breaks when features are reactive/proxy
-    features: unref(all.value).map(feature => toRaw(feature))
-  }))
-
   function setAll (features) {
-    all.value = features
+    collection.value.features = [...features]
   }
 
   function toggleAllSelected () {
-    selectedIds.value = allSelected.value ? [] : collectIds(all.value)
+    selectedIds.value = allSelected.value ? [] : collectIds(collection.value.features)
   }
 
   function toggleSingleSelected (featureId) {
@@ -80,7 +70,7 @@ export const useFeaturesStore = defineStore('features', () => {
         map.setFeatureState({ source, id }, { selected: true })
       })
 
-      all.value.forEach(({ id }) => {
+      collection.value.features.forEach(({ id }) => {
         const { selected } = map.getFeatureState({ id, source })
         if (selected && !currentIds.value.includes(id)) {
           map.setFeatureState({ source, id }, { selected: false })
@@ -135,7 +125,7 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   function updateMatchingFeatures (features) {
-    all.value = all.value.map(feature => {
+    collection.value.features = collection.value.features.map(feature => {
       const matchingFeature = features.find(({ id }) => feature.id === id)
 
       if (matchingFeature) {
@@ -147,6 +137,13 @@ export const useFeaturesStore = defineStore('features', () => {
 
       return feature
     })
+  }
+
+  function $reset () {
+    selectedIds.value = []
+    activeId.value = null
+    hoveredId.value = null
+    collection.value.features = []
   }
 
   return {
@@ -161,6 +158,8 @@ export const useFeaturesStore = defineStore('features', () => {
     allSelected,
     collection,
     // methods
+    $reset,
+    getFeatureById,
     setAll,
     toggleAllSelected,
     toggleSingleSelected,
