@@ -41,6 +41,9 @@ export default defineConfig(({ mode }) => {
     },
 
     test: {
+      coverage: {
+        provider: 'istanbul'
+      },
       environment: 'jsdom',
       setupFiles: [
         './tests-setup.js'
