@@ -42,6 +42,7 @@ export default defineConfig(({ mode }) => {
 
     test: {
       coverage: {
+        reporter: ['text', 'html', 'lcovonly', 'clover', 'json'],
         provider: 'istanbul'
       },
       environment: 'jsdom',

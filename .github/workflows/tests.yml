@@ -24,3 +24,6 @@ jobs:
         cache: 'npm'
 
     - run: npm clean-install-test
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
