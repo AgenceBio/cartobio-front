@@ -43,7 +43,9 @@ export function deriveRolesFromGroups (user) {
     return [ROLES.GUEST]
   }
 
-  const groupNames = user?.groups?.map(group => group.nom) ?? []
+  const groupNames = (user.groups ?? [user.mainGroup])
+    .filter(group => group)
+    .map(group => group.nom)
 
   if (groupNames.includes('Opérateur') || user.numeroBio) {
     return [ROLES.OPERATEUR]
