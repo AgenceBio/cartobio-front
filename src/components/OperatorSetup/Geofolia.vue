@@ -23,8 +23,6 @@
 import { ref } from 'vue'
 import { convertGeofoliaArchiveToGeoJSON } from '@/cartobio-api.js'
 
-const { VUE_APP_API_ENDPOINT } = import.meta.env
-
 const fileInput = ref(null)
 
 const emit = defineEmits(['upload:start', 'upload:complete'])

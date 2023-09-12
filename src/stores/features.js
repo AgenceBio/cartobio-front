@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, reactive, ref, toRaw, unref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()

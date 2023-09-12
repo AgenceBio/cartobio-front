@@ -195,7 +195,7 @@ function performAsyncAction (promise) {
         toast.error(
           "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
         )
-        //reject(error)
+        reject(error)
       })
       .finally(() => isSaving.value = false)
   })
