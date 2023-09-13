@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest';
 
-import { applyValidationRules, OPERATOR_RULES, AUDITOR_RULES } from './ab.js'
+import { applyValidationRules, getConversionLevel, isCertificationImmutable, isABLevel, OPERATOR_RULES, AUDITOR_RULES, CERTIFICATION_STATE } from './ab.js'
+import { LEVEL_UNKNOWN, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, LEVEL_MAYBE_AB } from './ab.js'
 import { useFeaturesStore } from "@/stores/index.js"
 
 describe('applyValidationRules', () => {
@@ -66,5 +67,41 @@ describe('applyValidationRules', () => {
         6: { success: 5, failures: 0 },
       },
     })
+  })
+})
+
+describe('isCertificationImmutable', () => {
+  test('immutable with Operateur and Auditeur when Pending Certification and Certified', () => {
+    expect(isCertificationImmutable(CERTIFICATION_STATE.OPERATOR_DRAFT)).toEqual(false)
+    expect(isCertificationImmutable(CERTIFICATION_STATE.AUDITED)).toEqual(false)
+    expect(isCertificationImmutable(CERTIFICATION_STATE.PENDING_CERTIFICATION)).toEqual(true)
+    expect(isCertificationImmutable(CERTIFICATION_STATE.CERTIFIED)).toEqual(true)
+  })
+})
+
+describe('getConversionLevel', () => {
+  test('returns UNKNOWN when not recognized', () => {
+    expect(getConversionLevel('AAA')).toHaveProperty('value', LEVEL_UNKNOWN)
+  })
+
+  test('returns conversion level informations when known', () => {
+    expect(getConversionLevel(LEVEL_AB)).toEqual({
+      value: LEVEL_AB,
+      shortLabel: 'AB',
+      label: 'AB — Agriculture biologique',
+      is_selectable: true
+    })
+  })
+})
+
+describe('isABLevel', () => {
+  test('C1, C2, C3 and AB are AB Levels', () => {
+    expect(isABLevel(LEVEL_UNKNOWN)).toEqual(false)
+    expect(isABLevel(LEVEL_CONVENTIONAL)).toEqual(false)
+    expect(isABLevel(LEVEL_C1)).toEqual(true)
+    expect(isABLevel(LEVEL_C2)).toEqual(true)
+    expect(isABLevel(LEVEL_C3)).toEqual(true)
+    expect(isABLevel(LEVEL_AB)).toEqual(true)
+    expect(isABLevel(LEVEL_MAYBE_AB)).toEqual(false)
   })
 })
