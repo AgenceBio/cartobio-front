@@ -1,6 +1,6 @@
 <template>
   <component :is="Modal" v-bind="$attrs" icon="fr-icon-checkbox-circle-fill" data-track-content data-content-name="Modale d'enregistrement d'audit">
-    <template #title>Envoyer l'audit</template>
+    <template #title>Terminer l'audit</template>
 
     <h2 class="fr-text--lead">{{ operator.nom }}</h2>
 
@@ -24,7 +24,7 @@
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
           <button class="fr-btn" form="sendoff-form">
-            Envoyer
+            Terminer
           </button>
         </li>
       </ul>
