@@ -1,3 +1,14 @@
+# En cours…
+
+# [2.11.0](https://github.com/AgenceBio/cartobio-front/compare/v2.10.0...v2.11.0) (2023-09-14)
+
+* nouvelle disposition des boutons d'action sur le parcellaire
+* l'historique des parcellaires affiche des informations plus détaillées
+  * ajout / suppression / modification de parcelles une fois l'audit terminé
+  * campagne et PACAGE du fichier importé
+* la modale de fin d'audit s'affiche… en fin d'audit (et non lors de la transmission à une personne chargée de certification)
+* correction d'un bug d'affichage de carte
+
 # [2.10.0](https://github.com/AgenceBio/cartobio-front/compare/v2.9.2...v2.10.0) (2023-09-06)
 
 * ajout d'un formulaire de certification pour renseigner les dates de validité du certificat
