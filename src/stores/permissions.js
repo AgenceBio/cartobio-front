@@ -42,6 +42,10 @@ export const usePermissions = defineStore('permissions', () => {
     return canEditParcellaire();
   })
 
+  const canDeleteFeature = computed(() => {
+    return canEditParcellaire();
+  })
+
   const canDeleteParcellaire = computed(() => {
     return canEditParcellaire();
   })
@@ -74,6 +78,7 @@ export const usePermissions = defineStore('permissions', () => {
     isOc,
     isAgri,
     canAddParcelle,
+    canDeleteFeature,
     canDeleteParcellaire,
     canChangeCulture,
     canAddParcelleNote,

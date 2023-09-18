@@ -21,6 +21,7 @@ describe('roles', () => {
     recordStore.record.certification_state = CERTIFICATION_STATE.OPERATOR_DRAFT
 
     expect(permissions.canAddParcelle).toEqual(true)
+    expect(permissions.canDeleteFeature).toEqual(true)
     expect(permissions.canDeleteParcellaire).toEqual(true)
     expect(permissions.canChangeCulture).toEqual(true)
     expect(permissions.canAddParcelleNote).toEqual(true)
@@ -31,6 +32,7 @@ describe('roles', () => {
 
     recordStore.record.certification_state = CERTIFICATION_STATE.AUDITED
     expect(permissions.canAddParcelle).toEqual(false)
+    expect(permissions.canDeleteFeature).toEqual(false)
     expect(permissions.canDeleteParcellaire).toEqual(false)
     expect(permissions.canChangeCulture).toEqual(false)
     expect(permissions.canAddParcelleNote).toEqual(true /* false */)
@@ -48,6 +50,7 @@ describe('roles', () => {
     recordStore.record.certification_state = CERTIFICATION_STATE.OPERATOR_DRAFT
 
     expect(permissions.canAddParcelle).toEqual(true)
+    expect(permissions.canDeleteFeature).toEqual(true)
     expect(permissions.canDeleteParcellaire).toEqual(true)
     expect(permissions.canChangeCulture).toEqual(true)
     expect(permissions.canAddParcelleNote).toEqual(true)
@@ -58,6 +61,7 @@ describe('roles', () => {
 
     recordStore.record.certification_state = CERTIFICATION_STATE.AUDITED
     expect(permissions.canAddParcelle).toEqual(true)
+    expect(permissions.canDeleteFeature).toEqual(true)
     expect(permissions.canDeleteParcellaire).toEqual(true)
     expect(permissions.canChangeCulture).toEqual(true)
     expect(permissions.canAddParcelleNote).toEqual(true)
@@ -76,6 +80,7 @@ describe('roles', () => {
     recordStore.record.certification_state = CERTIFICATION_STATE.OPERATOR_DRAFT
 
     expect(permissions.canAddParcelle).toEqual(true)
+    expect(permissions.canDeleteFeature).toEqual(true)
     expect(permissions.canDeleteParcellaire).toEqual(true)
     expect(permissions.canChangeCulture).toEqual(true)
     expect(permissions.canAddParcelleNote).toEqual(true)
@@ -86,6 +91,7 @@ describe('roles', () => {
 
     recordStore.record.certification_state = CERTIFICATION_STATE.AUDITED
     expect(permissions.canAddParcelle).toEqual(true)
+    expect(permissions.canDeleteFeature).toEqual(true)
     expect(permissions.canDeleteParcellaire).toEqual(true)
     expect(permissions.canChangeCulture).toEqual(true)
     expect(permissions.canAddParcelleNote).toEqual(true)
@@ -101,10 +107,12 @@ describe('roles', () => {
     expect(permissions.isAgri).toEqual(false)
     expect(permissions.isOc).toEqual(false)
     expect(permissions.canAddParcelle).toEqual(false)
+    expect(permissions.canDeleteFeature).toEqual(false)
 
     recordStore.record.certification_state = CERTIFICATION_STATE.OPERATOR_DRAFT
 
     expect(permissions.canAddParcelle).toEqual(false)
+    expect(permissions.canDeleteFeature).toEqual(false)
     expect(permissions.canDeleteParcellaire).toEqual(false)
     expect(permissions.canChangeCulture).toEqual(false)
     expect(permissions.canAddParcelleNote).toEqual(true /* false */)
@@ -115,6 +123,7 @@ describe('roles', () => {
 
     recordStore.record.certification_state = CERTIFICATION_STATE.AUDITED
     expect(permissions.canAddParcelle).toEqual(false)
+    expect(permissions.canDeleteFeature).toEqual(false)
     expect(permissions.canDeleteParcellaire).toEqual(false)
     expect(permissions.canChangeCulture).toEqual(false)
     expect(permissions.canAddParcelleNote).toEqual(true /* false */)

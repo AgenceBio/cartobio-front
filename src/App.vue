@@ -73,4 +73,8 @@ tr.clickable:hover th:first-of-type {
 .fr-background-alt--grey {
   background-color: var(--background-alt-grey);
 }
+
+.btn--error {
+  color: var(--text-default-error);
+}
 </style>

@@ -18,12 +18,12 @@
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
-        <col width="10%" />
-        <col width="10%" />
+        <col width="8%" />
+        <col width="8%" />
         <col width="30%" />
         <col width="22%" />
-        <col width="18%" />
-        <col width="10%" />
+        <col width="15%" />
+        <col width="17%" />
       </colgroup>
       <thead>
         <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
@@ -66,7 +66,7 @@
         </tr>
       </thead>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
@@ -80,6 +80,8 @@
 
       <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" />
     </Modal>
+
+    <DeleteFeatureModal v-if="maybeDeletedFeatureId" v-model="showDeleteFeatureModal" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
   </Teleport>
 
   <p>
@@ -94,6 +96,7 @@ import { storeToRefs } from 'pinia'
 
 import { useFeaturesStore } from '@/stores/features.js'
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
+import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 import Modal from '@/components/Modal.vue'
 
@@ -133,6 +136,9 @@ const { toggleSingleSelected, toggleAllSelected } = store
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
 
+const maybeDeletedFeatureId = ref(null)
+const showDeleteFeatureModal = computed(() => Boolean(maybeDeletedFeatureId.value))
+
 const userGroupingChoice = ref('CULTURE')
 
 // hence, feature groups
@@ -161,6 +167,12 @@ function handleSingleFeatureSubmit ({ id, properties }) {
   performAsyncAction(
     updateSingleFeatureProperties({ recordId: props.record.record_id }, { id, properties })
   )
+}
+
+function handleSingleFeatureDeletion ({ id }) {
+  statsPush(['trackEvent', 'Parcelles', 'Suppression individuelle (sauvegarde)'])
+
+  maybeDeletedFeatureId.value = null
 }
 
 function handleFeatureCollectionSubmit ({ ids, patch }) {

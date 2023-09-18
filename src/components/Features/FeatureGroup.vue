@@ -44,9 +44,24 @@
         <ConversionLevel :feature="feature" with-date />
       </td>
       <td @click="toggleEditForm(feature.id)" class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
-      <td @click="toggleEditForm(feature.id)" class="actions">
-        <span v-if="validation.features[feature.id]?.failures" class="fr-icon fr-icon-edit-box-fill fr-icon--warning" aria-role="button" />
-        <span v-else class="fr-icon fr-icon-edit-line" aria-role="button" />
+      <td class="actions">
+        <button type="button" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': !hasError(feature.id), 'fr-icon-edit-box-fill': hasError(feature.id), 'fr-icon--warning': hasError(feature.id)}" @click="toggleEditForm(feature.id)">
+          Modifier
+        </button>
+
+        <button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions" @click="activeFeatureMenu = feature.id">
+          Autres actions
+        </button>
+
+        <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
+          <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
+            <li v-if="permissions.canDeleteFeature">
+              <button @click.prevent="toggleDeleteForm(feature.id)" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error">
+                Supprimer la parcelle
+              </button>
+            </li>
+          </ul>
+        </div>
       </td>
     </tr>
   </tbody>
@@ -58,8 +73,11 @@ import { featureName, cultureLabel, inHa, surface } from '@/components/Features/
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
+import { usePermissions } from '@/stores/index.js'
+import { onClickOutside } from '@vueuse/core'
 
 const route = useRoute()
+const permissions = usePermissions()
 
 const props = defineProps({
   featureGroup: {
@@ -80,7 +98,10 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:singleFeatureId', 'edit:featureId'])
+const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:singleFeatureId', 'edit:featureId', 'delete:featureId'])
+
+const activeFeatureMenu = ref(null)
+const actionsMenuRef = ref(null)
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
 const open = ref(featureIds.value.includes(Number(route.query?.new)))
@@ -88,8 +109,16 @@ const allSelected = computed(() => featureIds.value.every(id => props.selectedId
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
 const validation = computed(() => applyValidationRules(props.validationRules.rules, ...props.featureGroup.features))
 
+function hasError (featureId) {
+  return validation.value.features[featureId]?.failures > 0
+}
+
 function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
+}
+
+function toggleDeleteForm (featureId) {
+  return emit('delete:featureId', featureId)
 }
 
 function toggleFeatureGroup () {
@@ -115,6 +144,8 @@ watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
     }, 200)
   }
 })
+
+onClickOutside(actionsMenuRef, () => activeFeatureMenu.value = null)
 </script>
 
 <style scoped>
@@ -189,10 +220,22 @@ table tr[aria-current="location"] {
 }
 
 .actions {
+  position: relative;
   text-align: center;
+
+  .fr-menu {
+    position: absolute;
+    left: 100%;
+    top: .6rem;
+  }
+
+  .fr-menu .fr-btn {
+    margin: 0;
+    width: 100%;
+  }
 }
 
 .fr-icon--warning {
-  color: var(--text-default-warning);
+  color: var(--text-default-error);
 }
 </style>

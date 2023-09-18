@@ -48,6 +48,28 @@ export const GROUPE_NIVEAU_CONVERSION = 'NIVEAU_CONVERSION'
 export const GROUPE_DATE_ENGAGEMENT = 'DATE_ENGAGEMENT'
 export const GROUPE_ANNEE_ENGAGEMENT = 'ANNEE_ENGAGEMENT'
 
+/**  @enum {String} */
+export const DeletionReasonsCode = {
+  FEATURE_COLLECTION_LIFECYCLE: 'lifecycle',
+  OTHER: 'other',
+  USER_ERROR: 'error'
+}
+
+/**
+ * @typedef DeletionReason
+ * @property {DeletionReasonsCode} code
+ * @property {String} label
+ */
+
+/**
+ * @type {DeletionReason[]}
+ */
+export const deletionReasons = [
+  { code: DeletionReasonsCode.USER_ERROR, label: 'Erreur' },
+  { code: DeletionReasonsCode.FEATURE_COLLECTION_LIFECYCLE, label: 'Évolution du parcellaire' },
+  { code: DeletionReasonsCode.OTHER, label: 'Autre' },
+]
+
 function sortBySurface (groupA, groupB) {
   return groupB.surface - groupA.surface
 }
