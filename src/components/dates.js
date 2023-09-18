@@ -24,11 +24,11 @@ const mmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric'
 })
 
-function onValidDate (date, fn) {
+export function onValidDate (date, fn) {
   const dateObj = new Date(date)
 
   if (dateObj.toString() !== 'Invalid Date') {
-    return fn(date)
+    return fn(dateObj)
   }
   return ''
 }
