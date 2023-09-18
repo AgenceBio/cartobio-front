@@ -40,6 +40,7 @@ import axios from "axios"
  * @property {Number} surface
  */
 
+export const GROUPE_NONE = ''
 export const GROUPE_COMMUNE = 'COMMUNE'
 export const GROUPE_CULTURE = 'CULTURE'
 export const GROUPE_ILOT = 'ILOT'
@@ -229,8 +230,8 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
 
   if (feature.properties.NUMERO_I || feature.properties.NUMERO_P) {
     return [
-      feature.properties.NUMERO_I ? `${ilotLabel}${feature.properties.NUMERO_I}` : '',
-      feature.properties.NUMERO_P ? `${parcelleLabel}${feature.properties.NUMERO_P}` : '',
+      Number.isNaN(parseInt(feature.properties.NUMERO_I, 10)) === false ? `${ilotLabel}${feature.properties.NUMERO_I}` : '',
+      Number.isNaN(parseInt(feature.properties.NUMERO_P, 10)) === false ? `${parcelleLabel}${feature.properties.NUMERO_P}` : '',
     ]
     .filter(d => d)
     .join(separator)
@@ -243,7 +244,12 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     }
 
     const {prefix, section, number} = parseReference(feature.properties.cadastre)
-    return `Reférence cadastrale ${prefix !== '000' ? prefix : ''} ${section} ${number}`
+    return [
+      'Reférence cadastrale',
+      prefix !== '000' ? prefix : '',
+      section,
+      number
+    ].filter(d => d).join(' ')
   }
   else {
     return placeholder

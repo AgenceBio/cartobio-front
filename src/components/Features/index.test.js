@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest'
-import { createGroupingKeys, diff, getFeatureGroups, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
+import { createGroupingKeys, diff, featureName, getFeatureGroups } from './index.js'
+import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
 
 const geometry = {
   type: "Polygon",
@@ -238,7 +239,33 @@ describe('getFeatureGroups()', () => {
     }
   }
 
-  test('collection is split in two groups based on a single value field', async () => {
+  test('collection is not split if there an explicit pivot of NONE', () => {
+    const collection = {
+      type: "FeatureCollection",
+      features: [feature1, feature2]
+    }
+
+    expect(getFeatureGroups(collection, GROUPE_NONE)).toEqual([
+      {
+        label: '',
+        key: 'none',
+        pivot: GROUPE_NONE,
+        features: collection.features,
+        surface: '1,41'
+      }
+    ])
+    expect(getFeatureGroups(collection, [])).toEqual([
+      {
+        label: '',
+        key: 'none',
+        pivot: [],
+        features: collection.features,
+        surface: '1,41'
+      }
+    ])
+  })
+
+  test('collection is split in two groups based on a single value field', () => {
     const collection = {
       type: "FeatureCollection",
       features: [feature1, feature2]
@@ -300,6 +327,7 @@ describe('getFeatureGroups()', () => {
     ]
 
     expect(getFeatureGroups(collection, GROUPE_CULTURE)).toEqual(expectation)
+    expect(getFeatureGroups(collection)).toEqual(expectation)
   })
 
   test('collection is split in four groups, based on multiple value field and multiple pivot', () => {
@@ -345,5 +373,87 @@ describe('getFeatureGroups()', () => {
 
     expect(getFeatureGroups(collection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION])).toEqual(expectation)
 
+  })
+})
+
+describe('featureName', () => {
+  test('no name to be found', () => {
+    const feature = {
+      id: 1,
+      properties: {}
+    }
+
+    expect(featureName(feature)).toEqual('-')
+    expect(featureName(feature, { placeholder: '' })).toEqual('')
+  })
+
+  test('get as custom name', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        NOM: 'Les muriers'
+      }
+    }
+
+    expect(featureName(feature)).toEqual('Les muriers')
+  })
+
+  test('get as ILOT.PARCELLE (PAC reference)', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        NUMERO_I: '1',
+        NUMERO_P: '1'
+      }
+    }
+
+    expect(featureName(feature)).toEqual('ilot 1, parcelle 1')
+    expect(featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).toEqual('1.1')
+  })
+
+  test('get as ILOT (because PARCELLE is not parseable)', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        NUMERO_I: '1',
+        NUMERO_P: '???'
+      }
+    }
+
+    expect(featureName(feature)).toEqual('ilot 1')
+  })
+
+  test('get as a single cadastre ref (without prefix)', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        cadastre: '26108000ZI0239'
+      }
+    }
+
+    expect(featureName(feature)).toEqual('Reférence cadastrale ZI 0239')
+  })
+
+  test('get as a single cadastre ref (with prefix)', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        cadastre: '26108001ZI0239'
+      }
+    }
+
+    expect(featureName(feature)).toEqual('Reférence cadastrale 001 ZI 0239')
+  })
+
+  test('get as multiple cadastre ref', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        cadastre: ['26108001ZI0239', '26108001ZI0240']
+      }
+    }
+
+    expect(featureName(feature)).toEqual('Parcelles 0239, 0240')
+    expect(featureName(feature, { separator: '-'})).toEqual('Parcelles 0239-0240')
   })
 })

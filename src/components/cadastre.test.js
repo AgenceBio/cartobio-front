@@ -1,5 +1,35 @@
 import { describe, test, expect } from 'vitest';
-import { parseReference, toString } from "./cadastre.js";
+import { isValidReference, parseReference, toString, trimLeadingZero } from "./cadastre.js";
+
+describe('isValidReference', () => {
+  test('recognize valid metropolitan and overseas references', () => {
+    expect(isValidReference('013100000A0016')).toEqual(true)
+    expect(isValidReference('2A0040000D0037')).toEqual(true)
+    expect(isValidReference('26108001ZI0239')).toEqual(true)
+    expect(isValidReference('26108000ZI0239')).toEqual(true)
+    expect(isValidReference('97411000BP0885')).toEqual(true)
+  })
+
+  test('these are not valid references', () => {
+    expect(isValidReference('13100000A0016')).toEqual(false)
+    expect(isValidReference('2C0040000D0037')).toEqual(false)
+    expect(isValidReference('9741100BP0885')).toEqual(false)
+    expect(isValidReference('97911000BP0885')).toEqual(false)
+    expect(isValidReference('99911000BP0885')).toEqual(false)
+  })
+})
+
+describe('trimLeadingZero', () => {
+  test('removes leading of sections and prefixes', () => {
+    expect(trimLeadingZero('0037')).toEqual('37')
+    expect(trimLeadingZero('0D')).toEqual('D')
+    expect(trimLeadingZero('BP')).toEqual('BP')
+  })
+
+  test('without effect on only zeroes', () => {
+    expect(trimLeadingZero('000')).toEqual('000')
+  })
+})
 
 describe('parseReference', () => {
   test('parse nothing', () => {
@@ -43,7 +73,10 @@ describe('parseReference', () => {
 
 describe('toString', () => {
   test('turn form inputs into a proper reference', () => {
-    const input = toString({ commune: '57123', section: 'A', number: '174' })
+    let input = toString({ commune: '57123', section: 'A', number: '174' })
     expect(input).toEqual('571230000A0174')
+
+    input = toString({ commune: '97411', section: 'BP', number: '885' })
+    expect(input).toEqual('97411000BP0885')
   })
 })

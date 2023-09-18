@@ -24,12 +24,21 @@ const mmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric'
 })
 
+function onValidDate (date, fn) {
+  const dateObj = new Date(date)
+
+  if (dateObj.toString() !== 'Invalid Date') {
+    return fn(date)
+  }
+  return ''
+}
+
 /**
  * @param {String} date
  * @returns {String} formatted date as DD MMMM YYYY
  */
 export function ddmmmmyyyy (date) {
-  return ddmmmmyyyyIntl.format(new Date(date))
+  return onValidDate(date, d => ddmmmmyyyyIntl.format(d))
 }
 
 /**
@@ -37,7 +46,7 @@ export function ddmmmmyyyy (date) {
  * @returns {String} formatted date as DD MM YYYY
  */
 export function dateFormat (date) {
-  return ddmmyyIntl.format(new Date(date))
+  return onValidDate(date, d => ddmmyyIntl.format(d))
 }
 
 /**
@@ -45,9 +54,7 @@ export function dateFormat (date) {
  * @returns {String} formatted date as MM YYYY
  */
 export function monthYearDateFormat (date) {
-  if (!date) return null
-
-  return mmmmyyIntl.format(new Date(date))
+  return onValidDate(date, d => mmmmyyIntl.format(d))
 }
 
 /**
@@ -55,7 +62,7 @@ export function monthYearDateFormat (date) {
  * @returns {String} formatted date as MM YYYY
  */
 export function mmyyyy (date) {
-  return mmyyIntl.format(new Date(date))
+  return onValidDate(date, d => mmyyIntl.format(d))
 }
 
 /**
