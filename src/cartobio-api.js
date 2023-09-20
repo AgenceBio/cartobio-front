@@ -154,6 +154,12 @@ export async function createOperatorRecord (operatorId, payload) {
   return data
 }
 
+export async function deleteSingleFeature ({ recordId }, { id, reason }) {
+  const { data } = await cartobioApi.delete(`/v2/audits/${recordId}/parcelles/${id}`, {data: { reason }})
+
+  return data
+}
+
 /**
  * Creates or updates a record based on geographical informations
  *

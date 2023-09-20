@@ -19,6 +19,10 @@
             {{ plurals(entry.featureIds.length, { one: 'parcelle', other: 'parcelles' }) }}
           </p>
 
+          <p v-if="entry.type === EventType.FEATURE_DELETE" class="fr-icon-arrow-right-line">
+            Raison : {{ deletionReason }}
+          </p>
+
           <p class="fr-icon-calendar-line">
             <span aria-hidden="true" />
             {{ ddmmmmyyyy(entry.date) }}
@@ -37,8 +41,10 @@
 import { computed } from 'vue'
 import { ddmmmmyyyy } from '@/components/dates.js'
 import { EventType } from '@/cartobio-api.js'
+import { deletionReasons } from '@/components/Features/index.js';
 
 import ActionType from '@/components/Certification/ActionType.vue'
+import { resolveCampagneFromDate } from '@/referentiels/pac';
 
 const props = defineProps({
   entry: {
@@ -56,6 +62,18 @@ function plurals (count, { zero, one, other }) {
   const suffix = rules[pr.select(count)]
   return `${count} ${suffix}`
 }
+
+/**
+ * We pick the details, or the associated label of a reason code
+ */
+const deletionReason = computed(() => {
+  if (props.entry.type === EventType.FEATURE_DELETE) {
+    const { code, details } = props.entry.metadata.reason
+    return details || (deletionReasons.find(r => r.code === code)?.label ?? '')
+  }
+
+  return ''
+})
 </script>
 
 <style scoped>

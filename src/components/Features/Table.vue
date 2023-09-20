@@ -101,7 +101,7 @@ import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 import Modal from '@/components/Modal.vue'
 
 import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from './index.js'
-import { updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
+import { deleteSingleFeature, updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
 import { usePermissions } from "@/stores/permissions.js"
 import { toast } from "vue3-toastify"
 import { useMessages } from "@/stores/index.js"
@@ -169,10 +169,14 @@ function handleSingleFeatureSubmit ({ id, properties }) {
   )
 }
 
-function handleSingleFeatureDeletion ({ id }) {
+function handleSingleFeatureDeletion ({ id, reason }) {
   statsPush(['trackEvent', 'Parcelles', 'Suppression individuelle (sauvegarde)'])
 
   maybeDeletedFeatureId.value = null
+
+  performAsyncAction(
+    deleteSingleFeature({ recordId: props.record.record_id }, { id, reason } )
+  )
 }
 
 function handleFeatureCollectionSubmit ({ ids, patch }) {
