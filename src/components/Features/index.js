@@ -340,15 +340,19 @@ export function inHa (value) {
 }
 
 /**
- * @param {Feature|Geometry} geometryOrFeature
+ * @param {FeatureCollection|Feature|Geometry} geometryOrFeature
  * @returns {Number}
  */
 export function surface (geometryOrFeature) {
-  return ['FeatureCollection', 'Feature'].includes(geometryOrFeature.type)
-    // we have a full feature
-    ? area(geometryOrFeature)
-    // we only have a geometry
-    : area(feature(geometryOrFeature))
+  if (Array.isArray(geometryOrFeature)) {
+    return area(featureCollection(geometryOrFeature))
+  }
+  else if (['FeatureCollection', 'Feature'].includes(geometryOrFeature.type)) {
+    return area(geometryOrFeature)
+  }
+  else {
+    return area(feature(geometryOrFeature))
+  }
 }
 
 /**
