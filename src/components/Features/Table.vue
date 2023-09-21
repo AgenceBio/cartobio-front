@@ -142,45 +142,50 @@ const showDeleteFeatureModal = computed(() => Boolean(maybeDeletedFeatureId.valu
 const userGroupingChoice = ref('CULTURE')
 
 // hence, feature groups
-const featureGroups = computed(() => getFeatureGroups(props.features, userGroupingChoice.value))
+const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
 
 const isSaving = ref(false)
 const showModal = computed(() => Boolean(editedFeatureId.value))
 
 // Messages
 const displayedMessages = ref(messages.popMessages())
+
 watch(messages.queue, () => {
   displayedMessages.value.push(...messages.popMessages())
 })
+
 watch(showModal, (value) => {
   if (value) {
     displayedMessages.value = []
   }
 })
 
-function handleSingleFeatureSubmit ({ id, properties }) {
+async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
 
-  store.updateMatchingFeatures([{id, properties }])
+  featuresStore.updateMatchingFeatures([{id, properties }])
   editedFeatureId.value = null
 
-  performAsyncAction(
-    updateSingleFeatureProperties({ recordId: props.record.record_id }, { id, properties })
+  await performAsyncRecordAction(
+    updateSingleFeatureProperties({ recordId: record.value.record_id }, { id, properties }),
+    'Parcelle modifiée.'
   )
 }
 
-function handleSingleFeatureDeletion ({ id, reason }) {
+async function handleSingleFeatureDeletion ({ id, reason }) {
   statsPush(['trackEvent', 'Parcelles', 'Suppression individuelle (sauvegarde)'])
 
   maybeDeletedFeatureId.value = null
 
-  performAsyncAction(
-    deleteSingleFeature({ recordId: props.record.record_id }, { id, reason } )
+  await performAsyncRecordAction(
+    deleteSingleFeature({ recordId: record.value.record_id }, { id, reason }),
+    'Parcelle supprimée.'
   )
 }
 
-function handleFeatureCollectionSubmit ({ ids, patch }) {
+async function handleFeatureCollectionSubmit ({ ids, patch }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
+
   const featureCollection = {
     type: 'FeatureCollection',
     features: ids.map(id => ({
@@ -189,32 +194,33 @@ function handleFeatureCollectionSubmit ({ ids, patch }) {
     }))
   }
 
-  store.updateMatchingFeatures(featureCollection.features)
+  featuresStore.updateMatchingFeatures(featureCollection.features)
   editedFeatureId.value = null
 
-  performAsyncAction(
-    updateFeatureCollectionProperties({ recordId: props.record.record_id }, featureCollection)
+  performAsyncRecordAction(
+    updateFeatureCollectionProperties({ recordId: record.value.record_id }, featureCollection),
+    'Parcelles modifiées.'
   )
 }
 
-function performAsyncAction (promise) {
+async function performAsyncRecordAction (promise, text = 'Modification enregistrée.') {
   isSaving.value = true
 
-  return new Promise((resolve, reject) => {
-    promise
-      .then(record => {
-        messages.addMessage({ type: 'success', text: 'Modification enregistrée.' })
-        resolve(record)
-      })
-      .catch(error => {
-        console.error(error)
-        toast.error(
-          "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
-        )
-        reject(error)
-      })
-      .finally(() => isSaving.value = false)
-  })
+  try {
+    const updatedRecord = await promise
+    recordStore.update(updatedRecord)
+
+    messages.addMessage({ type: 'success', text })
+  }
+  catch (error) {
+    console.error(error)
+    toast.error(
+      "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
+    )
+  }
+  finally {
+    isSaving.value = false
+  }
 }
 </script>
 
