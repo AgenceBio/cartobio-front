@@ -44,7 +44,6 @@ import { EventType } from '@/cartobio-api.js'
 import { deletionReasons } from '@/components/Features/index.js';
 
 import ActionType from '@/components/Certification/ActionType.vue'
-import { resolveCampagneFromDate } from '@/referentiels/pac';
 
 const props = defineProps({
   entry: {
