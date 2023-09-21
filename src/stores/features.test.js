@@ -13,7 +13,7 @@ const sampleFeatures = [
 describe('states', () => {
   afterEach(() => features.$reset())
 
-  it('should return an accurate collection', () => {
+  it('should collect all new features', () => {
     expect(features.collection).toEqual({
       type: 'FeatureCollection',
       features: []
@@ -23,6 +23,17 @@ describe('states', () => {
     expect(features.collection).toEqual({
       type: 'FeatureCollection',
       features: sampleFeatures
+    })
+  })
+
+  it('should evict removed feature', () => {
+    features.setAll(sampleFeatures)
+    // we remove one feature
+    features.setAll([sampleFeatures.at(0)])
+
+    expect(features.collection).toEqual({
+      type: 'FeatureCollection',
+      features: [sampleFeatures.at(0)]
     })
   })
 

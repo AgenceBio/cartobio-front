@@ -18,6 +18,8 @@ export const useFeaturesStore = defineStore('features', () => {
     return collection.value.features.find(feature => feature.id === id)
   }
 
+  const all = computed(() => collection.value.features)
+
   const allSelected = computed(() => {
     const collectedIds = collectIds(collection.value.features)
 
@@ -152,19 +154,20 @@ export const useFeaturesStore = defineStore('features', () => {
     selectedIds,
     // computed
     activeFeature,
+    all,
+    allSelected,
+    collection,
     hasFeatures,
     hoveredFeature,
     selectedFeatures,
-    allSelected,
-    collection,
     // methods
     $reset,
+    bindMaplibreFeatureState,
+    bindMaplibreInteractions,
     getFeatureById,
     setAll,
     toggleAllSelected,
     toggleSingleSelected,
-    bindMaplibreFeatureState,
-    bindMaplibreInteractions,
     updateMatchingFeatures
   }
 })

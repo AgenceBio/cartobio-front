@@ -60,7 +60,7 @@
         </tr>
         <tr class="summary" v-if="(selectedFeatureIds.length === 0)">
           <td colspan="2"></td>
-          <td colspan="2">{{ features.features.length }} parcelles</td>
+          <td colspan="2">{{ features.length }} parcelles</td>
           <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
           <td></td>
         </tr>
@@ -94,47 +94,47 @@
 import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useFeaturesStore } from '@/stores/features.js'
+import { useFeaturesStore, useMessages, usePermissions, useRecordStore } from '@/stores/index.js'
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 import Modal from '@/components/Modal.vue'
 
-import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from './index.js'
+import { surface, inHa, getFeatureGroups, groupingChoices } from './index.js'
 import { deleteSingleFeature, updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
-import { usePermissions } from "@/stores/permissions.js"
 import { toast } from "vue3-toastify"
-import { useMessages } from "@/stores/index.js"
 import { statsPush } from "@/stats.js"
 
-const props = defineProps({
+defineProps({
   operator: {
     type: Object,
     required: true,
   },
-  record: {
-    type: Object,
-    required: true,
+  editForm: {
+    type: Object
   },
-  features: {
+  validationRules: {
     type: Object,
     required: true
   },
-  editForm: Object,
-  validationRules: Object,
-  massActions: Array,
+  massActions: {
+    type: Array,
+    default: () => ([])
+  },
 })
 
-const store = useFeaturesStore()
+const recordStore = useRecordStore()
+const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
 const messages = useMessages()
 
-const { hoveredId:hoveredFeatureId } = storeToRefs(store)
-const { selectedIds:selectedFeatureIds, allSelected } = storeToRefs(store)
-const { toggleSingleSelected, toggleAllSelected } = store
+const { record } = storeToRefs(recordStore)
+const { all: features, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
+const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
+const { getFeatureById, toggleSingleSelected, toggleAllSelected } = featuresStore
 
 const editedFeatureId = ref(null)
-const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
+const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
 
 const maybeDeletedFeatureId = ref(null)
 const showDeleteFeatureModal = computed(() => Boolean(maybeDeletedFeatureId.value))
