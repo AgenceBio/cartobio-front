@@ -76,6 +76,7 @@ export const EventType = {
 
 /**
  * @typedef {Object} ExtendedRecord
+ * @property {Operator} operator
  * @property {RecordMetadata} metadata
  * @property {FeatureCollection} parcellaire
  */
