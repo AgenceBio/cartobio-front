@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch, watchEffect } from 'vue'
 import { setAuthorization } from '@/cartobio-api'
-import { statsPush } from "@/stats.js"
+import { CUSTOM_DIMENSION_ROLE, setCustomDimension } from "@/stats.js"
 
 export const ROLES = Object.freeze({
   OC_AUDIT: 'audit',
@@ -94,7 +94,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   watch(token, newToken => setAuthorization(newToken ? newToken : ''))
-  watch(user, () => statsPush(['setCustomVariable', 1, "Rôle de l'utilisateur", roles.value.join(', '), 'visit']))
+  watch(user, () => setCustomDimension(CUSTOM_DIMENSION_ROLE, roles.value.join(', ')))
 
   return {
     token,

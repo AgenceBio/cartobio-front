@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useFeaturesStore } from "@/stores/index.js"
+import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
 
 /** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
 
@@ -50,6 +51,14 @@ export const useRecordStore = defineStore('record', () => {
 
   const exists = computed(() => Boolean(record.record_id))
   const isSetup = computed(() => Boolean(record.record_id && record.metadata.source))
+
+  watch(record, () => {
+    if (record.operator?.departement) {
+      setCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT, record.operator.departement)
+    } else {
+      deleteCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT)
+    }
+  })
 
   return {
     record,
