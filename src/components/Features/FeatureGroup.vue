@@ -19,10 +19,10 @@
       <th scope="col">Certification</th>
       <th scope="col" colspan="2"></th>
     </tr>
-    <tr class="parcelle clickable" :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="emit('update:hoveredId', feature.id)" :aria-current="feature.id === hoveredId ? 'location' : null">
+    <tr class="parcelle clickable" :class="{'parcelle--is-new': feature.id === Number(route.query?.new)}" :id="'parcelle-' + feature.id" :hidden="!open" v-for="feature in featureGroup.features" :key="feature.id" @mouseover="hoveredId = feature.id" :aria-current="feature.id === hoveredId ? 'location' : null">
       <th scope="row">
         <div class="fr-checkbox-group single-checkbox">
-          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click="emit('toggle:singleFeatureId', feature.id)" />
+          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" @click="toggleSingleSelected(feature.id)" />
           <label class="fr-label" :for="'radio-' + feature.id" />
         </div>
       </th>
@@ -68,28 +68,22 @@
 </template>
 
 <script setup>
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { featureName, cultureLabel, inHa, surface } from '@/components/Features/index.js'
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
-import { usePermissions } from '@/stores/index.js'
+import { useFeaturesStore, usePermissions } from '@/stores/index.js'
 import { onClickOutside } from '@vueuse/core'
 
 const route = useRoute()
+const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
 
 const props = defineProps({
   featureGroup: {
     type: Object,
-    required: true
-  },
-  hoveredId: {
-    type: [Number, String, null],
-    required: true
-  },
-  selectedIds: {
-    type: Array,
     required: true
   },
   validationRules: {
@@ -98,14 +92,16 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:hoveredId', 'update:selectedIds', 'toggle:singleFeatureId', 'edit:featureId', 'delete:featureId'])
+const emit = defineEmits(['edit:featureId', 'delete:featureId'])
 
 const activeFeatureMenu = ref(null)
 const actionsMenuRef = ref(null)
+const { selectedIds, hoveredId } = storeToRefs(featuresStore)
+const { toggleSingleSelected } = featuresStore
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
 const open = ref(featureIds.value.includes(Number(route.query?.new)))
-const allSelected = computed(() => featureIds.value.every(id => props.selectedIds.includes(id)))
+const allSelected = computed(() => featureIds.value.every(id => selectedIds.value.includes(id)))
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
 const validation = computed(() => applyValidationRules(props.validationRules.rules, ...props.featureGroup.features))
 
@@ -124,14 +120,14 @@ function toggleDeleteForm (featureId) {
 function toggleFeatureGroup () {
   // we uncheck them
   if (allSelected.value) {
-    emit('update:selectedIds', props.selectedIds.filter(id => !featureIds.value.includes(id)))
+    featuresStore.unselect(...featureIds.value)
   }
   else {
-    emit('update:selectedIds', props.selectedIds.concat(Array.from(unref(featureIds.value))))
+    featuresStore.select(...featureIds.value)
   }
 }
 
-watch(() => props.selectedIds, (selectedIds, prevSelectedIds) => {
+watch(selectedIds, (selectedIds, prevSelectedIds) => {
   const newItems = featureIds.value.filter(id => {
     return selectedIds.includes(id) && !prevSelectedIds.includes(id)
   })

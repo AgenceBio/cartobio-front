@@ -66,7 +66,7 @@
         </tr>
       </thead>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" :validation-rules="validationRules" />
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
@@ -131,7 +131,7 @@ const messages = useMessages()
 const { record } = storeToRefs(recordStore)
 const { all: features, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
-const { getFeatureById, toggleSingleSelected, toggleAllSelected } = featuresStore
+const { getFeatureById, toggleAllSelected } = featuresStore
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)

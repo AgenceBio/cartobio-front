@@ -56,6 +56,14 @@ export const useFeaturesStore = defineStore('features', () => {
       : selectedIds.value.concat([featureId])
   }
 
+  function select (...ids) {
+    selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids]))
+  }
+
+  function unselect (...ids) {
+    selectedIds.value = selectedIds.value.filter(id => ids.includes(id) === false)
+  }
+
   function bindMaplibreFeatureState ({ map, source }) {
     watch(hoveredId, (id, previousId) => {
       if (id) {
@@ -165,9 +173,11 @@ export const useFeaturesStore = defineStore('features', () => {
     bindMaplibreFeatureState,
     bindMaplibreInteractions,
     getFeatureById,
+    select,
     setAll,
     toggleAllSelected,
     toggleSingleSelected,
+    unselect,
     updateMatchingFeatures
   }
 })
