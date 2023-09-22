@@ -1,10 +1,14 @@
 {
   "record_id": "054f0d70-c3da-448f-823e-81fcf7c2bf6e",
   "numerobio": "34857",
-  "operator_id": 113744,
+  "operator_id": 1,
+  "operator": {
+    "id": 1,
+    "nom": "test"
+  },
   "certification_date_debut": null,
   "certification_date_fin": null,
-  "certification_state": "PENDING_CERTIFICATION",
+  "certification_state": "OPERATOR_DRAFT",
   "created_at": "2023-09-07T13:25:16.435Z",
   "updated_at": "2023-09-07T13:25:16.435Z",
   "metadata": {
@@ -102,7 +106,8 @@
           "id": 2,
           "COMMUNE": "26108",
           "cultures": [
-            { "id": 1, "CPF": "01.13.42", "variete": "spéciale pour ail noir" }
+            { "id": 1, "CPF": "01.13.42", "variete": "spéciale pour ail noir" },
+            { "id": 2, "CPF": "01.23.11", "surface": "0.5" }
           ]
         }
       },

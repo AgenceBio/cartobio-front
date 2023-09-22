@@ -145,7 +145,7 @@ export const useFeaturesStore = defineStore('features', () => {
     selectedIds.value = []
     activeId.value = null
     hoveredId.value = null
-    collection.value.features = []
+    setAll([])
   }
 
   return {
