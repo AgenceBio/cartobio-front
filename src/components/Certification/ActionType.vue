@@ -64,7 +64,7 @@ const TYPES_MAP = readonly({
     color: 'fr-badge--icon-left fr-icon-add-line'
   },
   [EventType.FEATURE_DELETE]: {
-    label: 'Parcellaire supprimée',
+    label: 'Parcelle supprimée',
     color: 'fr-badge--icon-left fr-icon-delete-line'
   },
   [EventType.FEATURE_UPDATE]: {

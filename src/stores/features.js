@@ -18,6 +18,8 @@ export const useFeaturesStore = defineStore('features', () => {
     return collection.value.features.find(feature => feature.id === id)
   }
 
+  const all = computed(() => collection.value.features)
+
   const allSelected = computed(() => {
     const collectedIds = collectIds(collection.value.features)
 
@@ -52,6 +54,14 @@ export const useFeaturesStore = defineStore('features', () => {
       ? selectedIds.value.filter(id => id !== featureId)
       // otherwise, we add it to the select list
       : selectedIds.value.concat([featureId])
+  }
+
+  function select (...ids) {
+    selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids]))
+  }
+
+  function unselect (...ids) {
+    selectedIds.value = selectedIds.value.filter(id => ids.includes(id) === false)
   }
 
   function bindMaplibreFeatureState ({ map, source }) {
@@ -143,7 +153,7 @@ export const useFeaturesStore = defineStore('features', () => {
     selectedIds.value = []
     activeId.value = null
     hoveredId.value = null
-    collection.value.features = []
+    setAll([])
   }
 
   return {
@@ -152,19 +162,22 @@ export const useFeaturesStore = defineStore('features', () => {
     selectedIds,
     // computed
     activeFeature,
+    all,
+    allSelected,
+    collection,
     hasFeatures,
     hoveredFeature,
     selectedFeatures,
-    allSelected,
-    collection,
     // methods
     $reset,
+    bindMaplibreFeatureState,
+    bindMaplibreInteractions,
     getFeatureById,
+    select,
     setAll,
     toggleAllSelected,
     toggleSingleSelected,
-    bindMaplibreFeatureState,
-    bindMaplibreInteractions,
+    unselect,
     updateMatchingFeatures
   }
 })

@@ -1,20 +1,18 @@
-import { describe, it, expect, vi, afterEach } from "vitest"
+import { afterEach, beforeAll, describe, it, expect, vi } from "vitest"
 import { mount, flushPromises } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
 
 import OperatorSetup from "@/components/OperatorSetup/index.vue"
 import featureSources from '@/components/OperatorSetup/index.js'
-import { convertShapefileArchiveToGeoJSON, submitParcellesChanges } from "@/cartobio-api.js"
+import { convertShapefileArchiveToGeoJSON, createOperatorRecord } from "@/cartobio-api.js"
 import { AxiosError } from "axios"
 
 setActivePinia(createPinia())
 
-vi.mock('@/cartobio-api.js', () => ({
-  submitParcellesChanges: vi.fn().mockImplementation(() => {
-    return Promise.resolve()
-  }),
-  convertShapefileArchiveToGeoJSON: vi.fn().mockImplementation( async () => {
-    return {
+describe("OperatorSetup", () => {
+  beforeAll(() => {
+    createOperatorRecord.mockImplementation(async d => d),
+    convertShapefileArchiveToGeoJSON.mockResolvedValue({
       type: "FeatureCollection",
       features: [
         {
@@ -27,14 +25,9 @@ vi.mock('@/cartobio-api.js', () => ({
           "properties": {}
         }
       ]
-    }
+    })
   })
-}))
-
-describe("OperatorSetup", () => {
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
+  afterEach(() => vi.clearAllMocks())
 
   it("should render only telepac tab if there is only telepac source in props", () => {
     const wrapper = mount(OperatorSetup, {
@@ -87,7 +80,7 @@ describe("OperatorSetup", () => {
     // it is now called during preview
     await flushPromises()
     const confirmBtn = await wrapper.find('.fr-btn')
-    expect(submitParcellesChanges).not.toHaveBeenCalled()
+    expect(createOperatorRecord).not.toHaveBeenCalled()
     expect(confirmBtn.text()).toEqual('Import des données')
   })
 
@@ -98,12 +91,10 @@ describe("OperatorSetup", () => {
       }
     })
 
-    convertShapefileArchiveToGeoJSON.mockImplementationOnce(
-      async () => { throw new AxiosError('Fichier invalide') }
-    )
+    convertShapefileArchiveToGeoJSON.mockRejectedValueOnce(new AxiosError('Fichier invalide'))
     await wrapper.find('input[type="file"]').setValue('')
-    expect(convertShapefileArchiveToGeoJSON).toHaveBeenCalledOnce()
-    expect(submitParcellesChanges).not.toHaveBeenCalled()
+    expect(convertShapefileArchiveToGeoJSON.mock.results.at(0).value).toEqual(new AxiosError('Fichier invalide'))
+    expect(createOperatorRecord).not.toHaveBeenCalled()
     await flushPromises()
     expect(wrapper.text()).toContain('Erreur')
   })

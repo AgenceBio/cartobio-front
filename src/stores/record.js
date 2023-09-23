@@ -46,7 +46,7 @@ export const useRecordStore = defineStore('record', () => {
 
   function reset() {
     update({ ...initialState, metadata: { ...initialState.metadata } })
-    featuresStore.setAll([])
+    featuresStore.$reset()
   }
 
   const exists = computed(() => Boolean(record.record_id))

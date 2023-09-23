@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { createGroupingKeys, diff, featureName, getFeatureGroups } from './index.js'
+import { createGroupingKeys, diff, featureName, getFeatureGroups, surface } from './index.js'
 import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
 
 const geometry = {
@@ -455,5 +455,23 @@ describe('featureName', () => {
 
     expect(featureName(feature)).toEqual('Parcelles 0239, 0240')
     expect(featureName(feature, { separator: '-'})).toEqual('Parcelles 0239-0240')
+  })
+})
+
+describe('surface', () => {
+  test('with a FeatureCollection', () => {
+    expect(surface(overlappingFeatureCollection)).toBeCloseTo(42505773.88, 1)
+  })
+
+  test('with an array of Features', () => {
+    expect(surface([feature])).toBeCloseTo(27145758.11, 1)
+  })
+
+  test('with a Feature', () => {
+    expect(surface(feature)).toBeCloseTo(27145758.11, 1)
+  })
+
+  test('with a Geometry', () => {
+    expect(surface(geometry)).toBeCloseTo(7055.26, 1)
   })
 })

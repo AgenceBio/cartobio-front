@@ -18,12 +18,12 @@
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
-        <col width="10%" />
-        <col width="10%" />
+        <col width="8%" />
+        <col width="8%" />
         <col width="30%" />
         <col width="22%" />
-        <col width="18%" />
-        <col width="10%" />
+        <col width="15%" />
+        <col width="17%" />
       </colgroup>
       <thead>
         <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
@@ -60,13 +60,13 @@
         </tr>
         <tr class="summary" v-if="(selectedFeatureIds.length === 0)">
           <td colspan="2"></td>
-          <td colspan="2">{{ features.features.length }} parcelles</td>
+          <td colspan="2">{{ features.length }} parcelles</td>
           <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
           <td></td>
         </tr>
       </thead>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" v-model:hoveredId="hoveredFeatureId" v-model:selectedIds="selectedFeatureIds" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @toggle:singleFeatureId="toggleSingleSelected" :validation-rules="validationRules" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" :validation-rules="validationRules" />
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
@@ -80,6 +80,8 @@
 
       <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" />
     </Modal>
+
+    <DeleteFeatureModal v-if="maybeDeletedFeatureId" v-model="showDeleteFeatureModal" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
   </Teleport>
 
   <p>
@@ -92,79 +94,98 @@
 import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useFeaturesStore } from '@/stores/features.js'
+import { useFeaturesStore, useMessages, usePermissions, useRecordStore } from '@/stores/index.js'
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
+import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 import Modal from '@/components/Modal.vue'
 
-import { surface, inHa, getFeatureGroups, groupingChoices, getFeatureById } from './index.js'
-import { updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
-import { usePermissions } from "@/stores/permissions.js"
+import { surface, inHa, getFeatureGroups, groupingChoices } from './index.js'
+import { deleteSingleFeature, updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
 import { toast } from "vue3-toastify"
-import { useMessages } from "@/stores/index.js"
 import { statsPush } from "@/stats.js"
 
-const props = defineProps({
+defineProps({
   operator: {
     type: Object,
     required: true,
   },
-  record: {
-    type: Object,
-    required: true,
+  editForm: {
+    type: Object
   },
-  features: {
+  validationRules: {
     type: Object,
     required: true
   },
-  editForm: Object,
-  validationRules: Object,
-  massActions: Array,
+  massActions: {
+    type: Array,
+    default: () => ([])
+  },
 })
 
-const store = useFeaturesStore()
+const recordStore = useRecordStore()
+const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
 const messages = useMessages()
 
-const { hoveredId:hoveredFeatureId } = storeToRefs(store)
-const { selectedIds:selectedFeatureIds, allSelected } = storeToRefs(store)
-const { toggleSingleSelected, toggleAllSelected } = store
+const { record } = storeToRefs(recordStore)
+const { all: features, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
+const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
+const { getFeatureById, toggleAllSelected } = featuresStore
 
 const editedFeatureId = ref(null)
-const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(props.features.features, editedFeatureId.value) : null)
+const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
+
+const maybeDeletedFeatureId = ref(null)
+const showDeleteFeatureModal = computed(() => Boolean(maybeDeletedFeatureId.value))
 
 const userGroupingChoice = ref('CULTURE')
 
 // hence, feature groups
-const featureGroups = computed(() => getFeatureGroups(props.features, userGroupingChoice.value))
+const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
 
 const isSaving = ref(false)
 const showModal = computed(() => Boolean(editedFeatureId.value))
 
 // Messages
 const displayedMessages = ref(messages.popMessages())
+
 watch(messages.queue, () => {
   displayedMessages.value.push(...messages.popMessages())
 })
+
 watch(showModal, (value) => {
   if (value) {
     displayedMessages.value = []
   }
 })
 
-function handleSingleFeatureSubmit ({ id, properties }) {
+async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
 
-  store.updateMatchingFeatures([{id, properties }])
+  featuresStore.updateMatchingFeatures([{id, properties }])
   editedFeatureId.value = null
 
-  performAsyncAction(
-    updateSingleFeatureProperties({ recordId: props.record.record_id }, { id, properties })
+  await performAsyncRecordAction(
+    updateSingleFeatureProperties({ recordId: record.value.record_id }, { id, properties }),
+    'Parcelle modifiée.'
   )
 }
 
-function handleFeatureCollectionSubmit ({ ids, patch }) {
+async function handleSingleFeatureDeletion ({ id, reason }) {
+  statsPush(['trackEvent', 'Parcelles', 'Suppression individuelle (sauvegarde)'])
+
+  maybeDeletedFeatureId.value = null
+
+  await performAsyncRecordAction(
+    deleteSingleFeature({ recordId: record.value.record_id }, { id, reason }),
+    'Parcelle supprimée.'
+  )
+}
+
+async function handleFeatureCollectionSubmit ({ ids, patch }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
+
   const featureCollection = {
     type: 'FeatureCollection',
     features: ids.map(id => ({
@@ -173,32 +194,33 @@ function handleFeatureCollectionSubmit ({ ids, patch }) {
     }))
   }
 
-  store.updateMatchingFeatures(featureCollection.features)
+  featuresStore.updateMatchingFeatures(featureCollection.features)
   editedFeatureId.value = null
 
-  performAsyncAction(
-    updateFeatureCollectionProperties({ recordId: props.record.record_id }, featureCollection)
+  performAsyncRecordAction(
+    updateFeatureCollectionProperties({ recordId: record.value.record_id }, featureCollection),
+    'Parcelles modifiées.'
   )
 }
 
-function performAsyncAction (promise) {
+async function performAsyncRecordAction (promise, text = 'Modification enregistrée.') {
   isSaving.value = true
 
-  return new Promise((resolve, reject) => {
-    promise
-      .then(record => {
-        messages.addMessage({ type: 'success', text: 'Modification enregistrée.' })
-        resolve(record)
-      })
-      .catch(error => {
-        console.error(error)
-        toast.error(
-          "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
-        )
-        reject(error)
-      })
-      .finally(() => isSaving.value = false)
-  })
+  try {
+    const updatedRecord = await promise
+    recordStore.update(updatedRecord)
+
+    messages.addMessage({ type: 'success', text })
+  }
+  catch (error) {
+    console.error(error)
+    toast.error(
+      "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
+    )
+  }
+  finally {
+    isSaving.value = false
+  }
 }
 </script>
 

@@ -1,4 +1,4 @@
-import { afterEach, describe, it, expect, vi } from "vitest"
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
 import { useFeaturesStore } from "./features.js"
 import { createTestingPinia } from "@pinia/testing"
 
@@ -13,7 +13,7 @@ const sampleFeatures = [
 describe('states', () => {
   afterEach(() => features.$reset())
 
-  it('should return an accurate collection', () => {
+  it('should collect all new features', () => {
     expect(features.collection).toEqual({
       type: 'FeatureCollection',
       features: []
@@ -23,6 +23,17 @@ describe('states', () => {
     expect(features.collection).toEqual({
       type: 'FeatureCollection',
       features: sampleFeatures
+    })
+  })
+
+  it('should evict removed feature', () => {
+    features.setAll(sampleFeatures)
+    // we remove one feature
+    features.setAll([sampleFeatures.at(0)])
+
+    expect(features.collection).toEqual({
+      type: 'FeatureCollection',
+      features: [sampleFeatures.at(0)]
     })
   })
 
@@ -68,11 +79,35 @@ describe('getFeatureById()', () => {
   })
 })
 
+describe('select/unselect', () => {
+  beforeEach(() => features.setAll(sampleFeatures))
+  afterEach(() => features.$reset())
+
+  it('should select 1, then 2 without duplicates', () => {
+    expect(features.selectedFeatures).toEqual([])
+
+    features.select(1)
+    expect(features.selectedIds).toEqual([1])
+
+    features.select(1, 2)
+    expect(features.selectedIds).toEqual([1, 2])
+  })
+
+  it('should unselect 1', () => {
+    features.toggleAllSelected()
+    features.unselect(1)
+    expect(features.selectedIds).toEqual([2])
+
+    features.unselect(1)
+    expect(features.selectedIds).toEqual([2])
+  })
+})
+
 describe('toggle*Selected()', () => {
   afterEach(() => features.$reset())
 
   it('should have no selected features', () => {
-    expect(features.selectedFeatures).toEqual([])
+    expect(features.selectedIds).toEqual([])
   })
 
   it('should return only the selected feature 1, and untoggle it afterwards', () => {
