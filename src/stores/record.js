@@ -30,6 +30,9 @@ export const useRecordStore = defineStore('record', () => {
   })
 
   /**
+   * Soft update of a record
+   *
+   * Use case: when navigating from /parcellaire/:id to /parcellaire/:id/new-stuff
    * @param {import('@/cartobio-api').Record} updatedRecord
    */
   function update (updatedRecord) {
@@ -42,6 +45,17 @@ export const useRecordStore = defineStore('record', () => {
     if (updatedRecord.parcelles) {
       featuresStore.setAll(updatedRecord.parcelles.features)
     }
+  }
+
+  /**
+   * Replace a record with new values
+   * Use case: when navigating from /parcellaire/1234 to /parcellaire/9999 or even /parcellaires then /parcellaire/1234
+   *
+   * @param {import('@/cartobio-api').Record} maybeNewRecord
+   */
+  function replace (maybeNewRecord) {
+    reset()
+    update(maybeNewRecord)
   }
 
   function reset() {
@@ -66,8 +80,9 @@ export const useRecordStore = defineStore('record', () => {
     exists,
     isSetup,
     // methods
-    update,
+    $reset: reset,
+    replace,
     reset,
-    $reset: reset
+    update
   }
 })
