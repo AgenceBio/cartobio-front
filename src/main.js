@@ -121,7 +121,7 @@ router.beforeEach(async (to, from) => {
   if (to.params.id || userStore.roles.includes(ROLES.OPERATEUR)) {
     const recordStore = useRecordStore()
     const record = await getOperatorParcelles(to.params.id || userStore.user.id)
-    recordStore.update(record)
+    recordStore.replace(record)
   }
 
   if (to.path === '/login/agencebio') {
