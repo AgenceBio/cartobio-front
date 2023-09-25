@@ -2,6 +2,7 @@ import DefaultExporter from './DefaultExporter.js'
 import BureauVeritasExporter from './BureauVeritasExporter.js'
 import CertipaqExporter from './CertipaqExporter.js'
 import CertisExporter from './CertisExporter.js'
+import CertisudExporter from './CertisudExporter.js'
 import ControlUnionExporter from "./ControlUnionExporter.js"
 import OcaciaExporter from "./OcaciaExporter.js";
 import QualisudExporter from "./QualisudExporter.js";
@@ -18,7 +19,7 @@ const exporters = new Map([
   [2, BureauVeritasExporter],
   [3, CertipaqExporter],
   [4, QualisudExporter],
-  // [5, CertisudExporter],
+  [5, CertisudExporter],
   [6, CertisExporter],
   // [7, BureauAlpesControlesExporter],
   [10, ControlUnionExporter],
