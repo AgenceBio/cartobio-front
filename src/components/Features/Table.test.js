@@ -9,6 +9,7 @@ import { useRecordStore, useFeaturesStore, usePermissions } from "@/stores/index
 import { OPERATOR_RULES } from "@/referentiels/ab.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
+import Modal from "@/components/Modal.vue"
 import DeleteFeatureModal from "@/components/Features/DeleteFeatureModal.vue"
 import EditForm from "@/components/Features/SingleItemOperatorForm.vue"
 import FeatureGroup from "@/components/Features/FeatureGroup.vue"
@@ -114,6 +115,38 @@ describe("Features Table", () => {
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
   })
 
+  test("we open a modal and test various cases it should remain open, or close", async () => {
+    const AsyncComponent = defineComponent({
+      components: { TableComponent },
+      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>'
+    })
+
+    const wrapper = mount(AsyncComponent, {
+      props: { operator, validationRules: { rules: OPERATOR_RULES }, editForm: markRaw(EditForm) }
+    })
+
+    const table = wrapper.getComponent(TableComponent)
+    // await table.find('tr.parcelle td').trigger('click')
+
+    let modal
+
+    // we click outside the modal (the background of the <dialog> element)
+    await table.find('tr.parcelle td').trigger('click')
+    modal = wrapper.getComponent(Modal)
+    await modal.trigger('click')
+    expect(modal.exists()).toEqual(false)
+
+    // we click inside, so the modal should still exist
+    await table.find('tr.parcelle td').trigger('click')
+    modal = wrapper.getComponent(Modal)
+    await modal.find('#modal-title').trigger('click')
+    expect(modal.exists()).toEqual(true)
+
+    // then we close the modal with the Close button
+    await modal.find('.fr-modal__header .fr-btn--close').trigger('click')
+    expect(modal.exists()).toEqual(false)
+  })
+
   test("we delete a feature", async () => {
     permissions.canDeleteFeature = true
 
@@ -123,7 +156,6 @@ describe("Features Table", () => {
 
     await wrapper.find('.group-header').trigger('click')
     await wrapper.find('#parcelle-3 .show-actions').trigger('click')
-    await flushPromises()
     await wrapper.find('.fr-icon-delete-line').trigger('click')
 
     // we trigger the deletion

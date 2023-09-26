@@ -1,8 +1,8 @@
 <template>
-  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue" @click="click" ref="background">
-    <div ref="target" class="fr-container fr-container--fluid fr-container-md">
+  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue">
+    <div class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
-        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div ref="target" class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-modal__body">
             <div class="fr-modal__header">
               <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('update:modelValue', false)">
@@ -29,7 +29,7 @@
 <script setup>
 import { onBeforeUnmount, ref, watchEffect } from 'vue'
 import { useHead } from '@unhead/vue'
-import { onKeyStroke } from '@vueuse/core'
+import { onClickOutside, onKeyStroke } from '@vueuse/core'
 import { useContentTracking } from "@/stats.js"
 
 useContentTracking()
@@ -41,13 +41,17 @@ const props = defineProps({
 })
 
 const target = ref(null)
-const background = ref(null)
-const click = (e) => {
-  if (e.target === background.value) {
+
+const cancelKeyStroke = onKeyStroke('Escape', () => emit('update:modelValue', false))
+const cancelClickOutside = onClickOutside(target, (event) => {
+  const range = document.createRange()
+  range.selectNode(target.value)
+  const isOutside = range.intersectsNode(event.target)
+
+  if (isOutside) {
     emit('update:modelValue', false)
   }
-}
-onKeyStroke('Escape', () => emit('update:modelValue', false))
+})
 
 const stop = watchEffect(() => {
   if (props.modelValue) {
@@ -62,6 +66,8 @@ const stop = watchEffect(() => {
 
 onBeforeUnmount(() => {
   stop()
+  cancelClickOutside()
+  cancelKeyStroke()
 
   useHead({
     htmlAttrs: {}
