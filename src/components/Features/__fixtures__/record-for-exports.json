@@ -1,0 +1,98 @@
+{
+  "record_id": "054f0d70-c3da-448f-823e-81fcf7c2bf6e",
+  "operator": {
+    "id": 1,
+    "nom": "test"
+  },
+  "parcelles": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "id": 1,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 1,
+          "COMMUNE": "26108",
+          "engagement_date": "2023-01-01",
+          "conversion_niveau": "C1",
+          "cultures": [
+            { "id": 1, "CPF": "01.19.10.8" }
+          ],
+          "commentaire": "parcelle de Luzerne"
+        }
+      },
+      {
+        "id": 2,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 2,
+          "COMMUNE": "26108",
+          "engagement_date": "2023-01-01",
+          "conversion_niveau": "C1",
+          "cultures": [
+            { "id": 1, "CPF": "01.19.10.8" }
+          ],
+          "commentaire": "deuxième parcelle de Luzerne engagée au même moment (groupement par NIVEAU + DATE)"
+        }
+      },
+      {
+        "id": 3,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 3,
+          "engagement_date": "2021-01-01",
+          "conversion_niveau": "AB",
+          "cultures": [
+            { "id": 1, "CPF": "01.19.10.8" },
+            { "id": 2, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }
+          ],
+          "commentaire": "troisième parcelle de Luzerne et de trèfle engagée à un autre moment, avec une autre culture"
+        }
+      },
+      {
+        "id": 4,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 4,
+          "engagement_date": "2015-01-01",
+          "conversion_niveau": "AB",
+          "cultures": [
+            { "id": 1, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }
+          ],
+          "commentaire": "deuxième parcelle de trèfle engagée à un autre moment que la précédente"
+        }
+      },
+      {
+        "id": 5,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 5,
+          "cultures": [
+            { "id": 1, "CPF": "01.19.99" }
+          ],
+          "commentaire": "sans code CPF valide, ni date d'engagement ou autre"
+        }
+      }
+    ]
+  }
+}

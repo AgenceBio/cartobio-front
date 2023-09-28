@@ -1,15 +1,31 @@
+import { utils } from 'xlsx'
 import { cultureLabel, featureName } from "../index.js"
+
+const frNumbers = new Intl.NumberFormat('fr-FR', {
+  style: 'decimal',
+  minimumSignificantDigits: 2,
+  maximumSignificantDigits: 2
+})
 
 export default class BaseExporter {
   label = ''
   extension = ''
   mimetype = ''
+  origin = 'A1'
 
-  constructor({ featureCollection, operator, record }) {
+  constructor ({ featureCollection, operator, record }) {
     this.featureCollection = featureCollection
     this.operator = operator
     this.record = record
   }
+
+  toJSON () {
+    return utils.sheet_to_json(this.getSheet(), { header: 1, origin })
+  }
+}
+
+export function humanNumbers (float) {
+  return frNumbers.format(float)
 }
 
 /**
