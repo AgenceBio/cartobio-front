@@ -27,15 +27,17 @@
 
       <ConversionLevelSelector v-model="patch.conversion_niveau" />
 
-      <div :class="{'fr-input-group': true, 'fr-input-group--disabled': !isAB}">
-        <label class="fr-label">Date d'engagement</label>
+      <div class="fr-input-group">
+        <label class="fr-label">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
         <div class="fr-input-wrap fr-icon-calendar-line">
           <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
         </div>
       </div>
 
+      <AnnotationsSelector v-model="patch.annotations" :featureId="feature.properties.id" />
+
       <div class="fr-input-group">
-        <label class="fr-label" for="auditeur_notes">Vos notes de certification</label>
+        <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
         <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
       </div>
     </form>
@@ -56,6 +58,7 @@ import { reactive, computed } from 'vue';
 import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
 import Modal from '@/components/Modal.vue'
+import AnnotationsSelector from "@/components/Features/AnnotationsSelector.vue";
 import CultureSelector from "@/components/Features/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
 
@@ -67,8 +70,9 @@ const props = defineProps({
 })
 
 const patch = reactive({
+  annotations: props.feature.properties.annotations || [],
   conversion_niveau: props.feature.properties.conversion_niveau || '',
-  cultures: props.feature.properties.cultures,
+  cultures: props.feature.properties.cultures || [],
   engagement_date: props.feature.properties.engagement_date,
   auditeur_notes: props.feature.properties.auditeur_notes || '',
 })

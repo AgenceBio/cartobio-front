@@ -150,3 +150,84 @@ export function applyValidationRules (rules, ...features) {
 }
 
 export const ABLevels = [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB]
+
+/**
+ * @enum {String}
+ */
+export const ANNOTATIONS = {
+  DOWNGRADED: 'downgraded',
+  // v metadata keys
+  METADATA_STATE: 'state',
+  // NEWLY_ADDED: 'newly-added',
+  REDUCED_CONVERSION_PERIOD: 'reduction-conversion',
+  RISKY: 'risky',
+  SAMPLED: 'sampled',
+  // SOWED: 'sowed',
+  SURVEYED: 'surveyed'
+}
+
+/**
+ * @enum {String}
+ */
+export const CERTIFICATION_BODY_DECISION = {
+  ACCEPTED: 'accepted',
+  REJECTED: 'rejected'
+}
+
+/**
+ * @typedef {Object} UserAnnotation
+ * @property {String} id
+ * @property {ANNOTATIONS} code
+ * @property {String} date
+ * @property {Object.<ANNOTATIONS,String>=} metadata
+ */
+
+/**
+ * @typedef {Object} AnnotationConfiguration
+ * @property {(): Boolean} featured
+ * @property {String} label
+ * @property {Object.<ANNOTATIONS, AnnotationConfiguration>} metadata
+ */
+
+/**
+ * @type {Object.<ANNOTATIONS, AnnotationConfiguration>}
+ */
+export const AnnotationTags = {
+  [ANNOTATIONS.REDUCED_CONVERSION_PERIOD]: {
+    featured: () => true,
+    label: 'Réduction de conversion',
+    metadata: {
+      [ANNOTATIONS.METADATA_STATE]: {
+        [CERTIFICATION_BODY_DECISION.ACCEPTED]: {
+          label: 'Dérogation acceptée'
+        },
+        [CERTIFICATION_BODY_DECISION.REJECTED]: {
+          label: 'Dérogation refusée'
+        },
+      }
+    }
+  },
+  [ANNOTATIONS.DOWNGRADED]: {
+    featured: () => true,
+    label: 'Déclassement',
+    metadata: {
+      [ANNOTATIONS.METADATA_STATE]: {
+        [CERTIFICATION_BODY_DECISION.ACCEPTED]: {
+          label: 'Déclassement approuvé'
+        },
+        [CERTIFICATION_BODY_DECISION.REJECTED]: {
+          label: 'Déclassement refusé'
+        }
+      }
+    }
+  },
+  [ANNOTATIONS.RISKY]: {
+    label: 'À risque',
+  },
+  [ANNOTATIONS.SAMPLED]: {
+    label: 'Prélèvement effectué'
+  },
+  [ANNOTATIONS.SURVEYED]: {
+    label: 'Visitée'
+  }
+}
