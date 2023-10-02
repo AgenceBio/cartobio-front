@@ -27,10 +27,10 @@
 
       <ConversionLevelSelector v-model="patch.conversion_niveau" />
 
-      <div class="fr-input-group">
-        <label class="fr-label">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
+      <div class="fr-input-group" v-if="isAB">
+        <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
         <div class="fr-input-wrap fr-icon-calendar-line">
-          <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
+          <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
         </div>
       </div>
 

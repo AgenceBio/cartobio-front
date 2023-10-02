@@ -5,11 +5,11 @@
       Cette information n'est pas visible pour l'agriculteur.
     </div>
 
-    <ul class="fr-tags-group">
-      <li v-for="(annotation, annotationId) in visibleAnnotations" :key="annotationId">
+    <ul class="fr-tags-group fr-tags-group--annotations">
+      <li :class="`annotation-choice annotation--${annotationId}`" v-for="(annotation, annotationId) in visibleAnnotations" :key="annotationId">
         <button class="fr-tag" type="button" :aria-pressed="isSelected(annotationId)" @click="toggleAnnotation(annotationId)">{{ annotation.label }}</button>
       </li>
-      <li class="more" :hidden="isExpanded">
+      <li class="annotation--more" :hidden="isExpanded">
         <button class="fr-tag fr-tag--beige-gris-galet fr-tag--icon-left fr-icon-add-line" type="button" @click="isExpanded=true">Afficher plus</button>
       </li>
     </ul>
@@ -69,7 +69,7 @@ const props = defineProps({
 
 const isExpanded = ref(false)
 const visibleAnnotations = computed(() => Object.fromEntries(
-  Object.entries(AnnotationTags).filter(([key, { featured }]) => isExpanded.value || featured)
+  Object.entries(AnnotationTags).filter(([key, { featured }]) => isExpanded.value || (typeof featured === 'function' ? featured() : featured))
 ))
 
 const reducedConversionStates = computed(() => AnnotationTags[ANNOTATIONS.REDUCED_CONVERSION_PERIOD].metadata[ANNOTATIONS.METADATA_STATE])

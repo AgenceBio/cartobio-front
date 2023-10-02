@@ -16,6 +16,10 @@ export const CERTIFICATION_STATE = {
   CERTIFIED: 'CERTIFIED', // Phase 5
 }
 
+/**
+ * @param {CERTIFICATION_STATE} state
+ * @returns {Boolean}
+ */
 export function isCertificationImmutable (state) {
   return [
     CERTIFICATION_STATE.PENDING_CERTIFICATION,
