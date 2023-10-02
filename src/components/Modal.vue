@@ -5,15 +5,17 @@
         <div ref="target" class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-modal__body">
             <div class="fr-modal__header">
+              <h1 id="modal-title" class="fr-modal__title fr-m-0">
+                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" />
+                <slot name="title" />
+              </h1>
+
               <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('update:modelValue', false)">
                 Fermer
               </button>
             </div>
             <div class="fr-modal__content">
-              <h1 id="modal-title" class="fr-modal__title">
-                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" />
-                <slot name="title" />
-              </h1>
+
 
               <slot name="default" v-bind="$attrs" />
             </div>
@@ -76,6 +78,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.fr-modal__footer {
+  filter: drop-shadow(var(--lifted-shadow));
+  z-index: calc(var(--ground) + 2000); /* same as .fr-modal__body in DSFR */
+}
 .fr-modal__footer:empty {
   display: none;
 }
