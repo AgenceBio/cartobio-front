@@ -61,17 +61,15 @@
   </section>
 
   <Teleport to="body">
-    <Modal v-if="showDetailsModal" v-model="showDetailsModal" icon="fr-icon-file-text-fill" data-track-content data-content-name="Modale de confirmation d'ajout">
+    <Component :is="editForm" v-if="showDetailsModal" :feature="feature" @submit="saveFeature" v-model="showDetailsModal" icon="fr-icon-file-text-fill" data-content-name="Modale de confirmation d'ajout">
       <template #title>Ajouter une parcelle</template>
-      <Component :is="editForm" :feature="feature" @submit="saveFeature"/>
-    </Modal>
+    </Component>
   </Teleport>
 </template>
 
 <script setup>
 import { computed, markRaw, reactive, ref, toRaw, watch } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue'
-import Modal from "@/components/Modal.vue";
 import { submitNewParcelle } from '@/cartobio-api.js';
 import { featureCollection } from '@turf/helpers'
 import { diff, inHa, merge, surface } from './index.js'

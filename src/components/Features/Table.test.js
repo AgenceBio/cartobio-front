@@ -108,7 +108,7 @@ describe("Features Table", () => {
     expect(table.vm.editedFeatureId).toEqual(2)
 
     //submit form
-    await form.find('button.fr-btn').trigger('click')
+    await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     // modal is down, and the table should be updated
     expect(updateSingleFeatureProperties).toHaveBeenCalled()

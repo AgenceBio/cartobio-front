@@ -75,11 +75,9 @@
   </div>
 
   <Teleport to="body">
-    <Modal v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
+    <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
       <template #title>Modification de parcelle</template>
-
-      <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" />
-    </Modal>
+    </Component>
 
     <DeleteFeatureModal v-if="maybeDeletedFeatureId" v-model="showDeleteFeatureModal" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
   </Teleport>
