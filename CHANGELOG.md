@@ -1,4 +1,13 @@
-# En cours…
+# _En cours_…
+
+# [2.12.0](https://github.com/AgenceBio/cartobio-front/compare/v2.11.0...v2.12.0) (2023-10-03)
+
+* possibilité de supprimer une parcelle individuellement
+* la modification en masse de l'assolement _remplace_ la culture des parcelles sélectionnées, plutôt que de l'_ajouter_
+* nous n'importons plus le "code Précision" du fichier Télépac dans le champ "Variété"
+* ajout d'un export Certisud
+* correction d'un bug d'affichage de date qui faisait planter l'interface
+* préparations techniques à la mise en place d'une API Parcellaire
 
 # [2.11.0](https://github.com/AgenceBio/cartobio-front/compare/v2.10.0...v2.11.0) (2023-09-14)
 
