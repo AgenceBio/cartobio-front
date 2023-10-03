@@ -14,6 +14,7 @@ import TableComponent from "./Table.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const recordStore = useRecordStore(pinia)
+const permissions = usePermissions(pinia)
 
 const operator = {
   id: 1,
@@ -26,6 +27,7 @@ describe("SingleItemCertificationBodyForm", () => {
   beforeEach(async () => {
     recordStore.reset()
     recordStore.update(record)
+    permissions.isOc = true
 
     const AsyncComponent = defineComponent({
       components: { TableComponent },
@@ -85,6 +87,10 @@ describe("SingleItemCertificationBodyForm", () => {
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.REDUCED_CONVERSION_PERIOD} button`).trigger('click')
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.RISKY} button`).trigger('click')
 
+    // we toggle and cancel the tag
+    await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.SURVEYED} button`).trigger('click')
+    await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.SURVEYED} button`).trigger('click')
+
     await form.find('#reduced_conversion_period_state').setValue(CERTIFICATION_BODY_DECISION.REJECTED)
     await form.find('#downgraded_state').setValue(CERTIFICATION_BODY_DECISION.ACCEPTED)
 
@@ -112,7 +118,7 @@ describe("SingleItemCertificationBodyForm", () => {
             },
             {
               code: ANNOTATIONS.RISKY
-            },
+            }
           ]
         }
       }

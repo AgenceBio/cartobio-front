@@ -58,6 +58,36 @@ describe("Features Table", () => {
     expect(wrapper.find('#radio-mass-edit').exists()).toEqual(true)
   })
 
+  test("we not be able to see and activate facets as an Agri", async () => {
+    const wrapper = mount(TableComponent, {
+      props: { operator, validationRules: { rules: OPERATOR_RULES } }
+    })
+
+    expect(wrapper.find('.fr-tags-group--annotations').exists()).toEqual(false)
+  })
+
+  test("we should be able to see and activate facets only when we are a Certification Body", async () => {
+    const wrapper = mount(TableComponent, {
+      props: { operator, validationRules: { rules: OPERATOR_RULES } }
+    })
+
+    permissions.isOc = true
+    await flushPromises()
+
+    expect(wrapper.find('.fr-tags-group--annotations').exists()).toEqual(true)
+
+    // toggle two filters
+    await wrapper.find('.fr-tags-group--annotations .annotation--downgraded').trigger('click')
+    await wrapper.find('.fr-tags-group--annotations .annotation--risky').trigger('click')
+    await wrapper.find('.fr-tags-group--annotations .annotation--surveyed').trigger('click')
+    await wrapper.find('.fr-tags-group--annotations .annotation--surveyed').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("1 parcelles")
+    expect(featuresStore.all).toHaveLength(3)
+    expect(featuresStore.hits).toHaveLength(1)
+  })
+
   test("we group by town", async () => {
     const wrapper = mount(TableComponent, {
       props: { operator, validationRules: { rules: OPERATOR_RULES } }

@@ -15,9 +15,9 @@
   </div>
 
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
-    <ul class="fr-tags-group">
+    <ul class="fr-tags-group fr-tags-group--annotations" v-if="permissions.canViewAnnotations">
       <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
-        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active }" aria-label="Retirer {{ value.label }}" @click="toggleAnnotation(code)">{{ label }} ({{ count }})</button>
+        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active, [`annotation--${code}`]: true }" :aria-label="`${active ? 'Retirer' : 'Ajouter'} le filtre sur étiquette ${label}`" @click="toggleAnnotation(code)">{{ label }} ({{ count }})</button>
       </li>
     </ul>
 

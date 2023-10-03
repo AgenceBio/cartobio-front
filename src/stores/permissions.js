@@ -74,9 +74,13 @@ export const usePermissions = defineStore('permissions', () => {
     return userStore.roles.includes(ROLES.OC_CERTIF);
   })
 
+  const canAddAnnotations = computed(() => isOc.value)
+  const canViewAnnotations = computed(() => isOc.value)
+
   return {
     isOc,
     isAgri,
+    canAddAnnotations,
     canAddParcelle,
     canDeleteFeature,
     canDeleteParcellaire,
@@ -86,6 +90,7 @@ export const usePermissions = defineStore('permissions', () => {
     canSaveAudit,
     canSendAudit,
     canCertify,
+    canViewAnnotations,
     $reset
   }
 })

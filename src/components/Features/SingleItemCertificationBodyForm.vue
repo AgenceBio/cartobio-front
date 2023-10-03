@@ -25,7 +25,7 @@
         <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
       </div>
 
-      <ConversionLevelSelector v-model="patch.conversion_niveau" />
+      <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
       <div class="fr-input-group" v-if="isAB">
         <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <AnnotationsSelector v-model="patch.annotations" :featureId="feature.properties.id" />
+      <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :featureId="feature.properties.id" />
 
       <div class="fr-input-group">
         <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
@@ -57,6 +57,8 @@ import { reactive, computed } from 'vue';
 
 import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
+import { usePermissions } from '@/stores/index.js'
+
 import Modal from '@/components/Modal.vue'
 import AnnotationsSelector from "@/components/Features/AnnotationsSelector.vue";
 import CultureSelector from "@/components/Features/CultureSelector.vue";
@@ -68,6 +70,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const permissions = usePermissions()
 
 const patch = reactive({
   annotations: props.feature.properties.annotations || [],

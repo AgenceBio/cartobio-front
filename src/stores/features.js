@@ -233,6 +233,7 @@ export const useFeaturesStore = defineStore('features', () => {
   function $reset () {
     selectedIds.value = []
     activeId.value = null
+    activeAnnotations.value = []
     hoveredId.value = null
     setAll([])
   }
