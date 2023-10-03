@@ -15,6 +15,12 @@
   </div>
 
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
+    <ul class="fr-tags-group">
+      <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
+        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active }" aria-label="Retirer {{ value.label }}" @click="toggleAnnotation(code)">{{ label }} ({{ count }})</button>
+      </li>
+    </ul>
+
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
@@ -96,7 +102,6 @@ import { useFeaturesStore, useMessages, usePermissions, useRecordStore } from '@
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
-import Modal from '@/components/Modal.vue'
 
 import { surface, inHa, getFeatureGroups, groupingChoices } from './index.js'
 import { deleteSingleFeature, updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
@@ -127,9 +132,9 @@ const permissions = usePermissions()
 const messages = useMessages()
 
 const { record } = storeToRefs(recordStore)
-const { all: features, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
+const { hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
-const { getFeatureById, toggleAllSelected } = featuresStore
+const { getFeatureById, toggleAllSelected, toggleAnnotation } = featuresStore
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)

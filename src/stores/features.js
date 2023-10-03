@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
+import { AnnotationTags } from '@/referentiels/ab.js'
+
+/**
+ * @typedef {import('@/referentiels/ab.js').ANNOTATIONS} AnnotationId
+ * @typedef {import('@/referentiels/ab.js').UserAnnotation} UserAnnotation
+ * @typedef {import('vue').Readonly} Readonly
+ * @typedef {import('vue').Ref} Ref
+ */
+
 export function collectIds (features) {
   return features.map(({ id }) => id).sort()
 }
@@ -19,6 +28,13 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   const all = computed(() => collection.value.features)
+  const hasFeatures = computed(() => collection.value.features.length > 0)
+
+  const hits = computed(() => {
+    return collection.value.features
+      .filter(applyAnnotationsFacets)
+      // .filter(applyRulesFacets)
+  })
 
   const allSelected = computed(() => {
     const collectedIds = collectIds(collection.value.features)
@@ -30,7 +46,72 @@ export const useFeaturesStore = defineStore('features', () => {
     return activeId.value ? getFeatureById(activeId.value) : null
   })
 
-  const hasFeatures = computed(() => collection.value.features.length > 0)
+  /*
+   * Annotations Corner
+   */
+  const activeAnnotations = ref([])
+
+  /**
+   * Collects all annotations within all features
+   * It helps build interactive facets, for example.
+   */
+  const annotations = computed(() => {
+    const map = collection.value.features.reduce((map, feature) => {
+      /** @type {UserAnnotation[]} */(feature.properties.annotations ?? []).forEach(annotation => {
+        if (!map.has(annotation.code)) {
+          map.set(annotation.code, {
+            active: activeAnnotations.value.includes(annotation.code),
+            code: annotation.code,
+            count: 0,
+            featureIds: [],
+            label: AnnotationTags[annotation.code].label
+          })
+        }
+
+        const stats = map.get(annotation.code)
+
+        map.set(annotation.code, {
+          ...stats,
+          count: stats.count + 1,
+          featureIds: [...stats.featureIds, feature.id]
+        })
+      })
+
+      return map
+    }, new Map())
+
+    return Array.from(map).sort(([,{count: countA}], [,{ count: countB}]) => {
+      return countB - countA
+    }).map(([, stats]) => stats)
+  })
+
+  /**
+   * Check if a feature complies with the annotation filtering criteria.
+   * Ideally, applied as an Array iteration callback.
+   *
+   * @param {Feature} feature
+   * @returns {Boolean}
+   */
+  function applyAnnotationsFacets (feature) {
+    if (activeAnnotations.value.length === 0) {
+      return true
+    }
+
+    return (feature.properties.annotations ?? []).some(({ code }) => activeAnnotations.value.includes(code))
+  }
+
+  /**
+   * Activate or deactivate annotations
+   * They are reflected in the `hits` computed property
+   *
+   * @param {AnnotationId} annotationId
+   */
+  function toggleAnnotation (annotationId) {
+    activeAnnotations.value = activeAnnotations.value.includes(annotationId)
+      ? activeAnnotations.value.filter(id => id !== annotationId)
+      : [...activeAnnotations.value, annotationId]
+  }
+
 
   const hoveredFeature = computed(() => {
     return hoveredId.value ? getFeatureById(hoveredId.value) : null
@@ -45,7 +126,7 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   function toggleAllSelected () {
-    selectedIds.value = allSelected.value ? [] : collectIds(collection.value.features)
+    selectedIds.value = allSelected.value ? [] : collectIds(hits.value)
   }
 
   function toggleSingleSelected (featureId) {
@@ -164,8 +245,10 @@ export const useFeaturesStore = defineStore('features', () => {
     activeFeature,
     all,
     allSelected,
+    annotations,
     collection,
     hasFeatures,
+    hits,
     hoveredFeature,
     selectedFeatures,
     // methods
@@ -176,6 +259,7 @@ export const useFeaturesStore = defineStore('features', () => {
     select,
     setAll,
     toggleAllSelected,
+    toggleAnnotation,
     toggleSingleSelected,
     unselect,
     updateMatchingFeatures
