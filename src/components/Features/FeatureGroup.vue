@@ -49,14 +49,14 @@
           Modifier
         </button>
 
-        <button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions" @click="activeFeatureMenu = feature.id">
+        <button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions" @click="toggleFeatureMenu(feature.id)">
           Autres actions
         </button>
 
         <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
           <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
             <li v-if="permissions.canDeleteFeature">
-              <button @click.prevent="toggleDeleteForm(feature.id)" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error">
+              <button type="button" @click.prevent="toggleDeleteForm(feature.id)" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error">
                 Supprimer la parcelle
               </button>
             </li>
@@ -113,6 +113,11 @@ function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
 }
 
+function toggleFeatureMenu (featureId) {
+  activeFeatureMenu.value = activeFeatureMenu.value ? null : featureId
+
+}
+
 function toggleDeleteForm (featureId) {
   return emit('delete:featureId', featureId)
 }
@@ -141,7 +146,11 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
   }
 })
 
-onClickOutside(actionsMenuRef, () => activeFeatureMenu.value = null)
+onClickOutside(actionsMenuRef, ({ target }) => {
+  if (!target.classList.contains('show-actions')) {
+    activeFeatureMenu.value = null
+  }
+})
 </script>
 
 <style scoped>
