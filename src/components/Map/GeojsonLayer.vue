@@ -130,8 +130,11 @@ export default {
     })
   },
   watch: {
-    data(featureCollection) {
-      this.map.getSource(`${this.name}/data`).setData(featureCollection)
+    data: {
+      deep: true,
+      handler(featureCollection) {
+        this.map.getSource(`${this.name}/data`).setData(featureCollection)
+      }
     }
   }
 }
