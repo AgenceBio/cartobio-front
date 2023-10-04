@@ -49,14 +49,14 @@
           Modifier
         </button>
 
-        <button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions" @click="activeFeatureMenu = feature.id">
+        <button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions" @click="toggleFeatureMenu(feature.id)">
           Autres actions
         </button>
 
         <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
           <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
             <li v-if="permissions.canDeleteFeature">
-              <button @click.prevent="toggleDeleteForm(feature.id)" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error">
+              <button type="button" @click.prevent="toggleDeleteForm(feature.id)" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
                 Supprimer la parcelle
               </button>
             </li>
@@ -113,6 +113,11 @@ function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
 }
 
+function toggleFeatureMenu (featureId) {
+  activeFeatureMenu.value = activeFeatureMenu.value ? null : featureId
+
+}
+
 function toggleDeleteForm (featureId) {
   return emit('delete:featureId', featureId)
 }
@@ -141,7 +146,11 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
   }
 })
 
-onClickOutside(actionsMenuRef, () => activeFeatureMenu.value = null)
+onClickOutside(actionsMenuRef, ({ target }) => {
+  if (!target.classList.contains('show-actions')) {
+    activeFeatureMenu.value = null
+  }
+})
 </script>
 
 <style scoped>
@@ -198,15 +207,6 @@ onClickOutside(actionsMenuRef, () => activeFeatureMenu.value = null)
     background-color: var(--green-tilleul-verveine-975-75);
   }
 
-  .subtable {
-    padding: 0;
-  }
-
-  .subtable table,
-  .subtable tbody {
-    width: 100%;
-  }
-
 .fr-icon[aria-checked="true"]::before {
   transform: rotate(180deg);
 }
@@ -216,19 +216,39 @@ table tr[aria-current="location"] {
 }
 
 .actions {
+  --hover: transparent;
+  --active: transparent;
+
   position: relative;
-  text-align: center;
+  text-align: left;
+
+  > .fr-btn {
+    &:active {
+      background-color: var(--light-background-action-low-blue-france, #E3E3FD) !important;
+      border-radius: 0.3125rem;
+    }
+  }
 
   .fr-menu {
     position: absolute;
     left: 100%;
     top: .6rem;
+
+    .fr-menu__list {
+      border-radius: 0.3125rem;
+      margin: 0;
+      width: auto;
+    }
+
+    .fr-btn {
+      font-weight: 700;
+      justify-content: flex-start;
+      margin: 0;
+      padding: 0.5rem 0.75rem !important;
+      width: 100%;
+    }
   }
 
-  .fr-menu .fr-btn {
-    margin: 0;
-    width: 100%;
-  }
 }
 
 .fr-icon--warning {

@@ -137,7 +137,10 @@ const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
 
 const maybeDeletedFeatureId = ref(null)
-const showDeleteFeatureModal = computed(() => Boolean(maybeDeletedFeatureId.value))
+const showDeleteFeatureModal = computed({
+  get: () => Boolean(maybeDeletedFeatureId.value),
+  set: () => maybeDeletedFeatureId.value = null
+})
 
 const userGroupingChoice = ref('CULTURE')
 
