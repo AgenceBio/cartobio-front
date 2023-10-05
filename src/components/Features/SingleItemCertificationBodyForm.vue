@@ -11,35 +11,39 @@
       </ul>
     </div>
 
-    <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })" id="single-feature-edit-form">
-      <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
-        <blockquote>
-          <p>{{ feature.properties.commentaires }}</p>
-        </blockquote>
-        <figcaption>
-          <p class="fr-quote__author">Notes de l'exploitant‧e</p>
-        </figcaption>
-      </figure>
+    <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })" class="fr-accordions-group" id="single-feature-edit-form">
+      <AccordionSection title="Culture">
+        <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
+          <blockquote>
+            <p>{{ feature.properties.commentaires }}</p>
+          </blockquote>
+          <figcaption>
+            <p class="fr-quote__author">Notes de l'exploitant‧e</p>
+          </figcaption>
+        </figure>
 
-      <div class="fr-input-group">
-        <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
-      </div>
-
-      <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
-
-      <div class="fr-input-group" v-if="isAB">
-        <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
-        <div class="fr-input-wrap fr-icon-calendar-line">
-          <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
+        <div class="fr-input-group">
+          <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
         </div>
-      </div>
 
-      <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :featureId="feature.properties.id" />
+        <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
-      <div class="fr-input-group">
-        <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
-        <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
-      </div>
+        <div class="fr-input-group" v-if="isAB">
+          <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
+          <div class="fr-input-wrap fr-icon-calendar-line">
+            <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
+          </div>
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Informations sur la parcelle">
+        <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :featureId="feature.properties.id" />
+
+        <div class="fr-input-group">
+          <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
+          <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
+        </div>
+      </AccordionSection>
     </form>
 
     <template #title><slot name="title" /></template>
@@ -59,6 +63,7 @@ import { featureDetails, featureName, inHa, surface } from '@/components/Feature
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
 import { usePermissions } from '@/stores/index.js'
 
+import AccordionSection from '@/components/DesignSystem/Accordion.vue'
 import Modal from '@/components/Modal.vue'
 import AnnotationsSelector from "@/components/Features/AnnotationsSelector.vue";
 import CultureSelector from "@/components/Features/CultureSelector.vue";

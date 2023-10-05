@@ -10,7 +10,9 @@
         <button class="fr-tag" type="button" :aria-pressed="isSelected(annotationId)" @click="toggleAnnotation(annotationId)">{{ annotation.label }}</button>
       </li>
       <li class="annotation--more" :hidden="isExpanded">
-        <button class="fr-tag fr-tag--beige-gris-galet fr-tag--icon-left fr-icon-add-line" type="button" @click="isExpanded=true">Afficher plus</button>
+        <button class="fr-tag fr-tag--link fr-tag--icon-left fr-icon-add-line" type="button" @click="isUserExpanded=true">
+          Afficher plus
+        </button>
       </li>
     </ul>
   </div>
@@ -67,10 +69,20 @@ const props = defineProps({
   }
 })
 
-const isExpanded = ref(false)
+const isUserExpanded = ref(false)
 const visibleAnnotations = computed(() => Object.fromEntries(
-  Object.entries(AnnotationTags).filter(([key, { featured }]) => isExpanded.value || (typeof featured === 'function' ? featured() : featured))
+  Object.entries(AnnotationTags).filter(([key, { featured }]) => {
+    if (isUserExpanded.value || isSelected(key)) {
+      return true
+    }
+
+    return (typeof featured === 'function' ? featured() : featured)
+  })
 ))
+
+const isExpanded = computed(() => {
+  return isUserExpanded.value || Object.keys(visibleAnnotations.value).length === Object.keys(AnnotationTags).length
+})
 
 const reducedConversionStates = computed(() => AnnotationTags[ANNOTATIONS.REDUCED_CONVERSION_PERIOD].metadata[ANNOTATIONS.METADATA_STATE])
 const downgradedStates = computed(() => AnnotationTags[ANNOTATIONS.DOWNGRADED].metadata[ANNOTATIONS.METADATA_STATE])
@@ -117,3 +129,14 @@ function updateMetadata (annotationId, metadataId, value) {
   emit('update:modelValue', updatedMetadata)
 }
 </script>
+
+<style scoped>
+.fr-tag--link {
+  --hover-tint: transparent;
+  background-color: var(--hover-tint);
+  border-bottom: 2px solid currentColor;
+  border-radius: 0;
+  padding: 0 .1rem;
+  margin: 0 .75rem;
+}
+</style>
