@@ -118,10 +118,10 @@ describe("FeatureGroup", () => {
     expect(menu.exists()).toEqual(true)
 
     // delete item is not active unless we have the permissions (after flushPromises/re-render)
-    expect(menu.find('.fr-icon-delete-line').exists()).toEqual(false)
+    expect(menu.find('.fr-icon-delete-line').attributes()).toHaveProperty('disabled')
     permissions.canDeleteFeature = true
     await flushPromises()
-    expect(menu.find('.fr-icon-delete-line').exists()).toEqual(true)
+    expect(menu.find('.fr-icon-delete-line').attributes()).not.toHaveProperty('disabled')
     menu.find('.fr-icon-delete-line').trigger('click')
     expect(wrapper.emitted('delete:featureId')).toHaveProperty('0', [3])
   })
