@@ -55,8 +55,8 @@
 
         <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
           <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
-            <li v-if="permissions.canDeleteFeature">
-              <button type="button" @click.prevent="toggleDeleteForm(feature.id)" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
+            <li>
+              <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
                 Supprimer la parcelle
               </button>
             </li>
@@ -244,7 +244,7 @@ table tr[aria-current="location"] {
       font-weight: 700;
       justify-content: flex-start;
       margin: 0;
-      padding: 0.5rem 0.75rem !important;
+      padding: 0.75rem !important;
       width: 100%;
     }
   }
