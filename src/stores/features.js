@@ -50,6 +50,7 @@ export const useFeaturesStore = defineStore('features', () => {
    * Annotations Corner
    */
   const activeAnnotations = ref([])
+  const isAnnotationActive = (annotationId) => activeAnnotations.value.includes(annotationId)
 
   /**
    * Collects all annotations within all features
@@ -60,7 +61,7 @@ export const useFeaturesStore = defineStore('features', () => {
       /** @type {UserAnnotation[]} */(feature.properties.annotations ?? []).forEach(annotation => {
         if (!map.has(annotation.code)) {
           map.set(annotation.code, {
-            active: activeAnnotations.value.includes(annotation.code),
+            active: isAnnotationActive(annotation.code),
             code: annotation.code,
             count: 0,
             featureIds: [],
@@ -97,7 +98,7 @@ export const useFeaturesStore = defineStore('features', () => {
       return true
     }
 
-    return (feature.properties.annotations ?? []).some(({ code }) => activeAnnotations.value.includes(code))
+    return (feature.properties.annotations ?? []).some(({ code }) => isAnnotationActive(code))
   }
 
   /**
@@ -107,7 +108,7 @@ export const useFeaturesStore = defineStore('features', () => {
    * @param {AnnotationId} annotationId
    */
   function toggleAnnotation (annotationId) {
-    activeAnnotations.value = activeAnnotations.value.includes(annotationId)
+    activeAnnotations.value = isAnnotationActive(annotationId)
       ? activeAnnotations.value.filter(id => id !== annotationId)
       : [...activeAnnotations.value, annotationId]
   }
@@ -257,6 +258,7 @@ export const useFeaturesStore = defineStore('features', () => {
     bindMaplibreFeatureState,
     bindMaplibreInteractions,
     getFeatureById,
+    isAnnotationActive,
     select,
     setAll,
     toggleAllSelected,

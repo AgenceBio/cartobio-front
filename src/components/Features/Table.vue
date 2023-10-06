@@ -17,7 +17,7 @@
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
     <ul class="fr-tags-group fr-tags-group--annotations" v-if="permissions.canViewAnnotations">
       <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
-        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active, [`annotation--${code}`]: true }" :aria-label="`${active ? 'Retirer' : 'Ajouter'} le filtre sur étiquette ${label}`" @click="toggleAnnotation(code)">{{ label }} ({{ count }})</button>
+        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active, [`annotation--${code}`]: true }" :aria-label="`${active ? 'Retirer' : 'Ajouter'} le filtre sur étiquette ${label}`" @click="handleFilterClick(code)">{{ label }} ({{ count }})</button>
       </li>
     </ul>
 
@@ -207,6 +207,14 @@ async function handleFeatureCollectionSubmit ({ ids, patch }) {
     updateFeatureCollectionProperties({ recordId: record.value.record_id }, featureCollection),
     'Parcelles modifiées.'
   )
+}
+
+function handleFilterClick (code) {
+  toggleAnnotation(code)
+
+  if (featuresStore.isAnnotationActive(code)) {
+    statsPush(['trackEvent', 'Filtre parcelles', code])
+  }
 }
 
 async function performAsyncRecordAction (promise, text = 'Modification enregistrée.') {

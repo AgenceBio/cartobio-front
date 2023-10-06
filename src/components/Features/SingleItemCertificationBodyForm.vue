@@ -26,7 +26,9 @@
           <div class="fr-input-group">
             <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
           </div>
+        </AccordionSection>
 
+        <AccordionSection title="Annotations d'audit">
           <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
           <div class="fr-input-group" v-if="isAB">
@@ -35,9 +37,7 @@
               <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
             </div>
           </div>
-        </AccordionSection>
 
-        <AccordionSection title="Informations sur la parcelle">
           <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :featureId="feature.properties.id" />
 
           <div class="fr-input-group">
