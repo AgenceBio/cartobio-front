@@ -1,20 +1,21 @@
 <template>
   <section class="fr-accordion">
     <h3 class="fr-accordion__title">
-      <button class="fr-accordion__btn" :aria-expanded="isOpen" @click="isOpen = !isOpen" :aria-controls="elementId" type="button">
+      <button class="fr-accordion__btn" :aria-expanded="!isClosed" @click="handleToggle" :aria-controls="elementId" type="button">
         {{ title }}
       </button>
     </h3>
 
-    <div :class="{ 'fr-collapse': true, 'fr-collapse--expanded': isOpen }" :id="elementId">
+    <div ref="contentElement" :class="{ 'fr-collapse': true, 'fr-collapsing': isExpanding, 'fr-collapse--expanded': isOpen }" :id="elementId">
       <slot name="default" />
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 
+const activeAccordionId = inject('openAccordion')
 const props = defineProps({
   open: {
     type: Boolean,
@@ -26,12 +27,42 @@ const props = defineProps({
   }
 })
 
+const STATE = {
+  CLOSED: 0,
+  EXPANDING: 1,
+  OPEN: 2,
+}
+
+const contentElement = ref(null)
 const elementId = ref(`accordion-${crypto.randomUUID()}`)
-const isOpen = ref(props.open)
+const openingState = ref(props.open ? STATE.OPEN : STATE.CLOSED)
+
+const isClosed = computed(() => openingState.value === STATE.CLOSED)
+const isOpen = computed(() => openingState.value === STATE.OPEN)
+const isExpanding = computed(() => openingState.value === STATE.EXPANDING)
+
+function handleToggle () {
+  openingState.value = isClosed.value ? STATE.EXPANDING : STATE.CLOSED
+  activeAccordionId.value = isExpanding.value ? elementId.value : null
+}
+
+watch(openingState, (newState) => {
+  if (newState === STATE.EXPANDING) {
+    nextTick(() => openingState.value = STATE.OPEN)
+  }
+})
+
+if (activeAccordionId) {
+  watch(activeAccordionId, (newId) => {
+    if (newId && newId !== elementId.value) {
+      openingState.value = STATE.CLOSED
+    }
+  })
+}
 </script>
 
 <style scoped>
-.fr-collapse {
+.fr-collapse--expanded {
   --collapse-max-height: none;
 }
 </style>

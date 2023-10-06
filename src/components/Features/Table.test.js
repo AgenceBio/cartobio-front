@@ -161,19 +161,22 @@ describe("Features Table", () => {
     let modal
 
     // we click outside the modal (the background of the <dialog> element)
-    await table.find('tr.parcelle td').trigger('click')
+    table.find('tr.parcelle td').trigger('click')
+    await flushPromises()
     modal = wrapper.getComponent(Modal)
     await modal.trigger('click')
     expect(modal.exists()).toEqual(false)
 
     // we click inside, so the modal should still exist
-    await table.find('tr.parcelle td').trigger('click')
+    table.find('tr.parcelle td').trigger('click')
+    await flushPromises()
     modal = wrapper.getComponent(Modal)
     await modal.find('#modal-title').trigger('click')
     expect(modal.exists()).toEqual(true)
 
     // then we close the modal with the Close button
-    await modal.find('.fr-modal__header .fr-btn--close').trigger('click')
+    modal.find('.fr-modal__header .fr-btn--close').trigger('click')
+    await flushPromises()
     expect(modal.exists()).toEqual(false)
   })
 
