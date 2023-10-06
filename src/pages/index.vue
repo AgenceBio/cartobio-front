@@ -5,7 +5,7 @@
   </route>
 
 <template>
-  <div class="fr-container--fluid fr-background-alt--grey fr-py-5w">
+  <div class="fr-container--fluid fr-background-alt--grey fr-py-9v">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-lg-12">

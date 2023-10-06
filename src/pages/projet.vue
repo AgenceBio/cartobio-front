@@ -5,7 +5,7 @@ meta:
 </route>
 
 <template>
-  <div class="fr-container fr-py-5w">
+  <div class="fr-container fr-py-9v">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12">
         <h1>Le projet CartoBio</h1>

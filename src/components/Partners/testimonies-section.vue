@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-container fr-py-5w">
+  <div class="fr-container fr-py-9v">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-md-12">
         <h3 class="fr-h4">Témoignages</h3>

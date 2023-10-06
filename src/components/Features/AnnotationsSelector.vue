@@ -1,11 +1,11 @@
 <template>
   <div class="fr-input-group">
-    <label class="fr-label">Informations sur la parcelle (facultatif)</label>
-    <div class="fr-hint-text">
-      Cette information n'est pas visible pour l'agriculteur.
-    </div>
+    <label class="fr-label">
+      Informations sur la parcelle (facultatif)
+      <span class="fr-hint-text">Cette information n'est pas visible pour l'agriculteur.</span>
+    </label>
 
-    <ul class="fr-tags-group fr-tags-group--annotations">
+    <ul class="fr-tags-group fr-tags-group--annotations fr-my-2w">
       <li :class="`annotation-choice annotation--${annotationId}`" v-for="(annotation, annotationId) in visibleAnnotations" :key="annotationId">
         <button class="fr-tag" type="button" :aria-pressed="isSelected(annotationId)" @click="toggleAnnotation(annotationId)">{{ annotation.label }}</button>
       </li>

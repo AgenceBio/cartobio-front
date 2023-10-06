@@ -14,8 +14,8 @@
     </div>
   </div>
 
-  <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
-    <ul class="fr-tags-group fr-tags-group--annotations" v-if="permissions.canViewAnnotations">
+  <div class="fr-table fr-table--bordered fr-table--no-caption fr-my-3w">
+    <ul class="fr-tags-group fr-tags-group--annotations fr-mb-2w" v-if="permissions.canViewAnnotations">
       <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
         <button :class="{'fr-tag': true, 'fr-tag--dismiss': active, [`annotation--${code}`]: true }" :aria-label="`${active ? 'Retirer' : 'Ajouter'} le filtre sur étiquette ${label}`" @click="handleFilterClick(code)">{{ label }} ({{ count }})</button>
       </li>
@@ -307,6 +307,19 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
 .fr-table th.numeric {
   font-variant-numeric: tabular-nums;
   text-align: right !important;
+}
+
+.fr-tags-group--annotations {
+  gap: 0.75rem;
+
+  > li {
+    min-height: auto !important;
+    line-height: 1.5rem;
+  }
+
+  .fr-tag {
+    margin: 0;
+  }
 }
 
 

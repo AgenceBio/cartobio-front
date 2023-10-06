@@ -5,7 +5,7 @@ meta:
 </route>
 
 <template>
-  <div class="fr-container--fluid fr-background-alt--blue-france fr-py-5w">
+  <div class="fr-container--fluid fr-background-alt--blue-france fr-py-9v">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-lg-12">
@@ -31,7 +31,7 @@ meta:
     </div>
   </div>
 
-  <div class="fr-container fr-py-5w">
+  <div class="fr-container fr-py-9v">
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
       <div class="fr-col-md-4 fr-col--center">
         <span class="fr-icon-time-fill fr-icon--lg" aria-hidden="true"></span>
@@ -80,7 +80,7 @@ meta:
     <template #step-2b>Le parcellaire peut être mis à jour si besoin</template>
   </ProductflowSection>
 
-  <div class="fr-container fr-py-5w">
+  <div class="fr-container fr-py-9v">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-md-6">
         <h3 class="fr-h4">Les fonctionnalités</h3>
