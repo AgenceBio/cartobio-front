@@ -1,46 +1,61 @@
 <template>
-  <div class="fr-card fr-p-3w fr-mb-3w">
-    <h6 class="fr-mb-0">{{ featureName(feature) }}
-      ({{ inHa(surface(feature)) }} ha)</h6>
-    <ul v-if="details.length">
-      <li v-for="(detail, index) in details" :key="index">
-        {{ detail }}
-      </li>
-    </ul>
-  </div>
+  <Modal ref="modal" data-track-content data-content-name="Modale de modification de parcelle" v-bind="$attrs">
+    <div class="fr-card fr-p-2w fr-mb-3w">
+      <h6 class="fr-mb-0">{{ featureName(feature) }}
+        ({{ inHa(surface(feature)) }} ha)</h6>
 
-  <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })">
-    <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
-      <blockquote>
-        <p>{{ feature.properties.commentaires }}</p>
-      </blockquote>
-      <figcaption>
-        <p class="fr-quote__author">Notes de l'exploitant‧e</p>
-      </figcaption>
-    </figure>
-
-    <div class="fr-input-group">
-      <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+      <ul v-if="details.length">
+        <li v-for="(detail, index) in details" :key="index">
+          {{ detail }}
+        </li>
+      </ul>
     </div>
 
-    <ConversionLevelSelector v-model="patch.conversion_niveau" />
+    <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })" id="single-feature-edit-form">
+      <AccordionGroup>
+        <AccordionSection title="Culture">
+          <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
+            <blockquote>
+              <p>{{ feature.properties.commentaires }}</p>
+            </blockquote>
+            <figcaption>
+              <p class="fr-quote__author">Notes de l'exploitant‧e</p>
+            </figcaption>
+          </figure>
 
-    <div :class="{'fr-input-group': true, 'fr-input-group--disabled': !isAB}">
-      <label class="fr-label">Date d'engagement</label>
-      <div class="fr-input-wrap fr-icon-calendar-line">
-        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
+          <div class="fr-input-group">
+            <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+          </div>
+        </AccordionSection>
+
+        <AccordionSection title="Annotations d'audit">
+          <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
+
+          <div class="fr-input-group" v-if="isAB">
+            <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
+            <div class="fr-input-wrap fr-icon-calendar-line">
+              <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
+            </div>
+          </div>
+
+          <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :featureId="feature.properties.id" />
+
+          <div class="fr-input-group">
+            <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
+            <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
+          </div>
+        </AccordionSection>
+      </AccordionGroup>
+    </form>
+
+    <template #title><slot name="title" /></template>
+
+    <template #footer>
+      <div class="fr-input-group">
+        <button class="fr-btn" type="submit" form="single-feature-edit-form">Enregistrer</button>
       </div>
-    </div>
-
-    <div class="fr-input-group">
-      <label class="fr-label" for="auditeur_notes">Vos notes de certification</label>
-      <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
-    </div>
-
-    <div class="fr-input-group fr-mt-4w">
-      <button class="fr-btn" type="submit">Enregistrer</button>
-    </div>
-  </form>
+    </template>
+  </Modal>
 </template>
 
 <script setup>
@@ -48,6 +63,12 @@ import { reactive, computed } from 'vue';
 
 import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
+import { usePermissions } from '@/stores/index.js'
+
+import AccordionGroup from '@/components/DesignSystem/AccordionGroup.vue'
+import AccordionSection from '@/components/DesignSystem/Accordion.vue'
+import Modal from '@/components/Modal.vue'
+import AnnotationsSelector from "@/components/Features/AnnotationsSelector.vue";
 import CultureSelector from "@/components/Features/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
 
@@ -58,9 +79,12 @@ const props = defineProps({
   }
 })
 
+const permissions = usePermissions()
+
 const patch = reactive({
+  annotations: props.feature.properties.annotations || [],
   conversion_niveau: props.feature.properties.conversion_niveau || '',
-  cultures: props.feature.properties.cultures,
+  cultures: props.feature.properties.cultures || [],
   engagement_date: props.feature.properties.engagement_date,
   auditeur_notes: props.feature.properties.auditeur_notes || '',
 })

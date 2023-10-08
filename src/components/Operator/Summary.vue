@@ -1,5 +1,5 @@
 <template>
-  <header class="fr-mt-3w fr-mb-5w">
+  <header class="fr-my-3w">
     <h2 class="fr-h4 fr-my-1w" :data-operator-id="operator.id" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h2>
 
     <p class="state fr-subtitle">

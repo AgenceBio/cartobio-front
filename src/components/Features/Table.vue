@@ -14,7 +14,13 @@
     </div>
   </div>
 
-  <div class="fr-table fr-table--bordered fr-table--no-caption fr-mt-5w">
+  <div class="fr-table fr-table--bordered fr-table--no-caption fr-my-3w">
+    <ul class="fr-tags-group fr-tags-group--annotations fr-mb-2w" v-if="permissions.canViewAnnotations">
+      <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
+        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active, [`annotation--${code}`]: true }" :aria-label="`${active ? 'Retirer' : 'Ajouter'} le filtre sur étiquette ${label}`" @click="handleFilterClick(code)">{{ label }} ({{ count }})</button>
+      </li>
+    </ul>
+
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
@@ -75,11 +81,9 @@
   </div>
 
   <Teleport to="body">
-    <Modal v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
+    <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
       <template #title>Modification de parcelle</template>
-
-      <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" />
-    </Modal>
+    </Component>
 
     <DeleteFeatureModal v-if="maybeDeletedFeatureId" v-model="showDeleteFeatureModal" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
   </Teleport>
@@ -98,7 +102,6 @@ import { useFeaturesStore, useMessages, usePermissions, useRecordStore } from '@
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
-import Modal from '@/components/Modal.vue'
 
 import { surface, inHa, getFeatureGroups, groupingChoices } from './index.js'
 import { deleteSingleFeature, updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
@@ -129,9 +132,9 @@ const permissions = usePermissions()
 const messages = useMessages()
 
 const { record } = storeToRefs(recordStore)
-const { all: features, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
+const { hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
-const { getFeatureById, toggleAllSelected } = featuresStore
+const { getFeatureById, toggleAllSelected, toggleAnnotation } = featuresStore
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
@@ -204,6 +207,14 @@ async function handleFeatureCollectionSubmit ({ ids, patch }) {
     updateFeatureCollectionProperties({ recordId: record.value.record_id }, featureCollection),
     'Parcelles modifiées.'
   )
+}
+
+function handleFilterClick (code) {
+  toggleAnnotation(code)
+
+  if (featuresStore.isAnnotationActive(code)) {
+    statsPush(['trackEvent', 'Filtre parcelles', code])
+  }
 }
 
 async function performAsyncRecordAction (promise, text = 'Modification enregistrée.') {
@@ -296,6 +307,19 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
 .fr-table th.numeric {
   font-variant-numeric: tabular-nums;
   text-align: right !important;
+}
+
+.fr-tags-group--annotations {
+  gap: 0.75rem;
+
+  > li {
+    min-height: auto !important;
+    line-height: 1.5rem;
+  }
+
+  .fr-tag {
+    margin: 0;
+  }
 }
 
 

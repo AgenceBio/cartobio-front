@@ -120,6 +120,11 @@
         },
         "properties": {
           "id": 3,
+          "annotations": [
+            { "id": 1, "code": "surveyed", "date": "2023-01-01" },
+            { "id": 2, "code": "risky", "date": "2023-01-01" },
+            { "id": 3, "code": "downgraded", "date": "2023-01-01", "metadata": { "status": "rejected" } }
+          ],
           "COMMUNE": "26113",
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }

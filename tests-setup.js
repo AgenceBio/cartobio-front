@@ -35,4 +35,9 @@ vi.mock('maplibre-gl', () => ({
   NavigationControl: vi.fn(),
 }));
 
+vi.stubGlobal('matchMedia', vi.fn(() => ({
+  addEventListener: vi.fn(),
+  matches: vi.fn().mockReturnValue(true)
+})))
+
 afterEach(() => vi.clearAllMocks())
