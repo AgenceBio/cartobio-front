@@ -51,8 +51,8 @@ const getSheet = ({ featureCollection, operator }) => {
     sheet_add_aoa(sheet, [
       [
         culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
+        humanNumbers(surface / 10_000),
         autresInfos,
-        `${humanNumbers(surface / 10_000)} ha`,
         features.at(0).properties.conversion_niveau ?? '',
         features.at(0).properties.engagement_date ? new Date(features.at(0).properties.engagement_date) : '',
       ]
