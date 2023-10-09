@@ -14,7 +14,7 @@ export default {
     component: MesParcellesPanel,
   },
   [sources.GEOFOLIA]: {
-    label: 'Géofolia',
+    label: 'Geofolia',
     component: GeofoliaPanel,
   },
   [sources.NCVI]: {

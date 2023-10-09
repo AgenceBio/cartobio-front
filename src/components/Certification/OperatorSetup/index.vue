@@ -11,7 +11,7 @@
           <p class="fr-card__desc">
             L'agriculteur <b>{{ operator.nom }}</b> est autonome sur CartoBio.
             Cette personne peut récupérer des données depuis son logiciel de gestion
-            (Géofolia, MesParcelles…) ou à partir de sa déclaration Telepac la plus récente.
+            (Geofolia, MesParcelles…) ou à partir de sa déclaration Telepac la plus récente.
           </p>
           <div class="fr-card__start">
             <ul class="fr-tags-group">
