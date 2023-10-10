@@ -239,6 +239,20 @@ export const useFeaturesStore = defineStore('features', () => {
     setAll([])
   }
 
+  /*
+   * Check for toggled annotation with no match
+   * We untoggle them to avoid providing an empty list with no way to untoggle filters
+   */
+  watch(annotations, (annotations) => {
+    activeAnnotations.value.forEach(annotationId => {
+      const hasHits = annotations.some(({ code, count }) => code === annotationId && count > 0)
+
+      if (!hasHits) {
+        toggleAnnotation(annotationId)
+      }
+    })
+  })
+
   return {
     activeId,
     hoveredId,

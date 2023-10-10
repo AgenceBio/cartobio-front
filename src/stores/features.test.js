@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
 import { useFeaturesStore } from "./features.js"
 import { createTestingPinia } from "@pinia/testing"
+import { flushPromises } from '@vue/test-utils'
+import { ANNOTATIONS } from "@/referentiels/ab.js"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const features = useFeaturesStore(pinia)
@@ -10,9 +12,9 @@ const sampleFeatures = [
   { id: 2, properties: { id: 2, conversion_niveau: 'AB' }}
 ]
 
-describe('states', () => {
-  afterEach(() => features.$reset())
+afterEach(() => features.$reset())
 
+describe('states', () => {
   it('should collect all new features', () => {
     expect(features.collection).toEqual({
       type: 'FeatureCollection',
@@ -52,8 +54,6 @@ describe('states', () => {
 })
 
 describe('hasFeatures()', () => {
-  afterEach(() => features.$reset())
-
   it('should be empty', () => {
     expect(features.hasFeatures).toEqual(false)
   })
@@ -66,8 +66,6 @@ describe('hasFeatures()', () => {
 })
 
 describe('getFeatureById()', () => {
-  afterEach(() => features.$reset())
-
   it('should return nothing', () => {
     expect(features.getFeatureById(1)).toEqual(undefined)
   })
@@ -81,7 +79,6 @@ describe('getFeatureById()', () => {
 
 describe('select/unselect', () => {
   beforeEach(() => features.setAll(sampleFeatures))
-  afterEach(() => features.$reset())
 
   it('should select 1, then 2 without duplicates', () => {
     expect(features.selectedFeatures).toEqual([])
@@ -135,8 +132,6 @@ describe('toggle*Selected()', () => {
 })
 
 describe('updateMatchingFeatures()', () => {
-  afterEach(() => features.$reset())
-
   it('should do nothing', () => {
     features.updateMatchingFeatures([{ id: 1, properties: { CPF: '01.21.12' }}])
     expect(features.selectedFeatures).toEqual([])
@@ -147,5 +142,28 @@ describe('updateMatchingFeatures()', () => {
     features.updateMatchingFeatures([{ id: 1, properties: { CPF: '01.21.12' }}])
     expect(features.collection).toHaveProperty('features.0.properties.CPF', '01.21.12')
     expect(features.collection).toHaveProperty('features.0.properties.conversion_niveau', 'AB')
+  })
+})
+
+describe('watch/annotations', () => {
+  it('should untoggle an active filter when orphan', async () => {
+    features.setAll(sampleFeatures)
+
+    features.updateMatchingFeatures([{ id: 1, properties: {
+      annotations: [{ id: 1, code: ANNOTATIONS.SURVEYED }]
+    }}])
+    features.toggleAnnotation(ANNOTATIONS.SURVEYED)
+
+    expect(features.isAnnotationActive(ANNOTATIONS.SURVEYED)).toEqual(true)
+    expect(features.hits).toHaveLength(1)
+
+    features.updateMatchingFeatures([{ id: 1, properties: {
+      annotations: []
+    }}])
+
+    await flushPromises()
+
+    expect(features.isAnnotationActive(ANNOTATIONS.SURVEYED)).toEqual(false)
+    expect(features.hits).toHaveLength(2)
   })
 })
