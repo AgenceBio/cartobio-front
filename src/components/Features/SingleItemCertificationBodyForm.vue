@@ -12,8 +12,8 @@
     </div>
 
     <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })" id="single-feature-edit-form">
-      <AccordionGroup>
-        <AccordionSection title="Culture">
+      <AccordionGroup :constraint-toggle="!open">
+        <AccordionSection title="Culture" :open="open">
           <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
             <blockquote>
               <p>{{ feature.properties.commentaires }}</p>
@@ -28,7 +28,7 @@
           </div>
         </AccordionSection>
 
-        <AccordionSection title="Annotations d'audit">
+        <AccordionSection title="Annotations d'audit" :open="open">
           <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
           <div class="fr-input-group" v-if="isAB">
@@ -76,6 +76,10 @@ const props = defineProps({
   feature: {
     type: Object,
     required: true
+  },
+  open: {
+    type: Boolean,
+    default: false
   }
 })
 

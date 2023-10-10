@@ -15,7 +15,7 @@
 <script setup>
 import { computed, inject, nextTick, ref, watch } from 'vue'
 
-const activeAccordionId = inject('openAccordion')
+const activeAccordionId = inject('openAccordion', () => ref(null))
 const props = defineProps({
   open: {
     type: Boolean,

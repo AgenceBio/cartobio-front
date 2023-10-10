@@ -7,9 +7,18 @@
 <script setup>
 import { provide, ref } from 'vue'
 
+const props = defineProps({
+  constraintToggle: {
+    type: Boolean,
+    default: true
+  }
+})
+
 const openElement = ref(null)
 
-provide('openAccordion', openElement)
+if (props.constraintToggle) {
+  provide('openAccordion', openElement)
+}
 </script>
 
 <style scoped>
