@@ -1,5 +1,14 @@
 # _En cours_…
 
+# [2.13.0](https://github.com/AgenceBio/cartobio-front/compare/v2.12.0...v2.13.0) (2023-10-11)
+
+* fonctionnalité d'annotation de parcelle (déclassement, demande de dérogation, visitée, prélèvement effectué, etc.)
+* recherche par numéro bio dans le tableau de bord OC
+* correction d'un comportement de fermeture de modale inadapté (sélection de texte et relaché de clic hors de la modale)
+* la carte s'actualise en temps réel après la suppression d'une parcelle
+* le statut des parcellaires dans le tableau de bord OC est à nouveau conforme à la réalité (on affichait des fois "non renseigné" alors que c'était "certifié" ou "audité")
+* API Parcellaire à destination des organismes de certification
+
 # [2.12.0](https://github.com/AgenceBio/cartobio-front/compare/v2.11.0...v2.12.0) (2023-10-03)
 
 * possibilité de supprimer une parcelle individuellement
