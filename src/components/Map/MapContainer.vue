@@ -1,7 +1,9 @@
 <template>
-  <aside ref="mapContainer">
+  <aside ref="mapContainer" class="maplibre-container">
     <slot v-if="map" />
-    <slot name="legend" />
+    <div class="legend">
+      <slot name="legend" />
+    </div>
     <slot name="credits" />
   </aside>
 </template>
@@ -112,4 +114,17 @@ watch(() => props.bounds, (bounds) => {
   right: .5rem;
   top: .5rem;
 }
+
+.maplibre-container .maplibregl-canvas-container {
+  z-index: 0
+}
+
+.legend {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+
 </style>
