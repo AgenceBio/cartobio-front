@@ -90,6 +90,10 @@ watch(() => props.bounds, (bounds) => {
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
   margin: 0;
 }
+
+.legend > * {
+  pointer-events: initial;
+}
 </style>
 
 <style lang="postcss" scoped>
@@ -124,7 +128,6 @@ watch(() => props.bounds, (bounds) => {
   height: 100%;
   width: 100%;
   z-index: 1;
+  pointer-events: none;
 }
-
-
 </style>
