@@ -72,6 +72,10 @@ watch(() => props.bounds, (bounds) => {
   if (!bounds) return
   map.value.fitBounds(bounds, { padding: 50 })
 })
+
+defineExpose({
+  map,
+})
 </script>
 
 <style>

@@ -1,8 +1,10 @@
 <template>
   <Modal ref="modal" data-track-content data-content-name="Modale de modification de parcelle" v-bind="$attrs">
     <div class="fr-card fr-p-2w fr-mb-3w">
-      <h6 class="fr-mb-0">{{ featureName(feature) }}
-        ({{ inHa(surface(feature)) }} ha)</h6>
+      <label class="fr-label" for="nom">Nom de la parcelle</label>
+      <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
+      <input class="fr-input" v-model="patch.NOM" id="nom" required="required" />
+      <p class="fr-mt-2w fr-mb-0">Sa superficie est de {{ inHa(surface(feature)) }} ha.</p>
 
       <ul v-if="details.length">
         <li v-for="(detail, index) in details" :key="index">
@@ -53,6 +55,7 @@ const props = defineProps({
 })
 
 const patch = reactive({
+  NOM: featureName(props.feature, { placeholder: '' }),
   cultures: props.feature.properties.cultures,
   commentaires: props.feature.properties.commentaires || '',
 })

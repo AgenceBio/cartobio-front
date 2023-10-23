@@ -33,7 +33,7 @@
     <div class="fr-fieldset__element">
       <button v-if="feature && canDelete" class="fr-btn fr-btn--secondary fr-icon-delete-line" @click="emit('delete')">Supprimer</button>
       <button v-else-if="isFetchingGeometry" class="fr-btn fr-btn--secondary fr-icon-time-fill" disabled>Recherche en cours</button>
-      <button v-else class="fr-btn fr-icon-search-line" @click="searchReference">Rechercher</button>
+      <button v-else class="fr-btn fr-icon-search-line" @click="searchReference" :disabled="commune === ''">Rechercher</button>
     </div>
   </fieldset>
   <span v-if="searchError" class="fr-hint-text fr-message--error">{{ searchError }}</span>

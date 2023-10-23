@@ -37,6 +37,7 @@
     "fuse.js": "^6.6.2",
     "maplibre-gl": "^3.0.0",
     "pinia": "^2.0.26",
+    "terra-draw": "^0.0.1-alpha.48",
     "vue": "^3.2.25",
     "vue-matomo": "^4.1.0",
     "vue-router": "^4.0.12",

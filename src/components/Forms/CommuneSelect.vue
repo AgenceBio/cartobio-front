@@ -1,6 +1,8 @@
 <template>
-  <div ref="autocompleteRef"></div>
-  <div class="fr-hint-text">Saisissez le nom d'une commune</div>
+  <div :style="containerStyle">
+    <div ref="autocompleteRef"></div>
+    <div class="fr-hint-text">Saisissez le nom d'une commune</div>
+  </div>
 </template>
 
 <script setup>
@@ -11,8 +13,8 @@ import axios from "axios";
 
 const autocompleteRef = ref(null)
 
-const props = defineProps(['modelValue'])
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps(['modelValue', 'containerStyle'])
+const emit = defineEmits(['update:modelValue', 'feature'])
 const setQueryRef = ref(null)
 
 const updateFieldFromModel = async (value) => {
@@ -61,17 +63,17 @@ onMounted(async () => {
             })
 
             return response.data.features
-                .map(({ properties: { label, citycode, context, score } }) => ({score, citycode, name: `${label} (${context})`}))
-                .sort((a, b) => a.score < b.score)
+                .sort((a, b) => a.properties.score < b.properties.score)
           },
           templates: {
             item ({ item, html }) {
-              return html`<li>${ item.name }</li>`
+              return html`<li>${item.properties.label} (${item.properties.context})</li>`
             }
           },
           onSelect: function(event) {
-            event.setQuery(event.item.name);
-            emit('update:modelValue', event.item.citycode);
+            event.setQuery(event.item.properties.label);
+            emit('update:modelValue', event.item.properties.citycode);
+            emit('feature', event.item);
           },
         }
       ]
