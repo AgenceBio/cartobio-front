@@ -135,6 +135,7 @@ const getSheet = ({ featureCollection, operator, record }) => {
   featureCollection.features.forEach((feature, index) => {
     const rowIndex = index + 8;
 
+    // surface is a 2 digits figure
     sheet[`D${rowIndex}`].t = 'n'
     sheet[`D${rowIndex}`].z = '0.00'
 

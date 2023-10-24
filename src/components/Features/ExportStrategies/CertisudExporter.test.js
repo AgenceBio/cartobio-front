@@ -20,35 +20,39 @@ describe('CertisudExporter', () => {
       ],
       [
         'Luzerne',
-        '2,1',
+        // expect.closeTo(2.1), // in vite@5 + vitest@1
+        2.092976314534671,
         '',
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),
       ],
       [
         'Luzerne',
-        '1,0',
+        // expect.closeTo(1.0), // in vite@5 + vitest@1
+        1.0464881572673355,
         '',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
       ],
       [
         'Trèfle',
-        '1,0',
+        // expect.closeTo(1.0), // in vite@5 + vitest@1
+        1.0464881572673355,
         '4 feuilles, 2023-03-01',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
       ],
       [
         'Trèfle',
-        '1,0',
+        // expect.closeTo(1.0), // in vite@5 + vitest@1
+        1.0464881572673355,
         '4 feuilles, 2023-03-01',
         'AB',
         new Date('2015-01-01T00:00:00.000Z'),
       ],
       [
         '[ERREUR] correspondance manquante avec 01.19.99',
-        '1,0',
+        1.0464881572673355,
         '',
         '',
         '',
