@@ -22,7 +22,7 @@
             <label class="fr-label">
               Reference cadastrale
             </label>
-            <CadastreField :commune="commune"
+            <CadastreField :commune="flowSource === 'cadastre' ? commune : ''"
                            :form-error="cadastreParcelles[index].error"
                            :can-delete="cadastreParcelles.length > 1"
                            :field-id="key"
@@ -45,16 +45,25 @@
 
       <article class="fr-pl-5w fr-mb-5w">
         <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
+          <input type="radio" id="radio-source-dessin" name="source" value="dessin" v-model="flowSource">
+          <label class="fr-label" for="radio-source-dessin">
+            Par dessin sur la carte
+          </label>
+        </div>
+      </article>
+
+      <article class="fr-pl-5w fr-mb-5w">
+        <div class="fr-radio-group fr-ml-n4w fr-mb-2w">
           <input type="radio" id="radio-source-telepac" name="source" value="telepac" disabled v-model="flowSource">
           <label class="fr-label" for="radio-source-telepac">
-            Par référence Telepac (<i>prochainement</i>)
+            Par référence Telepac (prochainement)
           </label>
         </div>
       </article>
 
       <div class="fr-input-group fr-mt-5w">
-        <button class="fr-btn" type="submit" :disabled="!feature || multipolygon" @click="showDetailsModal = true">
-          Renseigner l'assolement
+        <button class="fr-btn" type="submit" :disabled="flowSource === 'cadastre' && !feature || multipolygon" @click="nextButton">
+          Continuer
         </button>
       </div>
     </form>
@@ -185,6 +194,16 @@ watch(feature, () => {
 
   emit('update', markRaw(featureCollection([toRaw(feature.value)])))
 })
+
+function nextButton() {
+  if (flowSource.value === 'cadastre') {
+    return showDetailsModal.value = true
+  }
+
+  if (flowSource.value === 'dessin') {
+    return router.push({ name: 'exploitations-id-ajout-parcelle-dessin', params: { id: recordStore.record.operator.id || 1 }})
+  }
+}
 
 async function saveFeature ({ properties }) {
   feature.value.properties = { ...feature.value.properties, ...properties }

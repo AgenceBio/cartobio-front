@@ -1,7 +1,8 @@
 <template>
   <Modal ref="modal" data-track-content data-content-name="Modale de modification de parcelle" v-bind="$attrs">
     <div class="fr-card fr-p-2w fr-mb-3w">
-      <h6 class="fr-mb-0">{{ featureName(feature) }}
+      <h6 class="fr-mb-0">
+        <input class="fr-input" v-model="patch.NOM" placeholder="Nom de la parcelle" required="required" />
         ({{ inHa(surface(feature)) }} ha)</h6>
 
       <ul v-if="details.length">
@@ -86,6 +87,7 @@ const props = defineProps({
 const permissions = usePermissions()
 
 const patch = reactive({
+  NOM: featureName(props.feature, { placeholder: '' }),
   annotations: props.feature.properties.annotations || [],
   conversion_niveau: props.feature.properties.conversion_niveau || '',
   cultures: props.feature.properties.cultures || [],
