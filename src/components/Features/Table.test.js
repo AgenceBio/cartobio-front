@@ -1,18 +1,17 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
-import { defineComponent, markRaw, Suspense } from "vue"
+import { defineComponent, markRaw } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
 import { deleteSingleFeature, updateSingleFeatureProperties } from '@/cartobio-api.js'
 
-import { GROUPE_COMMUNE, DeletionReasonsCode } from "@/components/Features/index.js"
-import { useRecordStore, useFeaturesStore, usePermissions } from "@/stores/index.js"
+import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/components/Features/index.js"
+import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index.js"
 import { OPERATOR_RULES } from "@/referentiels/ab.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import Modal from "@/components/Modal.vue"
 import DeleteFeatureModal from "@/components/Features/DeleteFeatureModal.vue"
 import EditForm from "@/components/Features/SingleItemOperatorForm.vue"
-import FeatureGroup from "@/components/Features/FeatureGroup.vue"
 import TableComponent from "./Table.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })

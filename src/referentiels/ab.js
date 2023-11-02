@@ -84,7 +84,7 @@ export const RULE_CPF = 'CPF'
 const VALIDATION_RULES = {
   // la culture a un nom
   [RULE_NAME] (feature) {
-    return Boolean(featureName(feature))
+    return Boolean(featureName(feature, { placeholder: '' }))
   },
   // la culture est renseignée
   [RULE_NOT_EMPTY] (feature) {

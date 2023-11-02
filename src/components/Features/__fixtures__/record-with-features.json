@@ -66,6 +66,7 @@
         },
         "properties": {
           "id": 1,
+          "NOM": "parcelle 1",
           "COMMUNE": "26108",
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }
@@ -104,6 +105,7 @@
         },
         "properties": {
           "id": 2,
+          "NOM": "parcelle 2",
           "COMMUNE": "26108",
           "cultures": [
             { "id": 1, "CPF": "01.13.42", "variete": "spéciale pour ail noir" },
@@ -125,6 +127,7 @@
             { "id": 2, "code": "risky", "date": "2023-01-01" },
             { "id": 3, "code": "downgraded", "date": "2023-01-01", "metadata": { "status": "rejected" } }
           ],
+          "NOM": "parcelle 3",
           "COMMUNE": "26113",
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }
