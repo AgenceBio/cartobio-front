@@ -1,4 +1,5 @@
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
+import { featureName } from "@/components/Features/index.js"
 
 export const LEVEL_UNKNOWN = undefined
 export const LEVEL_CONVENTIONAL = 'CONV'
@@ -72,6 +73,7 @@ export const conversionLevels = [
 
 export const userFacingConversionLevels = conversionLevels.filter(({ is_selectable }) => is_selectable)
 
+export const RULE_NAME = 'NAME'
 export const RULE_NOT_EMPTY = 'NOT_EMPTY'
 export const RULE_CONVERSION_LEVEL = 'CONVERSION_LEVEL'
 export const RULE_ENGAGEMENT_DATE = 'ENGAGEMENT_DATE'
@@ -80,6 +82,10 @@ export const RULE_MAYBE_AB = 'MAYBE_AB'
 export const RULE_CPF = 'CPF'
 
 const VALIDATION_RULES = {
+  // la culture a un nom
+  [RULE_NAME] (feature) {
+    return Boolean(featureName(feature))
+  },
   // la culture est renseignée
   [RULE_NOT_EMPTY] (feature) {
     return feature.properties.cultures.every(({ CPF }) => Boolean(CPF))
@@ -100,7 +106,7 @@ const VALIDATION_RULES = {
     const { conversion_niveau } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
-    return (conversionLevel.value === LEVEL_MAYBE_AB) === false
+    return !(conversionLevel.value === LEVEL_MAYBE_AB)
   },
   // la date d'engagement est manquante pour des conversions récentes
   // on dit que c'est OK de ne pas l'avoir en AB, pour accepter des parcellaires certifiés depuis longtemps, avant l'obligation de tracer leur date d'engagement ou de passage en bio
