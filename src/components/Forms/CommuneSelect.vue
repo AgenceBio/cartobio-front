@@ -1,7 +1,6 @@
 <template>
-  <div :style="containerStyle">
+  <div :style="style" :class="$props.class" >
     <div ref="autocompleteRef"></div>
-    <div class="fr-hint-text">Saisissez le nom d'une commune</div>
   </div>
 </template>
 
@@ -13,7 +12,7 @@ import axios from "axios";
 
 const autocompleteRef = ref(null)
 
-const props = defineProps(['modelValue', 'containerStyle'])
+const props = defineProps(['modelValue', 'style', 'class'])
 const emit = defineEmits(['update:modelValue', 'feature'])
 const setQueryRef = ref(null)
 

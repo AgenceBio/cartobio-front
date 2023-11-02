@@ -1,9 +1,15 @@
 <template>
   <Modal ref="modal" data-track-content data-content-name="Modale de modification de parcelle" v-bind="$attrs">
     <div class="fr-card fr-p-2w fr-mb-3w">
-      <h6 class="fr-mb-0">
-        <input class="fr-input" v-model="patch.NOM" placeholder="Nom de la parcelle" required="required" />
-        ({{ inHa(surface(feature)) }} ha)</h6>
+      <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
+        <label class="fr-label" for="nom">Nom de la parcelle</label>
+        <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
+        <input class="fr-input fr-error" v-model="patch.NOM" placeholder="Nom de la parcelle" required="required" :class="{ 'fr-input--error': nameError }" />
+        <p v-if="nameError" class="fr-error-text">
+          Ce champ est obligatoire
+        </p>
+      </div>
+      <p class="fr-mb-0">Sa superficie est de {{ inHa(surface(feature)) }} ha.</p>
 
       <ul v-if="details.length">
         <li v-for="(detail, index) in details" :key="index">
@@ -12,7 +18,7 @@
       </ul>
     </div>
 
-    <form @submit.prevent="emit('submit', { id: feature.id, properties: patch })" id="single-feature-edit-form">
+    <form @submit.prevent="validate" id="single-feature-edit-form">
       <AccordionGroup :constraint-toggle="!open">
         <AccordionSection title="Culture" :open="open">
           <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
@@ -60,10 +66,10 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue';
+import { reactive, computed, ref } from 'vue';
 
 import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
-import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE } from '@/referentiels/ab.js'
+import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE, RULE_NAME } from '@/referentiels/ab.js'
 import { usePermissions } from '@/stores/index.js'
 
 import AccordionGroup from '@/components/DesignSystem/AccordionGroup.vue'
@@ -83,6 +89,7 @@ const props = defineProps({
     default: false
   }
 })
+const emit = defineEmits(['submit'])
 
 const permissions = usePermissions()
 
@@ -94,12 +101,27 @@ const patch = reactive({
   engagement_date: props.feature.properties.engagement_date,
   auditeur_notes: props.feature.properties.auditeur_notes || '',
 })
+const nameError = ref(false)
 
-const emit = defineEmits(['submit'])
 const isAB = computed(() => isABLevel(patch.conversion_niveau))
 const maxDate = computed(() => new Date().toISOString().split('T').at(0))
 const isEngagementDateRequired = computed(() => applyValidationRules([RULE_ENGAGEMENT_DATE], { properties: patch }).success === 0)
 const details = await featureDetails(props.feature)
+
+const validate = () => {
+  const { rules } = applyValidationRules([RULE_NAME, RULE_ENGAGEMENT_DATE], { properties: patch })
+
+  if (rules[RULE_NAME].success === 0) {
+    nameError.value = true
+    return false
+  }
+
+  if (rules[RULE_ENGAGEMENT_DATE].success === 0) {
+    return false
+  }
+
+  emit('submit', { id: props.feature.id, properties: patch })
+}
 </script>
 
 <style scoped>
