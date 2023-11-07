@@ -56,6 +56,9 @@
         <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
           <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
             <li>
+              <router-link :to="`/exploitations/${recordStore.record.operator.id}/modifier/${feature.id}`" type="button" :disabled="!permissions.canChangeGeometry" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+                Modifier le contour
+              </router-link>
               <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
                 Supprimer la parcelle
               </button>
@@ -74,10 +77,11 @@ import { featureName, cultureLabel, inHa, surface } from '@/components/Features/
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
-import { useFeaturesStore, usePermissions } from '@/stores/index.js'
+import { useFeaturesStore, usePermissions, useRecordStore } from '@/stores/index.js'
 import { onClickOutside } from '@vueuse/core'
 
 const route = useRoute()
+const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
 
@@ -253,5 +257,9 @@ table tr[aria-current="location"] {
 
 .fr-icon--warning {
   color: var(--text-default-error);
+}
+
+.fr-icon-geometry::before {
+  mask-image: url(@/assets/icon-geometry.svg);
 }
 </style>

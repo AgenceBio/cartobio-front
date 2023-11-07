@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { defineComponent, markRaw } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
-import { deleteSingleFeature, updateSingleFeatureProperties } from '@/cartobio-api.js'
+import { deleteSingleFeature, updateSingleFeature } from '@/cartobio-api.js'
 
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/components/Features/index.js"
 import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index.js"
@@ -129,7 +129,7 @@ describe("Features Table", () => {
     await table.find('tr.parcelle td').trigger('click')
     await flushPromises()
 
-    updateSingleFeatureProperties.mockResolvedValue(record)
+    updateSingleFeature.mockResolvedValue(record)
 
     // this throws if the modal form does not exist
     // it catches the Component reference even if it has been Teleport-ed in the <body>
@@ -140,7 +140,7 @@ describe("Features Table", () => {
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     // modal is down, and the table should be updated
-    expect(updateSingleFeatureProperties).toHaveBeenCalled()
+    expect(updateSingleFeature).toHaveBeenCalled()
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
   })
 
