@@ -176,12 +176,12 @@ export async function updateFeatureCollectionProperties ({ recordId }, featureCo
 /**
  * Update/replace properties of a single feature
  *
- * @param {{ recordId: string, featureId: string }} identifiers
+ * @param {{ recordId: string }} identifiers
  * @param {GeoJSON.Feature} feature
  * @returns {Promise<Record>}
  */
-export async function updateSingleFeatureProperties ({ recordId }, { id, properties }) {
-  const { data } = await cartobioApi.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties })
+export async function updateSingleFeature ({ recordId }, { id, properties, geometry }) {
+  const { data } = await cartobioApi.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties, geometry })
 
   return data
 }

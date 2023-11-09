@@ -1,12 +1,18 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
-import { defineComponent, markRaw, Suspense } from "vue"
+import { defineComponent, markRaw } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
-import { updateSingleFeatureProperties } from '@/cartobio-api.js'
-
-import { DeletionReasonsCode } from "@/components/Features/index.js"
-import { useRecordStore, useFeaturesStore, usePermissions } from "@/stores/index.js"
-import { AnnotationTags, CERTIFICATION_BODY_DECISION, ANNOTATIONS, AUDITOR_RULES, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_AB } from "@/referentiels/ab.js"
+import { updateSingleFeature } from '@/cartobio-api.js'
+import { usePermissions, useRecordStore } from "@/stores/index.js"
+import {
+  ANNOTATIONS,
+  AnnotationTags,
+  AUDITOR_RULES,
+  CERTIFICATION_BODY_DECISION,
+  LEVEL_AB,
+  LEVEL_C1,
+  LEVEL_CONVENTIONAL
+} from "@/referentiels/ab.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import EditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
@@ -98,7 +104,7 @@ describe("SingleItemCertificationBodyForm", () => {
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
-    expect(updateSingleFeatureProperties.mock.lastCall).toMatchObject([
+    expect(updateSingleFeature.mock.lastCall).toMatchObject([
       { recordId: '054f0d70-c3da-448f-823e-81fcf7c2bf6e' },
       {
         id: 2,

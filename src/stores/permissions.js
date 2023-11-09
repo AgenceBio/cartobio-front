@@ -54,6 +54,10 @@ export const usePermissions = defineStore('permissions', () => {
     return canEditParcellaire();
   })
 
+  const canChangeGeometry = computed(() => {
+    return canEditParcellaire();
+  })
+
   const canAddParcelleNote = computed(() => {
     return Boolean(recordStore.record.certification_state);
   })
@@ -85,6 +89,7 @@ export const usePermissions = defineStore('permissions', () => {
     canDeleteFeature,
     canDeleteParcellaire,
     canChangeCulture,
+    canChangeGeometry,
     canAddParcelleNote,
     canChangeConversionLevel,
     canSaveAudit,

@@ -104,7 +104,7 @@ import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 
 import { surface, inHa, getFeatureGroups, groupingChoices } from './index.js'
-import { deleteSingleFeature, updateSingleFeatureProperties, updateFeatureCollectionProperties } from '@/cartobio-api.js'
+import { deleteSingleFeature, updateSingleFeature, updateFeatureCollectionProperties } from '@/cartobio-api.js'
 import { toast } from "vue3-toastify"
 import { statsPush } from "@/stats.js"
 
@@ -173,7 +173,7 @@ async function handleSingleFeatureSubmit ({ id, properties }) {
   editedFeatureId.value = null
 
   await performAsyncRecordAction(
-    updateSingleFeatureProperties({ recordId: record.value.record_id }, { id, properties }),
+    updateSingleFeature({ recordId: record.value.record_id }, { id, properties }),
     'Parcelle modifiée.'
   )
 }
