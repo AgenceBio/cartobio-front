@@ -1,5 +1,8 @@
 # _En cours_…
 
+# [2.14.0](https://github.com/AgenceBio/cartobio-front/compare/v2.13.1...v2.14.0) (2023-11-10)
+* ajout de parcelles par dessin libre
+
 # [2.13.1](https://github.com/AgenceBio/cartobio-front/compare/v2.13.0...v2.13.1) (2023-11-06)
 * correction d'un bug d'affichage des contrôles de la carte
 
