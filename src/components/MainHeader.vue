@@ -83,8 +83,8 @@
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <router-link to="/exploitation/parcellaire" class="fr-nav__link">
-                  Mon parcellaire
+                <router-link to="/exploitations" class="fr-nav__link">
+                  Mes exploitations
                 </router-link>
               </li>
               <li class="fr-nav__item">

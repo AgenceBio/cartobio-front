@@ -124,6 +124,15 @@ export async function searchOperators (input) {
 }
 
 /**
+ * @return {Promise<undefined>}
+ */
+export async function getUserOperators () {
+  const { data } = await cartobioApi.get(`/v2/operators`)
+
+  return data
+}
+
+/**
  * @param {string} pacage
  * @returns {Promise<FeatureCollection>}
  */
