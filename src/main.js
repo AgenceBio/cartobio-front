@@ -13,7 +13,6 @@ import App from './App.vue'
 import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
 import { getOperatorParcelles } from "@/cartobio-api.js"
-import { ROLES } from "@/stores/user.js"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -118,17 +117,16 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to, from) => {
   // Preload store for checking permissions
-  if (to.params.id || userStore.roles.includes(ROLES.OPERATEUR)) {
+  if (to.params.id) {
     const recordStore = useRecordStore()
-    const record = await getOperatorParcelles(to.params.id || userStore.user.id)
+    const record = await getOperatorParcelles(to.params.id)
     recordStore.replace(record)
   }
 
   if (to.path === '/login/agencebio') {
     // forwards the user selected tab to the callback URI
     // this way, we come back to the same tab
-    const qs = new URLSearchParams({ ...to.query, returnto: from.redirectedFrom?.fullPath ?? '/certification/exploitations' })
-    window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login?${qs.toString()}`
+    window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login`
     return false
   }
 

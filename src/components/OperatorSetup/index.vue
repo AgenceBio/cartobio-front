@@ -18,14 +18,13 @@
 
 <script setup>
 import { computed, provide, ref, toRaw, unref, watchEffect } from 'vue'
-import { storeToRefs } from 'pinia'
 
 import ImportPreview from '@/components/OperatorSetup/ImportPre.vue'
 
 import { createOperatorRecord } from '@/cartobio-api.js'
 import { now } from '@/components/dates.js'
 import featureSources from '@/components/OperatorSetup/index.js'
-import { useUserStore } from '@/stores/user.js'
+import { useRecordStore } from "@/stores/index.js"
 
 const emit = defineEmits(['source:change', 'import:start', 'import:preview', 'import:complete', 'import:error'])
 
@@ -47,8 +46,7 @@ provide('featureCollection', featureCollection)
 provide('importWarnings', importWarnings)
 provide('extraMetadata', extraMetadata)
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+const { record } = useRecordStore()
 
 const hasFeatureCollection = computed(() => featureCollection.value?.features)
 const provenance = computed(() => window.location.host)
@@ -75,14 +73,13 @@ function handleCancel () {
 }
 
 async function handleUpload () {
-  const { id: operatorId, numeroBio, organismeCertificateur } = user.value
+  const { id: operatorId, numeroBio, organismeCertificateur } = record.operator
   const { id: ocId, nom: ocLabel } = organismeCertificateur
 
   const geojson = toRaw(featureCollection.value)
   const source = toRaw(featureSource.value)
 
   try {
-    // @todo ensure this comes from an operator store, and not a user store (userId != operatorId)
     const record = await createOperatorRecord(operatorId, {
       geojson,
       ocId,

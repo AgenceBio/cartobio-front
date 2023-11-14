@@ -2,14 +2,14 @@
   <div>
     <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
 
-    <Spinner v-else-if="(!isVerifying && isLogged && permissions.isOc)">Chargement de votre liste clients…</Spinner>
+    <Spinner v-else-if="(!isVerifying && isLogged && (permissions.isOc || permissions.isAgri))">Chargement de vos exploitations…</Spinner>
 
     <div class="fr-connect-group" v-else-if="!isLogged">
       <p>
         L'accès à CartoBio s'effectue avec l'aide de votre compte Agence Bio&nbsp;:
       </p>
 
-      <button class="fr-connect fr-connect--agence-bio" @click="router.push('/login/agencebio?mode=certification')">
+      <button class="fr-connect fr-connect--agence-bio" @click="router.push('/login/agencebio')">
         <span class="fr-connect__login">S'identifier avec</span>
         <span class="fr-connect__brand">Agence Bio</span>
       </button>
@@ -26,8 +26,9 @@
         <h3 class="fr-alert__title">Droits d'accès inadaptés</h3>
         <p>
           Votre connexion a correctement abouti.
-          Malheureusement nous ne sommes pas en mesure de vous identifier comme
-          étant une personne travaillant au sein d'une organisme de certification.
+          Malheureusement nous ne sommes pas en mesure de vous identifier comme un
+          operateur agricole ou une personne travaillant au sein d'une organisme
+          de certification.
         </p>
 
         <p>
@@ -77,6 +78,10 @@ onMounted(async () => {
     if (res.id) {
       store.login(hashOrUserToken)
       router.replace('/login')
+    }
+
+    if (permissions.isAgri) {
+      router.replace('/exploitations')
     }
 
     if (permissions.isOc) {
