@@ -132,7 +132,7 @@ router.beforeEach(async (to, from) => {
 
   if (to.meta.requiredRoles
       && !to.meta.requiredRoles.some(role => userStore.roles.includes(role))) {
-    return { path: '/login', query: { mode: 'certification' } }
+    return { path: '/login' }
   }
 
   if (to.meta.requiredPermissions) {

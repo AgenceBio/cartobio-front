@@ -141,7 +141,7 @@ const { user, roles, isLogged } = storeToRefs(userStore)
 const roleIcon = computed(() => ROLE_ICONS.get(roles.value[0]) ?? 'fr-icon-account-circle-fill')
 const rolePage = computed(() => {
   if (permissions.isOc) return '/certification/exploitations'
-  if (permissions.isAgri) return '/exploitation/parcellaire'
+  if (permissions.isAgri) return '/exploitations'
 
   return '/'
 })
