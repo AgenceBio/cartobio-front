@@ -1,5 +1,9 @@
 # _En cours_…
 
+# [2.14.0](https://github.com/AgenceBio/cartobio-front/compare/v2.14.0...v2.15.0) (2023-11-17)
+* modification de contours de parcelles
+* login agriculteur
+
 # [2.14.0](https://github.com/AgenceBio/cartobio-front/compare/v2.13.1...v2.14.0) (2023-11-10)
 * ajout de parcelles par dessin libre
 
