@@ -214,7 +214,7 @@ async function saveFeature ({ properties }) {
   featuresStore.setAll(record.parcelles.features)
 
   showDetailsModal.value = false
-  statsPush(['trackEvent', 'Parcelles', 'Ajout (sauvegarde)'])
+  statsPush(['trackEvent', 'Parcelles', 'Ajout par cadastre (sauvegarde)'])
   await router.push({
     query: { new: record.audit_history.at(-1).parcelleId },
     path: props.backLink,
