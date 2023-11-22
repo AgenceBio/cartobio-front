@@ -89,7 +89,7 @@ const getSheet = ({ featureCollection, operator }) => {
       ]
     ], { origin: `B${2 + index}`, cellDates: true });
 
-    // Formattage des totaux
+    // surface is a 2 digits figure
     sheet[`G${2 + index}`].t = 'n'
     sheet[`G${2 + index}`].z = '0.00'
   })

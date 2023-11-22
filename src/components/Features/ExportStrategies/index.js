@@ -14,7 +14,7 @@ const isProduction = Boolean(import.meta.env.PROD)
 
 const exporters = new Map([
   // Use a custom exporter in development to ease testing
-  [1, isProduction ? DefaultExporter : CertisExporter],
+  [1, isProduction ? DefaultExporter : CertisudExporter],
   // Production exports
   [2, BureauVeritasExporter],
   [3, CertipaqExporter],

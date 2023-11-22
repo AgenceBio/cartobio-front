@@ -6,7 +6,7 @@ import {
   GROUPE_DATE_ENGAGEMENT,
   GROUPE_NIVEAU_CONVERSION
 } from '@/components/Features/index.js'
-import BaseExporter, { generateAutresInfos, humanNumbers } from "@/components/Features/ExportStrategies/BaseExporter.js";
+import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
 
@@ -51,12 +51,16 @@ const getSheet = ({ featureCollection, operator }) => {
     sheet_add_aoa(sheet, [
       [
         culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
-        humanNumbers(surface / 10_000),
+        surface / 10_000,
         autresInfos,
         features.at(0).properties.conversion_niveau ?? '',
         features.at(0).properties.engagement_date ? new Date(features.at(0).properties.engagement_date) : '',
       ]
     ], { origin: `A${2 + index}`, cellDates: true });
+
+    // surface is a 2 digits figure
+    sheet[`B${2 + index}`].t = 'n'
+    sheet[`B${2 + index}`].z = '0.00'
   })
 
   return sheet
