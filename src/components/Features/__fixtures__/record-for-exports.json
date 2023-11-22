@@ -2,7 +2,18 @@
   "record_id": "054f0d70-c3da-448f-823e-81fcf7c2bf6e",
   "operator": {
     "id": 1,
-    "nom": "test"
+    "nom": "test",
+    "notifications": [
+      {
+        "id": 1,
+        "status": "ACTIVE",
+        "organismeCertificateur": {
+          "id": 999,
+          "nom": "CartobiOC",
+          "numeroControleEu": "FR-BIO-999"
+        }
+      }
+    ]
   },
   "parcelles": {
     "type": "FeatureCollection",

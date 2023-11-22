@@ -1,12 +1,6 @@
 import { utils } from 'xlsx'
 import { cultureLabel, featureName } from "../index.js"
 
-const frNumbers = new Intl.NumberFormat('fr-FR', {
-  style: 'decimal',
-  minimumSignificantDigits: 2,
-  maximumSignificantDigits: 2
-})
-
 export default class BaseExporter {
   label = ''
   extension = ''
@@ -24,16 +18,12 @@ export default class BaseExporter {
   }
 }
 
-export function humanNumbers (float) {
-  return frNumbers.format(float)
-}
-
 /**
  *
  * @param {Feature[]} features
  * @returns {String}
  */
-export function generateAutresInfos (features, { withName = true, withNotes = true, withDate = true, withSurface = true, withVariete = true, pivot = null, initialCulture } = {}) {
+export function generateAutresInfos (features, { withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture } = {}) {
   return features.map(feature => {
     const name = withName ? featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }) : ''
     const notes = withNotes ? feature.properties.auditeur_notes : ''
