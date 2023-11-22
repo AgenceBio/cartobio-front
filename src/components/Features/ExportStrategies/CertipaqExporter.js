@@ -67,14 +67,14 @@ const getSheet = ({ featureCollection, operator }) => {
     const culture = fromCodeCpf(props.cultures.at(0)?.CPF)
 
     return [
-      // Commune
+      // Commune          #A
       props.COMMUNE_LABEL,
-      // Ilot
+      // Ilot             #B
       featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '_', placeholder: '' }),
-      // Culture
+      // Culture          #C
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
-      // Variété / infos
-      '',
+      // Variété / infos  #D
+      generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: true, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',
@@ -83,8 +83,8 @@ const getSheet = ({ featureCollection, operator }) => {
       props.conversion_niveau === 'C3' ? surfaceHa : '',
       // Date conv
       props.engagement_date ? new Date(props.engagement_date) : '',
-      // Observation / date de semis
-      generateAutresInfos([{ id, geometry, properties: props }], { withName: false, initialCulture: culture?.code_cpf }),
+      // Observation / date de semis #K
+      generateAutresInfos([{ id, geometry, properties: props }], { withDate: true, withName: false, withNotes: false, withSurface: true, withVariete: false, initialCulture: culture?.code_cpf }),
       // Précédent
       '',
       // Anté précédent
@@ -93,7 +93,7 @@ const getSheet = ({ featureCollection, operator }) => {
       '',
       // Date
       '',
-      // ParcelleId
+      // ParcelleId #P
       String(id),
     ]
   }), { origin: 'A6', cellDates: true })
@@ -159,6 +159,7 @@ class CertipaqExporter extends BaseExporter {
   label = "Tableur"
   extension = "csv"
   mimetype = "text/csv"
+  range = "A5:P999"
 
   getSheet() {
     return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
