@@ -1,11 +1,7 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import {
-  getFeatureGroups,
-  GROUPE_CULTURE,
-  GROUPE_DATE_ENGAGEMENT,
-  GROUPE_NIVEAU_CONVERSION
-} from '@/components/Features/index.js'
+import { surface } from '@/components/Features/index.js'
+import { certificationStates, CERTIFICATION_STATE, isABLevel } from '@/referentiels/ab.js'
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
@@ -20,78 +16,106 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator, permissions, record }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
+  const statut = certificationStates[record.certification_state] ?? certificationStates[CERTIFICATION_STATE.UNKNOWN]
 
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
     [
-      'SITE ID de l\'opérateur',
-      'Catégorie', 'Produit',
-      'Code Produit',
-      'Complément certificat',
-      'Autres infos',
-      'Surface',
-      'Unité',
-      'Classement',
-      'Date conversion'
+      "SITE ID de l'opérateur",
+      "Numéro PACAGE",
+      "Numéro Bio",
+      "Statut Cartobio",
+      "Id Parcelle",
+      "Numéro Ilôt",
+      "Numéro Parcelle",
+      "BIO",
+      "Classement",
+      "Date de conversion",
+      "Auditeur_note / Autres infos",
+      "Code CPF",
+      "Code Produit",
+      "Catégorie",
+      "Produit",
+      "Surface",
+      "Variété / Complément certificat",
+      "Date de semis"
     ],
-    [
-      notification.numeroClient ?? ''
-    ],
-    [
-      'PV'
-    ]
   ])
 
   sheet['!cols'] = [
     // Site ID
     { wch: 16 },
-    // Catégorie
+    // Numéro PACAGE
     { wch: 12 },
-    // Produit
-    { wch: 40 },
-    // Code Produit
+    // Numéro Bio
+    { wch: 12 },
+    // Statut Cartobio
     { wch: 16 },
-    // Complément certificat (variété)
-    { wch: 40 },
-    // Autres infos (ilot.parcelle date de semis)
-    { wch: 40 },
-    // Surface
-    { wch: 12 },
-    // Unité
-    { wch: 6 },
+    // Id Parcelle
+    { wch: 16 },
+    // Numéro Ilôt
+    { wch: 4 },
+    // Numéro Parcelle
+    { wch: 4 },
+    // BIO
+    { wch: 4 },
     // Classement
-    { wch: 8 },
+    { wch: 10 },
     // Date de conversion
-    { wch: 10 }
+    { wch: 10 },
+    // Auditeur_note / Autres infos
+    { wch: 40 },
+    // Code CPF
+    { wch: 12 },
+    // Code Produit
+    { wch: 12 },
+    // Catégorie
+    { wch: 20 },
+    // Produit
+    { wch: 20 },
+    // Surface
+    { wch: 8 },
+    // Variété / Complément certificat
+    { wch: 40 },
+    // Date de semis
+    { wch: 12 }
   ]
 
-  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
-    const culture = fromCodeCpf(mainKey)
-    const autresInfos = generateAutresInfos(features, { pivot: mainKey })
-    const varietes = generateAutresInfos(features, { pivot: mainKey, withNotes: false, withDate: false, withName: false, withSurface: false })
+  sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties, id }) => {
+    const culture = fromCodeCpf(properties.cultures.at(0)?.CPF)
+    const autresInfos = generateAutresInfos([{ id, geometry, properties }], { withAnnotations: true, withDate: false, withName: false, withNotes: true, withSurface: false, withVariete: false, initialCulture: culture?.code_cpf, permissions })
+    const varietes = generateAutresInfos([{ id, geometry, properties }], { withDate: false, withName: false, withNotes: false, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf })
+    const dateSemis = generateAutresInfos([{ id, geometry, properties }], { withDate: true, withName: false, withNotes: false, withSurface: false, withVariete: false, initialCulture: culture?.code_cpf })
 
-    sheet_add_aoa(sheet, [
-      [
-        culture?.groupe,
-        culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
-        culture?.code_bureau_veritas,
-        // Complément certificat (variété)
-        varietes,
-        // Autres infos (ilot.parcelle date de semis Notes de certification)
-        `Ilots : ${autresInfos}`,
-        surface / 10_000,
-        'ha',
-        features.at(0).properties.conversion_niveau,
-        features.at(0).properties.engagement_date,
-      ]
-    ], { origin: `B${2 + index}`, cellDates: true });
+    return [
+      notification.numeroClient,
+      operator.numeroPacage,
+      operator.numeroBio,
+      statut.label,
+      String(properties.id),
+      properties.NUMERO_I,
+      properties.NUMERO_P,
+      isABLevel(properties.conversion_niveau) ? 1 : 0,
+      properties.conversion_niveau,
+      properties.engagement_date ? new Date(properties.engagement_date) : '',
+      autresInfos,
+      culture?.code_cpf,
+      culture?.code_bureau_veritas,
+      culture?.groupe,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      surface(geometry) / 10_000,
+      varietes,
+      dateSemis
+    ]
+  }), { origin: 'A2', cellDates: true });
 
+  featureCollection.features.forEach((feature, index) => {
     // surface is a 2 digits figure
-    sheet[`G${2 + index}`].t = 'n'
-    sheet[`G${2 + index}`].z = '0.00'
+    sheet[`P${2 + index}`].t = 'n'
+    sheet[`P${2 + index}`].z = '0.00'
   })
 
   return sheet
@@ -103,7 +127,7 @@ class BureauVeritasExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions, record: this.record })
   }
 
   toFileData() {

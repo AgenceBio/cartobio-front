@@ -1,5 +1,7 @@
 {
   "record_id": "054f0d70-c3da-448f-823e-81fcf7c2bf6e",
+  "certification_state": "CERTIFIED",
+  "created_at": "2023-05-15",
   "operator": {
     "id": 1,
     "numeroBio": 1,
@@ -7,12 +9,13 @@
     "notifications": [
       {
         "id": 1,
-        "status": "ACTIVE",
+        "numeroClient": "27B/6",
         "organismeCertificateur": {
           "id": 999,
           "nom": "CartobiOC",
           "numeroControleEu": "FR-BIO-999"
-        }
+        },
+        "status": "ACTIVE"
       }
     ]
   },
