@@ -38,7 +38,7 @@ describe('CertisudExporter', () => {
         'Trèfle',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
         1.0464881572673355,
-        '4 feuilles, 2023-03-01',
+        '4 feuilles, semis le 2023-03-01',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
       ],
@@ -46,7 +46,7 @@ describe('CertisudExporter', () => {
         'Trèfle',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
         1.0464881572673355,
-        '4 feuilles, 2023-03-01',
+        '4 feuilles, semis le 2023-03-01',
         'AB',
         new Date('2015-01-01T00:00:00.000Z'),
       ],

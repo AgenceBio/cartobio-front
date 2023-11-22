@@ -5,7 +5,7 @@ export default class BaseExporter {
   label = ''
   extension = ''
   mimetype = ''
-  origin = 'A1'
+  range = null
 
   constructor ({ featureCollection, operator, record }) {
     this.featureCollection = featureCollection
@@ -14,7 +14,13 @@ export default class BaseExporter {
   }
 
   toJSON () {
-    return utils.sheet_to_json(this.getSheet(), { header: 1, origin })
+    const ws = this.getSheet()
+    return utils.sheet_to_json(ws, {
+      blankrows: false,
+      defval: '',
+      header: 1,
+      range: this.range ?? ws['!ref']
+    })
   }
 }
 
@@ -37,8 +43,8 @@ export function generateAutresInfos (features, { withDate = true, withName = tru
           // if we refine on a given culture, we certainly have a cell with its label
           // so we don't make it redundant
           pivot || (initialCulture === c.CPF) ? '' : cultureLabel(c, { withCode: true }),
-          withVariete ? c.variete : '',
-          withDate ? c.date_semis : '',
+          withVariete && c.variete ? c.variete : '',
+          withDate && c.date_semis ? `semis le ${c.date_semis}` : '',
           withSurface && c.surface ? `${c.surface}ha` : ''
         ].filter(d => d).join(', '))
       )
