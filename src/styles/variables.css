@@ -827,7 +827,7 @@
   --toastify-icon-color-warning: var(--warning-425-625);
   --toastify-icon-color-error: var(--error-425-625);
 
-  --toastify-toast-width: 320px;
+  --toastify-toast-width: 600px;
   --toastify-toast-background: #fff;
   --toastify-toast-min-height: 64px;
   --toastify-toast-max-height: 800px;
