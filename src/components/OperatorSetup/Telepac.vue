@@ -2,10 +2,14 @@
   <div>
     <div class="fr-upload-group fr-mb-5w">
       <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden />
-      <span class="fr-error-text" v-if="erreur">{{ erreur }}</span>
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
         Sélectionner ma dernière déclaration PAC
       </button>
+    </div>
+
+    <div v-if="erreur" class="fr-alert fr-alert--error fr-mb-6w">
+      <h3 class="fr-alert__title">Échec de l'import</h3>
+      <p>{{ erreur }}</p>
     </div>
 
     <div class="fr-alert fr-alert--info">
@@ -50,12 +54,12 @@ async function handleFileUpload () {
 
     emit('upload:complete', { geojson, source, warnings, metadata })
   } catch (error) {
-    if (error.response?.status === 500 && error.response?.status === 400) {
-      erreur.value = 'Le fichier sélectionné ne semble pas être un fichier de déclaration PAC valide.'
+    if (error.response?.status >= 400 && error.response?.status <= 500) {
+      erreur.value = 'Votre fichier ne semble pas être une déclaration PAC valide.'
+    } else {
+      erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
+      throw error
     }
-
-    console.error(error)
-    erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
   }
 }
 </script>
