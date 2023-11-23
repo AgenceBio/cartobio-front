@@ -146,7 +146,7 @@ export const useFeaturesStore = defineStore('features', () => {
     selectedIds.value = selectedIds.value.filter(id => ids.includes(id) === false)
   }
 
-  function bindMaplibreFeatureState ({ map, source }) {
+  function bindMaplibreFeatureState (map, source) {
     watch(hoveredId, (id, previousId) => {
       if (id) {
         map.setFeatureState({ source, id }, { hover: true })
@@ -191,7 +191,7 @@ export const useFeaturesStore = defineStore('features', () => {
     })
   }
 
-  function bindMaplibreInteractions ({ map, layer }) {
+  function bindMaplibreInteractions (map, layer) {
     map.on('mousemove', layer, ({ features }) => {
       if (features.length) {
         hoveredId.value = features[0].id

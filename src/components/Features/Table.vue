@@ -1,19 +1,4 @@
 <template>
-  <div v-for="(message, index) in displayedMessages" :key="index">
-    <div v-if="message.type === 'success'" class="fr-alert fr-alert--success fr-alert--sm fr-mb-2w">
-      <p>{{ message.text }}</p>
-      <button class="fr-btn--close fr-btn" title="Masquer le message" @click="displayedMessages.splice(index, 1)">
-        Masquer le message
-      </button>
-    </div>
-    <div v-if="message.type === 'error'" class="fr-alert fr-alert--error fr-alert--sm fr-mb-2w">
-      <p>{{ message.text }}</p>
-      <button class="fr-btn--close fr-btn" title="Masquer le message" @click="displayedMessages.splice(index, 1)">
-        Masquer le message
-      </button>
-    </div>
-  </div>
-
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-my-3w">
     <ul class="fr-tags-group fr-tags-group--annotations fr-mb-2w" v-if="permissions.canViewAnnotations">
       <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
@@ -95,17 +80,17 @@
   </p>
 </template>
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useFeaturesStore, useMessages, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesStore, usePermissions, useRecordStore } from '@/stores/index.js'
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 
-import { surface, inHa, getFeatureGroups, groupingChoices } from './index.js'
-import { deleteSingleFeature, updateSingleFeature, updateFeatureCollectionProperties } from '@/cartobio-api.js'
-import { toast } from "vue3-toastify"
+import { getFeatureGroups, groupingChoices, inHa, surface } from './index.js'
+import { deleteSingleFeature, updateFeatureCollectionProperties, updateSingleFeature } from '@/cartobio-api.js'
+import toast from "@/components/toast"
 import { statsPush } from "@/stats.js"
 
 defineProps({
@@ -129,7 +114,6 @@ defineProps({
 const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
-const messages = useMessages()
 
 const { record } = storeToRefs(recordStore)
 const { hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
@@ -153,18 +137,6 @@ const featureGroups = computed(() => getFeatureGroups({ features: features.value
 const isSaving = ref(false)
 const showModal = computed(() => Boolean(editedFeatureId.value))
 
-// Messages
-const displayedMessages = ref(messages.popMessages())
-
-watch(messages.queue, () => {
-  displayedMessages.value.push(...messages.popMessages())
-})
-
-watch(showModal, (value) => {
-  if (value) {
-    displayedMessages.value = []
-  }
-})
 
 async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
@@ -224,7 +196,7 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
     const updatedRecord = await promise
     recordStore.update(updatedRecord)
 
-    messages.addMessage({ type: 'success', text })
+    toast.success(text)
   }
   catch (error) {
     console.error(error)
