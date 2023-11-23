@@ -39,7 +39,7 @@ describe('CertipaqExporter', () => {
       ],
       [
         '',
-        '',
+        '1_1',
         'Luzerne',
         '',
         '',
@@ -58,7 +58,7 @@ describe('CertipaqExporter', () => {
       ],
       [
         '',
-        '',
+        '1_2',
         'Luzerne',
         '',
         '',
@@ -77,7 +77,7 @@ describe('CertipaqExporter', () => {
       ],
       [
         '',
-        '',
+        '2_1',
         'Luzerne',
         '01.19.10.7 Trèfle, 4 feuilles',
         '',
@@ -96,7 +96,7 @@ describe('CertipaqExporter', () => {
       ],
       [
         '',
-        '',
+        '2_2',
         'Trèfle',
         '4 feuilles',
         '',
@@ -115,7 +115,7 @@ describe('CertipaqExporter', () => {
       ],
       [
         '',
-        '',
+        '3_1',
         '[ERREUR] culture inconnue',
         '01.19.99 Culture inconnue',
         '',
