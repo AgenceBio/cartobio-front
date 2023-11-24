@@ -20,6 +20,13 @@
       </button>
     </div>
 
+    <div
+        v-if="permissions.isAgri && record.certification_state !== CERTIFICATION_STATE.OPERATOR_DRAFT"
+        class="fr-alert fr-alert--info fr-alert--sm fr-mt-3w"
+    >
+      <p class="fr-text--sm">Vous ne pouvez plus modifier votre parcellaire lorsqu’il est en cours de certification.</p>
+    </div>
+
     <div class="demandes fr-callout fr-callout--blue-ecume" v-if="displayCallout">
       <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
 
@@ -50,7 +57,7 @@ import OperatorHistoryModal from '@/components/Operator/HistoryModal.vue'
 import FeaturesExportModal from '@/components/Features/ExportModal.vue'
 import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.vue'
 
-import { isCertificationImmutable } from '@/referentiels/ab.js'
+import { CERTIFICATION_STATE, isCertificationImmutable } from '@/referentiels/ab.js'
 import { useFeaturesStore, usePermissions, useRecordStore } from '@/stores/index.js'
 
 const props = defineProps({
