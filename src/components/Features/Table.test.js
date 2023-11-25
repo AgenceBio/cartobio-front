@@ -144,41 +144,6 @@ describe("Features Table", () => {
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
   })
 
-  test("we open a modal and test various cases it should remain open, or close", async () => {
-    const AsyncComponent = defineComponent({
-      components: { TableComponent },
-      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>'
-    })
-
-    const wrapper = mount(AsyncComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES }, editForm: markRaw(EditForm) }
-    })
-
-    const table = wrapper.getComponent(TableComponent)
-    // await table.find('tr.parcelle td').trigger('click')
-
-    let modal
-
-    // we click outside the modal (the background of the <dialog> element)
-    table.find('tr.parcelle td').trigger('click')
-    await flushPromises()
-    modal = wrapper.getComponent(Modal)
-    await modal.trigger('click')
-    expect(modal.exists()).toEqual(false)
-
-    // we click inside, so the modal should still exist
-    table.find('tr.parcelle td').trigger('click')
-    await flushPromises()
-    modal = wrapper.getComponent(Modal)
-    await modal.find('#modal-title').trigger('click')
-    expect(modal.exists()).toEqual(true)
-
-    // then we close the modal with the Close button
-    modal.find('.fr-modal__header .fr-btn--close').trigger('click')
-    await flushPromises()
-    expect(modal.exists()).toEqual(false)
-  })
-
   test("we delete a feature", async () => {
     permissions.canDeleteFeature = true
 
@@ -204,4 +169,50 @@ describe("Features Table", () => {
       details: 'Parce que'
     })
   })
+
+  test("we open a modal and test various cases it should remain open, or close", async () => {
+    permissions.canDeleteFeature = true
+    const AsyncComponent = defineComponent({
+      components: { TableComponent },
+      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>'
+    })
+
+    const wrapper = mount(AsyncComponent, {
+      props: { operator, validationRules: { rules: OPERATOR_RULES }, editForm: markRaw(EditForm) }
+    })
+
+    const table = wrapper.getComponent(TableComponent)
+    // await table.find('tr.parcelle td').trigger('click')
+
+    let modal
+
+    // we click outside the edit modal (the background of the <dialog> element)
+    // it stays open with another confirmation modal
+    table.find('tr.parcelle td').trigger('click')
+    await flushPromises()
+    modal = wrapper.getComponent(Modal)
+    await modal.trigger('click')
+    expect(modal.exists()).toEqual(true)
+
+    // we click outside the delete modal
+    await wrapper.find('.group-header').trigger('click')
+    await wrapper.find('#parcelle-3 .show-actions').trigger('click')
+    await wrapper.find('.fr-icon-delete-line').trigger('click')
+    modal = wrapper.getComponent(DeleteFeatureModal)
+    await modal.trigger('click')
+    await flushPromises()
+    expect(modal.exists()).toEqual(false)
+
+
+    // we click inside, so the modal should still exist
+    await wrapper.find('.group-header').trigger('click')
+    await wrapper.find('#parcelle-3 .show-actions').trigger('click')
+    await wrapper.find('.fr-icon-delete-line').trigger('click')
+    await flushPromises()
+    modal = wrapper.getComponent(Modal)
+    await modal.find('#modal-title').trigger('click')
+    expect(modal.exists()).toEqual(true)
+
+  })
+
 })

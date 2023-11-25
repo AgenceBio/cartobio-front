@@ -1,5 +1,5 @@
 <template>
-  <Modal @close="showCancelModal = true" data-track-content data-content-name="Modale de modification de parcelle">
+  <Modal @close="showCancelModal = true" v-bind="$attrs" data-track-content data-content-name="Modale de modification de parcelle">
     <div class="fr-card fr-p-2w fr-mb-3w">
       <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
         <label class="fr-label" for="nom">Nom de la parcelle</label>
