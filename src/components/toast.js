@@ -3,7 +3,7 @@ import Toast from "@/components/Toast.vue"
 import { h } from "vue"
 
 const toastComponent = (message, actionLabel, actionCb) => {
-  return ({ closeToast, toastProps }) => h(Toast, { actionLabel, actionCb, closeToast, toastProps }, [ message ])
+  return ({ closeToast, toastProps }) => h(Toast, { message, actionLabel, actionCb, closeToast, toastProps })
 }
 
 const toast = (message, actionLabel, actionCb) => {
