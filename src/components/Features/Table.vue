@@ -66,11 +66,11 @@
   </div>
 
   <Teleport to="body">
-    <Component :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" v-if="editedFeatureId && editForm" v-model="showModal" icon="fr-icon-file-text-fill" @update:modelValue="editedFeatureId = null">
+    <Component  v-if="editedFeatureId && editForm" :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" @close="editedFeatureId = null" icon="fr-icon-file-text-fill">
       <template #title>Modification de parcelle</template>
     </Component>
 
-    <DeleteFeatureModal v-if="maybeDeletedFeatureId" v-model="showDeleteFeatureModal" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
+    <DeleteFeatureModal v-if="maybeDeletedFeatureId" @close="maybeDeletedFeatureId = false" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
   </Teleport>
 
   <p>
@@ -124,10 +124,6 @@ const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
 
 const maybeDeletedFeatureId = ref(null)
-const showDeleteFeatureModal = computed({
-  get: () => Boolean(maybeDeletedFeatureId.value),
-  set: () => maybeDeletedFeatureId.value = null
-})
 
 const userGroupingChoice = ref('CULTURE')
 
@@ -135,8 +131,6 @@ const userGroupingChoice = ref('CULTURE')
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
 
 const isSaving = ref(false)
-const showModal = computed(() => Boolean(editedFeatureId.value))
-
 
 async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])

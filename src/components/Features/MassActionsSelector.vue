@@ -17,7 +17,7 @@
   </nav>
 
   <Teleport to="body">
-    <Component :is="modalComponent" v-if="(modalComponent && isModalOpen)" v-model="isModalOpen" @submit="handleSubmit" />
+    <Component :is="modalComponent" v-if="(modalComponent && isModalOpen)" @close="isModalOpen = false" @submit="handleSubmit" />
   </Teleport>
 </template>
 

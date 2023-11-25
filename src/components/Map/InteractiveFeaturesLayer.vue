@@ -11,7 +11,6 @@ export default {
   props: {
     name: {
       type: String,
-      required: true,
       default: 'parcellaire-operateur'
     },
     data: {

@@ -70,7 +70,7 @@
   </section>
 
   <Teleport to="body">
-    <Component :is="editForm" v-if="showDetailsModal" :feature="feature" :open="true" @submit="saveFeature" v-model="showDetailsModal" icon="fr-icon-file-text-fill" data-content-name="Modale de confirmation d'ajout">
+    <Component :is="editForm" v-if="showDetailsModal" :feature="feature" @submit="saveFeature" @close="showDetailsModal = false" icon="fr-icon-file-text-fill" data-content-name="Modale de confirmation d'ajout">
       <template #title>Ajouter une parcelle</template>
     </Component>
   </Teleport>

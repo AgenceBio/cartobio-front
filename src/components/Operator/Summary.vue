@@ -35,16 +35,16 @@
   </header>
 
   <Teleport to="body">
-    <OperatorHistoryModal :record="record" :operator="operator" v-if="historyModal" v-model="historyModal" />
+    <OperatorHistoryModal :record="record" :operator="operator" v-if="historyModal" @close="historyModal = false" />
   </Teleport>
 
 
   <Teleport to="body">
-    <FeaturesExportModal :operator="operator" :collection="collection" :record="record" v-if="exportModal" v-model="exportModal" />
+    <FeaturesExportModal :operator="operator" :collection="collection" :record="record" v-if="exportModal" @close="exportModal = false" />
   </Teleport>
 
   <Teleport to="body">
-    <DeleteParcellaireModal :record="record" v-if="deleteModal" v-model="deleteModal" />
+    <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
   </Teleport>
 </template>
 

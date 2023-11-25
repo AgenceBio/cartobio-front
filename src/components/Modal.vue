@@ -1,5 +1,5 @@
 <template>
-  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" :class="{'fr-modal': true, 'fr-modal--opened': modelValue}" :open="modelValue">
+  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" class="fr-modal fr-modal--opened" open>
     <div class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
         <div ref="target" class="fr-col-12 fr-col-md-8 fr-col-lg-6">
@@ -10,7 +10,7 @@
                 <slot name="title" />
               </h1>
 
-              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('update:modelValue', false)">
+              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('close')">
                 Fermer
               </button>
             </div>
@@ -29,45 +29,47 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, ref, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { useHead } from '@unhead/vue'
 import { onClickOutside, onKeyStroke } from '@vueuse/core'
 import { useContentTracking } from "@/stats.js"
 
 useContentTracking()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['close'])
 const props = defineProps({
-  modelValue: Boolean,
   icon: String
 })
 
 const target = ref(null)
 
-const cancelKeyStroke = onKeyStroke('Escape', () => emit('update:modelValue', false))
+const cancelKeyStroke = onKeyStroke('Escape', () => emit('close'))
 const cancelClickOutside = onClickOutside(target, (event) => {
   const range = document.createRange()
   range.selectNode(target.value)
   const isOutside = range.intersectsNode(event.target)
 
   if (isOutside) {
-    emit('update:modelValue', false)
+    emit('close')
   }
 })
 
-const stop = watchEffect(() => {
-  if (props.modelValue) {
-    useHead({
-      htmlAttrs: {
-        'data-fr-scrolling': props.modelValue,
-        tagDuplicateStrategy: 'replace'
-      }
-    })
-  }
+onMounted(() => {
+  useHead({
+    htmlAttrs: {
+      'data-fr-scrolling': true,
+      tagDuplicateStrategy: 'replace'
+    }
+  })
 })
 
 onBeforeUnmount(() => {
-  stop()
+  useHead({
+    htmlAttrs: {
+      'data-fr-scrolling': false,
+      tagDuplicateStrategy: 'replace'
+    }
+  })
   cancelClickOutside()
   cancelKeyStroke()
 

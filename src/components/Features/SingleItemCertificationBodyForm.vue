@@ -1,5 +1,5 @@
 <template>
-  <Modal ref="modal" data-track-content data-content-name="Modale de modification de parcelle" v-bind="$attrs">
+  <Modal @close="showCancelModal = true" data-track-content data-content-name="Modale de modification de parcelle">
     <div class="fr-card fr-p-2w fr-mb-3w">
       <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
         <label class="fr-label" for="nom">Nom de la parcelle</label>
@@ -63,6 +63,7 @@
       </div>
     </template>
   </Modal>
+  <CancelModal v-if="showCancelModal" @save="validate" @close="$emit('close')"/>
 </template>
 
 <script setup>
@@ -78,6 +79,7 @@ import Modal from '@/components/Modal.vue'
 import AnnotationsSelector from "@/components/Features/AnnotationsSelector.vue";
 import CultureSelector from "@/components/Features/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
+import CancelModal from "@/components/Forms/CancelModal.vue"
 
 const props = defineProps({
   feature: {
@@ -89,9 +91,10 @@ const props = defineProps({
     default: false
   }
 })
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['submit', 'close'])
 
 const permissions = usePermissions()
+const showCancelModal = ref(false)
 
 const patch = reactive({
   NOM: featureName(props.feature, { placeholder: '' }),
