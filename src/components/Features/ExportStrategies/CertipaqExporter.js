@@ -48,7 +48,7 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 10 }, { wch: 10 },
     // Produit - Date
     { wch: 10 }, { wch: 10 },
-    // parcelleId
+    // Id. Parcelle
     { wch: 16 },
     // [ blank ]
     '',

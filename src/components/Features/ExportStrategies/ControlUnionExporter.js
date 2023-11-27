@@ -39,8 +39,8 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 8 },
     // Autres infos,
     { wch: 40 },
-    // Id. CartoBio
-    { wch: 24 }
+    // Id. Parcelle
+    { wch: 16 },
   ]
 
   sheet['!merges'] = [
@@ -58,7 +58,7 @@ const getSheet = ({ featureCollection, operator }) => {
       props.engagement_date ? new Date(props.engagement_date) : '',
       props.conversion_niveau ?? '',
       generateAutresInfos([{ properties: props }], { initialCulture: culture?.code_cpf }),
-      props.id
+      String(props.id)
     ]
   }), { origin: 'A7' })
 

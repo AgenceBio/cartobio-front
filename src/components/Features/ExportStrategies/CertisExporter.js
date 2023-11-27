@@ -14,8 +14,8 @@ const getSheet = ({ featureCollection, operator, record }) => {
     [],
     [],
     ['N° PACAGE', operator.numeroPacage],
-    ['Description parcellaire','',            '',                       '',                            '',                      '',         'Cultures',                 '',                   '',                                        '',                           '',                    '',                                           '',             '',                 'Ferti/amendements/effluents',             '',                 'Traitements phytos',             '',          'Rendements',                   '',                                     '',   'Prévisionnel',                                                                            '',                      'Commentaires'],
-    ['Nom de la parcelle', 'Ilot', 'N° parcelle', 'Surface graphique (ha)', 'Date de début de conversion', 'Précédent\n(année n-1)', 'Type de culture', 'Liste secondaire', 'Espèces implantées', 'Degré de conversion de la parcelle/ilot', 'Date de semis/implantation', 'Semence C2/Bio/Conv', 'Date de dérogation\n(NA si non applicable)', 'Conformité ?', 'Type/Nature des ferti/amendements/effluents', 'Conformité ?', 'Type/Nature des traitements phytos', 'Conformité ?', 'Rendement\n(qté/ha)', 'Rendement cohérent', 'Récolte gardée pour semence fermière', 'Culture prévue', 'Justificatif (facture d\'achat ou semences fermières) vu lors de l\'audit ?', 'Commentaire sur cet ilot/parcelle'],
+    ['Description parcellaire','',            '',                       '',                            '',                      '',         'Cultures',                 '',                   '',                                        '',                           '',                    '',                                           '',             '',                 'Ferti/amendements/effluents',             '',                 'Traitements phytos',             '',          'Rendements',                   '',                                     '',   'Prévisionnel',                                                                            '',                      'Commentaires',                 ''],
+    ['Nom de la parcelle', 'Ilot', 'N° parcelle', 'Surface graphique (ha)', 'Date de début de conversion', 'Précédent\n(année n-1)', 'Type de culture', 'Liste secondaire', 'Espèces implantées', 'Degré de conversion de la parcelle/ilot', 'Date de semis/implantation', 'Semence C2/Bio/Conv', 'Date de dérogation\n(NA si non applicable)', 'Conformité ?', 'Type/Nature des ferti/amendements/effluents', 'Conformité ?', 'Type/Nature des traitements phytos', 'Conformité ?', 'Rendement\n(qté/ha)', 'Rendement cohérent', 'Récolte gardée pour semence fermière', 'Culture prévue', 'Justificatif (facture d\'achat ou semences fermières) vu lors de l\'audit ?', 'Commentaire sur cet ilot/parcelle',     'Id. Parcelle'],
   ])
 
   sheet['!merges'] = [
@@ -73,6 +73,8 @@ const getSheet = ({ featureCollection, operator, record }) => {
     '',
     // Commentaire sur cet ilot/parcelle
     { wch: 40 },
+    // Id. Parcelle
+    { wch: 16 },
   ]
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties }) => {
@@ -127,7 +129,9 @@ const getSheet = ({ featureCollection, operator, record }) => {
       // Justificatif (facture d\'achat ou semences fermières) vu lors de l\'audit ?
       '',
       // Commentaire sur cet ilot/parcelle
-      properties.auditeur_notes ?? ''
+      properties.auditeur_notes ?? '',
+      // Id. Parcelle
+      String(properties.id)
     ]
   }), { origin: 'A8', cellDates: true })
 
@@ -174,6 +178,7 @@ class OcaciaExporter extends BaseExporter {
   label = "Tableur"
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  range = "A7:Y999"
 
   getSheet() {
     return getSheet({
