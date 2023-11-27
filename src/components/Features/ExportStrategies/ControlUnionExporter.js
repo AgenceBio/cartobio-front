@@ -42,7 +42,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     { wch: 40 },
     // Id. Parcelle #G
     { wch: 16 },
-    // Code culture (CPF) #G
+    // Code culture (CPF) #H
     { wch: 16 }
   ]
 
@@ -68,7 +68,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
 
   // Formattage des cellules
   featureCollection.features.forEach((feature, index) => {
-    sheet[`G${7 + index}`].t = 's';
+    sheet[`H${7 + index}`].t = 's';
   })
 
   return sheet
