@@ -1,7 +1,7 @@
 <script setup>
 import Modal from "@/components/Modal.vue"
 
-defineEmits(['close', 'save'])
+defineEmits(['close', 'cancel'])
 </script>
 
 <template>
@@ -18,8 +18,8 @@ defineEmits(['close', 'save'])
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="$emit('save')">
-            Enregistrer
+          <button class="fr-btn" @click="$emit('cancel')">
+            Revenir au formulaire
           </button>
         </li>
         <li>
