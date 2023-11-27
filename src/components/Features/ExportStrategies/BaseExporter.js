@@ -30,6 +30,13 @@ export default class BaseExporter {
  * @returns {String}
  */
 export function generateAutresInfos (features, { withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture } = {}) {
+  const dateFmnt = new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris',
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric'
+  })
+
   return features.map(feature => {
     const name = withName ? featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }) : ''
     const notes = withNotes ? feature.properties.auditeur_notes : ''
@@ -44,7 +51,7 @@ export function generateAutresInfos (features, { withDate = true, withName = tru
           // so we don't make it redundant
           pivot || (initialCulture === c.CPF) ? '' : cultureLabel(c, { withCode: true }),
           withVariete && c.variete ? c.variete : '',
-          withDate && c.date_semis ? `semis le ${c.date_semis}` : '',
+          withDate && c.date_semis ? `semis le ${dateFmnt.format(new Date(c.date_semis))}` : '',
           withSurface && c.surface ? `${c.surface}ha` : ''
         ].filter(d => d).join(', '))
       )

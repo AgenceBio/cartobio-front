@@ -32,15 +32,15 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes, Coucou')
+    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 1.2, 01.13.41.1 Carottes, Coucou')
 
     // in case we display by feature, and we have
-    expect(generateAutresInfos(features, { initialCulture: undefined })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes, Coucou')
-    expect(generateAutresInfos(features, { initialCulture: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, semis le 2023-03-31, 1ha ; 1.2, Coucou')
+    expect(generateAutresInfos(features, { initialCulture: undefined })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 1.2, 01.13.41.1 Carottes, Coucou')
+    expect(generateAutresInfos(features, { initialCulture: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 1.2, Coucou')
 
-    expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31, 1ha ; 1.2, 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31, 1ha ; 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false, withVariete: false })).toBe('01.13.41.1 Carottes, semis le 2023-03-31, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 1.2, 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false, withVariete: false })).toBe('01.13.41.1 Carottes, semis le 31/03/2023, 1ha ; 01.13.41.1 Carottes')
     expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 1ha ; 01.13.41.1 Carottes')
     expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false, withSurface: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
   })
@@ -83,9 +83,9 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 1.2, 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, semis le 2022-02-01, Coucou')
-    expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 1.2, 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, semis le 2022-02-01')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 2023-03-31 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, semis le 2022-02-01')
+    expect(generateAutresInfos(features)).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 1.2, 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, semis le 01/02/2022, Coucou')
+    expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 1.2, 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, semis le 01/02/2022')
+    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023 / 01.13.41.1 Carottes, Nantaise de Grasseval ; 01.13.41.1 Carottes / 01.13.42 Ail, Lautrec, semis le 01/02/2022')
   })
 
   test('with two features with a pivot on a given culture', () => {
@@ -126,7 +126,7 @@ describe('generateAutresInfos', () => {
       }
     ]
 
-    expect(generateAutresInfos(features, { pivot: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, semis le 2023-03-31 / Nantaise de Grasseval, Coucou ! ; 1.2')
+    expect(generateAutresInfos(features, { pivot: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, semis le 31/03/2023 / Nantaise de Grasseval, Coucou ! ; 1.2')
     expect(generateAutresInfos(features, { pivot: '01.13.41.1', withDate: false, withNotes: false })).toBe('1.1, Chantenay à cœur rouge / Nantaise de Grasseval ; 1.2')
   })
 })
