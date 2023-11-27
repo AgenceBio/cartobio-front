@@ -3,7 +3,7 @@ import { utils, write } from "xlsx";
 import { surface } from "@/components/Features/index.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
-const getSheet = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator, permissions }) => {
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = utils.aoa_to_sheet([
@@ -22,7 +22,8 @@ const getSheet = ({ featureCollection, operator }) => {
       'Date de début de conversion',
       'Niveau de la parcelle au jour de l\'audit (C1/C2/C3/AB)',
       'Autres infos',
-      'Id. CartoBio'
+      'Id. Parcelle',
+      'Code culture'
     ],
   ], { origin: 'A2' })
 
@@ -39,8 +40,10 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 8 },
     // Autres infos,
     { wch: 40 },
-    // Id. Parcelle
+    // Id. Parcelle #G
     { wch: 16 },
+    // Code culture (CPF) #G
+    { wch: 16 }
   ]
 
   sheet['!merges'] = [
@@ -53,14 +56,15 @@ const getSheet = ({ featureCollection, operator }) => {
 
     return [
       props.cadastre,
-      culture?.libelle_code_cpf,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
       surfaceHa,
       props.engagement_date ? new Date(props.engagement_date) : '',
-      props.conversion_niveau ?? '',
-      generateAutresInfos([{ properties: props }], { initialCulture: culture?.code_cpf }),
-      String(props.id)
+      props.conversion_niveau,
+      generateAutresInfos([{ properties: props }], { withAnnotations: true, initialCulture: culture?.code_cpf, permissions }),
+      String(props.id),
+      culture?.code_cpf
     ]
-  }), { origin: 'A7' })
+  }), { origin: 'A7', cellDates: true })
 
   // Formattage des cellules
   featureCollection.features.forEach((feature, index) => {
@@ -74,9 +78,10 @@ class ControlUnionExporter extends BaseExporter {
   label = "Tableur"
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  range = 'A6:H999'
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions } )
   }
 
   toFileData() {

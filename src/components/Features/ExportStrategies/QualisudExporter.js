@@ -16,7 +16,7 @@ const { sheet_to_json, json_to_sheet } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection }) => {
+const getSheet = ({ featureCollection, permissions }) => {
   const sheet = aoa_to_sheet([
     [
       "Production (code CPF)",
@@ -48,7 +48,7 @@ const getSheet = ({ featureCollection }) => {
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
     const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
-    const autresInfos = generateAutresInfos([ { properties }], { initialCulture: firstCulture?.code_cpf })
+    const autresInfos = generateAutresInfos([ { properties }], { withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
 
     sheet_add_aoa(sheet, [
@@ -84,7 +84,7 @@ class BureauVeritasExporter extends BaseExporter {
   mimetype = 'text/csv'
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
   }
 
   toFileData() {

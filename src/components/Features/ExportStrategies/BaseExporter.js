@@ -1,5 +1,6 @@
 import { utils } from 'xlsx'
 import { cultureLabel, featureName } from "../index.js"
+import { ANNOTATIONS, AnnotationTags } from '../../../referentiels/ab.js'
 
 export default class BaseExporter {
   label = ''
@@ -7,10 +8,11 @@ export default class BaseExporter {
   mimetype = ''
   range = null
 
-  constructor ({ featureCollection, operator, record }) {
+  constructor ({ featureCollection, operator, record, permissions }) {
     this.featureCollection = featureCollection
     this.operator = operator
     this.record = record
+    this.permissions = permissions
   }
 
   toJSON () {
@@ -29,7 +31,7 @@ export default class BaseExporter {
  * @param {Feature[]} features
  * @returns {String}
  */
-export function generateAutresInfos (features, { withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture } = {}) {
+export function generateAutresInfos (features, { withAnnotations = false, withCulture = true, withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture, permissions = {} } = {}) {
   const dateFmnt = new Intl.DateTimeFormat('fr-FR', {
     timeZone: 'Europe/Paris',
     day: 'numeric',
@@ -37,9 +39,23 @@ export function generateAutresInfos (features, { withDate = true, withName = tru
     year: 'numeric'
   })
 
+  const aggregateAnnotations = (annotations) => annotations.map(({ code, metadata }) => {
+    let text = AnnotationTags[code].label
+    const state = (metadata ?? {})[ANNOTATIONS.METADATA_STATE]
+
+    if (state) {
+      text += ` (${AnnotationTags[code].metadata[ANNOTATIONS.METADATA_STATE][state].label})`
+    }
+
+    return text
+  }).join(', ')
+
+  const dropEmptyItem = (d) => d
+
   return features.map(feature => {
     const name = withName ? featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }) : ''
     const notes = withNotes ? feature.properties.auditeur_notes : ''
+    const annotations = withAnnotations && permissions.canExportAnnotations && Array.isArray(feature.properties.annotations) ? aggregateAnnotations(feature.properties.annotations) : ''
 
     const cultures = feature.properties.cultures
       // refine on a given culture, or use everything
@@ -49,16 +65,19 @@ export function generateAutresInfos (features, { withDate = true, withName = tru
       .map(c => ([
           // if we refine on a given culture, we certainly have a cell with its label
           // so we don't make it redundant
-          pivot || (initialCulture === c.CPF) ? '' : cultureLabel(c, { withCode: true }),
+          pivot || (initialCulture === c.CPF) || !withCulture ? '' : cultureLabel(c, { withCode: true }),
           withVariete && c.variete ? c.variete : '',
           withDate && c.date_semis ? `semis le ${dateFmnt.format(new Date(c.date_semis))}` : '',
           withSurface && c.surface ? `${c.surface}ha` : ''
-        ].filter(d => d).join(', '))
+        ]
+        .filter(dropEmptyItem)
+        .join(', '))
       )
+      .filter(dropEmptyItem)
       .join(' / ')
 
-    return [name, cultures, notes].filter(d => d).join(', ')
+    return [name, cultures, notes, annotations].filter(dropEmptyItem).join(', ')
   })
-  .filter(d => d)
+  .filter(dropEmptyItem)
   .join(' ; ')
 }

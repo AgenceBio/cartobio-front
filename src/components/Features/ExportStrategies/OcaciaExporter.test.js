@@ -1,13 +1,21 @@
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, vi } from 'vitest'
+import { usePermissions } from '@/stores/index.js'
+import { createTestingPinia } from "@pinia/testing"
+
 import Exporter from './OcaciaExporter.js'
 import record from '@/components/Features/__fixtures__/record-for-exports.json' assert { type: 'json' }
+
+const pinia = createTestingPinia({ createSpy: vi.fn })
+const permissions = usePermissions(pinia)
+permissions.isOc = true
 
 describe('OcaciaExporter', () => {
   test('list by features', () => {
     const exporter = new Exporter({
       featureCollection: record.parcelles,
       operator: record.operator,
-      record: record
+      record: record,
+      permissions
     })
 
     const expectation = [
@@ -29,7 +37,7 @@ describe('OcaciaExporter', () => {
         'Produit',
         'Date',
         'Code culture',
-        'Id. CartoBio'
+        'Id. Parcelle'
       ],
       [
         '',
@@ -43,7 +51,7 @@ describe('OcaciaExporter', () => {
         '',
         '',
         new Date('2023-01-01T00:00:00.000Z'),
-        '',
+        'Visitée',
         '',
         '',
         '',
@@ -63,7 +71,7 @@ describe('OcaciaExporter', () => {
         '',
         '',
         new Date('2023-01-01T00:00:00.000Z'),
-        '',
+        'Prélèvement effectué, À risque',
         '',
         '',
         '',
@@ -76,14 +84,14 @@ describe('OcaciaExporter', () => {
         '',
         'Luzerne',
         '',
-        ' / 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023',
+        '01.19.10.7 Trèfle, 4 feuilles',
         '',
         1.0464881572673355,
         '',
         '',
         '',
         new Date('2021-01-01T00:00:00.000Z'),
-        '',
+        '01.19.10.7 Trèfle, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
         '',
         '',
         '',
@@ -96,14 +104,14 @@ describe('OcaciaExporter', () => {
         '',
         'Trèfle',
         '',
-        '4 feuilles, semis le 01/03/2023',
+        '4 feuilles',
         '',
         1.0464881572673355,
         '',
         '',
         '',
         new Date('2015-01-01T00:00:00.000Z'),
-        '',
+        'semis le 01/03/2023',
         '',
         '',
         '',
@@ -123,7 +131,7 @@ describe('OcaciaExporter', () => {
         '',
         '',
         '',
-        '',
+        '01.19.99 Culture inconnue',
         '',
         '',
         '',

@@ -1,13 +1,20 @@
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, vi } from 'vitest'
+import { usePermissions } from '@/stores/index.js'
+import { createTestingPinia } from "@pinia/testing"
 import Exporter from './CertisExporter.js'
 import record from '@/components/Features/__fixtures__/record-for-exports.json' assert { type: 'json' }
+
+const pinia = createTestingPinia({ createSpy: vi.fn })
+const permissions = usePermissions(pinia)
+permissions.isOc = true
 
 describe('CertisExporter', () => {
   test('list by features', () => {
     const exporter = new Exporter({
       featureCollection: record.parcelles,
       operator: record.operator,
-      record: record
+      record: record,
+      permissions
     })
 
     const expectation = [
@@ -62,7 +69,7 @@ describe('CertisExporter', () => {
         '',
         '',
         '',
-        '',
+        'Visitée',
         '1'
       ],
       [
@@ -89,7 +96,7 @@ describe('CertisExporter', () => {
         '',
         '',
         '',
-        '',
+        'Prélèvement effectué, À risque',
         '2'
       ],
       [
@@ -101,9 +108,9 @@ describe('CertisExporter', () => {
         '',
         '01.19.10.8',
         'Luzerne',
-        ' / 01.19.10.7 Trèfle, 4 feuilles',
+        '01.19.10.7 Trèfle, 4 feuilles',
         'AB',
-        ' / 01.19.10.7 Trèfle, semis le 01/03/2023',
+        '01.19.10.7 Trèfle, semis le 01/03/2023',
         '',
         '',
         '',
@@ -116,7 +123,7 @@ describe('CertisExporter', () => {
         '',
         '',
         '',
-        '',
+        'Réduction de conversion (Dérogation acceptée)',
         '3'
       ],
       [
@@ -154,7 +161,7 @@ describe('CertisExporter', () => {
         '',
         '',
         '[ERREUR] culture inconnue',
-        '[ERREUR] culture inconnue',
+        '',
         '01.19.99 Culture inconnue',
         '',
         '01.19.99 Culture inconnue',

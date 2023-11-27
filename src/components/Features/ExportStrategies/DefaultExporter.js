@@ -6,7 +6,7 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
 
-const getSheet = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator, permissions }) => {
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
@@ -47,7 +47,7 @@ const getSheet = ({ featureCollection, operator }) => {
     const culture = firstCulture.CPF ?? firstCulture.TYPE ?? ''
 
     return [
-      id,
+      String(props.id),
       ilotId,
       parcelleId,
       surfaceHa,
@@ -57,7 +57,7 @@ const getSheet = ({ featureCollection, operator }) => {
       props.conversion_niveau,
       props.engagement_date,
       (isPac ? 'PAC' : ''),
-      generateAutresInfos([{ id, geometry, properties: props }], { withName: false, withNotes: false, initialCulture: firstCulture?.CPF }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withName: false, withNotes: false, initialCulture: firstCulture?.CPF, permissions }),
       props.auditeur_notes ?? ''
     ]
   }), { origin: 'A7', cellDates: true })
@@ -78,7 +78,7 @@ class DefaultExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
   }
 
   toFileData() {

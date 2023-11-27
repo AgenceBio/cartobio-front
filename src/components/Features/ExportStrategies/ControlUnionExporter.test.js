@@ -2,14 +2,14 @@ import { describe, test, expect, vi } from 'vitest'
 import { usePermissions } from '@/stores/index.js'
 import { createTestingPinia } from "@pinia/testing"
 
-import Exporter from './QualisudExporter.js'
+import Exporter from './ControlUnionExporter.js'
 import record from '@/components/Features/__fixtures__/record-for-exports.json' assert { type: 'json' }
 
 const pinia = createTestingPinia({ createSpy: vi.fn })
 const permissions = usePermissions(pinia)
 permissions.isOc = true
 
-describe('QualisudExporter', () => {
+describe('ControlUnionExporter', () => {
   test('list by features', () => {
     const exporter = new Exporter({
       featureCollection: record.parcelles,
@@ -20,58 +20,64 @@ describe('QualisudExporter', () => {
 
     const expectation = [
       [
-        "Production (code CPF)",
-        "Notes de l'auditeur",
-        "Nom",
-        "Surface",
-        "Classe",
-        "Date d'engagement",
-        "Id. Parcelle"
+        'Identification (références cadastrales)',
+        'Production',
+        'Quantité',
+        'Date de début de conversion',
+        'Niveau de la parcelle au jour de l\'audit (C1/C2/C3/AB)',
+        'Autres infos',
+        'Id. Parcelle',
+        'Code culture'
       ],
       [
-        '01.19.10.8',
+        '',
+        'Luzerne',
+        1.0464881572673355,
+        new Date('2023-01-01T00:00:00.000Z'),
+        'C1',
         'Visitée',
-        '',
-        1.0464881572673355,
-        'C1',
-        new Date('2023-01-01T00:00:00.000Z'),
-        '1'
+        '1',
+        '01.19.10.8',
       ],
       [
-        '01.19.10.8',
+        '',
+        'Luzerne',
+        1.0464881572673355,
+        new Date('2023-01-01T00:00:00.000Z'),
+        'C1',
         'Prélèvement effectué, À risque',
-        '',
-        1.0464881572673355,
-        'C1',
-        new Date('2023-01-01T00:00:00.000Z'),
-        '2'
+        '2',
+        '01.19.10.8'
       ],
       [
-        '01.19.10.8',
-        '01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
         '',
+        'Luzerne',
         1.0464881572673355,
-        'AB',
         new Date('2021-01-01T00:00:00.000Z'),
-        '3'
-      ],
-      [
-        '01.19.10.7',
-        '4 feuilles, semis le 01/03/2023',
-        '',
-        1.0464881572673355,
         'AB',
-        new Date('2015-01-01T00:00:00.000Z'),
-        '4'
+        '01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '3',
+        '01.19.10.8'
       ],
       [
-        '[ERREUR] culture inconnue',
-        '01.19.99 Culture inconnue',
         '',
+        'Trèfle',
+        1.0464881572673355,
+        new Date('2015-01-01T00:00:00.000Z'),
+        'AB',
+        '4 feuilles, semis le 01/03/2023',
+        '4',
+        '01.19.10.7'
+      ],
+      [
+        '',
+        '[ERREUR] culture inconnue',
         1.0464881572673355,
         '',
         '',
-        '5'
+        '01.19.99 Culture inconnue',
+        '5',
+        ''
       ]
     ]
 

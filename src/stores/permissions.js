@@ -80,11 +80,14 @@ export const usePermissions = defineStore('permissions', () => {
 
   const canAddAnnotations = computed(() => isOc.value)
   const canViewAnnotations = computed(() => isOc.value)
+  const canExportAnnotations = computed(() => isOc.value)
 
   return {
     isOc,
     isAgri,
     canAddAnnotations,
+    canExportAnnotations,
+    canViewAnnotations,
     canAddParcelle,
     canDeleteFeature,
     canDeleteParcellaire,
@@ -95,7 +98,6 @@ export const usePermissions = defineStore('permissions', () => {
     canSaveAudit,
     canSendAudit,
     canCertify,
-    canViewAnnotations,
     $reset
   }
 })

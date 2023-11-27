@@ -20,14 +20,15 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator, permissions }) => {
   const sheet = aoa_to_sheet([
     [
       'Cultures en place lors du contrôle',
       'Surfaces déclarées',
-      'Réf parcelle (n° ilot, cadastre)',
+      'Autres infos (ilot.parcelle, semis, etc.)',
       'Classement proposé',
-      'Depuis'
+      'Depuis',
+      'Id. Parcelles'
     ],
   ])
 
@@ -41,12 +42,14 @@ const getSheet = ({ featureCollection, operator }) => {
     // Classement
     { wch: 8 },
     // Date de conversion
-    { wch: 10 }
+    { wch: 10 },
+    // Id. Parcelles (CPF)
+    { wch: 40 }
   ]
 
   getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
     const culture = fromCodeCpf(mainKey)
-    const autresInfos = generateAutresInfos(features, { pivot: mainKey })
+    const autresInfos = generateAutresInfos(features, { withAnnotations: true, pivot: mainKey, permissions })
 
     sheet_add_aoa(sheet, [
       [
@@ -55,6 +58,7 @@ const getSheet = ({ featureCollection, operator }) => {
         autresInfos,
         features.at(0).properties.conversion_niveau ?? '',
         features.at(0).properties.engagement_date ? new Date(features.at(0).properties.engagement_date) : '',
+        features.map(({ properties }) => String(properties.id)).join(',')
       ]
     ], { origin: `A${2 + index}`, cellDates: true });
 
@@ -72,7 +76,7 @@ export default class CertisudExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
   }
 
   toFileData() {

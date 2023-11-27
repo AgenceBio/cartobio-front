@@ -33,7 +33,14 @@
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }
           ],
-          "commentaire": "parcelle de Luzerne"
+          "commentaire": "parcelle de Luzerne",
+          "annotations": [
+            {
+              "id": "1",
+              "code": "surveyed",
+              "date": "2023-04-01"
+            }
+          ]
         }
       },
       {
@@ -51,7 +58,19 @@
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }
           ],
-          "commentaire": "deuxième parcelle de Luzerne engagée au même moment (groupement par NIVEAU + DATE)"
+          "commentaire": "deuxième parcelle de Luzerne engagée au même moment (groupement par NIVEAU + DATE)",
+          "annotations": [
+            {
+              "id": "1",
+              "code": "sampled",
+              "date": "2023-04-01"
+            },
+            {
+              "id": "2",
+              "code": "risky",
+              "date": "2023-04-01"
+            }
+          ]
         }
       },
       {
@@ -69,7 +88,17 @@
             { "id": 1, "CPF": "01.19.10.8" },
             { "id": 2, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }
           ],
-          "commentaire": "troisième parcelle de Luzerne et de trèfle engagée à un autre moment, avec une autre culture"
+          "commentaire": "troisième parcelle de Luzerne et de trèfle engagée à un autre moment, avec une autre culture",
+          "annotations": [
+            {
+              "id": "1",
+              "code": "reduction-conversion",
+              "date": "2023-04-01",
+              "metadata": {
+                "state": "accepted"
+              }
+            }
+          ]
         }
       },
       {
