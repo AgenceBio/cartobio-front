@@ -1,5 +1,19 @@
 import { describe, test, expect } from 'vitest';
-import { isValidReference, parseReference, toString, trimLeadingZero } from "./cadastre.js";
+import { cleanInput, isValidReference, parseReference, toString, trimLeadingZero } from "./cadastre.js";
+
+describe('cleanInput', () => {
+  test('remove unnecessary chars', () => {
+    expect(cleanInput(' A ,Z ')).toEqual('AZ')
+    expect(cleanInput('    ')).toEqual('')
+    expect(cleanInput('6  2 ')).toEqual('62')
+  })
+
+  test('works on non-string values', () => {
+    expect(cleanInput(new Date())).toEqual('')
+    expect(cleanInput(undefined)).toEqual('')
+    expect(cleanInput({})).toEqual('')
+  })
+})
 
 describe('isValidReference', () => {
   test('recognize valid metropolitan and overseas references', () => {

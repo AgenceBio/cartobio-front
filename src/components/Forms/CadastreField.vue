@@ -6,7 +6,7 @@
           Préfixe (facultatif)
           <span class="fr-hint-text">Exemple : 000, 011</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="\d{2,3}" :disabled="commune === ''" v-model="prefix" @keydown.enter="searchReference" />
+        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="[\d\s]{2,3}" :disabled="commune === ''" v-model="prefix" @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -16,7 +16,7 @@
           Section
           <span class="fr-hint-text">Exemple : A, AD</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="commune === ''" pattern="[a-zA-Z\d]{1,2}" v-model="section" required @keydown.enter="searchReference" />
+        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="commune === ''" pattern="[a-zA-Z\d\s]{1,2}" v-model="section" required @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -26,7 +26,7 @@
           N° de parcelle
           <span class="fr-hint-text">Exemple : 250, 1</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="\d{1,4}" :disabled="commune === ''" v-model="number" required @keydown.enter="searchReference" />
+        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="[\d\s]{1,4}" :disabled="commune === ''" v-model="number" required @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -44,7 +44,7 @@
 import axios from 'axios'
 
 import { computed, ref, watch } from 'vue'
-import { isValidReference, parseReference, toString } from '../cadastre.js';
+import { cleanInput, isValidReference, parseReference, toString } from '../cadastre.js';
 import toast from "@/components/toast"
 
 const props = defineProps({
@@ -83,9 +83,9 @@ const isError = computed(() => !!searchError.value || props.formError)
 // Exposed values
 const inputReference = computed(() => toString({
   commune: props.commune,
-  prefix: prefix.value.trim(),
-  section: section.value.trim(),
-  number: number.value.trim()
+  prefix: cleanInput(prefix.value),
+  section: cleanInput(section.value),
+  number: cleanInput(number.value)
 }))
 const feature = ref(null)
 
