@@ -99,11 +99,11 @@
   </div>
 
   <Teleport to="body">
-    <telepacModal :operator="operator" @upload="handleUpload" v-model="setupFromTelepacModal" v-if="setupFromTelepacModal" />
+    <telepacModal :operator="operator" @upload="handleUpload" @close="setupFromTelepacModal = false" v-if="setupFromTelepacModal" />
   </Teleport>
 
   <Teleport to="body">
-    <RPGModal :operator="operator" @upload="handleUpload" v-model="setupFromRPGModal" v-if="setupFromRPGModal" />
+    <RPGModal :operator="operator" @upload="handleUpload" @close="setupFromRPGModal = false" v-if="setupFromRPGModal" />
   </Teleport>
 </template>
 

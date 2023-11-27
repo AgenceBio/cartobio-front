@@ -11,7 +11,7 @@ setActivePinia(createPinia())
 
 describe("OperatorSetup", () => {
   beforeAll(() => {
-    createOperatorRecord.mockImplementation(async d => d),
+    createOperatorRecord.mockImplementation(async d => d)
     convertShapefileArchiveToGeoJSON.mockResolvedValue({
       type: "FeatureCollection",
       features: [
@@ -91,11 +91,13 @@ describe("OperatorSetup", () => {
       }
     })
 
-    convertShapefileArchiveToGeoJSON.mockRejectedValueOnce(new AxiosError('Fichier invalide'))
+    const error = new AxiosError('Fichier invalide')
+    error.response = { status : 400 }
+    convertShapefileArchiveToGeoJSON.mockRejectedValueOnce(error)
     await wrapper.find('input[type="file"]').setValue('')
-    expect(convertShapefileArchiveToGeoJSON.mock.results.at(0).value).toEqual(new AxiosError('Fichier invalide'))
+    expect(convertShapefileArchiveToGeoJSON.mock.results.at(0).value).toEqual(error)
     expect(createOperatorRecord).not.toHaveBeenCalled()
     await flushPromises()
-    expect(wrapper.text()).toContain('Erreur')
+    expect(wrapper.text()).toContain('Votre fichier ne semble pas être une déclaration')
   })
 })

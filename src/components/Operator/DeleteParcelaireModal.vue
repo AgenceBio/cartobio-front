@@ -1,5 +1,5 @@
 <template>
-  <Modal v-bind="$attrs" ref="modal" data-track-content data-content-name="Modale de suppression du parcellaire">
+  <Modal @close="emit('close')" data-track-content data-content-name="Modale de suppression du parcellaire">
     <template #title>Suppression du parcellaire</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
@@ -31,7 +31,6 @@
 import Modal from "@/components/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
 import { useRecordStore } from "@/stores/index.js"
-import { ref } from "vue"
 
 const props = defineProps({
   record: {
@@ -39,13 +38,13 @@ const props = defineProps({
     required: true
   },
 })
+const emit = defineEmits(['close'])
 
-const modal = ref(null)
 const recordStore = useRecordStore()
 
 async function handleDelete() {
   const record = await deleteRecord(props.record.record_id)
   recordStore.update(record)
-  modal.value?.$emit('update:modelValue', false)
+  emit('close')
 }
 </script>

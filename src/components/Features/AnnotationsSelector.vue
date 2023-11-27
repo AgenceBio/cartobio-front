@@ -39,7 +39,7 @@
     </select>
   </div>
 
-  <div class="fr-alert fr-alert--info fr-my-2w" v-if="isSelected(ANNOTATIONS.DOWNGRADED)">
+  <div class="fr-alert fr-alert--info fr-my-2w" v-if="isSelected(ANNOTATIONS.DOWNGRADED) && featureId">
     <p>
       Voici l'identifiant de parcelle à renseigner dans l'API&nbsp;Certification
       de l'Agence Bio : <code>{{ featureId }}</code>.
@@ -60,7 +60,7 @@ const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   featureId: {
     type: [String, Number],
-    required: true,
+    required: false,
   },
   modelValue: {
     type: Array,

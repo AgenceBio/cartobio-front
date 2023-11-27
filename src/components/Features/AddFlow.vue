@@ -70,7 +70,7 @@
   </section>
 
   <Teleport to="body">
-    <Component :is="editForm" v-if="showDetailsModal" :feature="feature" :open="true" @submit="saveFeature" v-model="showDetailsModal" icon="fr-icon-file-text-fill" data-content-name="Modale de confirmation d'ajout">
+    <Component :is="editForm" v-if="showDetailsModal" :feature="feature" @submit="saveFeature" @close="showDetailsModal = false" icon="fr-icon-file-text-fill" data-content-name="Modale de confirmation d'ajout">
       <template #title>Ajouter une parcelle</template>
     </Component>
   </Teleport>
@@ -84,11 +84,12 @@ import { featureCollection } from '@turf/helpers'
 import { diff, inHa, merge, surface } from './index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
-import { useFeaturesStore, useMessages, useRecordStore } from "@/stores/index.js"
+import { useFeaturesStore, useRecordStore } from "@/stores/index.js"
 import { usePermissions } from "@/stores/permissions.js"
 import CertificationBodyEditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
 import OperatorEditForm from "@/components/Features/SingleItemOperatorForm.vue"
 import { statsPush } from "@/stats.js"
+import toast from "@/components/toast.js"
 
 const props = defineProps({
   backLink: {
@@ -103,7 +104,6 @@ const router = useRouter()
 const featuresStore = useFeaturesStore()
 const recordStore = useRecordStore()
 const permissions = usePermissions()
-const messages = useMessages()
 
 // Flow state
 const flowSource = ref('cadastre')
@@ -208,16 +208,16 @@ function nextButton() {
 async function saveFeature ({ properties }) {
   feature.value.properties = { ...feature.value.properties, ...properties }
   const record = await submitNewParcelle({ recordId: recordStore.record.record_id }, feature.value)
-
-  messages.addMessage({ type: 'success', text: 'Parcelle ajoutée.' })
-
+  const newId = record.parcelles.features.at(-1).id
   featuresStore.setAll(record.parcelles.features)
 
   showDetailsModal.value = false
   statsPush(['trackEvent', 'Parcelles', 'Ajout par cadastre (sauvegarde)'])
-  await router.push({
-    query: { new: record.audit_history.at(-1).parcelleId },
-    path: props.backLink,
+
+  await router.push(props.backLink)
+
+  toast.success('Parcelle ajoutée.', 'Voir la parcelle', () => {
+    featuresStore.select(newId)
   })
 }
 </script>

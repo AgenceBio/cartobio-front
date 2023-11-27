@@ -8,6 +8,11 @@
       </button>
     </div>
 
+    <div v-if="erreur" class="fr-alert fr-alert--error fr-mb-6w">
+      <h3 class="fr-alert__title">Échec de l'import</h3>
+      <p>{{ erreur }}</p>
+    </div>
+
     <div class="fr-alert fr-alert--info">
       <h3 class="fr-alert__title">Où récupérer le fichier demandé ?</h3>
 
@@ -27,6 +32,7 @@ const fileInput = ref(null)
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
 const source = 'geofolia'
+const erreur = ref('')
 
 async function handleFileUpload () {
   const [archive] = fileInput.value.files
@@ -37,8 +43,12 @@ async function handleFileUpload () {
 
     emit('upload:complete', { geojson, source, warnings: [], metadata: {} })
   } catch (error) {
-    console.error(error)
-    erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
+    if (error.response?.status >= 400 && error.response?.status <= 500) {
+      erreur.value = 'votre fichier ne semble pas être valide.'
+    } else {
+      erreur.value = 'erreur inconnue, merci de réessayer plus tard.'
+      throw error
+    }
   }
 }
 </script>

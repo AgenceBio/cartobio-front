@@ -45,7 +45,7 @@ import axios from 'axios'
 
 import { computed, ref, watch } from 'vue'
 import { isValidReference, parseReference, toString } from '../cadastre.js';
-import { toast } from "vue3-toastify"
+import toast from "@/components/toast"
 
 const props = defineProps({
   commune: {

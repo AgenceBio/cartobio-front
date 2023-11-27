@@ -35,7 +35,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['load', 'zoom:change'])
+const emit = defineEmits(['zoom:change'])
 
 onMounted(() => {
   map.value = new MapLibre({
@@ -50,26 +50,25 @@ onMounted(() => {
     map.value.addControl(new NavigationControl(), 'bottom-right')
   }
 
-  map.value.once('load', ({ target: map }) => {
-    emit('load', map)
-    emit('zoom:change', map.getZoom())
+  map.value.once('load', () => {
+    emit('zoom:change', map.value.getZoom())
   })
 
-  map.value.on('zoomend', ({ target: map }) => emit('zoom:change', map.getZoom()))
+  map.value.on('zoomend', () => emit('zoom:change', map.value.getZoom()))
 
-  map.value.on('styleimagemissing', ({ target: map, id }) => {
+  map.value.on('styleimagemissing', ({ id }) => {
     if (id !== 'warning') return
-    map.loadImage(warningImg, (error, image) => {
+    map.value.loadImage(warningImg, (error, image) => {
       if (error) throw error
-      map.addImage('warning', image)
+      map.value.addImage('warning', image)
     })
   })
 })
 
-onUpdated(() => map.value.resize())
+onUpdated(() => map.value && map.value.resize())
 
 watch(() => props.bounds, (bounds) => {
-  if (!bounds) return
+  if (!bounds || !map.value) return
   map.value.fitBounds(bounds, { padding: 50 })
 })
 

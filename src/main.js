@@ -5,7 +5,7 @@ import { createHead } from '@unhead/vue'
 import * as Sentry from '@sentry/vue'
 import routes from '~pages'
 import Matomo from 'vue-matomo'
-import Vue3Toastify, { toast } from 'vue3-toastify'
+import Vue3Toastify, { toast as toastify } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css';
 
 import { useRecordStore, useUserStore } from '@/stores/index.js'
@@ -13,6 +13,7 @@ import App from './App.vue'
 import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
 import { getOperatorParcelles } from "@/cartobio-api.js"
+import toast from '@/components/toast.js'
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -44,7 +45,9 @@ const app = createApp(App)
     Vue3Toastify,
     {
       autoClose: false,
-      position: toast.POSITION.BOTTOM_RIGHT,
+      position: toastify.POSITION.BOTTOM_LEFT,
+      width: 'auto',
+      limit: 3,
     }
   )
   .use(Matomo, {

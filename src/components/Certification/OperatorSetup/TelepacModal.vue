@@ -7,6 +7,10 @@
         <span class="fr-icon fr-icon-questionnaire-fill fr-mr-1w" aria-hidden />
         Le nom du fichier ressemble à <code>{{ pacageFilename }}</code>
       </p>
+
+      <div v-if="erreur" class="fr-alert fr-alert--error fr-mb-6w">
+        <p>Échec de l'import&nbsp;: {{ erreur }}</p>
+      </div>
     </div>
 
     <section v-else>
@@ -58,6 +62,7 @@ const collection = ref(null)
 const { files, open, reset } = useFileDialog({ multiple: false, accept: '.zip'})
 const télépac = useTélépac()
 const pacageFilename = readonly(télépac.pacageFilename())
+const erreur = ref('')
 
 function confirmImport () {
   emit('upload', {
@@ -81,9 +86,13 @@ watch(files, async (newFiles) => {
   try {
     const geojson = await convertShapefileArchiveToGeoJSON(archive)
     collection.value = geojson
-  }
-  catch (error) {
-    console.error(error)
+  } catch (error) {
+    if (error.response?.status >= 400 && error.response?.status <= 500) {
+      erreur.value = 'votre fichier ne semble pas être une déclaration PAC valide.'
+    } else {
+      erreur.value = 'erreur inconnue, merci de réessayer plus tard.'
+      throw error
+    }
   }
 })
 </script>
