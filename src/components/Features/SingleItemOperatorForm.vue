@@ -41,7 +41,7 @@
       </div>
     </template>
   </Modal>
-  <CancelModal v-if="showCancelModal" @save="validate" @close="$emit('close')"/>
+  <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')"/>
 </template>
 
 
