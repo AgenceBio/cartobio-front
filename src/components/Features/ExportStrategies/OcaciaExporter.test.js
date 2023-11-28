@@ -41,7 +41,7 @@ describe('OcaciaExporter', () => {
       ],
       [
         '',
-        '',
+        '1.1',
         'Luzerne',
         '',
         '',
@@ -61,7 +61,7 @@ describe('OcaciaExporter', () => {
       ],
       [
         '',
-        '',
+        '1.2',
         'Luzerne',
         '',
         '',
@@ -81,7 +81,7 @@ describe('OcaciaExporter', () => {
       ],
       [
         '',
-        '',
+        '2.1',
         'Luzerne',
         '',
         '01.19.10.7 Trèfle, 4 feuilles',
@@ -101,7 +101,7 @@ describe('OcaciaExporter', () => {
       ],
       [
         '',
-        '',
+        '2.2',
         'Trèfle',
         '',
         '4 feuilles',
@@ -121,7 +121,7 @@ describe('OcaciaExporter', () => {
       ],
       [
         '',
-        '',
+        '3.1',
         '[ERREUR] culture inconnue',
         '',
         '01.19.99 Culture inconnue',

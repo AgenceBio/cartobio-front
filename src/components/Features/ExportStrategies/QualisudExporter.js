@@ -48,7 +48,7 @@ const getSheet = ({ featureCollection, permissions }) => {
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
     const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
-    const autresInfos = generateAutresInfos([ { properties }], { withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
+    const autresInfos = generateAutresInfos([ { properties }], { withAnnotations: true, withName: false, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
 
     sheet_add_aoa(sheet, [

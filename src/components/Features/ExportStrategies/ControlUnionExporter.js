@@ -68,7 +68,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
 
   // Formattage des cellules
   featureCollection.features.forEach((feature, index) => {
-    sheet[`H${7 + index}`].t = 's';
+    sheet[`G${7 + index}`].t = 's';
   })
 
   return sheet
