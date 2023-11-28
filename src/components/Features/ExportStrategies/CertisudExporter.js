@@ -20,7 +20,7 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, operator, permissions }) => {
+const getSheet = ({ featureCollection, permissions }) => {
   const sheet = aoa_to_sheet([
     [
       'Cultures en place lors du contrôle',

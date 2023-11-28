@@ -1,6 +1,6 @@
 import { utils } from 'xlsx'
 import { cultureLabel, featureName } from "../index.js"
-import { ANNOTATIONS, AnnotationTags } from '../../../referentiels/ab.js'
+import { getAnnotationLabel } from '../../../referentiels/ab.js'
 
 export default class BaseExporter {
   label = ''
@@ -39,17 +39,7 @@ export function generateAutresInfos (features, { withAnnotations = false, withCu
     year: 'numeric'
   })
 
-  const aggregateAnnotations = (annotations) => annotations.map(({ code, metadata }) => {
-    let text = AnnotationTags[code].label
-    const state = (metadata ?? {})[ANNOTATIONS.METADATA_STATE]
-
-    if (state) {
-      text += ` (${AnnotationTags[code].metadata[ANNOTATIONS.METADATA_STATE][state].label})`
-    }
-
-    return text
-  }).join(', ')
-
+  const aggregateAnnotations = (annotations) => annotations.map(getAnnotationLabel).join(', ')
   const dropEmptyItem = (d) => d
 
   return features.map(feature => {

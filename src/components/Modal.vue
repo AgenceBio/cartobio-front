@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useHead } from '@unhead/vue'
 import { onClickOutside, onKeyStroke } from '@vueuse/core'
 import { useContentTracking } from "@/stats.js"
@@ -37,7 +37,7 @@ import { useContentTracking } from "@/stats.js"
 useContentTracking()
 
 const emit = defineEmits(['close'])
-const props = defineProps({
+defineProps({
   icon: String
 })
 

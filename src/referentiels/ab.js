@@ -241,3 +241,20 @@ export const AnnotationTags = {
     label: 'Visitée'
   }
 }
+
+/**
+ * Return the label of an annotation.
+ * Also works with its 'state' metadata (suffixed)
+ * @param {UserAnnotation} annotation
+ * @returns {String}
+ */
+export function getAnnotationLabel ({ code, metadata }) {
+  let text = AnnotationTags[code].label
+  const state = (metadata ?? {})[ANNOTATIONS.METADATA_STATE]
+
+  if (state) {
+    text += ` (${AnnotationTags[code].metadata[ANNOTATIONS.METADATA_STATE][state].label})`
+  }
+
+  return text
+}
