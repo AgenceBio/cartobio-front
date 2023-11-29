@@ -6,7 +6,7 @@
           Préfixe (facultatif)
           <span class="fr-hint-text">Exemple : 000, 011</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" pattern="[\d\s]{2,3}" :disabled="commune === ''" v-model="prefix" @keydown.enter="searchReference" />
+        <input type="text" inputmode="text" class="fr-input" :id="`parcel-prefix-${fieldId}`" placeholder="000" :disabled="commune === ''" v-model="prefix" @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -16,7 +16,7 @@
           Section
           <span class="fr-hint-text">Exemple : A, AD</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="commune === ''" pattern="[a-zA-Z\d\s]{1,2}" v-model="section" required @keydown.enter="searchReference" />
+        <input type="text" inputmode="text" class="fr-input" :id="`parcel-section-${fieldId}`" :disabled="commune === ''" v-model="section" required @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -26,7 +26,7 @@
           N° de parcelle
           <span class="fr-hint-text">Exemple : 250, 1</span>
         </label>
-        <input type="search" class="fr-input" :id="`parcel-number-${fieldId}`" pattern="[\d\s]{1,4}" :disabled="commune === ''" v-model="number" required @keydown.enter="searchReference" />
+        <input type="search" inputmode="text" class="fr-input" :id="`parcel-number-${fieldId}`" :disabled="commune === ''" v-model="number" required @keydown.enter="searchReference" />
       </div>
     </div>
 
@@ -96,7 +96,7 @@ const searchReference = async (event) => {
     event.preventDefault()
   }
 
-  if (section.value === '' || number.value === '' || !isValidReference(inputReference.value)) {
+  if (cleanInput(section.value) === '' || cleanInput(number.value) === '' || !isValidReference(inputReference.value)) {
     searchError.value = "La référence cadastrale n'est pas valide."
     return
   }
