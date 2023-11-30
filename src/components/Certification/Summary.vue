@@ -13,8 +13,8 @@
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.AUDITED">
     <h3 class="fr-callout__title">Audit terminé</h3>
 
-    <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">Envoyer l'audit</button>
-    <span v-else>L'auditeur doit maintenant envoyer l'audit.</span>
+    <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">Soumettre pour certification</button>
+    <span v-else>L'auditeur doit maintenant soumettre l'audit pour certification.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.PENDING_CERTIFICATION">
