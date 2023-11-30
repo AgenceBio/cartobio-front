@@ -16,16 +16,16 @@ const { sheet_to_json, json_to_sheet } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection }) => {
+const getSheet = ({ featureCollection, permissions }) => {
   const sheet = aoa_to_sheet([
     [
-      'Production (code CPF)',
-      'Notes de l\'auditeur',
-      'Nom',
-      'Surface',
-      'Classe',
-      'Date d\'engagement',
-      'Id. CartoBio'
+      "Production (code CPF)",
+      "Notes de l'auditeur",
+      "Nom",
+      "Surface",
+      "Classe",
+      "Date d'engagement",
+      "Id. Parcelle"
     ]
   ])
 
@@ -42,24 +42,24 @@ const getSheet = ({ featureCollection }) => {
     { wch: 8 },
     // Date d'engagement
     { wch: 10 },
-    // Id. CartoBio
-    { wch: 10 }
+    // Id. Parcelle
+    { wch: 16 },
   ]
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
     const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
-    const autresInfos = generateAutresInfos([ { properties }], { initialCulture: firstCulture?.code_cpf })
+    const autresInfos = generateAutresInfos([ { properties }], { withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
 
     sheet_add_aoa(sheet, [
       [
         firstCulture?.code_cpf ?? `[ERREUR] culture inconnue`,
         autresInfos,
-        featureName({ properties }),
+        featureName({ properties }, { placeholder: '' }),
         surface(geometry) / 10_000,
         properties.conversion_niveau,
-        properties.engagement_date ? properties.engagement_date : '',
-        properties.id
+        properties.engagement_date ? new Date(properties.engagement_date) : '',
+        String(properties.id)
       ]
     ], { origin: `A${rowIndex}`, cellDates: true });
 
@@ -84,7 +84,7 @@ class BureauVeritasExporter extends BaseExporter {
   mimetype = 'text/csv'
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
   }
 
   toFileData() {

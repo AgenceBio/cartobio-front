@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test, vi } from "vitest"
 import { defineComponent } from "vue"
-import { flushPromises, mount } from "@vue/test-utils"
+import { mount } from "@vue/test-utils"
 
 import AccordionSection from "./Accordion.vue"
 import AccordionGroup from "./AccordionGroup.vue"

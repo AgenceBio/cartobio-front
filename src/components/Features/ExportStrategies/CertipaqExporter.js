@@ -7,7 +7,7 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
 const { decode_range: R, sheet_to_json, json_to_sheet } = utils
 
-const getSheet = ({ featureCollection, operator }) => {
+const getSheet = ({ featureCollection, operator, permissions }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
 
   // First sheet
@@ -48,7 +48,7 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 10 }, { wch: 10 },
     // Produit - Date
     { wch: 10 }, { wch: 10 },
-    // parcelleId
+    // Id. Parcelle
     { wch: 16 },
     // [ blank ]
     '',
@@ -58,8 +58,8 @@ const getSheet = ({ featureCollection, operator }) => {
 
   // First sheet: plots informations (via `featureCollection`)
   sheet_add_aoa(sheet, [
-    [''       ,     '',        '',        '',                'Surfaces en ha', '', '', '', '', '',          '',                            '',          '',               'Dernier intrant non autorisé en AB',  '',     ''],
-    ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3',     'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent', 'Produit',                             'Date', 'Id. CartoBio'],
+    [       '',     '',        '',                '', 'Surfaces en ha', '',   '',   '',     '',          '',                            '',          '',               '', 'Dernier intrant non autorisé en AB',     '',             '',             ''],
+    ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0',           'AB', 'C1', 'C2',   'C3', 'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Code culture', 'Id. Parcelle'],
   ], { origin: 'A4'})
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
@@ -71,7 +71,7 @@ const getSheet = ({ featureCollection, operator }) => {
       props.COMMUNE_LABEL,
       // Ilot             #B
       featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '_', placeholder: '' }),
-      // Culture          #C
+      // Libellé Culture  #C
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
       // Variété / infos  #D
       generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: true, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
@@ -84,7 +84,7 @@ const getSheet = ({ featureCollection, operator }) => {
       // Date conv
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis #K
-      generateAutresInfos([{ id, geometry, properties: props }], { withDate: true, withName: false, withNotes: false, withSurface: true, withVariete: false, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withDate: true, withName: false, withNotes: false, withSurface: true, withVariete: false, initialCulture: culture?.code_cpf, permissions }),
       // Précédent
       '',
       // Anté précédent
@@ -93,14 +93,16 @@ const getSheet = ({ featureCollection, operator }) => {
       '',
       // Date
       '',
-      // ParcelleId #P
+      // Code culture (CPF) #P
+      culture?.code_cpf,
+      // Id. Parcelle #Q
       String(id),
     ]
   }), { origin: 'A6', cellDates: true })
 
   // Formattage des cellules, s'il y a une valeur
   featureCollection.features.forEach((feature, index) => {
-    sheet[`P${6 + index}`].t = 's';
+    sheet[`Q${6 + index}`].t = 's';
 
     if (sheet[`J${6 + index}`].v) {
       sheet[`J${6 + index}`].t = 'd'
@@ -126,13 +128,13 @@ const getSheet = ({ featureCollection, operator }) => {
       groups.CONV?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
       (surface(featureCollection) / 10_000)?.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
     ],
-  ], { origin: 'R4'});
+  ], { origin: 'S4'});
 
   // Totaux par niveau de conversion ET par type de culture
   sheet_add_aoa(sheet, [
     ['Surfaces par culture',],
     ['Culture',                       'Somme de AB',  'Somme de C1',    'Somme de C2',  'Somme de C3',  'Somme de C0'],
-  ], { origin: 'R7'})
+  ], { origin: 'S7'})
 
   getFeatureGroups(featureCollection, GROUPE_CULTURE).forEach(({ key, features }, index) => {
     const culture = fromCodeCpf(key)
@@ -148,7 +150,7 @@ const getSheet = ({ featureCollection, operator }) => {
       groups.C2?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
       groups.C3?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
       groups.CONV?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0
-    ]], { origin: `R${9 + index}`});
+    ]], { origin: `S${9 + index}`});
   })
 
   return sheet;
@@ -159,10 +161,10 @@ class CertipaqExporter extends BaseExporter {
   label = "Tableur"
   extension = "csv"
   mimetype = "text/csv"
-  range = "A5:P999"
+  range = "A5:Q999"
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions } )
   }
 
   toFileData() {

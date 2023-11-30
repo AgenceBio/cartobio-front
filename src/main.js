@@ -118,7 +118,7 @@ router.isReady().then(() => {
   window.head = head
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   // Preload store for checking permissions
   if (to.params.id) {
     const recordStore = useRecordStore()

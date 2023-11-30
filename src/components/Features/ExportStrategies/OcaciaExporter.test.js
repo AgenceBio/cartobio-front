@@ -1,14 +1,15 @@
 import { describe, test, expect, vi } from 'vitest'
 import { usePermissions } from '@/stores/index.js'
 import { createTestingPinia } from "@pinia/testing"
-import Exporter from './CertipaqExporter.js'
+
+import Exporter from './OcaciaExporter.js'
 import record from '@/components/Features/__fixtures__/record-for-exports.json' assert { type: 'json' }
 
 const pinia = createTestingPinia({ createSpy: vi.fn })
 const permissions = usePermissions(pinia)
 permissions.isOc = true
 
-describe('CertipaqExporter', () => {
+describe('OcaciaExporter', () => {
   test('list by features', () => {
     const exporter = new Exporter({
       featureCollection: record.parcelles,
@@ -19,23 +20,24 @@ describe('CertipaqExporter', () => {
 
     const expectation = [
       [
-        "Commune",
-        "Ilot",
-        "Culture",
-        "Variété / infos",
-        "C0",
-        "AB",
-        "C1",
-        "C2",
-        "C3",
-        "Date conv",
-        "Observation / date de semis",
-        "Précédent",
-        "Anté précédent",
-        "Produit",
-        "Date",
-        "Code culture",
-        "Id. Parcelle"
+        'Commune',
+        'Ilot',
+        'Culture',
+        'N° Cadastre',
+        'Variété / infos',
+        'C0',
+        'AB',
+        'C1',
+        'C2',
+        'C3',
+        'Date conv',
+        'Observation',
+        'Précédent',
+        'Anté précédent',
+        'Produit',
+        'Date',
+        'Code culture',
+        'Id. Parcelle'
       ],
       [
         '',
@@ -44,7 +46,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '1,05',
+        '',
+        1.0464881572673355,
         '',
         '',
         new Date('2023-01-01T00:00:00.000Z'),
@@ -63,7 +66,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '1,05',
+        '',
+        1.0464881572673355,
         '',
         '',
         new Date('2023-01-01T00:00:00.000Z'),
@@ -79,9 +83,10 @@ describe('CertipaqExporter', () => {
         '',
         '',
         'Luzerne',
+        '',
         '01.19.10.7 Trèfle, 4 feuilles',
         '',
-        '1,05',
+        1.0464881572673355,
         '',
         '',
         '',
@@ -98,9 +103,10 @@ describe('CertipaqExporter', () => {
         '',
         '',
         'Trèfle',
+        '',
         '4 feuilles',
         '',
-        '1,05',
+        1.0464881572673355,
         '',
         '',
         '',
@@ -117,6 +123,7 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '[ERREUR] culture inconnue',
+        '',
         '01.19.99 Culture inconnue',
         '',
         '',

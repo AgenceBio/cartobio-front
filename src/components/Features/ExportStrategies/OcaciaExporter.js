@@ -7,11 +7,11 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
 const { decode_range: R, sheet_to_csv } = utils
 
-const getSheet = ({ featureCollection }) => {
+const getSheet = ({ featureCollection, permissions }) => {
   const sheet = aoa_to_sheet([
-    [''       ,     '',        '',            '',                '', 'Surfaces en ha', '', '', '', '',      '',          '',                            '',          '', 'Dernier intrant non autorisé en AB',  '',        ''],
-    [''       ,     '',        '',            '',                '', '0',   '0',  '0',  '0',  '0',          '',          '',                            '',          '',                                   '',  '',        ''],
-    ['Commune', 'Ilot', 'Culture', 'N° Cadastre', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3', 'Date conv', 'Observation', 'Précédent', 'Anté précédent', 'Produit',                               'Date', 'Id. CartoBio'],
+    [''       ,     '',        '',            '',                '', 'Surfaces en ha', '', '', '', '',      '',          '',            '',               '', 'Dernier intrant non autorisé en AB',     '',             '',             ''],
+    [''       ,     '',        '',            '',                '', '0',   '0',  '0',  '0',  '0',          '',          '',            '',               '',                                   '',     '',             '',             ''],
+    ['Commune', 'Ilot', 'Culture', 'N° Cadastre', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3', 'Date conv', 'Observation', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Code culture', 'Id. Parcelle'],
   ])
 
   sheet['!merges'] = [
@@ -39,8 +39,8 @@ const getSheet = ({ featureCollection }) => {
     { wch: 10 }, { wch: 10 },
     // Produit - Date
     { wch: 10 }, { wch: 10 },
-    // parcelleId
-    { wch: 24 },
+    // Id. Parcelle
+    { wch: 16 },
   ]
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ id, geometry, properties: props }) => {
@@ -57,17 +57,17 @@ const getSheet = ({ featureCollection }) => {
       // N° Cadastre
       props.cadastre,
       // Variété / infos
-      generateAutresInfos([{ id, geometry, properties: props }], { withName: false, withNotes: false, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',
       props.conversion_niveau === 'C1' ? surfaceHa : '',
       props.conversion_niveau === 'C2' ? surfaceHa : '',
       props.conversion_niveau === 'C3' ? surfaceHa : '',
-      // Date conv
+      // Date conv #K
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis
-      props.auditeur_notes ?? '',
+      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withDate: true, withName: false, withNotes: true, withVariete: false, initialCulture: culture?.code_cpf, permissions }),
       // Précédent
       '',
       // Anté précédent
@@ -76,8 +76,10 @@ const getSheet = ({ featureCollection }) => {
       '',
       // Date
       '',
-      // Feature ID
-      props.id
+      // Code culture (CPF) #Q
+      culture?.code_cpf,
+      // Id. Parcelle #R
+      String(props.id)
     ]
   }), { origin: 'A4', cellDates: true })
 
@@ -95,7 +97,7 @@ const getSheet = ({ featureCollection }) => {
     }
 
     // the id is always displayed as a string
-    sheet[`Q${rowIndex}`].t = 's'
+    sheet[`R${rowIndex}`].t = 's'
   })
 
   // totals
@@ -122,9 +124,10 @@ class OcaciaExporter extends BaseExporter {
   label = "Tableur"
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  range = "A3:R999"
 
   getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator } )
+    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions } )
   }
 
   toFileData() {

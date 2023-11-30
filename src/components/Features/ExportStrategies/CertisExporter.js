@@ -7,15 +7,15 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
 const { decode_range: R, sheet_to_json, json_to_sheet, sheet_to_csv } = utils
 
-const getSheet = ({ featureCollection, operator, record }) => {
+const getSheet = ({ featureCollection, operator, permissions, record }) => {
   const sheet = aoa_to_sheet([
     [],
     [],
     [],
     [],
     ['N° PACAGE', operator.numeroPacage],
-    ['Description parcellaire','',            '',                       '',                            '',                      '',         'Cultures',                 '',                   '',                                        '',                           '',                    '',                                           '',             '',                 'Ferti/amendements/effluents',             '',                 'Traitements phytos',             '',          'Rendements',                   '',                                     '',   'Prévisionnel',                                                                            '',                      'Commentaires'],
-    ['Nom de la parcelle', 'Ilot', 'N° parcelle', 'Surface graphique (ha)', 'Date de début de conversion', 'Précédent\n(année n-1)', 'Type de culture', 'Liste secondaire', 'Espèces implantées', 'Degré de conversion de la parcelle/ilot', 'Date de semis/implantation', 'Semence C2/Bio/Conv', 'Date de dérogation\n(NA si non applicable)', 'Conformité ?', 'Type/Nature des ferti/amendements/effluents', 'Conformité ?', 'Type/Nature des traitements phytos', 'Conformité ?', 'Rendement\n(qté/ha)', 'Rendement cohérent', 'Récolte gardée pour semence fermière', 'Culture prévue', 'Justificatif (facture d\'achat ou semences fermières) vu lors de l\'audit ?', 'Commentaire sur cet ilot/parcelle'],
+    ['Description parcellaire','',            '',                       '',                            '',                      '',         'Cultures',                 '',                   '',                                        '',                           '',                    '',                                           '',             '',                 'Ferti/amendements/effluents',             '',                 'Traitements phytos',             '',          'Rendements',                   '',                                     '',   'Prévisionnel',                                                                            '',                      'Commentaires',                 ''],
+    ['Nom de la parcelle', 'Ilot', 'N° parcelle', 'Surface graphique (ha)', 'Date de début de conversion', 'Précédent\n(année n-1)', 'Type de culture', 'Liste secondaire', 'Espèces implantées', 'Degré de conversion de la parcelle/ilot', 'Date de semis/implantation', 'Semence C2/Bio/Conv', 'Date de dérogation\n(NA si non applicable)', 'Conformité ?', 'Type/Nature des ferti/amendements/effluents', 'Conformité ?', 'Type/Nature des traitements phytos', 'Conformité ?', 'Rendement\n(qté/ha)', 'Rendement cohérent', 'Récolte gardée pour semence fermière', 'Culture prévue', 'Justificatif (facture d\'achat ou semences fermières) vu lors de l\'audit ?', 'Commentaire sur cet ilot/parcelle',     'Id. Parcelle'],
   ])
 
   sheet['!merges'] = [
@@ -73,6 +73,8 @@ const getSheet = ({ featureCollection, operator, record }) => {
     '',
     // Commentaire sur cet ilot/parcelle
     { wch: 40 },
+    // Id. Parcelle
+    { wch: 16 },
   ]
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties }) => {
@@ -95,13 +97,13 @@ const getSheet = ({ featureCollection, operator, record }) => {
       // Type de culture
       culture?.code_cpf ?? `[ERREUR] culture inconnue`,
       // Liste secondaire
-      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      culture?.libelle_code_cpf,
       // Espèces implantées
-      generateAutresInfos([{ properties }], { withName: false, withSurface: true, withVariete: true, withDate: false, withNotes: false, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ properties }], { withDate: false, withName: false, withNotes: false, withSurface: true, withVariete: true, initialCulture: culture?.code_cpf }),
       // Degré de conversion de la parcelle/ilot
       properties.conversion_niveau,
       // Date de semis/implantation
-      generateAutresInfos([{ properties }], { withName: false, withSurface: false, withVariete: false, withDate: true, withNotes: false, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ properties }], { withDate: true, withName: false, withNotes: false, withSurface: false, withVariete: false, initialCulture: culture?.code_cpf }),
       // Semence C2/Bio/Conv
       '',
       // Date de dérogation\n(NA si non applicable)
@@ -127,7 +129,9 @@ const getSheet = ({ featureCollection, operator, record }) => {
       // Justificatif (facture d\'achat ou semences fermières) vu lors de l\'audit ?
       '',
       // Commentaire sur cet ilot/parcelle
-      properties.auditeur_notes ?? ''
+      generateAutresInfos([{ properties }], { withAnnotations: true, withCulture: false, withDate: false, withName: false, withSurface: false, withVariete: false, withNotes: true, initialCulture: culture?.code_cpf, permissions }),
+      // Id. Parcelle
+      String(properties.id)
     ]
   }), { origin: 'A8', cellDates: true })
 
@@ -174,11 +178,13 @@ class OcaciaExporter extends BaseExporter {
   label = "Tableur"
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  range = "A7:Y999"
 
   getSheet() {
     return getSheet({
       featureCollection: this.featureCollection,
       operator: this.operator,
+      permissions: this.permissions,
       record: this.record
     })
   }

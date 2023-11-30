@@ -120,8 +120,8 @@ function updateMetadata (annotationId, metadataId, value) {
     return {
       ...annotation,
       metadata: {
-      ...annotation.metadata ?? {},
-      [metadataId]: value
+        ...annotation.metadata ?? {},
+        [metadataId]: value
       }
     }
   })

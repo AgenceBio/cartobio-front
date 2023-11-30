@@ -44,6 +44,7 @@ import { computed, ref, toRaw } from 'vue'
 import { fromId } from './ExportStrategies/index.js'
 
 import Modal from '@/components/Modal.vue'
+import { usePermissions } from '@/stores/index.js'
 import { statsPush } from "@/stats.js"
 
 const props = defineProps({
@@ -61,6 +62,7 @@ const props = defineProps({
   }
 })
 
+const permissions = usePermissions()
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id)
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`)
 const exporter = computed(function () {
@@ -68,7 +70,8 @@ const exporter = computed(function () {
   return new exporterClass({
     featureCollection: props.collection,
     operator: props.operator,
-    record: props.record
+    record: props.record,
+    permissions
   })
 })
 const copied = ref(false)
