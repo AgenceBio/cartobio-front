@@ -24,7 +24,7 @@
         v-if="permissions.isAgri && record.certification_state !== CERTIFICATION_STATE.OPERATOR_DRAFT"
         class="fr-alert fr-alert--info fr-alert--sm fr-mt-3w"
     >
-      <p class="fr-text--sm">Vous ne pouvez plus modifier votre parcellaire lorsqu’il est en cours de certification.</p>
+      <p class="fr-text--sm">Votre parcellaire est en cours de certification, vous ne pouvez pas modifier les données.</p>
     </div>
 
     <div class="demandes fr-callout fr-callout--blue-ecume" v-if="displayCallout">

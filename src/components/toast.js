@@ -7,23 +7,23 @@ const toastComponent = (message, actionLabel, actionCb) => {
 }
 
 const toast = (message, actionLabel, actionCb) => {
-  toastify(toastComponent(message, actionLabel, actionCb))
+  toastify(toastComponent(message, actionLabel, actionCb), { toastId: message })
 }
 
 toast.success = (message, actionLabel, actionCb) => {
-  toastify.success(toastComponent(message, actionLabel, actionCb))
+  toastify.success(toastComponent(message, actionLabel, actionCb), { toastId: message })
 }
 
 toast.info = (message, actionLabel, actionCb) => {
-  toastify.info(toastComponent(message, actionLabel, actionCb))
+  toastify.info(toastComponent(message, actionLabel, actionCb), { toastId: message })
 }
 
 toast.warning = (message, actionLabel, actionCb) => {
-  toastify.warning(toastComponent(message, actionLabel, actionCb))
+  toastify.warning(toastComponent(message, actionLabel, actionCb), { toastId: message })
 }
 
 toast.error = (message, actionLabel, actionCb) => {
-  toastify.error(toastComponent(message, actionLabel, actionCb))
+  toastify.error(toastComponent(message, actionLabel, actionCb), { toastId: message })
 }
 export default toast
 

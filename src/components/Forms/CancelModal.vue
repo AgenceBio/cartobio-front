@@ -6,7 +6,7 @@ defineEmits(['close', 'cancel'])
 
 <template>
   <Modal @close="$emit('close')">
-    <template #title>Modification non enregistrées</template>
+    <template #title>Modifications non enregistrées</template>
 
     <div class="fr-alert fr-alert--warning">
       <p>
