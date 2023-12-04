@@ -201,7 +201,7 @@ function nextButton() {
   }
 
   if (flowSource.value === 'dessin') {
-    return router.push({ name: 'exploitations-id-ajout-parcelle-dessin', params: { id: recordStore.record.operator.id || 1 }})
+    return router.push({ name: 'exploitations-id-ajout-parcelle-dessin', params: { id: recordStore.record.operator.numeroBio || 1 }})
   }
 }
 

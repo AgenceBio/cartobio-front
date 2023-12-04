@@ -65,24 +65,34 @@ export const EventType = {
  */
 
 /**
- * @typedef {Object} StrictRecord
- * @property {string} record_id
+ * @typedef {Object} BaseRecord
+ * @property {string} certification_state
  * @property {string} created_at
+ * @property {string} numerobio
+ * @property {RecordMetadata} metadata
+ * @property {string} record_id
  * @property {string} updated_at
+ */
+
+/**
+ * @typedef {BaseRecord & {operator: Operator}} BaseRecordWithOperator
+ */
+
+/**
+ * @typedef {Object} CertificationRecord
+ * @property {string} record_id
  * @property {Array<AuditHistoryEvent>} audit_history
  * @property {string} audit_notes
  * @property {string} audit_demandes
  */
 
 /**
- * @typedef {Object} ExtendedRecord
- * @property {Operator} operator
- * @property {RecordMetadata} metadata
+ * @typedef {Object} GeographicRecord
  * @property {FeatureCollection} parcellaire
  */
 
 /**
- * @typedef {StrictRecord & ExtendedRecord} Record
+ * @typedef {BaseRecordWithOperator & CertificationRecord & GeographicRecord} Record
  */
 
 /**
@@ -104,11 +114,11 @@ export const EventType = {
 const cartobioApi = axios.create({ baseURL, timeout: 10000 })
 
 /**
- * @param {number} operatorId
+ * @param {number} numeroBio
  * @returns {Promise<Record>}
  */
-export async function getOperatorParcelles (operatorId) {
-  const { data } = await cartobioApi.get(`/v2/operator/${operatorId}`)
+export async function getOperatorParcelles (numeroBio) {
+  const { data } = await cartobioApi.get(`/v2/operator/${numeroBio}`)
 
   return data
 }
@@ -154,11 +164,11 @@ export async function fetchLatestOperators () {
 /**
  * Creates a new operator Record
  *
- * @param {{ featureCollection: GeoJSON.FeatureCollection, operatorId: number }} param0
+ * @param {{ featureCollection: GeoJSON.FeatureCollection, numeroBio: number }} param0
  * @returns {Promise<Record>}
  */
-export async function createOperatorRecord (operatorId, payload) {
-  const { data } = await cartobioApi.post(`/v2/audits/${operatorId}`, payload)
+export async function createOperatorRecord (numeroBio, payload) {
+  const { data } = await cartobioApi.post(`/v2/audits/${numeroBio}`, payload)
 
   return data
 }
