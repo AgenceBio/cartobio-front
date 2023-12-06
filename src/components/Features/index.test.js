@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest'
-import { createGroupingKeys, diff, featureName, getFeatureGroups, surface } from './index.js'
+import { bounds, createGroupingKeys, diff, featureName, getFeatureGroups, surface } from './index.js'
 import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
+import { featureCollection } from '@turf/helpers'
 
 const geometry = {
   type: "Polygon",
@@ -455,6 +456,21 @@ describe('featureName', () => {
 
     expect(featureName(feature)).toEqual('Parcelles 0239, 0240')
     expect(featureName(feature, { separator: '-'})).toEqual('Parcelles 0239-0240')
+  })
+})
+
+describe('bounds', () => {
+  const DEFAULT_BOUNDS = bounds.DEFAULT_BOUNDS
+
+  test('returns default bounds with an empty/null object', () => {
+    expect(bounds(featureCollection([]))).toEqual(DEFAULT_BOUNDS)
+    expect(bounds(null)).toEqual(DEFAULT_BOUNDS)
+  })
+
+  test('it works with regular GeoJSON objects', () => {
+    expect(bounds(geometry)).toEqual([5.00619098801252, 44.71353436914191, 5.00742078063729, 44.71418584175069])
+    expect(bounds(feature)).toEqual([2.825121146516608, 44.260111501833876, 2.901018077685336, 44.30042614674991])
+    expect(bounds(overlappingFeatureCollection)).toEqual([2.868473399543859, 44.218891881070846, 2.9695701445478733, 44.27746261051493])
   })
 })
 
