@@ -1,25 +1,21 @@
-import GeofoliaPanel from './Geofolia.vue'
-import TelepacPanel from './Telepac.vue'
-
+import { markRaw } from 'vue'
 import { sources } from '@/referentiels/imports.js'
+
+import TelepacFeaturesImport from '@/components/OperatorSetup/Sources/Telepac.vue'
+import GeofoliaFeaturesImport from '@/components/OperatorSetup/Sources/Geofolia.vue'
 
 export default {
   [sources.TELEPAC]: {
     label: 'Telepac',
-    component: TelepacPanel,
+    component: markRaw(TelepacFeaturesImport),
   },
   [sources.GEOFOLIA]: {
     label: 'Geofolia',
-    component: GeofoliaPanel,
+    component: markRaw(GeofoliaFeaturesImport),
   },
-  [sources.NCVI]: {
-    label: 'ProDouanes (nCVI)',
-  },
-
   [sources.MES_PARCELLES]: {
     label: 'MesParcelles',
   },
-  [sources.SMAG_FARMER]: {
-    label: 'SMAG Farmer',
-  },
 }
+
+export const DEFAULT_SOURCE = sources.TELEPAC

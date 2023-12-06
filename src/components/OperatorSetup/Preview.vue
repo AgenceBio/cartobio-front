@@ -12,29 +12,30 @@
 
     <p>
       <button class="fr-btn" @click="emit('submit')">
-        Import des données
-      </button>
-    </p>
-
-    <p>
-      <button class="fr-btn fr-btn--secondary" @click="emit('cancel')">
-        Revenir à l'étape précédente
+        Importer ces données
       </button>
     </p>
   </section>
 </template>
 
 <script setup>
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 
 import MapPreview from '@/components/Map/Preview.vue'
 
 import { surface, inHa } from '@/components/Features/index.js'
 
-const featureCollection = inject('featureCollection')
-const warnings = inject('importWarnings')
-
 const emit = defineEmits(['submit', 'cancel'])
+const props = defineProps({
+  featureCollection: {
+    type: Object,
+    required: true
+  },
+  warnings: {
+    type: Array,
+    default: () => ([])
+  }
+})
 
-const surfaceTotale = computed(() => inHa(surface(featureCollection.value)))
+const surfaceTotale = computed(() => inHa(surface(props.featureCollection)))
 </script>

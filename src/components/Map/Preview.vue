@@ -7,7 +7,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import bbox from '@turf/bbox'
+import { bounds } from '@/components/Features/index.js'
 
 import MapContainer from './MapContainer.vue'
 import GeojsonLayer from './GeojsonLayer.vue'
@@ -22,7 +22,7 @@ const props = defineProps({
   }
 })
 
-const mapBounds = computed(() => bbox(props.collection))
+const mapBounds = computed(() => bounds(props.collection))
 </script>
 
 <style scoped>

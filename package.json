@@ -75,7 +75,8 @@
       "src/components/Features/ExportStrategies/*.test.js",
       "src/components/Features/FeatureGroup.test.js",
       "src/components/Features/SingleItem*.test.js",
-      "src/components/Features/Table.test.js"
+      "src/components/Features/Table.test.js",
+      "src/components/OperatorSetup/*.test.js"
     ],
     "rules": {
       "no-unused-vars": "warn",
