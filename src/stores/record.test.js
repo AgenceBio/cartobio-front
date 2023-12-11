@@ -67,7 +67,6 @@ describe('update', () => {
   it('maintains existing data if not updated', () => {
     store.update(record)
     store.update({ record_id: 'newId' })
-    console.log(record)
     expect(store.record).toHaveProperty('certification_state', 'OPERATOR_DRAFT')
     expect(store.record).toHaveProperty('record_id', 'newId')
     expect(store.record).toHaveProperty('operator', { nom: 'test', numeroBio: '34857' })
