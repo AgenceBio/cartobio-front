@@ -56,7 +56,7 @@
         <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
           <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
             <li>
-              <router-link v-if="permissions.canChangeGeometry" :to="`/exploitations/${recordStore.record.operator.id}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+              <router-link v-if="permissions.canChangeGeometry" :to="`/exploitations/${recordStore.record.operator.numeroBio}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
                 Modifier le contour
               </router-link>
               <button v-else type="button" disabled class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">

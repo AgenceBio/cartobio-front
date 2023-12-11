@@ -15,7 +15,7 @@ describe('exists', () => {
   })
 
   it('requires a record_id to be considered as existing', () => {
-    store.update({ operator: { id: 1, nom: 'test' }})
+    store.update({ operator: { nom: 'test', numeroBio: '34857' }})
     expect(store.exists).toEqual(false)
 
     store.update(record)
@@ -61,15 +61,16 @@ describe('update', () => {
     store.update({ ...record, unknownKey: true })
     expect(store.record).toHaveProperty('record_id', record.record_id)
     expect(store.record).not.toHaveProperty('unknownKey')
-    expect(store.record).toHaveProperty('operator', { id: 1, nom: 'test' })
+    expect(store.record).toHaveProperty('operator', { nom: 'test', numeroBio: '34857' })
   })
 
   it('maintains existing data if not updated', () => {
     store.update(record)
     store.update({ record_id: 'newId' })
+    console.log(record)
     expect(store.record).toHaveProperty('certification_state', 'OPERATOR_DRAFT')
     expect(store.record).toHaveProperty('record_id', 'newId')
-    expect(store.record).toHaveProperty('operator', { id: 1, nom: 'test' })
+    expect(store.record).toHaveProperty('operator', { nom: 'test', numeroBio: '34857' })
   })
 
   it('cascades the feature store updates', () => {

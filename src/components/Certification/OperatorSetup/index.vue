@@ -132,10 +132,10 @@ const setupFromTelepacModal = ref(false)
 const setupFromRPGModal = ref(false)
 
 async function handleUpload ({ geojson, source, metadata = {} }) {
-  const { id: operatorId, numeroBio, organismeCertificateur } = props.operator
+  const { numeroBio, organismeCertificateur } = props.operator
   const { id: ocId, nom: ocLabel } = organismeCertificateur
 
-  const record = await createOperatorRecord(operatorId, {
+  const record = await createOperatorRecord(numeroBio, {
     numeroBio,
     ocId,
     ocLabel,

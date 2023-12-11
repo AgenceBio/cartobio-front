@@ -15,7 +15,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     ['Surface graphique totale (en ha) :', '', surface(featureCollection) / 10_000]
   ], { cellDates: true })
 
-  sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+  sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}` }
   sheet['C1'].t = 's'
   sheet['C2'].t = 'd'
   sheet['C2'].z = 'dd/mm/yyyy'

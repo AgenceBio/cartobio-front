@@ -19,7 +19,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     ['Date de saisie :', new Date()],
   ], { cellDates: true })
 
-  sheet['B1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.id}` }
+  sheet['B1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}` }
   sheet['B1'].t = 's'
   sheet['B2'].t = 'd'
   sheet['B2'].z = 'dd/mm/yyyy'

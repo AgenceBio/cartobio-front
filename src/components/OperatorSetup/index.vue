@@ -73,14 +73,14 @@ function handleCancel () {
 }
 
 async function handleUpload () {
-  const { id: operatorId, numeroBio, organismeCertificateur } = record.operator
+  const { numeroBio, organismeCertificateur } = record.operator
   const { id: ocId, nom: ocLabel } = organismeCertificateur
 
   const geojson = toRaw(featureCollection.value)
   const source = toRaw(featureSource.value)
 
   try {
-    const record = await createOperatorRecord(operatorId, {
+    const record = await createOperatorRecord(numeroBio, {
       geojson,
       ocId,
       ocLabel,
