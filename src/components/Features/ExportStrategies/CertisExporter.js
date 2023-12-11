@@ -5,7 +5,7 @@ import { GROUPE_NIVEAU_CONVERSION, getFeatureGroups, surface } from '@/component
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
-const { decode_range: R, sheet_to_json, json_to_sheet, sheet_to_csv } = utils
+const { decode_range: R } = utils
 
 const getSheet = ({ featureCollection, operator, permissions, record }) => {
   const sheet = aoa_to_sheet([
@@ -195,17 +195,6 @@ class OcaciaExporter extends BaseExporter {
     book_append_sheet(workbook, sheet, 'Tableau de surfaces')
 
     return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
-  }
-
-  toClipboard() {
-    let sheet = this.getSheet()
-    sheet = sheet_to_json(sheet, { header: 1, raw: false, defval: '' })
-    // Remove first 7 row, keep first columns A to X
-    sheet = sheet.slice(8).map(row => row.slice(0, 21))
-    sheet = json_to_sheet(sheet)
-    const data = sheet_to_csv(sheet, { FS: '\t' })
-
-    return navigator.clipboard.writeText(data)
   }
 }
 

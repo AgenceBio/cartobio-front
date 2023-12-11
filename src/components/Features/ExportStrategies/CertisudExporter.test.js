@@ -31,7 +31,7 @@ describe('CertisudExporter', () => {
         'Luzerne',
         // expect.closeTo(2.1), // in vite@5 + vitest@1
         2.092976314534671,
-        'Visitée ; Prélèvement effectué, À risque',
+        '1.1, Visitée ; 1.2, Prélèvement effectué, À risque',
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),
         '1,2'
@@ -40,7 +40,7 @@ describe('CertisudExporter', () => {
         'Luzerne',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
         1.0464881572673355,
-        'Réduction de conversion (Dérogation acceptée)',
+        '2.1, Réduction de conversion (Dérogation acceptée)',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
         '3'
@@ -49,7 +49,7 @@ describe('CertisudExporter', () => {
         'Trèfle',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
         1.0464881572673355,
-        '4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '2.1, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
         '3'
@@ -58,7 +58,7 @@ describe('CertisudExporter', () => {
         'Trèfle',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
         1.0464881572673355,
-        '4 feuilles, semis le 01/03/2023',
+        '2.2, 4 feuilles, semis le 01/03/2023',
         'AB',
         new Date('2015-01-01T00:00:00.000Z'),
         '4'
@@ -66,7 +66,7 @@ describe('CertisudExporter', () => {
       [
         '[ERREUR] correspondance manquante avec 01.19.99',
         1.0464881572673355,
-        '',
+        '3.1',
         '',
         '',
         '5'

@@ -35,7 +35,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         new Date('2023-01-01T00:00:00.000Z'),
         'C1',
-        'Visitée',
+        '1.1, Visitée',
         '1',
         '01.19.10.8',
       ],
@@ -45,7 +45,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         new Date('2023-01-01T00:00:00.000Z'),
         'C1',
-        'Prélèvement effectué, À risque',
+        '1.2, Prélèvement effectué, À risque',
         '2',
         '01.19.10.8'
       ],
@@ -55,7 +55,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         new Date('2021-01-01T00:00:00.000Z'),
         'AB',
-        '01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '2.1, 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
         '3',
         '01.19.10.8'
       ],
@@ -65,7 +65,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         new Date('2015-01-01T00:00:00.000Z'),
         'AB',
-        '4 feuilles, semis le 01/03/2023',
+        '2.2, 4 feuilles, semis le 01/03/2023',
         '4',
         '01.19.10.7'
       ],
@@ -75,7 +75,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         '',
         '',
-        '01.19.99 Culture inconnue',
+        '3.1, 01.19.99 Culture inconnue',
         '5',
         ''
       ]

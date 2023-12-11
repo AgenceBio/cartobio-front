@@ -2,6 +2,8 @@ import { utils } from 'xlsx'
 import { cultureLabel, featureName } from "../index.js"
 import { getAnnotationLabel } from '../../../referentiels/ab.js'
 
+const { sheet_to_csv, sheet_to_json, json_to_sheet } = utils
+
 export default class BaseExporter {
   label = ''
   extension = ''
@@ -17,12 +19,32 @@ export default class BaseExporter {
 
   toJSON () {
     const ws = this.getSheet()
-    return utils.sheet_to_json(ws, {
+    return sheet_to_json(ws, {
       blankrows: false,
       defval: '',
       header: 1,
       range: this.range ?? ws['!ref']
     })
+  }
+
+  toCSV () {
+    const json = this.toJSON()
+    const header = json.at(0)
+    const data = json.slice(1).map(row => {
+      return row.reduce((obj, value, index) => ({
+        ...obj,
+        [header.at(index)]: value
+      }), {})
+    })
+
+    const sheet = json_to_sheet(data, { header })
+    return sheet_to_csv(sheet, { FS: '\t' })
+  }
+
+  async toClipboard() {
+    const data = this.toCSV()
+
+    return navigator.clipboard.writeText(data)
   }
 }
 

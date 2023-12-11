@@ -40,8 +40,6 @@ describe("AccordionGroup", () => {
 
     const section = wrapper.find('.fr-collapse')
 
-    console.log(wrapper.html())
-
     // first section should be open
     expect(section.classes()).toContain('fr-collapse--expanded')
   })

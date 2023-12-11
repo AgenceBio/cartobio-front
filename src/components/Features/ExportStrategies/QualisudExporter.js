@@ -3,8 +3,7 @@ import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { featureName, surface } from '@/components/Features/index.js'
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
-const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
-const { sheet_to_json, json_to_sheet } = utils
+const { aoa_to_sheet, sheet_add_aoa } = utils
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -48,7 +47,7 @@ const getSheet = ({ featureCollection, permissions }) => {
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
     const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
-    const autresInfos = generateAutresInfos([ { properties }], { withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
+    const autresInfos = generateAutresInfos([ { properties }], { withName: false, withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
 
     sheet_add_aoa(sheet, [
@@ -94,17 +93,6 @@ class BureauVeritasExporter extends BaseExporter {
     // Cette fonction ajoute un BOM ce que sheet_to_csv ne fait pas
     const data = write(workbook, { type: "array", bookType: 'csv', FS: ';' })
     return new Blob([data])
-  }
-
-  toClipboard() {
-    let sheet = this.getSheet()
-    sheet = sheet_to_json(sheet, { header: 1, raw: false, defval: '' })
-    // Remove first row, keep first columns A to I
-    sheet = sheet.slice(1).map(row => row.slice(0, 7))
-    sheet = json_to_sheet(sheet)
-    const data = sheet_to_csv(sheet, { FS: '\t' })
-
-    return navigator.clipboard.writeText(data)
   }
 }
 
