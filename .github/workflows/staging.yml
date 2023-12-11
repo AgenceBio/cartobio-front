@@ -27,7 +27,7 @@ jobs:
     - name: Assign env variables to a .env file
       run: env | grep VUE_APP > .env.local
       env:
-        VUE_APP_MATOMO_SITE_ID: 245
+        VUE_APP_MATOMO_SITE_ID: 59
         VUE_APP_API_ENDPOINT: "https://cartobio-preprod.agencebio.org/api"
         VUE_APP_PRELOADED_CAMPAGNE_PAC: 2021
         VUE_APP_ENVIRONMENT: staging
