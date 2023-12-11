@@ -14,7 +14,7 @@ import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
 import { getOperatorParcelles } from "@/cartobio-api.js"
 
-const { VUE_APP_MATOMO_SITE_ID:siteId = '245', VUE_APP_API_ENDPOINT } = import.meta.env
+const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
 
 const pinia = createPinia()
