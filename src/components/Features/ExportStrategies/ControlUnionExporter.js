@@ -90,12 +90,6 @@ class ControlUnionExporter extends BaseExporter {
     utils.book_append_sheet(workbook, sheet, 'Suivi parcelles')
     return new Blob([write(workbook, { type: 'array', bookType: this.extension })])
   }
-
-  toClipboard() {
-    const sheet = this.getSheet()
-    const data = utils.sheet_to_csv(sheet, { FS: '\t' })
-    return navigator.clipboard.writeText(data)
-  }
 }
 
 export default ControlUnionExporter

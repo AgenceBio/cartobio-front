@@ -1,4 +1,4 @@
-import { afterEach, vi } from 'vitest'
+import { beforeEach, vi } from 'vitest'
 import { createRouter, createWebHistory } from 'vue-router'
 import { config } from '@vue/test-utils'
 import { createHead } from '@unhead/vue'
@@ -40,4 +40,10 @@ vi.stubGlobal('matchMedia', vi.fn(() => ({
   matches: vi.fn().mockReturnValue(true)
 })))
 
-afterEach(() => vi.clearAllMocks())
+vi.spyOn(global, 'navigator', 'get').mockImplementation(() => ({
+  clipboard: {
+    writeText: vi.fn()
+  }
+}))
+
+beforeEach(() => vi.clearAllMocks())

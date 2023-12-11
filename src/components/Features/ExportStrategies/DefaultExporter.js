@@ -55,7 +55,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
       label,
       props.PACAGE,
       props.conversion_niveau,
-      props.engagement_date,
+      props.engagement_date ? new Date(props.engagement_date) : '',
       (isPac ? 'PAC' : ''),
       generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withName: false, withNotes: false, initialCulture: firstCulture?.CPF, permissions }),
       props.auditeur_notes ?? ''
@@ -76,6 +76,7 @@ class DefaultExporter extends BaseExporter {
   label = 'Excel'
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  range = 'A6:L999'
 
   getSheet() {
     return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })

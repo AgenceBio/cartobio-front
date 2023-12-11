@@ -4,8 +4,8 @@ import { featureName, getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
-const { aoa_to_sheet, sheet_add_aoa, sheet_to_csv } = utils
-const { decode_range: R, sheet_to_json, json_to_sheet } = utils
+const { aoa_to_sheet, sheet_add_aoa } = utils
+const { decode_range: R } = utils
 
 const getSheet = ({ featureCollection, operator, permissions }) => {
   const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
@@ -174,17 +174,6 @@ class CertipaqExporter extends BaseExporter {
     // Cette fonction ajoute un BOM ce que sheet_to_csv ne fait pas
     const data = write(workbook, { type: "array", bookType: 'csv', FS: ';' })
     return new Blob([data])
-  }
-
-  toClipboard() {
-    let sheet = this.getSheet()
-    sheet = sheet_to_json(sheet, { header: 1, raw: false, defval: '' })
-    // Remove first 5 rows, keep first columns A to J
-    sheet = sheet.slice(5).map(row => row.slice(0, 10))
-    sheet = json_to_sheet(sheet)
-    const data = sheet_to_csv(sheet, { FS: '\t' })
-
-    return navigator.clipboard.writeText(data)
   }
 }
 

@@ -5,7 +5,7 @@ import { GROUPE_NIVEAU_CONVERSION, featureName, getFeatureGroups, surface } from
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
-const { decode_range: R, sheet_to_csv } = utils
+const { decode_range: R } = utils
 
 const getSheet = ({ featureCollection, permissions }) => {
   const sheet = aoa_to_sheet([
@@ -136,12 +136,6 @@ class OcaciaExporter extends BaseExporter {
     book_append_sheet(workbook, sheet, 'Parcellaire')
 
     return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
-  }
-
-  toClipboard() {
-    const sheet = this.getSheet()
-    const data = sheet_to_csv(sheet, { FS: '\t' })
-    return navigator.clipboard.writeText(data)
   }
 }
 
