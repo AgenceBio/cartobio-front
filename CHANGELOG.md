@@ -1,5 +1,12 @@
 # _En cours_…
 
+* affichage amélioré des messages de confirmation et d'erreur
+* saisie assouplie des références cadastrales dans le formulaire d'ajout de parcelle
+* demande de confirmation en cas de fermeture de formulaire en cours de modification (pour éviter la perte d'information)
+* exports Excel avec identifiants de parcelles et l'ajout des étiquettes dans les champs "commentaires"
+* le "numéro bio" devient l'identifiant de référence (au lieu du mélange "identifiant d'opérateur" et "numéro bio")
+
+
 # [2.14.0](https://github.com/AgenceBio/cartobio-front/compare/v2.14.0...v2.15.0) (2023-11-17)
 * modification de contours de parcelles
 * login agriculteur
