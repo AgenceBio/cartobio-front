@@ -28,7 +28,7 @@ const props = defineProps({
   },
   sources: {
     type: Array,
-    default: () => Object.keys(featureSources),
+    default: () => ([]),
     validator: (value) => value.every((sourceId) => sourceId in featureSources)
   }
 })

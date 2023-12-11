@@ -69,7 +69,7 @@
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
-      <router-link :to="{ name: 'exploitations-id-ajout-parcelle', params: { id: operator.numeroBio || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+      <router-link :to="{ name: 'exploitations-numeroBio-ajout-parcelle', params: { numeroBio: operator.numeroBio || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
     </p>
   </div>
 
