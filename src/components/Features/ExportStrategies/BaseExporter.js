@@ -29,11 +29,19 @@ export default class BaseExporter {
 
   toCSV () {
     const json = this.toJSON()
-    const sheet = json_to_sheet(json)
+    const header = json.at(0)
+    const data = json.slice(1).map(row => {
+      return row.reduce((obj, value, index) => ({
+        ...obj,
+        [header.at(index)]: value
+      }), {})
+    })
+
+    const sheet = json_to_sheet(data, { header })
     return sheet_to_csv(sheet, { FS: '\t' })
   }
 
-  toClipboard() {
+  async toClipboard() {
     const data = this.toCSV()
 
     return navigator.clipboard.writeText(data)
