@@ -1,5 +1,6 @@
-# _En cours_…
+# [2.16.0](https://github.com/AgenceBio/cartobio-front/compare/v2.15.1...v2.16.0) (2023-12-12)
 
+* utilisation du RPG 2022 comme fond de carte des parcelles environnantes, et comme source de données pour les imports par numéro PACAGE
 * affichage amélioré des messages de confirmation et d'erreur
 * saisie assouplie des références cadastrales dans le formulaire d'ajout de parcelle
 * demande de confirmation en cas de fermeture de formulaire en cours de modification (pour éviter la perte d'information)
