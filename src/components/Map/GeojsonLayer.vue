@@ -15,6 +15,10 @@ export default {
       type: String,
       required: true,
     },
+    before: {
+      type: String,
+      required: false,
+    },
     fill: {
       type: Object,
       default: () => ({
@@ -44,11 +48,6 @@ export default {
   },
   inject: ['map'],
   mounted() {
-    const siblingNames = this.$parent.$slots.default()
-        .filter(node => node.props)
-        .map(node => node.props.name)
-    const nextSiblings = siblingNames.slice(siblingNames.indexOf(this.name) + 1)
-
     // always create the data layer even if data is empty at first,
     // otherwise the watch() fails (if empty at first, it cannot be updated)
     this.map
@@ -101,10 +100,7 @@ export default {
     this.style.layers?.map(layer => {
       if (this.map.getLayer(layer.id)) return
 
-      const nextLayer = this.map.getStyle().layers.find(({ id }) => {
-        return nextSiblings.includes(id.split('/')[0])
-      })
-
+      const nextLayer = this.map.getStyle().layers.find(({ id }) => this.before === id.split('/')[0])
       this.map.addLayer({
         ...layer,
         id: `${this.name}/${layer.id}`,
@@ -124,7 +120,7 @@ export default {
     if (!this.style) return
 
     this.style.layers.map(layer => this.map.removeLayer(`${this.name}/${layer.id}`))
-    Object.keys(this.style.sources).map(key => {
+    Object.keys(this.style.sources || {}).map(key => {
       if (!this.map.getSource(`${this.name}/${key}`)) return
       this.map.removeSource(`${this.name}/${key}`)
     })

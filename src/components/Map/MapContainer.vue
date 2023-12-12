@@ -9,9 +9,8 @@
 </template>
 
 <script setup>
-import { provide, shallowRef, ref, onMounted, onUpdated, watch } from 'vue'
+import { onMounted, onUpdated, provide, ref, shallowRef, watch } from 'vue'
 import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
-import warningImg from '@/assets/map/warning.png?url'
 
 const map = shallowRef(null)
 const mapContainer = ref(null)
@@ -44,10 +43,22 @@ onMounted(() => {
     bounds: props.bounds,
     padding: 50,
     ...props.options,
+    locale: {
+      'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',
+      'NavigationControl.ZoomIn': 'Zoomer',
+      'NavigationControl.ZoomOut': 'Dézoomer',
+    }
   })
 
   if (props.controls) {
     map.value.addControl(new NavigationControl(), 'bottom-right')
+    map.value.addControl({
+      onAdd: () => {
+        const el = document.createElement('div')
+        el.className = 'maplibregl-ctrl maplibregl-ctrl-group cartobio-controls fr-mb-1w'
+        return el
+      }
+    }, 'bottom-right')
   }
 
   map.value.once('load', () => {
@@ -55,14 +66,6 @@ onMounted(() => {
   })
 
   map.value.on('zoomend', () => emit('zoom:change', map.value.getZoom()))
-
-  map.value.on('styleimagemissing', ({ id }) => {
-    if (id !== 'warning') return
-    map.value.loadImage(warningImg, (error, image) => {
-      if (error) throw error
-      map.value.addImage('warning', image)
-    })
-  })
 })
 
 onUpdated(() => map.value && map.value.resize())
