@@ -21,31 +21,11 @@
         "fill-color": ["case",
           ["==", ["get", "BIO"], 1],
           "#9fe3d2",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
-          "#fff1bd",
           ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
-          "#ffd6a4",
+          "#fff1bd",
           "#ffd6a4"
         ],
-        "fill-opacity": 0.7
-      }
-    },
-    {
-      "id": "rpg-anon-2022-pattern",
-      "type": "fill",
-      "source": "rpg-anon",
-      "source-layer": "rpg2022",
-      "minzoom": 8,
-      "maxzoom": 24,
-      "paint": {
-        "fill-antialias": false,
-        "fill-color": "#000000",
-        "fill-pattern": ["case",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
-          "warning",
-          ""
-        ],
-        "fill-opacity": 1
+        "fill-opacity": 0.5
       }
     },
     {
@@ -59,10 +39,8 @@
         "line-color": ["case",
           ["==", ["get", "BIO"], 1],
           "#54cdaf",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["VRC", "CZH", "CZP", "PTC", "PTF", "BTN", "BTH", "BTP", "MPC", "ORH", "ORP", "TTH", "TTP", "MIS", "TRN"]]],
-          "#ffe586",
           ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
-          "#ffc177",
+          "#ffe586",
           "#ffc177"
         ],
         "line-opacity": 0.9,

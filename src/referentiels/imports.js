@@ -5,5 +5,5 @@ export const sources = Object.freeze({
   GEOFOLIA: 'geofolia',
   NCVI: 'ncvi',
   SMAG_FARMER: 'smagfarmer',
-  RPG: 'rpg',
+  RPG: 'showIlots',
 })

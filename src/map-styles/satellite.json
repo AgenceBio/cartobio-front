@@ -1,0 +1,21 @@
+{
+  "version": 8,
+  "sources": {
+    "satellite": {
+      "type": "raster",
+      "tiles": [
+        "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS/{z}/{x}/{y}.jpeg"
+      ],
+      "tileSize": 256
+    }
+  },
+  "layers": [
+    {
+      "id": "fond-satellite",
+      "type": "raster",
+      "source": "satellite",
+      "minzoom": 0,
+      "maxzoom": 22
+    }
+  ]
+}
