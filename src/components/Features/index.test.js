@@ -467,6 +467,17 @@ describe('bounds', () => {
     expect(bounds(null)).toEqual(DEFAULT_BOUNDS)
   })
 
+  test('it works with anormal empty geometries', () => {
+    const emptyGeometryFeature = {
+      ...feature,
+      geometry: {
+        type: 'Polygon',
+        coordinates: []
+      },
+    }
+    expect(bounds(featureCollection([emptyGeometryFeature]))).toEqual(DEFAULT_BOUNDS)
+  })
+
   test('it works with regular GeoJSON objects', () => {
     expect(bounds(geometry)).toEqual([5.00619098801252, 44.71353436914191, 5.00742078063729, 44.71418584175069])
     expect(bounds(feature)).toEqual([2.825121146516608, 44.260111501833876, 2.901018077685336, 44.30042614674991])
