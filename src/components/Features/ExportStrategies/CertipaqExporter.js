@@ -8,13 +8,13 @@ const { aoa_to_sheet, sheet_add_aoa } = utils
 const { decode_range: R } = utils
 
 const getSheet = ({ featureCollection, operator, permissions }) => {
-  const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
+  const notification = operator.notifications?.find(({ status }) => status === 'ACTIVE') ?? {}
 
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
     // A1: B1
-    ['N° de l\'opérateur', notification.numeroClient ?? ''],
+    ['N° de l\'opérateur', notification?.numeroClient ?? ''],
     // A2: B2
     ['Date de saisie :', new Date()],
   ], { cellDates: true })
