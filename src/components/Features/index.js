@@ -1,4 +1,5 @@
 import { featureCollection, feature } from '@turf/helpers'
+import bbox from '@turf/bbox'
 import difference from '@turf/difference'
 import intersect from '@turf/intersect'
 import area from '@turf/area'
@@ -338,6 +339,19 @@ export function inHa (value) {
       minimumFractionDigits: 2
     })
 }
+
+export function bounds (featureCollection, defaults = bounds.DEFAULT_BOUNDS) {
+  if (!featureCollection?.type || (featureCollection?.type === 'FeatureCollection' && !featureCollection.features.length)) {
+    return defaults
+  }
+
+  // if the input is out of bounds (eg: absent geometry), bbox returns [Infinite, Infinite, -Infinite, -Infinite]
+  // but mostly, MapLibre fails if the bounds are not withing the Web Mercator bounds
+  const result = bbox(featureCollection)
+  return Math.abs(result.at(0)) > 90 ? defaults : result
+}
+
+bounds.DEFAULT_BOUNDS = [[-9.86, 41.15], [10.38, 51.56]]
 
 /**
  * @param {FeatureCollection|Feature|Geometry} geometryOrFeature
