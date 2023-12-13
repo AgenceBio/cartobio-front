@@ -21,7 +21,7 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @returns {WorkSheet}
  */
 const getSheet = ({ featureCollection, operator }) => {
-  const notification = operator.notifications.find(({ status }) => status === 'ACTIVE') ?? operator.notifications.at(0)
+  const notification = operator.notifications?.find(({ status }) => status === 'ACTIVE') ?? {}
 
   // First sheet
   // First sheet: customer informations (via `customer`)
@@ -38,7 +38,7 @@ const getSheet = ({ featureCollection, operator }) => {
       'Date conversion'
     ],
     [
-      notification.numeroClient ?? ''
+      notification?.numeroClient ?? ''
     ],
     [
       'PV'

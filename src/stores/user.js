@@ -53,7 +53,7 @@ export function deriveRolesFromGroups (user) {
 
   const roles = new Set()
   groupNames.forEach(groupName => {
-    if (Object.hasOwn(rolesMap, groupName)) {
+    if (groupName in rolesMap) {
       rolesMap[groupName].forEach(role => roles.add(role))
     }
   })
