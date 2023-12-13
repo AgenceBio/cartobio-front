@@ -20,7 +20,7 @@ describe("FeatureGroup", () => {
   let featureGroup
 
   beforeEach(() => {
-    featureGroup = getFeatureGroups(record.parcelles).at(1)
+    featureGroup = getFeatureGroups(record.parcelles).at(0)
   })
 
   afterEach(() => {
@@ -48,10 +48,16 @@ describe("FeatureGroup", () => {
     expect(headers.at(1).text()).toEqual('Nom')
     expect(headers.at(2).text()).toEqual('Certification')
     expect(headers.at(3).text()).toEqual('')
+
+    // we should have a multi culture name within the 3rd cell
+    expect(wrapper.find('#parcelle-2 .feature-precision').text()).toEqual('Multi-culture')
+
+    // we should have a single culture name within the 3rd cell
+    expect(wrapper.find('#parcelle-4 .culture-name').text()).toEqual('ilot 2, parcelle 1')
   })
 
   test('non-culture grouping has different column name', async () => {
-    const featureGroup = getFeatureGroups(record.parcelles, GROUPE_COMMUNE).at(1)
+    const featureGroup = getFeatureGroups(record.parcelles, GROUPE_COMMUNE).at(0)
     const wrapper = mount(FeatureGroup, {
       props: { featureGroup, selectedIds: [], hoveredId: null, validationRules: { rules } }
     })
@@ -61,6 +67,13 @@ describe("FeatureGroup", () => {
     // we have default columns
     const headers = header.findAll('*')
     expect(headers.at(1).text()).toEqual('Culture')
+
+    // we should have a multi culture name within the 3rd cell
+    expect(wrapper.find('#parcelle-2 .culture-type').text()).toEqual('Multi-cultures : Ail, Pomelos et pamplemousses')
+
+    // we should have a single culture name within the 3rd cell
+    expect(wrapper.find('#parcelle-4 .culture-name').text()).toEqual('Ail')
+    expect(wrapper.find('#parcelle-4 .feature-precision').text()).toEqual('ilot 2, parcelle 1')
   })
 
   test('toggles on and off all group items', async () => {
@@ -75,7 +88,7 @@ describe("FeatureGroup", () => {
 
     const selectAllCheckbox = wrapper.find('.group-header .single-checkbox input[type="checkbox"]')
     await selectAllCheckbox.trigger('click')
-    expect(featuresStore.selectedIds).toEqual([1, 3])
+    expect(featuresStore.selectedIds).toEqual([2, 4])
 
     await selectAllCheckbox.trigger('click')
     expect(featuresStore.selectedIds).toEqual([])
@@ -83,8 +96,8 @@ describe("FeatureGroup", () => {
     // we close the header
     // then we click again on a single checkbox
     await wrapper.find('.group-header').trigger('click')
-    await wrapper.find('#parcelle-3 .single-checkbox input[type="checkbox"]').trigger('click')
-    expect(featuresStore.selectedIds).toEqual([3])
+    await wrapper.find('#parcelle-2 .single-checkbox input[type="checkbox"]').trigger('click')
+    expect(featuresStore.selectedIds).toEqual([2])
     expect(wrapper.vm.open).toEqual(true)
   })
 
@@ -100,9 +113,9 @@ describe("FeatureGroup", () => {
 
     const group = wrapper.getComponent(FeatureGroup)
     await wrapper.find('.group-header').trigger('click')
-    await wrapper.find('#parcelle-3 td').trigger('click')
+    await wrapper.find('#parcelle-2 td').trigger('click')
 
-    expect(group.emitted('edit:featureId')).toHaveProperty('0', [3])
+    expect(group.emitted('edit:featureId')).toHaveProperty('0', [2])
   })
 
   test('we trigger a delete form', async () => {
@@ -111,10 +124,10 @@ describe("FeatureGroup", () => {
     })
 
     await wrapper.find('.group-header').trigger('click')
-    await wrapper.find('#parcelle-3 .show-actions').trigger('click')
+    await wrapper.find('#parcelle-2 .show-actions').trigger('click')
 
     // menu is open
-    const menu = wrapper.find('#parcelle-3 .fr-menu')
+    const menu = wrapper.find('#parcelle-2 .fr-menu')
     expect(menu.exists()).toEqual(true)
 
     // delete item is not active unless we have the permissions (after flushPromises/re-render)
@@ -123,6 +136,6 @@ describe("FeatureGroup", () => {
     await flushPromises()
     expect(menu.find('.fr-icon-delete-line').attributes()).not.toHaveProperty('disabled')
     menu.find('.fr-icon-delete-line').trigger('click')
-    expect(wrapper.emitted('delete:featureId')).toHaveProperty('0', [3])
+    expect(wrapper.emitted('delete:featureId')).toHaveProperty('0', [2])
   })
 })
