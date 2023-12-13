@@ -74,7 +74,7 @@ describe('update', () => {
 
   it('cascades the feature store updates', () => {
     store.update(record)
-    expect(featuresStore.all).toHaveLength(3)
+    expect(featuresStore.all).toHaveLength(4)
   })
 
   it('resets the feature store as well', () => {

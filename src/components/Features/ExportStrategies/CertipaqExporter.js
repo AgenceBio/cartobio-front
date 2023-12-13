@@ -50,6 +50,8 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     { wch: 10 }, { wch: 10 },
     // Id. Parcelle
     { wch: 16 },
+    // Code culture
+    '',
     // [ blank ]
     '',
     // Totaux - AB - C1 - C2 - C3 - C0 - Total
@@ -59,7 +61,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
   // First sheet: plots informations (via `featureCollection`)
   sheet_add_aoa(sheet, [
     [       '',     '',        '',                '', 'Surfaces en ha', '',   '',   '',     '',          '',                            '',          '',               '', 'Dernier intrant non autorisé en AB',     '',             '',             ''],
-    ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0',           'AB', 'C1', 'C2',   'C3', 'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Code culture', 'Id. Parcelle'],
+    ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0',           'AB', 'C1', 'C2',   'C3', 'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Id. Parcelle', 'Code culture'],
   ], { origin: 'A4'})
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
@@ -93,16 +95,16 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
       '',
       // Date
       '',
-      // Code culture (CPF) #P
-      culture?.code_cpf,
-      // Id. Parcelle #Q
+      // Id. Parcelle #P
       String(id),
+      // Code culture (CPF) #Q
+      culture?.code_cpf,
     ]
   }), { origin: 'A6', cellDates: true })
 
   // Formattage des cellules, s'il y a une valeur
   featureCollection.features.forEach((feature, index) => {
-    sheet[`Q${6 + index}`].t = 's';
+    sheet[`P${6 + index}`].t = 's';
 
     if (sheet[`J${6 + index}`].v) {
       sheet[`J${6 + index}`].t = 'd'

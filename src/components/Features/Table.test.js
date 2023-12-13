@@ -35,12 +35,12 @@ describe("Features Table", () => {
     vi.clearAllMocks()
   })
 
-  test("features are listed as 3 groups of 2 and 1 and 1 features (multi-crops)", () => {
+  test("features are listed as 3 groups of 2 and 1 and 2 features (one being multi-crops)", () => {
     const wrapper = mount(TableComponent, {
       props: { operator, validationRules: { rules: OPERATOR_RULES } }
     })
 
-    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("3 parcelles")
+    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("4 parcelles")
     expect(wrapper.findAll('table tbody')).toHaveLength(3)
     expect(wrapper.find('#parcelle-1').attributes()).toHaveProperty('hidden', '')
   })
@@ -53,7 +53,7 @@ describe("Features Table", () => {
     expect(wrapper.find('#radio-mass-edit').exists()).toEqual(false)
     await wrapper.find('#radio-select-all').trigger('click')
 
-    expect(featuresStore.selectedIds).toEqual([1, 2, 3])
+    expect(featuresStore.selectedIds).toEqual([1, 2, 3, 4])
     expect(wrapper.find('#radio-mass-edit').exists()).toEqual(true)
   })
 
@@ -83,7 +83,7 @@ describe("Features Table", () => {
     await flushPromises()
 
     expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("1 parcelles")
-    expect(featuresStore.all).toHaveLength(3)
+    expect(featuresStore.all).toHaveLength(4)
     expect(featuresStore.hits).toHaveLength(1)
   })
 

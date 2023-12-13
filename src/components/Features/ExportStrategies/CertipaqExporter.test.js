@@ -34,8 +34,8 @@ describe('CertipaqExporter', () => {
         "Anté précédent",
         "Produit",
         "Date",
-        "Code culture",
-        "Id. Parcelle"
+        "Id. Parcelle",
+        "Code culture"
       ],
       [
         '',
@@ -53,8 +53,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '01.19.10.8',
-        '1'
+        '1',
+        '01.19.10.8'
       ],
       [
         '',
@@ -72,8 +72,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '01.19.10.8',
-        '2'
+        '2',
+        '01.19.10.8'
       ],
       [
         '',
@@ -91,8 +91,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '01.19.10.8',
-        '3'
+        '3',
+        '01.19.10.8'
       ],
       [
         '',
@@ -110,8 +110,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '01.19.10.7',
-        '4'
+        '4',
+        '01.19.10.7'
       ],
       [
         '',
@@ -129,8 +129,8 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '',
-        '',
-        '5'
+        '5',
+        ''
       ]
     ]
 

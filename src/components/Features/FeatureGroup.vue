@@ -33,11 +33,12 @@
       </td>
       <td @click="toggleEditForm(feature.id)" v-else>
         <span class="culture-type" v-if="feature.properties.cultures.length > 1">
-          Multi-cultures
+          Multi-cultures<span class="fr-sr-only"> : </span>
           <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
-            {{ cultureLabel(culture) }}
+            <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
           </small>
         </span>
+        <span class="culture-name" v-else>{{ cultureLabel(feature.properties.cultures[0]) }}</span>
         <small class="feature-precision">{{ featureName(feature) }}</small>
       </td>
       <td @click="toggleEditForm(feature.id)">
