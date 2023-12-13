@@ -44,7 +44,7 @@
 import axios from 'axios'
 
 import { computed, ref, watch } from 'vue'
-import { cleanInput, isValidReference, parseReference, toString } from '../cadastre.js';
+import { cleanInput, isValidReference, toString } from '../cadastre.js';
 import toast from "@/components/toast"
 
 const props = defineProps({
@@ -101,9 +101,6 @@ const searchReference = async (event) => {
     return
   }
 
-  const { commune: code_insee, section: parsedSection, prefix: com_abs, number: numero } = parseReference(inputReference.value)
-  const _limit = 1
-  const source_ign = 'PCI'
   isFetchingGeometry.value = true
 
   if (cadastreRequestController.value) {
@@ -113,8 +110,9 @@ const searchReference = async (event) => {
 
   let featureCollection;
   try {
-    ({ data: featureCollection } = await axios.get('https://apicarto.ign.fr/api/cadastre/parcelle', {
-      params: { code_insee, section: parsedSection, numero, com_abs, _limit, source_ign },
+    // @see https://geoservices.ign.fr/documentation/services/services-geoplateforme/geocodage
+    ({ data: featureCollection } = await axios.get('https://data.geopf.fr/geocodage/search', {
+      params: { q: inputReference.value, index: 'parcel', limit: 1, returntruegeometry: true },
       signal: cadastreRequestController.value.signal
     }))
   } catch (error) {
@@ -130,7 +128,11 @@ const searchReference = async (event) => {
 
   if (featureCollection.features.length) {
     searchError.value = ""
-    feature.value = featureCollection.features.at(0)
+    feature.value = {
+      type: 'Feature',
+      geometry: featureCollection.features.at(0).properties.truegeometry,
+      properties: {}
+    }
   } else {
     feature.value = null
     searchError.value = "La référence cadastrale n'est pas reconnue dans cette commune."
