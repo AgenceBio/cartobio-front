@@ -34,7 +34,7 @@ export default {
           //--blue-france-sun-113-625
           "#eee"
         ],
-        "fill-opacity": 1,
+        "fill-opacity": 0.6,
       })
     },
     line: {

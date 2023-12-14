@@ -20,6 +20,10 @@ export default {
         return featureStore.collection
       }
     },
+    interactive: {
+      type: Boolean,
+      default: false
+    },
     showNumerosIlot: {
       type: Boolean,
       default: false
@@ -63,8 +67,10 @@ export default {
       map.value.setLayoutProperty('parcellaire-operateur/numeros-ilots', 'visibility', showNumeroIlots ? 'visible' : 'none')
     })
 
-    featureStore.bindMaplibreFeatureState(map.value, 'parcellaire-operateur/data')
-    featureStore.bindMaplibreInteractions(map.value, 'parcellaire-operateur/geometry')
+    if (props.interactive) {
+      featureStore.bindMaplibreFeatureState(map.value, 'parcellaire-operateur/data')
+      featureStore.bindMaplibreInteractions(map.value, 'parcellaire-operateur/geometry')
+    }
   }
 }
 </script>
