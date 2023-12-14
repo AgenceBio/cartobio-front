@@ -88,7 +88,7 @@ import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 
-import { getFeatureGroups, groupingChoices, inHa, surface } from './index.js'
+import { featureName, getFeatureGroups, groupingChoices, inHa, surface } from './index.js'
 import { deleteSingleFeature, updateFeatureCollectionProperties, updateSingleFeature } from '@/cartobio-api.js'
 import toast from "@/components/toast"
 import { statsPush } from "@/stats.js"
@@ -140,7 +140,7 @@ async function handleSingleFeatureSubmit ({ id, properties }) {
 
   await performAsyncRecordAction(
     updateSingleFeature({ recordId: record.value.record_id }, { id, properties }),
-    'Parcelle modifiée.'
+    `Parcelle « ${featureName(featuresStore.getFeatureById(id))} » modifiée.`
   )
 }
 
@@ -151,7 +151,7 @@ async function handleSingleFeatureDeletion ({ id, reason }) {
 
   await performAsyncRecordAction(
     deleteSingleFeature({ recordId: record.value.record_id }, { id, reason }),
-    'Parcelle supprimée.'
+    `Parcelle « ${featureName(featuresStore.getFeatureById(id))} » supprimée.`
   )
 }
 

@@ -81,7 +81,7 @@ import { computed, markRaw, reactive, ref, toRaw, watch } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue'
 import { submitNewParcelle } from '@/cartobio-api.js';
 import { featureCollection } from '@turf/helpers'
-import { diff, inHa, merge, surface } from './index.js'
+import { diff, featureName, inHa, merge, surface } from './index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
 import { useFeaturesStore, useRecordStore } from "@/stores/index.js"
@@ -216,7 +216,7 @@ async function saveFeature ({ properties }) {
 
   await router.push(props.backLink)
 
-  toast.success('Parcelle ajoutée.', 'Voir la parcelle', () => {
+  toast.success(`Parcelle « ${featureName(feature.value)} » ajoutée.`, 'Voir la parcelle', () => {
     featuresStore.select(newId)
   })
 }
