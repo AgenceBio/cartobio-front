@@ -1,7 +1,7 @@
 <template>
   <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false, trackResize: false }" :bounds="mapBounds">
     <GeojsonLayer :style="baseStyle" name="base" />
-    <GeojsonLayer :data="collection" name="parcellaire-operateur" />
+    <FeaturesLayer />
   </MapContainer>
 </template>
 
@@ -12,6 +12,7 @@ import bbox from '@turf/bbox'
 import MapContainer from './MapContainer.vue'
 import GeojsonLayer from './GeojsonLayer.vue'
 import baseStyle from '@/map-styles/base.json'
+import FeaturesLayer from "@/components/Map/FeaturesLayer.vue"
 
 const props = defineProps({
   controls: Boolean,
