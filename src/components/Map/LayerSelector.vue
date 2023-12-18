@@ -38,12 +38,13 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
       </span>
     </button>
     <div class="menu" v-if="showMenu">
-      <h5>Cartes</h5>
+      <h5 class="fr-mb-2w">Cartes</h5>
       <button
         class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
         @click="showMenu = false"
       >Fermer</button>
-      <h6>Fonds de cartes</h6>
+
+      <h6 class="fr-my-2w fr-text--md">Fonds de carte</h6>
       <button class="menu-entry" :class="{ 'active': fond === 'plan' }" @click="$emit('update:fond', 'plan')">
         <img src="@/assets/map/plan.jpg" alt="Fond plan" />
         <span>Plan</span>
@@ -52,7 +53,10 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
         <img src="@/assets/map/satellite.jpg" alt="Fond satellite" />
         <span>Satellite</span>
       </button>
-      <h6>Calques</h6>
+
+      <hr class="fr-mt-3w fr-pb-2w" />
+
+      <h6 class="fr-mb-2w fr-text--md">Calques</h6>
       <button aria-label="Calque classification" class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)">
         <img src="@/assets/map/classification.jpg" alt="" />
         <span>
@@ -89,6 +93,10 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
   border-radius: 0.3125rem;
   border: 2px solid var(--text-inverted-grey);
   box-shadow: 0 6px 18px 0 rgba(0, 0, 18, 0.16);
+
+  &:hover {
+    outline: 2px solid var(--text-inverted-grey);
+  }
 
   display: flex;
   flex-direction: column;
@@ -146,8 +154,13 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
   }
 }
 
-.menu .menu-entry:hover {
+.menu .menu-entry:hover,
+.menu .menu-entry:focus {
   background-color: #fff;
+
+  img {
+    outline: 2px solid var(--border-active-blue-france);
+  }
 }
 
 .menu-entry img {
