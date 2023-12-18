@@ -27,7 +27,7 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
 
 <template>
 <Teleport to=".maplibregl-ctrl-bottom-left">
-  <div class="container maplibregl-ctrl fr-mb-2w fr-ml-2w">
+  <div class="container maplibregl-ctrl">
     <button
       class="menu-toggle"
       :class="{ 'menu-toggle--satellite': fond === 'satellite', 'menu-toggle--plan': fond === 'plan' }"
@@ -53,16 +53,19 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
         <span>Satellite</span>
       </button>
       <h6>Calques</h6>
-      <button class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)">
-        <img src="@/assets/map/classification.jpg" alt="Couche classification" />
-        <span>Classification</span>
+      <button aria-label="Calque classification" class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)">
+        <img src="@/assets/map/classification.jpg" alt="" />
+        <span>
+          Classification
+          <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification</a></small>
+        </span>
       </button>
-      <button class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)">
-        <img src="@/assets/map/cadastre.jpg" alt="Couche cadastre" />
+      <button aria-label="Calque numéros de cadastre" class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)">
+        <img src="@/assets/map/cadastre.jpg" alt="" />
         <span>Numéros de cadastre</span>
       </button>
-      <button class="menu-entry" :class="{ 'active': ilots }" @click="$emit('update:ilots', !ilots)">
-        <img src="../../assets/map/ilots.png" alt="Numéros d'îlots" />
+      <button aria-label="Calque " class="menu-entry" :class="{ 'active': ilots }" @click="$emit('update:ilots', !ilots)">
+        <img src="../../assets/map/ilots.png" alt="" />
         <span>Numéros d'îlots (PAC)</span>
       </button>
     </div>
@@ -77,6 +80,7 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
   gap: 1rem;
   justify-content: center;
   align-items: end;
+  margin: 1rem;
 }
 
 .menu-toggle {
@@ -134,6 +138,12 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
   gap: 1rem;
   font-size: 1rem;
   margin-bottom: 0.5rem;
+
+  > span {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .menu .menu-entry:hover {

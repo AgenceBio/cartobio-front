@@ -32,7 +32,6 @@ describe("Features Table", () => {
 
   afterEach(() => {
     document.body.outerHTML = ''
-    vi.clearAllMocks()
   })
 
   test("features are listed as 3 groups of 2 and 1 and 2 features (one being multi-crops)", () => {

@@ -1,16 +1,12 @@
 <template>
   <aside ref="mapContainer" class="maplibre-container">
     <slot v-if="map" />
-    <div class="legend">
-      <slot name="legend" />
-    </div>
-    <slot name="credits" />
   </aside>
 </template>
 
 <script setup>
 import { onMounted, onUpdated, provide, ref, shallowRef, watch } from 'vue'
-import { Map as MapLibre, NavigationControl } from 'maplibre-gl'
+import { Map as MapLibre, NavigationControl, ScaleControl } from 'maplibre-gl'
 
 const map = shallowRef(null)
 const mapContainer = ref(null)
@@ -18,6 +14,10 @@ const mapContainer = ref(null)
 provide('map', map)
 
 const props = defineProps({
+  showAttribution: {
+    type: Boolean,
+    default: false
+  },
   bounds: Array,
   controls: {
     type: Boolean,
@@ -38,12 +38,14 @@ const emit = defineEmits(['zoom:change'])
 
 onMounted(() => {
   map.value = new MapLibre({
+    attributionControl: false,
     container: mapContainer.value,
     hash: false,
     bounds: props.bounds,
     padding: 50,
     ...props.options,
     locale: {
+      'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
       'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',
       'NavigationControl.ZoomIn': 'Zoomer',
       'NavigationControl.ZoomOut': 'Dézoomer',
@@ -55,10 +57,23 @@ onMounted(() => {
     map.value.addControl({
       onAdd: () => {
         const el = document.createElement('div')
-        el.className = 'maplibregl-ctrl maplibregl-ctrl-group cartobio-controls fr-mb-1w'
+        el.className = 'maplibregl-ctrl maplibregl-ctrl-group cartobio-controls'
         return el
       }
     }, 'bottom-right')
+  }
+
+  if (props.showAttribution) {
+    map.value.addControl({
+      onAdd: () => {
+        const el = document.createElement('div')
+        el.className = 'maplibregl-ctrl maplibregl-ctrl-attrib'
+        el.innerHTML = `<a href="" target="_blank">Sources des données et licences</a>`
+        return el
+      }
+    }, 'bottom-right')
+
+    map.value.addControl(new ScaleControl({ maxWidth: 80, unit: 'metric' }), 'bottom-right')
   }
 
   map.value.once('load', () => {
@@ -87,14 +102,41 @@ defineExpose({
   font: inherit;
 }
 
-.maplibregl-ctrl-bottom-right {
-  bottom: 1.5rem;
-  right: 1.5rem;
-  padding: 0;
+.maplibregl-ctrl-bottom-left {
+  z-index: 10;    /* has to be above maplibregl-ctrl-bottom-right to overlap it */
 }
 
-.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
-  margin: 0;
+.maplibregl-ctrl-bottom-right {
+  display: grid;
+  grid-template-areas:
+    'null null custom-controls'
+    'null null group-controls'
+    'attribution scale scale';
+  gap: 1rem;
+
+  bottom: 1rem;
+  right: 1rem;
+  padding: 0;
+
+  .maplibregl-ctrl {
+    margin: 0;
+  }
+
+  .maplibregl-ctrl-attrib {
+    background-color: hsla(0,0%,100%, .90);
+    font-size: 0.75rem;
+    grid-area: attribution;
+  }
+  .maplibregl-ctrl-scale {
+    grid-area: scale;
+  }
+
+  .maplibregl-ctrl-group {
+    grid-area: group-controls;
+  }
+  .cartobio-controls {
+    grid-area: custom-controls;
+  }
 }
 
 .legend > * {
@@ -103,10 +145,6 @@ defineExpose({
 </style>
 
 <style lang="postcss" scoped>
-:deep(.maplibregl-ctrl-attrib) {
-  display: none;
-}
-
 :deep(.maplibregl-popup) {
   position: absolute;
   left: 0;
@@ -127,13 +165,5 @@ defineExpose({
 
 .maplibre-container .maplibregl-canvas-container {
   z-index: 0
-}
-
-.legend {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  pointer-events: none;
 }
 </style>

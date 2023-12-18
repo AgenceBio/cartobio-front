@@ -27,12 +27,17 @@ vi.mock('maplibre-gl', () => ({
     loadImage: vi.fn(),
     addSource: vi.fn(),
     addLayer: vi.fn(),
+    fitBounds: vi.fn(),
     getLayer: vi.fn(),
     getSource: vi.fn(),
+    getZoom: vi.fn(),
     getStyle: vi.fn().mockImplementation(() => ({layers: []})),
+    isStyleLoaded: vi.fn().mockReturnValue(true),
+    setLayoutProperty: vi.fn(),
     resize: vi.fn(),
   })),
   NavigationControl: vi.fn(),
+  ScaleControl: vi.fn(),
 }));
 
 vi.stubGlobal('matchMedia', vi.fn(() => ({

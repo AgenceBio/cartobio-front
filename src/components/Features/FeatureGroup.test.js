@@ -26,7 +26,6 @@ describe("FeatureGroup", () => {
   afterEach(() => {
     document.body.outerHTML = ''
     permissions.$reset()
-    vi.clearAllMocks()
   })
 
   test('properly renders a group', async () => {

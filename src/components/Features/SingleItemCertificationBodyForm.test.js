@@ -51,7 +51,6 @@ describe("SingleItemCertificationBodyForm", () => {
 
   afterEach(() => {
     document.body.outerHTML = ''
-    vi.clearAllMocks()
   })
 
   test("we assign a certification state", async () => {

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { mount } from "@vue/test-utils"
 
 import Notification from "./Notification.ce.vue"
@@ -15,10 +15,6 @@ vi.mock('@/cartobio-api.js', () => ({
 describe("Notification", () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
   })
 
   it("should render loading state then Telepac form", async () => {
