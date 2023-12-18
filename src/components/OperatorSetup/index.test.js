@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, it, expect, vi } from "vitest"
+import { beforeAll, describe, it, expect } from "vitest"
 import { mount, flushPromises } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
 
@@ -27,7 +27,6 @@ describe("OperatorSetup", () => {
       ]
     })
   })
-  afterEach(() => vi.clearAllMocks())
 
   it("should render only telepac tab if there is only telepac source in props", () => {
     const wrapper = mount(OperatorSetup, {

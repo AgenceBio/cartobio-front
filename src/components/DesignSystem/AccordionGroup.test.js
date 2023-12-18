@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, vi } from "vitest"
+import { describe, expect, test } from "vitest"
 import { defineComponent } from "vue"
 import { mount } from "@vue/test-utils"
 
@@ -7,8 +7,6 @@ import AccordionGroup from "./AccordionGroup.vue"
 
 
 describe("AccordionGroup", () => {
-  afterEach(() => vi.clearAllMocks())
-
   test('we trigger an edit form', async () => {
     const TestComponent = defineComponent({
       components: { AccordionGroup, AccordionSection },

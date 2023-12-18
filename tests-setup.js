@@ -30,6 +30,8 @@ vi.mock('maplibre-gl', () => ({
     getLayer: vi.fn(),
     getSource: vi.fn(),
     getStyle: vi.fn().mockImplementation(() => ({layers: []})),
+    isStyleLoaded: vi.fn().mockReturnValue(true),
+    setLayoutProperty: vi.fn(),
     resize: vi.fn(),
   })),
   NavigationControl: vi.fn(),
