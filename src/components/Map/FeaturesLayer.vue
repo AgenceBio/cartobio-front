@@ -24,29 +24,29 @@ export default {
       type: Boolean,
       default: false
     },
-    showNumerosIlot: {
+    showNumerosIlots: {
       type: Boolean,
       default: false
     },
     style: {
       type: Object,
-      default: ({ showNumeroIlots }) => ({
+      default: (props) => ({
         layers: [
           {
             "id": "numeros-ilots",
             "type": "symbol",
             "source": "data",
-            "minzoom": 14,
+            "minzoom": 12,
             "layout": {
               "text-field": [
                 "case",
                 ["has", "NUMERO_I"],
-                ["concat", ["get", "NUMERO_I"], " - ", ["get", "NUMERO_P"]],
+                ["concat", ["get", "NUMERO_I"], ".", ["get", "NUMERO_P"]],
                 "",
               ],
               "text-font": ["Noto Sans Regular"],
               "text-size": 12,
-              "visibility": showNumeroIlots ? "visible" : "none",
+              "visibility": props.showNumeroIlots ? "visible" : "none",
             },
             "paint": {
               "text-color": "rgba(0, 0, 0, 1)",
@@ -63,9 +63,16 @@ export default {
     const featureStore = useFeaturesStore()
     const map = inject('map')
 
-    watch(() => props.showNumerosIlot, (showNumeroIlots) => {
-      map.value.setLayoutProperty('parcellaire-operateur/numeros-ilots', 'visibility', showNumeroIlots ? 'visible' : 'none')
-    })
+    watch(() => props.showNumerosIlots, (showNumeroIlots) => {
+      const visibility = showNumeroIlots ? 'visible' : 'none'
+
+      if (map.value.isStyleLoaded()) {
+        map.value.setLayoutProperty('parcellaire-operateur/numeros-ilots', 'visibility', visibility)
+      }
+      else {
+        map.value.once('load', () => map.value.setLayoutProperty('parcellaire-operateur/numeros-ilots', 'visibility', visibility))
+      }
+    }, { immediate: true })
 
     if (props.interactive) {
       featureStore.bindMaplibreFeatureState(map.value, 'parcellaire-operateur/data')
