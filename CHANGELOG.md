@@ -1,9 +1,10 @@
-# [2.17.0](https://github.com/AgenceBio/cartobio-front/compare/v2.16.0...v2.17.0) (2023-12-?)
+# [2.17.0](https://github.com/AgenceBio/cartobio-front/compare/v2.16.0...v2.17.0) (2023-12-19)
 
 * nouvelle interface de sélection de fond de carte
 * affiche le nom de la culture dans le tableau de parcellaire en cas de tri autre que par "type de culture"
 * augmente la compatibilité avec Firefox 91
 * une carte sans parcellaire s'affiche sans erreur
+* correction d'un bug qui empêchait les exports de fonctionner
 
 # [2.16.0](https://github.com/AgenceBio/cartobio-front/compare/v2.15.1...v2.16.0) (2023-12-12)
 
