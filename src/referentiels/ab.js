@@ -88,18 +88,18 @@ const VALIDATION_RULES = {
   },
   // la culture est renseignée
   [RULE_NOT_EMPTY] (feature) {
-    return feature.properties.cultures.every(({ CPF }) => Boolean(CPF))
+    return Array.isArray(feature.properties.cultures) && feature.properties.cultures.every(({ CPF }) => Boolean(CPF))
   },
   // le code CPF est explicite (il n'y a pas plusieurs choix possibles pour un code)
   [RULE_CPF] (feature) {
-    return feature.properties.cultures.every(({ CPF }) => Boolean(!CPF) || fromCodeCpf(CPF)?.is_selectable)
+    return (feature.properties.cultures ?? []).every(({ CPF }) => Boolean(!CPF) || fromCodeCpf(CPF)?.is_selectable)
   },
   // le niveau de conversion n'est pas renseigné si une culture existe
   [RULE_CONVERSION_LEVEL] (feature) {
     const { conversion_niveau } = feature.properties
     const conversionLevel = getConversionLevel(conversion_niveau)
 
-    return (feature.properties.cultures.every(({ CPF }) => Boolean(CPF)) && conversionLevel.value === LEVEL_UNKNOWN) === false
+    return ((feature.properties.cultures ?? []).every(({ CPF }) => Boolean(CPF)) && conversionLevel.value === LEVEL_UNKNOWN) === false
   },
   // le produit est "bio", mais on ne sait pas de quel niveau de bio il s'agit
   [RULE_MAYBE_AB] (feature) {
