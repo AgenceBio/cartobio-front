@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest"
+import { describe, expect, test } from "vitest"
 import { mount } from "@vue/test-utils"
 import { NavigationControl, ScaleControl } from 'maplibre-gl'
 
@@ -6,7 +6,7 @@ import MapContainer from "./MapContainer.vue"
 
 describe("MapContainer", () => {
   test('we display navigation with no interactive elements', async () => {
-    const wrapper = mount(MapContainer, {
+    mount(MapContainer, {
       props: { controls: false }
     })
 

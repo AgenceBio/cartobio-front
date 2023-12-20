@@ -64,7 +64,8 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   const exists = computed(() => Boolean(record.record_id))
-  const isSetup = computed(() => Boolean(record.record_id && record.metadata.source))
+  const isSetup = computed(() => Boolean(record.record_id && Object.hasOwn(record.metadata, 'source')))
+  const hasFeatures = computed(() => featuresStore.hasFeatures)
 
   watch(record, () => {
     if (record.operator?.departement) {
@@ -78,6 +79,7 @@ export const useRecordStore = defineStore('record', () => {
     record,
     // computed
     exists,
+    hasFeatures,
     isSetup,
     // methods
     $reset: reset,

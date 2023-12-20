@@ -18,7 +18,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  bounds: Array,
+  bounds: {
+    type: Array,
+    required: true
+  },
   controls: {
     type: Boolean,
     default: true

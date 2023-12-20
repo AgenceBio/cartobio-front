@@ -20,9 +20,19 @@ npm start
 
 ### WebComponent Notification
 
+Le composant est intégré au portail de notification de l'Agence Bio pour proposer une option de chargement de parcellaire dès la première étape règlementaire.
+
+Le code source se situe dans [`src/widget/`](src/widget/).
+
+La variable d'environnement `VUE_APP_NOTIFICATIONS_AB_SAMPLE_WEBCOMPONENT_TOKEN` doit être configurée avec un jeton valide.
+
+La clé publique de vérification doit être installée côté API via la variable d'environnement `NOTIFICATIONS_AB_PUBLIC_KEY`.
+
 ```
 npm start -- --config vite.widget.config.js
 ```
+
+La page [`src/widget/index.html`](src/widget/index.html) documente son intégration dans une page web, tout en proposant une version interactive.
 
 ### Prépare au déploiement
 

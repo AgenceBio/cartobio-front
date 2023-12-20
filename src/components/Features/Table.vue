@@ -31,7 +31,7 @@
         </tr>
         <tr class="legend">
           <th colspan="2">
-            <div class="fr-checkbox-group single-checkbox">
+            <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
               <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
               <label class="fr-label" for="radio-select-all" />
             </div>
@@ -49,7 +49,7 @@
           <th scope="col" class="numeric">Surface</th>
           <th scope="col" class="numeric">Détails</th>
         </tr>
-        <tr class="summary" v-if="(selectedFeatureIds.length === 0)">
+        <tr class="summary" v-if="(selectedFeatureIds.length === 0 && hasFeatures)">
           <td colspan="2"></td>
           <td colspan="2">{{ features.length }} parcelles</td>
           <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
@@ -57,11 +57,19 @@
         </tr>
       </thead>
 
+      <tbody v-if="!hasFeatures">
+        <tr>
+          <td colspan="6">
+            Votre parcellaire est vide.
+          </td>
+        </tr>
+      </tbody>
+
       <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" :validation-rules="validationRules" />
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
-      <router-link :to="{ name: 'exploitations-id-ajout-parcelle', params: { id: operator.numeroBio || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+      <router-link :to="{ name: 'exploitations-numeroBio-ajout-parcelle', params: { numeroBio: operator.numeroBio || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
     </p>
   </div>
 
@@ -116,7 +124,7 @@ const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
 
 const { record } = storeToRefs(recordStore)
-const { hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
+const { hasFeatures, hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
 const { getFeatureById, toggleAllSelected, toggleAnnotation } = featuresStore
 
@@ -232,6 +240,7 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
   margin-left: .5rem;
 }
 .fr-table table {
+  display: table;
   overflow: initial;
 }
 

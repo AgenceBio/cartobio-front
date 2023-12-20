@@ -1,73 +1,92 @@
 <template>
-  <Loading v-if="!isVerified" class="message fr-mb-5w">Établissement d'une connexion sécurisée à CartoBio.</Loading>
+  <Loading v-if="!hasBooted" class="message fr-mb-5w">Établissement d'une connexion sécurisée à CartoBio.</Loading>
 
-  <div v-else-if="isVerified && !isAuthenticated" class="fr-alert fr-alert--error fr-mb-5w">
+  <div v-else-if="hasBooted && !isAuthenticated" class="fr-alert fr-alert--error fr-mb-5w">
     <p class="fr-alert__title">Connexion à CartoBio</p>
     <p>Impossible d'établir une connexion sécurisée.</p>
   </div>
 
-  <OperatorSetup v-else-if="canImport" class="fr-container--fluid fr-my-5w"  @import:start="onUploadStart" @import:complete="onSuccess" @import:error="onError" :sources="[sources.TELEPAC]" />
-
-  <div v-else-if="uploadState === 'complete'" class="fr-alert fr-alert--success fr-mb-5w">
-    <p class="fr-alert__title">Parcellaire importé avec succès.</p>
-
-    <p>Il sera mis à disposition de l'organisme certificateur {{ user.organismeCertificateur.nom }} pour votre premier audit.</p>
-  </div>
+  <OperatorSetupFlow
+    v-else-if="canImport"
+    class="fr-container--fluid fr-my-5w"
+    flow-id="source"
+    :operator="operator"
+    :actions="operatorSetupActions"
+    @error="emit('error', $event)"
+    @upload="onUpload"
+    @submit="onSubmit"
+    @redirect="onRedirect"
+  />
 </template>
 
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed, markRaw, onBeforeMount, ref, watch } from 'vue'
 
 import Loading from '@/components/Loading.vue'
-import OperatorSetup from '@/components/OperatorSetup/index.vue'
-import { useUserStore } from '@/stores/user.js'
-import { exchangeNotificationToken } from '@/cartobio-api.js'
+import OperatorSetupFlow from '@/components/OperatorSetup/Flow.vue'
+import FlowMultiSources from '@/components/OperatorSetup/Flows/MultiSources.vue'
+import { exchangeNotificationToken, setAuthorization } from '@/cartobio-api.js'
 import { sources } from '@/referentiels/imports.js'
 
 const props = defineProps({ authToken: String })
 const emit = defineEmits(['error', 'import:ready', 'import:started', 'import:complete', 'import:errored'])
 
-const uploadState = ref(null)
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+const operator = ref(null)
+const token = ref('')
 
-const isVerified = ref(false)
-const isAuthenticated = computed(() => user.value.id)
-const canImport = computed(() => isVerified.value && isAuthenticated.value && uploadState.value !== 'complete')
+const hasBooted = ref(false)
+const isAuthenticated = computed(() => token.value)
+const canImport = computed(() => hasBooted.value && isAuthenticated.value)
+
+const operatorSetupActions = [
+  {
+    id: 'source',
+    selector: null,
+    wizzard: markRaw(FlowMultiSources),
+    extraProps: {
+      sources: [sources.TELEPAC]
+    }
+  },
+]
 
 onBeforeMount(async () => {
   try {
-    const { token: cartobioToken } = await exchangeNotificationToken(props.authToken)
+    const exchangeToken = await exchangeNotificationToken(props.authToken)
 
-    if (cartobioToken) {
-      userStore.login(cartobioToken)
-    }
+    operator.value = exchangeToken.operator
+    token.value = exchangeToken.token
+    emit('import:ready')
   }
   catch (error) {
-    uploadState.value = 'error'
+    console.error(error)
     emit('import:errored', error)
     emit('error', error)
   }
   finally {
-    isVerified.value = true
-    emit('import:ready')
+    hasBooted.value = true
   }
 })
 
-function onUploadStart () {
-  emit('import:started')
-  uploadState.value = 'start'
+watch(token, (newToken) => setAuthorization(newToken))
+
+function onUpload ({ geojson, metadata, warnings }) {
+  emit('import:started', { geojson, metadata, warnings })
 }
 
-function onSuccess ({ geojson, source }) {
-  emit('import:complete', { geojson, source })
-  uploadState.value = 'complete'
+function onSubmit (record) {
+  emit('import:complete', {
+    geojson: record.parcelles,
+    source: record.metadata.source
+  })
+}
+
+function onRedirect (record) {
+  const self = new URL(import.meta.url)
+  window.open(`${self.protocol}//${self.host}/exploitations/${record.numerobio}`, '_blank')
 }
 
 function onError (error) {
   console.error(error)
-  uploadState.value = 'error'
   emit('import:errored', error)
   emit('error', error)
 }

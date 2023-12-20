@@ -10,7 +10,7 @@
 
           <p v-if="entry.description">{{ entry.description }}</p>
 
-          <p v-if="entry.type === EventType.FEATURE_COLLECTION_CREATE && entry.metadata" class="fr-icon-download-line">
+          <p v-if="entry.type === EventType.FEATURE_COLLECTION_CREATE && entry.metadata?.source" class="fr-icon-download-line">
             {{ entry.metadata.source }}
             {{ entry.metadata.campagne }}<span v-if="entry.metadata.pacage">, PACAGE {{ entry.metadata.pacage }}</span>
           </p>
@@ -24,13 +24,12 @@
           </p>
 
           <p class="fr-icon-calendar-line">
-            <span aria-hidden="true" />
-            {{ ddmmmmyyyy(entry.date) }}
+            <time :datetime="entry.date">{{ ddmmmmyyyy(entry.date) }}</time>
           </p>
         </div>
 
         <div class="fr-card__start">
-          <ActionType :type="entry.type" :state="entry.state" />
+          <ActionType :type="entry.type" :state="entry.state" :metadata="entry.metadata" />
         </div>
       </div>
     </div>

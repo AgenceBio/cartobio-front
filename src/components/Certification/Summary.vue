@@ -3,7 +3,7 @@
     <ValidationErrors :validation-result="validationResult" />
   </div>
 
-  <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
+  <div class="fr-callout fr-callout--blue-ecume" v-else-if="recordStore.hasFeatures && record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
     <button v-if="permissions.canSaveAudit" class="fr-btn" @click="showSendOffModal = true">Terminer l'audit</button>

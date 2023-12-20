@@ -120,9 +120,9 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to) => {
   // Preload store for checking permissions
-  if (to.params.id) {
+  if (to.params.numeroBio) {
     const recordStore = useRecordStore()
-    const record = await getOperatorParcelles(to.params.id)
+    const record = await getOperatorParcelles(to.params.numeroBio)
     recordStore.replace(record)
   }
 

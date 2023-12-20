@@ -83,7 +83,7 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: end;
+  align-items: flex-end;
   margin: 1rem;
 }
 
@@ -100,7 +100,7 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
 
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
 
   span {

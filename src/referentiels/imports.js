@@ -1,9 +1,10 @@
 /** @enum string */
 export const sources = Object.freeze({
-  TELEPAC: 'telepac',
-  MES_PARCELLES: 'mesparcelles',
   GEOFOLIA: 'geofolia',
+  MANUAL: '',
+  MES_PARCELLES: 'mesparcelles',
   NCVI: 'ncvi',
+  RPG: 'rpg',
   SMAG_FARMER: 'smagfarmer',
-  RPG: 'showIlots',
+  TELEPAC: 'telepac',
 })

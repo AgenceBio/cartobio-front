@@ -28,10 +28,17 @@ describe('isSetup', () => {
     expect(store.isSetup).toEqual(false)
   })
 
-  it('requires a record_id and an import source ', () => {
+  it('is not setup with solely a recordId', () => {
     store.update({ record_id: 1 })
     expect(store.isSetup).toEqual(false)
+  })
 
+  it('is okay with a manual setup', () => {
+    store.update({ record_id: 1, metadata: { source: '' } })
+    expect(store.isSetup).toEqual(true)
+  })
+
+  it('requires a record_id and an import source', () => {
     store.update(record)
     expect(store.isSetup).toEqual(true)
   })

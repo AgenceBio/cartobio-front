@@ -1,15 +1,33 @@
 import { beforeAll, describe, it, expect } from "vitest"
+import { markRaw } from "vue"
 import { mount, flushPromises } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
 
-import OperatorSetup from "@/components/OperatorSetup/index.vue"
-import featureSources from '@/components/OperatorSetup/index.js'
+import OperatorSetupFlow from './Flow.vue'
+import ActionFromScratch from './Actions/FromScratch.vue'
+import ActionFromSource from './Actions/FromSource.vue'
+import FlowMultiSources from './Flows/MultiSources.vue'
+
+import record from '../Features/__fixtures__/record-with-features.json' assert { type: 'json' }
+import { sources } from '@/referentiels/imports.js'
 import { convertShapefileArchiveToGeoJSON, createOperatorRecord } from "@/cartobio-api.js"
 import { AxiosError } from "axios"
 
 setActivePinia(createPinia())
 
-describe("OperatorSetup", () => {
+const operatorSetupActions = [
+  {
+    id: 'source',
+    selector: markRaw(ActionFromSource),
+    wizzard: markRaw(FlowMultiSources),
+    extraProps: {
+      sources: [sources.TELEPAC, sources.GEOFOLIA]
+    }
+  },
+  { id: 'manual', selector: markRaw(ActionFromScratch) },
+]
+
+describe("OperatorSetupFlow", () => {
   beforeAll(() => {
     createOperatorRecord.mockImplementation(async d => d)
     convertShapefileArchiveToGeoJSON.mockResolvedValue({
@@ -28,21 +46,57 @@ describe("OperatorSetup", () => {
     })
   })
 
-  it("should render only telepac tab if there is only telepac source in props", () => {
-    const wrapper = mount(OperatorSetup, {
+  it("should render the flow selector at first", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
       props: {
-        sources: ['telepac']
+        actions: operatorSetupActions,
+        operator: record.operator
       }
     })
 
-    expect(wrapper.find('ul').findAll('li').length).toBe(1)
+    expect(wrapper.findAll('.fr-card')).toHaveLength(2)
+    expect(wrapper.find('.fr-stepper__state').exists()).toBe(false)
+  })
+
+  it("should render the flow selector with a visual stepper", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        operator: record.operator,
+        withStepper: true
+      }
+    })
+
+    expect(wrapper.findAll('.fr-card')).toHaveLength(2)
+    expect(wrapper.find('.fr-stepper__state').exists()).toBe(true)
+    expect(wrapper.find('.fr-stepper__state').text()).toBe('Étape 1 sur 4')
+  })
+
+  it("should render the source selector with telepac tab with a pre-established flowId", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    await flushPromises()
+
+    const tabs = wrapper.findAll('.fr-tabs__tab')
+    expect(tabs).toHaveLength(2)
+    expect(tabs.at(0).attributes()).toHaveProperty('aria-selected', 'true')
+    expect(tabs.at(0).text()).toBe('Telepac')
+
     expect(wrapper.text()).toContain('Sélectionner ma dernière déclaration PAC')
   })
 
   it("should render tab content for telepac", () => {
-    const wrapper = mount(OperatorSetup, {
+    const wrapper = mount(OperatorSetupFlow, {
       props: {
-        sources: ['telepac']
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
       }
     })
 
@@ -50,27 +104,31 @@ describe("OperatorSetup", () => {
   })
 
   it("should render tab content for Geofolia when selected", async () => {
-    const wrapper = mount(OperatorSetup, {
+    const wrapper = mount(OperatorSetupFlow, {
       props: {
-        sources: ['telepac', 'geofolia']
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
       }
     })
 
     // Click on geofolia tab
-    await wrapper.find('ul').findAll('li')[1].find('button').trigger('click')
+    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
     expect(wrapper.text()).toContain(`Sélectionner mon fichier de parcelles et d'interventions`)
   })
 
-  it("should render all tabs otherwise", () => {
-    const wrapper = mount(OperatorSetup)
+  it("should render no tabs otherwise", () => {
+    const wrapper = mount(OperatorSetupFlow)
 
-    expect(wrapper.find('ul').findAll('li').length).toBe(Object.keys(featureSources).length)
+    expect(wrapper.findAll('.fr-tabs__tab')).toHaveLength(0)
   })
 
   it("should submit convert and save a telepac import", async () => {
-    const wrapper = mount(OperatorSetup, {
+    const wrapper = mount(OperatorSetupFlow, {
       props: {
-        sources: ['telepac']
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
       }
     })
 
@@ -80,13 +138,15 @@ describe("OperatorSetup", () => {
     await flushPromises()
     const confirmBtn = await wrapper.find('.fr-btn')
     expect(createOperatorRecord).not.toHaveBeenCalled()
-    expect(confirmBtn.text()).toEqual('Import des données')
+    expect(confirmBtn.text()).toEqual('Importer ces données')
   })
 
   it("should handle the case where it cannot convert telepac file (invalid file)", async () => {
-    const wrapper = mount(OperatorSetup, {
+    const wrapper = mount(OperatorSetupFlow, {
       props: {
-        sources: ['telepac']
+        actions: [ ...operatorSetupActions ],
+        flowId: 'source',
+        operator: record.operator
       }
     })
 

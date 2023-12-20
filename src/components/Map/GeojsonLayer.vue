@@ -109,17 +109,22 @@ export default {
     })
   },
   unmounted() {
-    if (this.map.getLayer(`${this.name}/geometry`)) {
-      this.map.removeLayer(`${this.name}/geometry`)
-    }
-    if (this.map.getLayer(`${this.name}/geometry-outline`)) {
-      this.map.removeLayer(`${this.name}/geometry-outline`)
-    }
-    this.map.removeSource(`${this.name}/data`)
+    const layerRE = new RegExp(`^${this.name}/`)
+    this.map.getLayersOrder()
+      .filter(name => layerRE.test(name))
+      .filter(name => this.map.getLayer(name))
+      .forEach(name => this.map.removeLayer(name))
+
+      // a source can be removed only after its last layer has been demoted
+      this.map.removeSource(`${this.name}/data`)
 
     if (!this.style) return
 
-    this.style.layers.map(layer => this.map.removeLayer(`${this.name}/${layer.id}`))
+    // est-ce encore nécessaire avec le filtre ci-dessus ?
+    this.style.layers
+      .filter(layer => this.map.getLayer(layer.id))
+      .map(layer => this.map.removeLayer(`${this.name}/${layer.id}`))
+
     Object.keys(this.style.sources || {}).map(key => {
       if (!this.map.getSource(`${this.name}/${key}`)) return
       this.map.removeSource(`${this.name}/${key}`)
