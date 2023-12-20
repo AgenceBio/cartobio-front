@@ -1,7 +1,7 @@
 <template>
   <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false, trackResize: false }" :bounds="mapBounds">
     <GeojsonLayer :style="baseStyle" name="base" />
-    <FeaturesLayer />
+    <FeaturesLayer :data="collection" />
   </MapContainer>
 </template>
 
