@@ -16,6 +16,27 @@ import axios from "axios"
  */
 
 /**
+ * @typedef IgnFeature
+ * @property {String=} id
+ * @property {Geometry} geometry
+ * @property {IgnFeatureProperties} properties
+ * @property {String} type
+ */
+/**
+ * @typedef IgnFeatureProperties
+ * @property {String} id
+ * @property {String} departmentcode
+ * @property {String} municipalitycode
+ * @property {String} oldmunicipalitycode
+ * @property {String} districtcode
+ * @property {String} section
+ * @property {String} sheet
+ * @property {String} number
+ * @property {String} city
+ * @property {Geometry} truegeometry
+ */
+
+/**
  * @typedef GroupingChoice
  * @property {String} label
  * @property {function(Feature): String|Number} datapoint
@@ -70,6 +91,51 @@ export const deletionReasons = [
   { code: DeletionReasonsCode.FEATURE_COLLECTION_LIFECYCLE, label: 'Évolution du parcellaire' },
   { code: DeletionReasonsCode.OTHER, label: 'Autre' },
 ]
+
+class FeatureError extends ReferenceError {
+  name = 'FeatureError'
+  #label = 'Erreur de parcelle'
+
+  constructor (featureId) {
+    super(`Problème avec la parcelle #${featureId}`)
+
+    this.cadastre = featureId
+  }
+
+  /**
+   * As displayed in the UI
+   *
+   * @returns {String}
+   */
+  toString () {
+    return this.message
+  }
+
+  /**
+   * As POSTed via the HTTP API
+   */
+  valueOf () {
+    return { cadastre: this.cadastre, name: this.#label }
+  }
+}
+
+export class FeatureNotFoundError extends FeatureError {
+  name = 'FeatureNotFoundError'
+  label = 'Parcelle introuvable'
+
+  toString () {
+    return `La référence #${this.cadastre} est introuvable dans le parcellaire informatisé.`
+  }
+}
+
+export class FeatureWithoutGeometryError extends FeatureError {
+  name = 'FeatureWithoutGeometryError'
+  label = 'Contour géographique absent'
+
+  toString () {
+    return `Impossible d'obtenir le dessin géographique de la référence #${this.cadastre} n'a pas été retournée par le parcellaire informatisé.`
+  }
+}
 
 function sortBySurface (groupA, groupB) {
   return groupB.surface - groupA.surface
@@ -404,4 +470,76 @@ export function merge(features) {
 
     return union(mergedFeature, feature)
   }, null)
+}
+
+/**
+ * Fetch a single geometry for a given cadastral reference
+ *
+ * @param {String} q
+ * @param {Feature} baseFeature
+ * @throws {Error}
+ * @returns {Promise<{ geometry: Geometry, feature: Feature }>}
+ */
+async function fetchCadastreGeometry (q, baseFeature) {
+  const { data } = await axios.get('https://data.geopf.fr/geocodage/search', {
+    params: {
+      q,
+      index: 'parcel',
+      limit: 1,
+      returntruegeometry: true
+    }
+  })
+
+  /** @type {IgnFeature=} */
+  const cadastreFeature = data.features.at(0)
+
+  if (!cadastreFeature) {
+    throw new FeatureNotFoundError(q)
+  }
+
+  const geometry = cadastreFeature.properties.truegeometry
+
+  if (!geometry) {
+    throw new FeatureWithoutGeometryError(q)
+  }
+
+  return {
+    geometry,
+    feature: feature(geometry, {
+      ...baseFeature.properties,
+      COMMUNE_LABEL: cadastreFeature.properties.city,
+      COMMUNE: `${cadastreFeature.properties.departmentcode}${cadastreFeature.properties.municipalitycode}`
+    }, { id: baseFeature.id ?? baseFeature.properties.id })
+  }
+}
+
+/**
+ * Augments features with no geometry and
+ * @param {FeatureCollection} baseCollection
+ * @param {String} field feature property name to collect and fetch the geometry against
+ * @throws {Error}
+ * @returns {Promise<{ featureCollection: FeatureCollection, warnings: String[] }>}
+ */
+export async function applyCadastreGeometries (baseCollection, field = 'cadastre') {
+  const warnings = []
+
+  const results = await Promise.allSettled(baseCollection.features.map(feature => {
+    if (!feature.geometry && feature.properties[field]) {
+      return fetchCadastreGeometry(feature.properties[field], feature)
+    }
+  }))
+
+  const featureCollection = {
+    ...baseCollection,
+    features: results.map(({ status, value, reason }) => {
+      if (status === 'rejected') {
+        warnings.push(reason)
+        return
+      }
+
+      return value.feature
+    }).filter(feature => feature)
+  }
+
+  return { featureCollection, warnings }
 }

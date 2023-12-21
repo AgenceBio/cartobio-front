@@ -1,7 +1,8 @@
-import { describe, test, expect } from 'vitest'
-import { bounds, createGroupingKeys, diff, featureName, getFeatureGroups, surface } from './index.js'
+import { describe, test, expect, vi } from 'vitest'
+import { applyCadastreGeometries, FeatureNotFoundError, FeatureWithoutGeometryError, bounds, createGroupingKeys, diff, featureName, getFeatureGroups, surface } from './index.js'
 import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
-import { featureCollection } from '@turf/helpers'
+import { feature as newFeature, featureCollection } from '@turf/helpers'
+import axios from 'axios'
 
 const geometry = {
   type: "Polygon",
@@ -500,5 +501,96 @@ describe('surface', () => {
 
   test('with a Geometry', () => {
     expect(surface(geometry)).toBeCloseTo(7055.26, 1)
+  })
+})
+
+describe('applyCadastreGeometries()', () => {
+  const baseCollection = featureCollection([
+    {
+      id: 1,
+      type: 'Feature',
+      properties: {
+        cadastre: '014000000D0006',
+        cultures: [{ id: 1, CPF: '01.21.12', variete: '1511' }]
+      }
+    },
+    {
+      id: 2,
+      type: 'Feature',
+      properties: {
+        cadastre: '010640000A0542',
+        cultures: [{ id: 1, CPF: '01.21.12', variete: '1511' }]
+      }
+    }
+  ])
+
+  const coordinates = [[ [5.493242, 45.786051], [5.493575, 45.786161], [5.493797, 45.786222], [5.493977, 45.786274], [5.493908, 45.786348], [5.494475, 45.786546], [5.49448, 45.786536], [5.494527, 45.78643], [5.494579, 45.786321], [5.493653, 45.786048], [5.493292, 45.785947], [5.493242, 45.786051] ]]
+
+  vi.mocked(axios.get).mockResolvedValue({
+    data: featureCollection([
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point'
+        },
+        properties: {
+          id: '014000000D0447',
+          departmentcode: '01',
+          municipalitycode: '400',
+          section: 'OD',
+          sheet: '03',
+          number: '0006',
+          city: 'Seillonnaz',
+          _type: 'parcel',
+          truegeometry: {
+            type: 'Polygon',
+            coordinates
+          }
+        }
+      }
+    ])
+  })
+
+  test('two hits features', () => {
+    const result = applyCadastreGeometries(baseCollection)
+
+    const expectation = {
+      featureCollection: featureCollection([
+        newFeature(
+          { type: 'Polygon', coordinates },
+          { ...baseCollection.features.at(0).properties, COMMUNE_LABEL: 'Seillonnaz', COMMUNE: '01400' },
+          { id: 1 }
+        ),
+        newFeature(
+          { type: 'Polygon', coordinates },
+          { ...baseCollection.features.at(1).properties, COMMUNE_LABEL: 'Seillonnaz', COMMUNE: '01400' },
+          { id: 2 }
+        )
+      ]),
+      warnings: []
+    }
+
+    return expect(result).resolves.toMatchObject(expectation)
+  })
+
+  test('one hit and one miss features', () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      data: featureCollection([])
+    })
+
+    const result = applyCadastreGeometries(baseCollection)
+
+    const expectation = {
+      featureCollection: featureCollection([
+        newFeature(
+          { type: 'Polygon', coordinates },
+          { ...baseCollection.features.at(1).properties, COMMUNE_LABEL: 'Seillonnaz', COMMUNE: '01400' },
+          { id: 2 }
+        )
+      ]),
+      warnings: [new FeatureNotFoundError('014000000D0006')]
+    }
+
+    return expect(result).resolves.toMatchObject(expectation)
   })
 })

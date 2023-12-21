@@ -13,6 +13,7 @@
           <p v-if="entry.type === EventType.FEATURE_COLLECTION_CREATE && entry.metadata?.source" class="fr-icon-download-line">
             {{ entry.metadata.source }}
             {{ entry.metadata.campagne }}<span v-if="entry.metadata.pacage">, PACAGE {{ entry.metadata.pacage }}</span>
+            <span v-if="entry.metadata.evv">, EVV {{ entry.metadata.evv }}</span>
           </p>
 
           <p v-if="entry.type === EventType.FEATURE_COLLECTION_UPDATE && entry.featureIds" class="fr-icon-arrow-right-line">

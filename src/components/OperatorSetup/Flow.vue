@@ -111,7 +111,8 @@ function handleUpload ({ geojson, metadata: data, source, warnings: warns }) {
   metadata.value = {
     ...data,
     provenance: window.location.host,
-    source
+    source,
+    warnings: warns
   }
 
   emit('upload', { geojson, metadata: unref(metadata), warnings: warns })
