@@ -111,14 +111,12 @@ defineExpose({
 
 .maplibregl-ctrl-bottom-right {
   display: grid;
+  grid-template-columns: auto 40px auto;
   grid-template-areas:
     'null null custom-controls'
     'null null group-controls'
     'attribution scale scale';
-  gap: 1rem;
 
-  bottom: 1rem;
-  right: 1rem;
   padding: 0;
 
   .maplibregl-ctrl {
@@ -129,6 +127,7 @@ defineExpose({
     background-color: hsla(0,0%,100%, .90);
     font-size: 0.75rem;
     grid-area: attribution;
+    margin-right: 1rem;
   }
   .maplibregl-ctrl-scale {
     grid-area: scale;
@@ -136,7 +135,10 @@ defineExpose({
 
   .maplibregl-ctrl-group {
     grid-area: group-controls;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
   }
+
   .cartobio-controls {
     grid-area: custom-controls;
   }
