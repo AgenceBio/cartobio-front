@@ -5,9 +5,7 @@
     <Spinner v-else-if="(!isVerifying && isLogged && (permissions.isOc || permissions.isAgri))">Chargement de vos exploitations…</Spinner>
 
     <div class="fr-connect-group" v-else-if="!isLogged">
-      <p>
-        L'accès à CartoBio s'effectue avec l'aide de votre compte Agence Bio&nbsp;:
-      </p>
+      <h6>Se connecter avec Agence Bio</h6>
 
       <button class="fr-connect fr-connect--agence-bio" @click="router.push('/login/agencebio')">
         <span class="fr-connect__login">S'identifier avec</span>
