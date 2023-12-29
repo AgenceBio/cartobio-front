@@ -96,6 +96,7 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
 
   &:hover {
     outline: 2px solid var(--text-inverted-grey);
+    outline-offset: 0;
   }
 
   display: flex;
