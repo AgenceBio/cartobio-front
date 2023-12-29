@@ -154,12 +154,11 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
   }
 }
 
-.menu .menu-entry:hover,
-.menu .menu-entry:focus {
+.menu .menu-entry:hover {
   background-color: #fff;
 
   img {
-    outline: 2px solid var(--border-active-blue-france);
+    outline: 4px solid var(--border-active-blue-france);
   }
 }
 
@@ -170,7 +169,7 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
 }
 
 .menu-entry.active img {
-  border: 2px solid var(--border-active-blue-france);
+  outline: 2px solid var(--border-active-blue-france);
 }
 
 .menu-entry.active span {
