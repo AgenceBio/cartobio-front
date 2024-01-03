@@ -39,7 +39,9 @@
         "line-color": ["case",
           ["==", ["get", "BIO"], 1],
           "#54cdaf",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
+          ["in", ["get", "CODE_CULTU"], ["literal", [
+            "GFP", "PTR", "BOP", "BRH", "BRO", "CAE", "CEE", "CRA", "DTY", "FET", "FLO", "J5M", "J6P", "J6S", "JNO", "MLG", "PAT", "PCL", "PRL", "PPH", "RGA", "ROS", "SPH", "SPL", "XFE"
+          ]]],
           "#ffe586",
           "#ffc177"
         ],
