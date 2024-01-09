@@ -54,8 +54,10 @@ const choices = computed(() => {
 
   if (!requirePrecision.value || !props.fromPac || showMore.value) return selectableCpf
 
-  return fromCodePacAll(props.fromPac)
+  const selectableFromPac = fromCodePacAll(props.fromPac)
       .filter(c => c.is_selectable)
+
+  return selectableFromPac.length ? selectableFromPac : selectableCpf
 })
 
 const requirePrecision = computed(() => props.modelValue && !(fromCodeCpf(props.modelValue)?.is_selectable))
