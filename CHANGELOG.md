@@ -1,6 +1,7 @@
 # [2.18.0](https://github.com/AgenceBio/cartobio-front/compare/v2.17.5...v2.18.0) (2023-01-09)
 * fusionne les pages de vue du parcellaire des OC et des agriculteurs (une seule URL pour les deux)
 * nouveau design de la page de connexion
+* première version de l'ajout de parcellaire vierge
 
 # [2.17.5](https://github.com/AgenceBio/cartobio-front/compare/v2.17.0...v2.17.5) (2023-01-09)
 * plusieurs corrections de bugs d'affichage
