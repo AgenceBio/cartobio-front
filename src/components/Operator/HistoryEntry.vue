@@ -4,7 +4,7 @@
       <div class="fr-card__content">
         <div class="fr-card__desc">
           <p class="fr-icon-user-line" v-if="entry.user && entry.user.id">
-            par <b>{{ entry.user.nom }}</b>
+            par <b>{{ entry.user.prenom ? `${entry.user.prenom} ${entry.user.nom}` : entry.user.nom }}</b>
             <span class="fr-ml-1w" v-if="isOc">({{ entry.user.organismeCertificateur.nom }})</span>
           </p>
 
