@@ -19,7 +19,9 @@ export default defineConfig(({ mode }) => {
 
     plugins: [
       vue(),
-      legacy(),
+      legacy({
+        modernPolyfills: ['es.object.has-own', 'es.array.at']
+      }),
       Pages({ extensions: ['vue'] }),
     ],
 
