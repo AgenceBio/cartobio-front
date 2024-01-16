@@ -64,7 +64,7 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   const exists = computed(() => Boolean(record.record_id))
-  const isSetup = computed(() => Boolean(record.record_id && Object.hasOwn(record.metadata, 'source')))
+  const isSetup = computed(() => Boolean(record.record_id && 'source' in record.metadata))
   const hasFeatures = computed(() => featuresStore.hasFeatures)
 
   watch(record, () => {
