@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve, join } from 'path'
+import vue from '@vitejs/plugin-vue'
 
 import baseConfig from './vite.config.js'
 
@@ -20,6 +21,8 @@ export default defineConfig(({ mode }) => {
     root: './widget',
     envDir: resolve(__dirname),
     publicDir: resolve(join(__dirname, 'public')),
+
+    plugins: [ vue() ],
 
     build: {
       ...resolvedConfig.build,

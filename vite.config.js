@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, searchForWorkspaceRoot } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import Pages from "vite-plugin-pages"
+import Pages from 'vite-plugin-pages'
+import legacy from '@vitejs/plugin-legacy'
 import { resolve, join, sep } from 'path'
 
 const cwd = process.cwd()
@@ -18,6 +19,7 @@ export default defineConfig(({ mode }) => {
 
     plugins: [
       vue(),
+      legacy(),
       Pages({ extensions: ['vue'] }),
     ],
 
