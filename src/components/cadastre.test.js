@@ -55,6 +55,10 @@ describe('parseReference', () => {
       commune: '26108', section: 'AI', prefix: '000', number: '0341'
     })
 
+    expect(parseReference('95476000AI0520')).toEqual({
+      commune: '95476', section: 'AI', prefix: '000', number: '0520'
+    })
+
     expect(parseReference('33063000PD0174')).toEqual({
       commune: '33063', section: 'PD', prefix: '000', number: '0174'
     })
@@ -69,6 +73,9 @@ describe('parseReference', () => {
   test('parse a DROM postcode', () => {
     expect(parseReference('97100000AO289')).toEqual({
       commune: '97100', section: 'AO', prefix: '000', number: '289'
+    })
+    expect(parseReference('97411000BP0867')).toEqual({
+      commune: '97411', section: 'BP', prefix: '000', number: '0867'
     })
   })
 
