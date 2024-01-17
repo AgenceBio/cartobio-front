@@ -17,6 +17,8 @@ config.global.plugins = [head, router]
 
 vi.mock('@/cartobio-api.js')
 
+vi.mock('axios')
+
 vi.mock('maplibre-gl', () => ({
   Map: vi.fn(() => ({
     addControl: vi.fn(),
