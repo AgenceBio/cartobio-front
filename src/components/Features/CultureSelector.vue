@@ -56,7 +56,7 @@ const emit = defineEmits(['change'])
 const uuidedCultures = computed(() => {
   return props.cultures.map(culture => ({
     ...culture,
-    id: culture.id ?? self.crypto.randomUUID(),
+    id: culture.id ?? crypto.randomUUID(),
     // variete: '',
     // date_semis: '',
     // superficie: ''
@@ -70,7 +70,7 @@ function appendEmptyCulture () {
     ...uuidedCultures.value,
     {
       CPF: '',
-      id: self.crypto.randomUUID()
+      id: crypto.randomUUID()
     }
   ]
 
