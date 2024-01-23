@@ -8,6 +8,10 @@
             <span class="fr-ml-1w" v-if="isOc">({{ entry.user.organismeCertificateur.nom }})</span>
           </p>
 
+          <p class="fr-icon-calendar-line">
+            <time :datetime="entry.date">{{ ddmmmmyyyy(entry.date) }}</time>
+          </p>
+
           <p v-if="entry.description">{{ entry.description }}</p>
 
           <p v-if="entry.type === EventType.FEATURE_COLLECTION_CREATE && entry.metadata?.source" class="fr-icon-download-line">
@@ -16,16 +20,18 @@
             <span v-if="entry.metadata.evv">, EVV {{ entry.metadata.evv }}</span>
           </p>
 
+          <ul v-if="entry.metadata.warnings">
+            <li v-for="({ id, label }, i) in entry.metadata.warnings" :key="i" class="fr-icon-warning-line">
+              {{ label }} (<code>{{ id }}</code>)
+            </li>
+          </ul>
+
           <p v-if="entry.type === EventType.FEATURE_COLLECTION_UPDATE && entry.featureIds" class="fr-icon-arrow-right-line">
             {{ plurals(entry.featureIds.length, { one: 'parcelle', other: 'parcelles' }) }}
           </p>
 
           <p v-if="entry.type === EventType.FEATURE_DELETE" class="fr-icon-arrow-right-line">
             Raison : {{ deletionReason }}
-          </p>
-
-          <p class="fr-icon-calendar-line">
-            <time :datetime="entry.date">{{ ddmmmmyyyy(entry.date) }}</time>
           </p>
         </div>
 
@@ -88,7 +94,13 @@ const deletionReason = computed(() => {
     }
   }
 
-  p[class*="fr-icon"] {
+  ul {
+    list-style: none;
+    margin: var(--text-spacing);
+    padding: 0;
+  }
+
+  p[class*="fr-icon"], li[class*="fr-icon"] {
     color: var(--text-mention-grey);
     font-size: 0.75rem;
 

@@ -97,9 +97,9 @@ class FeatureError extends ReferenceError {
   #label = 'Erreur de parcelle'
 
   constructor (featureId) {
-    super(`Problème avec la parcelle #${featureId}`)
+    super(`Problème avec la parcelle ${featureId}`)
 
-    this.cadastre = featureId
+    this.id = featureId
   }
 
   /**
@@ -115,7 +115,7 @@ class FeatureError extends ReferenceError {
    * As POSTed via the HTTP API
    */
   valueOf () {
-    return { cadastre: this.cadastre, name: this.#label }
+    return { id: this.id, name: this.#label }
   }
 }
 
@@ -124,7 +124,7 @@ export class FeatureNotFoundError extends FeatureError {
   label = 'Parcelle introuvable'
 
   toString () {
-    return `La référence #${this.cadastre} est introuvable dans le parcellaire informatisé.`
+    return `La référence cadastrale ${this.id} est introuvable dans le parcellaire informatisé.`
   }
 }
 
@@ -133,7 +133,7 @@ export class FeatureWithoutGeometryError extends FeatureError {
   label = 'Contour géographique absent'
 
   toString () {
-    return `Impossible d'obtenir le dessin géographique de la référence #${this.cadastre} n'a pas été retournée par le parcellaire informatisé.`
+    return `Impossible d'obtenir le dessin géographique de la référence cadastrale ${this.id} n'a pas été retournée par le parcellaire informatisé.`
   }
 }
 
