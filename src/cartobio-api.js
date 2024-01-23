@@ -123,8 +123,13 @@ export async function getOperatorParcelles (numeroBio) {
   return data
 }
 
-export async function getOperatorNcviFeatures (evvNumber) {
-  const { data } = await cartobioApi.get(`/v2/import/evv/${evvNumber}`)
+/**
+ *
+ * @param {{ evv: String, numeroBio: String }} params
+ * @returns {Promise<FeatureCollection>}
+ */
+export async function getOperatorNcviFeatures ({ evv, numeroBio }) {
+  const { data } = await cartobioApi.get(`/v2/import/evv/${evv}+${numeroBio}`)
 
   return data
 }
