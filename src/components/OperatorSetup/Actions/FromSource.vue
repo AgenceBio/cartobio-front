@@ -32,12 +32,5 @@
 </template>
 
 <script setup>
-defineProps({
-  operator: {
-    type: Object,
-    required: true
-  }
-})
-
 const emit = defineEmits(['select'])
 </script>

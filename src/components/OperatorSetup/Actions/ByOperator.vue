@@ -26,10 +26,7 @@
 </template>
 
 <script setup>
-defineProps({
-  operator: {
-    type: Object,
-    required: true
-  }
-})
+import { inject } from 'vue'
+
+const operator = inject('operator')
 </script>

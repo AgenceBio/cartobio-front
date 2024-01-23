@@ -15,11 +15,11 @@
 
     <div class="fr-grid-row fr-grid-row--gutters" v-if="isStep('intro')">
       <div class="fr-col-md-6 fr-col-lg-4" v-for="{ id, selector } in actions" :key="id">
-        <Component :is="selector" :operator="operator" @select="handleFlowSelection(id)" @submit="handleUpload" @save="handleUploadAndSave" />
+        <Component :is="selector" @select="handleFlowSelection(id)" @submit="handleUpload" @save="handleUploadAndSave" />
       </div>
     </div>
 
-    <Component :is="currentFlow.component" v-bind="currentFlow.extraProps" :operator="operator" @submit="handleUpload" v-else-if="isStep('setup')" />
+    <Component :is="currentFlow.component" v-bind="currentFlow.extraProps" @submit="handleUpload" v-else-if="isStep('setup')" />
     <PreviewStep :featureCollection="featureCollection" :warnings="warnings" @submit="handlePreviewConfirmation" @cancel="resetFlow" v-else-if="isStep('preview')" />
     <OutroStep @submit="handleRedirection" @cancel="resetFlow" v-else-if="isStep('outro')" />
 
@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { computed, markRaw, readonly, ref, shallowRef, unref } from 'vue'
+import { computed, markRaw, provide, readonly, ref, shallowRef, unref } from 'vue'
 
 import PreviewStep from '@/components/OperatorSetup/Preview.vue'
 import OutroStep from '@/components/OperatorSetup/Outro.vue'
@@ -62,6 +62,7 @@ const props = defineProps({
   }
 })
 
+provide('operator', props.operator)
 const currentFlowId = ref(props.flowId)
 const featureCollection = shallowRef(null)
 const metadata = shallowRef(null)

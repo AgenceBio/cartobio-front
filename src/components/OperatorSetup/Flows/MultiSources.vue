@@ -22,10 +22,6 @@ import featureSources, { DEFAULT_SOURCE } from '@/components/OperatorSetup/index
 const emit = defineEmits(['submit', 'error'])
 
 const props = defineProps({
-  operator: {
-    type: Object,
-    required: true
-  },
   sources: {
     type: Array,
     default: () => ([]),
