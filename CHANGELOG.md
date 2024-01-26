@@ -1,3 +1,6 @@
+# [2.18.4](https://github.com/AgenceBio/cartobio-front/compare/v2.18.1...v2.18.4) (2023-01-26)
+* corrections de bugs
+
 # [2.18.1](https://github.com/AgenceBio/cartobio-front/compare/v2.18.0...v2.18.1) (2023-01-16)
 * augmente la compatibilité des navigateurs (jusque 2019)
 
