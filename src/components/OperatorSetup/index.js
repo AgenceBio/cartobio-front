@@ -3,6 +3,7 @@ import { sources } from '@/referentiels/imports.js'
 
 import TelepacFeaturesImport from '@/components/OperatorSetup/Sources/Telepac.vue'
 import GeofoliaFeaturesImport from '@/components/OperatorSetup/Sources/Geofolia.vue'
+import RPGFeaturesImport from '@/components/OperatorSetup/Sources/RPG.vue'
 
 export default {
   [sources.TELEPAC]: {
@@ -12,6 +13,10 @@ export default {
   [sources.GEOFOLIA]: {
     label: 'Geofolia',
     component: markRaw(GeofoliaFeaturesImport),
+  },
+  [sources.RPG]: {
+    label: 'RPG instruit',
+    component: markRaw(RPGFeaturesImport),
   },
   [sources.MES_PARCELLES]: {
     label: 'MesParcelles',
