@@ -20,7 +20,7 @@ import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic'
 import Fuse from 'fuse.js'
 import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
-import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
+import { fromCodeCpf, fromCodePacAll, fromCodePacStrict } from "@agencebio/rosetta-cultures"
 
 const props = defineProps({
   id: {
@@ -89,9 +89,10 @@ onMounted(() => {
               threshold: 0.4,
             })
 
-            const cultureChoices = fuse
+            const cultureChoices = query ? fuse
               .search(query)
-              .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }))
+              .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle })) :
+              choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }))
 
             if (requirePrecision.value && !(showMore.value)) {
               cultureChoices.push({
@@ -158,7 +159,7 @@ onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false))
 }
 
 .aa-PanelLayout {
-  max-height: calc(100vh - 25rem);
+  bottom: 10rem;
 }
 
 .aa-Autocomplete {
