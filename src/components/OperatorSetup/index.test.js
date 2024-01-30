@@ -10,7 +10,7 @@ import FlowMultiSources from './Flows/MultiSources.vue'
 
 import record from '../Features/__fixtures__/record-with-features.json' assert { type: 'json' }
 import { sources } from '@/referentiels/imports.js'
-import { convertShapefileArchiveToGeoJSON, createOperatorRecord } from "@/cartobio-api.js"
+import { convertShapefileArchiveToGeoJSON, createOperatorRecord, pacageLookup } from "@/cartobio-api.js"
 import { AxiosError } from "axios"
 
 setActivePinia(createPinia())
@@ -21,7 +21,7 @@ const operatorSetupActions = [
     selector: markRaw(ActionFromSource),
     wizzard: markRaw(FlowMultiSources),
     extraProps: {
-      sources: [sources.TELEPAC, sources.GEOFOLIA]
+      sources: [sources.TELEPAC, sources.GEOFOLIA, sources.RPG]
     }
   },
   { id: 'manual', selector: markRaw(ActionFromScratch) },
@@ -30,7 +30,7 @@ const operatorSetupActions = [
 describe("OperatorSetupFlow", () => {
   beforeAll(() => {
     createOperatorRecord.mockImplementation(async d => d)
-    convertShapefileArchiveToGeoJSON.mockResolvedValue({
+    const importData = {
       type: "FeatureCollection",
       features: [
         {
@@ -43,7 +43,9 @@ describe("OperatorSetupFlow", () => {
           "properties": {}
         }
       ]
-    })
+    }
+    convertShapefileArchiveToGeoJSON.mockResolvedValue(importData)
+    pacageLookup.mockResolvedValue(importData)
   })
 
   it("should render the flow selector at first", async () => {
@@ -84,7 +86,7 @@ describe("OperatorSetupFlow", () => {
     await flushPromises()
 
     const tabs = wrapper.findAll('.fr-tabs__tab')
-    expect(tabs).toHaveLength(2)
+    expect(tabs).toHaveLength(3)
     expect(tabs.at(0).attributes()).toHaveProperty('aria-selected', 'true')
     expect(tabs.at(0).text()).toBe('Telepac')
 
@@ -115,6 +117,20 @@ describe("OperatorSetupFlow", () => {
     // Click on geofolia tab
     await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
     expect(wrapper.text()).toContain(`Sélectionner mon fichier de parcelles et d'interventions`)
+  })
+
+  it("should render tab content for RPG when selected", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    // Click on rpg tab
+    await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
+    expect(wrapper.text()).toContain(`Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit`)
   })
 
   it("should render no tabs otherwise", () => {
@@ -158,5 +174,40 @@ describe("OperatorSetupFlow", () => {
     expect(createOperatorRecord).not.toHaveBeenCalled()
     await flushPromises()
     expect(wrapper.text()).toContain('Votre fichier ne semble pas être une déclaration')
+  })
+
+  it('should handle incorrect PACAGE numbers', async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    // Click on rpg tab
+    await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
+    await wrapper.find('#input-pacage').setValue('123456')
+    await wrapper.find('.fr-btn').trigger('click')
+    expect(wrapper.text()).toContain(`Le numéro de PACAGE est composé de 8 ou 9 chiffres.`)
+  })
+
+  it('should handle correct PACAGE numbers', async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    // Click on rpg tab
+    await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
+    await wrapper.find('#input-pacage').setValue('012345678')
+    await wrapper.find('.fr-btn').trigger('click')
+    await flushPromises()
+    expect(pacageLookup).toHaveBeenCalledOnce()
+    const confirmBtn = await wrapper.find('.fr-btn')
+    expect(confirmBtn.text()).toEqual('Importer ces données')
   })
 })
