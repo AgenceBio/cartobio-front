@@ -15,7 +15,33 @@ const router = createRouter({ routes, history: createWebHistory() })
 
 config.global.plugins = [head, router]
 
-vi.mock('@/cartobio-api.js')
+vi.mock('axios', async (importActual) => {
+  const axios = await importActual()
+  const createMock = {
+    delete: vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    defaults: {
+      headers: {
+        common: {}
+      }
+    }
+  }
+  return {
+    __esModule: true,
+    default: {
+      create: vi.fn().mockReturnValue(createMock),
+      __createMock: createMock,
+      delete: vi.fn(),
+      get: vi.fn(),
+      post: vi.fn(),
+      put: vi.fn()
+    },
+    post: vi.fn(),
+    AxiosError: axios.AxiosError
+  }
+})
 
 vi.mock('maplibre-gl', () => ({
   Map: vi.fn(() => ({

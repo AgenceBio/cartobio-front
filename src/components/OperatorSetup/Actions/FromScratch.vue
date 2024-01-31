@@ -24,13 +24,6 @@ import { sources } from '@/referentiels/imports.js'
 
 const emit = defineEmits(['save'])
 
-defineProps({
-  operator: {
-    type: Object,
-    required: true
-  }
-})
-
 function confirmImport () {
   emit('save', {
     geojson: { type: 'FeatureCollection', features: [] },

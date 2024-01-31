@@ -11,7 +11,6 @@
           </label>
         </div>
 
-
         <div class="fr-mb-10v" v-for="({ commune, key }, index) in cadastreParcelles" :key="key">
           <div class="fr-input-group fr-mb-3v">
             <label for="form-commune" class="fr-label">Commune</label>
