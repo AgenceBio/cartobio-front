@@ -111,14 +111,14 @@ export const EventType = {
  * @property {UserRole} mainGroup
  */
 
-const cartobioApi = axios.create({ baseURL, timeout: 10000 })
+const apiClient = axios.create({ baseURL, timeout: 10000 })
 
 /**
  * @param {number} numeroBio
  * @returns {Promise<Record>}
  */
 export async function getOperatorParcelles (numeroBio) {
-  const { data } = await cartobioApi.get(`/v2/operator/${numeroBio}`)
+  const { data } = await apiClient.get(`/v2/operator/${numeroBio}`)
 
   return data
 }
@@ -129,7 +129,7 @@ export async function getOperatorParcelles (numeroBio) {
  * @returns {Promise<FeatureCollection>}
  */
 export async function getOperatorNcviFeatures ({ evv, numeroBio }) {
-  const { data } = await cartobioApi.get(`/v2/import/evv/${evv}+${numeroBio}`)
+  const { data } = await apiClient.get(`/v2/import/evv/${evv}+${numeroBio}`)
 
   return data
 }
@@ -139,7 +139,7 @@ export async function getOperatorNcviFeatures ({ evv, numeroBio }) {
  * @returns {Promise<Record[]>}
  */
 export async function searchOperators (input) {
-  const { data } = await cartobioApi.post(`/v2/certification/operators/search`, { input })
+  const { data } = await apiClient.post(`/v2/certification/operators/search`, { input })
 
   return data
 }
@@ -148,7 +148,7 @@ export async function searchOperators (input) {
  * @return {Promise<undefined>}
  */
 export async function getUserOperators () {
-  const { data } = await cartobioApi.get(`/v2/operators`)
+  const { data } = await apiClient.get(`/v2/operators`)
 
   return data
 }
@@ -158,7 +158,7 @@ export async function getUserOperators () {
  * @returns {Promise<FeatureCollection>}
  */
 export async function pacageLookup (pacage) {
-  const { data } = await cartobioApi.get(`/v2/import/pacage/${pacage}`)
+  const { data } = await apiClient.get(`/v2/import/pacage/${pacage}`)
 
   return data
 }
@@ -167,7 +167,7 @@ export async function pacageLookup (pacage) {
  * @returns {Promise<Record[]>}
  */
 export async function fetchLatestOperators () {
-  const { data } = await cartobioApi.get(`/v2/certification/operators/latest`, { timeout: 10000 })
+  const { data } = await apiClient.get(`/v2/certification/operators/latest`, { timeout: 10000 })
 
   return data.operators
 }
@@ -179,13 +179,13 @@ export async function fetchLatestOperators () {
  * @returns {Promise<Record>}
  */
 export async function createOperatorRecord (numeroBio, payload) {
-  const { data } = await cartobioApi.post(`/v2/audits/${numeroBio}`, payload)
+  const { data } = await apiClient.post(`/v2/audits/${numeroBio}`, payload)
 
   return data
 }
 
 export async function deleteSingleFeature ({ recordId }, { id, reason }) {
-  const { data } = await cartobioApi.delete(`/v2/audits/${recordId}/parcelles/${id}`, {data: { reason }})
+  const { data } = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${id}`, {data: { reason }})
 
   return data
 }
@@ -198,7 +198,7 @@ export async function deleteSingleFeature ({ recordId }, { id, reason }) {
  * @returns {Promise<Record>}
  */
 export async function updateFeatureCollectionProperties ({ recordId }, featureCollection) {
-  const { data } = await cartobioApi.patch(`/v2/audits/${recordId}/parcelles`, featureCollection)
+  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, featureCollection)
 
   return data
 }
@@ -211,7 +211,7 @@ export async function updateFeatureCollectionProperties ({ recordId }, featureCo
  * @returns {Promise<Record>}
  */
 export async function updateSingleFeature ({ recordId }, { id, properties, geometry }) {
-  const { data } = await cartobioApi.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties, geometry })
+  const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties, geometry })
 
   return data
 }
@@ -223,7 +223,7 @@ export async function updateSingleFeature ({ recordId }, { id, properties, geome
  * @returns {Promise<Record>}
  */
 export async function updateAuditState ({ recordId }, patch) {
-  const { data } = await cartobioApi.patch(`/v2/audits/${recordId}`, patch)
+  const { data } = await apiClient.patch(`/v2/audits/${recordId}`, patch)
 
   return data
 }
@@ -233,7 +233,7 @@ export async function updateAuditState ({ recordId }, patch) {
  * @returns {Promise<Record>}
  */
 export async function deleteRecord (recordId) {
-  const { data } = await cartobioApi.delete(`/v2/audits/${recordId}`)
+  const { data } = await apiClient.delete(`/v2/audits/${recordId}`)
 
   return data
 }
@@ -246,7 +246,7 @@ export async function deleteRecord (recordId) {
  * @returns {Promise<Record>}
  */
 export async function submitNewParcelle ({ recordId }, feature) {
-  const { data } = await cartobioApi.post(`/v2/audits/${recordId}/parcelles`, {
+  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
     feature
   })
 
@@ -258,7 +258,7 @@ export async function submitNewParcelle ({ recordId }, feature) {
  * @returns {Promise<DecodedUserToken>}
  */
 export async function verifyToken (userToken) {
-  const { data } = await cartobioApi.get(`/v2/user/verify`, {
+  const { data } = await apiClient.get(`/v2/user/verify`, {
     headers: {
       Authorization: `Bearer ${userToken}`
     }
@@ -268,7 +268,7 @@ export async function verifyToken (userToken) {
 }
 
 export async function exchangeNotificationToken (token) {
-  const { data } = await cartobioApi.get(`/v2/user/exchangeToken`, {
+  const { data } = await apiClient.get(`/v2/user/exchangeToken`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -279,10 +279,10 @@ export async function exchangeNotificationToken (token) {
 
 export function setAuthorization (userToken) {
   if (userToken) {
-    cartobioApi.defaults.headers.common['Authorization'] = `Bearer ${userToken}`
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${userToken}`
   }
   else {
-    delete cartobioApi.defaults.headers.common['Authorization']
+    delete apiClient.defaults.headers.common['Authorization']
   }
 }
 
@@ -295,7 +295,7 @@ export function setAuthorization (userToken) {
 export async function convertShapefileArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
-  const { data: geojson } = await cartobioApi.post(`/v2/convert/shapefile/geojson`, form)
+  const { data: geojson } = await apiClient.post(`/v2/convert/shapefile/geojson`, form)
   return geojson
 }
 
@@ -308,6 +308,6 @@ export async function convertShapefileArchiveToGeoJSON (archive) {
 export async function convertGeofoliaArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
-  const { data: geojson } = await cartobioApi.post(`/v2/convert/geofolia/geojson`, form)
+  const { data: geojson } = await apiClient.post(`/v2/convert/geofolia/geojson`, form)
   return geojson
 }

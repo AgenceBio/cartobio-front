@@ -524,8 +524,8 @@ export async function applyCadastreGeometries (baseCollection, field = 'cadastre
   const warnings = []
 
   const results = await Promise.allSettled(baseCollection.features.map(feature => {
-    if (!feature.geometry && feature.properties[field]) {
-      return fetchCadastreGeometry(feature.properties[field], feature)
+    if (!feature.geometry && Array.isArray(feature.properties[field])) {
+      return fetchCadastreGeometry(feature.properties[field][0], feature)
     }
   }))
 

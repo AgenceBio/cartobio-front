@@ -35,7 +35,7 @@ export const useRecordStore = defineStore('record', () => {
    * Use case: when navigating from /parcellaire/:id to /parcellaire/:id/new-stuff
    * @param {import('@/cartobio-api').Record} updatedRecord
    */
-  function update (updatedRecord) {
+  function update (updatedRecord = {}) {
     Object.entries(record).forEach(([key]) => {
       if (key in updatedRecord) {
         record[key] = updatedRecord[key]

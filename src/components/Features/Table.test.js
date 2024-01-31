@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { defineComponent, markRaw } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
-import { deleteSingleFeature, updateSingleFeature } from '@/cartobio-api.js'
+import axios from 'axios'
 
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/components/Features/index.js"
 import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index.js"
@@ -128,7 +128,7 @@ describe("Features Table", () => {
     await table.find('tr.parcelle td').trigger('click')
     await flushPromises()
 
-    updateSingleFeature.mockResolvedValue(record)
+    axios.__createMock.put.mockResolvedValueOnce(record)
 
     // this throws if the modal form does not exist
     // it catches the Component reference even if it has been Teleport-ed in the <body>
@@ -139,7 +139,7 @@ describe("Features Table", () => {
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     // modal is down, and the table should be updated
-    expect(updateSingleFeature).toHaveBeenCalled()
+    expect(axios.__createMock.put).toHaveBeenCalled()
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
   })
 
@@ -155,7 +155,7 @@ describe("Features Table", () => {
     await wrapper.find('.fr-icon-delete-line').trigger('click')
 
     // we trigger the deletion
-    deleteSingleFeature.mockResolvedValue(record)
+    axios.__createMock.delete.mockResolvedValueOnce(record)
 
     const modal = wrapper.getComponent(DeleteFeatureModal)
     await modal.find('#deletion-reason').setValue(DeletionReasonsCode.OTHER)

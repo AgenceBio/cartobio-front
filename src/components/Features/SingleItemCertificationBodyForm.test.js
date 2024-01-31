@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { defineComponent, markRaw } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
-import { updateSingleFeature } from '@/cartobio-api.js'
+import axios from 'axios'
 import { usePermissions, useRecordStore } from "@/stores/index.js"
 import {
   ANNOTATIONS,
@@ -103,10 +103,9 @@ describe("SingleItemCertificationBodyForm", () => {
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
-    expect(updateSingleFeature.mock.lastCall).toMatchObject([
-      { recordId: '054f0d70-c3da-448f-823e-81fcf7c2bf6e' },
+    expect(axios.__createMock.put.mock.lastCall).toMatchObject([
+      '/v2/audits/054f0d70-c3da-448f-823e-81fcf7c2bf6e/parcelles/2',
       {
-        id: 2,
         properties: {
           annotations: [
             {

@@ -510,7 +510,7 @@ describe('applyCadastreGeometries()', () => {
       id: 1,
       type: 'Feature',
       properties: {
-        cadastre: '014000000D0006',
+        cadastre: ['014000000D0006'],
         cultures: [{ id: 1, CPF: '01.21.12', variete: '1511' }]
       }
     },
@@ -518,7 +518,7 @@ describe('applyCadastreGeometries()', () => {
       id: 2,
       type: 'Feature',
       properties: {
-        cadastre: '010640000A0542',
+        cadastre: ['010640000A0542'],
         cultures: [{ id: 1, CPF: '01.21.12', variete: '1511' }]
       }
     }
