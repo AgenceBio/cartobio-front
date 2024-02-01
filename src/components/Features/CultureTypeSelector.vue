@@ -50,12 +50,15 @@ const showMore = ref(false)
 const query = ref(fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
 
 const choices = computed(() => {
-  const selectableCpf = cpf.filter(({ is_selectable }) => is_selectable)
+  const selectableCpf = cpf
+      .filter(({ is_selectable }) => is_selectable)
+      .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf))
 
   if (!requirePrecision.value || !props.fromPac || showMore.value) return selectableCpf
 
   const selectableFromPac = fromCodePacAll(props.fromPac)
       .filter(c => c.is_selectable)
+      .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf))
 
   return selectableFromPac.length ? selectableFromPac : selectableCpf
 })
@@ -83,25 +86,30 @@ onMounted(() => {
         {
           sourceId: 'cultures',
           getItems ({ query }) {
-            const fuse = new Fuse(choices.value, {
-              keys: ['libelle_code_cpf'],
-              minMatchCharLength: 2,
-              threshold: 0.4,
-            })
+            let items;
 
-            const cultureChoices = query ? fuse
-              .search(query)
-              .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle })) :
-              choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }))
+            if (query.length > 1) {
+              items = new Fuse(choices.value, {
+                keys: ['libelle_code_cpf'],
+                minMatchCharLength: 2,
+                threshold: 0.4,
+              })
+                  .search(query)
+                  .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }))
+            } else if (requirePrecision.value || showMore.value) {
+              items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }))
+            } else {
+              items = []
+            }
 
             if (requirePrecision.value && !(showMore.value)) {
-              cultureChoices.push({
+              items.push({
                 libelle: 'Voir toutes les cultures',
                 code: 'showMore'
               })
             }
 
-            return cultureChoices
+            return items
           },
           templates: {
             item ({ item, html }) {
@@ -159,7 +167,7 @@ onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false))
 }
 
 .aa-PanelLayout {
-  bottom: 10rem;
+  max-height: 20rem;
 }
 
 .aa-Autocomplete {
