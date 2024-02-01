@@ -14,7 +14,12 @@ const loading = ref(false)
 const erreur = ref('')
 const importRPG = async () => {
   if (!isValid(normalize(pacage.value))) {
-    erreur.value = 'Le numéro de PACAGE est composé de 8 ou 9 chiffres.'
+    if (pacage.value.length < 7 || pacage.value.length > 9) {
+      erreur.value = 'Le numéro de PACAGE est composé de minimum 7 chiffres.'
+    } else {
+      erreur.value = 'Le numéro de PACAGE est invalide. Il doit commencer par le numéro du département, ' +
+          'et être composé de 7 ou 8 chiffres, éventuellement précédés de 0, ou de 9 chiffres pour les DROM.'
+    }
     return
   }
 

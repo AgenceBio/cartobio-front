@@ -1,6 +1,6 @@
-import { beforeAll, describe, it, expect, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { markRaw } from "vue"
-import { mount, flushPromises } from "@vue/test-utils"
+import { flushPromises, mount } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
 import axios, { AxiosError } from "axios"
 
@@ -12,7 +12,6 @@ import CviComponent from "./Sources/Cvi.vue"
 
 import record from '../Features/__fixtures__/record-with-features.json' assert { type: 'json' }
 import { sources } from '@/referentiels/imports.js'
-import { AxiosError } from "axios"
 
 setActivePinia(createPinia())
 
@@ -146,7 +145,7 @@ describe("OperatorSetupFlow", () => {
 
     await wrapper.find('ul').find('.import-source-tab--cvi').trigger('click')
 
-    const cvi = wrapper.getComponent(CviComponent)
+    wrapper.getComponent(CviComponent)
     await wrapper.find('#ncvi-evv').setValue('99999')
 
     // surprisingly, the click on the submit button… does not trigger the submit event
@@ -223,9 +222,9 @@ describe("OperatorSetupFlow", () => {
 
     // Click on rpg tab
     await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
-    await wrapper.find('#input-pacage').setValue('123456')
+    await wrapper.find('#input-pacage').setValue('12345')
     await wrapper.find('.fr-btn').trigger('click')
-    expect(wrapper.text()).toContain(`Le numéro de PACAGE est composé de 8 ou 9 chiffres.`)
+    expect(wrapper.text()).toContain(`Le numéro de PACAGE est composé de minimum 7 chiffres.`)
   })
 
   it('should handle correct PACAGE numbers', async () => {
