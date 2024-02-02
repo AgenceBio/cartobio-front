@@ -4,12 +4,14 @@ import { ref } from "vue"
 import { pacageLookup } from "@/cartobio-api.js"
 import { normalize, isValid, useTélépac } from "@/referentiels/pac.js"
 import { sources } from "@/referentiels/imports.js"
+import { useRecordStore } from "@/stores/index.js"
 
 const emit = defineEmits(["upload:start", "upload:complete"])
 
 const telepac = useTélépac()
+const recordStore = useRecordStore()
 
-const pacage = ref('')
+const pacage = ref(recordStore.record.operator?.numeroPacage ?? "")
 const loading = ref(false)
 const erreur = ref('')
 const importRPG = async () => {
