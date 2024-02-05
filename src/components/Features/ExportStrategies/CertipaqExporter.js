@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { featureName, getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
+import { cultureLabel, featureName, getFeatureGroups, GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, surface } from '@/components/Features/index.js'
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -66,7 +66,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const surfaceHa = (surface(geometry) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
-    const culture = fromCodeCpf(props.cultures.at(0)?.CPF)
+    const culture = fromCodeCpf(props.cultures?.at(0)?.CPF)
 
     return [
       // Commune          #A
@@ -74,7 +74,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
       // Ilot             #B
       featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '_', placeholder: '' }),
       // Libellé Culture  #C
-      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures?.at(0)?.CPF})`,
       // Variété / infos  #D
       generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: true, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
@@ -146,7 +146,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     )
 
     sheet_add_aoa(sheet, [[
-      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      cultureLabel(culture),
       groups.AB?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
       groups.C1?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,
       groups.C2?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? 0,

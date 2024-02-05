@@ -53,7 +53,7 @@ const getSheet = ({ featureCollection, permissions }) => {
       // Ilot
       featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }),
       // Culture
-      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures.at(0)?.CPF})`,
       // N° Cadastre
       props.cadastre,
       // Variété / infos

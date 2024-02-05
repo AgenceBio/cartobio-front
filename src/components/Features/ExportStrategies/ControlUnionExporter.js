@@ -56,7 +56,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
 
     return [
       props.cadastre,
-      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue`,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures.at(0)?.CPF})`,
       surfaceHa,
       props.engagement_date ? new Date(props.engagement_date) : '',
       props.conversion_niveau,

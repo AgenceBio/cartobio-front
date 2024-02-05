@@ -45,7 +45,7 @@ describe("SingleItemCertificationBodyForm", () => {
     })
 
     const table = wrapper.getComponent(TableComponent)
-    await table.find('tr.parcelle td').trigger('click')
+    await table.find('tr#parcelle-2 td').trigger('click')
     await flushPromises()
   })
 

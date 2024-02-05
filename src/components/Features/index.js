@@ -137,33 +137,39 @@ export class FeatureWithoutGeometryError extends FeatureError {
   }
 }
 
-function sortBySurface (groupA, groupB) {
-  return groupB.surface - groupA.surface
-}
-
-function sortByDescendingKey (groupA, groupB) {
-  return groupB.key - groupA.key
-}
-
-function sortByAscendingLabel (groupA, groupB) {
-  return groupA.label.localeCompare(groupB.label)
+/**
+ * @enum {Number}
+ */
+const SORT = {
+  ASCENDING: 1,
+  DESCENDING: -1
 }
 
 /**
  *
  * @param {function(Feature): function} propertyAccessor
- * @returns {function}
+ * @param {SORT} order
+ * @returns {function(GroupOrFeature, GroupOrFeature): Number}
  */
-function sortByAscendingFeatureProperty (propertyAccessor) {
+export function sortByAccessor (propertyAccessor, order = SORT.ASCENDING) {
+  const isNumeric = (d) => typeof d === 'number' || Number.isNaN(parseInt(d, 10)) === false
+
   return function sortByAscendingFeatureGroupProperty (groupA, groupB) {
-    const a = String(propertyAccessor(groupA.features.at(0)))
-    const b = String(propertyAccessor(groupB.features.at(0)))
+    const a = String(propertyAccessor(groupA))
+    const b = String(propertyAccessor(groupB))
 
     return a.localeCompare(b, 'fr-FR', {
       usage: 'sort',
-      numeric: true
-    })
+      numeric: isNumeric(propertyAccessor(groupA))
+    }) * order
   }
+}
+
+const NO_GROUP = '__nogroup__'
+const PACNotationOptions = {
+  ilotLabel: '',
+  parcelleLabel: '',
+  separator: '.'
 }
 
 /**
@@ -172,44 +178,74 @@ function sortByAscendingFeatureProperty (propertyAccessor) {
 export const groupingChoices = {
   [GROUPE_COMMUNE]: {
     label: 'commune',
-    datapoint: (d) => d.properties.COMMUNE,
-    groupLabelFn: ({ featureSample: d }) => {
+    labelNoGroup: 'Commune inconnue',
+    datapoint: (d) => d.properties.COMMUNE || NO_GROUP,
+    groupLabelFn ({ featureSample: d }) {
       if (d.properties.COMMUNE_LABEL) {
         return `${d.properties.COMMUNE_LABEL} (${d.properties.COMMUNE.slice(0, -3)})`
       }
+      else if (d.properties.COMMUNE) {
+        return d.properties.COMMUNE
+      }
       else {
-        return d.properties.COMMUNE || 'Commune inconnue'
+        return this.labelNoGroup
       }
     },
-    sortFn: sortBySurface
+    sortFn: sortByAccessor((g) => g.surface, SORT.DESCENDING),
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ILOT]: {
     label: 'îlot PAC',
+    labelNoGroup: 'Non précisé ou hors-PAC',
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.NUMERO_I || '',
-    groupLabelFn: ({ featureSample: d }) => d.properties.NUMERO_I ? `Îlot ${d.properties.NUMERO_I}` : 'Numéro d\'îlot non-précisé',
-    sortFn: sortByAscendingFeatureProperty((d) => d.properties.NUMERO_I || '')
+    datapoint: (d) => 'NUMERO_I' in d.properties ? d.properties.NUMERO_I : NO_GROUP,
+    groupLabelFn ({ featureSample: d }) {
+      if (d.properties.NUMERO_I) {
+        return `Îlot ${d.properties.NUMERO_I}`
+      }
+      else {
+        return this.labelNoGroup
+      }
+    },
+    sortFn: sortByAccessor((g) => parseInt(g.features.at(0).properties.NUMERO_I, 10) || Infinity, SORT.ASCENDING),
+    sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
     label: 'type de culture',
+    labelNoGroup: 'Absence de culture',
+    labelUnknown: 'Culture inconnue',
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.cultures.map(({ CPF }) => CPF),
-    groupLabelFn: ({ datapoint }) => fromCodeCpf(datapoint)?.libelle_code_cpf || 'Type de culture inconnu',
-    sortFn: sortByAscendingLabel
+    datapoint: (d) => Array.isArray(d.properties.cultures) && d.properties.cultures.length ? d.properties.cultures.map(({ CPF }) => CPF) : [NO_GROUP],
+    groupLabelFn ({ datapoint }) {
+      return datapoint === NO_GROUP ? this.labelNoGroup : (fromCodeCpf(datapoint)?.libelle_code_cpf || this.labelUnknown)
+    },
+    sortFn: sortByAccessor((g) => {
+      console.log(g.mainKey, fromCodeCpf(g.mainKey)?.libelle_code_cpf, featureName(g.features.at(0), PACNotationOptions))
+      return fromCodeCpf(g.mainKey)?.libelle_code_cpf || ''
+    }, SORT.ASCENDING),
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },
   [GROUPE_NIVEAU_CONVERSION]: {
     label: 'niveau de conversion',
+    labelNoGroup: 'Niveau de conversion inconnu',
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.conversion_niveau || '',
-    groupLabelFn: ({ groupingKey }) => conversionLevels.find(({ value }) => value === groupingKey)?.label || 'Niveau de conversion inconnu',
-    sortFn: sortBySurface
+    datapoint: (d) => d.properties.conversion_niveau || NO_GROUP,
+    groupLabelFn ({ groupingKey }) {
+      return conversionLevels.find(({ value }) => value === groupingKey)?.label || this.labelNoGroup
+    },
+    sortFn: sortByAccessor((g) => g.surface, SORT.DESCENDING),
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
     label: 'année d\'engagement',
+    labelNoGroup: 'Absence d\'année d\'engagement',
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : '',
-    groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
-    sortFn: sortByDescendingKey
+    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP,
+    groupLabelFn ({ groupingKey }) {
+      return groupingKey === NO_GROUP ? this.labelNoGroup : groupingKey
+    },
+    sortFn: sortByAccessor((g) => g.features.at(0).properties.engagement_date, SORT.DESCENDING),
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },
 }
 
@@ -220,7 +256,8 @@ Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
     /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).toISOString().split('T').at(0) : '',
     groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
-    sortFn: sortByDescendingKey
+    sortFn: sortByAccessor((g) => g.key, SORT.DESCENDING),
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },
 })
 
@@ -271,14 +308,15 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
    * With step 1 [ [01.92, AB, 2019], [01.26.1, AB, 2019], [01.92, AB, 2010] ]
    */
   const groups = collection.features.reduce((groups, feature) => {
-    const groupingKeys = createGroupingKeys(pivots.map(pivot => groupingChoices[pivot].datapoint(feature)))
+    const datapoints = pivots.map(pivot => groupingChoices[pivot].datapoint(feature))
+    const groupingKeys = createGroupingKeys(datapoints)
 
     groupingKeys.forEach(groupKey => {
       if (!groups.has(groupKey)) {
         groups.set(groupKey, [])
       }
 
-      groups.set(groupKey, [...groups.get(groupKey), feature])
+      groups.set(groupKey, [...groups.get(groupKey), feature].sort(groupingChoices[pivots.at(0)].sortFeaturesFn))
     })
 
     return groups
@@ -378,7 +416,11 @@ const cultureList = new Intl.ListFormat('fr', {
  * @returns {string}
  */
 export function cultureLabel (culture, { withCode = false } = {}) {
-  const label = fromCodeCpf(culture.CPF)?.libelle_code_cpf || 'Culture inconnue'
+  if (!culture) {
+    return groupingChoices[GROUPE_CULTURE].labelNoGroup
+  }
+
+  const label = fromCodeCpf(culture.CPF)?.libelle_code_cpf || groupingChoices[GROUPE_CULTURE].labelUnknown
 
   return withCode ? `${culture.CPF ?? culture.TYPE} ${label}` : label
 }

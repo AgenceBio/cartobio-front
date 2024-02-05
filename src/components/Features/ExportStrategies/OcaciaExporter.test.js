@@ -122,7 +122,7 @@ describe('OcaciaExporter', () => {
       [
         '',
         '3.1',
-        '[ERREUR] culture inconnue',
+        '[ERREUR] culture inconnue (01.19.99)',
         '',
         '01.19.99 Culture inconnue',
         '',
