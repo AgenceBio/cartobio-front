@@ -108,7 +108,7 @@ const { selectedIds, hoveredId } = storeToRefs(featuresStore)
 const { toggleSingleSelected } = featuresStore
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id))
-const open = ref(featureIds.value.includes(Number(route.query?.new)))
+const open = ref(featureIds.value.includes(String(route.query?.new)))
 const allSelected = computed(() => featureIds.value.every(id => selectedIds.value.includes(id)))
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
 const validation = computed(() => applyValidationRules(props.validationRules.rules, ...props.featureGroup.features))
