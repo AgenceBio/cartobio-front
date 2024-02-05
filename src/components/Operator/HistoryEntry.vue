@@ -22,7 +22,7 @@
 
           <ul v-if="entry.metadata.warnings">
             <li v-for="({ id, label }, i) in entry.metadata.warnings" :key="i" class="fr-icon-warning-line">
-              {{ label }} (<code>{{ id }}</code>)
+              {{ label }} <ReferenceCadastrale v-if="id" :reference="id" class="optional-info" />
             </li>
           </ul>
 
@@ -50,6 +50,7 @@ import { EventType } from '@/cartobio-api.js'
 import { deletionReasons } from '@/components/Features/index.js';
 
 import ActionType from '@/components/Certification/ActionType.vue'
+import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
 
 const props = defineProps({
   entry: {
@@ -82,6 +83,14 @@ const deletionReason = computed(() => {
 </script>
 
 <style scoped>
+.optional-info {
+  &::before {
+    content: "(";
+  }
+  &::after {
+    content: ")";
+  }
+}
 .fr-card__content {
   --text-spacing: 0.5rem;
   padding: 1.5rem;
