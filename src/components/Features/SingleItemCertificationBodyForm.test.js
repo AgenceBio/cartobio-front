@@ -106,7 +106,7 @@ describe("SingleItemCertificationBodyForm", () => {
     expect(updateSingleFeature.mock.lastCall).toMatchObject([
       { recordId: '054f0d70-c3da-448f-823e-81fcf7c2bf6e' },
       {
-        id: 2,
+        id: '2',
         properties: {
           annotations: [
             {
