@@ -87,7 +87,7 @@ describe("FeatureGroup", () => {
 
     const selectAllCheckbox = wrapper.find('.group-header .single-checkbox input[type="checkbox"]')
     await selectAllCheckbox.trigger('click')
-    expect(featuresStore.selectedIds).toEqual([2, 4])
+    expect(featuresStore.selectedIds).toEqual(['2', '4'])
 
     await selectAllCheckbox.trigger('click')
     expect(featuresStore.selectedIds).toEqual([])
@@ -96,7 +96,7 @@ describe("FeatureGroup", () => {
     // then we click again on a single checkbox
     await wrapper.find('.group-header').trigger('click')
     await wrapper.find('#parcelle-2 .single-checkbox input[type="checkbox"]').trigger('click')
-    expect(featuresStore.selectedIds).toEqual([2])
+    expect(featuresStore.selectedIds).toEqual(['2'])
     expect(wrapper.vm.open).toEqual(true)
   })
 
@@ -114,7 +114,7 @@ describe("FeatureGroup", () => {
     await wrapper.find('.group-header').trigger('click')
     await wrapper.find('#parcelle-2 td').trigger('click')
 
-    expect(group.emitted('edit:featureId')).toHaveProperty('0', [2])
+    expect(group.emitted('edit:featureId')).toHaveProperty('0', ['2'])
   })
 
   test('we trigger a delete form', async () => {
@@ -135,6 +135,6 @@ describe("FeatureGroup", () => {
     await flushPromises()
     expect(menu.find('.fr-icon-delete-line').attributes()).not.toHaveProperty('disabled')
     menu.find('.fr-icon-delete-line').trigger('click')
-    expect(wrapper.emitted('delete:featureId')).toHaveProperty('0', [2])
+    expect(wrapper.emitted('delete:featureId')).toHaveProperty('0', ['2'])
   })
 })
