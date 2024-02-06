@@ -33,7 +33,7 @@
     "type": "FeatureCollection",
     "features": [
       {
-        "id": 1,
+        "id": "1",
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
@@ -63,7 +63,7 @@
           ]
         },
         "properties": {
-          "id": 1,
+          "id": "1",
           "NOM": "parcelle 1",
           "COMMUNE": "26108",
           "cultures": [
@@ -72,7 +72,7 @@
         }
       },
       {
-        "id": 2,
+        "id": "2",
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
@@ -102,7 +102,7 @@
           ]
         },
         "properties": {
-          "id": 2,
+          "id": "2",
           "NOM": "parcelle 2",
           "COMMUNE": "26108",
           "cultures": [
@@ -112,7 +112,7 @@
         }
       },
       {
-        "id": 3,
+        "id": "3",
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
@@ -133,7 +133,7 @@
         }
       },
       {
-        "id": 4,
+        "id": "4",
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
@@ -163,7 +163,7 @@
           ]
         },
         "properties": {
-          "id": 4,
+          "id": "4",
           "NUMERO_I": "2",
           "NUMERO_P": "1",
           "COMMUNE": "26108",

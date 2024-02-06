@@ -11,7 +11,7 @@ import { AnnotationTags } from '@/referentiels/ab.js'
  */
 
 export function collectIds (features) {
-  return features.map(({ id }) => id).sort()
+  return features.map(({ id }) => String(id)).sort()
 }
 
 export const useFeaturesStore = defineStore('features', () => {
@@ -24,7 +24,7 @@ export const useFeaturesStore = defineStore('features', () => {
   })
 
   function getFeatureById (id) {
-    return collection.value.features.find(feature => feature.id === id)
+    return collection.value.features.find(feature => String(feature.id) === String(id))
   }
 
   const all = computed(() => collection.value.features)
@@ -131,19 +131,19 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   function toggleSingleSelected (featureId) {
-    selectedIds.value = selectedIds.value.includes(featureId)
+    selectedIds.value = selectedIds.value.includes(String(featureId))
       // we remove it if it was available
-      ? selectedIds.value.filter(id => id !== featureId)
+      ? selectedIds.value.filter(id => String(id) !== String(featureId))
       // otherwise, we add it to the select list
-      : selectedIds.value.concat([featureId])
+      : selectedIds.value.concat([String(featureId)])
   }
 
   function select (...ids) {
-    selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids]))
+    selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids.map(String)]))
   }
 
   function unselect (...ids) {
-    selectedIds.value = selectedIds.value.filter(id => ids.includes(id) === false)
+    selectedIds.value = selectedIds.value.filter(id => ids.map(String).includes(String(id)) === false)
   }
 
   function bindMaplibreFeatureState (map, source) {

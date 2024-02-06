@@ -8,8 +8,8 @@ const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const features = useFeaturesStore(pinia)
 
 const sampleFeatures = [
-  { id: 1, properties: { id: 1, conversion_niveau: 'AB' }},
-  { id: 2, properties: { id: 2, conversion_niveau: 'AB' }}
+  { id: '1', properties: { id: '1', conversion_niveau: 'AB' }},
+  { id: '2', properties: { id: '2', conversion_niveau: 'AB' }}
 ]
 
 afterEach(() => features.$reset())
@@ -45,10 +45,10 @@ describe('states', () => {
     expect(features.activeFeature).toBeNull()
     expect(features.hoveredFeature).toBeNull()
 
-    features.activeId = 2
+    features.activeId = '2'
     expect(features.activeFeature).toEqual(sampleFeatures.at(1))
 
-    features.hoveredId = 1
+    features.hoveredId = '1'
     expect(features.hoveredFeature).toEqual(sampleFeatures.at(0))
   })
 })
@@ -73,7 +73,7 @@ describe('getFeatureById()', () => {
   it('should be truthy with one feature', () => {
     features.setAll(sampleFeatures)
 
-    expect(features.getFeatureById(1)).toHaveProperty('id', 1)
+    expect(features.getFeatureById(1)).toHaveProperty('id', '1')
   })
 })
 
@@ -84,19 +84,19 @@ describe('select/unselect', () => {
     expect(features.selectedFeatures).toEqual([])
 
     features.select(1)
-    expect(features.selectedIds).toEqual([1])
+    expect(features.selectedIds).toEqual(['1'])
 
     features.select(1, 2)
-    expect(features.selectedIds).toEqual([1, 2])
+    expect(features.selectedIds).toEqual(['1', '2'])
   })
 
   it('should unselect 1', () => {
     features.toggleAllSelected()
     features.unselect(1)
-    expect(features.selectedIds).toEqual([2])
+    expect(features.selectedIds).toEqual(['2'])
 
     features.unselect(1)
-    expect(features.selectedIds).toEqual([2])
+    expect(features.selectedIds).toEqual(['2'])
   })
 })
 
@@ -111,7 +111,7 @@ describe('toggle*Selected()', () => {
     features.setAll(sampleFeatures)
     features.toggleSingleSelected(1)
 
-    expect(features.selectedFeatures).toHaveProperty('0.id', 1)
+    expect(features.selectedFeatures).toHaveProperty('0.id', '1')
     expect(features.selectedFeatures).toHaveLength(1)
 
     features.toggleSingleSelected(1)
@@ -122,8 +122,8 @@ describe('toggle*Selected()', () => {
     features.setAll(sampleFeatures)
     features.toggleAllSelected()
 
-    expect(features.selectedFeatures).toHaveProperty('0.id', 1)
-    expect(features.selectedFeatures).toHaveProperty('1.id', 2)
+    expect(features.selectedFeatures).toHaveProperty('0.id', '1')
+    expect(features.selectedFeatures).toHaveProperty('1.id', '2')
     expect(features.selectedFeatures).toHaveLength(2)
 
     features.toggleAllSelected()
@@ -133,13 +133,13 @@ describe('toggle*Selected()', () => {
 
 describe('updateMatchingFeatures()', () => {
   it('should do nothing', () => {
-    features.updateMatchingFeatures([{ id: 1, properties: { CPF: '01.21.12' }}])
+    features.updateMatchingFeatures([{ id: '1', properties: { CPF: '01.21.12' }}])
     expect(features.selectedFeatures).toEqual([])
   })
 
   it('should patch existing features', () => {
     features.setAll(sampleFeatures)
-    features.updateMatchingFeatures([{ id: 1, properties: { CPF: '01.21.12' }}])
+    features.updateMatchingFeatures([{ id: '1', properties: { CPF: '01.21.12' }}])
     expect(features.collection).toHaveProperty('features.0.properties.CPF', '01.21.12')
     expect(features.collection).toHaveProperty('features.0.properties.conversion_niveau', 'AB')
   })
@@ -149,7 +149,7 @@ describe('watch/annotations', () => {
   it('should untoggle an active filter when orphan', async () => {
     features.setAll(sampleFeatures)
 
-    features.updateMatchingFeatures([{ id: 1, properties: {
+    features.updateMatchingFeatures([{ id: '1', properties: {
       annotations: [{ id: 1, code: ANNOTATIONS.SURVEYED }]
     }}])
     features.toggleAnnotation(ANNOTATIONS.SURVEYED)
@@ -157,7 +157,7 @@ describe('watch/annotations', () => {
     expect(features.isAnnotationActive(ANNOTATIONS.SURVEYED)).toEqual(true)
     expect(features.hits).toHaveLength(1)
 
-    features.updateMatchingFeatures([{ id: 1, properties: {
+    features.updateMatchingFeatures([{ id: '1', properties: {
       annotations: []
     }}])
 

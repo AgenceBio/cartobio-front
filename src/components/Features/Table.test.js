@@ -52,7 +52,7 @@ describe("Features Table", () => {
     expect(wrapper.find('#radio-mass-edit').exists()).toEqual(false)
     await wrapper.find('#radio-select-all').trigger('click')
 
-    expect(featuresStore.selectedIds).toEqual([1, 2, 3, 4])
+    expect(featuresStore.selectedIds).toEqual(['1', '2', '3', '4'])
     expect(wrapper.find('#radio-mass-edit').exists()).toEqual(true)
   })
 
@@ -110,7 +110,6 @@ describe("Features Table", () => {
     featuresStore.toggleSingleSelected(1)
     await flushPromises()
 
-    expect(wrapper.vm.selectedFeatureIds).toEqual([1])
     expect(wrapper.find('#parcelle-1').attributes()).not.toHaveProperty('hidden')
   })
 
@@ -133,7 +132,7 @@ describe("Features Table", () => {
     // this throws if the modal form does not exist
     // it catches the Component reference even if it has been Teleport-ed in the <body>
     const form = wrapper.getComponent(EditForm)
-    expect(table.vm.editedFeatureId).toEqual(2)
+    expect(table.vm.editedFeatureId).toEqual('2')
 
     //submit form
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
@@ -162,7 +161,7 @@ describe("Features Table", () => {
     await modal.find('#deletion-details').setValue('Parce que')
     await modal.find('button.fr-icon-delete-line').trigger('click')
 
-    expect(modal.emitted('submit')).toHaveProperty('0.0.id', 3)
+    expect(modal.emitted('submit')).toHaveProperty('0.0.id', '3')
     expect(modal.emitted('submit')).toHaveProperty('0.0.reason', {
       code: DeletionReasonsCode.OTHER,
       details: 'Parce que'
