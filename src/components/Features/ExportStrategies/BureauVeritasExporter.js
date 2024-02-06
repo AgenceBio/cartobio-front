@@ -68,7 +68,7 @@ const getSheet = ({ featureCollection, operator }) => {
     { wch: 10 }
   ]
 
-  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
+  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ features, mainKey, surface }, index) => {
     const culture = fromCodeCpf(mainKey)
     const autresInfos = generateAutresInfos(features, { pivot: mainKey })
     const varietes = generateAutresInfos(features, { pivot: mainKey, withNotes: false, withDate: false, withName: false, withSurface: false })
@@ -76,7 +76,7 @@ const getSheet = ({ featureCollection, operator }) => {
     sheet_add_aoa(sheet, [
       [
         culture?.groupe,
-        culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
+        culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
         culture?.code_bureau_veritas,
         // Complément certificat (variété)
         varietes,

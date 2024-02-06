@@ -28,6 +28,14 @@ describe('CertisudExporter', () => {
         'Id. Parcelles'
       ],
       [
+        '[ERREUR] culture inconnue (01.19.99)',
+        1.0464881572673355,
+        '3.1',
+        '',
+        '',
+        '5'
+      ],
+      [
         'Luzerne',
         // expect.closeTo(2.1), // in vite@5 + vitest@1
         2.092976314534671,
@@ -62,14 +70,6 @@ describe('CertisudExporter', () => {
         'AB',
         new Date('2015-01-01T00:00:00.000Z'),
         '4'
-      ],
-      [
-        '[ERREUR] correspondance manquante avec 01.19.99',
-        1.0464881572673355,
-        '3.1',
-        '',
-        '',
-        '5'
       ]
     ]
 

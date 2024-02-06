@@ -95,7 +95,7 @@ const getSheet = ({ featureCollection, operator, permissions, record }) => {
       // Précédent\n(année n-1)
       '',
       // Type de culture
-      culture?.code_cpf ?? `[ERREUR] culture inconnue`,
+      culture?.code_cpf ?? `[ERREUR] culture inconnue (${properties.cultures.at(0)?.CPF})`,
       // Liste secondaire
       culture?.libelle_code_cpf,
       // Espèces implantées

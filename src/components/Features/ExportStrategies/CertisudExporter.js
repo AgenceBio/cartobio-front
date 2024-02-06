@@ -47,13 +47,13 @@ const getSheet = ({ featureCollection, permissions }) => {
     { wch: 40 }
   ]
 
-  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ mainKey, surface, features }, index) => {
+  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ features, mainKey, surface }, index) => {
     const culture = fromCodeCpf(mainKey)
     const autresInfos = generateAutresInfos(features, { withAnnotations: true, pivot: mainKey, permissions })
 
     sheet_add_aoa(sheet, [
       [
-        culture?.libelle_code_cpf ?? `[ERREUR] correspondance manquante avec ${mainKey}`,
+        culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
         surface / 10_000,
         autresInfos,
         features.at(0).properties.conversion_niveau ?? '',

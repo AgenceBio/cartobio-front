@@ -52,7 +52,7 @@ const getSheet = ({ featureCollection, permissions }) => {
 
     sheet_add_aoa(sheet, [
       [
-        firstCulture?.code_cpf ?? `[ERREUR] culture inconnue`,
+        firstCulture?.code_cpf ?? `[ERREUR] culture inconnue (${properties.cultures.at(0)?.CPF})`,
         autresInfos,
         featureName({ properties }, { placeholder: '' }),
         surface(geometry) / 10_000,

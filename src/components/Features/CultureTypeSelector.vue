@@ -20,7 +20,7 @@ import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic'
 import Fuse from 'fuse.js'
 import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
-import { fromCodeCpf, fromCodePacAll, fromCodePacStrict } from "@agencebio/rosetta-cultures"
+import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
 
 const props = defineProps({
   id: {

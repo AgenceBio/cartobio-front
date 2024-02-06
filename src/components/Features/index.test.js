@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
-import { applyCadastreGeometries, FeatureNotFoundError, FeatureWithoutGeometryError, bounds, createGroupingKeys, diff, featureName, getFeatureGroups, surface } from './index.js'
+import { applyCadastreGeometries, FeatureNotFoundError, bounds, createGroupingKeys, cultureLabel, diff, featureName, getFeatureGroups, surface, groupingChoices, sortByAccessor } from './index.js'
 import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
 import { feature as newFeature, featureCollection } from '@turf/helpers'
 import axios from 'axios'
@@ -241,6 +241,14 @@ describe('getFeatureGroups()', () => {
     }
   }
 
+  const feature4 = {
+    geometry,
+    properties: {
+      id: '99999',
+      cultures: []
+    }
+  }
+
   test('collection is not split if there an explicit pivot of NONE', () => {
     const collection = {
       type: "FeatureCollection",
@@ -267,10 +275,10 @@ describe('getFeatureGroups()', () => {
     ])
   })
 
-  test('collection is split in two groups based on a single value field', () => {
+  test('collection is split in three groups based on a single value field (GROUPE_ILOT)', () => {
     const collection = {
       type: "FeatureCollection",
-      features: [feature1, feature2]
+      features: [feature1, feature2, feature4]
     }
 
     const expectation = [
@@ -289,19 +297,35 @@ describe('getFeatureGroups()', () => {
         pivot: GROUPE_ILOT,
         features: [feature2],
         surface: 7055.2689844296965,
+      },
+      {
+        label: 'Non précisé ou hors-PAC',
+        key: '__nogroup__',
+        mainKey: '__nogroup__',
+        pivot: GROUPE_ILOT,
+        features: [feature4],
+        surface: 7055.2689844296965,
       }
     ]
 
     expect(getFeatureGroups(collection, GROUPE_ILOT)).toEqual(expectation)
   })
 
-  test('collection is split in two groups, based on multiple value field', () => {
+  test('collection is split in three groups, based on multiple value field (GROUPE_CULTURE)', () => {
     const collection = {
       type: "FeatureCollection",
-      features: [feature1, feature2]
+      features: [feature1, feature2, feature4]
     }
 
     const expectation = [
+      {
+        label: 'Absence de culture',
+        key: '__nogroup__',
+        mainKey: '__nogroup__',
+        pivot: GROUPE_CULTURE,
+        features: [feature4],
+        surface: 7055.2689844296965,
+      },
       {
         label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
         key: '01.92',
@@ -332,13 +356,21 @@ describe('getFeatureGroups()', () => {
     expect(getFeatureGroups(collection)).toEqual(expectation)
   })
 
-  test('collection is split in four groups, based on multiple value field and multiple pivot', () => {
+  test('collection is split in four groups, based on multiple value field and multiple pivot (GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION)', () => {
     const collection = {
       type: "FeatureCollection",
-      features: [feature1, feature2, feature3]
+      features: [feature1, feature2, feature3, feature4]
     }
 
     const expectation = [
+      {
+        label: 'Absence de culture',
+        key: '__nogroup__-__nogroup__',
+        mainKey: '__nogroup__',
+        pivot: GROUPE_CULTURE,
+        features: [feature4],
+        surface: 7055.2689844296965,
+      },
       {
         label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
         key: '01.92-AB',
@@ -374,7 +406,36 @@ describe('getFeatureGroups()', () => {
     ]
 
     expect(getFeatureGroups(collection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION])).toEqual(expectation)
+  })
+})
 
+describe('cultureLabel', () => {
+  test('returns CPF label', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        cultures: [{ CPF: '01.21.12' }]
+      }
+    }
+
+    expect(cultureLabel(feature.properties.cultures.at(0))).toEqual('Raisin de cuve')
+  })
+
+  test('returns unknown CPF label', () => {
+    const feature = {
+      id: 1,
+      properties: {
+        cultures: [{ CPF: '999.990.999' }]
+      }
+    }
+
+    expect(cultureLabel(feature.properties.cultures.at(0))).toEqual(groupingChoices[GROUPE_CULTURE].labelUnknown)
+  })
+
+  test('returns unknown culture label', () => {
+    expect(cultureLabel(undefined)).toEqual(groupingChoices[GROUPE_CULTURE].labelNoGroup)
+    expect(cultureLabel()).toEqual(groupingChoices[GROUPE_CULTURE].labelNoGroup)
+    expect(cultureLabel('')).toEqual(groupingChoices[GROUPE_CULTURE].labelNoGroup)
   })
 })
 
@@ -486,6 +547,36 @@ describe('bounds', () => {
   })
 })
 
+describe('sortByAccessor()', () => {
+  const obj1 = {
+    properties: {
+      name: 'AAA',
+      NUMERO_I: 2
+    }
+  }
+
+  const obj2 = {
+    properties: {
+      name: 'ZZZ',
+      NUMERO_I: 1
+    }
+  }
+
+  const obj3 = {
+    properties: {}
+  }
+
+  test('it sorts numerical values', () => {
+    const sortFn = sortByAccessor(f => f.properties.NUMERO_I || Infinity)
+    expect([obj1, obj2, obj3].sort(sortFn)).toEqual([obj2, obj1, obj3])
+  })
+
+  test('it sorts alpha values as well', () => {
+    const sortFn = sortByAccessor(f => f.properties.name || '')
+    expect([obj1, obj2, obj3].sort(sortFn)).toEqual([obj3, obj1, obj2])
+  })
+})
+
 describe('surface', () => {
   test('with a FeatureCollection', () => {
     expect(surface(overlappingFeatureCollection)).toBeCloseTo(42505773.88, 1)
@@ -594,3 +685,5 @@ describe('applyCadastreGeometries()', () => {
     return expect(result).resolves.toMatchObject(expectation)
   })
 })
+
+

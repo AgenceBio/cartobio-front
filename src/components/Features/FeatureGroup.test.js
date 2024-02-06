@@ -87,7 +87,7 @@ describe("FeatureGroup", () => {
 
     const selectAllCheckbox = wrapper.find('.group-header .single-checkbox input[type="checkbox"]')
     await selectAllCheckbox.trigger('click')
-    expect(featuresStore.selectedIds).toEqual(['2', '4'])
+    expect(featuresStore.selectedIds).toEqual(['4', '2'])
 
     await selectAllCheckbox.trigger('click')
     expect(featuresStore.selectedIds).toEqual([])
