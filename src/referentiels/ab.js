@@ -88,7 +88,7 @@ const VALIDATION_RULES = {
   },
   // la culture est renseignée
   [RULE_NOT_EMPTY] (feature) {
-    return Array.isArray(feature.properties.cultures) && feature.properties.cultures.every(({ CPF }) => Boolean(CPF))
+    return Array.isArray(feature.properties.cultures) && feature.properties.cultures.length > 0 && feature.properties.cultures.every(({ CPF }) => Boolean(CPF))
   },
   // le code CPF est explicite (il n'y a pas plusieurs choix possibles pour un code)
   [RULE_CPF] (feature) {

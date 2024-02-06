@@ -7,24 +7,26 @@ import { useFeaturesStore } from "@/stores/index.js"
 describe('applyValidationRules', () => {
   test('operator requires culture cpf', () => {
     const features = [
-      { id: 1, properties: { cultures: [ { TYPE: 'BTH', CPF: '01.11.12' } ] }},
-      { id: 2, properties: { cultures: [ { TYPE: '' } ] }}
+      { id: '1', properties: { cultures: [ { TYPE: 'BTH', CPF: '01.11.12' } ] }},
+      { id: '2', properties: { cultures: [ { TYPE: '' } ] }},
+      { id: '3', properties: { cultures: [] }}
     ]
     const store = useFeaturesStore()
     store.setAll(features)
     const result = applyValidationRules(OPERATOR_RULES, ...store.collection.features)
 
     expect(result).toEqual({
-      failures: 1,
-      success: 3,
-      total: 4,
+      failures: 2,
+      success: 4,
+      total: 6,
       features: {
         1: { success: 2, failures: 0 },
-        2: { success: 1, failures: 1 }
+        2: { success: 1, failures: 1 },
+        3: { success: 1, failures: 1 }
       },
       rules: {
-        CPF: { success: 2, failures: 0 },
-        NOT_EMPTY: { success: 1, failures: 1 },
+        CPF: { success: 3, failures: 0 },
+        NOT_EMPTY: { success: 1, failures: 2 },
       }
     })
   })
