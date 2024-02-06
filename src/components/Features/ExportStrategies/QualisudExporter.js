@@ -19,6 +19,8 @@ const getSheet = ({ featureCollection, permissions }) => {
   const sheet = aoa_to_sheet([
     [
       "Production (code CPF)",
+      "Précision",
+      "Étiquettes",
       "Notes de l'auditeur",
       "Nom",
       "Surface",
@@ -29,31 +31,36 @@ const getSheet = ({ featureCollection, permissions }) => {
   ])
 
   sheet['!cols'] = [
-    // Production (code CPF)
+    // Production (code CPF)  #A
     { wch: 40 },
-    // Notes de l\'auditeur
+    // Culture précision      #B
+    { wch: 20 },
+    // Étiquettes             #C
     { wch: 40 },
-    // Nom
+    // Notes de l\'auditeur   #D
+    { wch: 40 },
+    // Nom                    #E
     { wch: 16 },
-    // Surface
+    // Surface                #F
     { wch: 16 },
-    // Classe
+    // Classe                 #G
     { wch: 8 },
-    // Date d'engagement
+    // Date d'engagement      #H
     { wch: 10 },
-    // Id. Parcelle
+    // Id. Parcelle           #I
     { wch: 16 },
   ]
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
     const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
-    const autresInfos = generateAutresInfos([ { properties }], { withName: false, withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
 
     sheet_add_aoa(sheet, [
       [
         firstCulture?.code_cpf ?? `[ERREUR] culture inconnue`,
-        autresInfos,
+        generateAutresInfos([ { properties }], { withAnnotations: false, withCulture: true, withDate: false, withName: false, withNotes: false, withSurface: true, withVariete: true, initialCulture: firstCulture?.code_cpf, permissions }),
+        generateAutresInfos([ { properties }], { withAnnotations: true, withCulture: false, withDate: false, withName: false, withNotes: false, withSurface: false, withVariete: false, initialCulture: firstCulture?.code_cpf, permissions }),
+        generateAutresInfos([ { properties }], { withAnnotations: false, withCulture: true, withDate: true, withName: false, withNotes: true, withSurface: false, withVariete: false, initialCulture: firstCulture?.code_cpf, permissions }),
         featureName({ properties }, { placeholder: '' }),
         surface(geometry) / 10_000,
         properties.conversion_niveau,
@@ -63,13 +70,13 @@ const getSheet = ({ featureCollection, permissions }) => {
     ], { origin: `A${rowIndex}`, cellDates: true });
 
     // surface is a 2 digits figure
-    sheet[`D${rowIndex}`].t = 'n'
-    sheet[`D${rowIndex}`].z = '0.00'
-    sheet[`G${rowIndex}`].t = 's'
+    sheet[`F${rowIndex}`].t = 'n'
+    sheet[`F${rowIndex}`].z = '0.00'
+    sheet[`I${rowIndex}`].t = 's'
 
-    if (sheet[`F${rowIndex}`].v) {
-      sheet[`F${rowIndex}`].t = 'd'
-      sheet[`F${rowIndex}`].z = 'dd/mm/yyyy'
+    if (sheet[`H${rowIndex}`].v) {
+      sheet[`H${rowIndex}`].t = 'd'
+      sheet[`H${rowIndex}`].z = 'dd/mm/yyyy'
     }
 
   })

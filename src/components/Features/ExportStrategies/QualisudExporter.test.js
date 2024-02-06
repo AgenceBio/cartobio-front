@@ -21,6 +21,8 @@ describe('QualisudExporter', () => {
     const expectation = [
       [
         "Production (code CPF)",
+        "Précision",
+        "Étiquettes",
         "Notes de l'auditeur",
         "Nom",
         "Surface",
@@ -30,7 +32,9 @@ describe('QualisudExporter', () => {
       ],
       [
         '01.19.10.8',
+        '',
         'Visitée',
+        '',
         'ilot 1, parcelle 1',
         1.0464881572673355,
         'C1',
@@ -39,7 +43,9 @@ describe('QualisudExporter', () => {
       ],
       [
         '01.19.10.8',
+        '',
         'Prélèvement effectué, À risque',
+        '',
         'ilot 1, parcelle 2',
         1.0464881572673355,
         'C1',
@@ -48,7 +54,9 @@ describe('QualisudExporter', () => {
       ],
       [
         '01.19.10.8',
-        '01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '01.19.10.7 Trèfle, 4 feuilles',
+        'Réduction de conversion (Dérogation acceptée)',
+        '01.19.10.7 Trèfle, semis le 01/03/2023',
         'ilot 2, parcelle 1',
         1.0464881572673355,
         'AB',
@@ -57,7 +65,9 @@ describe('QualisudExporter', () => {
       ],
       [
         '01.19.10.7',
-        '4 feuilles, semis le 01/03/2023',
+        '4 feuilles',
+        '',
+        'semis le 01/03/2023',
         'ilot 2, parcelle 2',
         1.0464881572673355,
         'AB',
@@ -66,6 +76,8 @@ describe('QualisudExporter', () => {
       ],
       [
         '[ERREUR] culture inconnue',
+        '01.19.99 Culture inconnue',
+        '',
         '01.19.99 Culture inconnue',
         'ilot 3, parcelle 1',
         1.0464881572673355,
