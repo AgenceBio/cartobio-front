@@ -14,6 +14,7 @@ import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
 import { getOperatorParcelles } from "@/cartobio-api.js"
 import toast from '@/components/toast.js'
+import { AxiosError } from "axios"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -67,9 +68,17 @@ const userStore = useUserStore()
 userStore.enablePersistance()
 
 app.config.errorHandler = (error) => {
-  if (error.code === "ERR_NETWORK") {
+  if (
+      error.name === "AxiosError" &&
+      [
+        AxiosError.ETIMEDOUT,
+        AxiosError.ECONNABORTED,
+        AxiosError.ERR_NETWORK
+      ].includes(error.code)
+  ) {
     toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
   }
+
 
   // Token has expired: we disconnect and force render the current page to trigger the login mechanism
   if (error.name === "AxiosError" && error.response?.status === 401) {
