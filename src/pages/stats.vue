@@ -9,5 +9,5 @@
 </template>
 
 <script setup>
-import StatsSection from '@/components/Stats/section.vue'
+import StatsSection from '@/components/Landing/Stats.vue'
 </script>

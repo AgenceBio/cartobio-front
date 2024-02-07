@@ -112,7 +112,7 @@ meta:
 </template>
 
 <script setup>
-import PartnersSection from '@/components/Partners/section.vue'
+import PartnersSection from '@/components/Landing/Sponsors.vue'
 import ContributeSection from '@/components/Partners/contribute-section.vue'
 import TestimoniesSection from '@/components/Partners/testimonies-section.vue';
 import ProductflowSection from '@/components/Features/productflow-section.vue';

@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
       fs: {
         allow:[
             searchForWorkspaceRoot(cwd),
-            resolve(cwd, '@gouvfr/dsfr'),
+            resolve(join(__dirname, 'node_modules', '@gouvfr', 'dsfr')),
         ]
       }
     },
