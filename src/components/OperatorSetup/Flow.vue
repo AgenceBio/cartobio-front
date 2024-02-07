@@ -119,12 +119,13 @@ function handleUpload ({ geojson, metadata: data, source, warnings: warns }) {
   emit('upload', { geojson, metadata: unref(metadata), warnings: warns })
 }
 
-async function handlePreviewConfirmation () {
+async function handlePreviewConfirmation (importPrevious) {
   const { numeroBio } = props.operator
 
   record.value = await createOperatorRecord(numeroBio, {
     geojson: featureCollection.value,
-    metadata: metadata.value
+    metadata: metadata.value,
+    importPrevious
   })
 
   emit('submit', unref(record.value))

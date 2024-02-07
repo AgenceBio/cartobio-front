@@ -15,7 +15,7 @@
         Export
       </button>
 
-      <button v-if="permissions.canDeleteParcellaire && isSetup" class="import-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-arrow-go-forward-line" @click="deleteModal = true">
+      <button v-if="permissions.canCreateVersion && isSetup" class="import-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-arrow-go-forward-line" @click="newVersion">
         Réimporter
       </button>
     </div>
@@ -85,6 +85,12 @@ const { collection, hasFeatures } = storeToRefs(featuresStore)
 const { isSetup } = storeToRefs(recordStore)
 const displayCallout = computed(() => props.record.audit_demandes && isCertificationImmutable(props.record.certification_state))
 const canDisplayHistory = computed(() => Array.isArray(props.record.audit_history) && props.record.audit_history.length)
+
+function newVersion () {
+  const operator = recordStore.record.operator
+  recordStore.reset()
+  recordStore.update({ operator })
+}
 
 </script>
 
