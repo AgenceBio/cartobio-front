@@ -16,7 +16,7 @@
     "posttest": "eslint ./src"
   },
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "dependencies": {
     "@agencebio/rosetta-cultures": "^1.4.0",
