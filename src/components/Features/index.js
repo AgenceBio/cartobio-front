@@ -219,10 +219,7 @@ export const groupingChoices = {
     groupLabelFn ({ datapoint }) {
       return datapoint === NO_GROUP ? this.labelNoGroup : (fromCodeCpf(datapoint)?.libelle_code_cpf || this.labelUnknown)
     },
-    sortFn: sortByAccessor((g) => {
-      console.log(g.mainKey, fromCodeCpf(g.mainKey)?.libelle_code_cpf, featureName(g.features.at(0), PACNotationOptions))
-      return fromCodeCpf(g.mainKey)?.libelle_code_cpf || ''
-    }, SORT.ASCENDING),
+    sortFn: sortByAccessor((g) => fromCodeCpf(g.mainKey)?.libelle_code_cpf || '', SORT.ASCENDING),
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },
   [GROUPE_NIVEAU_CONVERSION]: {

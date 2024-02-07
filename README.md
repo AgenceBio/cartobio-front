@@ -2,11 +2,11 @@
 
 Application de suivi et de certificaton du parcellaire bio à destination des _opérateurs bio_[^1] et aux _organismes de certification_.
 
-Cette application implémente [la maquette Figma CartoBio](https://www.figma.com/file/tkco0RcI2RqAjn8Vmtd1Og/Cartobio?node-id=493-89045) ainsi que le [Système de Design de l'État](https://www.systeme-de-design.gouv.fr/) avec [Vue 3], [Vue Router], [Vue Pages] et [Pinia].
+Cette application implémente [la maquette Figma CartoBio][maquette-figma] ainsi que le [Système de Design de l'État](https://www.systeme-de-design.gouv.fr/) avec [Vue 3], [Vue Router], [Vue Pages] et [Pinia].
 
 ## Installation
 
-**Pré-requis** : `node@16`
+**Pré-requis** : `node@20`
 
 ```bash
 npm install
@@ -92,3 +92,4 @@ npm install @agencebio/rosetta-cultures@latest
 [Vue Pages]: https://github.com/hannoeru/vite-plugin-pages
 [Pinia]: https://pinia.vuejs.org/
 [Netlify]: https://netlify.com
+[maquette-figma]: https://www.figma.com/file/RpE4QhlPyV0OSSYuk5vPno/Cartobio
