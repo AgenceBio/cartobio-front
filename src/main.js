@@ -157,13 +157,21 @@ router.beforeEach(async (to) => {
   }
 })
 
-router.onError((error) => {
-  console.error(error)
-
+router.onError((error, to) => {
   if (error.name === "TypeError" || error.code === "ERR_NETWORK") {
     toast.error('La page n\'a pas pu être chargée. Vérifiez votre connexion internet.')
     return
   }
 
+  // refresh the page if the app is redeployed while being in use
+  // this should be handled with a basic ServiceWorker/offline-first approach
+  // it could also be done as a Toast, with a reload action to offer a less surprising experience
+  const errors = ['Failed to fetch dynamically imported module', 'Unable to preload CSS']
+  if (errors.some((e) => error.message.includes(e))) {
+    window.location = to.fullPath
+    return
+  }
+
+  console.error(error)
   toast.error('Une erreur est survenue. La page n\'a pas pu être chargée.')
 })
