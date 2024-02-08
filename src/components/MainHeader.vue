@@ -12,7 +12,7 @@
               </div>
 
               <div class="fr-header__operator">
-                <img src="../assets/logo-agence-bio.svg" class="fr-responsive-img logo" alt="L'Agence Bio" />
+                <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img logo" alt="L'Agence Bio" />
               </div>
             </div>
 
@@ -27,7 +27,7 @@
             </div>
           </div>
 
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="user.numeroBio">
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools">
             <div class="fr-header__tools-links">
               <ul class="fr-btns-group" v-if="isLogged">
                 <li class="tool-username" aria-hidden="true">

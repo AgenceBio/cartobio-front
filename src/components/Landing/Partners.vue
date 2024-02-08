@@ -9,7 +9,7 @@
         </div>
       </div>
 
-      <div class="fr-grid-row">
+      <div class="fr-grid-row sections">
         <div :class="{ 'fr-col-12': !sponsors, 'fr-col-lg-5': sponsors }" v-if="certificationBodies">
           <p>
             Cartobio est un outil conçu <strong>avec et pour</strong>
