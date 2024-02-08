@@ -187,7 +187,7 @@ h1, h2, :deep(h2) {
 
 .hero {
   background-color: #e9eddf;
-  background-image: url('@/assets/illustrations/map-background.png');
+  background-image: url('@/assets/screenshots/map-background.png');
   background-position: center center;
   background-size: cover;
 }
