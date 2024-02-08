@@ -44,7 +44,12 @@
                 </li>
               </ul>
               <ul class="fr-btn-group" v-else>
-                <li>
+                <li v-if="$route.meta.generalAudience">
+                  <router-link to="/pro" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
+                    Accès professionnel
+                  </router-link>
+                </li>
+                <li v-else>
                   <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
                     Connexion
                   </router-link>

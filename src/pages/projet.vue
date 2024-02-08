@@ -1,5 +1,6 @@
 <route lang="yaml">
 meta:
+  generalAudience: true
   seo:
     title: Stratégie et historique du projet CartoBio
 </route>
@@ -60,7 +61,7 @@ meta:
         </p>
 
         <p>
-          Le projet est soutenu par la Direction du Numérique (DINUM), le Ministère de l’Agriculture et de la Souveraineté Alimentaire (MASA) et le Ministère de la Transition Écologique et de la Cohésion des Territoires (MTECT).
+          Le projet est soutenu par la Direction du Numérique (DINUM), le ministère de l'Agriculture et de la Souveraineté alimentaire (MASA) et le ministère de la Transition Écologique et de la Cohésion des Territoires (MTECT).
           <br />
           Le projet est soutenu financièrement par l’Office Français de la Biodiversité (OFB) dans le cadre du Plan Ecophyto.
         </p>

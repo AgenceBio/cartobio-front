@@ -1,11 +1,12 @@
 <route lang="yaml">
   meta:
+    generalAudience: true
     seo:
-      title: Votre parcellaire cultivé en agriculture biologique
+      title: Découvrez les parcelles bio autour de chez vous
   </route>
 
 <template>
-  <div class="fr-container--fluid fr-py-8w hero">
+  <div class="fr-container--fluid fr-py-9v hero">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-md-6">
@@ -68,7 +69,7 @@
     </div>
   </div>
 
-  <ProductFlowSection />
+  <ProductFlowSection general-audience />
 
   <section class="fr-container--fluid fr-py-9v">
     <div class="fr-container">
@@ -91,7 +92,11 @@
     </div>
   </section>
 
-  <SponsorsSection />
+  <PartnersSection sponsors>
+    <template #headline>
+      Des données contrôlées issues de la filière biologique
+    </template>
+  </PartnersSection>
 
   <div class="fr-container--fluid fr-py-4w">
     <div class="fr-container">
@@ -152,8 +157,8 @@
 </template>
 
 <script setup>
-import SponsorsSection from '@/components/Landing/Sponsors.vue'
-import ProductFlowSection from '@/components/Features/productflow-section.vue'
+import PartnersSection from '@/components/Landing/Partners.vue'
+import ProductFlowSection from '@/components/Landing/ProductFlow.vue'
 </script>
 
 <style scoped>
@@ -162,8 +167,6 @@ fr-container {
   --btn-background-color-default: var(--success-425-625);
   --btn-background-color-active: #0C5127;
   --btn-color-default: var(--background-color-default);
-  --hover: var(--btn-background-color-active);
-  --hover-tint: var(--btn-background-color-active);
 
   /* overrides default color */
   --text-action-high-blue-france: var(--btn-background-color-default);
@@ -177,7 +180,7 @@ a:not(.fr-btn),
   color: var(--btn-background-color-default);
 }
 
-h1, h2 {
+h1, h2, :deep(h2) {
   --text-title-grey: var(--btn-background-color-default);
 }
 
@@ -210,8 +213,5 @@ h2 {
 }
 .background-alt {
   background-color: var(--green-bourgeon-975-75);
-}
-.cta-img {
-  max-height: 6em;
 }
 </style>
