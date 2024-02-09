@@ -77,6 +77,7 @@ app.config.errorHandler = (error) => {
       ].includes(error.code)
   ) {
     toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
+    return false
   }
 
 
