@@ -111,7 +111,6 @@ router.isReady().then(() => {
         integrations: [
           new Sentry.BrowserTracing({
             routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-            tracingOrigins: ['cartobio.agencebio.org', 'cartobio-preprod.agencebio.org', /^.+--cartobio-dev.netlify.app$/],
           }),
         ],
         logErrors: true,
