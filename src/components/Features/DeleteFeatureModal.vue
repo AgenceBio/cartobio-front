@@ -11,14 +11,16 @@
       <p>Cette action est irréversible.</p>
     </div>
 
-    <form id="delete-feature-form" class="fr-my-3w" @submit.prevent="emit('submit', { id: featureId, reason })">
-      <div class="fr-input-group">
-        <label for="deletion-reason" class="fr-label">Raison de la suppression</label>
-        <select id="deletion-reason" name="code" class="fr-select" v-model="reason.code" required>
+    <form id="delete-feature-form" class="fr-my-3w" @submit.prevent="validateForm" novalidate>
+      <div class="fr-input-group" :class="{ 'fr-input-group--error': requiredError }">
+        <label for="deletion-reason" class="fr-label">Raison de la suppression
+          <span class="fr-hint-text">Ce champ est obligatoire</span></label>
+        <select id="deletion-reason" name="code" class="fr-select" :class="{ 'fr-input--error': requiredError }" v-model="reason.code" required>
           <option v-for="({ code, label }) in deletionReasons" :value="code" :key="code">
             {{ label }}
           </option>
         </select>
+        <p class="fr-error-text" v-if="requiredError">Vous devez sélectionner une raison de suppression dans la liste.</p>
       </div>
 
       <div class="fr-input-group" v-if="isOther">
@@ -42,7 +44,7 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { deletionReasons, DeletionReasonsCode, featureName, inHa, surface } from '@/components/Features/index.js'
 import { useFeaturesStore } from '@/stores/features.js'
 
@@ -65,4 +67,17 @@ const reason = reactive({
   code: '',
   details: ''
 })
+
+const requiredError = ref(false)
+watch(() => reason.code, () => {
+  requiredError.value = false
+})
+const validateForm = () => {
+  if (reason.code === '') {
+    requiredError.value = true
+    return
+  }
+
+  emit('submit', { id: props.featureId, reason })
+}
 </script>
