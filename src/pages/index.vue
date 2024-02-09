@@ -1,107 +1,217 @@
 <route lang="yaml">
   meta:
+    generalAudience: true
     seo:
-      title: Votre parcellaire cultivé en agriculture biologique
+      title: Découvrez les parcelles bio autour de chez vous
   </route>
 
 <template>
-  <div class="fr-container--fluid fr-background-alt--grey fr-py-9v">
+  <div class="fr-container--fluid fr-py-9v hero">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-lg-12">
-          <h1>Le parcellaire cultivé en agriculture biologique</h1>
+        <div class="fr-col-md-6">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h1>
+                  Découvrez les parcelles bio autour de chez vous
+                </h1>
 
-          <p>
-            <strong>Des données collectées sur le terrain</strong><br />
-            Saisies par les agriculteurs·trices et validées par les Organismes de Certification.
-          </p>
-
-          <p>
-            <strong>Faire avancer les initiatives locales et la recherche</strong><br />
-            Utilisées par de nombreux acteurs, les données du parcellaire bio sont précieuses.
-          </p>
-
-          <p>
-            <a class="fr-btn" href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771"
-              to="/exploitation" target="_blank">
-              Accéder aux données publiques
-            </a>
-          </p>
+                <p class="fr-card__desc fr-text--lead">
+                  Explorez votre territoire grâce à nos données sur l'agriculture biologique.
+                </p>
+              </div>
+              <div class="fr-card__footer">
+                <ul class="fr-btns-group fr-btns-group--inline">
+                  <li>
+                    <a class="fr-btn" href="https://www.agencebio.org/cartobio/" rel="noopener" target="_blank">
+                      Localiser le bio près de chez moi
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="fr-container fr-py-4w">
-    <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-lg-6 fr-col--center">
-        <img src="../assets/illustrations/undraw_environment.svg" class="fr-responsive-img fr-my-3w cta-img"
-          alt="" />
+  <div class="fr-container--fluid fr-py-6w background-alt">
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-5">
+          <h3>Comprendre son environnement</h3>
 
-        <h3 class="fr-h4">Agriculteurs, agricultrices</h3>
+          <ul class="list-marks">
+            <li>
+              Visualisez votre territoire grâce à <strong>nos données cartographiques</strong>.
+            </li>
+            <li>
+              Profitez de <strong>données fiables</strong>, complètes et mises à jour régulièrement par les acteurs de la filière biologique.
+            </li>
+          </ul>
+        </div>
 
-        <p>
-          Partagez simplement votre parcellaire avec votre OC<br />et simplifiez vos demandes d’aides !
-        </p>
+        <div class="fr-col-md-5 fr-col-offset-md-1">
+          <h3>Évaluer la qualité de vie</h3>
 
-        <p>
-          <router-link to="/exploitation" class="fr-btn fr-btn--secondary">
-            Utiliser CartoBio pour mon exploitation
-          </router-link>
-        </p>
-      </div>
-
-      <div class="fr-col-lg-6 fr-col--center">
-        <img src="../assets/illustrations/undraw_certification.svg" class="fr-responsive-img fr-my-3w cta-img"
-          alt="" />
-
-        <h3 class="fr-h4">Organismes de Certification</h3>
-
-        <p>
-          Faites le suivi du parcellaire de l’opérateur<br />sur un support graphique.
-        </p>
-
-        <p>
-          <router-link to="/certification" class="fr-btn fr-btn--secondary">
-            Utiliser CartoBio pour mes contrôles
-          </router-link>
-        </p>
+          <ul class="list-marks">
+            <li>
+              Regardez la part de <strong>parcelles bio</strong> autour de vous.
+            </li>
+            <li>
+              <strong>Observez l'évolution</strong> de l'agriculture biologique au fil des années.
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <PartnersSection class="fr-background-alt--grey" section-oc section-administrations />
+  <ProductFlowSection general-audience />
 
-  <ProductFlowSection />
+  <section class="fr-container--fluid fr-py-9v">
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-8">
+          <h2>Des données en libre accès</h2>
 
-  <StatsSection class="fr-background-alt--grey">
-    <template #footer-link>
-      <router-link to="/stats" class="fr-btn fr-btn--secondary">
-        Voir toutes les statistiques
-      </router-link>
-    </template>
-  </StatsSection>
+          <p>
+            Téléchargez nos données géographiques pour les manipuler
+            ou les intégrer dans vos outils.
+          </p>
 
-  <OpendataSection>
+          <p>
+            <a class="fr-btn fr-btn--secondary" href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/" target="_blank"  rel="noopener">
+              Accéder aux données
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <PartnersSection sponsors>
     <template #headline>
-      <h2 class="fr-h4">Les réutilisations</h2>
+      Des données contrôlées issues de la filière biologique
     </template>
-  </OpendataSection>
+  </PartnersSection>
 
-  <ContributeSection class="fr-background-alt--grey" />
+  <div class="fr-container--fluid fr-py-4w">
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-6">
+          <div class="fr-card background-alt">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h3>Pour les agriculteurs</h3>
+
+                <ul class="list-marks fr-card__desc">
+                  <li>
+                    Partagez votre parcellaire avec votre organisme de certification.
+                  </li>
+                </ul>
+              </div>
+              <div class="fr-card__footer">
+                <ul class="fr-btns-group fr-btns-group--inline">
+                  <li>
+                    <router-link to="/exploitations" class="fr-btn fr-btn--secondary">
+                      Importer mon parcellaire
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-col-md-6">
+          <div class="fr-card background-alt">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h3>Pour les organismes de certification</h3>
+
+                <ul class="list-marks fr-card__desc">
+                  <li>
+                    Facilitez votre suivi du parcellaire avec des données cartographiques.
+                  </li>
+                </ul>
+              </div>
+
+              <div class="fr-card__footer">
+                <ul class="fr-btns-group fr-btns-group--inline">
+                  <li>
+                    <router-link to="/certification/exploitations" class="fr-btn fr-btn--secondary">
+                      Se connecter
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import StatsSection from '@/components/Stats/section.vue'
-import PartnersSection from '@/components/Partners/section.vue'
-import OpendataSection from '@/components/Partners/opendata-section.vue'
-import ContributeSection from '@/components/Partners/contribute-section.vue'
-import ProductFlowSection from '@/components/Features/productflow-section.vue'
+import PartnersSection from '@/components/Landing/Partners.vue'
+import ProductFlowSection from '@/components/Landing/ProductFlow.vue'
 </script>
 
 <style scoped>
+.fr-container--fluid,
+fr-container {
+  --btn-background-color-default: var(--success-425-625);
+  --btn-background-color-active: #0C5127;
+  --btn-color-default: var(--background-color-default);
 
-.cta-img {
-  max-height: 6em;
+  /* overrides default color */
+  --text-action-high-blue-france: var(--btn-background-color-default);
+  --border-action-high-blue-france: var(--btn-background-color-default);
+  --background-action-high-blue-france: var(--btn-background-color-default);
+  --background-action-high-blue-france-hover: var(--btn-background-color-active);
+}
+
+a:not(.fr-btn),
+:deep(a:not(.fr-btn)) {
+  color: var(--btn-background-color-default);
+}
+
+h1, h2, :deep(h2) {
+  --text-title-grey: var(--btn-background-color-default);
+}
+
+
+.hero {
+  background-color: #e9eddf;
+  background-image: url('@/assets/screenshots/map-background.png');
+  background-position: center center;
+  background-size: cover;
+}
+
+.list-marks {
+  font-size: 1.25rem; /* as .fr-text--lead */
+  padding-left: 0;
+
+
+  li {
+    background: url("@/assets/check-line.svg") no-repeat left center;
+    list-style: none;
+    padding-left: 1.9em;
+
+    &:not(:last-of-type) {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+h2 {
+  color: var(--btn-background-color-default);
+}
+.background-alt {
+  background-color: var(--green-bourgeon-975-75);
 }
 </style>

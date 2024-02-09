@@ -38,7 +38,7 @@
       "source-layer": "parcelles",
       "minzoom": 11,
       "layout": {
-        "text-field": "{numero}",
+        "text-field": "{section} {numero}",
         "text-font": ["Noto Sans Regular"],
         "text-size": 12,
         "text-optional": false,

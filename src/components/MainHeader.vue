@@ -12,7 +12,7 @@
               </div>
 
               <div class="fr-header__operator">
-                <img src="../assets/logo-agence-bio.svg" class="fr-responsive-img logo" alt="L'Agence Bio" />
+                <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img logo" alt="L'Agence Bio" />
               </div>
             </div>
 
@@ -27,7 +27,7 @@
             </div>
           </div>
 
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools" :data-numero-bio="user.numeroBio">
+          <div class="fr-hidden fr-unhidden-lg fr-header__tools">
             <div class="fr-header__tools-links">
               <ul class="fr-btns-group" v-if="isLogged">
                 <li class="tool-username" aria-hidden="true">
@@ -44,7 +44,12 @@
                 </li>
               </ul>
               <ul class="fr-btn-group" v-else>
-                <li>
+                <li v-if="$route.meta.generalAudience">
+                  <router-link to="/pro" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
+                    Accès professionnel
+                  </router-link>
+                </li>
+                <li v-else>
                   <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
                     Connexion
                   </router-link>

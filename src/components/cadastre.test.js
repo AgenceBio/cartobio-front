@@ -30,6 +30,7 @@ describe('isValidReference', () => {
     expect(isValidReference('9741100BP0885')).toEqual(false)
     expect(isValidReference('97911000BP0885')).toEqual(false)
     expect(isValidReference('99911000BP0885')).toEqual(false)
+    expect(isValidReference(`["13056000DP0040"]'`)).toEqual(false)
   })
 })
 
@@ -46,6 +47,10 @@ describe('trimLeadingZero', () => {
 })
 
 describe('parseReference', () => {
+  test('handle incorrectly formatted field', () => {
+    expect(parseReference(`["13056000DP0040"]'`)).toEqual(null)
+  })
+
   test('parse nothing', () => {
     expect(parseReference('26400AZ23')).toEqual(null)
   })
