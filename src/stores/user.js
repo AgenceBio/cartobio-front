@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import * as Sentry from '@sentry/vue'
 import { computed, ref, watch, watchEffect } from 'vue'
 import { setAuthorization } from '@/cartobio-api'
 import { CUSTOM_DIMENSION_ROLE, setCustomDimension } from "@/stats.js"
@@ -74,10 +75,12 @@ export const useUserStore = defineStore('user', () => {
   const roles = computed(() => deriveRolesFromGroups(user.value))
 
   function login (userToken) {
+    Sentry.setUser({ id: user.value.id })
     token.value = userToken
   }
 
   function logout () {
+    Sentry.setUser(null);
     token.value = null
   }
 
