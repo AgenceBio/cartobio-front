@@ -1,8 +1,10 @@
-# [2.19.0](https://github.com/AgenceBio/cartobio-front/compare/v2.18.4...v2.19.0) (2023-02-?)
+# [2.19.0](https://github.com/AgenceBio/cartobio-front/compare/v2.18.4...v2.19.0) (2023-02-10)
 
+* nouvelle page d'accueil
 * import de parcellaire depuis ProDouanes/CVI
 * import de parcellaire depuis un numéro PACAGE
 * correction d'un bug d'import Telepac pour des parcellaires hors-métropole
+* correction d'un bug de prévisualisation de parcelle à ajouter
 * API de lecture
 
 # [2.18.4](https://github.com/AgenceBio/cartobio-front/compare/v2.18.1...v2.18.4) (2023-01-26)
