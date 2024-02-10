@@ -14,6 +14,7 @@ describe("MainHeader", () => {
   afterEach(() => {
     user.$reset()
     permissions.$reset()
+    vi.unstubAllEnvs()
   })
 
   test("as a guest", () => {
@@ -21,7 +22,20 @@ describe("MainHeader", () => {
 
     expect(wrapper.find('.tool-username').exists()).toEqual(false)
     expect(wrapper.find('.fr-header__tools').text()).toEqual('Connexion')
+  })
+
+  test("with a warning header", async () => {
+    delete import.meta.env.VUE_APP_PRODUCTION
+
+    const wrapper = mount(MainHeader)
     expect(wrapper.find('.fr-notice').exists()).toEqual(true)
+  })
+
+  test("without a warning header", async () => {
+    vi.stubEnv('VUE_APP_PRODUCTION', true)
+
+    const wrapper = mount(MainHeader)
+    expect(wrapper.find('.fr-notice').exists()).toEqual(false)
   })
 
   test("as a guest, on a general audience page", () => {
@@ -67,7 +81,6 @@ describe("MainHeader", () => {
     user.isLogged = true
     user.roles = []
     await flushPromises()
-    console.log(wrapper.html())
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-account-circle-fill')).toEqual(true)
     expect(wrapper.find('[role="navigation"]').exists()).toEqual(false)
