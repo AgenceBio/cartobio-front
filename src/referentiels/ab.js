@@ -180,6 +180,7 @@ export const ANNOTATIONS = {
  * @enum {String}
  */
 export const CERTIFICATION_BODY_DECISION = {
+  PENDING: '',
   ACCEPTED: 'accepted',
   REJECTED: 'rejected'
 }
@@ -208,6 +209,9 @@ export const AnnotationTags = {
     label: 'Réduction de conversion',
     metadata: {
       [ANNOTATIONS.METADATA_STATE]: {
+        [CERTIFICATION_BODY_DECISION.PENDING]: {
+          label: 'En cours de traitement'
+        },
         [CERTIFICATION_BODY_DECISION.ACCEPTED]: {
           label: 'Dérogation acceptée'
         },

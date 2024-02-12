@@ -92,6 +92,9 @@ describe("SingleItemCertificationBodyForm", () => {
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.REDUCED_CONVERSION_PERIOD} button`).trigger('click')
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.RISKY} button`).trigger('click')
 
+    expect(form.find('#reduced_conversion_period_state').element.value).toEqual(CERTIFICATION_BODY_DECISION.PENDING)
+    expect(form.find('#reduced_conversion_period_state').element.selectedOptions[0].textContent).toEqual('En cours de traitement')
+
     // we toggle and cancel the tag
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.SURVEYED} button`).trigger('click')
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.SURVEYED} button`).trigger('click')
