@@ -75,12 +75,10 @@ export const useUserStore = defineStore('user', () => {
   const roles = computed(() => deriveRolesFromGroups(user.value))
 
   function login (userToken) {
-    Sentry.setUser({ id: user.value.id })
     token.value = userToken
   }
 
   function logout () {
-    Sentry.setUser(null);
     token.value = null
   }
 
@@ -97,7 +95,15 @@ export const useUserStore = defineStore('user', () => {
   }
 
   watch(token, newToken => setAuthorization(newToken ? newToken : ''))
-  watch(user, () => setCustomDimension(CUSTOM_DIMENSION_ROLE, roles.value.join(', ')))
+  watch(user, () => {
+    setCustomDimension(CUSTOM_DIMENSION_ROLE, roles.value.join(', '))
+
+    if (user.value) {
+      Sentry.setUser({ id: user.value.id })
+    } else {
+      Sentry.setUser(null);
+    }
+  })
 
   return {
     token,
