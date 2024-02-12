@@ -146,6 +146,21 @@
           ],
           "commentaire": "sans code CPF valide, ni date d'engagement ou autre"
         }
+      },
+      {
+        "id": 6,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 6,
+          "NUMERO_I": "4",
+          "NUMERO_P": "1",
+          "cultures": [],
+          "commentaire": "sans culture, suite à un import CVI par exemple"
+        }
       }
     ]
   }

@@ -45,7 +45,7 @@ const getSheet = ({ featureCollection, permissions }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ id, geometry, properties: props }) => {
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodeCpf(props.cultures.at(0)?.CPF)
+    const culture = props.cultures.at(0) ? fromCodeCpf(props.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
     return [
       // Commune

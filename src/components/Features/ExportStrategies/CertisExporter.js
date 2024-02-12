@@ -79,7 +79,7 @@ const getSheet = ({ featureCollection, operator, permissions, record }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties }) => {
     const surfaceHa = surface(geometry) / 10_000
-    const culture = fromCodeCpf(properties.cultures.at(0)?.CPF)
+    const culture = properties.cultures.at(0) ? fromCodeCpf(properties.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
     return [
       // Nom de la parcelle
@@ -95,9 +95,9 @@ const getSheet = ({ featureCollection, operator, permissions, record }) => {
       // Précédent\n(année n-1)
       '',
       // Type de culture
-      culture?.code_cpf ?? `[ERREUR] culture inconnue (${properties.cultures.at(0)?.CPF})`,
+      culture?.code_cpf,
       // Liste secondaire
-      culture?.libelle_code_cpf,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${properties.cultures.at(0)?.CPF})`,
       // Espèces implantées
       generateAutresInfos([{ properties }], { withDate: false, withName: false, withNotes: false, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // Degré de conversion de la parcelle/ilot

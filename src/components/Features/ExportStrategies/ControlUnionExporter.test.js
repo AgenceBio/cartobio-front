@@ -78,6 +78,16 @@ describe('ControlUnionExporter', () => {
         '3.1, 01.19.99 Culture inconnue',
         '5',
         ''
+      ],
+      [
+        '',
+        '[ERREUR] culture absente',
+        1.0464881572673355,
+        '',
+        '',
+        '4.1',
+        '6',
+        ''
       ]
     ]
 

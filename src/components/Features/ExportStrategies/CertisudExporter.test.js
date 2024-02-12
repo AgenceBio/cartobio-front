@@ -36,6 +36,14 @@ describe('CertisudExporter', () => {
         '5'
       ],
       [
+        '[ERREUR] culture absente',
+        1.0464881572673355,
+        '4.1',
+        '',
+        '',
+        '6'
+      ],
+      [
         'Luzerne',
         // expect.closeTo(2.1), // in vite@5 + vitest@1
         2.092976314534671,

@@ -72,6 +72,15 @@ describe('QualisudExporter', () => {
         '',
         '',
         '5'
+      ],
+      [
+        '[ERREUR] culture absente',
+        '',
+        'ilot 4, parcelle 1',
+        1.0464881572673355,
+        '',
+        '',
+        '6'
       ]
     ]
 

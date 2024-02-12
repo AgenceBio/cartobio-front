@@ -66,7 +66,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
 
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const surfaceHa = (surface(geometry) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
-    const culture = fromCodeCpf(props.cultures?.at(0)?.CPF)
+    const culture = props.cultures?.at(0) ? fromCodeCpf(props.cultures?.at(0).CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
     return [
       // Commune          #A
@@ -74,7 +74,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
       // Ilot             #B
       featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '_', placeholder: '' }),
       // Libellé Culture  #C
-      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures?.at(0)?.CPF})`,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures?.at(0).CPF})`,
       // Variété / infos  #D
       generateAutresInfos([{ id, geometry, properties: props }], { withCode: false, withDate: false, withName: false, withNotes: true, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3

@@ -53,7 +53,7 @@ const getSheet = ({ featureCollection, permissions }) => {
 
     sheet_add_aoa(sheet, [
       [
-        culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
+        mainKey === '__nogroup__' ? '[ERREUR] culture absente' : (culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`),
         surface / 10_000,
         autresInfos,
         features.at(0).properties.conversion_niveau ?? '',
