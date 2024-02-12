@@ -46,7 +46,7 @@ const getSheet = ({ featureCollection, permissions }) => {
   ]
 
   featureCollection.features.forEach(({ geometry, properties }, index) => {
-    const firstCulture = fromCodeCpf(properties.cultures.at(0)?.CPF)
+    const firstCulture = properties.cultures.at(0) ? fromCodeCpf(properties.cultures.at(0)?.CPF) : { code_cpf: '[ERREUR] culture absente' }
     const autresInfos = generateAutresInfos([ { properties }], { withName: false, withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
 

@@ -160,8 +160,8 @@ describe('CertisExporter', () => {
         1.0464881572673355,
         '',
         '',
-        '[ERREUR] culture inconnue (01.19.99)',
         '',
+        '[ERREUR] culture inconnue (01.19.99)',
         '01.19.99 Culture inconnue',
         '',
         '01.19.99 Culture inconnue',
@@ -179,6 +179,33 @@ describe('CertisExporter', () => {
         '',
         '',
         '5'
+      ],
+      [
+        '',
+        '4',
+        '1',
+        1.0464881572673355,
+        '',
+        '',
+        '',
+        '[ERREUR] culture absente',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '6'
       ]
     ]
 

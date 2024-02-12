@@ -91,7 +91,7 @@ describe('OcaciaExporter', () => {
         '',
         '',
         new Date('2021-01-01T00:00:00.000Z'),
-        '01.19.10.7 Trèfle, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '0.70ha / 01.19.10.7 Trèfle, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
         '',
         '',
         '',
@@ -138,6 +138,26 @@ describe('OcaciaExporter', () => {
         '',
         '',
         '5'
+      ],
+      [
+        '',
+        '4.1',
+        '[ERREUR] culture absente',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '6'
       ]
     ]
 

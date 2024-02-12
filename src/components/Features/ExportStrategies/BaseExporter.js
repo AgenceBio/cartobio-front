@@ -53,7 +53,7 @@ export default class BaseExporter {
  * @param {Feature[]} features
  * @returns {String}
  */
-export function generateAutresInfos (features, { withAnnotations = false, withCulture = true, withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture, permissions = {} } = {}) {
+export function generateAutresInfos (features, { withAnnotations = false, withCode = true, withCulture = true, withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture, permissions = {} } = {}) {
   const dateFmnt = new Intl.DateTimeFormat('fr-FR', {
     timeZone: 'Europe/Paris',
     day: 'numeric',
@@ -77,7 +77,7 @@ export function generateAutresInfos (features, { withAnnotations = false, withCu
       .map(c => ([
           // if we refine on a given culture, we certainly have a cell with its label
           // so we don't make it redundant
-          pivot || (initialCulture === c.CPF) || !withCulture ? '' : cultureLabel(c, { withCode: true }),
+          pivot || (initialCulture === c.CPF) || !withCulture ? '' : cultureLabel(c, { withCode }),
           withVariete && c.variete ? c.variete : '',
           withDate && c.date_semis ? `semis le ${dateFmnt.format(new Date(c.date_semis))}` : '',
           withSurface && c.surface ? `${c.surface}ha` : ''

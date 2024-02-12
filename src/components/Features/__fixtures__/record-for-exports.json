@@ -95,8 +95,8 @@
           "engagement_date": "2021-01-01",
           "conversion_niveau": "AB",
           "cultures": [
-            { "id": 1, "CPF": "01.19.10.8" },
-            { "id": 2, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }
+            { "id": 1, "CPF": "01.19.10.8", "surface": "0.70" },
+            { "id": 2, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles", "surface": "0.30" }
           ],
           "commentaire": "troisième parcelle de Luzerne et de trèfle engagée à un autre moment, avec une autre culture",
           "annotations": [
@@ -145,6 +145,21 @@
             { "id": 1, "CPF": "01.19.99" }
           ],
           "commentaire": "sans code CPF valide, ni date d'engagement ou autre"
+        }
+      },
+      {
+        "id": 6,
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[ [44.0, 2.0], [44.0, 2.0013], [44.0013, 2.0013], [44.0013, 2.0013], [44.0, 2.0] ]]
+        },
+        "properties": {
+          "id": 6,
+          "NUMERO_I": "4",
+          "NUMERO_P": "1",
+          "cultures": [],
+          "commentaire": "sans culture, suite à un import CVI par exemple"
         }
       }
     ]

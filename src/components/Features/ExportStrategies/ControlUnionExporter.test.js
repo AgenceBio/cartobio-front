@@ -55,7 +55,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         new Date('2021-01-01T00:00:00.000Z'),
         'AB',
-        '2.1, 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '2.1, 0.70ha / 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
         '3',
         '01.19.10.8'
       ],
@@ -77,6 +77,16 @@ describe('ControlUnionExporter', () => {
         '',
         '3.1, 01.19.99 Culture inconnue',
         '5',
+        ''
+      ],
+      [
+        '',
+        '[ERREUR] culture absente',
+        1.0464881572673355,
+        '',
+        '',
+        '4.1',
+        '6',
         ''
       ]
     ]

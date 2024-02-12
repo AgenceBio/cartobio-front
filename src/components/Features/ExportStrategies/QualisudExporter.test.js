@@ -48,7 +48,7 @@ describe('QualisudExporter', () => {
       ],
       [
         '01.19.10.8',
-        '01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '0.70ha / 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
         'ilot 2, parcelle 1',
         1.0464881572673355,
         'AB',
@@ -72,6 +72,15 @@ describe('QualisudExporter', () => {
         '',
         '',
         '5'
+      ],
+      [
+        '[ERREUR] culture absente',
+        '',
+        'ilot 4, parcelle 1',
+        1.0464881572673355,
+        '',
+        '',
+        '6'
       ]
     ]
 

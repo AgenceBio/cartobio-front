@@ -74,7 +74,7 @@ describe('DefaultExporter', () => {
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
         '',
-        '01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, Réduction de conversion (Dérogation acceptée)',
+        '0.70ha / 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
         ''
       ],
       [
@@ -97,7 +97,21 @@ describe('DefaultExporter', () => {
         '1',
         1.0464881572673355,
         '01.19.99',
+        '[ERREUR] culture inconnue (01.19.99)',
         '',
+        '',
+        '',
+        '',
+        '',
+        ''
+      ],
+      [
+        '6',
+        '4',
+        '1',
+        1.0464881572673355,
+        '',
+        '[ERREUR] culture absente',
         '',
         '',
         '',

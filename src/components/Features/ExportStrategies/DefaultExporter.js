@@ -41,18 +41,17 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
   sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const firstCulture = props.cultures.at(0)
-    const label = firstCulture?.TYPE_LIBELLE ?? fromCodeCpf(firstCulture?.CPF)?.libelle_code_cpf ?? ''
+    const culture = firstCulture ? fromCodeCpf(firstCulture?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
     const surfaceHa = surface(geometry) / 10_000
     const isPac = Boolean(props.PACAGE)
-    const culture = firstCulture.CPF ?? firstCulture.TYPE ?? ''
 
     return [
       String(props.id),
       ilotId,
       parcelleId,
       surfaceHa,
-      culture,
-      label,
+      firstCulture?.CPF,
+      culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${firstCulture?.CPF})`,
       props.PACAGE,
       props.conversion_niveau,
       props.engagement_date ? new Date(props.engagement_date) : '',

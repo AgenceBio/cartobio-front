@@ -39,10 +39,13 @@ describe('generateAutresInfos', () => {
     expect(generateAutresInfos(features, { initialCulture: '01.13.41.1' })).toBe('1.1, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 1.2, Coucou')
 
     expect(generateAutresInfos(features, { withNotes: false })).toBe('1.1, 01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 1.2, 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false, withVariete: false })).toBe('01.13.41.1 Carottes, semis le 31/03/2023, 1ha ; 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 1ha ; 01.13.41.1 Carottes')
-    expect(generateAutresInfos(features, { withNotes: false, withName: false, withDate: false, withSurface: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withName: false, withNotes: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, semis le 31/03/2023, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withName: false, withNotes: false, withVariete: false })).toBe('01.13.41.1 Carottes, semis le 31/03/2023, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withDate: false, withName: false, withNotes: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge, 1ha ; 01.13.41.1 Carottes')
+    expect(generateAutresInfos(features, { withDate: false, withName: false, withNotes: false, withSurface: false })).toBe('01.13.41.1 Carottes, Chantenay à cœur rouge ; 01.13.41.1 Carottes')
+
+    expect(generateAutresInfos(features, { withCode: false, withCulture: true, withDate: false, withName: false, withNotes: false, withSurface: false })).toBe('Carottes, Chantenay à cœur rouge ; Carottes')
+    expect(generateAutresInfos(features, { withCode: false, withCulture: false, withDate: false, withName: false, withNotes: false, withSurface: false })).toBe('Chantenay à cœur rouge')
   })
 
   test('with two features with multiple cultures each', () => {
