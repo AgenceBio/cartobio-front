@@ -3,6 +3,7 @@ import bbox from '@turf/bbox'
 import difference from '@turf/difference'
 import intersect from '@turf/intersect'
 import area from '@turf/area'
+import { toDateInputString } from '@/components/dates.js'
 import { conversionLevels } from '@/referentiels/ab.js'
 import { parseReference } from "@/components/cadastre.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
@@ -251,7 +252,7 @@ Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
   value: {
     label: null,
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).toISOString().split('T').at(0) : '',
+    datapoint: (d) => d.properties.engagement_date ? toDateInputString(new Date(d.properties.engagement_date)) : '',
     groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
     sortFn: sortByAccessor((g) => g.key, SORT.DESCENDING),
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)

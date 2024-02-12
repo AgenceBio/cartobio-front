@@ -1,8 +1,16 @@
-import { describe, test, expect } from 'vitest';
+import { afterAll, beforeAll, describe, test, expect, vi } from 'vitest';
 
-import { applyValidationRules, getConversionLevel, isCertificationImmutable, isABLevel, OPERATOR_RULES, AUDITOR_RULES, CERTIFICATION_STATE } from './ab.js'
+import { applyValidationRules, certificationDateFin, getConversionLevel, isCertificationImmutable, isABLevel, OPERATOR_RULES, AUDITOR_RULES, CERTIFICATION_STATE } from './ab.js'
 import { LEVEL_UNKNOWN, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, LEVEL_MAYBE_AB } from './ab.js'
 import { useFeaturesStore } from "@/stores/index.js"
+
+const dateNow = new Date('2021-01-01T09:00:00.000+02:00')
+
+afterAll(() => vi.useRealTimers())
+beforeAll(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(dateNow)
+})
 
 describe('applyValidationRules', () => {
   test('operator requires culture cpf', () => {
@@ -105,5 +113,21 @@ describe('isABLevel', () => {
     expect(isABLevel(LEVEL_C3)).toEqual(true)
     expect(isABLevel(LEVEL_AB)).toEqual(true)
     expect(isABLevel(LEVEL_MAYBE_AB)).toEqual(false)
+  })
+})
+
+describe('certificationDateFin', () => {
+  test('returns a M+18 date', () => {
+    const d = new Date()
+    const result = certificationDateFin.MoisPlusDixHuit(d)
+    expect(result.toISOString()).toMatch('2022-07-01T')
+    expect(d).toEqual(dateNow)
+  })
+
+  test('returns a Y+2 31/03 date', () => {
+    const d = new Date()
+    const result = certificationDateFin.AnneePlusDeux(d)
+    expect(result.toISOString()).toMatch('2023-03-31T')
+    expect(d).toEqual(dateNow)
   })
 })

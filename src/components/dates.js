@@ -71,3 +71,12 @@ export function mmyyyy (date) {
 export function now () {
   return new Date().toISOString()
 }
+
+/**
+ * Transforms a date in an <input type=date
+ * @param {Date} date
+ * @returns {string}
+ */
+export function toDateInputString (date) {
+  return date.toISOString().split('T').at(0)
+}

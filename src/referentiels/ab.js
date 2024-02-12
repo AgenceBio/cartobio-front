@@ -258,3 +258,30 @@ export function getAnnotationLabel ({ code, metadata }) {
 
   return text
 }
+
+export const certificationDateFin = {
+  /**
+   * It's the standard rule.
+   *
+   * @param {Date} date
+   * @returns {string}
+   */
+  MoisPlusDixHuit (date) {
+    const d = new Date(date)
+    d.setMonth(d.getMonth() + 18)
+    return d
+  },
+  /**
+   * It's a more commonly practiced rule.
+   *
+   * @param {Date} date
+   * @returns {string}
+   */
+  AnneePlusDeux (date) {
+    const d = new Date(date)
+    d.setDate(31)
+    d.setMonth(2) /* march */
+    d.setUTCFullYear(d.getUTCFullYear() + 2)
+    return d
+  }
+}

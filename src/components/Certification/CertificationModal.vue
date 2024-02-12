@@ -34,6 +34,8 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { certificationDateFin } from '@/referentiels/ab.js'
+import { toDateInputString } from '@/components/dates.js'
 
 import Modal from '@/components/Modal.vue'
 
@@ -50,10 +52,7 @@ const props = defineProps({
 })
 
 const startDate = new Date()
-const endDate = new Date()
-endDate.setMonth(endDate.getMonth() + 18)
-
-const toDateInputString = (date) => date.toISOString().split('T').at(0)
+const endDate = certificationDateFin.AnneePlusDeux(startDate)
 
 const patch = reactive({
   certification_date_debut: props.record.certification_date_debut ?? toDateInputString(startDate),
