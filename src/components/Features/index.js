@@ -520,6 +520,7 @@ export function merge(features) {
  * @returns {Promise<{ geometry: Geometry, feature: Feature }>}
  */
 async function fetchCadastreGeometry (q, baseFeature) {
+
   const { data } = await axios.get('https://data.geopf.fr/geocodage/search', {
     params: {
       q,
