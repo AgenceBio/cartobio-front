@@ -21,7 +21,7 @@ const { VUE_APP_SENTRY_DSN } = import.meta.env
 
 const pinia = createPinia()
 const head = createHead()
-
+const app = createApp(App)
 const router = createRouter({
   routes,
   history: createWebHistory(),
@@ -38,7 +38,34 @@ const router = createRouter({
   }
 })
 
-const app = createApp(App)
+if (import.meta.env.PROD && VUE_APP_SENTRY_DSN) {
+  let release = version.replace("v", "")
+
+  if (import.meta.env.VUE_APP_ENVIRONMENT !== 'production') {
+    release = `${release}-dev-${import.meta.env.VUE_APP_GIT_COMMIT_SHA}`
+  }
+
+  try {
+    Sentry.init({
+      app,
+      dsn: VUE_APP_SENTRY_DSN,
+      environment: import.meta.env.VUE_APP_ENVIRONMENT,
+      integrations: [
+        new Sentry.BrowserTracing({
+          routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+        }),
+      ],
+      logErrors: true,
+      tracesSampleRate: 0.3,
+      release,
+    })
+  }
+  catch (error) {
+    console.error("Failed to initialize Sentry client %o", error)
+  }
+}
+
+app
   .use(router)
   .use(head)
   .use(pinia)
@@ -67,7 +94,7 @@ const app = createApp(App)
 const userStore = useUserStore()
 userStore.enablePersistance()
 
-app.config.errorHandler = (error) => {
+function handlerAPIErrors(error) {
   if (
       error.name === "AxiosError" &&
       [
@@ -77,9 +104,8 @@ app.config.errorHandler = (error) => {
       ].includes(error.code)
   ) {
     toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
-    return false
+    return true
   }
-
 
   // Token has expired: we disconnect and force render the current page to trigger the login mechanism
   if (error.name === "AxiosError" && error.response?.status === 401) {
@@ -87,42 +113,34 @@ app.config.errorHandler = (error) => {
 
     userStore.logout()
     router.push({ path, params, force: true })
-    return false
+    return true
   }
+}
+
+app.config.errorHandler = (error) => {
+  if (handlerAPIErrors(error)) return false
 
   toast.error('Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.')
-
   throw error;
 }
 
-router.isReady().then(() => {
-  if (import.meta.env.PROD && VUE_APP_SENTRY_DSN) {
-    let release = version.replace("v", "")
+router.onError((error, to) => {
+  if (handlerAPIErrors(error)) return false
 
-    if (import.meta.env.VUE_APP_ENVIRONMENT !== 'production') {
-      release = `${release}-dev-${import.meta.env.VUE_APP_GIT_COMMIT_SHA}`
-    }
-
-    try {
-      Sentry.init({
-        app,
-        dsn: VUE_APP_SENTRY_DSN,
-        environment: import.meta.env.VUE_APP_ENVIRONMENT,
-        integrations: [
-          new Sentry.BrowserTracing({
-            routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-          }),
-        ],
-        logErrors: true,
-        tracesSampleRate: 0.3,
-        release,
-      })
-    }
-    catch (error) {
-      console.error("Failed to initialize Sentry client %o", error)
-    }
+  // refresh the page if the app is redeployed while being in use
+  // this should be handled with a basic ServiceWorker/offline-first approach
+  // it could also be done as a Toast, with a reload action to offer a less surprising experience
+  const errors = ['Failed to fetch dynamically imported module', 'Unable to preload CSS']
+  if (errors.some((e) => error.message.includes(e))) {
+    window.location = to.fullPath
+    return
   }
 
+  toast.error('Une erreur est survenue. La page n\'a pas pu être chargée.')
+  throw error
+})
+
+router.isReady().then(() => {
   app.mount('#app')
   window.head = head
 })
@@ -164,23 +182,4 @@ router.beforeEach(async (to) => {
   if (to.path === '/login' && userStore.isLogged) {
     return { path: '/', replace: true }
   }
-})
-
-router.onError((error, to) => {
-  if (error.name === "TypeError" || error.code === "ERR_NETWORK") {
-    toast.error('La page n\'a pas pu être chargée. Vérifiez votre connexion internet.')
-    return
-  }
-
-  // refresh the page if the app is redeployed while being in use
-  // this should be handled with a basic ServiceWorker/offline-first approach
-  // it could also be done as a Toast, with a reload action to offer a less surprising experience
-  const errors = ['Failed to fetch dynamically imported module', 'Unable to preload CSS']
-  if (errors.some((e) => error.message.includes(e))) {
-    window.location = to.fullPath
-    return
-  }
-
-  console.error(error)
-  toast.error('Une erreur est survenue. La page n\'a pas pu être chargée.')
 })
