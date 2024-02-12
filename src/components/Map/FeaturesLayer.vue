@@ -42,6 +42,8 @@ export default {
                 "case",
                 ["!=", ["to-string", ["get", "NUMERO_I"]], ""],
                 ["concat", ["get", "NUMERO_I"], ".", ["get", "NUMERO_P"]],
+                ["has", "NOM"],
+                ["get", "NOM"],
                 "",
               ],
               "text-font": ["Noto Sans Regular"],
