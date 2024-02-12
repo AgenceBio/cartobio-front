@@ -21,7 +21,6 @@
     <label class="fr-label" for="reduced_conversion_period_state">Information sur la dérogation</label>
 
     <select class="fr-select" name="reduced_conversion_period_state" id="reduced_conversion_period_state" :value="getMetadata(ANNOTATIONS.REDUCED_CONVERSION_PERIOD, ANNOTATIONS.METADATA_STATE)" @change="updateMetadata(ANNOTATIONS.REDUCED_CONVERSION_PERIOD, ANNOTATIONS.METADATA_STATE, $event.target.value)">
-      <option value="">Sélectionner le statut</option>
       <option :value="key" :key="key" v-for="({ label }, key) in reducedConversionStates">
         {{ label }}
       </option>
