@@ -57,7 +57,7 @@ const getSheet = ({ featureCollection, permissions }) => {
       // N° Cadastre
       props.cadastre,
       // Variété / infos
-      generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: false, withVariete: true, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: false, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',
@@ -67,7 +67,7 @@ const getSheet = ({ featureCollection, permissions }) => {
       // Date conv #K
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis
-      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withDate: true, withName: false, withNotes: true, withVariete: false, initialCulture: culture?.code_cpf, permissions }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withDate: true, withName: false, withNotes: true, withSurface: true, withVariete: false, initialCulture: culture?.code_cpf, permissions }),
       // Précédent
       '',
       // Anté précédent

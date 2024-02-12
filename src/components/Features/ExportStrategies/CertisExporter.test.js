@@ -108,7 +108,7 @@ describe('CertisExporter', () => {
         '',
         '01.19.10.8',
         'Luzerne',
-        '01.19.10.7 Trèfle, 4 feuilles',
+        '0.70ha / 01.19.10.7 Trèfle, 4 feuilles, 0.30ha',
         'AB',
         '01.19.10.7 Trèfle, semis le 01/03/2023',
         '',

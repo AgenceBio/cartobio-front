@@ -95,8 +95,8 @@
           "engagement_date": "2021-01-01",
           "conversion_niveau": "AB",
           "cultures": [
-            { "id": 1, "CPF": "01.19.10.8" },
-            { "id": 2, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }
+            { "id": 1, "CPF": "01.19.10.8", "surface": "0.70" },
+            { "id": 2, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles", "surface": "0.30" }
           ],
           "commentaire": "troisième parcelle de Luzerne et de trèfle engagée à un autre moment, avec une autre culture",
           "annotations": [
