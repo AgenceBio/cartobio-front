@@ -13,16 +13,46 @@
 
     <MapPreview :controls="false" :collection="featureCollection" class="fr-mb-3w" />
 
-    <p>
-      <button class="fr-btn" @click="emit('submit')">
-        Importer ces données
-      </button>
-    </p>
+    <div class="fr-alert fr-alert--info fr-mb-3w">
+      Récupération des informations
+      <p>
+        Vous pouvez récupérer les informations renseignées sur le dernier parcellaire certifié&nbsp;:
+        dates et niveaux de conversion, parcelles ajoutées manuellement, variété des parcelles de la culture principale,
+        commentaires et noms de parcelle modifiés.
+      </p>
+    </div>
+
+    <form @submit.prevent="emit('submit', importPrevious === 'oui')">
+      <fieldset class="fr-fieldset" id="radio-import" aria-labelledby="radio-import-legend">
+        <legend class="fr-fieldset__legend fr-fieldset__legend--regular" id="radio-import-legend">
+          Souhaitez-vous récupérer les informations renseignées dans le dernier parcellaire certifié ?
+        </legend>
+
+        <div class="fr-fieldset__element">
+          <div class="fr-radio-group">
+            <input type="radio" id="radio-import-oui" name="radio-import" v-model="importPrevious" value="oui" required="required"  />
+            <label class="fr-label" for="radio-import-oui">Oui</label>
+          </div>
+        </div>
+        <div class="fr-fieldset__element">
+          <div class="fr-radio-group">
+            <input type="radio" id="radio-import-non" name="radio-import" v-model="importPrevious" value="non" required="required" />
+            <label class="fr-label" for="radio-import-non">Non</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <p>
+        <button class="fr-btn" type="submit">
+          Importer ces données
+        </button>
+      </p>
+    </form>
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import MapPreview from '@/components/Map/Preview.vue'
 import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
@@ -40,6 +70,8 @@ const props = defineProps({
     default: () => ([])
   }
 })
+
+const importPrevious = ref()
 
 const surfaceTotale = computed(() => inHa(surface(props.featureCollection)))
 </script>
