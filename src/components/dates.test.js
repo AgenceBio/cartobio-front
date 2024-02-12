@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
 import { ddmmmmyyyy, dateFormat, monthYearDateFormat, mmyyyy, now, onValidDate } from "./dates.js"
 
-const dateNow = new Date('2021-01-01T09:00:00')
+const dateNow = new Date('2021-01-01T09:00:00.000+02:00')
 
 afterAll(() => vi.useRealTimers())
 beforeAll(() => {
