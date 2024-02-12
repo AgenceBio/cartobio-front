@@ -8,7 +8,8 @@
 import { Fragment, h, onMounted, ref, render } from 'vue'
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic';
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import toast from "@/components/toast.js"
 
 const autocompleteRef = ref(null)
 
@@ -53,13 +54,30 @@ onMounted(async () => {
               return []
             }
 
-            const response = await axios.get('https://api-adresse.data.gouv.fr/search/', {
-              params: {
-                q: query,
-                type: 'municipality',
-                autocomplete: 1
+            try {
+              const response = await axios.get('https://api-adresse.data.gouv.fr/search/', {
+                params: {
+                  q: query,
+                  type: 'municipality',
+                  autocomplete: 1
+                }
+              })
+              // autocomplete lib does not handle errors properly so we have to do it ourselves
+            } catch (error) {
+              if (
+                  error.name === "AxiosError" &&
+                  [
+                    AxiosError.ETIMEDOUT,
+                    AxiosError.ECONNABORTED,
+                    AxiosError.ERR_NETWORK
+                  ].includes(error.code)
+              ) {
+                toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
+                return []
+              } else {
+                throw error;
               }
-            })
+            }
 
             return response.data.features
                 .sort((a, b) => a.properties.score < b.properties.score)
