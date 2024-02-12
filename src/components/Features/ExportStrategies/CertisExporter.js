@@ -99,7 +99,7 @@ const getSheet = ({ featureCollection, operator, permissions, record }) => {
       // Liste secondaire
       culture?.libelle_code_cpf,
       // Espèces implantées
-      generateAutresInfos([{ properties }], { withDate: false, withName: false, withNotes: false, withSurface: true, withVariete: true, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ properties }], { withDate: false, withName: false, withNotes: false, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // Degré de conversion de la parcelle/ilot
       properties.conversion_niveau,
       // Date de semis/implantation
