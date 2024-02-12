@@ -72,6 +72,7 @@ import { reactive, computed, ref } from 'vue';
 import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
 import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE, RULE_NAME } from '@/referentiels/ab.js'
 import { usePermissions } from '@/stores/index.js'
+import { toDateInputString } from '@/components/dates.js'
 
 import AccordionGroup from '@/components/DesignSystem/AccordionGroup.vue'
 import AccordionSection from '@/components/DesignSystem/Accordion.vue'
@@ -107,7 +108,7 @@ const patch = reactive({
 const nameError = ref(false)
 
 const isAB = computed(() => isABLevel(patch.conversion_niveau))
-const maxDate = computed(() => new Date().toISOString().split('T').at(0))
+const maxDate = computed(() => toDateInputString(new Date()))
 const isEngagementDateRequired = computed(() => applyValidationRules([RULE_ENGAGEMENT_DATE], { properties: patch }).success === 0)
 const details = await featureDetails(props.feature)
 

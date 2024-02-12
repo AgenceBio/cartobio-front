@@ -33,6 +33,7 @@
 import { computed, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFeaturesStore } from '@/stores/features.js'
+import { toDateInputString } from '@/components/dates.js'
 
 import Modal from '@/components/Modal.vue'
 
@@ -46,5 +47,5 @@ const patch = reactive({
   engagement_date: '',
 })
 
-const maxDate = computed(() => new Date().toISOString().split('T').at(0))
+const maxDate = computed(() => toDateInputString(new Date()))
 </script>
