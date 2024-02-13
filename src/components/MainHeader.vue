@@ -153,8 +153,10 @@ const rolePage = computed(() => {
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 
 async function logout() {
+  const redirectUrl = (permissions.isOc || permissions.isAgri) ? '/pro' : '/'
+
   await userStore.logout()
-  router.push('/')
+  router.push(redirectUrl)
 }
 </script>
 
