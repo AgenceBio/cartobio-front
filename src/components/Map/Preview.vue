@@ -1,5 +1,5 @@
 <template>
-  <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false, trackResize: false }" :bounds="mapBounds">
+  <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false, trackResize: false }" minInitialZoom="22" :bounds="mapBounds">
     <GeojsonLayer :style="baseStyle" name="base" />
     <FeaturesLayer :data="collection" />
   </MapContainer>
