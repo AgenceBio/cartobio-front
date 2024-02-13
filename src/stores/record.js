@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, watch } from 'vue'
 import { useFeaturesStore } from "@/stores/index.js"
+import bbox from '@turf/bbox'
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
 
 /** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
@@ -27,6 +28,29 @@ export const useRecordStore = defineStore('record', () => {
     ...initialState,
     audit_history: [ ...initialState.audit_history ],
     metadata: { ...initialState.metadata }
+  })
+
+  /** @type {computed<[]>} */
+  const bounds = computed(() => {
+    // prioritize features over locations
+    if (featuresStore.hasFeatures) {
+      return bbox(featuresStore.collection)
+    }
+    // otherwise fallback on advertised operator locations
+    else if (Array.isArray(record.operator.adressesOperateurs)) {
+      const features = record.operator.adressesOperateurs.map(({ lat, long }) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [long, lat]
+        }
+      }))
+
+      return bbox({ type: 'FeatureCollection', features })
+    }
+    else {
+      return []
+    }
   })
 
   /**
@@ -78,6 +102,7 @@ export const useRecordStore = defineStore('record', () => {
   return {
     record,
     // computed
+    bounds,
     exists,
     hasFeatures,
     isSetup,

@@ -26,6 +26,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  minInitialZoom: {
+    type: [Number, String],
+    default: 12,
+  },
   mode: {
     type: String,
   },
@@ -80,6 +84,10 @@ onMounted(() => {
   }
 
   map.value.once('load', () => {
+    // avoid the map to be too much on the nose of a single feature
+    const zoom = Math.min(map.value.getZoom(), parseFloat(props.minInitialZoom))
+    map.value.setZoom(zoom)
+
     emit('zoom:change', map.value.getZoom())
   })
 
