@@ -45,6 +45,7 @@ import ValidationErrors from "@/components/Features/ValidationErrors.vue"
 import CertificationModal from "@/components/Certification/CertificationModal.vue"
 import SendOffModal from "@/components/Certification/SendOffModal.vue"
 import { usePermissions } from "@/stores/permissions.js"
+import toast from "@/components/toast.js"
 
 const recordStore = useRecordStore()
 const permissions = usePermissions()
@@ -74,11 +75,21 @@ const validationResult = computed(() => applyValidationRules(props.validationRul
 const hasFailures = computed(() => Boolean(validationResult.value.failures))
 
 async function handleSaveAudit ({ record_id: recordId, patch }) {
-  const record = await updateAuditState({ recordId }, {
-    ...patch,
-      certification_state: CERTIFICATION_STATE.AUDITED
+  let record
+  try {
+    record = await updateAuditState({ recordId }, {
+          ...patch,
+          certification_state: CERTIFICATION_STATE.AUDITED
+        }
+    )
+  } catch (e) {
+    if (e.response?.status === 400) {
+      toast.error(e.response.data.error)
+      return
     }
-  )
+
+    throw e
+  }
 
   recordStore.update(record)
   showSendOffModal.value = false

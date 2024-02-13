@@ -201,7 +201,6 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
     toast.success(text)
   }
   catch (error) {
-    console.error(error)
     toast.error(
       "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
     )
