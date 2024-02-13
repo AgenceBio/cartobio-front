@@ -29,6 +29,13 @@ export const EventType = {
  */
 
 /**
+ * @typedef {Object} AgenceBioAdresseGeo
+ * @property {string} codeCommune
+ * @property {number} lat
+ * @property {number} long
+ */
+
+/**
  * @typedef {Object} Operator
  * @property {number} id
  * @property {string | null} dateEngagement
@@ -40,6 +47,7 @@ export const EventType = {
  * @property {string | null} siret
  * @property {string | null} email
  * @property {CertificationBody} organismeCertificateur
+ * @property {AgenceBioAdresseGeo[]} adressesOperateurs
  * @property {string} codeCommune
  * @property {string} commune
  * @property {string} departement
