@@ -20,7 +20,7 @@
             <span v-if="entry.metadata.evv">, EVV {{ entry.metadata.evv }}</span>
           </p>
 
-          <ul v-if="entry.metadata.warnings">
+          <ul v-if="entry.metadata?.warnings">
             <li v-for="({ id, label }, i) in entry.metadata.warnings" :key="i" class="fr-icon-warning-line">
               {{ label }} <ReferenceCadastrale v-if="id" :reference="id" class="optional-info" />
             </li>
@@ -73,7 +73,7 @@ function plurals (count, { zero, one, other }) {
  * We pick the details, or the associated label of a reason code
  */
 const deletionReason = computed(() => {
-  if (props.entry.type === EventType.FEATURE_DELETE) {
+  if (props.entry.type === EventType.FEATURE_DELETE && props.entry.metadata) {
     const { code, details } = props.entry.metadata.reason
     return details || (deletionReasons.find(r => r.code === code)?.label ?? '')
   }
