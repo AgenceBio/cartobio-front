@@ -137,7 +137,9 @@ export function applyValidationRules (rules, ...features) {
   let total = 0
   let success = 0
   let failures = 0
-  const results = rules.reduce((obj, ruleId) => ({
+  const applicableRules = rules.filter(r => r)
+
+  const results = applicableRules.reduce((obj, ruleId) => ({
     ...obj,
     [ruleId]: { success: 0, failures: 0 }
   }), {})
@@ -147,7 +149,7 @@ export function applyValidationRules (rules, ...features) {
   }), {})
 
   features.forEach(feature => {
-    rules.forEach((ruleId) => {
+    applicableRules.forEach((ruleId) => {
       const result = VALIDATION_RULES[ruleId](feature)
       total++
       result ? success++ : failures++

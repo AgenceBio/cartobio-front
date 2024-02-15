@@ -21,7 +21,7 @@ describe('applyValidationRules', () => {
     ]
     const store = useFeaturesStore()
     store.setAll(features)
-    const result = applyValidationRules(OPERATOR_RULES, ...store.collection.features)
+    const result = applyValidationRules([...OPERATOR_RULES, ''], ...store.collection.features)
 
     expect(result).toEqual({
       failures: 2,

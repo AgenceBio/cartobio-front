@@ -4,7 +4,7 @@
       <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
         <label class="fr-label" for="nom">Nom de la parcelle</label>
         <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-        <input class="fr-input fr-error" v-model="patch.NOM" :placeholder="featureName(feature, { placeholder: 'Nom de la parcelle' })" required="required" :class="{ 'fr-input--error': nameError }" />
+        <input class="fr-input fr-error" v-model="patch.NOM" :placeholder="featureName(feature, { placeholder: 'Nom de la parcelle' })" :required="requiredName" :class="{ 'fr-input--error': nameError }" />
         <p v-if="nameError" class="fr-error-text">
           Ce champ est obligatoire
         </p>
@@ -90,6 +90,10 @@ const props = defineProps({
   open: {
     type: Boolean,
     default: false
+  },
+  requiredName: {
+    type: Boolean,
+    default: false
   }
 })
 const emit = defineEmits(['submit', 'close'])
@@ -113,9 +117,9 @@ const isEngagementDateRequired = computed(() => applyValidationRules([RULE_ENGAG
 const details = await featureDetails(props.feature)
 
 const validate = () => {
-  const { rules } = applyValidationRules([RULE_NAME, RULE_ENGAGEMENT_DATE], { properties: patch })
+  const { rules } = applyValidationRules([props.requiredName ? RULE_NAME : null, RULE_ENGAGEMENT_DATE], { properties: patch })
 
-  if (rules[RULE_NAME].success === 0) {
+  if (rules[RULE_NAME]?.success === 0) {
     nameError.value = true
     return false
   }
