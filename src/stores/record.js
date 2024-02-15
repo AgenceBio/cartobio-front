@@ -4,7 +4,9 @@ import { useFeaturesStore } from "@/stores/index.js"
 import bbox from '@turf/bbox'
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
 
-/** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
+/**
+ * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
+ */
 
 export const useRecordStore = defineStore('record', () => {
   const featuresStore = useFeaturesStore()
@@ -23,7 +25,7 @@ export const useRecordStore = defineStore('record', () => {
     metadata: {}
   }
 
-  /** @type {reactive<StrictRecord>} */
+  /** @type {reactive<NormalizedRecord>} */
   const record = reactive({
     ...initialState,
     audit_history: [ ...initialState.audit_history ],
@@ -57,7 +59,7 @@ export const useRecordStore = defineStore('record', () => {
    * Soft update of a record
    *
    * Use case: when navigating from /parcellaire/:id to /parcellaire/:id/new-stuff
-   * @param {import('@/cartobio-api').Record} updatedRecord
+   * @param {NormalizedRecord} updatedRecord
    */
   function update (updatedRecord = {}) {
     Object.entries(record).forEach(([key]) => {
@@ -75,7 +77,7 @@ export const useRecordStore = defineStore('record', () => {
    * Replace a record with new values
    * Use case: when navigating from /parcellaire/1234 to /parcellaire/9999 or even /parcellaires then /parcellaire/1234
    *
-   * @param {import('@/cartobio-api').Record} maybeNewRecord
+   * @param {NormalizedRecord} maybeNewRecord
    */
   function replace (maybeNewRecord) {
     reset()

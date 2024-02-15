@@ -6,8 +6,11 @@ import { AnnotationTags } from '@/referentiels/ab.js'
 /**
  * @typedef {import('@/referentiels/ab.js').ANNOTATIONS} AnnotationId
  * @typedef {import('@/referentiels/ab.js').UserAnnotation} UserAnnotation
- * @typedef {import('vue').Readonly} Readonly
- * @typedef {import('vue').Ref} Ref
+ */
+
+/**
+ * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
+ * @typedef {import('@agencebio/cartobio-types').CartoBioFeature} CartoBioFeature
  */
 
 export function collectIds (features) {
@@ -18,15 +21,24 @@ export const useFeaturesStore = defineStore('features', () => {
   const selectedIds = ref([])
   const activeId = ref(null)
   const hoveredId = ref(null)
+  /**
+   * @type {reactive<CartoBioFeatureCollection>}
+   */
   const collection = ref({
     type: 'FeatureCollection',
     features: []
   })
 
+  /**
+   * @return {CartoBioFeature}
+   */
   function getFeatureById (id) {
     return collection.value.features.find(feature => String(feature.id) === String(id))
   }
 
+  /**
+   * @type {ComputedRef<CartoBioFeature[]>}
+   */
   const all = computed(() => collection.value.features)
   const hasFeatures = computed(() => collection.value.features.length > 0)
 
@@ -36,12 +48,18 @@ export const useFeaturesStore = defineStore('features', () => {
       // .filter(applyRulesFacets)
   })
 
+  /**
+   * @type {ComputedRef<CartoBioFeature[]>}
+   */
   const allSelected = computed(() => {
     const collectedIds = collectIds(collection.value.features)
 
     return collectedIds.toString() === selectedIds.value.sort().toString()
   })
 
+  /**
+   * @type {ComputedRef<CartoBioFeature>}
+   */
   const activeFeature = computed(() => {
     return activeId.value ? getFeatureById(activeId.value) : null
   })
