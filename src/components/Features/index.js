@@ -349,17 +349,22 @@ export function getFeatureById (features, id) {
  * @returns {String}
  */
 export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', ', placeholder = '-'} = {}) {
-  if (feature.properties.NOM) {
-    return feature.properties.NOM
-  }
+  const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10)
+  const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10)
 
-  if (feature.properties.NUMERO_I || feature.properties.NUMERO_P) {
-    return [
-      Number.isNaN(parseInt(feature.properties.NUMERO_I, 10)) === false ? `${ilotLabel}${feature.properties.NUMERO_I}` : '',
-      Number.isNaN(parseInt(feature.properties.NUMERO_P, 10)) === false ? `${parcelleLabel}${feature.properties.NUMERO_P}` : '',
+  if (feature.properties.NOM || !Number.isNaN(NUMERO_I) || !Number.isNaN(NUMERO_P)) {
+    const name = [
+      Number.isNaN(NUMERO_I) === false ? `${ilotLabel}${NUMERO_I}` : '',
+      Number.isNaN(NUMERO_P) === false ? `${parcelleLabel}${NUMERO_P}` : '',
     ]
     .filter(d => d)
     .join(separator)
+
+    if (!name) {
+      return feature.properties.NOM
+    }
+
+    return (ilotLabel && parcelleLabel && feature.properties.NOM ? `${name} (${feature.properties.NOM})` : name)
   }
 
   if (feature.properties.cadastre) {
