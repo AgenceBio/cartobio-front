@@ -459,6 +459,7 @@ describe('featureName', () => {
     }
 
     expect(featureName(feature)).toEqual('Les muriers')
+    expect(featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).toEqual('Les muriers')
   })
 
   test('get as ILOT.PARCELLE (PAC reference)', () => {
@@ -498,6 +499,7 @@ describe('featureName', () => {
     }
 
     expect(featureName(feature)).toEqual('ilot 1')
+    expect(featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).toEqual('1')
   })
 
   test('get as a single cadastre ref (without prefix)', () => {
