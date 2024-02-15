@@ -4,7 +4,7 @@
       <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
         <label class="fr-label" for="nom">Nom de la parcelle</label>
         <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-        <input class="fr-input fr-error" v-model="patch.NOM" placeholder="Nom de la parcelle" required="required" :class="{ 'fr-input--error': nameError }" />
+        <input class="fr-input fr-error" v-model="patch.NOM" :placeholder="featureName(feature, { placeholder: 'Nom de la parcelle' })" required="required" :class="{ 'fr-input--error': nameError }" />
         <p v-if="nameError" class="fr-error-text">
           Ce champ est obligatoire
         </p>
@@ -98,7 +98,7 @@ const permissions = usePermissions()
 const showCancelModal = ref(false)
 
 const patch = reactive({
-  NOM: featureName(props.feature, { placeholder: '' }),
+  NOM: props.feature.properties.NOM || '',
   annotations: props.feature.properties.annotations || [],
   conversion_niveau: props.feature.properties.conversion_niveau || '',
   cultures: props.feature.properties.cultures || [],
