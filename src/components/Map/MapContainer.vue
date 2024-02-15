@@ -28,7 +28,7 @@ const props = defineProps({
   },
   minInitialZoom: {
     type: [Number, String],
-    default: 12,
+    default: 14,
   },
   mode: {
     type: String,
