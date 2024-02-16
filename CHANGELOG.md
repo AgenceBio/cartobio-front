@@ -1,3 +1,8 @@
+# [2.20.0](https://github.com/AgenceBio/cartobio-front/compare/v2.19.0...v2.20.0) (2023-02-?)
+
+* import de parcellaire depuis Geofolia
+* le statut d'une dérogation de conversion est par défaut "en cours"
+
 # [2.19.0](https://github.com/AgenceBio/cartobio-front/compare/v2.18.4...v2.19.0) (2023-02-10)
 
 * nouvelle page d'accueil
