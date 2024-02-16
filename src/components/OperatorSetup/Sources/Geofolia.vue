@@ -27,11 +27,11 @@
 <script setup>
 import { ref } from 'vue'
 import { convertGeofoliaArchiveToGeoJSON } from '@/cartobio-api.js'
+import { sources } from "@/referentiels/imports.js"
 
 const fileInput = ref(null)
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
-const source = 'geofolia'
 const erreur = ref('')
 
 async function handleFileUpload () {
@@ -41,12 +41,12 @@ async function handleFileUpload () {
   try {
     const geojson = await convertGeofoliaArchiveToGeoJSON(archive)
 
-    emit('upload:complete', { geojson, source, warnings: [], metadata: {} })
+    emit('upload:complete', { geojson, source: sources.GEOFOLIA, warnings: [], metadata: {} })
   } catch (error) {
     if (error.response?.status >= 400 && error.response?.status <= 500) {
-      erreur.value = 'votre fichier ne semble pas être valide.'
+      erreur.value = 'Votre fichier n\'est pas reconnu comme un export Geofolia.'
     } else {
-      erreur.value = 'erreur inconnue, merci de réessayer plus tard.'
+      erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
       throw error
     }
   }

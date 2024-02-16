@@ -100,7 +100,7 @@ describe("OperatorSetupFlow", () => {
     expect(wrapper.text()).toContain('Sélectionner ma dernière déclaration PAC')
   })
 
-  it("should render tab content for Geofolia when selected", async () => {
+  it("should import successfully a Geofolia archive", async () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
@@ -112,6 +112,38 @@ describe("OperatorSetupFlow", () => {
     // Click on geofolia tab
     await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
     expect(wrapper.text()).toContain(`Sélectionner mon fichier de parcelles et d'interventions`)
+
+    axios.__createMock.post.mockResolvedValueOnce({
+      data: featureCollectionFixture
+    })
+
+    await wrapper.find('input[type="file"]').setValue('')
+    await flushPromises()
+
+    // it is now called during preview
+    const confirmBtn = await wrapper.find('.fr-btn')
+    expect(confirmBtn.text()).toEqual('Importer ces données')
+  })
+
+  it("should fail on invalid Geofolia archive", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: [ ...operatorSetupActions ],
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    const error = new AxiosError('Fichier invalide')
+    error.response = { status : 400 }
+
+    axios.__createMock.post.mockRejectedValueOnce(error)
+
+    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+    await wrapper.find('input[type="file"]').setValue('')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Votre fichier n\'est pas reconnu comme un export Geofolia.')
   })
 
   it("should render tab content for RPG when selected", async () => {
