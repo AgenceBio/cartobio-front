@@ -4,7 +4,7 @@
       <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
         <label class="fr-label" for="nom">Nom de la parcelle</label>
         <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-        <input class="fr-input fr-error" v-model="patch.NOM" :placeholder="featureName(feature, { placeholder: 'Nom de la parcelle' })" :required="requiredName" :class="{ 'fr-input--error': nameError }" />
+        <input class="fr-input fr-error" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameError }" />
         <p v-if="nameError" class="fr-error-text">
           Ce champ est obligatoire
         </p>
@@ -48,7 +48,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 
-import { featureDetails, featureName, inHa, surface } from '@/components/Features/index.js'
+import { featureDetails, inHa, surface } from '@/components/Features/index.js'
 import Modal from '@/components/Modal.vue'
 import CultureSelector from '@/components/Features/CultureSelector.vue'
 import { usePermissions } from "@/stores/permissions.js"
