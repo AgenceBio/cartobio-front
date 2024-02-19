@@ -64,7 +64,18 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     ['Commune', 'Ilot', 'Culture', 'Variété / infos', 'C0',           'AB', 'C1', 'C2',   'C3', 'Date conv', 'Observation / date de semis', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Id. Parcelle', 'Code culture'],
   ], { origin: 'A4'})
 
-  sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
+  const ilotOptions = {
+    ilotLabel: '',
+    parcelleLabel: '',
+    separator: '_',
+    placeholder: ''
+  }
+
+  const sortedFeatures = [...featureCollection.features].sort((a, b) => {
+    return featureName(a, ilotOptions).localeCompare(b, ilotOptions)
+  })
+
+  sheet_add_aoa(sheet, sortedFeatures.map(({ geometry, properties: props, id }) => {
     const surfaceHa = (surface(geometry) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
     const culture = props.cultures?.at(0) ? fromCodeCpf(props.cultures?.at(0).CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
@@ -72,7 +83,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
       // Commune          #A
       props.COMMUNE_LABEL,
       // Ilot             #B
-      featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '_', placeholder: '' }),
+      featureName({ properties: props }, ilotOptions),
       // Libellé Culture  #C
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures?.at(0).CPF})`,
       // Variété / infos  #D

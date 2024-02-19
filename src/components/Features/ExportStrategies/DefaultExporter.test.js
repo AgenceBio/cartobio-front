@@ -92,12 +92,12 @@ describe('DefaultExporter', () => {
         ''
       ],
       [
-        '5',
-        '3',
+        '6',
+        '4',
         '1',
         1.0464881572673355,
-        '01.19.99',
-        '[ERREUR] culture inconnue (01.19.99)',
+        '',
+        '[ERREUR] culture absente',
         '',
         '',
         '',
@@ -106,12 +106,12 @@ describe('DefaultExporter', () => {
         ''
       ],
       [
-        '6',
-        '4',
+        '5',
+        '3',
         '1',
         1.0464881572673355,
-        '',
-        '[ERREUR] culture absente',
+        '01.19.99',
+        '[ERREUR] culture inconnue (01.19.99)',
         '',
         '',
         '',

@@ -76,7 +76,7 @@ const getSheet = ({ featureCollection, operator }) => {
     sheet_add_aoa(sheet, [
       [
         culture?.groupe,
-        culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
+        mainKey === '__nogroup__' ? '[ERREUR] culture absente' : (culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`),
         culture?.code_bureau_veritas,
         // Complément certificat (variété)
         varietes,
