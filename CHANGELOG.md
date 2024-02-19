@@ -1,7 +1,15 @@
-# [2.20.0](https://github.com/AgenceBio/cartobio-front/compare/v2.19.0...v2.20.0) (2023-02-?)
+# [2.20.0](https://github.com/AgenceBio/cartobio-front/compare/v2.19.0...v2.20.0) (2023-02-10)
 
-* import de parcellaire depuis Geofolia
-* le statut d'une dérogation de conversion est par défaut "en cours"
+* Préservation des versions précédentes du parcellaire lors des noueaux imports ([3b92b45](https://github.com/AgenceBio/cartobio-front/commit/3b92b45), [5ca8290](https://github.com/AgenceBio/cartobio-front/commit/5ca8290))
+* Sélectionne 'en cours de traitement' par défaut sur les annotations ([6967c65](https://github.com/AgenceBio/cartobio-front/commit/6967c65))
+* Propose par défaut les dates de fin de certification à 2 ans ([f0fae4f](https://github.com/AgenceBio/cartobio-front/commit/f0fae4f))
+* Supprime la surface des exports Certis ([9e642b4](https://github.com/AgenceBio/cartobio-front/commit/9e642b4))
+* Affiche les noms de parcelles sur la carte ([7e6ac0a](https://github.com/AgenceBio/cartobio-front/commit/7e6ac0a))
+* Centre la carte sur les adresses opérateurs si le parcellaire est vide ([6817b8a](https://github.com/AgenceBio/cartobio-front/commit/6817b8a))
+* Zoom par défaut sur la carte de 14 au lieu de 12 ([724c633](https://github.com/AgenceBio/cartobio-front/commit/724c633))
+* Activation du connecteur Geofolia ([9f6edcb](https://github.com/AgenceBio/cartobio-front/commit/9f6edcb))
+* Le champ « nom » des parcelles n'est plus obligatoire
+* Corrections de bugs
 
 # [2.19.0](https://github.com/AgenceBio/cartobio-front/compare/v2.18.4...v2.19.0) (2023-02-10)
 

@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "start": "vite",
     "test": "vitest --coverage",
-    "posttest": "eslint ./src"
+    "posttest": "eslint ./src",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 1 -u"
   },
   "engines": {
     "node": "^20.0.0"
