@@ -228,6 +228,9 @@ export const AnnotationTags = {
     label: 'Déclassement',
     metadata: {
       [ANNOTATIONS.METADATA_STATE]: {
+        [CERTIFICATION_BODY_DECISION.PENDING]: {
+          label: 'En cours de traitement'
+        },
         [CERTIFICATION_BODY_DECISION.ACCEPTED]: {
           label: 'Déclassement approuvé'
         },

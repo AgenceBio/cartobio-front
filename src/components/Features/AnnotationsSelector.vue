@@ -31,7 +31,6 @@
     <label class="fr-label" for="downgraded_state">Information sur le déclassement</label>
 
     <select class="fr-select" name="downgraded_state" id="downgraded_state" :value="getMetadata(ANNOTATIONS.DOWNGRADED, ANNOTATIONS.METADATA_STATE)" @change="updateMetadata(ANNOTATIONS.DOWNGRADED, ANNOTATIONS.METADATA_STATE, $event.target.value)">
-      <option value="">Sélectionner le statut</option>
       <option :value="key" :key="key" v-for="({ label }, key) in downgradedStates">
         {{ label }}
       </option>
