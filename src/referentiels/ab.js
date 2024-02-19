@@ -312,8 +312,8 @@ export const certificationDateFin = {
    */
   AnneePlusDeux (date) {
     const d = new Date(date)
-    d.setDate(31)
-    d.setMonth(2) /* march */
+    d.setMonth(2) /* first, set the month march */
+    d.setDate(31) /* then we can set the day */
     d.setUTCFullYear(d.getUTCFullYear() + 2)
     return d
   }

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, test, expect, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, test, expect, vi } from 'vitest';
 
 import { applyValidationRules, certificationDateFin, getConversionLevel, isCertificationImmutable, isABLevel, OPERATOR_RULES, AUDITOR_RULES, CERTIFICATION_STATE } from './ab.js'
 import { LEVEL_UNKNOWN, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, LEVEL_MAYBE_AB } from './ab.js'
@@ -117,17 +117,33 @@ describe('isABLevel', () => {
 })
 
 describe('certificationDateFin', () => {
-  test('returns a M+18 date', () => {
-    const d = new Date()
+  test('returns a M+18 date (feb 2024)', () => {
+    const d = new Date('2024-02-19T09:00:00.000+02:00')
     const result = certificationDateFin.MoisPlusDixHuit(d)
-    expect(result.toISOString()).toMatch('2022-07-01T')
-    expect(d).toEqual(dateNow)
+    expect(result.toISOString()).toMatch('2025-08-19T')
   })
 
-  test('returns a Y+2 31/03 date', () => {
-    const d = new Date()
+  test('returns a Y+2 31/03 date (feb 2024)', () => {
+    const d = new Date('2024-02-19T09:00:00.000+02:00')
     const result = certificationDateFin.AnneePlusDeux(d)
-    expect(result.toISOString()).toMatch('2023-03-31T')
-    expect(d).toEqual(dateNow)
+    expect(result.toISOString()).toMatch('2026-03-31T')
+  })
+
+  test('returns a M+18 date (end of year)', () => {
+    const d = new Date('2023-12-31T09:00:00.000+02:00')
+    const result = certificationDateFin.MoisPlusDixHuit(d)
+    expect(result.toISOString()).toMatch('2025-07-01T')
+  })
+
+  test('returns a Y+2 31/03 date (end of year)', () => {
+    const d = new Date('2023-12-31T09:00:00.000+02:00')
+    const result = certificationDateFin.AnneePlusDeux(d)
+    expect(result.toISOString()).toMatch('2025-03-31T')
+  })
+
+  test('returns a Y+2 31/03 date (same day)', () => {
+    const d = new Date('2023-03-31T09:00:00.000+02:00')
+    const result = certificationDateFin.AnneePlusDeux(d)
+    expect(result.toISOString()).toMatch('2025-03-31T')
   })
 })
