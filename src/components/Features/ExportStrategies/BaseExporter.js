@@ -1,5 +1,5 @@
 import { utils } from 'xlsx'
-import { cultureLabel, featureName } from "../index.js"
+import { cultureLabel, featureName, sortByAccessor } from "../index.js"
 import { getAnnotationLabel } from '../../../referentiels/ab.js'
 
 const { sheet_to_csv, sheet_to_json, json_to_sheet } = utils
@@ -15,6 +15,18 @@ export default class BaseExporter {
     this.operator = operator
     this.record = record
     this.permissions = permissions
+  }
+
+  getSortedFeatures () {
+    return [...this.featureCollection.features].sort(
+      sortByAccessor((f) => {
+        return featureName(f, {
+          ilotLabel: '',
+          parcelleLabel: '',
+          separator: '.'
+        })
+      })
+    )
   }
 
   toJSON () {
