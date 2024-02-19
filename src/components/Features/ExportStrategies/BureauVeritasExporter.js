@@ -20,7 +20,8 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, operator }) => {
+function getSheet () {
+  const { featureCollection, operator } = this
   const notification = operator.notifications?.find(({ status }) => status === 'ACTIVE') ?? {}
 
   // First sheet
@@ -102,9 +103,7 @@ class BureauVeritasExporter extends BaseExporter {
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator })
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()

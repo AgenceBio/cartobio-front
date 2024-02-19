@@ -3,7 +3,8 @@ import { utils, write } from "xlsx";
 import { surface } from "@/components/Features/index.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
-const getSheet = ({ featureCollection, operator, permissions }) => {
+function getSheet () {
+  const { featureCollection, operator, permissions } = this
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = utils.aoa_to_sheet([
@@ -50,7 +51,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     utils.decode_range('A3:E3')
   ]
 
-  utils.sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props }) => {
+  utils.sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties: props }) => {
     const surfaceHa = surface(geometry) / 10_000
     const culture = props.cultures.at(0) ? fromCodeCpf(props.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
@@ -80,9 +81,7 @@ class ControlUnionExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   range = 'A6:H999'
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions } )
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()

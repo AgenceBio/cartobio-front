@@ -65,15 +65,6 @@ describe('QualisudExporter', () => {
         '4'
       ],
       [
-        '[ERREUR] culture absente',
-        '',
-        'ilot 4, parcelle 1',
-        1.0464881572673355,
-        '',
-        '',
-        '6'
-      ],
-      [
         '[ERREUR] culture inconnue (01.19.99)',
         '01.19.99 Culture inconnue',
         'ilot 3, parcelle 1',
@@ -81,6 +72,15 @@ describe('QualisudExporter', () => {
         '',
         '',
         '5'
+      ],
+      [
+        '[ERREUR] culture absente',
+        '',
+        'ilot 4, parcelle 1',
+        1.0464881572673355,
+        '',
+        '',
+        '6'
       ]
     ]
 

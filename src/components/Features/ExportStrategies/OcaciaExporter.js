@@ -7,7 +7,8 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
 const { decode_range: R } = utils
 
-const getSheet = ({ featureCollection, permissions }) => {
+function getSheet () {
+  const { featureCollection, permissions } = this
   const sheet = aoa_to_sheet([
     [''       ,     '',        '',            '',                '', 'Surfaces en ha', '', '', '', '',      '',          '',            '',               '', 'Dernier intrant non autorisé en AB',     '',             '',             ''],
     [''       ,     '',        '',            '',                '', '0',   '0',  '0',  '0',  '0',          '',          '',            '',               '',                                   '',     '',             '',             ''],
@@ -43,7 +44,7 @@ const getSheet = ({ featureCollection, permissions }) => {
     { wch: 16 },
   ]
 
-  sheet_add_aoa(sheet, featureCollection.features.map(({ id, geometry, properties: props }) => {
+  sheet_add_aoa(sheet, this.getSortedFeatures().map(({ id, geometry, properties: props }) => {
     const surfaceHa = surface(geometry) / 10_000
     const culture = props.cultures.at(0) ? fromCodeCpf(props.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
@@ -126,9 +127,7 @@ class OcaciaExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   range = "A3:R999"
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions } )
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()

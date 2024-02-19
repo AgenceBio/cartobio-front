@@ -7,7 +7,8 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { aoa_to_sheet, sheet_add_aoa } = utils
 const { decode_range: R } = utils
 
-const getSheet = ({ featureCollection, operator, permissions }) => {
+function getSheet () {
+  const { featureCollection, operator, permissions } = this
   const notification = operator.notifications?.find(({ status }) => status === 'ACTIVE') ?? {}
 
   // First sheet
@@ -71,11 +72,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     placeholder: ''
   }
 
-  const sortedFeatures = [...featureCollection.features].sort((a, b) => {
-    return featureName(a, ilotOptions).localeCompare(b, ilotOptions)
-  })
-
-  sheet_add_aoa(sheet, sortedFeatures.map(({ geometry, properties: props, id }) => {
+  sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties: props, id }) => {
     const surfaceHa = (surface(geometry) / 10_000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
     const culture = props.cultures?.at(0) ? fromCodeCpf(props.cultures?.at(0).CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
@@ -176,9 +173,7 @@ class CertipaqExporter extends BaseExporter {
   mimetype = "text/csv"
   range = "A5:Q999"
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions } )
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()
