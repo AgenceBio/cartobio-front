@@ -121,26 +121,6 @@ describe('OcaciaExporter', () => {
       ],
       [
         '',
-        '3.1',
-        '[ERREUR] culture inconnue (01.19.99)',
-        '',
-        '01.19.99 Culture inconnue',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '01.19.99 Culture inconnue',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '5'
-      ],
-      [
-        '',
         '4.1',
         '[ERREUR] culture absente',
         '',
@@ -158,6 +138,26 @@ describe('OcaciaExporter', () => {
         '',
         '',
         '6'
+      ],
+      [
+        '',
+        '3.1',
+        '[ERREUR] culture inconnue (01.19.99)',
+        '',
+        '01.19.99 Culture inconnue',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '01.19.99 Culture inconnue',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '5'
       ]
     ]
 

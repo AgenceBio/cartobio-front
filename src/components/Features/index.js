@@ -346,6 +346,7 @@ export function getFeatureById (features, id) {
 
 /**
  * @param {Feature} feature
+ * @param {{ ilotLabel?: string, parcelleLabel?: string, separator?: string, placeholder?: string}} options
  * @returns {String}
  */
 export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', ', placeholder = '-'} = {}) {
@@ -361,10 +362,10 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
     .join(separator)
 
     if (!name) {
-      return feature.properties.NOM
+      return feature.properties.NOM ?? placeholder
     }
 
-    return (ilotLabel && parcelleLabel && feature.properties.NOM ? `${name} (${feature.properties.NOM})` : name)
+    return (ilotLabel && parcelleLabel && feature.properties.NOM ? `${name} (${feature.properties.NOM})` : (name ?? placeholder))
   }
 
   if (feature.properties.cadastre) {
