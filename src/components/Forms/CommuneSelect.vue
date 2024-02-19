@@ -54,8 +54,9 @@ onMounted(async () => {
               return []
             }
 
+            let response
             try {
-              const response = await axios.get('https://api-adresse.data.gouv.fr/search/', {
+              response = await axios.get('https://api-adresse.data.gouv.fr/search/', {
                 params: {
                   q: query,
                   type: 'municipality',
