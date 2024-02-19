@@ -15,7 +15,8 @@ const { aoa_to_sheet, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, permissions }) => {
+function getSheet () {
+  const { featureCollection, permissions } = this
   const sheet = aoa_to_sheet([
     [
       "Production (code CPF)",
@@ -45,7 +46,7 @@ const getSheet = ({ featureCollection, permissions }) => {
     { wch: 16 },
   ]
 
-  featureCollection.features.forEach(({ geometry, properties }, index) => {
+  this.getSortedFeatures().forEach(({ geometry, properties }, index) => {
     const firstCulture = properties.cultures.at(0) ? fromCodeCpf(properties.cultures.at(0)?.CPF) : { code_cpf: '[ERREUR] culture absente' }
     const autresInfos = generateAutresInfos([ { properties }], { withName: false, withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
@@ -82,9 +83,7 @@ class BureauVeritasExporter extends BaseExporter {
   extension = 'csv'
   mimetype = 'text/csv'
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()

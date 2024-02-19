@@ -115,25 +115,6 @@ describe('CertipaqExporter', () => {
       ],
       [
         '',
-        '4_1',
-        '[ERREUR] culture absente',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '6',
-        ''
-      ],
-      [
-        '',
         '3_1',
         '[ERREUR] culture inconnue (01.19.99)',
         'Culture inconnue',
@@ -149,6 +130,25 @@ describe('CertipaqExporter', () => {
         '',
         '',
         '5',
+        ''
+      ],
+      [
+        '',
+        '4_1',
+        '[ERREUR] culture absente',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '6',
         ''
       ]
     ]

@@ -7,7 +7,8 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
 const { decode_range: R } = utils
 
-const getSheet = ({ featureCollection, operator, permissions, record }) => {
+function getSheet () {
+  const { featureCollection, operator, permissions, record } = this
   const sheet = aoa_to_sheet([
     [],
     [],
@@ -77,7 +78,7 @@ const getSheet = ({ featureCollection, operator, permissions, record }) => {
     { wch: 16 },
   ]
 
-  sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties }) => {
+  sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties }) => {
     const surfaceHa = surface(geometry) / 10_000
     const culture = properties.cultures.at(0) ? fromCodeCpf(properties.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
@@ -180,14 +181,7 @@ class OcaciaExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   range = "A7:Y999"
 
-  getSheet() {
-    return getSheet({
-      featureCollection: this.featureCollection,
-      operator: this.operator,
-      permissions: this.permissions,
-      record: this.record
-    })
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()

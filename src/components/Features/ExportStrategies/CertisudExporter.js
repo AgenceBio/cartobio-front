@@ -20,7 +20,8 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-const getSheet = ({ featureCollection, permissions }) => {
+function getSheet () {
+  const { featureCollection, permissions } = this
   const sheet = aoa_to_sheet([
     [
       'Cultures en place lors du contrôle',
@@ -75,9 +76,7 @@ export default class CertisudExporter extends BaseExporter {
   extension = 'xlsx'
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()

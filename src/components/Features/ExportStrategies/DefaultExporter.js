@@ -6,7 +6,8 @@ import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportS
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils
 
-const getSheet = ({ featureCollection, operator, permissions }) => {
+function getSheet () {
+  const { featureCollection, operator, permissions } = this
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet([
@@ -38,7 +39,7 @@ const getSheet = ({ featureCollection, operator, permissions }) => {
     ['Identifiant CartoBio', 'N°Ilot', 'N°Parcelle', 'Surfaces graphique (ha)', 'Code culture', 'Libellé culture', 'PACAGE', 'Niveau de conversion', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire agriculteur', 'Notes d\'audit'],
   ], { origin: 'A6'})
 
-  sheet_add_aoa(sheet, featureCollection.features.map(({ geometry, properties: props, id }) => {
+  sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties: props, id }) => {
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const firstCulture = props.cultures.at(0)
     const culture = firstCulture ? fromCodeCpf(firstCulture?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
@@ -77,9 +78,7 @@ class DefaultExporter extends BaseExporter {
   mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   range = 'A6:L999'
 
-  getSheet() {
-    return getSheet({ featureCollection: this.featureCollection, operator: this.operator, permissions: this.permissions })
-  }
+  getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()
