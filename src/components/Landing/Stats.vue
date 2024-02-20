@@ -10,13 +10,17 @@
       <ul class="fr-grid-row fr-raw-list">
         <li class="fr-col-md-3">
           <span class="fr-display--xl fr-text-title--blue-france">{{ stats.cartobioExploitationsCount }}</span>
-          Parcellaires renseignés
+          Parcellaires certifiés
         </li>
         <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.surfaceCartographiéConnuee }}%</span>
-          De la surface cultivée en bio cartographiée<br/>
-          (correspondant au <a href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/" target="_blank">RPG Bio</a>)
+          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.cartobioParcellesCount }}</span>
+          Parcelles renseignées
         </li>
+        <li class="fr-col-md-3">
+          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.surfaceCartographiéConnuee }}</span>
+          De la surface connue en bio cartographiée
+        </li>
+
         <li class="fr-col-md-3">
           <span class="fr-display--xl fr-text-title--blue-france">{{ stats.opendataDownloadCount }}</span>
           Téléchargements des données
@@ -37,15 +41,26 @@ import { onMounted, reactive } from 'vue'
 
 import axios from "axios"
 
+const roundedPercent = Intl.NumberFormat('fr-FR', {
+  style: 'percent',
+  maximumFractionDigits: 1
+})
+
+const largeNumbers = Intl.NumberFormat('fr-FR', {
+  style: 'decimal',
+  notation: 'compact',
+  compactDisplay: 'short'
+})
+
 const stats = reactive({
-  surfaceCartobioCouverte: 0,
   surfaceBioCouverte: 2776553,
   surfaceRpgBioCouverte: 2360070,
   get surfaceCartographiéConnuee () {
-    return (this.surfaceRpgBioCouverte / this.surfaceBioCouverte * 100).toLocaleString('fr-FR')
+    return roundedPercent.format(this.cartobioSurfaceCouverte / this.surfaceBioCouverte)
   },
   cartobioExploitationsCount: 0,
   cartobioParcellesCount: 0,
+  cartobioSurfaceCouverte: 0,
   opendataDownloadCount: 518, // datapass.api.gouv.fr + demandes manuelles
 })
 
@@ -53,9 +68,12 @@ onMounted(async () => {
   const { data } = await axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
   const { dataGouv, stats: cartobio } = data
 
-  stats.opendataDownloadCount = dataGouv.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), stats.opendataDownloadCount)
-  stats.cartobioExploitationsCount = cartobio.count
-  stats.cartobioParcellesCount = cartobio.parcelles_count
+  const dataGouvAccumulatedDownloads = dataGouv.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), stats.opendataDownloadCount)
+
+  stats.opendataDownloadCount = largeNumbers.format(dataGouvAccumulatedDownloads)
+  stats.cartobioExploitationsCount = largeNumbers.format(cartobio.parcellaires)
+  stats.cartobioParcellesCount = largeNumbers.format(cartobio.parcelles)
+  stats.cartobioSurfaceCouverte = cartobio.surface
 })
 
 
