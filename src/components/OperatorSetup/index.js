@@ -4,6 +4,7 @@ import { sources } from '@/referentiels/imports.js'
 import GeofoliaFeaturesImport from '@/components/OperatorSetup/Sources/Geofolia.vue'
 import RPGFeaturesImport from '@/components/OperatorSetup/Sources/RPG.vue'
 import CviFeaturesImport from '@/components/OperatorSetup/Sources/Cvi.vue'
+import MesParcellesFeaturesImport from '@/components/OperatorSetup/Sources/MesParcelles.vue'
 import TelepacFeaturesImport from '@/components/OperatorSetup/Sources/Telepac.vue'
 
 export default {
@@ -23,8 +24,9 @@ export default {
     label: 'ProDouanes (CVI)',
     component: markRaw(CviFeaturesImport),
   },
-  [sources.MES_PARCELLES]: {
+  [sources.MESPARCELLES]: {
     label: 'MesParcelles',
+    component: markRaw(MesParcellesFeaturesImport),
   }
 }
 

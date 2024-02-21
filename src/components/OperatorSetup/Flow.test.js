@@ -15,13 +15,14 @@ import { sources } from '@/referentiels/imports.js'
 
 setActivePinia(createPinia())
 
+const activeSources = [sources.TELEPAC, sources.GEOFOLIA, sources.RPG, sources.CVI, sources.MESPARCELLES]
 const operatorSetupActions = [
   {
     id: 'source',
     selector: markRaw(ActionFromSource),
     wizzard: markRaw(FlowMultiSources),
     extraProps: {
-      sources: [sources.TELEPAC, sources.GEOFOLIA, sources.RPG, sources.CVI]
+      sources: activeSources
     }
   },
   { id: 'manual', selector: markRaw(ActionFromScratch) },
@@ -81,7 +82,7 @@ describe("OperatorSetupFlow", () => {
     await flushPromises()
 
     const tabs = wrapper.findAll('.fr-tabs__tab')
-    expect(tabs).toHaveLength(4)
+    expect(tabs).toHaveLength(activeSources.length)
     expect(tabs.at(0).attributes()).toHaveProperty('aria-selected', 'true')
     expect(tabs.at(0).text()).toBe('Telepac')
 
@@ -144,6 +145,106 @@ describe("OperatorSetupFlow", () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Votre fichier n\'est pas reconnu comme un export Geofolia.')
+  })
+
+  it("should fail on unreachable server during Geofolia import", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: [ ...operatorSetupActions ],
+        flowId: 'source',
+        operator: record.operator
+      },
+      global: {
+        config: {
+          errorHandler (error) {
+            expect(error.message).toBe('Server is down')
+          }
+        }
+      }
+    })
+
+    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+
+    const error = new AxiosError('Server is down')
+    error.response = { status : 500 }
+    axios.__createMock.post.mockRejectedValueOnce(error)
+
+    await wrapper.find('input[type="file"]').setValue('')
+    await flushPromises()
+    expect(wrapper.text()).toContain('Erreur inconnue, merci de réessayer plus tard.')
+  })
+
+  it("should import successfully a MesParcelles/TelepacXML archive", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    // Click on mesparcelles tab
+    await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
+    expect(wrapper.text()).toContain(`Sélectionner mon export MesParcelles (service Telepac)`)
+
+    axios.__createMock.post.mockResolvedValueOnce({
+      data: featureCollectionFixture
+    })
+
+    await wrapper.find('input[type="file"]').setValue('')
+    await flushPromises()
+
+    // it is now called during preview
+    const confirmBtn = await wrapper.find('.fr-btn')
+    expect(confirmBtn.text()).toEqual('Importer ces données')
+  })
+
+  it("should fail on invalid MesParcelles/TelepacXML archive", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: [ ...operatorSetupActions ],
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    const error = new AxiosError('Fichier invalide')
+    error.response = { status : 400 }
+    axios.__createMock.post.mockRejectedValueOnce(error)
+
+    await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
+    await wrapper.find('input[type="file"]').setValue('')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Votre fichier ne semble pas être un export MesParcelles valide.')
+  })
+
+  it("should fail on unreachable server during a MesParcelles/TelepacXML import", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: [ ...operatorSetupActions ],
+        flowId: 'source',
+        operator: record.operator
+      },
+      global: {
+        config: {
+          errorHandler (error) {
+            expect(error.message).toBe('Server is down')
+          }
+        }
+      }
+    })
+
+    await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
+
+    const error = new AxiosError('Server is down')
+    error.response = { status : 500 }
+    axios.__createMock.post.mockRejectedValueOnce(error)
+
+    await wrapper.find('input[type="file"]').setValue('')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Erreur inconnue, merci de réessayer plus tard.')
   })
 
   it("should render tab content for RPG when selected", async () => {

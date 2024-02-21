@@ -1,10 +1,9 @@
 <template>
   <div>
     <div class="fr-upload-group fr-mb-5w">
-      <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden>
-
+      <input type="file" ref="fileInput" accept=".xml" @change="handleFileUpload" hidden />
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
-        Sélectionner mon fichier de parcelles et d'interventions
+        Sélectionner mon export MesParcelles (service Telepac)
       </button>
     </div>
 
@@ -17,7 +16,7 @@
       <h3 class="fr-alert__title">Où récupérer le fichier demandé ?</h3>
 
       <p>
-        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-geofolia" target="_blank">Import Geofolia</a>
+        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-mesparcelles" target="_blank">import MesParcelles</a>
         de notre documentation pour une aide illustrée et pas à pas.
       </p>
     </div>
@@ -26,25 +25,30 @@
 
 <script setup>
 import { ref } from 'vue'
-import { convertGeofoliaArchiveToGeoJSON } from '@/cartobio-api.js'
+import { convertTelepacXMLToGeoJSON } from '@/cartobio-api.js'
 import { sources } from "@/referentiels/imports.js"
 
-const fileInput = ref(null)
-
 const emit = defineEmits(['upload:start', 'upload:complete'])
+
+const fileInput = ref(null)
 const erreur = ref('')
 
 async function handleFileUpload () {
-  const [archive] = fileInput.value.files
+  const warnings = []
+  const [file] = fileInput.value.files
+
   emit('upload:start')
 
   try {
-    const geojson = await convertGeofoliaArchiveToGeoJSON(archive)
+    const geojson = await convertTelepacXMLToGeoJSON(file)
+    const metadata = {
+      pacage: geojson.features.at(0)?.properties?.PACAGE,
+    }
 
-    emit('upload:complete', { geojson, source: sources.GEOFOLIA, warnings: [], metadata: {} })
+    emit('upload:complete', { geojson, source: sources.MESPARCELLES, warnings, metadata })
   } catch (error) {
     if (error.response?.status >= 400 && error.response?.status < 500) {
-      erreur.value = 'Votre fichier n\'est pas reconnu comme un export Geofolia.'
+      erreur.value = 'Votre fichier ne semble pas être un export MesParcelles valide.'
     } else {
       erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
       throw error
