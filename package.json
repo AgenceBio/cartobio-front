@@ -23,7 +23,7 @@
     "@agencebio/rosetta-cultures": "^1.4.0",
     "@algolia/autocomplete-js": "^1.8.3",
     "@algolia/autocomplete-theme-classic": "^1.8.3",
-    "@gouvfr/dsfr": "^1.8.1",
+    "@gouvfr/dsfr": "1.10.2",
     "@sentry/vue": "^7.50.0",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
