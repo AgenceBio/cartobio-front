@@ -308,6 +308,19 @@ export async function convertShapefileArchiveToGeoJSON (archive) {
 }
 
 /**
+ * Turn a Telepac XML file into a GeoJSON
+ *
+ * @param {File} archive
+ * @returns {GeoJSON}
+ */
+export async function convertTelepacXMLToGeoJSON (file) {
+  const form = new FormData()
+  form.append('file', file)
+  const { data: geojson } = await apiClient.post(`/v2/convert/telepac-xml/geojson`, form)
+  return geojson
+}
+
+/**
  * Turn a geofolia archive into a GeoJSON
  *
  * @param {File} archive
