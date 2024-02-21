@@ -31,7 +31,7 @@ const props = defineProps({
 
 const featureSource = ref(DEFAULT_SOURCE)
 const sourcesTabs = computed(() => Object.fromEntries(
-  Object.entries(featureSources).filter(([sourceId]) => props.sources.includes(sourceId))
+  props.sources.map(sourceId => ([sourceId, featureSources[sourceId]]))
 ))
 
 function handleSelection ({ geojson, warnings = [], metadata = {} }) {
