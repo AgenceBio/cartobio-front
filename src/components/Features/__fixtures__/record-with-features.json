@@ -3,6 +3,7 @@
   "operator": {
     "numeroBio": "34857",
     "nom": "test",
+    "siret": "00000000000",
     "adressesOperateurs": [
       {
         "lat": 45.470757,

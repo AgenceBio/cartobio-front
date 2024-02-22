@@ -21,6 +21,7 @@ vi.mock('axios', async (importActual) => {
     delete: vi.fn(),
     get: vi.fn(),
     post: vi.fn(),
+    head: vi.fn(),
     put: vi.fn(),
     defaults: {
       headers: {
@@ -35,6 +36,7 @@ vi.mock('axios', async (importActual) => {
       __createMock: createMock,
       delete: vi.fn(),
       get: vi.fn(),
+      head: vi.fn(),
       post: vi.fn(),
       put: vi.fn()
     },

@@ -324,11 +324,34 @@ export async function convertTelepacXMLToGeoJSON (file) {
  * Turn a geofolia archive into a GeoJSON
  *
  * @param {File} archive
- * @returns {GeoJSON}
+ * @returns {Promise<GeoJSON>}
  */
 export async function convertGeofoliaArchiveToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
   const { data: geojson } = await apiClient.post(`/v2/convert/geofolia/geojson`, form)
+  return geojson
+}
+
+/**
+ * Checks the availability of an immediate download
+ *
+ * @param {File} archive
+ * @returns {Promise<Number>}
+ */
+export async function checkGeofoliaAccountStatus (numeroBio) {
+  const { status } = await apiClient.head(`/v2/import/geofolia/${numeroBio}`)
+  return status
+}
+
+/**
+ * Retrieves an immediate download
+ * It eventually indicates the try again later, because the download is being processed (Retry-After + HTTP 202 Accepted)
+ *
+ * @param {File} archive
+ * @returns {Promise<GeoJSON>}
+ */
+export async function getOperatorGeofoliaFeatures (numeroBio) {
+  const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`)
   return geojson
 }

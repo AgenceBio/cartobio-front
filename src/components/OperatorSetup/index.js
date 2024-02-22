@@ -7,6 +7,8 @@ import CviFeaturesImport from '@/components/OperatorSetup/Sources/Cvi.vue'
 import MesParcellesFeaturesImport from '@/components/OperatorSetup/Sources/MesParcelles.vue'
 import TelepacFeaturesImport from '@/components/OperatorSetup/Sources/Telepac.vue'
 
+const { VUE_APP_PRELOADED_CAMPAGNE_PAC: CAMPAGNE_PAC } = import.meta.env
+
 export default {
   [sources.TELEPAC]: {
     label: 'Telepac',
@@ -17,7 +19,7 @@ export default {
     component: markRaw(GeofoliaFeaturesImport),
   },
   [sources.RPG]: {
-    label: 'RPG instruit',
+    label: `RPG ${CAMPAGNE_PAC}`,
     component: markRaw(RPGFeaturesImport),
   },
   [sources.CVI]: {
