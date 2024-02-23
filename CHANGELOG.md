@@ -1,7 +1,15 @@
+# [2.21.0](https://github.com/AgenceBio/cartobio-front/compare/v2.20.0...v2.21.0) (2023-02-23)
+
+* Activation de l'import MesParcelles ([#323](https://github.com/AgenceBio/cartobio-front/pull/323))
+* Sélectionne 'en cours de traitement' par défaut sur les annotations de déclassement ([#318](https://github.com/AgenceBio/cartobio-front/pull/318))
+* Trie les parcelles par nom dans les exports Excel/CSV ([#319](https://github.com/AgenceBio/cartobio-front/pull/319), [#320](https://github.com/AgenceBio/cartobio-front/pull/320))
+* API : expose les champs `certification.dateAudit` et `surface` dans l'API Lecture ([#152](https://github.com/AgenceBio/cartobio-api/pull/152), [#151](https://github.com/AgenceBio/cartobio-api/pull/151))
+* Corrections de bugs ([#322](https://github.com/AgenceBio/cartobio-front/pull/322), [#325](https://github.com/AgenceBio/cartobio-front/pull/325), [#159](https://github.com/AgenceBio/cartobio-api/pull/159), [#153](https://github.com/AgenceBio/cartobio-api/pull/153))
+
 # [2.20.0](https://github.com/AgenceBio/cartobio-front/compare/v2.19.0...v2.20.0) (2023-02-10)
 
 * Préservation des versions précédentes du parcellaire lors des noueaux imports ([3b92b45](https://github.com/AgenceBio/cartobio-front/commit/3b92b45), [5ca8290](https://github.com/AgenceBio/cartobio-front/commit/5ca8290))
-* Sélectionne 'en cours de traitement' par défaut sur les annotations ([6967c65](https://github.com/AgenceBio/cartobio-front/commit/6967c65))
+* Sélectionne 'en cours de traitement' par défaut sur les annotations de réduction de période de conversion ([6967c65](https://github.com/AgenceBio/cartobio-front/commit/6967c65))
 * Propose par défaut les dates de fin de certification à 2 ans ([f0fae4f](https://github.com/AgenceBio/cartobio-front/commit/f0fae4f))
 * Supprime la surface des exports Certis ([9e642b4](https://github.com/AgenceBio/cartobio-front/commit/9e642b4))
 * Affiche les noms de parcelles sur la carte ([7e6ac0a](https://github.com/AgenceBio/cartobio-front/commit/7e6ac0a))
