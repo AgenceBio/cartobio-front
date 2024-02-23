@@ -16,7 +16,7 @@ const { aoa_to_sheet, sheet_add_aoa } = utils
  * @returns {WorkSheet}
  */
 function getSheet () {
-  const { featureCollection, permissions } = this
+  const { permissions } = this
   const sheet = aoa_to_sheet([
     [
       "Production (code CPF)",

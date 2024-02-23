@@ -31,8 +31,8 @@
   </div>
 
   <Teleport to="body">
-    <SendOffModal :operator="operator" :record="record" v-if="showSendOffModal" v-model="showSendOffModal" @submit="handleSaveAudit" />
-    <CertificationModal :operator="operator" :record="record" v-if="showCertificationModal" v-model="showCertificationModal" @submit="handleCertify" />
+    <SendOffModal :operator="operator" :record="record" v-if="showSendOffModal" @close="showSendOffModal = false" @submit="handleSaveAudit" />
+    <CertificationModal :operator="operator" :record="record" v-if="showCertificationModal" @close="showCertificationModal = false" @submit="handleCertify" />
   </Teleport>
 </template>
 

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, test, expect, vi } from 'vitest';
+import { afterAll, beforeAll, describe, test, expect, vi } from 'vitest';
 
 import { applyValidationRules, certificationDateFin, getConversionLevel, isCertificationImmutable, isABLevel, OPERATOR_RULES, AUDITOR_RULES, CERTIFICATION_STATE } from './ab.js'
 import { LEVEL_UNKNOWN, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, LEVEL_MAYBE_AB } from './ab.js'
