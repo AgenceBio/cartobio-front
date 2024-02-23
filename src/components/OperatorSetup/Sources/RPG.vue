@@ -51,7 +51,7 @@ const importRPG = async () => {
 <template>
   <div>
     <p>
-      Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit
+      Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit.
     </p>
     <form @submit.prevent="importRPG">
       <div class="fr-input-group" :class="{'fr-input-group--disabled': loading, 'fr-input-group--error': !!erreur}">

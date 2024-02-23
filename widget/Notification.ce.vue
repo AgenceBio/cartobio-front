@@ -44,7 +44,12 @@ const operatorSetupActions = [
     selector: null,
     wizzard: markRaw(FlowMultiSources),
     extraProps: {
-      sources: [sources.GEOFOLIA, sources.MESPARCELLES, sources.TELEPAC, sources.CVI]
+      sources: [
+        sources.GEOFOLIA,
+        sources.MESPARCELLES,
+        sources.TELEPAC,
+        sources.CVI
+      ]
     }
   },
 ]

@@ -112,7 +112,7 @@ describe("OperatorSetupFlow", () => {
 
     // Click on geofolia tab
     await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
-    expect(wrapper.text()).toContain(`Sélectionner mon fichier de parcelles et d'interventions`)
+    expect(wrapper.text()).toContain(`Parcelles et interventions (ZIP)`)
 
     axios.__createMock.post.mockResolvedValueOnce({
       data: featureCollectionFixture
@@ -122,8 +122,76 @@ describe("OperatorSetupFlow", () => {
     await flushPromises()
 
     // it is now called during preview
-    const confirmBtn = await wrapper.find('.fr-btn')
+    const confirmBtn = wrapper.find('.fr-btn')
     expect(confirmBtn.text()).toEqual('Importer ces données')
+  })
+
+  it("should import from Geofolink", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    axios.__createMock.head.mockResolvedValueOnce({ status: 204 })
+
+    // Click on geofolia tab
+    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+    expect(wrapper.text()).toContain('Vérification de votre contrat')
+    const form = wrapper.find('form')
+
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('Vérification de votre contrat')
+    expect(axios.__createMock.head).toHaveBeenCalled(1)
+
+    // we should be ready to import (first attempt, not ready)
+    const importBtn = wrapper.find('form .fr-btn')
+    expect(importBtn.text()).toBe('Collecter les parcelles')
+    expect(importBtn.attributes('disabled')).toBe(undefined)
+
+    axios.__createMock.get.mockResolvedValueOnce({ status: 202 })
+    await form.trigger('submit.prevent')
+    expect(wrapper.text()).toContain('Collecte des parcelles en cours')
+
+    await flushPromises()
+    expect(wrapper.text()).toContain('Les données ne sont pas encore prêtes')
+
+    // second attempt, ready to import
+    axios.__createMock.get.mockResolvedValueOnce({
+      data: featureCollectionFixture
+    })
+
+    await form.trigger('submit.prevent')
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('Les données ne sont pas encore prêtes')
+    expect(axios.__createMock.get).toHaveBeenCalled(2)
+
+    const confirmBtn = wrapper.find('.fr-btn')
+    expect(confirmBtn.text()).toEqual('Importer ces données')
+  })
+
+  it("should tell if Geofolink account is not configured", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        flowId: 'source',
+        operator: record.operator
+      }
+    })
+
+    // Click on geofolia tab
+    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+
+    axios.__createMock.head.mockResolvedValueOnce({ status: 404 })
+    await flushPromises()
+
+    // button is now disabled and we should read the manual
+    const importBtn = wrapper.find('form .fr-btn')
+    expect(importBtn.text()).toBe('Collecter les parcelles')
+    expect(importBtn.attributes('disabled')).toBe('')
+    expect(wrapper.text()).toContain('Comment activer la liaison Geofolink avec CartoBio ?')
   })
 
   it("should fail on invalid Geofolia archive", async () => {
