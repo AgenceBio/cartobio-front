@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { markRaw } from "vue"
 import { flushPromises, mount } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
@@ -44,6 +44,8 @@ const featureCollectionFixture = {
 }
 
 describe("OperatorSetupFlow", () => {
+  beforeEach(() => import.meta.env.PROD = true)
+
   it("should render the flow selector at first", async () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
@@ -127,6 +129,8 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should import from Geofolink", async () => {
+    import.meta.env.PROD = false
+
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
@@ -173,6 +177,8 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should tell if Geofolink account is not configured", async () => {
+    import.meta.env.PROD = false
+
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
@@ -195,6 +201,8 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should fail on invalid Geofolia archive", async () => {
+    import.meta.env.PROD = false
+
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: [ ...operatorSetupActions ],

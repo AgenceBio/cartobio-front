@@ -31,7 +31,7 @@
       </div>
     </form>
 
-    <hr class="fr-my-3w" />
+    <hr class="fr-my-3w" v-if="!isProduction" />
 
     <h3 class="fr-h5">Export manuel</h3>
 
