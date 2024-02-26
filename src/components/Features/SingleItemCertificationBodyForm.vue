@@ -31,12 +31,12 @@
           </figure>
 
           <div class="fr-input-group">
-            <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+            <CultureSelector :feature-id="feature.properties.id" :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
           </div>
         </AccordionSection>
 
         <AccordionSection title="Annotations d'audit" :open="open">
-          <ConversionLevelSelector :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
+          <ConversionLevelSelector :feature-id="feature.properties.id" :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
           <div class="fr-input-group" v-if="isAB">
             <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
@@ -45,7 +45,7 @@
             </div>
           </div>
 
-          <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :featureId="feature.properties.id" />
+          <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :feature-id="feature.properties.id" />
 
           <div class="fr-input-group">
             <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
@@ -70,8 +70,9 @@
 import { reactive, computed, ref } from 'vue';
 
 import { featureDetails, inHa, surface } from '@/components/Features/index.js'
-import { isABLevel, applyValidationRules, RULE_ENGAGEMENT_DATE, RULE_NAME } from '@/referentiels/ab.js'
-import { usePermissions } from '@/stores/index.js'
+import { isABLevel } from '@/referentiels/ab.js'
+import { useFeaturesSetsStore, usePermissions } from '@/stores/index.js'
+import { RuleSet } from '@/stores/features-sets.js'
 import { toDateInputString } from '@/components/dates.js'
 
 import AccordionGroup from '@/components/DesignSystem/AccordionGroup.vue'
@@ -99,6 +100,7 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'close'])
 
 const permissions = usePermissions()
+const featuresSet = useFeaturesSetsStore()
 const showCancelModal = ref(false)
 
 const patch = reactive({
@@ -113,18 +115,18 @@ const nameError = ref(false)
 
 const isAB = computed(() => isABLevel(patch.conversion_niveau))
 const maxDate = computed(() => toDateInputString(new Date()))
-const isEngagementDateRequired = computed(() => applyValidationRules([RULE_ENGAGEMENT_DATE], { properties: patch }).success === 0)
+const isEngagementDateRequired = computed(() => featuresSet.isRequired(RuleSet.ENGAGEMENT_DATE_MISSING))
 const details = await featureDetails(props.feature)
 
 const validate = () => {
-  const { rules } = applyValidationRules([props.requiredName ? RULE_NAME : null, RULE_ENGAGEMENT_DATE], { properties: patch })
+  const set = featuresSet.byFeature(props.feature.id)
 
-  if (rules[RULE_NAME]?.success === 0) {
+  if (set.has(RuleSet.NAMELESS)) {
     nameError.value = true
     return false
   }
 
-  if (rules[RULE_ENGAGEMENT_DATE].success === 0) {
+  if (set.size) {
     return false
   }
 

@@ -65,7 +65,7 @@
         </tr>
       </tbody>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" :validation-rules="validationRules" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
@@ -104,10 +104,6 @@ import { statsPush } from "@/stats.js"
 defineProps({
   editForm: {
     type: Object
-  },
-  validationRules: {
-    type: Object,
-    required: true
   },
   massActions: {
     type: Array,

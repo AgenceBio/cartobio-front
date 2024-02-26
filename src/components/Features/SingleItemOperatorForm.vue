@@ -51,8 +51,8 @@ import { reactive, ref } from 'vue';
 import { featureDetails, inHa, surface } from '@/components/Features/index.js'
 import Modal from '@/components/Modal.vue'
 import CultureSelector from '@/components/Features/CultureSelector.vue'
-import { usePermissions } from "@/stores/permissions.js"
-import { applyValidationRules, RULE_ENGAGEMENT_DATE, RULE_NAME } from "@/referentiels/ab.js"
+import { useFeaturesSetsStore, usePermissions } from "@/stores/index.js"
+import { RuleSet } from "@/stores/features-sets.js"
 import CancelModal from "@/components/Forms/CancelModal.vue"
 
 const props = defineProps({
@@ -68,6 +68,7 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'close'])
 
 const permissions = usePermissions()
+const featuresSet = useFeaturesSetsStore()
 const showCancelModal = ref(false)
 
 const patch = reactive({
@@ -78,9 +79,9 @@ const patch = reactive({
 const nameError = ref(false)
 
 const validate = () => {
-  const { rules } = applyValidationRules([props.requiredName ? RULE_NAME : null, RULE_ENGAGEMENT_DATE], { properties: patch })
+  const set = featuresSet.byFeature(props.feature.id)
 
-  if (rules[RULE_NAME]?.success === 0) {
+  if (set.has(RuleSet.NAMELESS)) {
     nameError.value = true
     return false
   }
