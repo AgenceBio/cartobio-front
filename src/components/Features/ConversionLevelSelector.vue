@@ -9,19 +9,21 @@
       </label>
     </div>
 
-    <div v-if="modelValue === LEVEL_UNKNOWN" class="fr-hint-text fr-error-text">
-      Le niveau de conversion a besoin d'être indiqué.
-    </div>
-    <div v-if="modelValue === LEVEL_MAYBE_AB" class="fr-hint-text fr-error-text">
-      Le niveau de conversion en agriculture biologique a besoin d'être précisé.
+    <div v-for="([id, result]) in errors" :key="id" class="fr-hint-text fr-error-text">
+      {{ result.errorMessage }}.
     </div>
   </div>
 </template>
 
 <script setup>
-import { LEVEL_UNKNOWN, LEVEL_MAYBE_AB, userFacingConversionLevels as conversionLevels } from '@/referentiels/ab.js';
+import { computed } from 'vue'
+import { userFacingConversionLevels as conversionLevels } from '@/referentiels/ab.js'
+import { useFeaturesSetsStore } from '@/stores/index.js'
 
-defineProps({
+const props = defineProps({
+  featureId: {
+    type: String
+  },
   modelValue: {
     type: String,
     required: true
@@ -31,5 +33,9 @@ defineProps({
     default: () => false
   }
 })
+
+const featuresSets = useFeaturesSetsStore()
+
 const emit = defineEmits(['update:modelValue'])
+const errors = computed(() => featuresSets.byFeatureProperty(props.featureId, 'conversion_niveau'))
 </script>
