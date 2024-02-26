@@ -97,92 +97,12 @@ export const conversionLevels = [
 
 export const userFacingConversionLevels = conversionLevels.filter(({ is_selectable }) => is_selectable)
 
-export const RULE_NAME = 'NAME'
-export const RULE_NOT_EMPTY = 'NOT_EMPTY'
-export const RULE_CONVERSION_LEVEL = 'CONVERSION_LEVEL'
-export const RULE_ENGAGEMENT_DATE = 'ENGAGEMENT_DATE'
-export const RULE_MAYBE_AB = 'MAYBE_AB'
-
-export const RULE_CPF = 'CPF'
-
-const VALIDATION_RULES = {
-  // la culture a un nom
-  [RULE_NAME] (feature) {
-    return Boolean(featureName(feature, { placeholder: '' }))
-  },
-  // la culture est renseignée
-  [RULE_NOT_EMPTY] (feature) {
-    return Array.isArray(feature.properties.cultures) && feature.properties.cultures.length > 0 && feature.properties.cultures.every(({ CPF }) => Boolean(CPF))
-  },
-  // le code CPF est explicite (il n'y a pas plusieurs choix possibles pour un code)
-  [RULE_CPF] (feature) {
-    return (feature.properties.cultures ?? []).every(({ CPF }) => Boolean(!CPF) || fromCodeCpf(CPF)?.is_selectable)
-  },
-  // le niveau de conversion n'est pas renseigné si une culture existe
-  [RULE_CONVERSION_LEVEL] (feature) {
-    const { conversion_niveau } = feature.properties
-    const conversionLevel = getConversionLevel(conversion_niveau)
-
-    return ((feature.properties.cultures ?? []).every(({ CPF }) => Boolean(CPF)) && conversionLevel.value === LEVEL_UNKNOWN) === false
-  },
-  // le produit est "bio", mais on ne sait pas de quel niveau de bio il s'agit
-  [RULE_MAYBE_AB] (feature) {
-    const { conversion_niveau } = feature.properties
-    const conversionLevel = getConversionLevel(conversion_niveau)
-
-    return !(conversionLevel.value === LEVEL_MAYBE_AB)
-  },
-  // la date d'engagement est manquante pour des conversions récentes
-  // on dit que c'est OK de ne pas l'avoir en AB, pour accepter des parcellaires certifiés depuis longtemps, avant l'obligation de tracer leur date d'engagement ou de passage en bio
-  [RULE_ENGAGEMENT_DATE] (feature) {
-    const { conversion_niveau, engagement_date } = feature.properties
-    const conversionLevel = getConversionLevel(conversion_niveau)
-
-    if ([LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(conversionLevel.value) && !engagement_date) {
-      return false
-    }
-
-    return true
-  }
-}
-
-export const OPERATOR_RULES = [RULE_NOT_EMPTY, RULE_CPF]
-export const AUDITOR_RULES = [RULE_NOT_EMPTY, RULE_CPF, RULE_CONVERSION_LEVEL, RULE_MAYBE_AB, RULE_ENGAGEMENT_DATE]
-
 export function getConversionLevel (level) {
   return conversionLevels.find(({ value }) => value === level) ?? getConversionLevel(LEVEL_UNKNOWN)
 }
 
 export function isABLevel (level) {
   return ABLevels.includes(level)
-}
-
-export function applyValidationRules (rules, ...features) {
-  let total = 0
-  let success = 0
-  let failures = 0
-  const applicableRules = rules.filter(r => r)
-
-  const results = applicableRules.reduce((obj, ruleId) => ({
-    ...obj,
-    [ruleId]: { success: 0, failures: 0 }
-  }), {})
-  const featuresResults = features.reduce((obj, feature) => ({
-    ...obj,
-    [feature.id]: { success: 0, failures: 0 }
-  }), {})
-
-  features.forEach(feature => {
-    applicableRules.forEach((ruleId) => {
-      const result = VALIDATION_RULES[ruleId](feature)
-      total++
-      result ? success++ : failures++
-      results[ruleId][result ? 'success' : 'failures']++
-      featuresResults[feature.id][result ? 'success' : 'failures']++
-    })
-  })
-
-  return { total, success, failures, rules: results, features: featuresResults }
 }
 
 export const ABLevels = [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB]
