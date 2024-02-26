@@ -265,12 +265,15 @@ export const AnnotationTags = {
     }
   },
   [ANNOTATIONS.RISKY]: {
+    featured: () => true,
     label: 'À risque',
   },
   [ANNOTATIONS.SAMPLED]: {
+    featured: () => true,
     label: 'Prélèvement effectué'
   },
   [ANNOTATIONS.SURVEYED]: {
+    featured: () => true,
     label: 'Visitée'
   }
 }
