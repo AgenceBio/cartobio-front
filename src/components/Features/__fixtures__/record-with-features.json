@@ -1,22 +1,5 @@
 {
   "record_id": "054f0d70-c3da-448f-823e-81fcf7c2bf6e",
-  "operator": {
-    "numeroBio": "34857",
-    "nom": "test",
-    "siret": "00000000000",
-    "adressesOperateurs": [
-      {
-        "lat": 45.470757,
-        "long": 4.63488839,
-        "codeCommune": "42210"
-      },
-      {
-        "lat": 45.47151,
-        "long": 4.5885,
-        "codeCommune": "42271"
-      }
-    ]
-  },
   "certification_date_debut": null,
   "certification_date_fin": null,
   "certification_state": "OPERATOR_DRAFT",

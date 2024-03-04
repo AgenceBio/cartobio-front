@@ -39,7 +39,7 @@ describe('ddmmmmyyyy', () => {
 describe('dateFormat', () => {
   test('returns a day shortmonth year value', () => {
     expect(dateFormat()).toEqual('')
-    expect(dateFormat(dateNow)).toEqual('1 janv. 2021')
+    expect(dateFormat(dateNow)).toEqual('01/01/2021')
   })
 })
 

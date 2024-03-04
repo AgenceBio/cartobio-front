@@ -77,7 +77,7 @@ const hasFailures = computed(() => Boolean(validationResult.value.failures))
 async function handleSaveAudit ({ record_id: recordId, patch }) {
   let record
   try {
-    record = await updateAuditState({ recordId }, {
+    record = await updateAuditState(recordId, {
           ...patch,
           certification_state: CERTIFICATION_STATE.AUDITED
         }
@@ -97,7 +97,7 @@ async function handleSaveAudit ({ record_id: recordId, patch }) {
 
 async function handleSendAudit () {
   const record = await updateAuditState(
-    { recordId : props.record.record_id },
+    props.record.record_id,
     { certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION }
   )
 
@@ -105,7 +105,7 @@ async function handleSendAudit () {
 }
 
 async function handleCertify ({ record_id: recordId, patch }) {
-  const record = await updateAuditState({ recordId }, {
+  const record = await updateAuditState(recordId, {
       ...patch,
       certification_state: CERTIFICATION_STATE.CERTIFIED
     }

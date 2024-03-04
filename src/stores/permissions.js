@@ -1,4 +1,4 @@
-import { useRecordStore, useUserStore } from "@/stores/index.js"
+import { useOperatorStore, useRecordStore, useUserStore } from "@/stores/index.js"
 import { ROLES } from "@/stores/user.js"
 import { CERTIFICATION_STATE } from "@/referentiels/ab.js"
 import { computed } from "vue"
@@ -7,6 +7,7 @@ import { defineStore } from "pinia"
 export const usePermissions = defineStore('permissions', () => {
   const userStore = useUserStore();
   const recordStore = useRecordStore();
+  const operatorStore = useOperatorStore();
 
   // Tests
 
@@ -51,7 +52,7 @@ export const usePermissions = defineStore('permissions', () => {
   })
 
   const canCreateVersion = computed(() => {
-    return canEditParcellaire();
+    return operatorStore.records?.length && canEditParcellaire();
   })
 
   const canChangeCulture = computed(() => {

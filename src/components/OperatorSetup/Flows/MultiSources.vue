@@ -2,6 +2,7 @@
   <div class="fr-tabs">
     <p>
       Sélectionner l'outil informatisé qui est au plus proche de la réalité de votre terrain.
+      Vous pourrez modifier manuellement votre parcellaire après l'import.
     </p>
 
     <ul class="fr-tabs__list" role="tablist">

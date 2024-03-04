@@ -46,7 +46,7 @@
 <script setup>
 import { computed } from 'vue'
 import { ddmmmmyyyy } from '@/components/dates.js'
-import { EventType } from '@/cartobio-api.js'
+import { EventType } from '@agencebio/cartobio-types'
 import { deletionReasons } from '@/components/Features/index.js';
 
 import ActionType from '@/components/Certification/ActionType.vue'

@@ -50,25 +50,17 @@
           Modifier
         </button>
 
-        <button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions" @click="toggleFeatureMenu(feature.id)">
-          Autres actions
-        </button>
-
-        <div class="fr-menu" ref="actionsMenuRef" v-if="activeFeatureMenu === feature.id">
-          <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
-            <li>
-              <router-link v-if="permissions.canChangeGeometry" :to="`/exploitations/${recordStore.record.operator.numeroBio}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
-                Modifier le contour
-              </router-link>
-              <button v-else type="button" disabled class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
-                Modifier le contour
-              </button>
-              <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
-                Supprimer la parcelle
-              </button>
-            </li>
-          </ul>
-        </div>
+        <ActionDropdown>
+          <router-link v-if="permissions.canChangeGeometry" :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+            Modifier le contour
+          </router-link>
+          <button v-else type="button" disabled class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+            Modifier le contour
+          </button>
+          <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
+            Supprimer la parcelle
+          </button>
+        </ActionDropdown>
       </td>
     </tr>
   </tbody>
@@ -81,10 +73,11 @@ import { featureName, cultureLabel, inHa, surface } from '@/components/Features/
 import { applyValidationRules } from '@/referentiels/ab.js'
 import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
-import { useFeaturesStore, usePermissions, useRecordStore } from '@/stores/index.js'
-import { onClickOutside } from '@vueuse/core'
+import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import ActionDropdown from "@/components/ActionDropdown.vue"
 
 const route = useRoute()
+const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
@@ -102,8 +95,6 @@ const props = defineProps({
 
 const emit = defineEmits(['edit:featureId', 'delete:featureId'])
 
-const activeFeatureMenu = ref(null)
-const actionsMenuRef = ref(null)
 const { selectedIds, hoveredId } = storeToRefs(featuresStore)
 const { toggleSingleSelected } = featuresStore
 
@@ -119,11 +110,6 @@ function hasError (featureId) {
 
 function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
-}
-
-function toggleFeatureMenu (featureId) {
-  activeFeatureMenu.value = activeFeatureMenu.value ? null : featureId
-
 }
 
 function toggleDeleteForm (featureId) {
@@ -151,12 +137,6 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
     setTimeout(() => {
       document.querySelector(`tr#parcelle-${newItems[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }, 200)
-  }
-})
-
-onClickOutside(actionsMenuRef, ({ target }) => {
-  if (!target.classList.contains('show-actions')) {
-    activeFeatureMenu.value = null
   }
 })
 </script>
@@ -229,34 +209,6 @@ table tr[aria-current="location"] {
 
   position: relative;
   text-align: left;
-
-  > .fr-btn {
-    &:active {
-      background-color: var(--light-background-action-low-blue-france, #E3E3FD) !important;
-      border-radius: 0.3125rem;
-    }
-  }
-
-  .fr-menu {
-    position: absolute;
-    left: 100%;
-    top: .6rem;
-
-    .fr-menu__list {
-      border-radius: 0.3125rem;
-      margin: 0;
-      width: auto;
-    }
-
-    .fr-btn {
-      font-weight: 700;
-      justify-content: flex-start;
-      margin: 0;
-      padding: 0.75rem !important;
-      width: 100%;
-    }
-  }
-
 }
 
 .fr-icon--warning {

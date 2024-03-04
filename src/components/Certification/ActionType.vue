@@ -7,7 +7,7 @@
 <script setup>
 import { readonly, computed } from 'vue'
 
-import { EventType } from '@/cartobio-api.js'
+import { EventType } from '@agencebio/cartobio-types'
 import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 import { sources } from '@/referentiels/imports.js'
 import { usePermissions } from '@/stores/index.js'

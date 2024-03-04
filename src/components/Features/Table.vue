@@ -69,7 +69,7 @@
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
-      <router-link :to="{ name: 'exploitations-numeroBio-ajout-parcelle', params: { numeroBio: operator.numeroBio || 1 }}" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+      <router-link :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
     </p>
   </div>
 
@@ -91,7 +91,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useFeaturesStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
@@ -102,10 +102,6 @@ import toast from "@/components/toast"
 import { statsPush } from "@/stats.js"
 
 defineProps({
-  operator: {
-    type: Object,
-    required: true,
-  },
   editForm: {
     type: Object
   },
@@ -119,10 +115,12 @@ defineProps({
   },
 })
 
+const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
 const permissions = usePermissions()
 
+const { operator } = storeToRefs(operatorStore)
 const { record } = storeToRefs(recordStore)
 const { hasFeatures, hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
