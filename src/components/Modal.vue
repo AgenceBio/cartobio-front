@@ -10,7 +10,7 @@
                 <slot name="title" />
               </h1>
 
-              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('close')">
+              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('close')" v-if="!noCloseButton">
                 Fermer
               </button>
             </div>
@@ -38,7 +38,8 @@ useContentTracking()
 
 const emit = defineEmits(['close'])
 defineProps({
-  icon: String
+  icon: String,
+  noCloseButton: Boolean,
 })
 
 const target = ref(null)

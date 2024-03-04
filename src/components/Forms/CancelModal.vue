@@ -5,7 +5,7 @@ defineEmits(['close', 'cancel'])
 </script>
 
 <template>
-  <Modal @close="$emit('close')">
+  <Modal @close="$emit('close')" no-close-button>
     <template #title>Modifications non enregistrées</template>
 
     <div class="fr-alert fr-alert--warning">
@@ -24,7 +24,7 @@ defineEmits(['close', 'cancel'])
         </li>
         <li>
           <button class="fr-btn fr-btn--secondary" @click="$emit('close')">
-            Quitter
+            Annuler les modifications
           </button>
         </li>
       </ul>
