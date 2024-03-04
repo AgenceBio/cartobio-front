@@ -1,29 +1,33 @@
 import { defineStore } from 'pinia'
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive } from 'vue'
 import { useFeaturesStore } from "@/stores/index.js"
 import bbox from '@turf/bbox'
-import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
+import { useOperatorStore } from "@/stores/operator.js"
+import { getRecord } from "@/cartobio-api.js"
 
-/** @typedef {import('@/cartobio-api.js').StrictRecord} StrictRecord */
+/**
+ * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
+ */
 
 export const useRecordStore = defineStore('record', () => {
   const featuresStore = useFeaturesStore()
 
   const initialState = {
     record_id: null,
+    version_name: null,
     certification_date_debut: null,
     certification_date_fin: null,
     certification_state: null,
     created_at: null,
     updated_at: null,
-    operator: {},
+    audit_date: null,
     audit_notes: '',
     audit_demandes: '',
     audit_history: [],
     metadata: {}
   }
 
-  /** @type {reactive<StrictRecord>} */
+  /** @type {reactive<NormalizedRecord>} */
   const record = reactive({
     ...initialState,
     audit_history: [ ...initialState.audit_history ],
@@ -36,9 +40,11 @@ export const useRecordStore = defineStore('record', () => {
     if (featuresStore.hasFeatures) {
       return bbox(featuresStore.collection)
     }
+
+    const operator = useOperatorStore().operator
     // otherwise fallback on advertised operator locations
-    else if (Array.isArray(record.operator.adressesOperateurs)) {
-      const features = record.operator.adressesOperateurs.map(({ lat, long }) => ({
+    if (Array.isArray(operator.adressesOperateurs)) {
+      const features = operator.adressesOperateurs.map(({ lat, long }) => ({
         type: 'Feature',
         geometry: {
           type: 'Point',
@@ -48,16 +54,15 @@ export const useRecordStore = defineStore('record', () => {
 
       return bbox({ type: 'FeatureCollection', features })
     }
-    else {
-      return []
-    }
+
+    return []
   })
 
   /**
    * Soft update of a record
    *
    * Use case: when navigating from /parcellaire/:id to /parcellaire/:id/new-stuff
-   * @param {import('@/cartobio-api').Record} updatedRecord
+   * @param {NormalizedRecord} updatedRecord
    */
   function update (updatedRecord = {}) {
     Object.entries(record).forEach(([key]) => {
@@ -75,7 +80,7 @@ export const useRecordStore = defineStore('record', () => {
    * Replace a record with new values
    * Use case: when navigating from /parcellaire/1234 to /parcellaire/9999 or even /parcellaires then /parcellaire/1234
    *
-   * @param {import('@/cartobio-api').Record} maybeNewRecord
+   * @param {NormalizedRecord} maybeNewRecord
    */
   function replace (maybeNewRecord) {
     reset()
@@ -87,17 +92,25 @@ export const useRecordStore = defineStore('record', () => {
     featuresStore.$reset()
   }
 
-  const exists = computed(() => Boolean(record.record_id))
+  async function ready(recordId) {
+    if (record.record_id === recordId) {
+      launchRevalidate()
+      return
+    }
+
+    const newRecord = await getRecord(recordId)
+    reset()
+    update(newRecord)
+  }
+
+  function launchRevalidate() {
+    getRecord(record.record_id).then(update)
+  }
+
+
+    const exists = computed(() => Boolean(record.record_id))
   const isSetup = computed(() => Boolean(record.record_id && 'source' in record.metadata))
   const hasFeatures = computed(() => featuresStore.hasFeatures)
-
-  watch(record, () => {
-    if (record.operator?.departement) {
-      setCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT, record.operator.departement)
-    } else {
-      deleteCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT)
-    }
-  })
 
   return {
     record,
@@ -110,6 +123,7 @@ export const useRecordStore = defineStore('record', () => {
     $reset: reset,
     replace,
     reset,
-    update
+    update,
+    ready
   }
 })

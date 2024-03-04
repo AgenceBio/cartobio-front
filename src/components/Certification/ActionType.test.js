@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { mount } from "@vue/test-utils"
 
-import { EventType } from '@/cartobio-api.js'
+import { EventType } from '@agencebio/cartobio-types'
 import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 import { usePermissions } from '@/stores/index.js'
 import ActionType from "./ActionType.vue"

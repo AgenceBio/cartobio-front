@@ -12,9 +12,9 @@ import { useRecordStore, useUserStore } from '@/stores/index.js'
 import App from './App.vue'
 import { version } from "../package.json"
 import { usePermissions } from "@/stores/permissions.js"
-import { getOperatorParcelles } from "@/cartobio-api.js"
 import toast from '@/components/toast.js'
 import { AxiosError } from "axios"
+import { useOperatorStore } from "@/stores/operator.js"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -121,6 +121,7 @@ app.config.errorHandler = (error) => {
   if (handlerAPIErrors(error)) return false
 
   toast.error('Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.')
+  console.error(error)
   throw error;
 }
 
@@ -137,6 +138,7 @@ router.onError((error, to) => {
   }
 
   toast.error('Une erreur est survenue. La page n\'a pas pu être chargée.')
+  console.error(error)
   throw error
 })
 
@@ -146,12 +148,21 @@ router.isReady().then(() => {
 })
 
 router.beforeEach(async (to) => {
-  // Preload store for checking permissions
-  if (to.params.numeroBio) {
-    const recordStore = useRecordStore()
-    const record = await getOperatorParcelles(to.params.numeroBio)
-    recordStore.replace(record)
-  }
+  // Preload stores for checking permissions
+  await Promise.all([
+    (async () => {
+      if (to.params.numeroBio) {
+        const operatorStore = useOperatorStore()
+        await operatorStore.ready(to.params.numeroBio)
+      }
+    })(),
+    (async () => {
+      if (to.params.recordId) {
+        const recordStore = useRecordStore()
+        await recordStore.ready(to.params.recordId)
+      }
+    })(),
+  ])
 
   if (to.path === '/login/agencebio') {
     // forwards the user selected tab to the callback URI

@@ -3,133 +3,15 @@ import axios from 'axios'
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
 
 /**
- * @enum {String}
- * Duplicate of api/cartobio.js#EventType
- */
-export const EventType = {
-  CERTIFICATION_STATE_CHANGE: 'CertificationStateChange',
-  FEATURE_COLLECTION_CREATE: 'FeatureCollectionCreation',
-  FEATURE_COLLECTION_DELETE: 'FeatureCollectionDeletion',
-  FEATURE_COLLECTION_UPDATE: 'FeatureCollectionUpdate',
-  FEATURE_CREATE: 'FeatureCreation',
-  FEATURE_DELETE: 'FeatureDeletion',
-  FEATURE_UPDATE: 'FeatureUpdate'
-}
-
-/**
- * @typedef {import('@types/geojson').FeatureCollection} FeatureCollection
- * @typedef {import('@/referentiels/imports.js').sources} SourceType
- * @typedef {import('@/referentiels/ab.js').CERTIFICATION_STATE} CertificationState
- **/
-
-/**
- * @typedef {Object} CertificationBody
- * @property {number} id
- * @property {string} nom
- */
-
-/**
- * @typedef {Object} AgenceBioAdresseGeo
- * @property {string} codeCommune
- * @property {number} lat
- * @property {number} long
- */
-
-/**
- * @typedef {Object} Operator
- * @property {number} id
- * @property {string | null} dateEngagement
- * @property {string | null} datePremierEngagement
- * @property {string} nom
- * @property {string} denominationCourante
- * @property {string} numeroBio
- * @property {string | null} numeroPacage
- * @property {string | null} siret
- * @property {string | null} email
- * @property {CertificationBody} organismeCertificateur
- * @property {AgenceBioAdresseGeo[]} adressesOperateurs
- * @property {string} codeCommune
- * @property {string} commune
- * @property {string} departement
- */
-
-/**
- * @typedef {Object} RecordMetadata
- * @property {SourceType} source
- * @property {string} sourceLastUpdate
- */
-
-/**
- * @typedef {Object} AuditHistoryEvent
- * @property {string} date
- * @property {CertificationState} state
- * @property {number=} userId
- * @property {string=} userName
- * @property {number=} userRoleId
- * @property {string=} userRole
- * @property {number=} userOrgId
- * @property {string=} userOrg
- * @property {string=} description
- */
-
-/**
- * @typedef {Object} BaseRecord
- * @property {string} certification_state
- * @property {string} created_at
- * @property {string} numerobio
- * @property {RecordMetadata} metadata
- * @property {string} record_id
- * @property {string} updated_at
- */
-
-/**
- * @typedef {BaseRecord & {operator: Operator}} BaseRecordWithOperator
- */
-
-/**
- * @typedef {Object} CertificationRecord
- * @property {string} record_id
- * @property {Array<AuditHistoryEvent>} audit_history
- * @property {string} audit_notes
- * @property {string} audit_demandes
- */
-
-/**
- * @typedef {Object} GeographicRecord
- * @property {FeatureCollection} parcellaire
- */
-
-/**
- * @typedef {BaseRecordWithOperator & CertificationRecord & GeographicRecord} Record
- */
-
-/**
- * @typedef {Object} UserRole
- * @property {number} id
- * @property {string} nom
- */
-
-/**
- * @typedef {Object} DecodedUserToken
- * @property {number} id
- * @property {string} nom
- * @property {string} prenom
- * @property {number} organismeCertificateurId
- * @property {CertificationBody} organismeCertificateur
- * @property {UserRole} mainGroup
+ * @typedef {import('geojson').FeatureCollection} FeatureCollection
+ * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
+ * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
+ * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperatorWithRecord} AgenceBioNormalizedOperatorWithRecord
+ * @typedef {import('@agencebio/cartobio-types').CartoBioUser} CartoBioUser
+ * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
  */
 
 const apiClient = axios.create({ baseURL, timeout: 10000 })
-
-/**
- * @param {number} numeroBio
- * @returns {Promise<Record>}
- */
-export async function getOperatorParcelles (numeroBio) {
-  const { data } = await apiClient.get(`/v2/operator/${numeroBio}`)
-
-  return data
-}
 
 /**
  *
@@ -144,7 +26,7 @@ export async function getOperatorNcviFeatures ({ evv, numeroBio }) {
 
 /**
  * @param {string} input
- * @returns {Promise<Record[]>}
+ * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
 export async function searchOperators (input) {
   const { data } = await apiClient.post(`/v2/certification/operators/search`, { input })
@@ -153,7 +35,7 @@ export async function searchOperators (input) {
 }
 
 /**
- * @return {Promise<undefined>}
+ * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
 export async function getUserOperators () {
   const { data } = await apiClient.get(`/v2/operators`)
@@ -172,7 +54,7 @@ export async function pacageLookup (pacage) {
 }
 
 /**
- * @returns {Promise<Record[]>}
+ * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
 export async function fetchLatestOperators () {
   const { data } = await apiClient.get(`/v2/certification/operators/latest`, { timeout: 10000 })
@@ -180,18 +62,54 @@ export async function fetchLatestOperators () {
   return data.operators
 }
 
+
 /**
- * Creates a new operator Record
- *
- * @param {{ featureCollection: GeoJSON.FeatureCollection, numeroBio: number }} param0
- * @returns {Promise<Record>}
+ * @param {string} numeroBio
+ * @returns {Promise<import('@agencebio/cartobio-types').AgenceBioNormalizedOperator>}
  */
-export async function createOperatorRecord (numeroBio, payload) {
-  const { data } = await apiClient.post(`/v2/audits/${numeroBio}`, payload)
+export async function getOperator (numeroBio) {
+  const { data } = await apiClient.get(`/v2/operator/${numeroBio}`)
 
   return data
 }
 
+/**
+ * @param {string} numeroBio
+ * @return {Promise<import('@agencebio/cartobio-types').NormalizedRecordSummary[]>}
+ */
+export async function getOperatorRecords (numeroBio) {
+  const { data } = await apiClient.get(`/v2/operator/${numeroBio}/records`)
+
+  return data
+}
+
+
+/**
+ * Creates a new operator Record
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function createOperatorRecord (numeroBio, payload) {
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload)
+
+  return data
+}
+
+/**
+ * @param {UUID} recordId
+ * @return {Promise<NormalizedRecord>}
+ */
+export async function getRecord (recordId) {
+  const { data } = await apiClient.get(`/v2/audits/${recordId}`)
+
+  return data
+}
+
+/**
+ * Delete a single feature
+ *
+ * @return {Promise<NormalizedRecord>}
+ */
 export async function deleteSingleFeature ({ recordId }, { id, reason }) {
   const { data } = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${id}`, {data: { reason }})
 
@@ -201,9 +119,7 @@ export async function deleteSingleFeature ({ recordId }, { id, reason }) {
 /**
  * Creates or updates a record based on geographical informations
  *
- * @param {{ recordId: string }} identifiers
- * @param {GeoJSON.FeatureCollection} featureCollection
- * @returns {Promise<Record>}
+ * @returns {Promise<NormalizedRecord>}
  */
 export async function updateFeatureCollectionProperties ({ recordId }, featureCollection) {
   const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, featureCollection)
@@ -214,9 +130,7 @@ export async function updateFeatureCollectionProperties ({ recordId }, featureCo
 /**
  * Update/replace properties of a single feature
  *
- * @param {{ recordId: string }} identifiers
- * @param {GeoJSON.Feature} feature
- * @returns {Promise<Record>}
+ * @returns {Promise<NormalizedRecord>}
  */
 export async function updateSingleFeature ({ recordId }, { id, properties, geometry }) {
   const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties, geometry })
@@ -226,11 +140,11 @@ export async function updateSingleFeature ({ recordId }, { id, properties, geome
 
 /**
  *
- * @param {{ recordId: string }} identifiers
+ * @param {string} recordId
  * @param {Object} patch
- * @returns {Promise<Record>}
+ * @returns {Promise<NormalizedRecord>}
  */
-export async function updateAuditState ({ recordId }, patch) {
+export async function updateAuditState (recordId, patch) {
   const { data } = await apiClient.patch(`/v2/audits/${recordId}`, patch)
 
   return data
@@ -238,20 +152,16 @@ export async function updateAuditState ({ recordId }, patch) {
 
 /**
  * @param {string} recordId
- * @returns {Promise<Record>}
+ * @returns {Promise<void>}
  */
 export async function deleteRecord (recordId) {
-  const { data } = await apiClient.delete(`/v2/audits/${recordId}`)
-
-  return data
+  await apiClient.delete(`/v2/audits/${recordId}`)
 }
 
 /**
  * Add a new plot without id to a feature collection
  *
- * @param {{ recordId: String }} identifiers
- * @param {feature: GeoJSON.Feature} feature
- * @returns {Promise<Record>}
+ * @returns {Promise<NormalizedRecord>}
  */
 export async function submitNewParcelle ({ recordId }, feature) {
   const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
@@ -263,7 +173,7 @@ export async function submitNewParcelle ({ recordId }, feature) {
 
 /**
  * @param {string} userToken
- * @returns {Promise<DecodedUserToken>}
+ * @returns {Promise<CartoBioUser>}
  */
 export async function verifyToken (userToken) {
   const { data } = await apiClient.get(`/v2/user/verify`, {
@@ -275,6 +185,11 @@ export async function verifyToken (userToken) {
   return data
 }
 
+/**
+ *
+ * @param token
+ * @return {Promise<{ operator: AgenceBioNormalizedOperator, token: CartoBioUser}>}
+ */
 export async function exchangeNotificationToken (token) {
   const { data } = await apiClient.get(`/v2/user/exchangeToken`, {
     headers: {
@@ -298,7 +213,7 @@ export function setAuthorization (userToken) {
  * Turn a zipped Shapefile into a GeoJSON
  *
  * @param {File} archive
- * @returns {GeoJSON}
+ * @returns {Promise<CartoBioFeatureCollection>}
  */
 export async function convertShapefileArchiveToGeoJSON (archive) {
   const form = new FormData()
@@ -324,7 +239,7 @@ export async function convertTelepacXMLToGeoJSON (file) {
  * Turn a geofolia archive into a GeoJSON
  *
  * @param {File} archive
- * @returns {Promise<GeoJSON>}
+ * @returns {Promise<CartoBioFeatureCollection>}
  */
 export async function convertGeofoliaArchiveToGeoJSON (archive) {
   const form = new FormData()

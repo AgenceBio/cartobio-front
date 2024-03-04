@@ -83,7 +83,7 @@ import { featureCollection } from '@turf/helpers'
 import { diff, featureName, inHa, merge, surface } from './index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
-import { useFeaturesStore, useRecordStore } from "@/stores/index.js"
+import { useFeaturesStore, useOperatorStore, useRecordStore } from "@/stores/index.js"
 import { usePermissions } from "@/stores/permissions.js"
 import CertificationBodyEditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
 import OperatorEditForm from "@/components/Features/SingleItemOperatorForm.vue"
@@ -102,6 +102,7 @@ const router = useRouter()
 
 const featuresStore = useFeaturesStore()
 const recordStore = useRecordStore()
+const operatorStore = useOperatorStore()
 const permissions = usePermissions()
 
 // Flow state
@@ -200,7 +201,7 @@ function nextButton() {
   }
 
   if (flowSource.value === 'dessin') {
-    return router.push({ name: 'exploitations-numeroBio-ajout-parcelle-dessin', params: { numeroBio: recordStore.record.operator.numeroBio || 1 }})
+    return router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/ajout-parcelle/dessin`)
   }
 }
 

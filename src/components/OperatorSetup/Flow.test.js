@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 import { markRaw } from "vue"
 import { flushPromises, mount } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
@@ -10,7 +10,7 @@ import ActionFromSource from './Actions/FromSource.vue'
 import FlowMultiSources from './Flows/MultiSources.vue'
 import CviComponent from "./Sources/Cvi.vue"
 
-import record from '../Features/__fixtures__/record-with-features.json' assert { type: 'json' }
+import operator from '../Features/__fixtures__/operator.json' assert { type: 'json' }
 import { sources } from '@/referentiels/imports.js'
 
 setActivePinia(createPinia())
@@ -50,7 +50,7 @@ describe("OperatorSetupFlow", () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -62,7 +62,7 @@ describe("OperatorSetupFlow", () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
-        operator: record.operator,
+        operator: operator,
         withStepper: true
       }
     })
@@ -77,7 +77,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -96,7 +96,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -108,7 +108,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -135,7 +135,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -183,7 +183,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -207,7 +207,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: [ ...operatorSetupActions ],
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -228,7 +228,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: [ ...operatorSetupActions ],
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       },
       global: {
         config: {
@@ -255,7 +255,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -280,7 +280,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: [ ...operatorSetupActions ],
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -300,7 +300,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: [ ...operatorSetupActions ],
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       },
       global: {
         config: {
@@ -328,7 +328,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -343,7 +343,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -372,7 +372,7 @@ describe("OperatorSetupFlow", () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: [],
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -384,7 +384,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -405,7 +405,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: [ ...operatorSetupActions ],
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -425,7 +425,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 
@@ -441,7 +441,7 @@ describe("OperatorSetupFlow", () => {
       props: {
         actions: operatorSetupActions,
         flowId: 'source',
-        operator: record.operator
+        operator: operator
       }
     })
 

@@ -1,7 +1,9 @@
 // 7 déc. 2022
 const ddmmyyIntl = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'Europe/Paris',
-  dateStyle: 'medium'
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
 })
 
 // 7 décembre 2022

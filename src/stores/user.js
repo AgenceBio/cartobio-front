@@ -4,6 +4,11 @@ import { computed, ref, watch, watchEffect } from 'vue'
 import { setAuthorization } from '@/cartobio-api'
 import { CUSTOM_DIMENSION_ROLE, setCustomDimension } from "@/stats.js"
 
+
+/**
+ * @typedef {import('@agencebio/cartobio-types').CartoBioUser} CartoBioUser
+ */
+
 export const ROLES = Object.freeze({
   OC_AUDIT: 'audit',
   OC_CERTIF: 'certif',
@@ -69,6 +74,9 @@ export function deriveRolesFromGroups (user) {
 export const useUserStore = defineStore('user', () => {
   const storageName = 'cartobio.v2'
   const token = ref('')
+  /**
+   * @type {ComputedRef<CartoBioUser|{}>}
+   */
   const user = computed(() => token.value ? parseJwt(token.value) : {})
   const isLogged = computed(() => Boolean(user.value.id))
 

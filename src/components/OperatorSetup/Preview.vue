@@ -13,7 +13,7 @@
 
     <MapPreview :controls="false" :collection="featureCollection" class="fr-mb-3w" />
 
-    <div class="fr-alert fr-alert--info fr-mb-3w">
+    <div v-if="operatorStore.records?.length" class="fr-alert fr-alert--info fr-mb-3w">
       Récupération des informations
       <p>
         Vous pouvez récupérer les informations renseignées sur le dernier parcellaire certifié&nbsp;:
@@ -23,7 +23,7 @@
     </div>
 
     <form @submit.prevent="emit('submit', importPrevious === 'oui')">
-      <fieldset class="fr-fieldset" id="radio-import" aria-labelledby="radio-import-legend">
+      <fieldset v-if="operatorStore.records?.length" class="fr-fieldset" id="radio-import" aria-labelledby="radio-import-legend">
         <legend class="fr-fieldset__legend fr-fieldset__legend--regular" id="radio-import-legend">
           Souhaitez-vous récupérer les informations renseignées dans le dernier parcellaire certifié ?
         </legend>
@@ -58,6 +58,7 @@ import MapPreview from '@/components/Map/Preview.vue'
 import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
 
 import { surface, inHa, FeatureNotFoundError } from '@/components/Features/index.js'
+import { useOperatorStore } from "@/stores/index.js"
 
 const emit = defineEmits(['submit', 'cancel'])
 const props = defineProps({
@@ -70,6 +71,8 @@ const props = defineProps({
     default: () => ([])
   }
 })
+
+const operatorStore = useOperatorStore()
 
 const importPrevious = ref()
 
