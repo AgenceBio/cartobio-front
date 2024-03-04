@@ -62,6 +62,7 @@
           "id": "1",
           "NOM": "parcelle 1",
           "COMMUNE": "26108",
+          "conversion_niveau": "AB",
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }
           ]
@@ -101,6 +102,8 @@
           "id": "2",
           "NOM": "parcelle 2",
           "COMMUNE": "26108",
+          "conversion_niveau": "C3",
+          "engagement_date": "2021-01-01",
           "cultures": [
             { "id": 1, "CPF": "01.13.42", "variete": "spéciale pour ail noir" },
             { "id": 2, "CPF": "01.23.11", "surface": "0.5" }
@@ -123,6 +126,7 @@
           ],
           "NOM": "parcelle 3",
           "COMMUNE": "26113",
+          "conversion_niveau": "AB",
           "cultures": [
             { "id": 1, "CPF": "01.19.10.8" }
           ]
@@ -163,6 +167,7 @@
           "NUMERO_I": "2",
           "NUMERO_P": "1",
           "COMMUNE": "26108",
+          "conversion_niveau": "AB",
           "cultures": [
             { "id": 1, "CPF": "01.13.42", "variete": "spéciale pour ail noir" }
           ]

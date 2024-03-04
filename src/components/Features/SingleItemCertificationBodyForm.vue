@@ -1,26 +1,26 @@
 <template>
-  <Modal @close="showCancelModal = true" v-bind="$attrs" data-track-content data-content-name="Modale de modification de parcelle">
-    <div class="fr-card fr-p-2w fr-mb-3w">
-      <div class="fr-input-group" :class="{ 'fr-input-group--error': nameError }">
-        <label class="fr-label" for="nom">Nom de la parcelle</label>
-        <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-        <input class="fr-input fr-error" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameError }" />
-        <p v-if="nameError" class="fr-error-text">
-          Ce champ est obligatoire
-        </p>
-      </div>
-      <p class="fr-mb-0">Sa superficie est de {{ inHa(surface(feature)) }} ha.</p>
-
-      <ul v-if="details.length">
-        <li v-for="(detail, index) in details" :key="index">
-          {{ detail }}
-        </li>
-      </ul>
-    </div>
-
+  <Modal @close="handleClose" v-bind="$attrs" data-track-content data-content-name="Modale de modification de parcelle">
     <form @submit.prevent="validate" id="single-feature-edit-form">
+      <div class="fr-card fr-p-2w fr-mb-3w">
+        <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
+          <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
+          <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
+          <input class="fr-input" id="feature-nom" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameErrors.size }" />
+          <div v-for="([id, result]) in nameErrors" :key="id" class="fr-hint-text fr-error-text">
+            {{ result.errorMessage }}.
+          </div>
+        </div>
+        <p class="fr-mb-0">Sa superficie est de {{ inHa(surface(feature)) }} ha.</p>
+
+        <ul v-if="details.length">
+          <li v-for="(detail, index) in details" :key="index">
+            {{ detail }}
+          </li>
+        </ul>
+      </div>
+
       <AccordionGroup :constraint-toggle="!open">
-        <AccordionSection title="Culture" :open="open">
+        <AccordionSection title="Culture" :open="open" :requires-action="requiresAction(['commentaires', 'cultures'])">
           <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
             <blockquote>
               <p>{{ feature.properties.commentaires }}</p>
@@ -30,19 +30,15 @@
             </figcaption>
           </figure>
 
-          <div class="fr-input-group">
-            <CultureSelector :feature-id="feature.properties.id" :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
-          </div>
+          <CultureSelector :feature-id="feature.properties.id" :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
         </AccordionSection>
 
-        <AccordionSection title="Annotations d'audit" :open="open">
+        <AccordionSection title="Annotations d'audit" :open="open" :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])">
           <ConversionLevelSelector :feature-id="feature.properties.id" :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
           <div class="fr-input-group" v-if="isAB">
             <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
-            <div class="fr-input-wrap fr-icon-calendar-line">
-              <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
-            </div>
+            <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
           </div>
 
           <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :feature-id="feature.properties.id" />
@@ -67,12 +63,11 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref } from 'vue';
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 
 import { featureDetails, inHa, surface } from '@/components/Features/index.js'
-import { isABLevel } from '@/referentiels/ab.js'
+import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from '@/referentiels/ab.js'
 import { useFeaturesSetsStore, usePermissions } from '@/stores/index.js'
-import { RuleSet } from '@/stores/features-sets.js'
 import { toDateInputString } from '@/components/dates.js'
 
 import AccordionGroup from '@/components/DesignSystem/AccordionGroup.vue'
@@ -111,20 +106,19 @@ const patch = reactive({
   engagement_date: props.feature.properties.engagement_date,
   auditeur_notes: props.feature.properties.auditeur_notes || '',
 })
-const nameError = ref(false)
 
 const isAB = computed(() => isABLevel(patch.conversion_niveau))
 const maxDate = computed(() => toDateInputString(new Date()))
-const isEngagementDateRequired = computed(() => featuresSet.isRequired(RuleSet.ENGAGEMENT_DATE_MISSING))
-const details = await featureDetails(props.feature)
+const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau))
+const details = featureDetails(props.feature)
+const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, 'name'))
+
+function requiresAction (properties) {
+  return properties.some(property => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0)
+}
 
 const validate = () => {
-  const set = featuresSet.byFeature(props.feature.id)
-
-  if (set.has(RuleSet.NAMELESS)) {
-    nameError.value = true
-    return false
-  }
+  const set = featuresSet.byFeature(props.feature.id, true)
 
   if (set.size) {
     return false
@@ -132,6 +126,27 @@ const validate = () => {
 
   emit('submit', { id: props.feature.id, properties: patch })
 }
+
+function handleClose () {
+  if (featuresSet.isDirty) {
+    showCancelModal.value = true
+  }
+  else {
+    emit('close')
+  }
+}
+
+onBeforeUnmount(() => featuresSet.setCandidate([]))
+
+watch(patch, (properties) => {
+  featuresSet.setCandidate([{
+    id: props.feature.id,
+    properties: {
+      ...props.feature.properties,
+      ...properties
+    }
+  }])
+})
 </script>
 
 <style scoped>

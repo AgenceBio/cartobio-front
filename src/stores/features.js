@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
-import { AnnotationTags } from '@/referentiels/ab.js'
-
 /**
- * @typedef {import('@/referentiels/ab.js').ANNOTATIONS} AnnotationId
  * @typedef {import('@/referentiels/ab.js').UserAnnotation} UserAnnotation
  */
 
@@ -30,6 +27,14 @@ export const useFeaturesStore = defineStore('features', () => {
   })
 
   /**
+   * @type {reactive<CartoBioFeatureCollection>}
+   */
+  const candidateCollection = ref({
+    type: 'FeatureCollection',
+    features: []
+  })
+
+  /**
    * @return {CartoBioFeature}
    */
   function getFeatureById (id) {
@@ -40,13 +45,21 @@ export const useFeaturesStore = defineStore('features', () => {
    * @type {ComputedRef<CartoBioFeature[]>}
    */
   const all = computed(() => collection.value.features)
-  const hasFeatures = computed(() => collection.value.features.length > 0)
 
-  const hits = computed(() => {
-    return collection.value.features
-      .filter(applyAnnotationsFacets)
-      // .filter(applyRulesFacets)
-  })
+  /**
+   * @type {ComputedRef<CartoBioFeature[]>}
+   */
+  const allCandidate = computed(() => mergeFeatures(collection.value.features, candidateCollection.value.features))
+
+  /**
+   * @type {ComputedRef<Boolean>}
+   */
+  const isDirty = computed(() => JSON.stringify(all.value) !== JSON.stringify(allCandidate.value))
+
+  /**
+   * @type {ComputedRef<Boolean>}
+   */
+  const hasFeatures = computed(() => collection.value.features.length > 0)
 
   /**
    * @type {ComputedRef<CartoBioFeature[]>}
@@ -64,90 +77,42 @@ export const useFeaturesStore = defineStore('features', () => {
     return activeId.value ? getFeatureById(activeId.value) : null
   })
 
-  /*
-   * Annotations Corner
-   */
-  const activeAnnotations = ref([])
-  const isAnnotationActive = (annotationId) => activeAnnotations.value.includes(annotationId)
-
   /**
-   * Collects all annotations within all features
-   * It helps build interactive facets, for example.
+   * @type {ComputedRef<CartoBioFeature|null>}
    */
-  const annotations = computed(() => {
-    const map = collection.value.features.reduce((map, feature) => {
-      /** @type {UserAnnotation[]} */(feature.properties.annotations ?? []).forEach(annotation => {
-        if (!map.has(annotation.code)) {
-          map.set(annotation.code, {
-            active: isAnnotationActive(annotation.code),
-            code: annotation.code,
-            count: 0,
-            featureIds: [],
-            label: AnnotationTags[annotation.code].label
-          })
-        }
-
-        const stats = map.get(annotation.code)
-
-        map.set(annotation.code, {
-          ...stats,
-          count: stats.count + 1,
-          featureIds: [...stats.featureIds, feature.id]
-        })
-      })
-
-      return map
-    }, new Map())
-
-    return Array.from(map).sort(([,{count: countA}], [,{ count: countB}]) => {
-      return countB - countA
-    }).map(([, stats]) => stats)
-  })
-
-  /**
-   * Check if a feature complies with the annotation filtering criteria.
-   * Ideally, applied as an Array iteration callback.
-   *
-   * @param {Feature} feature
-   * @returns {Boolean}
-   */
-  function applyAnnotationsFacets (feature) {
-    if (activeAnnotations.value.length === 0) {
-      return true
-    }
-
-    return (feature.properties.annotations ?? []).some(({ code }) => isAnnotationActive(code))
-  }
-
-  /**
-   * Activate or deactivate annotations
-   * They are reflected in the `hits` computed property
-   *
-   * @param {AnnotationId} annotationId
-   */
-  function toggleAnnotation (annotationId) {
-    activeAnnotations.value = isAnnotationActive(annotationId)
-      ? activeAnnotations.value.filter(id => id !== annotationId)
-      : [...activeAnnotations.value, annotationId]
-  }
-
-
   const hoveredFeature = computed(() => {
     return hoveredId.value ? getFeatureById(hoveredId.value) : null
   })
 
+  /**
+   * @type {ComputedRef<CartoBioFeature[]>}
+   */
   const selectedFeatures = computed(() => {
     return selectedIds.value.map(getFeatureById)
   })
 
+  /**
+   * @param {CartoBioFeature[]} features
+   */
   function setAll (features) {
     collection.value.features = [...features]
   }
 
-  function toggleAllSelected () {
-    selectedIds.value = allSelected.value ? [] : collectIds(hits.value)
+  /**
+   *
+   * @param {CartoBioFeature[]} features
+   */
+  function setCandidate (features) {
+    candidateCollection.value.features = [...features]
   }
 
+  function toggleAllSelected () {
+    selectedIds.value = allSelected.value ? [] : collectIds(all.value)
+  }
+
+  /**
+   * @param {String} featureId
+   */
   function toggleSingleSelected (featureId) {
     selectedIds.value = selectedIds.value.includes(String(featureId))
       // we remove it if it was available
@@ -156,10 +121,16 @@ export const useFeaturesStore = defineStore('features', () => {
       : selectedIds.value.concat([String(featureId)])
   }
 
+  /**
+   * @param  {...String} ids
+   */
   function select (...ids) {
     selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids.map(String)]))
   }
 
+  /**
+   * @param  {...String} ids
+   */
   function unselect (...ids) {
     selectedIds.value = selectedIds.value.filter(id => ids.map(String).includes(String(id)) === false)
   }
@@ -234,14 +205,24 @@ export const useFeaturesStore = defineStore('features', () => {
     })
   }
 
-  function updateMatchingFeatures (features) {
-    collection.value.features = collection.value.features.map(feature => {
-      const matchingFeature = features.find(({ id }) => feature.id === id)
+  /**
+   * Update feature properties based on a matching Feature ID
+   *
+   * @param {CartoBioFeature[]} target
+   * @param {CartoBioFeature[]} source
+   * @returns {CartoBioFeature[]}
+   */
+  function mergeFeatures (target, source) {
+    return target.map(feature => {
+      const matchingFeature = source.find(({ id }) => feature.id === id)
 
       if (matchingFeature) {
-        feature.properties = {
-          ...feature.properties,
-          ...matchingFeature.properties
+        return {
+          ...feature,
+          properties: JSON.parse(JSON.stringify({
+            ...feature.properties,
+            ...matchingFeature.properties
+          }))
         }
       }
 
@@ -249,27 +230,24 @@ export const useFeaturesStore = defineStore('features', () => {
     })
   }
 
+  /**
+   * @param {CartoBioFeature[]} features
+   */
+  function updateMatchingFeatures (features) {
+    collection.value.features = mergeFeatures(collection.value.features, features)
+  }
+
+  function commitCandidate () {
+    collection.value.features = [...candidateCollection.value.features]
+  }
+
   function $reset () {
     selectedIds.value = []
     activeId.value = null
-    activeAnnotations.value = []
     hoveredId.value = null
     setAll([])
+    setCandidate([])
   }
-
-  /*
-   * Check for toggled annotation with no match
-   * We untoggle them to avoid providing an empty list with no way to untoggle filters
-   */
-  watch(annotations, (annotations) => {
-    activeAnnotations.value.forEach(annotationId => {
-      const hasHits = annotations.some(({ code, count }) => code === annotationId && count > 0)
-
-      if (!hasHits) {
-        toggleAnnotation(annotationId)
-      }
-    })
-  })
 
   return {
     activeId,
@@ -278,23 +256,23 @@ export const useFeaturesStore = defineStore('features', () => {
     // computed
     activeFeature,
     all,
+    allCandidate,
     allSelected,
-    annotations,
     collection,
     hasFeatures,
-    hits,
     hoveredFeature,
+    isDirty,
     selectedFeatures,
     // methods
     $reset,
     bindMaplibreFeatureState,
     bindMaplibreInteractions,
     getFeatureById,
-    isAnnotationActive,
     select,
     setAll,
+    setCandidate,
+    commitCandidate,
     toggleAllSelected,
-    toggleAnnotation,
     toggleSingleSelected,
     unselect,
     updateMatchingFeatures

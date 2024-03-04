@@ -48,7 +48,7 @@
       </td>
       <td @click="toggleEditForm(feature.id)" class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
       <td class="actions">
-        <button type="button" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': !featuresSets.byFeature(feature.id).size, 'fr-icon-edit-box-fill fr-icon--warning': featuresSets.byFeature(feature.id).size}" @click="toggleEditForm(feature.id)">
+        <button type="button" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true /*!featuresSets.byFeature(feature.id, true).size, 'fr-icon-edit-box-fill fr-icon--warning': featuresSets.byFeature(feature.id, true).size*/}" @click="toggleEditForm(feature.id)">
           Modifier
         </button>
 
@@ -104,7 +104,7 @@ const allSelected = computed(() => featureIds.value.every(id => selectedIds.valu
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
 
 const groupErrors = computed(() => {
-  return featureIds.value.reduce((sum, id) => sum + featuresSets.byFeature(id).size, 0)
+  return featureIds.value.reduce((sum, id) => sum + featuresSets.byFeature(id, true).size, 0)
 })
 
 function toggleEditForm (featureId) {

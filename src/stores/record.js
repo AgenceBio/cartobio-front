@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, reactive } from 'vue'
-import { useFeaturesStore } from "@/stores/index.js"
+import { useFeaturesStore, useFeaturesSetsStore } from "@/stores/index.js"
 import bbox from '@turf/bbox'
 import { useOperatorStore } from "@/stores/operator.js"
 import { getRecord } from "@/cartobio-api.js"
@@ -11,6 +11,7 @@ import { getRecord } from "@/cartobio-api.js"
 
 export const useRecordStore = defineStore('record', () => {
   const featuresStore = useFeaturesStore()
+  const sets = useFeaturesSetsStore()
 
   const initialState = {
     record_id: null,
@@ -90,6 +91,7 @@ export const useRecordStore = defineStore('record', () => {
   function reset() {
     update({ ...initialState, metadata: { ...initialState.metadata } })
     featuresStore.$reset()
+    sets.$reset()
   }
 
   async function ready(recordId) {
@@ -108,8 +110,19 @@ export const useRecordStore = defineStore('record', () => {
   }
 
 
-    const exists = computed(() => Boolean(record.record_id))
+  /**
+   * @type {ComputedRef<Boolean>}
+   */
+  const exists = computed(() => Boolean(record.record_id))
+
+  /**
+   * @type {ComputedRef<Boolean>}
+   */
   const isSetup = computed(() => Boolean(record.record_id && 'source' in record.metadata))
+
+  /**
+   * @type {ComputedRef<Boolean>}
+   */
   const hasFeatures = computed(() => featuresStore.hasFeatures)
 
   return {

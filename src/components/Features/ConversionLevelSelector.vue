@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-input-group">
+  <div class="fr-input-group" :class="{'fr-input-group--error': hasErrors}">
     <label class="fr-label">Niveau de conversion</label>
 
     <div class="fr-radio-group fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
@@ -34,8 +34,9 @@ const props = defineProps({
   }
 })
 
-const featuresSets = useFeaturesSetsStore()
-
 const emit = defineEmits(['update:modelValue'])
+
+const featuresSets = useFeaturesSetsStore()
 const errors = computed(() => featuresSets.byFeatureProperty(props.featureId, 'conversion_niveau'))
+const hasErrors = computed(() => errors.value.size > 0)
 </script>

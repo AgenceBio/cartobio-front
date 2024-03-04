@@ -1,9 +1,11 @@
 <template>
-  <div class="fr-alert fr-alert--warning fr-mb-3w" v-if="featuresSet.hasRequiredItems">
-    <p v-for="([ruleId, result]) in featuresSet.results" :key="ruleId">
+  <div class="fr-alert fr-alert--warning fr-mb-3w" v-if="featuresSet.hasRequiredSets">
+    <p v-for="([ruleId, result]) in featuresSet.required" :key="ruleId">
       {{ result.errorMessage }} pour {{ inflex(result.count, 'parcelle', 'parcelles') }}.
 
-      <button class="fr-link fr-icon-arrow-right-line fr-link--icon-right">voir</button>
+      <button v-if="!featuresSet.isToggled(ruleId)" @click="featuresSet.toggle(ruleId)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-icon-arrow-right-line fr-btn--icon-right">
+        voir
+      </button>
     </p>
   </div>
 

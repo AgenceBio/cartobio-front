@@ -6,7 +6,6 @@ import axios from 'axios'
 
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/components/Features/index.js"
 import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index.js"
-import { OPERATOR_RULES } from "@/referentiels/ab.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import Modal from "@/components/Modal.vue"
@@ -35,9 +34,7 @@ describe("Features Table", () => {
   })
 
   test("features are listed as 3 groups of 2 and 1 and 2 features (one being multi-crops)", () => {
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
 
     expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("4 parcelles")
     expect(wrapper.findAll('table tbody')).toHaveLength(3)
@@ -45,9 +42,7 @@ describe("Features Table", () => {
   })
 
   test("we toggle all features in one click", async () => {
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
 
     expect(wrapper.find('#radio-mass-edit').exists()).toEqual(false)
     await wrapper.find('#radio-select-all').trigger('click')
@@ -57,39 +52,35 @@ describe("Features Table", () => {
   })
 
   test("we not be able to see and activate facets as an Agri", async () => {
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
 
     expect(wrapper.find('.fr-tags-group--annotations').exists()).toEqual(false)
   })
 
   test("we should be able to see and activate facets only when we are a Certification Body", async () => {
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
+
+    expect(wrapper.find('.fr-tags-group--tags').exists()).toEqual(false)
 
     permissions.isOc = true
     await flushPromises()
 
-    expect(wrapper.find('.fr-tags-group--annotations').exists()).toEqual(true)
+    expect(wrapper.find('.fr-tags-group--tags').exists()).toEqual(true)
 
     // toggle two filters
-    await wrapper.find('.fr-tags-group--annotations .annotation--downgraded').trigger('click')
-    await wrapper.find('.fr-tags-group--annotations .annotation--risky').trigger('click')
-    await wrapper.find('.fr-tags-group--annotations .annotation--surveyed').trigger('click')
-    await wrapper.find('.fr-tags-group--annotations .annotation--surveyed').trigger('click')
+    await wrapper.find('.fr-tags-group--tags .tag--annotation_downgraded').trigger('click')
+    await wrapper.find('.fr-tags-group--tags .tag--annotation_risky').trigger('click')
+    await wrapper.find('.fr-tags-group--tags .tag--annotation_surveyed').trigger('click')
+    await wrapper.find('.fr-tags-group--tags .tag--annotation_surveyed').trigger('click')
     await flushPromises()
 
     expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("1 parcelles")
+    expect(wrapper.findAll('tr.parcelle')).toHaveLength(1)
     expect(featuresStore.all).toHaveLength(4)
-    expect(featuresStore.hits).toHaveLength(1)
   })
 
   test("we group by town", async () => {
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
 
     wrapper.find('#plots-group-by').setValue(GROUPE_COMMUNE)
 
@@ -102,9 +93,7 @@ describe("Features Table", () => {
   })
 
   test("we select a feature and its unfolds the group", async () => {
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
 
     // await wrapper.find('#parcelle-1 th .single-checkbox input[type="checkbox"]')
     featuresStore.toggleSingleSelected(1)
@@ -120,7 +109,7 @@ describe("Features Table", () => {
     })
 
     const wrapper = mount(AsyncComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES }, editForm: markRaw(EditForm) }
+      props: { editForm: markRaw(EditForm) }
     })
 
     const table = wrapper.getComponent(TableComponent)
@@ -145,9 +134,7 @@ describe("Features Table", () => {
   test("we delete a feature", async () => {
     permissions.canDeleteFeature = true
 
-    const wrapper = mount(TableComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES } }
-    })
+    const wrapper = mount(TableComponent)
 
     await wrapper.find('.group-header').trigger('click')
     await wrapper.find('#parcelle-3 .show-actions').trigger('click')
@@ -169,27 +156,42 @@ describe("Features Table", () => {
   })
 
   test("we open a modal and test various cases it should remain open, or close", async () => {
+    permissions.isOc = false
+    permissions.isAgri = true
     permissions.canDeleteFeature = true
+    permissions.canChangeCulture = true
+
     const AsyncComponent = defineComponent({
       components: { TableComponent },
       template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>'
     })
 
     const wrapper = mount(AsyncComponent, {
-      props: { operator, validationRules: { rules: OPERATOR_RULES }, editForm: markRaw(EditForm) }
+      props: { editForm: markRaw(EditForm) }
     })
 
     const table = wrapper.getComponent(TableComponent)
-    // await table.find('tr.parcelle td').trigger('click')
 
     let modal
 
     // we click outside the edit modal (the background of the <dialog> element)
-    // it stays open with another confirmation modal
+    // it closes itself because it is not "dirty"
     table.find('tr.parcelle td').trigger('click')
     await flushPromises()
     modal = wrapper.getComponent(Modal)
     await modal.trigger('click')
+    await flushPromises()
+    expect(modal.exists()).toEqual(false)
+
+    // now, we change a field and we should not be able to close it
+    axios.__createMock.put.mockResolvedValueOnce(record)
+
+    table.find('tr.parcelle td').trigger('click')
+    await flushPromises()
+    modal = wrapper.getComponent(Modal)
+    await modal.find('#feature-nom').setValue('aa')
+    await modal.trigger('click')
+    await flushPromises()
     expect(modal.exists()).toEqual(true)
 
     // we click outside the delete modal
@@ -209,8 +211,8 @@ describe("Features Table", () => {
     await flushPromises()
     modal = wrapper.getComponent(Modal)
     await modal.find('#modal-title').trigger('click')
+    await flushPromises()
     expect(modal.exists()).toEqual(true)
-
   })
 
 })

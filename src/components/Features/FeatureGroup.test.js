@@ -4,15 +4,13 @@ import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
 
 import { GROUPE_COMMUNE, getFeatureGroups } from "@/components/Features/index.js"
-import { useRecordStore, useFeaturesStore, usePermissions } from "@/stores/index.js"
-import { OPERATOR_RULES as rules } from "@/referentiels/ab.js"
+import { useFeaturesStore, usePermissions } from "@/stores/index.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import FeatureGroup from "@/components/Features/FeatureGroup.vue"
 import EditForm from "@/components/Features/SingleItemOperatorForm.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
-const recordStore = useRecordStore(pinia)
 const featuresStore = useFeaturesStore(pinia)
 const permissions = usePermissions(pinia)
 
@@ -30,7 +28,7 @@ describe("FeatureGroup", () => {
 
   test('properly renders a group', async () => {
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null, validationRules: { rules } }
+      props: { featureGroup, selectedIds: [], hoveredId: null }
     })
     const header = wrapper.find('.intermediate-header')
 
@@ -58,7 +56,7 @@ describe("FeatureGroup", () => {
   test('non-culture grouping has different column name', async () => {
     const featureGroup = getFeatureGroups(record.parcelles, GROUPE_COMMUNE).at(0)
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null, validationRules: { rules } }
+      props: { featureGroup, selectedIds: [], hoveredId: null }
     })
     const header = wrapper.find('.intermediate-header')
     await wrapper.find('.group-header').trigger('click')
@@ -77,7 +75,7 @@ describe("FeatureGroup", () => {
 
   test('toggles on and off all group items', async () => {
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null, validationRules: { rules } }
+      props: { featureGroup, selectedIds: [], hoveredId: null }
     })
 
     expect(wrapper.vm.selectedIds).toEqual([])
@@ -107,7 +105,7 @@ describe("FeatureGroup", () => {
     })
 
     const wrapper = mount(AsyncComponent, {
-      props: { featureGroup, selectedIds: [], hoveredId: null, validationRules: { rules }, editForm: markRaw(EditForm) }
+      props: { featureGroup, selectedIds: [], hoveredId: null, editForm: markRaw(EditForm) }
     })
 
     const group = wrapper.getComponent(FeatureGroup)
@@ -119,7 +117,7 @@ describe("FeatureGroup", () => {
 
   test('we trigger a delete form', async () => {
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null, validationRules: { rules } }
+      props: { featureGroup, selectedIds: [], hoveredId: null }
     })
 
     await wrapper.find('.group-header').trigger('click')

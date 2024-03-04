@@ -1,21 +1,23 @@
-import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { defineStore, storeToRefs } from 'pinia'
+import { computed, ref, watch } from 'vue'
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 import { useFeaturesStore, usePermissions } from "@/stores/index.js"
 import { AnnotationTags, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from '@/referentiels/ab.js'
 import { featureName } from "@/components/Features/index.js"
 
+/** @typedef {require('geojson').Feature} Feature */
+
 /** @enum {String} */
 export const RuleSet = {
   NAMELESS: 'nameless',
-  CULTURE_MISSING: 'without-culture',
+  CULTURE_MISSING: 'culture-missing',
   CULTURE_UNSURE: 'culture-unsure',
   CONVERSION_LEVEL_MISSING: 'conversion-level-missing',
   CONVERSION_LEVEL_UNSURE: 'conversion-level-unsure',
   GEOMETRY_MISSING: 'geometry-missing',
   ENGAGEMENT_DATE_MISSING: 'engagement-date-missing',
-  ANNOTATED: 'annotated'
+  ANNOTATED: 'annotation'
 }
 
 /**
@@ -41,73 +43,104 @@ export const RuleSet = {
  * @typedef {SetItem} SetResult
  * @property {Boolean} count
  * @property {FeatureId[]} featureIds
+ * @property {<String, {Boolean|<String, Boolean>[]}>[]} details
  */
 
 export const useFeaturesSetsStore = defineStore('features-sets', () => {
   const featuresStore = useFeaturesStore()
   const permissions = usePermissions()
+  const { allCandidate, isDirty } = storeToRefs(featuresStore)
+
+  const toggles = ref(new Map())
 
   /**
    *
+   * @param {computed<Feature[]>} features
    * @param {Function(Feature): Boolean} filterFn
    * @returns {FeatureId[]}
    */
-  function collectIds (filterFn) {
-    return featuresStore.all.filter(filterFn).map(({ id }) => id)
+  function collectIds (features, filterFn) {
+    return features.value
+      .filter(f => {
+        const result = filterFn(f)
+
+        if (Array.isArray(result)) {
+          return result.some(([, result]) => result === true)
+        }
+
+        return result === true
+      })
+      .map(({ id }) => id)
+  }
+
+  /**
+   *
+   * @param {computed<Feature[]>} features
+   * @param {Function(Feature): Boolean} filterFn
+   * @returns {FeatureId[]}
+   */
+  function collectDetails (features, filterFn) {
+    return features.value
+      .flatMap(f => {
+        const result = filterFn(f)
+
+        if (Array.isArray(result)) {
+          return result.map(r => ([f.id, r])).filter(([, r]) => r.at(1))
+        }
+
+        return [ [f.id, result] ]
+      })
+      .filter(([, result]) => Array.isArray(result) ? result.length : result)
   }
 
   /** @type {Map<SetItem>} */
-  const set = new Map([
+  const definitions = computed(() => new Map([
     [
       RuleSet.NAMELESS,
       {
+        label: 'Sans nom',
         property: 'name',
         required: true,
         errorMessage: 'Il manque un nom',
-        select (name = '') {
-          return collectIds(f => featureName(f, { placeholder: '' }) === name)
+        select (f) {
+          return featureName(f, { placeholder: '' }) === ''
         }
       }
     ],
     [
       RuleSet.CULTURE_MISSING,
       {
+        label: 'Sans culture',
         property: 'cultures',
         required: true,
         errorMessage: 'Il manque un type de culture',
-        select () {
-          return collectIds(f => {
-            if (!Array.isArray(f.properties.cultures)) {
-              return true
-            }
+        select (f) {
+          if (!Array.isArray(f.properties.cultures) || f.properties.cultures.length === 0) {
+            return true
+          }
 
-            const eachHasCultureCode = f.properties.cultures.every(({ CPF }) => Boolean(CPF))
-            if (f.properties.cultures.length === 0 || eachHasCultureCode === false) {
-              return false
-            }
-          })
+          return f.properties.cultures.map(({ id, CPF, TYPE, GF }, i) => ([id ?? i, !CPF && !TYPE && !GF]))
         }
       }
     ],
     [
       RuleSet.CULTURE_UNSURE,
       {
+        label: 'Culture à préciser',
         property: 'cultures',
         required: true,
         errorMessage: 'La culture est à préciser',
-        select () {
-          return collectIds(f => {
-            if (!Array.isArray(f.properties.cultures)) {
-              return false
+        select (f) {
+          if (!Array.isArray(f.properties.cultures) || f.properties.cultures.length === 0) {
+            return false
+          }
+
+          return f.properties.cultures.map(({ id, CPF, TYPE, GF }, i) => {
+            if (!CPF && (TYPE || GF)) {
+              return [id ?? i, true]
             }
 
-            return f.properties.cultures.some(({ CPF, TYPE, GF }) => {
-              if (!CPF && (TYPE || GF)) {
-                return true
-              }
-
-              return !fromCodeCpf(CPF)?.is_selectable
-            })
+            return [id ?? i, CPF && !fromCodeCpf(CPF)?.is_selectable]
           })
         }
       }
@@ -115,52 +148,48 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
     [
       RuleSet.CONVERSION_LEVEL_MISSING,
       {
+        label: 'Niveau de conversion manquant',
         property: 'conversion_niveau',
         required: permissions.isOc,
         errorMessage: 'Il manque un niveau de conversion',
-        select (level = LEVEL_UNKNOWN) {
-          return collectIds(f => {
-            return !f.properties.conversion_niveau || f.properties.conversion_niveau === level
-          })
+        select (f) {
+          return !f.properties.conversion_niveau || f.properties.conversion_niveau === LEVEL_UNKNOWN
         }
       }
     ],
     [
       RuleSet.CONVERSION_LEVEL_UNSURE,
       {
+        label: 'Niveau de conversion à préciser',
         property: 'conversion_niveau',
         required: permissions.isOc,
         errorMessage: 'Le niveau de conversion en agriculture biologique a besoin d\'être précisé',
-        select (level = LEVEL_MAYBE_AB) {
-          return collectIds(f => {
-            return f.properties.conversion_niveau === level
-          })
+        select (f) {
+          return f.properties.conversion_niveau === LEVEL_MAYBE_AB
         }
       }
     ],
     [
       RuleSet.ENGAGEMENT_DATE_MISSING,
       {
+        label: 'Date d\'engagement manquante',
         property: 'engagement_date',
         required: permissions.isOc,
         errorMessage: 'Il manque une date d\'engagement',
-        select () {
-          return collectIds(f => {
-            return !f.properties.engagement_date && [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(f.properties.conversion_niveau)
-          })
+        select (f) {
+          return !f.properties.engagement_date && [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(f.properties.conversion_niveau)
         }
       }
     ],
     [
       RuleSet.GEOMETRY_MISSING,
       {
+        label: 'Dessin géographique manquant',
         property: '_geometry',
         required: permissions.isOc,
         errorMessage: 'Il manque des coordonnées géométriques',
-        select () {
-          return collectIds(f => {
-            return !f.geometry || (Array.isArray(f.geometry.coordinates) && f.geometry.coordinates.length === 0)
-          })
+        select (f) {
+          return !f.geometry || (Array.isArray(f.geometry.coordinates) && f.geometry.coordinates.length === 0)
         }
       }
     ],
@@ -169,44 +198,126 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
       {
         property: 'annotations',
         required: false,
-        select () {
-          return collectIds(f => {
-            return f.properties.annotations && Object.keys(f.properties.annotations).length > 0
-          })
+        items (features) {
+          return Array.from(features.value.reduce((map, feature) => {
+            /** @type {UserAnnotation[]} */(feature.properties.annotations ?? []).forEach(annotation => {
+              const id = [RuleSet.ANNOTATED, annotation.code].join('_')
+
+              if (!map.has(id)) {
+                map.set(id, {
+                  id,
+                  count: 0,
+                  featureIds: [],
+                  label: AnnotationTags[annotation.code].label
+                })
+              }
+
+              const stats = map.get(id)
+
+              map.set(id, {
+                ...stats,
+                count: stats.count + 1,
+                featureIds: [...stats.featureIds, feature.id]
+              })
+            })
+
+            return map
+          }, new Map()).values())
+        },
+        select (f) {
+          return f.properties.annotations && Object.keys(f.properties.annotations).length > 0
         }
       }
     ],
-  ])
+  ]))
 
   /**
-   * @type {computed<Map<SetResult>>}
+   * @type computed<Map<SetResult>>
    */
-  const results = computed(() => new Map(
-    Array.from(set.entries())
-      .map(([id, item]) => {
-        const featureIds = item.select()
+  const sets = computed(() => new Map(
+    Array.from(definitions.value.entries())
+      .map(([id, { errorMessage, label, property, required, select }]) => {
+        const featureIds = collectIds(allCandidate, select)
         return [
           id,
           {
-            ...item,
             count: featureIds.length,
-            featureIds
+            details: collectDetails(allCandidate, select),
+            errorMessage,
+            featureIds,
+            label,
+            property,
+            required
           }
         ]
       })
       .filter(([, { count }]) => count)
   ))
 
-  const hasRequiredItems = computed(() => Array.from(results.value.values()).some(({ required }) => required))
+  /**
+   * @type {computed<Map<SetResult>>}
+   */
+  const required = computed(() => new Map(
+    Array.from(sets.value.entries())
+      .filter(([, { required }]) => required)
+  ))
+
+  /**
+   * @type {computed<Map<SetResult>>}
+   */
+  const tags = computed(() => Array.from(sets.value.entries()).flatMap(([id, result]) => {
+    const definition = definitions.value.get(id)
+
+    return definition.items ? definition.items(allCandidate) : [{ id, ...result }]
+  }).map(({ id, ...item }) => ({ id, ...item, active: isToggled(id) })))
+
+  /**
+   * @type {computed<Feature[]>}
+   */
+  const hits = computed(() => {
+    const taggedFeatureIds = Array.from(tags.value.values())
+      .filter(({ active }) => active)
+      .flatMap(({ featureIds }) => featureIds)
+
+    if (!taggedFeatureIds.length) {
+      return featuresStore.all
+    }
+
+    return featuresStore.all.filter(({ id }) => taggedFeatureIds.includes(id))
+  })
+
+  function toggle (id) {
+    toggles.value.set(id, !isToggled(id))
+  }
+
+  function isToggled (id) {
+    return toggles.value.get(id) === true
+  }
+
+  /**
+   * @type {computed<Boolean>}
+   */
+  const hasRequiredSets = computed(() => required.value.size > 0)
 
   /**
    * @param {String} featureId
    * @returns {Map<SetResult>}
    */
-  function byFeature (featureId) {
+  function byFeature (featureId, filterRequired = false) {
     return new Map(
-      Array.from(results.value.entries())
-        .filter(([, { featureIds }]) => featureIds.includes(featureId))
+      Array.from(sets.value.entries())
+        .filter(([, { featureIds, required }]) => {
+          return featureIds.includes(featureId) && (filterRequired ? filterRequired && required : true)
+        })
+        .map(([key, { details, label, ...rest }]) => ([
+          key,
+          {
+            ...rest,
+            count: 1,
+            featureIds: [featureId],
+            details: details.filter((d) => d.at(0) === featureId)
+          }
+        ]))
     )
   }
 
@@ -215,46 +326,63 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
    * @param {String} property
    * @returns {Map<SetResult>}
    */
-  function byFeatureProperty (featureId, property) {
+  function byFeatureProperty (featureId, property, filterRequired = false) {
     return new Map(
-      Array.from(results.value.entries())
-        .filter(([, { featureIds }]) => featureIds.includes(featureId))
+      Array.from(byFeature(featureId, filterRequired).entries())
         .filter(([, { property: prop }]) => prop === property)
     )
   }
 
   /**
    * @param {String} featureId
-   * @param {String} item
+   * @param {String} detailId
    * @returns {Map<SetResult>}
    */
-  function byFeatureItem (featureId, itemId) {
+  function byFeatureDetail (featureId, detailId, filterRequired = false) {
     return new Map(
-      Array.from(results.value.entries())
-        .filter(([id]) => id === itemId)
-        .filter(([, { featureIds }]) => featureIds.includes(featureId))
+      Array.from(byFeature(featureId, filterRequired).entries())
+        .filter(([, { details }]) => details.some(([fid, r]) => fid === featureId && (Array.isArray(r) ? r.at(0) === detailId : r)))
     )
   }
 
-  /**
-   * @param {String} itemId
-   * @returns {Boolean}
-   */
-  function isRequired (itemId) {
-    return Array.from(set.entries())
-      .some(([id, { required }]) => itemId === id && required)
+  function $reset () {
+    toggles.value = new Map()
   }
 
+  /*
+   * Check for toggled items with no tag (items with count=0 are out of the sets)
+   * We automatically untoggle them to avoid providing no hits and no hidden toggled tag
+   */
+  watch(tags, (currentTags) => {
+    toggles.value.forEach((value, toggledId) => {
+      const tag = currentTags.find(({ id }) => id === toggledId)
+      if (!tag && value) {
+        toggle(toggledId)
+      }
+    })
+  })
+
   return {
+    //proxy
+    isDirty,
+    setCandidate: featuresStore.setCandidate,
+    // where all lives
+    sets,
+    required, // sets filtered by requirement
     // computed
-    hasRequiredItems,
-    results,
+    hasRequiredSets,
+    tags,     // sets filtered by toggled elements
+
 
     // general methods
-    isRequired,
+    $reset,
     // per feature methods
     byFeature,
+    byFeatureDetail,
     byFeatureProperty,
-    byFeatureItem,
+    // features x active tags
+    hits,
+    isToggled,
+    toggle,
   }
 })

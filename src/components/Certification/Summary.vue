@@ -63,7 +63,7 @@ const props = defineProps({
 const showSendOffModal = ref(false)
 const showCertificationModal = ref(false)
 
-const canEndAudit = computed(() => recordStore.hasFeatures && !featuresSets.hasRequiredItems)
+const canEndAudit = computed(() => recordStore.hasFeatures && !featuresSets.hasRequiredSets)
 
 async function handleSaveAudit ({ record_id: recordId, patch }) {
   let record
