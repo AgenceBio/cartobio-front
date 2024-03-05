@@ -8,6 +8,10 @@ import { getOperator, getOperatorRecords } from "@/cartobio-api.js"
  * @typedef {import('@vue/reactivity').UnwrapRef} UnwrapRef
  */
 
+function date(record) {
+  return new Date(record.certification_date_debut || record.audit_date || record.created_at)
+}
+
 export const useOperatorStore = defineStore('operator', () => {
   /**
    * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator}
@@ -26,8 +30,9 @@ export const useOperatorStore = defineStore('operator', () => {
   const recordsByYear = computed(() => {
     if (!records.value?.length) return [];
 
+    // Versions years is same as yearLabel output with fallback to created_at
     return records.value.reduce((acc, record) => {
-      const year = record.created_at.split('-')[0]
+      const year = (record.certification_date_debut || record.audit_date || record.created_at).split('-')[0]
       if (acc[acc.length - 1].year !== year) {
         acc.push({ year, records: [] })
       }
@@ -46,7 +51,9 @@ export const useOperatorStore = defineStore('operator', () => {
 
     operator.value = await getOperator(numeroBio)
     records.value = null
-    getOperatorRecords(numeroBio).then((r) => records.value = r)
+    getOperatorRecords(numeroBio).then((r) => {
+      records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA))
+    })
   }
 
   watch(operator, () => {

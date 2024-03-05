@@ -1,27 +1,26 @@
 <template>
-  <span :class="['fr-badge', stateInfo.color]" :aria-label="date ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label">
+  <span :class="['fr-badge', stateInfo.color]" :aria-label="dateLabel ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label">
     {{ stateInfo.label }}
-    <span v-if="date" class="year">{{ dateLabel }}</span>
+    <span v-if="showDate && dateLabel" class="year">{{ dateLabel }}</span>
   </span>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
-import { CERTIFICATION_STATE, certificationStates } from '@/referentiels/ab.js'
+import { CERTIFICATION_STATE, certificationStates, yearLabel } from '@/referentiels/ab.js'
 
 const props = defineProps({
-  state: String,
-  date: String
+  record: Object,
+  showDate: {
+    type: Boolean,
+    default: true
+  }
 })
 
-const stateId = computed(() => props.state in certificationStates ? props.state : CERTIFICATION_STATE.UNKNOWN)
+const stateId = computed(() => props.record.certification_state in certificationStates ? props.record.certification_state : CERTIFICATION_STATE.UNKNOWN)
 const stateInfo = computed(() => certificationStates[stateId.value])
-const dateLabel = computed(() => {
-  return props.date
-    ? new Date(props.date).toLocaleDateString('fr-FR', { year: 'numeric'})
-    : ''
-})
+const dateLabel = computed(() => yearLabel(props.record))
 </script>
 
 <style scoped>
