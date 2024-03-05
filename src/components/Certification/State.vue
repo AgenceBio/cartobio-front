@@ -1,7 +1,7 @@
 <template>
   <span :class="['fr-badge', stateInfo.color]" :aria-label="dateLabel ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label">
     {{ stateInfo.label }}
-    <span v-if="dateLabel" class="year">{{ dateLabel }}</span>
+    <span v-if="showDate && dateLabel" class="year">{{ dateLabel }}</span>
   </span>
 </template>
 
@@ -12,6 +12,10 @@ import { CERTIFICATION_STATE, certificationStates, yearLabel } from '@/referenti
 
 const props = defineProps({
   record: Object,
+  showDate: {
+    type: Boolean,
+    default: true
+  }
 })
 
 const stateId = computed(() => props.record.certification_state in certificationStates ? props.record.certification_state : CERTIFICATION_STATE.UNKNOWN)
