@@ -29,6 +29,7 @@ onClickOutside(actionsMenuRef, () => {
 .menu-container {
   position: relative;
   display: inline-block;
+  white-space: initial;
 }
 
 .fr-menu {

@@ -208,6 +208,7 @@ table tr[aria-current="location"] {
 
   position: relative;
   text-align: left;
+  white-space: nowrap;
 }
 
 .fr-icon--warning {
