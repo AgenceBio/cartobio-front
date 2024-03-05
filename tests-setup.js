@@ -73,6 +73,11 @@ vi.stubGlobal('matchMedia', vi.fn(() => ({
   matches: vi.fn().mockReturnValue(true)
 })))
 
+vi.stubGlobal('localStorage', {
+  getItem: vi.fn(),
+  setItem: vi.fn()
+})
+
 vi.spyOn(global, 'navigator', 'get').mockImplementation(() => ({
   clipboard: {
     writeText: vi.fn()
