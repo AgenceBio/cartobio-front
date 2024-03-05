@@ -125,7 +125,9 @@ export default {
       .forEach(name => this.map.removeLayer(name))
 
       // a source can be removed only after its last layer has been demoted
-      this.map.removeSource(`${this.name}/data`)
+      if (this.map.getSource(`${this.name}/data`)) {
+        this.map.removeSource(`${this.name}/data`)
+      }
 
     if (!this.style) return
 

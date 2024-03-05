@@ -26,6 +26,13 @@
       }
     },
     {
+      "id": "background-base",
+      "type": "background",
+      "paint": {
+        "background-color": "transparent"
+      }
+    },
+    {
       "id": "waterway-name",
       "type": "symbol",
       "source": "openmaptiles",
