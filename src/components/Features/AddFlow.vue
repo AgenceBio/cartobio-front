@@ -110,6 +110,9 @@ const flowSource = ref('cadastre')
 const showDetailsModal = ref(false)
 const editForm = computed(() => markRaw(permissions.isOc ? CertificationBodyEditForm : OperatorEditForm))
 
+// it will be replaced server-side, but we want to go through API Schema validation
+const id = '__00000001__'
+
 // Cadastre references
 const cadastreParcelles = reactive([{ commune: '', reference: '', feature: null, error: '', key: crypto.randomUUID() }])
 const feature = ref(null)
@@ -149,7 +152,6 @@ function updateReference (index, { reference, feature: cadastreFeature }) {
 
 // Merge all cadastre references into a single feature
 watch(cadastreParcelles, () => {
-
   const features = cadastreParcelles.map(p => p.feature).filter(feature => feature !== null)
   const references = cadastreParcelles.filter(p => p.feature !== null).map(p => p.reference)
 
@@ -165,8 +167,9 @@ watch(cadastreParcelles, () => {
     multipolygon.value = features[0].geometry.type === 'MultiPolygon' && features[0].geometry.coordinates.length > 1;
     feature.value = {
       ...features[0],
-      id: 1, // it will be replaced server-side, but we want to go through API Schema validation
+      id,
       properties: {
+        id,
         cadastre: [references[0]],
         cultures: [{ CPF: '', id: crypto.randomUUID() }]
       }
@@ -182,7 +185,7 @@ watch(cadastreParcelles, () => {
   // we still set features ref even if multipolygon to allow the user to view it
   multipolygon.value = combinedFeature.geometry.type === 'MultiPolygon' && combinedFeature.geometry.coordinates.length > 1;
 
-  combinedFeature.id = 1 // it will be replaced server-side, but we want to go through API Schema validation
+  combinedFeature.id = id
   combinedFeature.properties.cadastre = references
   combinedFeature.properties.cultures = [{ CPF: '', id: crypto.randomUUID() }]
 
