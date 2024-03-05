@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
+import { useFeaturesSetsStore } from "@/stores/index.js"
+
 
 /**
  * @typedef {import('@/referentiels/ab.js').UserAnnotation} UserAnnotation
@@ -18,6 +20,7 @@ export const useFeaturesStore = defineStore('features', () => {
   const selectedIds = ref([])
   const activeId = ref(null)
   const hoveredId = ref(null)
+
   /**
    * @type {reactive<CartoBioFeatureCollection>}
    */
@@ -65,7 +68,8 @@ export const useFeaturesStore = defineStore('features', () => {
    * @type {ComputedRef<CartoBioFeature[]>}
    */
   const allSelected = computed(() => {
-    const collectedIds = collectIds(collection.value.features)
+    const sets = useFeaturesSetsStore()
+    const collectedIds = collectIds(sets.hits)
 
     return collectedIds.toString() === selectedIds.value.sort().toString()
   })
@@ -107,7 +111,8 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   function toggleAllSelected () {
-    selectedIds.value = allSelected.value ? [] : collectIds(all.value)
+    const sets = useFeaturesSetsStore()
+    selectedIds.value = allSelected.value ? [] : collectIds(sets.hits)
   }
 
   /**
