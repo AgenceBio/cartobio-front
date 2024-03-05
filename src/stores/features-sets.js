@@ -341,7 +341,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   function byFeatureDetail (featureId, detailId, filterRequired = false) {
     return new Map(
       Array.from(byFeature(featureId, filterRequired).entries())
-        .filter(([, { details }]) => details.some(([fid, r]) => fid === featureId && (Array.isArray(r) ? r.at(0) === detailId : r)))
+        .filter(([, { details }]) => details.some(([fid, r]) => fid === featureId && (Array.isArray(r) ? r.at(0) === detailId : false)))
     )
   }
 

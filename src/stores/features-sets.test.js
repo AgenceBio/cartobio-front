@@ -196,52 +196,25 @@ describe('byFeatureDetail()', () => {
   it('returns only the relevant property checks', () => {
     store.setAll(features)
 
-    expect(featuresSets.byFeatureDetail('1', '1')).toMatchObject(new Map([
+    expect(featuresSets.byFeatureDetail('2', 0)).toMatchObject(new Map([
       [
-        RuleSet.NAMELESS,
+        RuleSet.CULTURE_UNSURE,
         {
           count: 1,
-          details: [['1', true]],
-          errorMessage: 'Il manque un nom',
-          featureIds: ['1'],
-          property: 'name',
-          required: true
-        }
-      ],
-      [
-        RuleSet.CULTURE_MISSING,
-        {
-          count: 1,
-          details: [['1', true]],
-          errorMessage: "Il manque un type de culture",
-          featureIds: ['1'],
+          details: [['2', [0, true]]],
+          errorMessage: "La culture est à préciser",
+          featureIds: ['2'],
           property: 'cultures',
           required: true
         }
       ],
-      [
-        RuleSet.CONVERSION_LEVEL_MISSING,
-        {
-          count: 1,
-          details: [['1', true]],
-          errorMessage: "Il manque un niveau de conversion",
-          featureIds: ['1'],
-          property: 'conversion_niveau',
-          required: false
-        }
-      ],
-      [
-        RuleSet.GEOMETRY_MISSING,
-        {
-          count: 1,
-          details: [['1', true]],
-          errorMessage: 'Il manque des coordonnées géométriques',
-          featureIds: ['1'],
-          property: '_geometry',
-          required: false
-        }
-      ]
     ]))
+  })
+
+  it('returns an empty map if no details could be found', () => {
+    store.setAll(features)
+
+    expect(featuresSets.byFeatureDetail('1', 0)).toMatchObject(new Map())
   })
 })
 
