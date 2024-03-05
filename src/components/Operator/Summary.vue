@@ -9,7 +9,7 @@
     </h1>
 
     <p class="state fr-subtitle">
-      <ParcellaireState :state="record.certification_state" :date="record.created_at" />
+      <ParcellaireState :record="record" />
     </p>
 
 

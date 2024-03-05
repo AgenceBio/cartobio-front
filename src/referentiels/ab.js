@@ -292,6 +292,14 @@ export function getAnnotationLabel ({ code, metadata }) {
   return text
 }
 
+
+export function yearLabel(record) {
+  const date = record.certification_date_debut ?? record.audit_date ?? null
+  if (!date) return ''
+
+  return new Date(date).toLocaleDateString('fr-FR', { year: 'numeric'})
+}
+
 export const certificationDateFin = {
   /**
    * It's the standard rule.
