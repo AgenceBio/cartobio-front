@@ -78,9 +78,26 @@ export const useUserStore = defineStore('user', () => {
    * @type {ComputedRef<CartoBioUser|{}>}
    */
   const user = computed(() => token.value ? parseJwt(token.value) : {})
-  const isLogged = computed(() => Boolean(user.value.id))
-
   const roles = computed(() => deriveRolesFromGroups(user.value))
+  const isLogged = computed(() => Boolean(user.value.id))
+  const isAdmin = computed(() => roles.value.includes(ROLES.ADMIN))
+  const isUnknown = computed(() => roles.value.includes(ROLES.UNKNOWN))
+  const isOcAudit = computed(() => roles.value.includes(ROLES.OC_AUDIT))
+  const isOcCertif = computed(() => roles.value.includes(ROLES.OC_CERTIF))
+  const isOc = computed(() => isOcAudit.value || isOcCertif.value)
+  const isAgri = computed(() => roles.value.includes(ROLES.OPERATEUR))
+
+  const startPage = computed(() => {
+    if (isOc.value) {
+      return '/certification/exploitations'
+    }
+    else if (isAgri.value) {
+      return '/exploitations'
+    }
+
+    return '/'
+  })
+
 
   function login (userToken) {
     token.value = userToken
@@ -116,9 +133,16 @@ export const useUserStore = defineStore('user', () => {
   return {
     token,
     // getters
+    isAgri,
     isLogged,
-    user,
+    isAdmin,
+    isOc,
+    isOcAudit,
+    isOcCertif,
+    isUnknown,
     roles,
+    startPage,
+    user,
     // methods
     enablePersistance,
     login,

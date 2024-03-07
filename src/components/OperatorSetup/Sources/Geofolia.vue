@@ -5,7 +5,7 @@
       <p>{{ erreur }}</p>
     </div>
 
-    <form @submit.prevent="handleSubmit" role="search" id="import-geofolia-form" v-if="!isProduction">
+    <form @submit.prevent="handleSubmit" role="search" id="import-geofolia-form" v-if="isStaging">
       <h3 class="fr-h5">Plate-forme Geofolink</h3>
 
       <p>
@@ -31,7 +31,7 @@
       </div>
     </form>
 
-    <hr class="fr-my-3w" v-if="!isProduction" />
+    <hr class="fr-my-3w" v-if="isStaging" />
 
     <h3 class="fr-h5">Export manuel</h3>
 
@@ -68,7 +68,7 @@ const fileInput = ref(null)
 const erreur = ref('')
 
 // API import
-const isProduction = readonly(import.meta.env.PROD)
+const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
 const operator = inject('operator')
 
 const isLoading = ref(false)

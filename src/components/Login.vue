@@ -2,18 +2,19 @@
   <div>
     <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
 
-    <Spinner v-else-if="(!isVerifying && isLogged && (permissions.isOc || permissions.isAgri))">Chargement de vos exploitations…</Spinner>
+    <Spinner v-else-if="(!isVerifying && isLogged && (store.isOc || store.isAgri))">Chargement de vos exploitations…</Spinner>
 
     <div class="fr-connect-group" v-else-if="!isLogged">
-      <h6>Se connecter avec Agence Bio</h6>
+      <h2>Connexion à CartoBio</h2>
 
-      <button class="fr-connect fr-connect--agence-bio" @click="router.push('/login/agencebio')">
-        <span class="fr-connect__login">S'identifier avec</span>
-        <span class="fr-connect__brand">Agence Bio</span>
-      </button>
+      <p class="fr-my-9v">
+        <router-link to="/login/agencebio" class="fr-btn">
+          Se connecter avec mon compte Agence Bio
+        </router-link>
+      </p>
 
       <p>
-        <a href="https://notification.agencebio.org/faq" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
+        <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/connexion" class="fr-link" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
           Qu'est-ce que mon compte Agence Bio ?
         </a>
       </p>
@@ -43,15 +44,13 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user.js'
+import { useUserStore } from '@/stores/index.js'
 
 import { verifyToken } from '@/cartobio-api.js'
 
 import Spinner from '@/components/Spinner.vue'
-import { usePermissions } from "@/stores/permissions.js"
 
 const store = useUserStore()
-const permissions = usePermissions()
 const route = useRoute()
 const router = useRouter()
 
@@ -78,12 +77,8 @@ onMounted(async () => {
       router.replace('/login')
     }
 
-    if (permissions.isAgri) {
-      router.replace('/exploitations')
-    }
-
-    if (permissions.isOc) {
-      router.replace(route.query.returnto || '/certification/exploitations')
+    if (store.isLogged) {
+      router.replace(route.query.returnto || store.startPage)
     }
   }
   finally {
@@ -91,27 +86,4 @@ onMounted(async () => {
   }
 })
 </script>
-
-
-<style scoped>
-.fr-connect--agence-bio::before {
-  background-image: url('@/assets/logo-agence-bio.svg?inline');
-  background-size: contain;
-  height: 2.5rem;
-}
-.fr-connect--agence-bio {
-  --brand-color: #006E38;
-  border: 1px solid var(--brand-color);
-  border-radius: 5px;
-  color: currentColor;
-  background-color: transparent;
-}
-  .fr-connect--agence-bio:hover {
-    background-color: var(--background-raised-grey-hover);
-  }
-
-    .fr-connect--agence-bio .fr-connect__brand {
-      color: var(--brand-color);
-    }
-</style>
 
