@@ -5,15 +5,16 @@
     <Spinner v-else-if="(!isVerifying && isLogged && (permissions.isOc || permissions.isAgri))">Chargement de vos exploitations…</Spinner>
 
     <div class="fr-connect-group" v-else-if="!isLogged">
-      <h6>Se connecter avec Agence Bio</h6>
+      <h2>Connexion à CartoBio</h2>
 
-      <button class="fr-connect fr-connect--agence-bio" @click="router.push('/login/agencebio')">
-        <span class="fr-connect__login">S'identifier avec</span>
-        <span class="fr-connect__brand">Agence Bio</span>
-      </button>
+      <p class="fr-my-9v">
+        <router-link to="/login/agencebio" class="fr-btn">
+          Se connecter avec mon compte Agence Bio
+        </router-link>
+      </p>
 
       <p>
-        <a href="https://notification.agencebio.org/faq" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
+        <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/connexion" class="fr-link" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
           Qu'est-ce que mon compte Agence Bio ?
         </a>
       </p>
@@ -91,27 +92,4 @@ onMounted(async () => {
   }
 })
 </script>
-
-
-<style scoped>
-.fr-connect--agence-bio::before {
-  background-image: url('@/assets/logo-agence-bio.svg?inline');
-  background-size: contain;
-  height: 2.5rem;
-}
-.fr-connect--agence-bio {
-  --brand-color: #006E38;
-  border: 1px solid var(--brand-color);
-  border-radius: 5px;
-  color: currentColor;
-  background-color: transparent;
-}
-  .fr-connect--agence-bio:hover {
-    background-color: var(--background-raised-grey-hover);
-  }
-
-    .fr-connect--agence-bio .fr-connect__brand {
-      color: var(--brand-color);
-    }
-</style>
 
