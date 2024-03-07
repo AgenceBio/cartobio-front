@@ -1,25 +1,24 @@
 <template>
-  <p v-for="([ruleId, result]) in validationRulesWithFailures" :key="ruleId">
-    {{ ruleId === 'NOT_EMPTY' ? `Il manque un type de culture pour ${result.failures} parcelles.` : '' }}
-    {{ ruleId === 'ENGAGEMENT_DATE' ? `Il manque une date d'engagement pour ${result.failures} parcelles.` : '' }}
-    {{ ruleId === 'CONVERSION_LEVEL' ? `Il manque un niveau de conversion pour ${result.failures} parcelles.` : '' }}
-    {{ ruleId === 'MAYBE_AB' ? `Le niveau de conversion en agriculture biologique a besoin d'être précisé pour ${result.failures} parcelles.` : '' }}
-    {{ ruleId === 'CPF' ? 'Certaines cultures ont besoin d\'être précisées.' : '' }}
-  </p>
+  <div class="fr-alert fr-alert--warning fr-mb-3w" v-if="featuresSet.hasRequiredSets">
+    <p v-for="([ruleId, result]) in featuresSet.required" :key="ruleId">
+      {{ result.errorMessage }} pour {{ inflex(result.count, 'parcelle', 'parcelles') }}.
+
+      <button v-if="!featuresSet.isToggled(ruleId)" @click="featuresSet.toggle(ruleId)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-icon-arrow-right-line fr-btn--icon-right">
+        voir
+      </button>
+    </p>
+  </div>
+
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { useFeaturesSetsStore } from '@/stores/index.js'
 
-const props = defineProps({
-  validationResult: {
-    type: Object,
-    required: true
-  }
-})
+const featuresSet = useFeaturesSetsStore()
+const plural = new Intl.PluralRules('fr-FR', { type: 'cardinal' })
 
-const validationRulesWithFailures = computed(() => {
-  return Object.entries(props.validationResult.rules)
-          .filter(([, { failures }]) => failures)
-})
+const inflex = (n, one, many) => {
+  const rule = plural.select(n)
+  return rule === 'one' ? `${n} ${one}` : `${n} ${many}`
+}
 </script>

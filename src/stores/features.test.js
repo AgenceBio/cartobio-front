@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
 import { useFeaturesStore } from "./features.js"
 import { createTestingPinia } from "@pinia/testing"
-import { flushPromises } from '@vue/test-utils'
-import { ANNOTATIONS } from "@/referentiels/ab.js"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const features = useFeaturesStore(pinia)
@@ -131,6 +129,26 @@ describe('toggle*Selected()', () => {
   })
 })
 
+describe('setCandidate()', () => {
+  it('should merge data into a temporary collection', () => {
+    features.setAll(sampleFeatures)
+    features.setCandidate([{ id: '1', properties: { CPF: '01.21.12' }}])
+
+    expect(features.isDirty).toEqual(true)
+    expect(features.all.find(({ id }) => id === '1')).not.toHaveProperty('properties.CPF')
+    expect(features.allCandidate.find(({ id }) => id === '1')).toHaveProperty('properties.CPF', '01.21.12')
+  })
+
+  it('should commit candidates into the mainstream collection', () => {
+    features.setAll(sampleFeatures)
+    features.setCandidate([{ id: '1', properties: { CPF: '01.21.12' }}])
+    features.commitCandidate()
+
+    expect(features.isDirty).toEqual(false)
+    expect(features.all).toEqual(features.allCandidate)
+  })
+})
+
 describe('updateMatchingFeatures()', () => {
   it('should do nothing', () => {
     features.updateMatchingFeatures([{ id: '1', properties: { CPF: '01.21.12' }}])
@@ -142,28 +160,5 @@ describe('updateMatchingFeatures()', () => {
     features.updateMatchingFeatures([{ id: '1', properties: { CPF: '01.21.12' }}])
     expect(features.collection).toHaveProperty('features.0.properties.CPF', '01.21.12')
     expect(features.collection).toHaveProperty('features.0.properties.conversion_niveau', 'AB')
-  })
-})
-
-describe('watch/annotations', () => {
-  it('should untoggle an active filter when orphan', async () => {
-    features.setAll(sampleFeatures)
-
-    features.updateMatchingFeatures([{ id: '1', properties: {
-      annotations: [{ id: 1, code: ANNOTATIONS.SURVEYED }]
-    }}])
-    features.toggleAnnotation(ANNOTATIONS.SURVEYED)
-
-    expect(features.isAnnotationActive(ANNOTATIONS.SURVEYED)).toEqual(true)
-    expect(features.hits).toHaveLength(1)
-
-    features.updateMatchingFeatures([{ id: '1', properties: {
-      annotations: []
-    }}])
-
-    await flushPromises()
-
-    expect(features.isAnnotationActive(ANNOTATIONS.SURVEYED)).toEqual(false)
-    expect(features.hits).toHaveLength(2)
   })
 })

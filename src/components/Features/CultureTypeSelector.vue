@@ -1,20 +1,26 @@
 <template>
-  <div v-if="requirePrecision && fromCodeCpf(modelValue)" class="fr-hint-text">
-    Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
-  </div>
+  <div class="fr-input-group" :class="{'fr-input-group--error': hasErrors}">
+    <label class="fr-label" :for="`cpf-${culture.id}-input`">Type de culture</label>
 
-  <div ref="autocompleteRef"></div>
+    <div v-if="requirePrecision && fromCodeCpf(modelValue)" class="fr-hint-text">
+      Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
+    </div>
 
-  <div v-if="requirePrecision" class="fr-hint-text fr-error-text">
-    La culture a besoin d'être précisée.
-  </div>
-  <div v-else-if="!query" class="fr-hint-text">
-    Saisissez le nom d'une culture pour la sélectionner parmi une liste.
+    <div ref="autocompleteRef"></div>
+
+    <div v-for="([id, result]) in errors" :key="id" class="fr-hint-text fr-error-text">
+      {{ result.errorMessage }}.
+    </div>
+
+    <div v-if="!hasErrors && !query" class="fr-hint-text">
+      Saisissez le nom d'une culture pour la sélectionner parmi une liste.
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from 'vue'
+import { useFeaturesSetsStore } from '@/stores/index.js'
 
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic'
@@ -23,9 +29,13 @@ import cpf from '@agencebio/rosetta-cultures/data/cpf.json'
 import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures"
 
 const props = defineProps({
-  id: {
+  culture: {
+    type: Object,
+    required: true
+  },
+  featureId: {
     type: String,
-    default: ''
+    default: '',
   },
   placeholder: {
     type: String,
@@ -34,10 +44,6 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: true
-  },
-  fromPac: {
-    type: String,
-    required: false
   }
 })
 
@@ -47,6 +53,10 @@ const autocompleteProps = shallowRef(null)
 const autocompleteRef = ref(null)
 const showMore = ref(false)
 
+const featuresSets = useFeaturesSetsStore()
+const errors = computed(() => featuresSets.byFeatureDetail(props.featureId, props.culture.id, true))
+const hasErrors = computed(() => errors.value.size > 0)
+
 const query = ref(fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
 
 const choices = computed(() => {
@@ -54,9 +64,9 @@ const choices = computed(() => {
       .filter(({ is_selectable }) => is_selectable)
       .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf))
 
-  if (!requirePrecision.value || !props.fromPac || showMore.value) return selectableCpf
+  if (!requirePrecision.value || !props.culture.TYPE || showMore.value) return selectableCpf
 
-  const selectableFromPac = fromCodePacAll(props.fromPac)
+  const selectableFromPac = fromCodePacAll(props.culture.TYPE)
       .filter(c => c.is_selectable)
       .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf))
 
@@ -70,10 +80,9 @@ onMounted(() => {
     container: autocompleteRef.value,
     placeholder: props.placeholder,
     openOnFocus: true,
-    id: props.id,
+    id: `cpf-${props.culture.id}`,
     classNames: {
-      form: 'fr-input',
-      // inputWrapper: 'fr-input-wrap',
+      form: 'fr-input'
     },
 
     // helps react to query and isOpen changes

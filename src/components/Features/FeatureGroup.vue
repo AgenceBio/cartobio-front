@@ -10,7 +10,9 @@
       <td><span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" /></td>
       <th scope="row" colspan="2" :data-group-id="featureGroup.key">{{ featureGroup.label }}</th>
       <td class="numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
-      <td class="actions"><span :class="{ 'fr-icon fr-icon-warning-fill fr-icon--warning': validation.total !== validation.success }" /></td>
+      <td class="actions">
+        <span class="fr-btn fr-btn--tertiary-no-outline fr-icon-warning-fill fr-icon--warning" :title="`${groupErrors} parcelles à amender`" v-if="groupErrors" />
+      </td>
     </tr>
     <tr :hidden="!open" class="intermediate-header">
       <th scope="col" colspan="2"></th>
@@ -46,7 +48,7 @@
       </td>
       <td @click="toggleEditForm(feature.id)" class="numeric">{{ inHa(surface(feature)) }}&nbsp;ha</td>
       <td class="actions">
-        <button type="button" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': !hasError(feature.id), 'fr-icon-edit-box-fill': hasError(feature.id), 'fr-icon--warning': hasError(feature.id)}" @click="toggleEditForm(feature.id)">
+        <button type="button" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true /*!featuresSets.byFeature(feature.id, true).size, 'fr-icon-edit-box-fill fr-icon--warning': featuresSets.byFeature(feature.id, true).size*/}" @click="toggleEditForm(feature.id)">
           Modifier
         </button>
 
@@ -69,27 +71,25 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { featureName, cultureLabel, inHa, surface } from '@/components/Features/index.js'
-import { applyValidationRules } from '@/referentiels/ab.js'
-import ConversionLevel from './ConversionLevel.vue'
 import { useRoute } from "vue-router";
-import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { featureName, cultureLabel, inHa, surface } from '@/components/Features/index.js'
+import { useFeaturesStore, useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+
+import ConversionLevel from './ConversionLevel.vue'
 import ActionDropdown from "@/components/ActionDropdown.vue"
+
 
 const route = useRoute()
 const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
+const featuresSets = useFeaturesSetsStore()
 const permissions = usePermissions()
 
 const props = defineProps({
   featureGroup: {
     type: Object,
     required: true
-  },
-  validationRules: {
-    type: Object,
-    required: true,
   }
 })
 
@@ -102,11 +102,10 @@ const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id
 const open = ref(featureIds.value.includes(String(route.query?.new)))
 const allSelected = computed(() => featureIds.value.every(id => selectedIds.value.includes(id)))
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === 'CULTURE')
-const validation = computed(() => applyValidationRules(props.validationRules.rules, ...props.featureGroup.features))
 
-function hasError (featureId) {
-  return validation.value.features[featureId]?.failures > 0
-}
+const groupErrors = computed(() => {
+  return featureIds.value.reduce((sum, id) => sum + featuresSets.byFeature(id, true).size, 0)
+})
 
 function toggleEditForm (featureId) {
   return emit('edit:featureId', featureId)
@@ -209,6 +208,7 @@ table tr[aria-current="location"] {
 
   position: relative;
   text-align: left;
+  white-space: nowrap;
 }
 
 .fr-icon--warning {

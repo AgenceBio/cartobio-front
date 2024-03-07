@@ -23,7 +23,7 @@
         <p class="fr-error-text" v-if="requiredError">Vous devez sélectionner une raison de suppression dans la liste.</p>
       </div>
 
-      <div class="fr-input-group" v-if="isOther">
+      <div class="fr-input-group">
         <label class="fr-label" for="deletion-details">
           Préciser votre motif (facultatif)
         </label>
@@ -61,7 +61,6 @@ const emit = defineEmits(['submit'])
 
 const store = useFeaturesStore()
 const feature = computed(() => store.getFeatureById(props.featureId))
-const isOther = computed(() => reason.code === DeletionReasonsCode.OTHER)
 
 const reason = reactive({
   code: '',

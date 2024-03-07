@@ -1,8 +1,10 @@
 <template>
   <div class="fr-table fr-table--bordered fr-table--no-caption fr-my-3w">
-    <ul class="fr-tags-group fr-tags-group--annotations fr-mb-2w" v-if="permissions.canViewAnnotations">
-      <li :key="code" v-for="{ active, code, count, label } in featureAnnotations">
-        <button :class="{'fr-tag': true, 'fr-tag--dismiss': active, [`annotation--${code}`]: true }" :aria-label="`${active ? 'Retirer' : 'Ajouter'} le filtre sur étiquette ${label}`" @click="handleFilterClick(code)">{{ label }} ({{ count }})</button>
+    <ul class="fr-tags-group fr-tags-group--tags fr-mb-2w" v-if="permissions.canViewAnnotations">
+      <li :key="id" v-for="{ active, id, count, label, required } in tags">
+        <button class="fr-tag" :class="{'fr-tag--dismiss': active, [`tag--${id}`]: true, 'fr-icon-warning-fill fr-tag--icon-left': required }" :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`" @click="handleFilterClick(id)">
+          {{ label }} ({{ count }})
+        </button>
       </li>
     </ul>
 
@@ -65,7 +67,7 @@
         </tr>
       </tbody>
 
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" :validation-rules="validationRules" />
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
     </table>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle">
@@ -91,7 +93,8 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesStore, useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
@@ -105,10 +108,6 @@ defineProps({
   editForm: {
     type: Object
   },
-  validationRules: {
-    type: Object,
-    required: true
-  },
   massActions: {
     type: Array,
     default: () => ([])
@@ -118,22 +117,23 @@ defineProps({
 const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
+const featuresSets = useFeaturesSetsStore()
 const permissions = usePermissions()
 
 const { operator } = storeToRefs(operatorStore)
 const { record } = storeToRefs(recordStore)
-const { hasFeatures, hits: features, annotations: featureAnnotations, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
+const { hits: features } = storeToRefs(featuresSets)
+const { hasFeatures, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
-const { getFeatureById, toggleAllSelected, toggleAnnotation } = featuresStore
+const { getFeatureById, toggleAllSelected } = featuresStore
 
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
-
 const maybeDeletedFeatureId = ref(null)
 
-const userGroupingChoice = ref('CULTURE')
+const tags = computed(() => featuresSets.tags.filter(({ active, required, count }) => (!required && count) || active))
 
-// hence, feature groups
+const userGroupingChoice = ref('CULTURE')
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
 
 const isSaving = ref(false)
@@ -141,7 +141,7 @@ const isSaving = ref(false)
 async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
 
-  featuresStore.updateMatchingFeatures([{id, properties }])
+  featuresStore.updateMatchingFeatures([{ id, properties }])
   editedFeatureId.value = null
 
   await performAsyncRecordAction(
@@ -181,11 +181,11 @@ async function handleFeatureCollectionSubmit ({ ids, patch }) {
   )
 }
 
-function handleFilterClick (code) {
-  toggleAnnotation(code)
+function handleFilterClick (id) {
+  featuresSets.toggle(id)
 
-  if (featuresStore.isAnnotationActive(code)) {
-    statsPush(['trackEvent', 'Filtre parcelles', code])
+  if (featuresSets.isToggled(id)) {
+    statsPush(['trackEvent', 'Filtre parcelles', id])
   }
 }
 
@@ -281,7 +281,7 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
   text-align: right !important;
 }
 
-.fr-tags-group--annotations {
+.fr-tags-group--tags {
   gap: 0.75rem;
 
   > li {

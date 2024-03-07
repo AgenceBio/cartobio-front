@@ -11,9 +11,7 @@
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
         <label class="fr-label">Date d'engagement</label>
-        <div class="fr-input-wrap fr-icon-calendar-line">
-          <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" required />
-        </div>
+        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" required />
       </div>
     </form>
 

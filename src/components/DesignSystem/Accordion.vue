@@ -2,7 +2,8 @@
   <section class="fr-accordion">
     <h3 class="fr-accordion__title">
       <button class="fr-accordion__btn" :aria-expanded="!isClosed" @click="handleToggle" :aria-controls="elementId" type="button">
-        {{ title }}
+        <span>{{ title }}</span>
+        <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
       </button>
     </h3>
 
@@ -16,8 +17,12 @@
 import { computed, inject, nextTick, ref, watch } from 'vue'
 
 const activeAccordionId = inject('openAccordion', () => ref(null))
+
 const props = defineProps({
   open: {
+    type: Boolean
+  },
+  requiresAction: {
     type: Boolean,
     default: false
   },
@@ -35,7 +40,7 @@ const STATE = {
 
 const contentElement = ref(null)
 const elementId = ref(`accordion-${crypto.randomUUID()}`)
-const openingState = ref(props.open ? STATE.OPEN : STATE.CLOSED)
+const openingState = ref(props.open || props.requiresAction ? STATE.OPEN : STATE.CLOSED)
 
 const isClosed = computed(() => openingState.value === STATE.CLOSED)
 const isOpen = computed(() => openingState.value === STATE.OPEN)
@@ -64,5 +69,13 @@ if (activeAccordionId) {
 <style scoped>
 .fr-collapse--expanded {
   --collapse-max-height: none;
+}
+
+.fr-accordion__btn {
+  gap: 1rem;
+
+  span:first-child {
+    flex: 1;
+  }
 }
 </style>

@@ -41,7 +41,7 @@ describe("SingleItemCertificationBodyForm", () => {
     })
 
     wrapper = mount(AsyncComponent, {
-      props: { operator, validationRules: { rules: AUDITOR_RULES }, editForm: markRaw(EditForm) }
+      props: { operator, editForm: markRaw(EditForm) }
     })
 
     const table = wrapper.getComponent(TableComponent)
@@ -72,22 +72,21 @@ describe("SingleItemCertificationBodyForm", () => {
   test("we toggle expanded annotations", async () => {
     const form = wrapper.getComponent(EditForm)
 
-    // We have 2 tags and 1 expand button
-    expect(form.findAll('.fr-tags-group--annotations > .annotation-choice')).toHaveLength(2)
-    expect(form.find('.fr-tags-group--annotations > .annotation--more').attributes()).not.toHaveProperty('hidden')
+    // We have all the tags tags and no expand button
+    expect(form.findAll('.fr-tags-group--annotations > .annotation-choice')).toHaveLength(5)
+    expect(form.find('.fr-tags-group--annotations > .annotation--more').attributes()).toHaveProperty('hidden')
 
-    await form.find('.fr-tags-group--annotations > .annotation--more button').trigger('click')
+    // expect(form.find('.fr-tags-group--annotations > .annotation--more').attributes()).not.toHaveProperty('hidden')
+    // await form.find('.fr-tags-group--annotations > .annotation--more button').trigger('click')
 
     const expectedChoices = Object.keys(AnnotationTags)
-    expect(form.find('.fr-tags-group--annotations > .annotation--more').attributes()).toHaveProperty('hidden')
     expect(form.findAll('.fr-tags-group--annotations > .annotation-choice')).toHaveLength(expectedChoices.length)
   })
 
   test("we select three choices, and two reasons", async () => {
     const form = wrapper.getComponent(EditForm)
 
-    // We have 2 tags and 1 expand button
-    await form.find('.fr-tags-group--annotations > .annotation--more button').trigger('click')
+    // We have 5 tags
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.DOWNGRADED} button`).trigger('click')
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.REDUCED_CONVERSION_PERIOD} button`).trigger('click')
     await form.find(`.fr-tags-group--annotations > .annotation--${ANNOTATIONS.RISKY} button`).trigger('click')

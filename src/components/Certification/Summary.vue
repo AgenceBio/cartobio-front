@@ -1,23 +1,19 @@
 <template>
-  <div class="fr-alert fr-alert--warning fr-mb-3w" v-if="hasFailures">
-    <ValidationErrors :validation-result="validationResult" />
-  </div>
-
-  <div class="fr-callout fr-callout--blue-ecume" v-else-if="recordStore.hasFeatures && record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
+  <div class="fr-callout fr-callout--blue-ecume" v-if="canEndAudit && record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
     <button v-if="permissions.canSaveAudit" class="fr-btn" @click="showSendOffModal = true">Terminer l'audit</button>
     <span v-else>L'auditeur doit maintenant terminer l'audit.</span>
   </div>
 
-  <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.AUDITED">
+  <div class="fr-callout fr-callout--blue-ecume" v-else-if="canEndAudit && record.certification_state === CERTIFICATION_STATE.AUDITED">
     <h3 class="fr-callout__title">Audit terminé</h3>
 
     <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">Soumettre pour certification</button>
     <span v-else>L'auditeur doit maintenant soumettre l'audit pour certification.</span>
   </div>
 
-  <div class="fr-callout fr-callout--blue-ecume" v-else-if="record.certification_state === CERTIFICATION_STATE.PENDING_CERTIFICATION">
+  <div class="fr-callout fr-callout--blue-ecume" v-else-if="canEndAudit && record.certification_state === CERTIFICATION_STATE.PENDING_CERTIFICATION">
     <h3 class="fr-callout__title">Certification en cours</h3>
 
     <button v-if="permissions.canCertify" class="fr-btn" @click="showCertificationModal = true">Certifier le parcellaire</button>
@@ -38,16 +34,15 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { applyValidationRules, CERTIFICATION_STATE } from '@/referentiels/ab.js'
+import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 import { updateAuditState } from '@/cartobio-api.js'
-import { useRecordStore } from '@/stores/index.js'
-import ValidationErrors from "@/components/Features/ValidationErrors.vue"
+import { useFeaturesSetsStore, usePermissions, useRecordStore } from '@/stores/index.js'
 import CertificationModal from "@/components/Certification/CertificationModal.vue"
 import SendOffModal from "@/components/Certification/SendOffModal.vue"
-import { usePermissions } from "@/stores/permissions.js"
 import toast from "@/components/toast.js"
 
 const recordStore = useRecordStore()
+const featuresSets = useFeaturesSetsStore()
 const permissions = usePermissions()
 
 const props = defineProps({
@@ -62,17 +57,13 @@ const props = defineProps({
   record: {
     type: Object,
     required: true
-  },
-  validationRules: {
-    type: Object,
-    required: true
   }
 })
 
 const showSendOffModal = ref(false)
 const showCertificationModal = ref(false)
-const validationResult = computed(() => applyValidationRules(props.validationRules.rules, ...props.features.features))
-const hasFailures = computed(() => Boolean(validationResult.value.failures))
+
+const canEndAudit = computed(() => recordStore.hasFeatures && !featuresSets.hasRequiredSets)
 
 async function handleSaveAudit ({ record_id: recordId, patch }) {
   let record

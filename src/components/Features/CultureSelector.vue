@@ -1,9 +1,6 @@
 <template>
   <fieldset class="culture-group fr-card fr-mb-1w fr-p-2w" v-for="(culture) in uuidedCultures" :key="culture.id">
-    <div class="fr-input-group">
-      <label class="fr-label" :for="`cpf-${culture.id}-input`">Type de culture</label>
-      <CultureTypeSelector :id="`cpf-${culture.id}`" :from-pac="culture.TYPE" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
-    </div>
+    <CultureTypeSelector :feature-id="featureId" :culture="culture" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
 
     <div class="fr-input-group">
       <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>
@@ -42,12 +39,16 @@
 
 <script setup>
 import { computed } from 'vue'
+
 import CultureTypeSelector from './CultureTypeSelector.vue';
 
 const props = defineProps({
   cultures: {
     type: Array,
     required: true
+  },
+  featureId: {
+    type: String
   }
 })
 

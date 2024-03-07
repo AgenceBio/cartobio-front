@@ -10,7 +10,14 @@ describe("AccordionGroup", () => {
   test('we trigger an edit form', async () => {
     const TestComponent = defineComponent({
       components: { AccordionGroup, AccordionSection },
-      template: '<AccordionGroup><AccordionSection title="Un"><p>1</p></AccordionSection><AccordionSection title="Deux"><p>2</p></AccordionSection></AccordionGroup>'
+      template: `<AccordionGroup>
+        <AccordionSection title="Un">
+          <p>1</p>
+        </AccordionSection>
+        <AccordionSection title="Deux">
+          <p>2</p>
+        </AccordionSection>
+      </AccordionGroup>`
     })
 
     const wrapper = mount(TestComponent)
@@ -29,6 +36,26 @@ describe("AccordionGroup", () => {
     await wrapper.findAll('.fr-accordion__btn').at(1).trigger('click')
     expect(sections.at(0).classes()).not.toContain('fr-collapse--expanded')
     expect(sections.at(1).classes()).toContain('fr-collapse--expanded')
+  })
+
+  test('we unfold a required element', async () => {
+    const TestComponent = defineComponent({
+      components: { AccordionGroup, AccordionSection },
+      template: `<AccordionGroup>
+        <AccordionSection title="Un">
+          <p>1</p>
+        </AccordionSection>
+        <AccordionSection title="Deux" requires-action>
+          <p>2</p>
+        </AccordionSection>
+      </AccordionGroup>`
+    })
+
+    const wrapper = mount(TestComponent)
+
+    // both sections should be closed
+    expect(wrapper.find('.fr-accordion:nth-child(2) .fr-collapse').classes()).toContain('fr-collapse--expanded')
+    expect(wrapper.find('.fr-accordion:nth-child(2)').text()).toContain('À préciser')
   })
 
   test('we trigger an edit form', async () => {

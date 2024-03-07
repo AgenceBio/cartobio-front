@@ -387,22 +387,17 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
   }
 }
 
-export async function featureDetails (feature) {
+export function featureDetails (feature) {
   const details = []
 
   if (feature.properties.cadastre) {
     const cadastre = Array.isArray(feature.properties.cadastre) ? feature.properties.cadastre : [feature.properties.cadastre]
-    const references = cadastre
-        .map(ref => parseReference(ref))
 
-    const communes = (await Promise.all(
-        references
-        .map(({ commune }) => axios.get(`https://geo.api.gouv.fr/communes/${commune}`))
-    )).map(({ data }) => data.nom)
-
-    details.push(...references.map(
-        ({ section, number }, index) => `Parcelle cadastrale ${number} (Section ${section}, ${communes[index]})`
-    ))
+    cadastre
+      .map(ref => parseReference(ref))
+      .forEach(({ section, number }) => {
+        details.push(`Parcelle cadastrale ${number} (Section ${section}, ${feature.properties.COMMUNE_LABEL})`)
+      })
   }
 
   return details
