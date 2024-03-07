@@ -2,7 +2,7 @@
   <div>
     <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
 
-    <Spinner v-else-if="(!isVerifying && isLogged && (permissions.isOc || permissions.isAgri))">Chargement de vos exploitations…</Spinner>
+    <Spinner v-else-if="(!isVerifying && isLogged && (store.isOc || store.isAgri))">Chargement de vos exploitations…</Spinner>
 
     <div class="fr-connect-group" v-else-if="!isLogged">
       <h2>Connexion à CartoBio</h2>
@@ -44,15 +44,13 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user.js'
+import { useUserStore } from '@/stores/index.js'
 
 import { verifyToken } from '@/cartobio-api.js'
 
 import Spinner from '@/components/Spinner.vue'
-import { usePermissions } from "@/stores/permissions.js"
 
 const store = useUserStore()
-const permissions = usePermissions()
 const route = useRoute()
 const router = useRouter()
 
@@ -79,12 +77,8 @@ onMounted(async () => {
       router.replace('/login')
     }
 
-    if (permissions.isAgri) {
-      router.replace('/exploitations')
-    }
-
-    if (permissions.isOc) {
-      router.replace(route.query.returnto || '/certification/exploitations')
+    if (store.isLogged) {
+      router.replace(route.query.returnto || store.startPage)
     }
   }
   finally {

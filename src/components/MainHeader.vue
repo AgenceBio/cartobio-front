@@ -31,7 +31,7 @@
             <div class="fr-header__tools-links">
               <ul class="fr-btns-group" v-if="isLogged">
                 <li class="tool-username" aria-hidden="true">
-                  <router-link :to="rolePage" :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]">
+                  <router-link :to="startPage" :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]">
                     {{ user.nom }}
                   </router-link>
                 </li>
@@ -60,12 +60,12 @@
         </div>
       </div>
 
-      <div class="fr-header__menu" v-if="isLogged && permissions.isOc">
+      <div class="fr-header__menu" v-if="isLogged && userStore.isOc">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <router-link to="/certification/exploitations" class="fr-nav__link">
+                <router-link :to="startPage" class="fr-nav__link">
                   Exploitations
                 </router-link>
               </li>
@@ -83,12 +83,12 @@
           </nav>
         </div>
       </div>
-      <div class="fr-header__menu" v-else-if="(isLogged && permissions.isAgri)">
+      <div class="fr-header__menu" v-else-if="(isLogged && userStore.isAgri)">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <router-link to="/exploitations" class="fr-nav__link">
+                <router-link :to="startPage" class="fr-nav__link">
                   Mes exploitations
                 </router-link>
               </li>
@@ -128,10 +128,8 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
-import { usePermissions } from "@/stores/permissions.js"
 
 const userStore = useUserStore()
-const permissions = usePermissions()
 const router = useRouter()
 
 const ROLE_ICONS = new Map([
@@ -142,18 +140,18 @@ const ROLE_ICONS = new Map([
   [ROLES.UNKNOWN, 'fr-icon-warning-fill']
 ])
 
-const { user, roles, isLogged } = storeToRefs(userStore)
-const roleIcon = computed(() => ROLE_ICONS.get(roles.value[0]) ?? 'fr-icon-account-circle-fill')
-const rolePage = computed(() => {
-  if (permissions.isOc) return '/certification/exploitations'
-  if (permissions.isAgri) return '/exploitations'
-
-  return '/'
-})
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
+const { user, isLogged, roles, startPage } = storeToRefs(userStore)
+const roleIcon = computed(() => {
+  for (const role of roles.value) {
+    if (ROLE_ICONS.has(role)) return ROLE_ICONS.get(role)
+  }
+
+  return 'fr-icon-account-circle-fill'
+})
 
 async function logout() {
-  const redirectUrl = (permissions.isOc || permissions.isAgri) ? '/pro' : '/'
+  const redirectUrl = (userStore.isOc || userStore.isAgri) ? '/pro' : '/'
 
   await userStore.logout()
   router.push(redirectUrl)
