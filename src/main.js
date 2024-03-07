@@ -164,6 +164,15 @@ router.beforeEach(async (to) => {
     })(),
   ])
 
+  if (to.path === '/login' && userStore.isLogged) {
+    return { path: userStore.startPage, replace: true }
+  }
+
+
+  if (to.meta.requiresAuth && !userStore.isLogged) {
+    return { path: '/login', replace: true }
+  }
+
   if (to.path === '/login/agencebio') {
     // forwards the user selected tab to the callback URI
     // this way, we come back to the same tab
@@ -184,13 +193,5 @@ router.beforeEach(async (to) => {
     if (!hasPermission) {
       return { path: '/login' }
     }
-  }
-
-  if (to.meta.requiresAuth && !userStore.isLogged) {
-    return { path: '/login', replace: true }
-  }
-
-  if (to.path === '/login' && userStore.isLogged) {
-    return { path: '/', replace: true }
   }
 })

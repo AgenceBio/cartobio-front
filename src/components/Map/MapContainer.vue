@@ -8,6 +8,8 @@
 import { onMounted, onUpdated, provide, ref, shallowRef, watch } from 'vue'
 import { Map as MapLibre, NavigationControl, ScaleControl } from 'maplibre-gl'
 
+import style from '@/map-styles/base.json'
+
 const map = shallowRef(null)
 const mapContainer = ref(null)
 
@@ -51,6 +53,7 @@ onMounted(() => {
     bounds: props.bounds,
     padding: 50,
     ...props.options,
+    style,
     locale: {
       'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
       'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',

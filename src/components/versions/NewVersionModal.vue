@@ -59,17 +59,15 @@ async function createEmptyVersion() {
         </div>
       </div>
     </div>
-    <div class="fr-card fr-enlarge-link">
+    <div class="fr-card">
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
-            <router-link to="" class="fr-card__link">
-              Dupliquer une autre version
-            </router-link>
+            Dupliquer une autre version
           </h3>
           <p class="fr-card__desc">
-            Vous pouvez également dupliquer une version existante depuis l’écran précédent.
-            <a href="#">Voir l’aide</a>
+            Vous pouvez également dupliquer une version existante depuis l’écran précédent, en ouvrant le menu des
+            actions de la version souhaitée.
           </p>
         </div>
       </div>

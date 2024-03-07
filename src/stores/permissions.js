@@ -1,17 +1,20 @@
 import { useOperatorStore, useRecordStore, useUserStore } from "@/stores/index.js"
-import { ROLES } from "@/stores/user.js"
 import { CERTIFICATION_STATE } from "@/referentiels/ab.js"
 import { computed } from "vue"
 import { defineStore } from "pinia"
 
 export const usePermissions = defineStore('permissions', () => {
-  const userStore = useUserStore();
-  const recordStore = useRecordStore();
-  const operatorStore = useOperatorStore();
+  const userStore = useUserStore()
+  const recordStore = useRecordStore()
+  const operatorStore = useOperatorStore()
+
+  // proxy the values so as they can be overriden by unit tests
+  const isOc = computed(() => userStore.isOc)
+  const isAgri = computed(() => userStore.isAgri)
 
   // Tests
 
-  function canEditParcellaire () {
+  const canEditParcellaire = computed(() => {
     if (isOc.value) {
       return true;
     }
@@ -20,8 +23,8 @@ export const usePermissions = defineStore('permissions', () => {
       return recordStore.record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT;
     }
 
-    return false;
-  }
+    return false
+  })
 
   function $reset () {
     userStore.$reset()
@@ -29,67 +32,38 @@ export const usePermissions = defineStore('permissions', () => {
   }
 
   // Returned permissions
+  const canAddParcelle = canEditParcellaire
 
-  const isOc = computed(() => {
-    return [ROLES.OC_CERTIF, ROLES.OC_AUDIT]
-        .some(role => userStore.roles.includes(role));
-  })
+  const canDeleteFeature = canEditParcellaire
 
-  const isAgri = computed(() => {
-    return userStore.roles.includes(ROLES.OPERATEUR);
-  })
-
-  const canAddParcelle = computed(() => {
-    return canEditParcellaire();
-  })
-
-  const canDeleteFeature = computed(() => {
-    return canEditParcellaire();
-  })
-
-  const canDeleteParcellaire = computed(() => {
-    return canEditParcellaire();
-  })
+  const canDeleteParcellaire = canEditParcellaire
 
   const canCreateVersion = computed(() => {
-    return operatorStore.records?.length && canEditParcellaire();
+    return operatorStore.records?.length && canEditParcellaire.value;
   })
 
-  const canChangeCulture = computed(() => {
-    return canEditParcellaire();
-  })
-
-  const canChangeGeometry = computed(() => {
-    return canEditParcellaire();
-  })
+  const canChangeCulture = canEditParcellaire
+  const canChangeGeometry = canEditParcellaire
 
   const canAddParcelleNote = computed(() => {
     return Boolean(recordStore.record.certification_state);
   })
 
-  const canChangeConversionLevel = computed(() => {
-    return isOc.value;
-  })
+  const canChangeConversionLevel = isOc
 
-  const canSaveAudit = computed(() => {
-    return userStore.roles.includes(ROLES.OC_AUDIT);
-  })
-
-  const canSendAudit = computed(() => {
-    return userStore.roles.includes(ROLES.OC_AUDIT);
-  })
-
-  const canCertify = computed(() => {
-    return userStore.roles.includes(ROLES.OC_CERTIF);
-  })
-
-  const canAddAnnotations = computed(() => isOc.value)
-  const canViewAnnotations = computed(() => isOc.value)
-  const canExportAnnotations = computed(() => isOc.value)
+  const canSaveAudit = computed(() => Boolean(userStore.isOcAudit))
+  const canSendAudit = computed(() => Boolean(userStore.isOcAudit))
+  const canCertify = computed(() => Boolean(userStore.isOcCertif))
+  const canAddAnnotations = isOc
+  const canViewAnnotations = isOc
+  const canExportAnnotations = isOc
 
   return {
+    // convenience proxy
     isOc,
     isAgri,
+    startPage: computed(() => userStore.startPage),
+    //
     canAddAnnotations,
     canExportAnnotations,
     canViewAnnotations,

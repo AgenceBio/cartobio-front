@@ -1,6 +1,6 @@
 <template>
   <MapContainer :controls="controls" class="map map--preview" :options="{ interactive: false, hash: false, trackResize: false }" minInitialZoom="22" :bounds="mapBounds">
-    <GeojsonLayer :style="baseStyle" name="base" />
+    <GeojsonLayer :style="planStyle" name="plan" />
     <FeaturesLayer :data="collection" />
   </MapContainer>
 </template>
@@ -11,7 +11,7 @@ import { bounds } from '@/components/Features/index.js'
 
 import MapContainer from './MapContainer.vue'
 import GeojsonLayer from './GeojsonLayer.vue'
-import baseStyle from '@/map-styles/base.json'
+import planStyle from '@/map-styles/plan.json'
 import FeaturesLayer from "@/components/Map/FeaturesLayer.vue"
 
 const props = defineProps({

@@ -4,7 +4,7 @@ import { ref } from "vue"
 import { pacageLookup } from "@/cartobio-api.js"
 import { normalize, isValid, useTélépac } from "@/referentiels/pac.js"
 import { sources } from "@/referentiels/imports.js"
-import { useOperatorStore, useRecordStore } from "@/stores/index.js"
+import { useOperatorStore } from "@/stores/index.js"
 
 const emit = defineEmits(["upload:start", "upload:complete"])
 

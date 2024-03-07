@@ -1,30 +1,3 @@
-<script setup>
-import { ref } from "vue"
-
-const showMenu = ref(false)
-
-defineProps({
-  fond: {
-    type: String,
-    required: true,
-  },
-  classification: {
-    type: Boolean,
-    required: true,
-  },
-  cadastre: {
-    type: Boolean,
-    required: true,
-  },
-  ilots: {
-    type: Boolean,
-    required: true,
-  },
-})
-
-defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:ilots'])
-</script>
-
 <template>
 <Teleport to=".maplibregl-ctrl-bottom-left">
   <div class="container maplibregl-ctrl">
@@ -34,11 +7,12 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
       @click="showMenu = !showMenu"
     >
       <span class="fr-icon--sm fr-mb-1v">
-        Cartes
+        Calques
       </span>
     </button>
-    <div class="menu" v-if="showMenu">
-      <h5 class="fr-mb-2w">Cartes</h5>
+    <div class="menu" v-if="showMenu" ref="layersMenuRef">
+      <h5 class="fr-mb-2w">Calques</h5>``
+
       <button
         class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
         @click="showMenu = false"
@@ -60,22 +34,47 @@ defineEmits(['update:fond', 'update:classification', 'update:cadastre', 'update:
       <button aria-label="Calque classification" class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)">
         <img src="@/assets/map/classification.jpg" alt="" />
         <span>
-          Classification
+          RPG Bio {{ currentCampagne }}
           <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification</a></small>
         </span>
       </button>
       <button aria-label="Calque numéros de cadastre" class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)">
         <img src="@/assets/map/cadastre.jpg" alt="" />
-        <span>Numéros de cadastre</span>
-      </button>
-      <button aria-label="Calque " class="menu-entry" :class="{ 'active': ilots }" @click="$emit('update:ilots', !ilots)">
-        <img src="../../assets/map/ilots.png" alt="" />
-        <span>Numéros d'îlots (PAC)</span>
+        <span>Cadastre</span>
       </button>
     </div>
   </div>
 </Teleport>
 </template>
+
+<script setup>
+import { ref } from "vue"
+import { onClickOutside } from "@vueuse/core"
+import { useTélépac } from "@/referentiels/pac.js";
+
+const showMenu = ref(false)
+const layersMenuRef = ref(null)
+const { preloadedCampagne: currentCampagne } = useTélépac()
+
+defineProps({
+  fond: {
+    type: String,
+    required: true,
+  },
+  classification: {
+    type: Boolean,
+    required: true,
+  },
+  cadastre: {
+    type: Boolean,
+    required: true,
+  }
+})
+
+defineEmits(['update:fond', 'update:classification', 'update:cadastre'])
+
+onClickOutside(layersMenuRef, () => showMenu.value = false)
+</script>
 
 <style scoped>
 

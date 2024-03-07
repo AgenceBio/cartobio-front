@@ -9,7 +9,7 @@
     </h1>
 
     <p class="state fr-subtitle">
-      <ParcellaireState :state="record.certification_state" :date="record.created_at" />
+      <ParcellaireState :record="record" />
     </p>
 
 
@@ -20,13 +20,13 @@
               class="fr-btn fr-btn--icon-left fr-btn--tertiary-no-outline fr-icon-git-pull-request-fill show-versions"
               @click.stop.prevent="versionMenu = !versionMenu"
           >
-            Comparer les versions <span class="fr-icon-arrow-down-s-line" />
+            Autres versions <span class="fr-icon-arrow-down-s-line" />
           </button>
           <div v-if="versionMenu" class="fr-menu fr-translate__menu" ref="versionMenuRef">
             <ul class="fr-menu__list">
               <li v-for="{ year, records } in operatorStore.recordsByYear" :key="year">
                 <a class="fr-nav__link" @click.stop.prevent="versionMenu = year" href="#">
-                  Année {{ year }} <span class="fr-icon-arrow-right-s-line" />
+                  Audit {{ year }} <span class="fr-icon-arrow-right-s-line" />
                 </a>
                 <div class="fr-menu fr-translate__menu">
                   <ul v-if="versionMenu === year" class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
