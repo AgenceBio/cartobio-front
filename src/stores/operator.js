@@ -47,10 +47,11 @@ export const useOperatorStore = defineStore('operator', () => {
    * @return {Promise<void>}
    */
   async function ready (numeroBio) {
-    if (operator.value.numeroBio === numeroBio) return
+    if (String(operator.value.numeroBio) !== numeroBio) {
+      operator.value = await getOperator(numeroBio)
+      records.value = null
+    }
 
-    operator.value = await getOperator(numeroBio)
-    records.value = null
     getOperatorRecords(numeroBio).then((r) => {
       records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA))
     })
