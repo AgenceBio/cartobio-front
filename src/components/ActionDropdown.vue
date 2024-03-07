@@ -11,6 +11,9 @@ onClickOutside(actionsMenuRef, () => {
 </script>
 
 <template>
+  <button type="button" @click.stop.prevent="show = !show" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions">
+    Autres actions
+  </button>
   <div class="menu-container">
     <div v-if="show" class="fr-menu" ref="actionsMenuRef">
       <ul class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
@@ -20,9 +23,6 @@ onClickOutside(actionsMenuRef, () => {
       </ul>
     </div>
   </div>
-  <button type="button" @click.stop.prevent="show = !show" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions">
-    Autres actions
-  </button>
 </template>
 
 <style scoped>
@@ -33,7 +33,7 @@ onClickOutside(actionsMenuRef, () => {
 
 .fr-menu {
   position: absolute;
-  left: 100%;
+  right: 100%;
   top: -100%;
 
   :deep(.fr-menu__list) {
