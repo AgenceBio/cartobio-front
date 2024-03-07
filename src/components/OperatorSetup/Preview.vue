@@ -25,7 +25,7 @@
     <form @submit.prevent="emit('submit', importPrevious === 'oui')">
       <fieldset v-if="operatorStore.records?.length" class="fr-fieldset" id="radio-import" aria-labelledby="radio-import-legend">
         <legend class="fr-fieldset__legend fr-fieldset__legend--regular" id="radio-import-legend">
-          Souhaitez-vous récupérer les informations renseignées dans le dernier parcellaire certifié ?
+          Souhaitez-vous récupérer les informations renseignées dans le dernier parcellaire créé (<i>{{ lastCreatedRecord.version_name }}</i>) ?
         </legend>
 
         <div class="fr-fieldset__element">
@@ -73,6 +73,7 @@ const props = defineProps({
 })
 
 const operatorStore = useOperatorStore()
+const lastCreatedRecord = computed(() => operatorStore.records.toSorted()[operatorStore.records.length - 1])
 
 const importPrevious = ref()
 
