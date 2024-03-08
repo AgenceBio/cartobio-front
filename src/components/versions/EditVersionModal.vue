@@ -55,9 +55,9 @@ async function save() {
     </form>
 
     <template #footer>
-      <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+      <ul class="fr-btns-group fr-btns-group--inline">
         <li>
-          <button type="submit" class="fr-btn fr-icon-delete-bin-line" form="version-edit-form">Enregistrer</button>
+          <button type="submit" class="fr-btn" form="version-edit-form">Enregistrer</button>
         </li>
         <li>
           <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>
