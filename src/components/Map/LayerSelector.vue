@@ -11,7 +11,7 @@
       </span>
     </button>
     <div class="menu" v-if="showMenu" ref="layersMenuRef">
-      <h5 class="fr-mb-2w">Calques</h5>``
+      <h5 class="fr-mb-2w">Calques</h5>
 
       <button
         class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
