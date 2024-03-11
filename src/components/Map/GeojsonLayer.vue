@@ -18,7 +18,6 @@ export default {
     before: {
       type: String,
       required: false,
-      default: 'waterway-name'
     },
     fill: {
       type: Object,
@@ -49,76 +48,68 @@ export default {
   },
   inject: ['map'],
   mounted() {
-    this.map.once('data', () => {
-      const nextLayer = this.map.getLayersOrder().find((id) => this.before === id.split('/')[0])
-
-      // always create the data layer even if data is empty at first,
-      // otherwise the watch() fails (if empty at first, it cannot be updated)
-      if (!this.map.getSource(`${this.name}/data`)) {
-        this.map
-        .addSource(`${this.name}/data`, {
-          type: 'geojson',
-          data: this.data ?? { type: 'FeatureCollection', features: [] }
-        })
-      }
-
-      // If we use a data and fill / line props, we create the geometry layers
-      if (this.data && this.fill && !this.map.getLayer(`${this.name}/geometry`)) {
-        this.map.addLayer({
-          id: `${this.name}/geometry`,
-          source: `${this.name}/data`,
-          type: 'fill',
-          paint: this.fill
-        }, nextLayer)
-      }
-
-      if (this.data && this.line && !this.map.getLayer(`${this.name}/geometry-outline`)) {
-        this.map.addLayer({
-          id: `${this.name}/geometry-outline`,
-          source: `${this.name}/data`,
-          type: 'line',
-          paint: this.line
-        }, nextLayer)
-      }
-
-      // If we use a style prop, we create the layers
-      if (!this.style) return
-
-      if (this.style.sprite) {
-        const hasSprite = this.map.getSprite(this.name)
-
-        if (!hasSprite) {
-          this.map.addSprite(this.name, this.style.sprite)
-        }
-      }
-
-      if (this.style.glyphs) {
-        this.map.setGlyphs(this.style.glyphs)
-      }
-
-      Object.entries(this.style.sources || {}).map(([key, value]) => {
-        if (this.map.style && this.map.getSource(`${this.name}/${key}`)) return
-        this.map.addSource(`${this.name}/${key}`, value)
+    // always create the data layer even if data is empty at first,
+    // otherwise the watch() fails (if empty at first, it cannot be updated)
+    this.map
+      .addSource(`${this.name}/data`, {
+        type: 'geojson',
+        data: this.data ?? { type: 'FeatureCollection', features: [] }
       })
 
-      this.style.layers?.map(layer => {
-        if (this.map.getLayer(`${this.name}/${layer.id}`)) return
-
-        this.map.addLayer({
-          ...layer,
-          id: `${this.name}/${layer.id}`,
-          source: `${this.name}/${layer.source}`
-        }, nextLayer)
+    // If we use a data and fill / line props, we create the geometry layers
+    if (this.data && this.fill && !this.map.getLayer(`${this.name}/geometry`)) {
+      this.map.addLayer({
+        id: `${this.name}/geometry`,
+        source: `${this.name}/data`,
+        type: 'fill',
+        paint: this.fill
       })
+    }
+
+    if (this.data && this.line && !this.map.getLayer(`${this.name}/geometry-outline`)) {
+      this.map.addLayer({
+        id: `${this.name}/geometry-outline`,
+        source: `${this.name}/data`,
+        type: 'line',
+        paint: this.line
+      })
+    }
+
+    // If we use a style prop, we create the layers
+    if (!this.style) return
+
+    if (this.style.sprite) {
+      const hasSprite = !this.map
+          .getStyle?.()
+          ?.sprite
+          ?.find(({ id, url }) => id === this.name || url === this.style.sprite)
+      if (!hasSprite) {
+        this.map.addSprite(this.name, this.style.sprite)
+      }
+    }
+
+    if (this.style.glyphs) {
+      this.map.setGlyphs(this.style.glyphs)
+    }
+
+    Object.entries(this.style.sources || {}).map(([key, value]) => {
+      if (this.map.style && this.map.getSource(`${this.name}/${key}`)) return
+      this.map.addSource(`${this.name}/${key}`, value)
+    })
+
+    this.style.layers?.map(layer => {
+      if (this.map.getLayer(layer.id)) return
+
+      const nextLayer = this.map.getStyle().layers.find(({ id }) => this.before === id.split('/')[0])
+      this.map.addLayer({
+        ...layer,
+        id: `${this.name}/${layer.id}`,
+        source: `${this.name}/${layer.source}`
+      }, nextLayer?.id)
     })
   },
   unmounted() {
     const layerRE = new RegExp(`^${this.name}/`)
-
-    if (!this.map.isStyleLoaded()) {
-      return
-    }
-
     this.map.getLayersOrder()
       .filter(name => layerRE.test(name))
       .filter(name => this.map.getLayer(name))

@@ -4,7 +4,7 @@
 <script>
 import GeojsonLayer from "@/components/Map/GeojsonLayer.vue"
 import { useFeaturesStore } from "@/stores/index.js"
-import { inject } from "vue"
+import { inject, watch } from "vue"
 
 export default {
   extends: GeojsonLayer,
@@ -24,9 +24,13 @@ export default {
       type: Boolean,
       default: false
     },
+    showNumerosIlots: {
+      type: Boolean,
+      default: false
+    },
     style: {
       type: Object,
-      default: () => ({
+      default: (props) => ({
         layers: [
           {
             "id": "numeros-ilots",
@@ -44,7 +48,7 @@ export default {
               ],
               "text-font": ["Noto Sans Regular"],
               "text-size": 12,
-              "visibility": "visible",
+              "visibility": props.showNumeroIlots ? "visible" : "none",
             },
             "paint": {
               "text-color": "rgba(0, 0, 0, 1)",
@@ -60,6 +64,17 @@ export default {
   setup(props) {
     const featureStore = useFeaturesStore()
     const map = inject('map')
+
+    watch(() => props.showNumerosIlots, (showNumeroIlots) => {
+      const visibility = showNumeroIlots ? 'visible' : 'none'
+
+      if (map.value.isStyleLoaded()) {
+        map.value.setLayoutProperty('parcellaire-operateur/numeros-ilots', 'visibility', visibility)
+      }
+      else {
+        map.value.once('load', () => map.value.setLayoutProperty('parcellaire-operateur/numeros-ilots', 'visibility', visibility))
+      }
+    }, { immediate: true })
 
     if (props.interactive) {
       featureStore.bindMaplibreFeatureState(map.value, 'parcellaire-operateur/data')

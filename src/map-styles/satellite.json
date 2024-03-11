@@ -1,12 +1,6 @@
 {
   "version": 8,
-  "id": "satellite",
-  "name": "Satellite",
   "sources": {
-    "openmaptiles": {
-      "type": "vector",
-      "url": "https://openmaptiles.geo.data.gouv.fr/data/france-vector.json"
-    },
     "satellite": {
       "type": "raster",
       "tiles": [
@@ -15,7 +9,6 @@
       "tileSize": 256
     }
   },
-  "glyphs": "https://openmaptiles.geo.data.gouv.fr/fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "fond-satellite",
