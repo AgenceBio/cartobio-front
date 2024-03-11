@@ -3,9 +3,9 @@
     <p v-for="([ruleId, result]) in featuresSet.required" :key="ruleId">
       {{ result.errorMessage }} pour {{ inflex(result.count, 'parcelle', 'parcelles') }}.
 
-      <button v-if="!featuresSet.isToggled(ruleId)" @click="featuresSet.toggle(ruleId)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-icon-arrow-right-line fr-btn--icon-right">
+      <!-- <button v-if="!featuresSet.isToggled(ruleId)" @click="featuresSet.toggle(ruleId)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-icon-arrow-right-line fr-btn--icon-right">
         voir
-      </button>
+      </button> -->
     </p>
   </div>
 

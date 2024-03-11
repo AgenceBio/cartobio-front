@@ -273,11 +273,16 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   /**
    * @type {ComputedRef<Map<String,SetResult>>}
    */
-  const tags = computed(() => Array.from(sets.value.entries()).flatMap(([id, result]) => {
-    const definition = definitions.value.get(id)
+  const tags = computed(() =>
+    Array.from(sets.value.entries())
+      .flatMap(([id, result]) => {
+        const definition = definitions.value.get(id)
 
-    return definition.items ? definition.items(allCandidate) : [{ id, ...result }]
-  }).map(({ id, ...item }) => ({ id, ...item, active: isToggled(id) })))
+        return definition.items ? definition.items(allCandidate) : [{ id, ...result }]
+      })
+      .map(({ id, ...item }) => ({ id, ...item, active: isToggled(id) }))
+      .sort(({ count: countA }, { count: countB }) => countB - countA)
+    )
 
   /**
    * @type {ComputedRef<Feature[]>}

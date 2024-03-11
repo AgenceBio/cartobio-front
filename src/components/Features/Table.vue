@@ -122,7 +122,7 @@ const permissions = usePermissions()
 
 const { operator } = storeToRefs(operatorStore)
 const { record } = storeToRefs(recordStore)
-const { hits: features } = storeToRefs(featuresSets)
+const { hits: features, tags } = storeToRefs(featuresSets)
 const { hasFeatures, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
 const { getFeatureById, toggleAllSelected } = featuresStore
@@ -130,8 +130,6 @@ const { getFeatureById, toggleAllSelected } = featuresStore
 const editedFeatureId = ref(null)
 const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
 const maybeDeletedFeatureId = ref(null)
-
-const tags = computed(() => featuresSets.tags.filter(({ active, required, count }) => (!required && count) || active))
 
 const userGroupingChoice = ref('CULTURE')
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
