@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { markRaw } from "vue"
 import { flushPromises, mount } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
@@ -104,6 +104,8 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should import successfully a Geofolia archive", async () => {
+    vi.stubEnv('VUE_APP_PRODUCTION', true)
+
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
@@ -129,7 +131,7 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should import from Geofolink", async () => {
-    import.meta.env.PROD = false
+    delete import.meta.env.VUE_APP_PRODUCTION
 
     const wrapper = mount(OperatorSetupFlow, {
       props: {
@@ -177,7 +179,7 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should tell if Geofolink account is not configured", async () => {
-    import.meta.env.PROD = false
+    delete import.meta.env.VUE_APP_PRODUCTION
 
     const wrapper = mount(OperatorSetupFlow, {
       props: {
@@ -201,8 +203,6 @@ describe("OperatorSetupFlow", () => {
   })
 
   it("should fail on invalid Geofolia archive", async () => {
-    import.meta.env.PROD = false
-
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: [ ...operatorSetupActions ],
