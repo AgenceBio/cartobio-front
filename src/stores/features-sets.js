@@ -6,7 +6,12 @@ import { useFeaturesStore, usePermissions } from "@/stores/index.js"
 import { AnnotationTags, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from '@/referentiels/ab.js'
 import { featureName } from "@/components/Features/index.js"
 
-/** @typedef {require('geojson').Feature} Feature */
+
+/**
+ * @typedef {import('vue').ComputedRef} ComputedRef
+ * @typedef {import('vue').Ref} Ref
+ * @typedef {import('geojson').Feature} Feature
+ */
 
 /** @enum {String} */
 export const RuleSet = {
@@ -36,7 +41,7 @@ export const RuleSet = {
  * @property {String} errorMessage
  * @property {String?} property
  * @property {Boolean} required
- * @property {Function(): FeatureId[]} select
+ * @property {() => FeatureId[]} select
  */
 
 /**
@@ -51,12 +56,15 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   const permissions = usePermissions()
   const { allCandidate, isDirty } = storeToRefs(featuresStore)
 
+  /**
+   * @type {Ref<Map<String,Boolean>>}
+   */
   const toggles = ref(new Map())
 
   /**
    *
-   * @param {computed<Feature[]>} features
-   * @param {Function(Feature): Boolean} filterFn
+   * @param {ComputedRef<Feature[]>} features
+   * @param {(f: Feature) => Boolean|Array.<string,boolean>} filterFn
    * @returns {FeatureId[]}
    */
   function collectIds (features, filterFn) {
@@ -75,7 +83,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
 
   /**
    *
-   * @param {computed<Feature[]>} features
+   * @param {ComputedRef<Feature[]>} features
    * @param {Function(Feature): Boolean} filterFn
    * @returns {FeatureId[]}
    */
@@ -93,7 +101,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
       .filter(([, result]) => Array.isArray(result) ? result.length : result)
   }
 
-  /** @type {Map<SetItem>} */
+  /** @type {ComputedRef<Map<String,SetItem>>} */
   const definitions = computed(() => new Map([
     [
       RuleSet.NAMELESS,
@@ -232,7 +240,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   ]))
 
   /**
-   * @type computed<Map<SetResult>>
+   * @type {ComputedRef<Map<String,SetResult>>}
    */
   const sets = computed(() => new Map(
     Array.from(definitions.value.entries())
@@ -255,7 +263,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   ))
 
   /**
-   * @type {computed<Map<SetResult>>}
+   * @type {ComputedRef<Map<String,SetResult>>}
    */
   const required = computed(() => new Map(
     Array.from(sets.value.entries())
@@ -263,7 +271,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   ))
 
   /**
-   * @type {computed<Map<SetResult>>}
+   * @type {ComputedRef<Map<String,SetResult>>}
    */
   const tags = computed(() => Array.from(sets.value.entries()).flatMap(([id, result]) => {
     const definition = definitions.value.get(id)
@@ -272,7 +280,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   }).map(({ id, ...item }) => ({ id, ...item, active: isToggled(id) })))
 
   /**
-   * @type {computed<Feature[]>}
+   * @type {ComputedRef<Feature[]>}
    */
   const hits = computed(() => {
     const taggedFeatureIds = Array.from(tags.value.values())
@@ -295,13 +303,13 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   }
 
   /**
-   * @type {computed<Boolean>}
+   * @type {ComputedRef<Boolean>}
    */
   const hasRequiredSets = computed(() => required.value.size > 0)
 
   /**
    * @param {String} featureId
-   * @returns {Map<SetResult>}
+   * @returns {Map<String,SetResult>}
    */
   function byFeature (featureId, filterRequired = false) {
     return new Map(
@@ -324,7 +332,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   /**
    * @param {String} featureId
    * @param {String} property
-   * @returns {Map<SetResult>}
+   * @returns {Map<String,SetResult>}
    */
   function byFeatureProperty (featureId, property, filterRequired = false) {
     return new Map(
@@ -336,7 +344,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
   /**
    * @param {String} featureId
    * @param {String} detailId
-   * @returns {Map<SetResult>}
+   * @returns {Map<String,SetResult>}
    */
   function byFeatureDetail (featureId, detailId, filterRequired = false) {
     return new Map(
@@ -349,9 +357,12 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
     toggles.value = new Map()
   }
 
-  /*
+  /**
    * Check for toggled items with no tag (items with count=0 are out of the sets)
    * We automatically untoggle them to avoid providing no hits and no hidden toggled tag
+   *
+   * @param {ComputedRef} tags
+   * @param {(currentTags: ComputedRef<Map<String,SetResult>>) => undefined}
    */
   watch(tags, (currentTags) => {
     toggles.value.forEach((value, toggledId) => {
