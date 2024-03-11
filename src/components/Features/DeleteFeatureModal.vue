@@ -45,7 +45,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import { deletionReasons, DeletionReasonsCode, featureName, inHa, surface } from '@/components/Features/index.js'
+import { deletionReasons, featureName, inHa, surface } from '@/components/Features/index.js'
 import { useFeaturesStore } from '@/stores/features.js'
 
 import Modal from '@/components/Modal.vue'

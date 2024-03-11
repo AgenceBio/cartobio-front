@@ -172,10 +172,10 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
     [
       RuleSet.ENGAGEMENT_DATE_MISSING,
       {
-        label: 'Date d\'engagement manquante',
+        label: 'Date de début de conversion manquante',
         property: 'engagement_date',
         required: permissions.isOc,
-        errorMessage: 'Il manque une date d\'engagement',
+        errorMessage: 'Il manque une date de début de conversion',
         select (f) {
           return !f.properties.engagement_date && [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(f.properties.conversion_niveau)
         }

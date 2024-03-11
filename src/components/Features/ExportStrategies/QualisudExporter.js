@@ -24,7 +24,7 @@ function getSheet () {
       "Nom",
       "Surface",
       "Classe",
-      "Date d'engagement",
+      "Date de début de conversion",
       "Id. Parcelle"
     ]
   ])
@@ -40,7 +40,7 @@ function getSheet () {
     { wch: 16 },
     // Classe
     { wch: 8 },
-    // Date d'engagement
+    // Date de début de conversion
     { wch: 10 },
     // Id. Parcelle
     { wch: 16 },

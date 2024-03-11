@@ -235,8 +235,8 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
-    label: 'année d\'engagement',
-    labelNoGroup: 'Absence d\'année d\'engagement',
+    label: 'année de début de conversion',
+    labelNoGroup: 'Absence de date de début de conversion',
     /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP,
     groupLabelFn ({ groupingKey }) {
@@ -253,7 +253,7 @@ Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
     label: null,
     /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.engagement_date ? toDateInputString(new Date(d.properties.engagement_date)) : '',
-    groupLabelFn: ({ groupingKey }) => groupingKey || 'Année d\'engagement inconnue',
+    groupLabelFn: ({ groupingKey }) => groupingKey || 'Année de début de conversion inconnue',
     sortFn: sortByAccessor((g) => g.key, SORT.DESCENDING),
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
   },

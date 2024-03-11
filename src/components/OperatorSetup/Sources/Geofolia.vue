@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, readonly, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
 import { convertGeofoliaArchiveToGeoJSON, checkGeofoliaAccountStatus, getOperatorGeofoliaFeatures } from '@/cartobio-api.js'
 import { sources } from "@/referentiels/imports.js"
 

@@ -25,7 +25,7 @@ describe('QualisudExporter', () => {
         "Nom",
         "Surface",
         "Classe",
-        "Date d'engagement",
+        "Date de début de conversion",
         "Id. Parcelle"
       ],
       [
