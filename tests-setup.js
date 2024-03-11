@@ -68,15 +68,15 @@ vi.mock('maplibre-gl', () => ({
   ScaleControl: vi.fn(),
 }));
 
-vi.stubGlobal('matchMedia', vi.fn(() => ({
-  addEventListener: vi.fn(),
-  matches: vi.fn().mockReturnValue(true)
-})))
-
 vi.stubGlobal('localStorage', {
   getItem: vi.fn(),
   setItem: vi.fn()
 })
+
+vi.stubGlobal('matchMedia', vi.fn(() => ({
+  addEventListener: vi.fn(),
+  matches: vi.fn().mockReturnValue(true)
+})))
 
 vi.spyOn(global, 'navigator', 'get').mockImplementation(() => ({
   clipboard: {

@@ -34,7 +34,7 @@
       <button aria-label="Calque classification" class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)">
         <img src="@/assets/map/classification.jpg" alt="" />
         <span>
-          RPG Bio {{ currentCampagne }}
+          RPG {{ currentCampagne }}
           <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification</a></small>
         </span>
       </button>
@@ -54,7 +54,7 @@ import { useTélépac } from "@/referentiels/pac.js";
 
 const showMenu = ref(false)
 const layersMenuRef = ref(null)
-const { preloadedCampagne: currentCampagne } = useTélépac()
+const { campagne: currentCampagne } = useTélépac()
 
 defineProps({
   fond: {
