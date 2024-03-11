@@ -6,10 +6,10 @@
     </div>
 
     <form @submit.prevent="handleSubmit" role="search" id="import-geofolia-form" v-if="isStaging">
-      <h3 class="fr-h5">Plate-forme Geofolink</h3>
+      <h3 class="fr-h5">Plateforme Geofolink</h3>
 
       <p>
-        La plate-forme Geofolink facilite le partage des données avec CartoBio si vous en donnez votre consentement.<br />
+        La plateforme Geofolink facilite le partage des données avec CartoBio si vous en donnez votre consentement.<br />
         Cette connexion est basée sur votre SIRET, à savoir <code>{{ operator.siret }}</code>.
       </p>
 
