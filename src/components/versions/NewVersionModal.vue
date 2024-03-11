@@ -68,7 +68,7 @@ async function createEmptyVersion() {
           <p class="fr-card__desc">
             Vous pouvez également dupliquer une version existante depuis l’écran précédent, en ouvrant le menu des
             actions de la version souhaitée.<br>
-            <a href="https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/gestion-des-versions-de-parcellaire#dupliquer-une-version">
+            <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/gestion-des-versions-de-parcellaire#dupliquer-un-parcellaire">
               Voir l'aide <span class="fr-icon-arrow-right-line fr-icon--sm"></span>
             </a>
           </p>
