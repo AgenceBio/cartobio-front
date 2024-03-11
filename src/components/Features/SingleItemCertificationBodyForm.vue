@@ -37,7 +37,7 @@
           <ConversionLevelSelector :feature-id="feature.properties.id" :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
 
           <div class="fr-input-group" v-if="isAB">
-            <label class="fr-label" for="engagement_date">Date d'engagement <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
+            <label class="fr-label" for="engagement_date">Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
             <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
           </div>
 

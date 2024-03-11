@@ -97,7 +97,7 @@ describe('results', () => {
         {
           count: 1,
           details: [['5', true]],
-          errorMessage: "Il manque une date d'engagement",
+          errorMessage: "Il manque une date de début de conversion",
           featureIds: ['5'],
           property: 'engagement_date',
           required: false

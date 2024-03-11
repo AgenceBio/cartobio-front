@@ -1,6 +1,6 @@
 <template>
-  <Modal v-bind="$attrs" data-track-content data-content-name="Modale de modification multiple de la date d'engagement">
-    <template #title>Modification de la date d'engagement</template>
+  <Modal v-bind="$attrs" data-track-content data-content-name="Modale de modification multiple de début de conversion">
+    <template #title>Modification de début de conversion</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -10,7 +10,7 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <label class="fr-label">Date d'engagement</label>
+        <label class="fr-label">Date de début de conversion</label>
         <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" required />
       </div>
     </form>

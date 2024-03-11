@@ -1,6 +1,3 @@
-import { fromCodeCpf } from "@agencebio/rosetta-cultures"
-import { featureName } from "@/components/Features/index.js"
-
 export const LEVEL_UNKNOWN = undefined
 export const LEVEL_CONVENTIONAL = 'CONV'
 export const LEVEL_C1 = 'C1'
