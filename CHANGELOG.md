@@ -1,3 +1,23 @@
+# [2.22.0](https://github.com/AgenceBio/cartobio-front/compare/v2.21.0...v2.22.0) (2023-03-11)
+
+* Gestion des versions d'une exploitation agricole
+* Fonctionnalité de création de version par duplication de version
+* Filtrage de parcelles en fonction des raisons d'alerte
+* Recherche d'exploitation par numéro de SIRET
+* Amélioration des performances d'affichage
+* Affichage des alertes dans les formulaires de modification
+* Mémorisation des choix de calques de carte
+* Le champ "raison de suppression" est désormais toujours affiché
+* Correction de l'année utilisée sur le badge de certification
+* Correction de la fonctionnalité "Voir la parcelle" après un ajout
+* Correction des parcelles en doublon avec l'import RPG
+* Ajustement des mots utilisés pour les options de calques de carte
+* Le terme "date de début de conversion" est utilisé au lieu de "date d'engagement"
+* Les noms de parcelles sont désormais affichés par défaut
+* Le bouton sur la page de connexion est rendu explicite
+* API écriture : correction d'un bug dans la réception des parcelles sans géométrie
+* API lecture : filtre par date d'audit ou statut de certification
+
 # [2.21.0](https://github.com/AgenceBio/cartobio-front/compare/v2.20.0...v2.21.0) (2023-02-23)
 
 * Activation de l'import MesParcelles ([#323](https://github.com/AgenceBio/cartobio-front/pull/323))
