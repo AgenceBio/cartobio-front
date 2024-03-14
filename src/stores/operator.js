@@ -57,6 +57,11 @@ export const useOperatorStore = defineStore('operator', () => {
     })
   }
 
+  function $reset () {
+    operator.value = { ...initialState }
+    records.value = null
+  }
+
   watch(operator, () => {
     if (operator.value.departement) {
       setCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT, operator.value.departement)
@@ -69,6 +74,7 @@ export const useOperatorStore = defineStore('operator', () => {
     operator,
     records,
     recordsByYear,
-    ready
+    ready,
+    $reset
   }
 })
