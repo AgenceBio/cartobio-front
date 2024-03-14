@@ -49,6 +49,11 @@ async function save() {
       </div>
 
       <div v-if="modelValue.certification_state === 'CERTIFIED'" class="fr-input-group">
+        <label for="certification_date_fin" class="fr-input-group__label">Date de début de validité du certificat</label>
+        <input type="date" id="certification_date_fin" class="fr-input" :value="modelValue.certification_date_debut" disabled />
+      </div>
+
+      <div v-if="modelValue.certification_state === 'CERTIFIED'" class="fr-input-group">
         <label for="certification_date_fin" class="fr-input-group__label">Date de fin de validité du certificat</label>
         <input type="date" id="certification_date_fin" class="fr-input" v-model="patch.certification_date_fin" />
       </div>
