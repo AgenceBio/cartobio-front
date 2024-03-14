@@ -1,10 +1,11 @@
 <template>
   <header class="fr-mb-3w">
     <span :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
-    <h1 class="fr-h4 fr-mb-2v">
+    <h1 class="fr-h4 fr-my-2v">
       {{ record.version_name }}
-      <button class="fr-link" @click="showEditVersionModal = true">
-        <span class="fr-icon-edit-line" />
+
+      <button class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
+        Modifier la version
       </button>
     </h1>
 
@@ -13,7 +14,7 @@
     </p>
 
 
-    <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left">
+    <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left fr-mt-4v">
       <nav role="navigation" class="fr-translate fr-nav">
         <div class="fr-nav-item">
           <button
@@ -135,6 +136,10 @@ onClickOutside(versionMenuRef, ({ target }) => {
 header {
   display: flex;
   flex-direction: column;
+
+  h1 .fr-btn {
+    vertical-align: text-bottom;
+  }
 
   & > p.state {
     margin: 0 0 0.5rem;
