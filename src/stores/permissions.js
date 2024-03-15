@@ -1,4 +1,4 @@
-import { useOperatorStore, useRecordStore, useUserStore } from "@/stores/index.js"
+import { useRecordStore, useUserStore } from "@/stores/index.js"
 import { CERTIFICATION_STATE } from "@/referentiels/ab.js"
 import { computed } from "vue"
 import { defineStore } from "pinia"
@@ -6,7 +6,6 @@ import { defineStore } from "pinia"
 export const usePermissions = defineStore('permissions', () => {
   const userStore = useUserStore()
   const recordStore = useRecordStore()
-  const operatorStore = useOperatorStore()
 
   // proxy the values so as they can be overriden by unit tests
   const isOc = computed(() => userStore.isOc)
@@ -38,9 +37,7 @@ export const usePermissions = defineStore('permissions', () => {
 
   const canDeleteParcellaire = canEditParcellaire
 
-  const canCreateVersion = computed(() => {
-    return operatorStore.records?.length && canEditParcellaire.value;
-  })
+  const canCreateVersion = computed(() => isOc.value || isAgri.value)
 
   const canChangeCulture = canEditParcellaire
   const canChangeGeometry = canEditParcellaire
@@ -70,6 +67,7 @@ export const usePermissions = defineStore('permissions', () => {
     canAddParcelle,
     canDeleteFeature,
     canDeleteParcellaire,
+    canEditParcellaire,
     canCreateVersion,
     canChangeCulture,
     canChangeGeometry,
