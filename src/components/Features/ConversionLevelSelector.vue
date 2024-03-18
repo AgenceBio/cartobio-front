@@ -18,7 +18,7 @@
 <script setup>
 import { computed } from 'vue'
 import { userFacingConversionLevels as conversionLevels } from '@/referentiels/ab.js'
-import { useFeaturesSetsStore } from '@/stores/index.js'
+import { useFeaturesSetsStore } from '@/stores/features-sets.js'
 
 const props = defineProps({
   featureId: {

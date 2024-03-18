@@ -1,7 +1,8 @@
 <script setup>
 
 import Modal from "@/components/Modal.vue"
-import { useOperatorStore, useRecordStore } from "@/stores/index.js"
+import { useOperatorStore } from "@/stores/operator.js"
+import { useRecordStore } from "@/stores/record.js"
 import { sources } from "@/referentiels/imports.js"
 import { createOperatorRecord } from "@/cartobio-api.js"
 import { useRouter } from "vue-router"

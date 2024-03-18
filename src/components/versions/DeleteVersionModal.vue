@@ -2,7 +2,7 @@
 import Modal from "@/components/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
 import toast from "@/components/toast.js"
-import { useOperatorStore } from "@/stores/index.js"
+import { useOperatorStore } from "@/stores/operator.js"
 
 const props = defineProps({
   record: {

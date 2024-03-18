@@ -21,7 +21,7 @@ import { computed } from 'vue'
 import { LEVEL_MAYBE_AB, LEVEL_UNKNOWN, getConversionLevel, isABLevel } from '@/referentiels/ab.js'
 import { mmyyyy, ddmmmmyyyy } from '@/components/dates.js';
 import { storeToRefs } from 'pinia'
-import { usePermissions } from "@/stores/index.js"
+import { usePermissions } from "@/stores/permissions.js"
 
 
 const props = defineProps({

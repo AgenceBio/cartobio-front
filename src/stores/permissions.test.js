@@ -1,5 +1,7 @@
 import { afterEach, describe, it, expect, vi } from "vitest"
-import { usePermissions, useRecordStore, useUserStore } from "./index.js"
+import { usePermissions } from "./permissions.js"
+import { useRecordStore } from "./record.js"
+import { useUserStore } from "./user.js"
 import { ROLES } from "./user.js"
 import { CERTIFICATION_STATE } from "../referentiels/ab.js"
 import { createTestingPinia } from "@pinia/testing"

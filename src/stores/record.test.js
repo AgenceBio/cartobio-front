@@ -1,5 +1,7 @@
 import { afterEach, describe, it, expect, vi } from "vitest"
-import { useFeaturesStore, useOperatorStore, useRecordStore } from "./index.js"
+import { useFeaturesStore } from "./features.js"
+import { useOperatorStore } from "./operator.js"
+import { useRecordStore } from "./record.js"
 import { createTestingPinia } from "@pinia/testing"
 import record from '@/components/Features/__fixtures__/record-with-features.json' assert { type: 'json' }
 import operator from '@/components/Features/__fixtures__/operator.json' assert { type: 'json' }

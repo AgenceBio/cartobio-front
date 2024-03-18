@@ -5,7 +5,9 @@ import { flushPromises, mount } from "@vue/test-utils"
 import axios from 'axios'
 
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/components/Features/index.js"
-import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index.js"
+import { useFeaturesStore } from "@/stores/features.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useRecordStore } from "@/stores/record.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import Modal from "@/components/Modal.vue"

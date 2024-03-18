@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
-import { usePermissions } from '@/stores/index.js'
+import { usePermissions } from '@/stores/permissions.js'
 import { createTestingPinia } from "@pinia/testing"
 
 import Exporter from './DefaultExporter.js'

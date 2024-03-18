@@ -44,7 +44,7 @@ import { computed, ref, toRaw } from 'vue'
 import { fromId } from '../../Features/ExportStrategies/index.js'
 
 import Modal from '@/components/Modal.vue'
-import { usePermissions } from '@/stores/index.js'
+import { usePermissions } from '@/stores/permissions.js'
 import { statsPush } from "@/stats.js"
 
 const props = defineProps({

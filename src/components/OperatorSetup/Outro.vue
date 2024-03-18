@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { usePermissions } from "@/stores/index.js"
+import { usePermissions } from "@/stores/permissions.js"
 
 const emit = defineEmits(['submit'])
 const permissions = usePermissions()

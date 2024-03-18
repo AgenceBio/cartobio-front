@@ -83,7 +83,9 @@ import { featureCollection } from '@turf/helpers'
 import { diff, featureName, inHa, legalProjectionSurface, merge } from './index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
-import { useFeaturesStore, useOperatorStore, useRecordStore } from "@/stores/index.js"
+import { useFeaturesStore } from "@/stores/features.js"
+import { useRecordStore } from "@/stores/record.js"
+import { useOperatorStore } from "@/stores/operator.js"
 import { usePermissions } from "@/stores/permissions.js"
 import CertificationBodyEditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
 import OperatorEditForm from "@/components/Features/SingleItemOperatorForm.vue"

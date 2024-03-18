@@ -1,4 +1,5 @@
-import { useRecordStore, useUserStore } from "@/stores/index.js"
+import { useRecordStore } from "@/stores/record.js"
+import { useUserStore } from "@/stores/user.js"
 import { CERTIFICATION_STATE } from "@/referentiels/ab.js"
 import { computed } from "vue"
 import { defineStore } from "pinia"
