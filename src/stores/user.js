@@ -98,6 +98,12 @@ export const useUserStore = defineStore('user', () => {
     return '/'
   })
 
+  const documentationPage = computed(() => {
+    if (isOc.value) return 'https://docs-cartobio.agencebio.org/organisme-certification'
+    else if (isAgri.value) return 'https://docs-cartobio.agencebio.org/agriculteurs.trices'
+
+    return ''
+  })
 
   function login (userToken) {
     token.value = userToken
@@ -142,6 +148,7 @@ export const useUserStore = defineStore('user', () => {
     isUnknown,
     roles,
     startPage,
+    documentationPage,
     user,
     // methods
     enablePersistance,

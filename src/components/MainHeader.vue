@@ -70,6 +70,9 @@
                 </router-link>
               </li>
               <li class="fr-nav__item">
+                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link">Centre d'aide</a>
+              </li>
+              <li class="fr-nav__item">
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
@@ -91,6 +94,9 @@
                 <router-link :to="startPage" class="fr-nav__link">
                   Mes exploitations
                 </router-link>
+              </li>
+              <li class="fr-nav__item">
+                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link">Centre d'aide</a>
               </li>
               <li class="fr-nav__item">
                 <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
@@ -141,7 +147,7 @@ const ROLE_ICONS = new Map([
 ])
 
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION)
-const { user, isLogged, roles, startPage } = storeToRefs(userStore)
+const { user, isLogged, roles, startPage, documentationPage } = storeToRefs(userStore)
 const roleIcon = computed(() => {
   for (const role of roles.value) {
     if (ROLE_ICONS.has(role)) return ROLE_ICONS.get(role)
