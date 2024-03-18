@@ -76,7 +76,7 @@
 
 
   <Teleport to="body">
-    <FeaturesExportModal :operator="operator" :collection="collection" :record="record" v-if="exportModal" @close="exportModal = false" />
+    <AsyncFeaturesExportModal v-if="exportModal" :operator="operator" :collection="collection" :record="record" @close="exportModal = false" />
     <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
     <EditVersionModal
         :model-value="record"
@@ -88,18 +88,22 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import ParcellaireState from '@/components/Certification/State.vue'
 import OperatorHistoryModal from '@/components/Operator/HistoryModal.vue'
-import FeaturesExportModal from '@/components/Features/ExportModal.vue'
 import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.vue'
 
 import { CERTIFICATION_STATE, isCertificationImmutable } from '@/referentiels/ab.js'
-import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesStore } from "@/stores/features.js"
+import { useOperatorStore } from "@/stores/operator.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useRecordStore } from "@/stores/record.js"
 import { onClickOutside } from "@vueuse/core"
 import EditVersionModal from "@/components/versions/EditVersionModal.vue"
+
+const AsyncFeaturesExportModal = defineAsyncComponent(() => import('@/components/Features/ExportModal.vue'))
 
 defineProps({
   disableActions: {

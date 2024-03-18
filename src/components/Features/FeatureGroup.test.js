@@ -4,7 +4,8 @@ import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
 
 import { GROUPE_COMMUNE, getFeatureGroups } from "@/components/Features/index.js"
-import { useFeaturesStore, usePermissions } from "@/stores/index.js"
+import { useFeaturesStore } from "@/stores/features.js"
+import { usePermissions } from "@/stores/permissions.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import FeatureGroup from "@/components/Features/FeatureGroup.vue"

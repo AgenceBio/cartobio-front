@@ -37,7 +37,7 @@ import { computed, markRaw, provide, readonly, ref, shallowRef, unref } from 'vu
 import PreviewStep from '@/components/OperatorSetup/Preview.vue'
 import OutroStep from '@/components/OperatorSetup/Outro.vue'
 
-import { useRecordStore } from '@/stores/index.js'
+import { useRecordStore } from '@/stores/record.js'
 import { createOperatorRecord } from '@/cartobio-api.js'
 
 const recordStore = useRecordStore()

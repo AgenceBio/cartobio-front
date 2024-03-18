@@ -2,7 +2,8 @@ import { defineStore, storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
-import { useFeaturesStore, usePermissions } from "@/stores/index.js"
+import { useFeaturesStore } from "@/stores/features.js"
+import { usePermissions } from "@/stores/permissions.js"
 import { AnnotationTags, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from '@/referentiels/ab.js'
 import { featureName } from "@/components/Features/index.js"
 

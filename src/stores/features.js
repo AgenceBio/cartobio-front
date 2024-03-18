@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import { useFeaturesSetsStore } from "@/stores/index.js"
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 
 
 /**
