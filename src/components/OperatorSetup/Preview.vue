@@ -58,7 +58,7 @@ import MapPreview from '@/components/Map/Preview.vue'
 import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
 
 import { surface, inHa, FeatureNotFoundError } from '@/components/Features/index.js'
-import { useOperatorStore } from "@/stores/index.js"
+import { useOperatorStore } from "@/stores/operator.js"
 
 const emit = defineEmits(['submit', 'cancel'])
 const props = defineProps({

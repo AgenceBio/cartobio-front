@@ -1,6 +1,6 @@
 <template>
   <fieldset class="culture-group fr-card fr-mb-1w fr-p-2w" v-for="(culture) in uuidedCultures" :key="culture.id">
-    <CultureTypeSelector :feature-id="featureId" :culture="culture" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
+    <AsyncCultureTypeSelector :feature-id="featureId" :culture="culture" :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
 
     <div class="fr-input-group">
       <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>
@@ -38,9 +38,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 
-import CultureTypeSelector from './CultureTypeSelector.vue';
+const AsyncCultureTypeSelector = defineAsyncComponent(() => import('./CultureTypeSelector.vue'))
 
 const props = defineProps({
   cultures: {

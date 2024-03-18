@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test, vi } from "vitest"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
-import { usePermissions, useUserStore } from "@/stores/index.js"
-import { ROLES } from "@/stores/user.js"
+import { ROLES, useUserStore } from "@/stores/user.js"
+import { usePermissions } from "@/stores/permissions.js"
 
 import MainHeader from "./MainHeader.vue"
 

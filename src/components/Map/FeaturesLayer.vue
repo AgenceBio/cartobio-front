@@ -3,7 +3,7 @@
 
 <script>
 import GeojsonLayer from "@/components/Map/GeojsonLayer.vue"
-import { useFeaturesStore } from "@/stores/index.js"
+import { useFeaturesStore } from "@/stores/features.js"
 import { inject } from "vue"
 
 export default {

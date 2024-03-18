@@ -36,7 +36,9 @@
 import { computed, ref } from 'vue'
 import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 import { updateAuditState } from '@/cartobio-api.js'
-import { useFeaturesSetsStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useRecordStore } from "@/stores/record.js"
 import CertificationModal from "@/components/Certification/CertificationModal.vue"
 import SendOffModal from "@/components/Certification/SendOffModal.vue"
 import toast from "@/components/toast.js"

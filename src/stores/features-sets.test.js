@@ -1,6 +1,8 @@
 import { afterEach, describe, it, expect, vi } from "vitest"
 import { flushPromises } from '@vue/test-utils'
-import { useFeaturesStore, useFeaturesSetsStore, usePermissions } from "./index.js"
+import { useFeaturesStore } from "./features.js"
+import { useFeaturesSetsStore } from "./features-sets.js"
+import { usePermissions } from "./permissions.js"
 import { RuleSet } from "./features-sets.js"
 import { ANNOTATIONS } from "@/referentiels/ab.js"
 import { createTestingPinia } from "@pinia/testing"

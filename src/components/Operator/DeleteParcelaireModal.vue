@@ -30,7 +30,7 @@
 <script setup>
 import Modal from "@/components/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
-import { useRecordStore } from "@/stores/index.js"
+import { useRecordStore } from "@/stores/record.js"
 
 const props = defineProps({
   record: {

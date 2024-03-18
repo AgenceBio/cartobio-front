@@ -20,7 +20,7 @@
 
 <script setup>
 import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from 'vue'
-import { useFeaturesSetsStore } from '@/stores/index.js'
+import { useFeaturesSetsStore } from '@/stores/features-sets.js'
 
 import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic'
