@@ -51,6 +51,7 @@ describe("MainHeader", () => {
 
     expect(wrapper.find('.tool-username').exists()).toEqual(false)
     expect(wrapper.find('.fr-header__tools').text()).toEqual('Accès professionnel')
+    expect(wrapper.find('[role="navigation"] a[target="_blank"]').exists()).toEqual(false)
   })
 
   test("as a certification body", async () => {
@@ -61,6 +62,7 @@ describe("MainHeader", () => {
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-medal-fill')).toEqual(true)
     expect(wrapper.find('[role="navigation"] a').attributes('href')).toEqual('/certification/exploitations')
+    expect(wrapper.find('[role="navigation"] a[target="_blank"]').attributes('href')).toEqual('https://docs-cartobio.agencebio.org/organisme-certification')
 
     await wrapper.find('.tool-logout a').trigger('click')
     await flushPromises()
@@ -74,6 +76,7 @@ describe("MainHeader", () => {
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-plant-fill')).toEqual(true)
     expect(wrapper.find('[role="navigation"] a').attributes('href')).toEqual('/exploitations')
+    expect(wrapper.find('[role="navigation"] a[target="_blank"]').attributes('href')).toEqual('https://docs-cartobio.agencebio.org/agriculteurs.trices')
   })
 
   test("as unknown role", async () => {
