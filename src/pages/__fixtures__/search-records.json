@@ -1,0 +1,51 @@
+[
+  {
+    "commune": "Crest",
+    "codePostal": "26400",
+    "numeroBio": 1,
+    "nom": "opérateur 1",
+    "dateEngagement": null,
+    "record_id": null,
+    "audit_date": null,
+    "certification_date_debut": null,
+    "certification_date_fin": null,
+    "certification_state": null
+  },
+  {
+    "commune": "Crest",
+    "codePostal": "26400",
+    "numeroBio": 2,
+    "nom": "opérateur 2",
+    "dateEngagement": null,
+    "record_id": null,
+    "audit_date": null,
+    "certification_date_debut": null,
+    "certification_date_fin": null,
+    "certification_state": null
+  },
+
+  {
+    "commune": "Die",
+    "codePostal": "26150",
+    "numeroBio": 3,
+    "nom": "opérateur 3",
+    "dateEngagement": "2020-02-02",
+    "record_id": "a-b-c-d",
+    "audit_date": null,
+    "certification_date_debut": null,
+    "certification_date_fin": null,
+    "certification_state": "OPERATOR_DRAFT"
+  },
+  {
+    "commune": "Die",
+    "codePostal": "26150",
+    "numeroBio": 4,
+    "nom": "opérateur 4",
+    "dateEngagement": "2020-02-02",
+    "record_id": "e-f-g-h",
+    "audit_date": "2024-01-01",
+    "certification_date_debut": "2024-01-01",
+    "certification_date_fin": "2024-03-31",
+    "certification_state": "CERTIFIED"
+  }
+]

@@ -22,7 +22,16 @@ export default defineConfig(({ mode }) => {
       legacy({
         modernPolyfills: ['es.object.has-own', 'es.array.at']
       }),
-      Pages({ extensions: ['vue'] }),
+      Pages({
+        extensions: ['vue'],
+        extendRoute (route) {
+          if (route.name === 'certification-exploitations') {
+            route.props = (route) => ({ ...route.query })
+          }
+
+          return route
+        }
+      }),
     ],
 
     resolve: {

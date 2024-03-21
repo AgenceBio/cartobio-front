@@ -28,8 +28,8 @@ export async function getOperatorNcviFeatures ({ evv, numeroBio }) {
  * @param {string} input
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
-export async function searchOperators (input) {
-  const { data } = await apiClient.post(`/v2/certification/operators/search`, { input })
+export async function searchOperators ({ input, page, sort, order }) {
+  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, sort, order })
 
   return data
 }
@@ -51,15 +51,6 @@ export async function pacageLookup (pacage) {
   const { data } = await apiClient.get(`/v2/import/pacage/${pacage}`)
 
   return data
-}
-
-/**
- * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
- */
-export async function fetchLatestOperators () {
-  const { data } = await apiClient.get(`/v2/certification/operators/latest`, { timeout: 10000 })
-
-  return data.operators
 }
 
 
