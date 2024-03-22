@@ -107,20 +107,33 @@
         </div>
       </div>
     </div>
-    <div class="fr-notice fr-notice--info" v-if="isStaging">
-      <div class="fr-container">
-        <div class="fr-notice__body">
-          <p class="fr-notice__title">
-            <mark>Vous êtes sur un environnement de test</mark>.
-
-            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
-              Cliquez ici pour accéder à l'environnement avec données réelles.
-            </a>
-          </p>
-        </div>
+  </header>
+  <div class="fr-notice fr-notice--info" v-if="true">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p class="fr-notice__title">
+          CartoBio rencontre actuellement des problèmes techniques.
+          <a href="https://docs-cartobio.agencebio.org/statut" rel="noreferrer noopener" target="_blank">
+            Visitez la page de statut pour en savoir plus.
+          </a>
+        </p>
       </div>
     </div>
-  </header>
+  </div>
+  <div class="fr-notice fr-notice--info" v-if="isStaging">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p class="fr-notice__title">
+          <mark>Vous êtes sur un environnement de test</mark>.
+
+          <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
+            Cliquez ici pour accéder à l'environnement avec données réelles.
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
