@@ -49,7 +49,7 @@ import { ddmmmmyyyy } from '@/components/dates.js'
 import { EventType } from '@agencebio/cartobio-types'
 import { deletionReasons } from '@/components/Features/index.js';
 
-import ActionType from '@/components/Certification/ActionType.vue'
+import ActionType from '@/components/record/history/ActionType.vue'
 import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
 
 const props = defineProps({

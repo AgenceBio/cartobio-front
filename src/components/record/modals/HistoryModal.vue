@@ -10,7 +10,7 @@
 
 <script setup>
 import Modal from '@/components/Modal.vue'
-import HistoryEntry from './HistoryEntry.vue'
+import HistoryEntry from '../history/HistoryEntry.vue'
 
 defineProps({
   operator: {
