@@ -20,7 +20,7 @@ import { computed, ref, toRaw, unref } from 'vue'
 
 import featureSources, { DEFAULT_SOURCE } from '@/components/OperatorSetup/index.js'
 
-const emit = defineEmits(['submit', 'error'])
+const emit = defineEmits(['submit', 'import:start', 'error'])
 
 const props = defineProps({
   sources: {
