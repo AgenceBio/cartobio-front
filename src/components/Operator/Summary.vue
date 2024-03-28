@@ -1,5 +1,5 @@
 <template>
-  <header class="fr-mb-3w">
+  <header class="fr-mb-6v">
     <span :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
     <h1 class="fr-h4 fr-my-2v">
       {{ record.version_name }}
@@ -58,12 +58,12 @@
 
     <div
         v-if="permissions.isAgri && record.certification_state !== CERTIFICATION_STATE.OPERATOR_DRAFT"
-        class="fr-alert fr-alert--info fr-alert--sm fr-mt-3w"
+        class="fr-alert fr-alert--info fr-alert--sm fr-my-6v"
     >
       <p class="fr-text--sm">Votre parcellaire est en cours de certification, vous ne pouvez pas modifier les données.</p>
     </div>
 
-    <div class="demandes fr-callout fr-callout--blue-ecume" v-if="displayCallout">
+    <div class="demandes fr-callout fr-callout--blue-ecume fr-mt-6v fr-mb-0" v-if="record.audit_demandes">
       <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
 
       <div v-html="record.audit_demandes" />
@@ -96,7 +96,7 @@ import OperatorHistoryModal from '@/components/Operator/HistoryModal.vue'
 import FeaturesExportModal from '@/components/Features/ExportModal.vue'
 import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.vue'
 
-import { CERTIFICATION_STATE, isCertificationImmutable } from '@/referentiels/ab.js'
+import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
 import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
 import { onClickOutside } from "@vueuse/core"
 import EditVersionModal from "@/components/versions/EditVersionModal.vue"
@@ -118,7 +118,6 @@ const permissions = usePermissions()
 const { record } = recordStore
 const { operator } = operatorStore
 const { collection, hasFeatures } = storeToRefs(featuresStore)
-const displayCallout = computed(() => record.audit_demandes && isCertificationImmutable(record.certification_state))
 const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && record.audit_history.length)
 
 const versionMenu = ref(false)
