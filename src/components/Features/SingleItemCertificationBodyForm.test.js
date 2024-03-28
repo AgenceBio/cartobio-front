@@ -22,11 +22,6 @@ const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const recordStore = useRecordStore(pinia)
 const permissions = usePermissions(pinia)
 
-const operator = {
-  id: 1,
-  nom: "Test"
-}
-
 describe("SingleItemCertificationBodyForm", () => {
   let wrapper
 
@@ -41,7 +36,7 @@ describe("SingleItemCertificationBodyForm", () => {
     })
 
     wrapper = mount(AsyncComponent, {
-      props: { operator, editForm: markRaw(EditForm) }
+      props: { editForm: markRaw(EditForm) }
     })
 
     const table = wrapper.getComponent(TableComponent)

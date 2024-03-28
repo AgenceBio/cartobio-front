@@ -63,7 +63,6 @@ onBeforeMount(async () => {
     emit('import:ready')
   }
   catch (error) {
-    console.error(error)
     emit('import:errored', error)
     emit('error', error)
   }

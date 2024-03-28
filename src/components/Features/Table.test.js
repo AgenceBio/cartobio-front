@@ -18,11 +18,6 @@ const recordStore = useRecordStore(pinia)
 const featuresStore = useFeaturesStore(pinia)
 const permissions = usePermissions(pinia)
 
-const operator = {
-  id: 1,
-  nom: "Test"
-}
-
 describe("Features Table", () => {
   beforeEach(() => {
     recordStore.reset()

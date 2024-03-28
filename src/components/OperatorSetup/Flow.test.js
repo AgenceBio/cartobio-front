@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { markRaw } from "vue"
 import { flushPromises, mount } from "@vue/test-utils"
-import { createPinia, setActivePinia } from "pinia"
+import { createTestingPinia } from "@pinia/testing"
 import axios, { AxiosError } from "axios"
 
 import OperatorSetupFlow from './Flow.vue'
@@ -13,7 +13,7 @@ import CviComponent from "./Sources/Cvi.vue"
 import operator from '../Features/__fixtures__/operator.json' assert { type: 'json' }
 import { sources } from '@/referentiels/imports.js'
 
-setActivePinia(createPinia())
+const pinia = createTestingPinia({ createSpy: vi.fn })
 
 const activeSources = [sources.TELEPAC, sources.GEOFOLIA, sources.RPG, sources.CVI, sources.MESPARCELLES]
 const operatorSetupActions = [
@@ -344,6 +344,13 @@ describe("OperatorSetupFlow", () => {
         actions: operatorSetupActions,
         flowId: 'source',
         operator: operator
+      },
+      global: {
+        config: {
+          errorHandler (error) {
+            expect(error.message).toBe('EVV et SIRET non correspondants')
+          }
+        }
       }
     })
 

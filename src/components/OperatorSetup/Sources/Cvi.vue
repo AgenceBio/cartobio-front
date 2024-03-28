@@ -58,7 +58,6 @@ async function handleSubmit () {
     const { featureCollection: geojson, warnings } = await applyCadastreGeometries(baseCollection)
     emit('upload:complete', { geojson, source, warnings, metadata: { source, evv } })
   } catch (error) {
-    console.error('error', error)
     const { status, data } = error?.response ?? {}
     if (status === 401 || status === 404) {
       inputError.value = data.error
