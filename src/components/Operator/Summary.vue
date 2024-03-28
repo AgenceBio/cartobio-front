@@ -58,7 +58,7 @@
 
     <div
         v-if="permissions.isAgri && record.certification_state !== CERTIFICATION_STATE.OPERATOR_DRAFT"
-        class="fr-alert fr-alert--info fr-alert--sm fr-my-6v"
+        class="fr-alert fr-alert--info fr-alert--sm fr-mt-6v fr-mb-0"
     >
       <p class="fr-text--sm">Votre parcellaire est en cours de certification, vous ne pouvez pas modifier les données.</p>
     </div>
