@@ -58,11 +58,7 @@ function handleSubmit ({ ids, patch }) {
 </script>
 
 <style scoped>
-.fr-translate.fr-nav {
-  text-align: right;
-}
 .fr-nav__item {
-  display: inline-flex;
   position: relative;
 }
   .fr-translate__menu {
@@ -72,6 +68,7 @@ function handleSubmit ({ ids, patch }) {
     text-align: left;
   }
   .fr-translate .fr-translate__btn {
+    align-self: flex-end;
     border: 1px solid #fff;
     background-color: #fff;
     margin-bottom: 0;
@@ -83,6 +80,7 @@ function handleSubmit ({ ids, patch }) {
   }
 
   .fr-menu__list .fr-btn {
+    text-align: initial;
     width: 100%;
   }
 </style>
