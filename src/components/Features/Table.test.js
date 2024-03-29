@@ -9,9 +9,9 @@ import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import Modal from "@/components/Modal.vue"
-import DeleteFeatureModal from "@/components/Features/DeleteFeatureModal.vue"
+import DeleteFeatureModal from "@/components/record/modals/DeleteFeatureModal.vue"
 import EditForm from "@/components/Features/SingleItemOperatorForm.vue"
-import TableComponent from "./Table.vue"
+import TableComponent from "../record/Table.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const recordStore = useRecordStore(pinia)

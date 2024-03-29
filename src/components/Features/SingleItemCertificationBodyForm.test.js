@@ -16,7 +16,7 @@ import {
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import EditForm from "@/components/Features/SingleItemCertificationBodyForm.vue"
-import TableComponent from "./Table.vue"
+import TableComponent from "../record/Table.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const recordStore = useRecordStore(pinia)

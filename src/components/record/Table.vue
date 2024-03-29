@@ -11,16 +11,15 @@
     <table @mouseout="hoveredFeatureId = null">
       <caption>Parcellaire agricole</caption>
       <colgroup>
-        <col width="8%" />
-        <col width="8%" />
-        <col width="30%" />
-        <col width="22%" />
-        <col width="15%" />
-        <col width="17%" />
+        <col class="selection" />
+        <col class="accordion" />
+        <col class="labels" />
+        <col class="surface" />
+        <col class="actions" />
       </colgroup>
       <thead>
         <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
-          <td colspan="2">
+          <td class="selection">
             <div class="fr-checkbox-group single-checkbox">
               <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
               <label class="fr-label" for="radio-mass-edit" />
@@ -31,16 +30,17 @@
             <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeatureCollectionSubmit" />
           </td>
         </tr>
-        <tr class="legend">
+        <tr>
           <th colspan="2">
             <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
               <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
               <label class="fr-label" for="radio-select-all" />
             </div>
           </th>
-          <th colspan="2" scope="col">
-            <div class="seemless-select">
-              <label for="plots-group-by">Parcelles par</label>
+          <th class="labels" scope="col">
+            <div class="seamless-select">
+              <label for="plots-group-by">Parcelles par </label>
+              <b>{{ groupingChoices[userGroupingChoice].label }}</b>
               <select id="plots-group-by" v-model="userGroupingChoice">
                 <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
                   {{ label }}
@@ -49,19 +49,19 @@
             </div>
           </th>
           <th scope="col" class="numeric">Surface</th>
-          <th scope="col" class="numeric">Détails</th>
+          <th />
         </tr>
         <tr class="summary" v-if="(selectedFeatureIds.length === 0 && hasFeatures)">
           <td colspan="2"></td>
-          <td colspan="2">{{ features.length }} parcelles</td>
+          <td class="labels">{{ features.length }} parcelles</td>
           <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
-          <td></td>
+          <th />
         </tr>
       </thead>
 
       <tbody v-if="!hasFeatures">
         <tr>
-          <td colspan="6">
+          <td colspan="4">
             Votre parcellaire est vide.
           </td>
         </tr>
@@ -96,12 +96,12 @@ import { storeToRefs } from 'pinia'
 import { useFeaturesStore, useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
 
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
-import DeleteFeatureModal from '@/components/Features/DeleteFeatureModal.vue'
+import DeleteFeatureModal from '@/components/record/modals/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 
-import { featureName, getFeatureGroups, groupingChoices, inHa, surface } from './index.js'
+import { featureName, getFeatureGroups, groupingChoices, inHa, surface } from '../Features/index.js'
 import { deleteSingleFeature, updateFeatureCollectionProperties, updateSingleFeature } from '@/cartobio-api.js'
-import toast from "@/components/toast"
+import toast from "@/components/toast.js"
 import { statsPush } from "@/stats.js"
 
 defineProps({
@@ -219,29 +219,62 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
 </style>
 
 <style scoped>
-.seemless-select {
-  font-weight: normal;
+.selection {
+  min-width: 1.5rem;
 }
-  .seemless-select select {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
-    background-position: right center;
-    background-repeat: no-repeat;
-    font-weight: bold;
-    padding-right: 1rem;
+
+.accordion {
+  width: 2.5rem;
+}
+
+.surface {
+  width: 1rem;
+}
+
+
+.seamless-select {
+  position: relative;
+  padding-right: 1rem;
+  font-weight: normal;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
+  background-position: right center;
+  background-repeat: no-repeat;
+
+  & label {
+    display: inline;
   }
 
-.rowIdCell small {
-  font-weight: normal;
-  margin-left: .5rem;
+  /* super hacky way to hide a select behind
+   our custom div and still be able to interact with it
+   (there is no way to open select fields programmatically) */
+  & select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
 }
+
 .fr-table table {
   display: table;
   overflow: initial;
+
+  & th:empty,
+  & td:empty {
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+
+    white-space: nowrap;
+  }
 }
 
 .fr-table thead {
   background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
 }
+
 .fr-table .summary {
   color: var(--text-title-blue-france);
   background-size: 100% 2px, 100% 2px;
@@ -263,16 +296,6 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
   box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
 }
 
-.fr-text--align-right {
-  text-align: right !important;
-}
-
-.fr-table tr.legend :is(td, th),
-.fr-table tr.summary :is(td, th) {
-  padding-left: .6rem;
-  padding-right: .6rem;
-}
-
 .fr-table td.numeric,
 .fr-table th.numeric {
   font-variant-numeric: tabular-nums;
@@ -291,6 +314,4 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
     margin: 0;
   }
 }
-
-
 </style>

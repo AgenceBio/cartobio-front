@@ -80,7 +80,7 @@ import { storeToRefs } from 'pinia'
 
 import ParcellaireState from '@/components/record/State.vue'
 import OperatorHistoryModal from '@/components/record/modals/HistoryModal.vue'
-import FeaturesExportModal from '@/components/Features/ExportModal.vue'
+import FeaturesExportModal from '@/components/record/modals/ExportModal.vue'
 import DeleteParcellaireModal from '@/components/record/modals/DeleteParcelaireModal.vue'
 
 import { useFeaturesStore, useOperatorStore, useRecordStore } from '@/stores/index.js'
