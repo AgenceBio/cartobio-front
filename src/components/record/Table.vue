@@ -19,15 +19,17 @@
       </colgroup>
       <thead>
         <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
-          <td class="selection">
+          <td class="selection" colspan="2">
             <div class="fr-checkbox-group single-checkbox">
               <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
               <label class="fr-label" for="radio-mass-edit" />
             </div>
           </td>
-          <td colspan="2">{{ selectedFeatureIds.length }} parcelles sélectionnées</td>
-          <td colspan="2">
-            <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeatureCollectionSubmit" />
+          <td colspan="3">
+            <div>
+              {{ selectedFeatureIds.length }} parcelles sélectionnées
+              <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeatureCollectionSubmit" />
+            </div>
           </td>
         </tr>
         <tr>
@@ -308,6 +310,13 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
 
 .fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before{
   box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
+}
+
+.fr-table .summary.summary__mass-actions td:nth-child(2) div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .fr-table td.numeric,
