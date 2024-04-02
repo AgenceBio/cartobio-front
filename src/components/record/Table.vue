@@ -48,13 +48,26 @@
               </select>
             </div>
           </th>
-          <th scope="col" class="numeric">Surface</th>
+          <th scope="col" class="numeric">
+            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl ">
+              Surface
+            </span>
+          </th>
           <th />
         </tr>
         <tr class="summary" v-if="(selectedFeatureIds.length === 0 && hasFeatures)">
           <td colspan="2"></td>
-          <td class="labels">{{ features.length }} parcelles</td>
-          <td class="numeric">{{ inHa(surface(features)) }}&nbsp;ha</td>
+          <td class="labels">
+            {{ features.length }} parcelles
+            <span class="fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
+              - {{ inHa(surface(features)) }}&nbsp;ha
+            </span>
+          </td>
+          <td class="numeric">
+            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl ">
+            {{ inHa(surface(features)) }}&nbsp;ha
+            </span>
+          </td>
           <th />
         </tr>
       </thead>
@@ -220,17 +233,12 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
 
 <style scoped>
 .selection {
-  min-width: 1.5rem;
+  min-width: 2rem;
 }
 
 .accordion {
   width: 2.5rem;
 }
-
-.surface {
-  width: 1rem;
-}
-
 
 .seamless-select {
   position: relative;
@@ -266,8 +274,14 @@ async function performAsyncRecordAction (promise, text = 'Modification enregistr
     padding: 0;
     font-size: 0;
     line-height: 0;
-
     white-space: nowrap;
+  }
+
+  th:has(span.fr-hidden.fr-unhidden-sm),
+  td:has(span.fr-hidden.fr-unhidden-sm){
+    @media (max-width: 579px) {
+      padding: 0;
+    }
   }
 }
 

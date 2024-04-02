@@ -8,12 +8,21 @@
         </div>
       </td>
       <td class="accordion"><span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" /></td>
-      <th class="labels" scope="row" :data-group-id="featureGroup.key">{{ featureGroup.label }}</th>
-      <td class="surface numeric">{{ inHa(featureGroup.surface) }}&nbsp;ha</td>
+      <th class="labels" scope="row" :data-group-id="featureGroup.key">
+        {{ featureGroup.label }}
+        <small class="group-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
+          {{ inHa(featureGroup.surface) }}&nbsp;ha
+        </small>
+      </th>
+      <td class="surface numeric">
+        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+          {{ inHa(featureGroup.surface) }}&nbsp;ha
+        </span>
+      </td>
       <td class="actions">
         <span
             v-if="groupErrors"
-            class="fr-btn fr-btn--tertiary-no-outline fr-icon-warning-fill fr-icon--warning fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
+            class="fr-btn fr-btn--tertiary-no-outline fr-icon-warning-fill fr-icon--warning"
             :title="`${groupErrors} parcelles à amender`"
         />
       </td>
@@ -202,6 +211,11 @@ tr.parcelle th {
     @media (max-width: 579px) {
       padding: 0;
     }
+  }
+
+  & > .group-precision {
+    display: block;
+    color: var(--text-mention-grey);
   }
 }
 
