@@ -206,23 +206,10 @@ export function setAuthorization (userToken) {
  * @param {File} archive
  * @returns {Promise<CartoBioFeatureCollection>}
  */
-export async function convertShapefileArchiveToGeoJSON (archive) {
+export async function convertTelepacFileToGeoJSON (archive) {
   const form = new FormData()
   form.append('archive', archive)
-  const { data: geojson } = await apiClient.post(`/v2/convert/shapefile/geojson`, form)
-  return geojson
-}
-
-/**
- * Turn a Telepac XML file into a GeoJSON
- *
- * @param {File} archive
- * @returns {GeoJSON}
- */
-export async function convertTelepacXMLToGeoJSON (file) {
-  const form = new FormData()
-  form.append('file', file)
-  const { data: geojson } = await apiClient.post(`/v2/convert/telepac-xml/geojson`, form)
+  const { data: geojson } = await apiClient.post(`/v2/convert/telepac/geojson`, form)
   return geojson
 }
 

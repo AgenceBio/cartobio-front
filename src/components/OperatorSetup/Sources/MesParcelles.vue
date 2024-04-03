@@ -25,7 +25,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { convertTelepacXMLToGeoJSON } from '@/cartobio-api.js'
+import { convertTelepacFileToGeoJSON } from '@/cartobio-api.js'
 import { sources } from "@/referentiels/imports.js"
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
@@ -40,7 +40,7 @@ async function handleFileUpload () {
   emit('upload:start')
 
   try {
-    const geojson = await convertTelepacXMLToGeoJSON(file)
+    const geojson = await convertTelepacFileToGeoJSON(file)
     const metadata = {
       pacage: geojson.features.at(0)?.properties?.PACAGE,
     }
