@@ -417,7 +417,7 @@ describe("OperatorSetupFlow", () => {
     })
 
     const error = new AxiosError('Fichier invalide')
-    error.response = { status : 400 }
+    error.response = { status : 400, data: { error: 'Votre fichier ne semble pas être une déclaration' } }
 
     axios.__createMock.post.mockRejectedValueOnce(error)
 
