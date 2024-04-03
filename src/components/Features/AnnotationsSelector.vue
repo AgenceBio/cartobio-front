@@ -39,7 +39,7 @@
 
   <div class="fr-alert fr-alert--info fr-my-2w" v-if="isSelected(ANNOTATIONS.DOWNGRADED) && featureId">
     <p>
-      Voici l'identifiant de parcelle à renseigner dans l'API&nbsp;Certification
+      Voici l'identifiant de parcelle à renseigner dans l'API&nbsp;Contrôle
       de l'Agence Bio : <code>{{ featureId }}</code>.
     </p>
   </div>
