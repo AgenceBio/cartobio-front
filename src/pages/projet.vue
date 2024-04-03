@@ -1,6 +1,5 @@
 <route lang="yaml">
 meta:
-  generalAudience: true
   seo:
     title: Stratégie et historique du projet CartoBio
 </route>

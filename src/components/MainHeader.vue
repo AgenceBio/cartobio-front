@@ -17,7 +17,7 @@
             </div>
 
             <div class="fr-header__service">
-              <router-link to="/" rel="home">
+              <router-link :to="startPage" rel="home">
                 <p class="fr-header__service-title">
                   CartoBio <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">beta</span>
                 </p>
@@ -27,7 +27,7 @@
             </div>
           </div>
 
-          <div class="fr-hidden fr-unhidden-lg fr-header__tools">
+          <div class="fr-header__tools">
             <div class="fr-header__tools-links">
               <ul class="fr-btns-group" v-if="isLogged">
                 <li class="tool-username" aria-hidden="true">
@@ -43,15 +43,15 @@
                   </router-link>
                 </li>
               </ul>
-              <ul class="fr-btn-group" v-else>
-                <li v-if="$route.meta.generalAudience">
-                  <router-link to="/pro" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
-                    Accès professionnel
-                  </router-link>
-                </li>
-                <li v-else>
+              <ul class="fr-btns-group" v-else>
+                <li>
                   <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
                     Connexion
+                  </router-link>
+                </li>
+                <li>
+                  <router-link to="/projet" class="fr-btn fr-icon-question-line fr-btn--icon-left">
+                    À propos
                   </router-link>
                 </li>
               </ul>
@@ -60,10 +60,10 @@
         </div>
       </div>
 
-      <div class="fr-header__menu" v-if="isLogged && userStore.isOc">
+      <div class="fr-header__menu">
         <div class="fr-container">
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
-            <ul class="fr-nav__list">
+            <ul class="fr-nav__list" v-if="isLogged">
               <li class="fr-nav__item">
                 <router-link :to="startPage" class="fr-nav__link">
                   Exploitations
@@ -71,9 +71,6 @@
               </li>
               <li class="fr-nav__item">
                 <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link">Centre d'aide</a>
-              </li>
-              <li class="fr-nav__item">
-                <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
                 <router-link to="/logout" custom v-slot="{ href }">
@@ -83,29 +80,15 @@
                 </router-link>
               </li>
             </ul>
-          </nav>
-        </div>
-      </div>
-      <div class="fr-header__menu" v-else-if="(isLogged && userStore.isAgri)">
-        <div class="fr-container">
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
-            <ul class="fr-nav__list">
+            <ul class="fr-nav__list" v-else>
               <li class="fr-nav__item">
-                <router-link :to="startPage" class="fr-nav__link">
-                  Mes exploitations
+                <router-link to="/" class="fr-nav__link">
+                  Grand public
                 </router-link>
               </li>
               <li class="fr-nav__item">
-                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link">Centre d'aide</a>
-              </li>
-              <li class="fr-nav__item">
-                <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
-              </li>
-              <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }">
-                  <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
-                    Déconnexion
-                  </a>
+                <router-link to="/pro" class="fr-nav__link">
+                  Agriculteur·ice
                 </router-link>
               </li>
             </ul>
