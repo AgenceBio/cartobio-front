@@ -809,7 +809,7 @@
 
 :root {
   --z-index-map: calc(var(--ground) + 10);
-  --z-index-mass-actions: calc(var(--ground) + 50);
+  --z-index-dropdown: calc(var(--ground) + 50);
   --z-index-map-large: calc(var(--ground) + 100);
 }
 

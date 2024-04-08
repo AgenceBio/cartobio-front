@@ -87,16 +87,22 @@
             <td class="actions">
               <button type="button" class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }" @click="toggleEditForm(feature.id)" aria-label="Modifier" />
 
-              <ActionDropdown>
-                <router-link v-if="permissions.canChangeGeometry" :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+              <ActionDropdown with-icons>
+                <li v-if="permissions.canChangeGeometry">
+                  <router-link :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
                   Modifier le contour
                 </router-link>
-                <button v-else type="button" disabled class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
-                  Modifier le contour
-                </button>
-                <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
-                  Supprimer la parcelle
-                </button>
+                </li>
+                <li v-else>
+                  <button type="button" disabled class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+                    Modifier le contour
+                  </button>
+                </li>
+                <li>
+                  <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
+                    Supprimer la parcelle
+                  </button>
+                </li>
               </ActionDropdown>
             </td>
           </tr>
