@@ -107,8 +107,9 @@ function handlerAPIErrors(error) {
     return true
   }
 
-  // Token has expired: we disconnect and force render the current page to trigger the login mechanism
-  if (error.name === "AxiosError" && error.response?.status === 401) {
+  // Token has expired, as stated by the API error code
+  // We disconnect and force render the current page to trigger the login mechanism
+  if (error?.response?.data?.code === 'EXPIRED_CREDENTIALS') {
     const { path, params } = router.currentRoute.value
 
     userStore.logout()
@@ -137,7 +138,9 @@ router.onError((error, to) => {
     return
   }
 
-  toast.error('Une erreur est survenue. La page n\'a pas pu être chargée.')
+  // try to prefetch errors from response
+  const { message = 'Une erreur est survenue. La page n\'a pas pu être chargée.' } = error?.response?.data ?? {}
+  toast.error(message)
   console.error(error)
   throw error
 })
