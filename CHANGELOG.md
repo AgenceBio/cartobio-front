@@ -1,3 +1,19 @@
+# [2.23.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.0...v2.23.0) (2023-04-?)
+
+* Nouveau Tableau de Bord avec recherche et tri sur les statuts
+* L'import Telepac accepte le fichier "Dossier complet XML", en plus des fichiers "Parcelles déclarées" et "Parcelles instruites"
+* L'import Telepac n'accepte plus les fichiers "Ilots déclarés" et "Ilots instruits"
+* Affichage des "Notes de l'auditeur·ice" dès qu'elles sont disponibles (et non plus quand le parcellaire est certifié)
+* Meilleure gestion de l'expiration de connexion
+* API Écriture : les dates de début et de fin de validité de certificat sont enregistrées
+* Correctifs de sécurité
+
+# 2.22.1—4
+
+* Le bouton "Créer une nouvelle version" apparait à nouveau sur un profil agriculteur·ice
+* Affichage des plages de validité du certificat bio
+* Diverses corrections visuelles et textuelles
+
 # [2.22.0](https://github.com/AgenceBio/cartobio-front/compare/v2.21.0...v2.22.0) (2023-03-11)
 
 * Gestion des versions d'une exploitation agricole
