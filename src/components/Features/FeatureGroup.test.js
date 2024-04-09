@@ -40,11 +40,11 @@ describe("FeatureGroup", () => {
     expect(header.attributes()).not.toHaveProperty('hidden')
 
     // we have default columns
-    const headers = header.findAll('*')
+    const headers = header.findAll('th')
     expect(headers.at(0).text()).toEqual('')
     expect(headers.at(1).text()).toEqual('Nom')
     expect(headers.at(2).text()).toEqual('Certification')
-    expect(headers.at(3).text()).toEqual('')
+    expect(headers.at(3).text()).toEqual('Surface')
 
     // we should have a multi culture name within the 3rd cell
     expect(wrapper.find('#parcelle-2 .feature-precision').text()).toEqual('Multi-culture')

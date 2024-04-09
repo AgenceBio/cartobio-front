@@ -100,10 +100,14 @@
                 </router-link>
               </li>
               <li class="fr-nav__item">
-                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">Aide</a>
+                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
+                  Aide
+                </a>
               </li>
               <li class="fr-nav__item">
-                <router-link to="/projet" class="fr-nav__link">À propos de CartoBio</router-link>
+                <router-link to="/projet" class="fr-nav__link">
+                  À propos de CartoBio
+                </router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
                 <router-link  v-if="isLogged" to="/logout" custom v-slot="{ href }">
