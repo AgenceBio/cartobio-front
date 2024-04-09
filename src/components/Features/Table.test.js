@@ -9,9 +9,9 @@ import { useFeaturesStore, usePermissions, useRecordStore } from "@/stores/index
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import Modal from "@/components/Modal.vue"
-import DeleteFeatureModal from "@/components/Features/DeleteFeatureModal.vue"
+import DeleteFeatureModal from "@/components/record/modals/DeleteFeatureModal.vue"
 import EditForm from "@/components/Features/SingleItemOperatorForm.vue"
-import TableComponent from "./Table.vue"
+import TableComponent from "../record/Table.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const recordStore = useRecordStore(pinia)
@@ -31,7 +31,7 @@ describe("Features Table", () => {
   test("features are listed as 3 groups of 2 and 1 and 2 features (one being multi-crops)", () => {
     const wrapper = mount(TableComponent)
 
-    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("4 parcelles")
+    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toContain("4 parcelles")
     expect(wrapper.findAll('table tbody')).toHaveLength(3)
     expect(wrapper.find('#parcelle-1').attributes()).toHaveProperty('hidden', '')
   })
@@ -69,7 +69,7 @@ describe("Features Table", () => {
     await wrapper.find('.fr-tags-group--tags .tag--annotation_surveyed').trigger('click')
     await flushPromises()
 
-    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toBe("1 parcelles")
+    expect(wrapper.find('tr.summary td:nth-child(2)').text()).toContain("1 parcelles")
     expect(wrapper.findAll('tr.parcelle')).toHaveLength(1)
     expect(featuresStore.all).toHaveLength(4)
   })
@@ -83,8 +83,8 @@ describe("Features Table", () => {
     await flushPromises()
     const groups = wrapper.findAll('table tbody')
 
-    expect(groups.at(0).find('th[scope="row"]').text()).toEqual('26108')
-    expect(groups.at(1).find('th[scope="row"]').text()).toEqual('26113')
+    expect(groups.at(0).find('th[scope="row"]').text()).toContain('26108')
+    expect(groups.at(1).find('th[scope="row"]').text()).toContain('26113')
   })
 
   test("we select a feature and its unfolds the group", async () => {
@@ -133,12 +133,13 @@ describe("Features Table", () => {
 
     await wrapper.find('.group-header').trigger('click')
     await wrapper.find('#parcelle-3 .show-actions').trigger('click')
-    await wrapper.find('.fr-icon-delete-line').trigger('click')
+    await wrapper.find('#parcelle-3 .menu-container .fr-icon-delete-line').trigger('click')
 
     // we trigger the deletion
     axios.__createMock.delete.mockResolvedValueOnce(record)
 
     const modal = wrapper.getComponent(DeleteFeatureModal)
+    expect(modal.text()).toContain("parcelle 3")
     await modal.find('#deletion-reason').setValue(DeletionReasonsCode.OTHER)
     await modal.find('#deletion-details').setValue('Parce que')
     await modal.find('button.fr-icon-delete-line').trigger('click')

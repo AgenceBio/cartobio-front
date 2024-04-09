@@ -7,12 +7,12 @@
             <div class="fr-header__brand-top">
               <div class="fr-header__logo">
                 <p class="fr-logo">
-                  République<br />française
+                  Agence Bio
                 </p>
               </div>
 
               <div class="fr-header__operator">
-                <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img logo" alt="L'Agence Bio" />
+                <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg logo" alt="L'Agence Bio" />
               </div>
             </div>
 
@@ -23,21 +23,47 @@
                 </p>
               </router-link>
 
-              <p class="fr-header__service-tagline">Parcellaire cultivé en Agriculture Biologique</p>
+              <p class="fr-header__service-tagline fr-hidden fr-unhidden-sm">Parcellaire cultivé en Agriculture Biologique</p>
+            </div>
+
+            <div class="fr-header__navbar">
+              <button
+                  title="Menu"
+                  class="fr-btn--menu fr-btn"
+                  id="mobile-menu-button"
+                  :data-fr-opened="menuIsOpen"
+                  aria-controls="mobile-menu"
+                  aria-haspopup="menu"
+                  @click="menuIsOpen = !menuIsOpen"
+              >
+                Menu
+              </button>
             </div>
           </div>
 
           <div class="fr-header__tools">
             <div class="fr-header__tools-links">
+              <ul class="fr-btns-group">
+                <li>
+                  <router-link to="/projet" class="fr-btn">
+                    À propos
+                  </router-link>
+                </li>
+                <li>
+                  <a :href="documentationPage" class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill">
+                    Aide
+                  </a>
+                </li>
+              </ul>
               <ul class="fr-btns-group" v-if="isLogged">
                 <li class="tool-username" aria-hidden="true">
-                  <router-link :to="startPage" :class="['fr-btn', 'fr-icon--sm', 'fr-mr-1w', roleIcon]">
+                  <router-link :to="startPage" :class="['fr-btn', 'fr-mr-1w', roleIcon]">
                     {{ user.nom }}
                   </router-link>
                 </li>
                 <li class="tool-logout">
                   <router-link to="/logout" custom v-slot="{ href }">
-                    <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout" aria-role="button">
+                    <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout">
                       Déconnexion
                     </a>
                   </router-link>
@@ -49,46 +75,48 @@
                     Connexion
                   </router-link>
                 </li>
-                <li>
-                  <router-link to="/projet" class="fr-btn fr-icon-question-line fr-btn--icon-left">
-                    À propos
-                  </router-link>
-                </li>
               </ul>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="fr-header__menu">
+      <div
+          class="fr-header__menu fr-modal fr-hidden-lg"
+          id="mobile-menu"
+          :class="{ 'fr-modal--opened': menuIsOpen }"
+          aria-labelledby="mobile-menu-button"
+      >
         <div class="fr-container">
+          <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
+            Fermer
+          </button>
+          <div class="fr-header__menu-links" />
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
-            <ul class="fr-nav__list" v-if="isLogged">
-              <li class="fr-nav__item">
-                <router-link :to="startPage" class="fr-nav__link">
-                  Exploitations
+            <ul class="fr-nav__list">
+              <li class="fr-nav__item" v-if="isLogged">
+                <router-link :to="startPage" class="fr-nav__link fr-btn--icon-left" :class="roleIcon" aria-current="false">
+                  {{ user.nom }}
                 </router-link>
               </li>
               <li class="fr-nav__item">
-                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link">Centre d'aide</a>
+                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
+                  Aide
+                </a>
+              </li>
+              <li class="fr-nav__item">
+                <router-link to="/projet" class="fr-nav__link">
+                  À propos de CartoBio
+                </router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link to="/logout" custom v-slot="{ href }">
-                  <a :href="href" @click.prevent="logout" class="fr-nav__link" aria-role="button">
+                <router-link  v-if="isLogged" to="/logout" custom v-slot="{ href }">
+                  <a :href="href" @click.prevent="logout" class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
                     Déconnexion
                   </a>
                 </router-link>
-              </li>
-            </ul>
-            <ul class="fr-nav__list" v-else>
-              <li class="fr-nav__item">
-                <router-link to="/" class="fr-nav__link">
-                  Grand public
-                </router-link>
-              </li>
-              <li class="fr-nav__item">
-                <router-link to="/pro" class="fr-nav__link">
-                  Agriculteur·ice
+                <router-link v-else to="/login" aria-role="button" class="fr-nav__link  fr-btn--icon-left fr-icon-account-circle-fill">
+                  Connexion
                 </router-link>
               </li>
             </ul>
@@ -96,6 +124,26 @@
         </div>
       </div>
     </div>
+
+    <div class="fr-header__menu" v-if="!isLogged">
+      <div class="fr-container">
+        <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+          <ul class="fr-nav__list">
+            <li class="fr-nav__item">
+              <router-link to="/" class="fr-nav__link">
+                Grand public
+              </router-link>
+            </li>
+            <li class="fr-nav__item">
+              <router-link to="/pro" class="fr-nav__link">
+                Agriculteur·ice
+              </router-link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
     <div class="fr-notice fr-notice--info" v-if="isStaging">
       <div class="fr-container">
         <div class="fr-notice__body">
@@ -113,13 +161,17 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
 
 const userStore = useUserStore()
 const router = useRouter()
+
+router.afterEach(() => {
+  menuIsOpen.value = false
+})
 
 const ROLE_ICONS = new Map([
   [ROLES.OC_AUDIT, 'fr-icon-medal-fill'],
@@ -139,11 +191,13 @@ const roleIcon = computed(() => {
   return 'fr-icon-account-circle-fill'
 })
 
+const menuIsOpen = ref(false)
+
 async function logout() {
   const redirectUrl = (userStore.isOc || userStore.isAgri) ? '/pro' : '/'
 
   await userStore.logout()
-  router.push(redirectUrl)
+  await router.push(redirectUrl)
 }
 </script>
 
@@ -156,17 +210,27 @@ async function logout() {
   flex-shrink: 0;
 }
 
+.fr-header__brand-top {
+  width: auto;
+}
+
+.fr-header__service {
+  width: auto;
+  box-shadow: none;
+}
+
 .tool-username {
   flex-shrink: 1;
   max-width: 30vw !important;
 }
-  .tool-username span {
-    display: inline-block;
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-    max-width: 100% !important;
-  }
-  .tool-username span::before {
-    display: inline-block;
-  }
+
+.tool-username span {
+  display: inline-block;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  max-width: 100% !important;
+}
+.tool-username span::before {
+  display: inline-block;
+}
 </style>

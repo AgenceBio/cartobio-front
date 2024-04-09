@@ -21,8 +21,8 @@ describe("MainHeader", () => {
     const wrapper = mount(MainHeader)
 
     expect(wrapper.find('.tool-username').exists()).toEqual(false)
-    expect(wrapper.find('.fr-header__tools').text()).toEqual('Connexion  À propos')
-    expect(wrapper.find('[role="navigation"]').text()).toEqual('Grand public  Agriculteur·ice')
+    expect(wrapper.find('.fr-header__tools').text()).toEqual('À propos  Aide  Connexion')
+    expect(wrapper.find('[role="navigation"]').text()).toEqual('Aide  À propos de CartoBio  Connexion')
   })
 
   test("with a warning header", async () => {
@@ -51,18 +51,18 @@ describe("MainHeader", () => {
     })
 
     expect(wrapper.find('.tool-username').exists()).toEqual(false)
-    expect(wrapper.find('.fr-header__tools').text()).toEqual('Connexion  À propos')
-    expect(wrapper.find('[role="navigation"] a[target="_blank"]').exists()).toEqual(false)
+    expect(wrapper.find('.fr-header__tools').text()).toEqual('À propos  Aide  Connexion')
   })
 
   test("as a certification body", async () => {
     const wrapper = mount(MainHeader)
     user.isLogged = true
+    user.user = { nom: 'Nom' }
     user.roles = [ROLES.OC_AUDIT]
     await flushPromises()
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-medal-fill')).toEqual(true)
-    expect(wrapper.find('[role="navigation"]').text()).toEqual('Exploitations Centre d\'aide Déconnexion')
+    expect(wrapper.find('[role="navigation"]').text()).toEqual('Nom Aide  À propos de CartoBio  Déconnexion')
     expect(wrapper.find('[role="navigation"] a').attributes('href')).toEqual('/certification/exploitations')
     expect(wrapper.find('[role="navigation"] a[target="_blank"]').attributes('href')).toEqual('https://docs-cartobio.agencebio.org/organisme-certification')
 
@@ -73,11 +73,12 @@ describe("MainHeader", () => {
   test("as a farmer", async () => {
     const wrapper = mount(MainHeader)
     user.isLogged = true
+    user.user = { nom: 'Nom' }
     user.roles = [ROLES.OPERATEUR]
     await flushPromises()
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-plant-fill')).toEqual(true)
-    expect(wrapper.find('[role="navigation"]').text()).toEqual('Exploitations Centre d\'aide Déconnexion')
+    expect(wrapper.find('[role="navigation"]').text()).toEqual('Nom Aide  À propos de CartoBio  Déconnexion')
     expect(wrapper.find('[role="navigation"] a').attributes('href')).toEqual('/exploitations')
     expect(wrapper.find('[role="navigation"] a[target="_blank"]').attributes('href')).toEqual('https://docs-cartobio.agencebio.org/agriculteurs.trices')
   })
@@ -85,10 +86,11 @@ describe("MainHeader", () => {
   test("as unknown role", async () => {
     const wrapper = mount(MainHeader)
     user.isLogged = true
+    user.user = { nom: 'Nom' }
     user.roles = []
     await flushPromises()
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-account-circle-fill')).toEqual(true)
-    expect(wrapper.find('[role="navigation"]').text()).toEqual('Exploitations Centre d\'aide Déconnexion')
+    expect(wrapper.find('[role="navigation"]').text()).toEqual('Nom Aide  À propos de CartoBio  Déconnexion')
   })
 })

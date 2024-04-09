@@ -1,10 +1,10 @@
 <template>
-  <header class="fr-mb-6v">
-    <span :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
-    <h1 class="fr-h4 fr-my-2v">
+  <header class="fr-mb-2w">
+    <span class="fr-text--bold" :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
+    <h1 class="fr-h4 fr-my-0 fr-mb-1v">
       {{ record.version_name }}
 
-      <button class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
+      <button v-if="!disableActions" class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
         Modifier la version
       </button>
     </h1>
@@ -14,7 +14,7 @@
     </p>
 
 
-    <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--inline-sm fr-btns-group--icon-left fr-mt-4v">
+    <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--sm fr-btns-group--inline-sm fr-btns-group--icon-left">
       <nav role="navigation" class="fr-translate fr-nav">
         <div class="fr-nav-item">
           <button
@@ -51,22 +51,9 @@
         Historique
       </button>
 
-      <button v-if="hasFeatures" class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-road-map-line" @click="exportModal = true">
-        Export
+      <button v-if="hasFeatures" class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2" @click="exportModal = true">
+        Exporter
       </button>
-    </div>
-
-    <div
-        v-if="permissions.isAgri && record.certification_state !== CERTIFICATION_STATE.OPERATOR_DRAFT"
-        class="fr-alert fr-alert--info fr-alert--sm fr-mt-6v fr-mb-0"
-    >
-      <p class="fr-text--sm">Votre parcellaire est en cours de certification, vous ne pouvez pas modifier les données.</p>
-    </div>
-
-    <div class="demandes fr-callout fr-callout--blue-ecume fr-mt-6v fr-mb-0" v-if="record.audit_demandes">
-      <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
-
-      <div v-html="record.audit_demandes" />
     </div>
   </header>
 
@@ -91,13 +78,12 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import ParcellaireState from '@/components/Certification/State.vue'
-import OperatorHistoryModal from '@/components/Operator/HistoryModal.vue'
-import FeaturesExportModal from '@/components/Features/ExportModal.vue'
-import DeleteParcellaireModal from '@/components/Operator/DeleteParcelaireModal.vue'
+import ParcellaireState from '@/components/record/State.vue'
+import OperatorHistoryModal from '@/components/record/modals/HistoryModal.vue'
+import FeaturesExportModal from '@/components/record/modals/ExportModal.vue'
+import DeleteParcellaireModal from '@/components/record/modals/DeleteParcelaireModal.vue'
 
-import { CERTIFICATION_STATE } from '@/referentiels/ab.js'
-import { useFeaturesStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesStore, useOperatorStore, useRecordStore } from '@/stores/index.js'
 import { onClickOutside } from "@vueuse/core"
 import EditVersionModal from "@/components/versions/EditVersionModal.vue"
 
@@ -114,7 +100,6 @@ const deleteModal = ref(false)
 const featuresStore = useFeaturesStore()
 const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
-const permissions = usePermissions()
 const { record } = recordStore
 const { operator } = operatorStore
 const { collection, hasFeatures } = storeToRefs(featuresStore)
@@ -146,20 +131,16 @@ header {
 }
 
 .actions {
-  background: var(--light-background-alt-blue-france, #F5F5FE);
-  display: flex;
   position: relative;
-}
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+  margin: 0;
 
-@media screen and (min-width: 62em) {
-  .actions {
-    flex-direction: row;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  div.actions .fr-btn {
-    margin-bottom: 0;
+  .fr-btn {
+    margin: 0;
+    flex-grow: 0;
+    width: auto;
   }
 }
 
@@ -168,6 +149,7 @@ header {
 .fr-menu {
   position: absolute;
   top: 100%;
+  left: 0.5rem;
   width: 9rem;
   padding: 0;
   margin: 0;
