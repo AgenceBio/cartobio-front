@@ -244,6 +244,7 @@ td:has(table) {
   margin: 0;
   padding: 0;
   width: 100%;
+  display: table;
   overflow: visible;
 
   & .selection {
