@@ -19,6 +19,7 @@ useFocus(autofocusedElement, { initialValue: true })
 const patch = reactive({
   version_name: record.version_name,
   audit_date: record.audit_date,
+  certification_date_debut: record.certification_date_debut,
   certification_date_fin: record.certification_date_fin
 })
 
@@ -26,6 +27,7 @@ function save() {
   recordStore.updateInfo({
     version_name: patch.version_name,
     ...(patch.audit_date && { audit_date: patch.audit_date }),
+    ...(!record.certification_date_debut && { certification_date_debut: patch.certification_date_debut }),
     ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin })
   })
 
