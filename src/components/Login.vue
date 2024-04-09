@@ -15,7 +15,7 @@
 
       <p>
         <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/connexion" class="fr-link" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
-          Qu'est-ce que mon compte Agence Bio ?
+          Comment se connecter ?
         </a>
       </p>
     </div>

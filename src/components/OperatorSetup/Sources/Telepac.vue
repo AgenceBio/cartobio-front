@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="fr-upload-group fr-mb-5w">
-      <input type="file" ref="fileInput" accept=".zip" @change="handleFileUpload" hidden />
+      <input type="file" ref="fileInput" accept=".zip,.xml" @change="handleFileUpload" hidden />
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
         Sélectionner ma dernière déclaration PAC
       </button>
@@ -25,7 +25,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { convertShapefileArchiveToGeoJSON } from '@/cartobio-api.js'
+import { convertTelepacFileToGeoJSON } from '@/cartobio-api.js'
 import { useTélépac } from '@/referentiels/pac.js'
 
 const emit = defineEmits(['upload:start', 'upload:complete'])
@@ -42,7 +42,7 @@ async function handleFileUpload () {
   emit('upload:start')
 
   try {
-    const geojson = await convertShapefileArchiveToGeoJSON(archive)
+    const geojson = await convertTelepacFileToGeoJSON(archive)
     const metadata = {
       campagne: geojson.features.at(0)?.properties?.CAMPAGNE,
       pacage: geojson.features.at(0)?.properties?.PACAGE,
@@ -55,7 +55,7 @@ async function handleFileUpload () {
     emit('upload:complete', { geojson, source, warnings, metadata })
   } catch (error) {
     if (error.response?.status >= 400 && error.response?.status < 500) {
-      erreur.value = 'Votre fichier ne semble pas être une déclaration PAC valide.'
+      erreur.value = error.response.data.error
     } else {
       erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
       throw error

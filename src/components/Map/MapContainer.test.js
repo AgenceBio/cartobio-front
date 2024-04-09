@@ -8,7 +8,7 @@ import LayerSelector from "./LayerSelector.vue"
 describe("MapContainer", () => {
   test('we display navigation with no interactive elements', async () => {
     mount(MapContainer, {
-      props: { controls: false }
+      props: { controls: false, bounds: [] }
     })
 
     expect(NavigationControl).toHaveBeenCalledTimes(0)
@@ -17,7 +17,7 @@ describe("MapContainer", () => {
 
   test('we display navigation control, without attribution', async () => {
     const wrapper = mount(MapContainer, {
-      props: { controls: true }
+      props: { controls: true, bounds: [] }
     })
 
     expect(NavigationControl).toHaveBeenCalledTimes(1)
@@ -30,7 +30,7 @@ describe("MapContainer", () => {
 
   test('we display navigation control and attribution', async () => {
     const wrapper = mount(MapContainer, {
-      props: { showAttribution: true }
+      props: { showAttribution: true, bounds: [] }
     })
 
     expect(NavigationControl).toHaveBeenCalledOnce()

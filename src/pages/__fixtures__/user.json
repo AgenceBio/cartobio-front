@@ -1,0 +1,14 @@
+{
+  "id": 1,
+  "prenom": "Test",
+  "nom": "Utilisateur",
+  "organismeCertificateur": {
+    "id": 999,
+    "nom": "CartobiOC",
+    "numeroControleEu": "FR-BIO-999"
+  },
+  "groups": [
+    { "nom": "Auditeur"}
+  ],
+  "mainGroup": {"nom": "Auditeur"}
+}

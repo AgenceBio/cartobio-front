@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-alert fr-alert--warning fr-mb-3w" v-if="featuresSet.hasRequiredSets">
+  <div class="fr-alert fr-alert--warning fr-mt-6v" v-if="featuresSet.hasRequiredSets">
     <p v-for="([ruleId, result]) in featuresSet.required" :key="ruleId">
       {{ result.errorMessage }} pour {{ inflex(result.count, 'parcelle', 'parcelles') }}.
 
