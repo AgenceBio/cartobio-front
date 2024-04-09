@@ -4,7 +4,7 @@
     <h1 class="fr-h4 fr-my-0 fr-mb-1v">
       {{ record.version_name }}
 
-      <button class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
+      <button v-if="!disableActions" class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
         Modifier la version
       </button>
     </h1>
