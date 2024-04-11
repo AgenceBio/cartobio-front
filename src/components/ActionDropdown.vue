@@ -72,7 +72,7 @@ watch(show, (value) => {
     </slot>
       <dialog class="menu-container" :open="show">
         <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
-          <ul class="fr-menu__list fr-btns-group fr-btns-group--equisized" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
+          <ul class="fr-menu__list fr-btns-group" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
             <slot/>
           </ul>
         </div>
@@ -143,7 +143,7 @@ watch(show, (value) => {
     }
   }
 
-  :deep(.fr-menu__list) {
+  .fr-menu__list {
     border-radius: 0.3125rem;
     margin: 0;
     width: auto;
@@ -154,8 +154,10 @@ watch(show, (value) => {
     box-shadow: inset 0 1px 0 0 var(--border-open-blue-france);
   }
 
-  :deep(.fr-btn) {
+  :deep(li .fr-btn) {
     margin: 0;
+    text-align: left;
+    justify-content: flex-start;
     padding: 0.75rem !important;
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
