@@ -50,7 +50,7 @@
                   </router-link>
                 </li>
                 <li>
-                  <a :href="documentationPage" class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill">
+                  <a :href="documentationPage" target="_blank" class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill">
                     Aide
                   </a>
                 </li>
