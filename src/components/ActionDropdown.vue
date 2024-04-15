@@ -48,14 +48,14 @@ onClickOutside(actionsMenuRef, () => {
 watch(show, (value) => {
   if (value && !window.matchMedia('(min-width: 580px)').matches) {
     useHead({ htmlAttrs: {
-        'data-fr-scrolling': true,
+        'style': 'overflow: hidden;',
         tagDuplicateStrategy: 'replace'
       }
     })
   } else {
     useHead({
       htmlAttrs: {
-        'data-fr-scrolling': null,
+        'style': '',
         tagDuplicateStrategy: 'replace'
       }
     })
