@@ -61,7 +61,7 @@ function getSheet () {
       surfaceHa,
       props.engagement_date ? new Date(props.engagement_date) : '',
       props.conversion_niveau,
-      generateAutresInfos([{ properties: props }], { withAnnotations: true, initialCulture: culture?.code_cpf, permissions }),
+      generateAutresInfos([{ properties: props }], { withAnnotations: true, withExplicitName: true, withName: true, initialCulture: culture?.code_cpf, permissions }),
       String(props.id),
       culture?.code_cpf
     ]

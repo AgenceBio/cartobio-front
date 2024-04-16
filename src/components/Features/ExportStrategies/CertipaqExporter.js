@@ -85,7 +85,7 @@ function getSheet () {
       // Libellé Culture  #C
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures?.at(0).CPF})`,
       // Variété / infos  #D
-      generateAutresInfos([{ id, geometry, properties: props }], { withCode: false, withDate: false, withName: false, withNotes: true, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withCode: false, withDate: false, withExplicitName: true, withName: false, withNotes: true, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',

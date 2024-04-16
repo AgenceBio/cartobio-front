@@ -50,7 +50,7 @@ function getSheet () {
 
   getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ features, mainKey, surface }, index) => {
     const culture = fromCodeCpf(mainKey)
-    const autresInfos = generateAutresInfos(features, { withAnnotations: true, pivot: mainKey, permissions })
+    const autresInfos = generateAutresInfos(features, { withAnnotations: true, withExplicitName: true, withName: true, pivot: mainKey, permissions })
 
     sheet_add_aoa(sheet, [
       [

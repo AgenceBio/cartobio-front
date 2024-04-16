@@ -35,7 +35,7 @@ describe('ControlUnionExporter', () => {
         1.0464881572673355,
         new Date('2023-01-01T00:00:00.000Z'),
         'C1',
-        '1.1, Visitée',
+        '1.1 (nom personnalisé), Visitée',
         '1',
         '01.19.10.8',
       ],

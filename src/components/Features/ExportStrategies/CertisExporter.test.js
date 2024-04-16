@@ -46,7 +46,7 @@ describe('CertisExporter', () => {
         "Id. Parcelle"
       ],
       [
-        '',
+        'nom personnalisé',
         '1',
         '1',
         1.0464881572673355,

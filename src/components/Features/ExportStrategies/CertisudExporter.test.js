@@ -47,7 +47,7 @@ describe('CertisudExporter', () => {
         'Luzerne',
         // expect.closeTo(2.1), // in vite@5 + vitest@1
         2.092976314534671,
-        '1.1, Visitée ; 1.2, Prélèvement effectué, À risque',
+        '1.1 (nom personnalisé), Visitée ; 1.2, Prélèvement effectué, À risque',
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),
         '1,2'

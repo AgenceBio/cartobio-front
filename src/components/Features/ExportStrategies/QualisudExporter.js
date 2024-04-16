@@ -55,7 +55,7 @@ function getSheet () {
       [
         firstCulture?.code_cpf ?? `[ERREUR] culture inconnue (${properties.cultures.at(0)?.CPF})`,
         autresInfos,
-        featureName({ properties }, { placeholder: '' }),
+        featureName({ properties }, { placeholder: '', explicitName: true }),
         surface(geometry) / 10_000,
         properties.conversion_niveau,
         properties.engagement_date ? new Date(properties.engagement_date) : '',
