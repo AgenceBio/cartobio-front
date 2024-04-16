@@ -486,7 +486,8 @@ describe('featureName', () => {
     }
 
     expect(featureName(feature)).toEqual('ilot 1, parcelle 1 (les muriers)')
-    expect(featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).toEqual('1.1')
+    expect(featureName(feature, { explicitName: false, ilotLabel: '', parcelleLabel: '', separator: '.' })).toEqual('1.1')
+    expect(featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.' })).toEqual('1.1 (les muriers)')
   })
 
   test('get as ILOT (because PARCELLE is not parseable)', () => {

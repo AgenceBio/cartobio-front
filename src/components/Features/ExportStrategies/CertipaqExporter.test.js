@@ -41,7 +41,7 @@ describe('CertipaqExporter', () => {
         '',
         '1_1',
         'Luzerne',
-        '',
+        'nom personnalisé',
         '',
         '',
         '1,05',

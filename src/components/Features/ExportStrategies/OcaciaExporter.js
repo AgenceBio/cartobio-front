@@ -52,13 +52,13 @@ function getSheet () {
       // Commune
       props.COMMUNE_LABEL,
       // Ilot
-      featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }),
+      featureName({ properties: props }, { explicitName: false, ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }),
       // Culture
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures.at(0)?.CPF})`,
       // N° Cadastre
       props.cadastre,
       // Variété / infos
-      generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withName: false, withNotes: false, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withDate: false, withExplicitName: false, withName: false, withNotes: false, withSurface: false, withVariete: true, initialCulture: culture?.code_cpf }),
       // C0 - AB - C1 - C2 - C3
       props.conversion_niveau === 'CONV' ? surfaceHa : '',
       props.conversion_niveau === 'AB' ? surfaceHa : '',
@@ -68,7 +68,7 @@ function getSheet () {
       // Date conv #K
       props.engagement_date ? new Date(props.engagement_date) : '',
       // Observation / date de semis
-      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withDate: true, withName: false, withNotes: true, withSurface: true, withVariete: false, initialCulture: culture?.code_cpf, permissions }),
+      generateAutresInfos([{ id, geometry, properties: props }], { withAnnotations: true, withDate: true, withExplicitName: true, withName: false, withNotes: true, withSurface: true, withVariete: false, initialCulture: culture?.code_cpf, permissions }),
       // Précédent
       '',
       // Anté précédent

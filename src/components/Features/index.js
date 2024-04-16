@@ -346,10 +346,10 @@ export function getFeatureById (features, id) {
 
 /**
  * @param {Feature} feature
- * @param {{ ilotLabel?: string, parcelleLabel?: string, separator?: string, placeholder?: string}} options
+ * @param {{ explicitName?: boolean, ilotLabel?: string, parcelleLabel?: string, separator?: string, placeholder?: string}} options
  * @returns {String}
  */
-export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', ', placeholder = '-'} = {}) {
+export function featureName (feature, { explicitName = true, ilotLabel = 'ilot ', parcelleLabel = 'parcelle ', separator = ', ', placeholder = '-'} = {}) {
   const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10)
   const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10)
 
@@ -365,7 +365,7 @@ export function featureName (feature, { ilotLabel = 'ilot ', parcelleLabel = 'pa
       return feature.properties.NOM ?? placeholder
     }
 
-    return (ilotLabel && parcelleLabel && feature.properties.NOM ? `${name} (${feature.properties.NOM})` : (name ?? placeholder))
+    return `${name ?? placeholder}${explicitName && feature.properties.NOM ? ` (${feature.properties.NOM})` : ''}`
   }
 
   if (feature.properties.cadastre) {

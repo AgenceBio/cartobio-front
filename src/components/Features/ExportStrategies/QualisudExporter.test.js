@@ -31,7 +31,7 @@ describe('QualisudExporter', () => {
       [
         '01.19.10.8',
         'Visitée',
-        'ilot 1, parcelle 1',
+        'ilot 1, parcelle 1 (nom personnalisé)',
         1.0464881572673355,
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),

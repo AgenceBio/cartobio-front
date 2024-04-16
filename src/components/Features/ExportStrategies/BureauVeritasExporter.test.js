@@ -60,7 +60,7 @@ describe('BureauVeritasExporter', () => {
         "Luzerne",
         "1125",
         "",
-        "Ilots : 1.1 ; 1.2",
+        "Ilots : 1.1 (nom personnalisé) ; 1.2",
         2.092976314534671,
         "ha",
         "C1",
