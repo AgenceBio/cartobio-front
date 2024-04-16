@@ -34,6 +34,7 @@
           "NUMERO_I": "1",
           "NUMERO_P": "1",
           "COMMUNE": "26108",
+          "NOM": "nom personnalisé",
           "engagement_date": "2023-01-01",
           "conversion_niveau": "C1",
           "cultures": [

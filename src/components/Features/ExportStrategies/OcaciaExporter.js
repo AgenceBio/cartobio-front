@@ -52,7 +52,7 @@ function getSheet () {
       // Commune
       props.COMMUNE_LABEL,
       // Ilot
-      featureName({ properties: props }, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }),
+      featureName({ properties: props }, { explicitName: false, ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }),
       // Culture
       culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures.at(0)?.CPF})`,
       // N° Cadastre

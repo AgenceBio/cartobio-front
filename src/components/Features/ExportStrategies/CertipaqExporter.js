@@ -66,6 +66,7 @@ function getSheet () {
   ], { origin: 'A4'})
 
   const ilotOptions = {
+    explicitName: false,
     ilotLabel: '',
     parcelleLabel: '',
     separator: '_',

@@ -65,7 +65,7 @@ export default class BaseExporter {
  * @param {Feature[]} features
  * @returns {String}
  */
-export function generateAutresInfos (features, { withAnnotations = false, withCode = true, withCulture = true, withDate = true, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture, permissions = {} } = {}) {
+export function generateAutresInfos (features, { withAnnotations = false, withCode = true, withCulture = true, withDate = true, withExplicitName = false, withName = true, withNotes = true, withSurface = true, withVariete = true, pivot = null, initialCulture, permissions = {} } = {}) {
   const dateFmnt = new Intl.DateTimeFormat('fr-FR', {
     timeZone: 'Europe/Paris',
     day: 'numeric',
@@ -77,7 +77,9 @@ export function generateAutresInfos (features, { withAnnotations = false, withCo
   const dropEmptyItem = (d) => d
 
   return features.map(feature => {
-    const name = withName ? featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '' }) : ''
+    const name = withName
+      ? featureName(feature, { ilotLabel: '', parcelleLabel: '', separator: '.', placeholder: '', explicitName: withExplicitName })
+      : (withExplicitName ? (feature.properties.NOM ?? '') : '')
     const notes = withNotes ? feature.properties.auditeur_notes : ''
     const annotations = withAnnotations && permissions.canExportAnnotations && Array.isArray(feature.properties.annotations) ? aggregateAnnotations(feature.properties.annotations) : ''
 
