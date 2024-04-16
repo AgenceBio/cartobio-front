@@ -1,5 +1,6 @@
 <route lang="yaml">
   meta:
+    generalAudience: true
     seo:
       title: Déclaration d'accessibilité du service en ligne
   </route>
