@@ -1,6 +1,7 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { GROUPE_NIVEAU_CONVERSION, featureName, getFeatureGroups, surface } from '@/components/Features/index.js'
+import { certificationStates, yearLabel } from '@/referentiels/ab.js'
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -8,11 +9,15 @@ const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
 const { decode_range: R } = utils
 
 function getSheet () {
-  const { featureCollection, permissions } = this
+  const { featureCollection, operator, permissions, record } = this
+  const adresse = `${operator.codePostal} ${operator.commune}`.trim()
+  const annee = yearLabel(record)
+  const statut = certificationStates[record.certification_state].label
+
   const sheet = aoa_to_sheet([
-    [''       ,     '',        '',            '',                '', 'Surfaces en ha', '', '', '', '',      '',          '',            '',               '', 'Dernier intrant non autorisé en AB',     '',             '',             ''],
-    [''       ,     '',        '',            '',                '', '0',   '0',  '0',  '0',  '0',          '',          '',            '',               '',                                   '',     '',             '',             ''],
-    ['Commune', 'Ilot', 'Culture', 'N° Cadastre', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3', 'Date conv', 'Observation', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Code culture', 'Id. Parcelle'],
+    [operator.nom, adresse,    statut,         annee,                '', 'Surfaces en ha', '', '', '', '',      '',          '',            '',               '', 'Dernier intrant non autorisé en AB',     '',             '',             ''],
+    [''          ,      '',        '',            '',                '', '0',   '0',  '0',  '0',  '0',          '',          '',            '',               '',                                   '',     '',             '',             ''],
+    ['Commune'   ,  'Ilot', 'Culture', 'N° Cadastre', 'Variété / infos', 'C0', 'AB', 'C1', 'C2', 'C3', 'Date conv', 'Observation', 'Précédent', 'Anté précédent',                            'Produit', 'Date', 'Code culture', 'Id. Parcelle'],
   ])
 
   sheet['!merges'] = [
