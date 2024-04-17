@@ -2,6 +2,12 @@ import { utils } from 'xlsx'
 import { cultureLabel, featureName, sortByAccessor } from "../index.js"
 import { getAnnotationLabel } from '../../../referentiels/ab.js'
 
+/**
+ * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} FeatureCollection
+ * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
+ * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
+ */
+
 const { sheet_to_csv, sheet_to_json, json_to_sheet } = utils
 
 export default class BaseExporter {
@@ -10,6 +16,9 @@ export default class BaseExporter {
   mimetype = ''
   range = null
 
+  /**
+   * @param {{ featureCollection: FeatureCollection, operator: AgenceBioNormalizedOperator, record: NormalizedRecord, permissions }} params
+   */
   constructor ({ featureCollection, operator, record, permissions }) {
     this.featureCollection = featureCollection
     this.operator = operator
