@@ -1,14 +1,25 @@
 <route lang="yaml">
   meta:
-    generalAudience: true&
+    generalAudience: true
     seo:
-      title: Métriques de réussite du projet
+      title: Statistiques d'usage de CartoBio
   </route>
 
 <template>
-  <StatsSection />
+  <div class="fr-container fr-py-9v">
+    <div class="fr-grid-row">
+      <div class="fr-col-12">
+        <h1>Statistiques projet</h1>
+
+        <iframe :src frameborder="0" width="100%" height="800" ref="el" allowtransparency />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import StatsSection from '@/components/Landing/Stats.vue'
+import { readonly } from 'vue'
+import { getStatsIframeUrl } from '@/cartobio-api.js'
+
+const src = readonly(await getStatsIframeUrl())
 </script>

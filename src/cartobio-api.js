@@ -248,3 +248,15 @@ export async function getOperatorGeofoliaFeatures (numeroBio) {
   const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`)
   return geojson
 }
+
+/**
+ * Retrieves a secured Metabase embed URL
+ *
+ * @see https://www.metabase.com/docs/latest/embedding/introduction#static-embedding
+ * @returns {Promise<string>}
+ */
+export async function getStatsIframeUrl () {
+  const { data: url } = await apiClient.get(`/v2/stats/embed`)
+
+  return url
+}
