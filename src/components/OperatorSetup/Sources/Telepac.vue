@@ -55,7 +55,7 @@ async function handleFileUpload () {
     emit('upload:complete', { geojson, source, warnings, metadata })
   } catch (error) {
     if (error.response?.status >= 400 && error.response?.status < 500) {
-      erreur.value = error.response.data.error
+      erreur.value = error.response.data.message
     } else {
       erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
       throw error
