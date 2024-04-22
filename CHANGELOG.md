@@ -1,18 +1,17 @@
-# [2.23.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.0...v2.23.0) (2023-04-?)
+##  [2.23.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.0...v2.23.0) (2023-04-22)
 
-* Nouveau Tableau de Bord avec recherche et tri sur les statuts
-* L'import Telepac accepte le fichier "Dossier complet XML", en plus des fichiers "Parcelles déclarées" et "Parcelles instruites"
-* L'import Telepac n'accepte plus les fichiers "Ilots déclarés" et "Ilots instruits"
-* Affichage des "Notes de l'auditeur·ice" dès qu'elles sont disponibles (et non plus quand le parcellaire est certifié)
-* Meilleure gestion de l'expiration de connexion
-* API Écriture : les dates de début et de fin de validité de certificat sont enregistrées
-* Correctifs de sécurité
-
-# 2.22.1—4
-
-* Le bouton "Créer une nouvelle version" apparait à nouveau sur un profil agriculteur·ice
-* Affichage des plages de validité du certificat bio
-* Diverses corrections visuelles et textuelles
+* Page parcellaire et header du site adaptés aux mobiles ([5319dec](https://github.com/AgenceBio/cartobio-front/commit/5319dec)) ([b880525](https://github.com/AgenceBio/cartobio-front/commit/b880525))  ([e462118](https://github.com/AgenceBio/cartobio-front/commit/e462118)) ([921217b](https://github.com/AgenceBio/cartobio-front/commit/921217b)) ([2a273c9](https://github.com/AgenceBio/cartobio-front/commit/2a273c9))  ([f1ba46c](https://github.com/AgenceBio/cartobio-front/commit/f1ba46c)) ([db325d3](https://github.com/AgenceBio/cartobio-front/commit/db325d3)) ([1c60c40](https://github.com/AgenceBio/cartobio-front/commit/1c60c40)) ([cdccacc](https://github.com/AgenceBio/cartobio-front/commit/cdccacc)) ([c54bf0e](https://github.com/AgenceBio/cartobio-front/commit/c54bf0e)) ([190e177](https://github.com/AgenceBio/cartobio-front/commit/190e177)) ([fca88db](https://github.com/AgenceBio/cartobio-front/commit/fca88db)) ([5120665](https://github.com/AgenceBio/cartobio-front/commit/5120665)) ([0730b1c](https://github.com/AgenceBio/cartobio-front/commit/0730b1c)) ([00163f1](https://github.com/AgenceBio/cartobio-front/commit/00163f1)) ([9db90d9](https://github.com/AgenceBio/cartobio-front/commit/9db90d9)) ([7dd1c81](https://github.com/AgenceBio/cartobio-front/commit/7dd1c81))
+* Ne déconnecte seulement en présence du code erreur EXPIRED_CREDENTIALS ([ea94b71](https://github.com/AgenceBio/cartobio-front/commit/ea94b71))
+* Personnalise le titre de la page sur les pages parcellaires/version ([e2b2b44](https://github.com/AgenceBio/cartobio-front/commit/e2b2b44))
+* Recherche avec tri sur le tableau des exploitations ([599033c](https://github.com/AgenceBio/cartobio-front/commit/599033c))
+* Ajout d'informations opérateur sur l'export Ocacia ([fd2fb12](https://github.com/AgenceBio/cartobio-front/commit/fd2fb12))
+* Corrections de bugs sur l'affichage des noms personnalisés de parcelles ([ed50716](https://github.com/AgenceBio/cartobio-front/commit/ed50716)) ([786c35e](https://github.com/AgenceBio/cartobio-front/commit/786c35e))
+* L'onglet Telepac accepte aussi le dossier XML Telepac ([1d7273e](https://github.com/AgenceBio/cartobio-front/commit/1d7273e))
+* Affiche les demandes de l'auditeur dès qu'elles sont disponibles. ([228970d](https://github.com/AgenceBio/cartobio-front/commit/228970d))
+* Change la formulation "API Certification" pour "API Contrôle" ([f5bc20b](https://github.com/AgenceBio/cartobio-front/commit/f5bc20b))
+* Adaptation du wording de l'aide sous le bouton de connexion ([9ae5d32](https://github.com/AgenceBio/cartobio-front/commit/9ae5d32))
+* Nécessite une authentification pour la séquence d'import ([b0ae7e4](https://github.com/AgenceBio/cartobio-front/commit/b0ae7e4))
+* Import télépac : affiche les erreurs personnalisées plutôt qu'une générique ([04af5f2](https://github.com/AgenceBio/cartobio-front/commit/04af5f2))
 
 # [2.22.0](https://github.com/AgenceBio/cartobio-front/compare/v2.21.0...v2.22.0) (2023-03-11)
 
