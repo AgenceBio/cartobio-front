@@ -48,7 +48,8 @@ const operatorSetupActions = [
         sources.GEOFOLIA,
         sources.MESPARCELLES,
         sources.TELEPAC,
-        sources.CVI
+        sources.CVI,
+        sources.ANYGEO
       ]
     }
   },
