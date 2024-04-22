@@ -10,7 +10,7 @@
             {{ result.errorMessage }}.
           </div>
         </div>
-        <p class="fr-mb-0">Sa superficie est de {{ inHa(surface(feature)) }} ha.</p>
+        <p class="fr-mb-0">Sa superficie est de {{ inHa(legalProjectionSurface(feature)) }} ha.</p>
 
         <ul v-if="details.length">
           <li v-for="(detail, index) in details" :key="index">
@@ -65,7 +65,7 @@
 <script setup>
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 
-import { featureDetails, inHa, surface } from '@/components/Features/index.js'
+import { featureDetails, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from '@/referentiels/ab.js'
 import { useFeaturesSetsStore, usePermissions } from '@/stores/index.js'
 import { toDateInputString } from '@/components/dates.js'

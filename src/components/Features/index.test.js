@@ -1,5 +1,17 @@
 import { describe, test, expect, vi } from 'vitest'
-import { applyCadastreGeometries, FeatureNotFoundError, bounds, createGroupingKeys, cultureLabel, diff, featureName, getFeatureGroups, surface, groupingChoices, sortByAccessor } from './index.js'
+import {
+  applyCadastreGeometries,
+  FeatureNotFoundError,
+  bounds,
+  createGroupingKeys,
+  cultureLabel,
+  diff,
+  featureName,
+  getFeatureGroups,
+  groupingChoices,
+  sortByAccessor,
+  legalProjectionSurface
+} from './index.js'
 import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
 import { feature as newFeature, featureCollection } from '@turf/helpers'
 import axios from 'axios'
@@ -198,6 +210,7 @@ describe('createGroupingKeys', () => {
 
 describe('getFeatureGroups()', () => {
   const feature1 = {
+    type: "Feature",
     geometry,
     properties: {
       conversion_niveau: 'AB',
@@ -210,6 +223,7 @@ describe('getFeatureGroups()', () => {
     }
   }
   const feature2 = {
+    type: "Feature",
     geometry,
     properties: {
       NUMERO_I: '2',
@@ -228,6 +242,7 @@ describe('getFeatureGroups()', () => {
   }
 
   const feature3 = {
+    type: "Feature",
     geometry,
     properties: {
       NUMERO_I: '2',
@@ -242,6 +257,7 @@ describe('getFeatureGroups()', () => {
   }
 
   const feature4 = {
+    type: "Feature",
     geometry,
     properties: {
       id: '99999',
@@ -288,7 +304,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '1',
         pivot: GROUPE_ILOT,
         features: [feature1],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Îlot 2',
@@ -296,7 +312,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '2',
         pivot: GROUPE_ILOT,
         features: [feature2],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Non précisé ou hors-PAC',
@@ -304,7 +320,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '__nogroup__',
         pivot: GROUPE_ILOT,
         features: [feature4],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       }
     ]
 
@@ -324,7 +340,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '__nogroup__',
         pivot: GROUPE_CULTURE,
         features: [feature4],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
@@ -332,7 +348,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.92',
         pivot: GROUPE_CULTURE,
         features: [feature2],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Olives',
@@ -340,7 +356,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.26.1',
         pivot: GROUPE_CULTURE,
         features: [feature1],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Raisin de cuve',
@@ -348,7 +364,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.21.12',
         pivot: GROUPE_CULTURE,
         features: [feature2],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       }
     ]
 
@@ -369,7 +385,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '__nogroup__',
         pivot: GROUPE_CULTURE,
         features: [feature4],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Gel fixe, friche, gel spécifique n’entrant pas en rotation',
@@ -377,7 +393,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.92',
         pivot: GROUPE_CULTURE,
         features: [feature2],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Olives',
@@ -385,7 +401,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.26.1',
         pivot: GROUPE_CULTURE,
         features: [feature1],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Raisin de cuve',
@@ -393,7 +409,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.21.12',
         pivot: GROUPE_CULTURE,
         features: [feature2],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       },
       {
         label: 'Raisin de cuve',
@@ -401,7 +417,7 @@ describe('getFeatureGroups()', () => {
         mainKey: '01.21.12',
         pivot: GROUPE_CULTURE,
         features: [feature3],
-        surface: 7055.2689844296965,
+        surface: 7048.2314453125,
       }
     ]
 
@@ -594,21 +610,17 @@ describe('sortByAccessor()', () => {
   })
 })
 
-describe('surface', () => {
+describe('legalProjectionSurface', () => {
   test('with a FeatureCollection', () => {
-    expect(surface(overlappingFeatureCollection)).toBeCloseTo(42505773.88, 1)
+    expect(legalProjectionSurface(overlappingFeatureCollection)).toBeCloseTo(42482781.974121094, 1)
   })
 
   test('with an array of Features', () => {
-    expect(surface([feature])).toBeCloseTo(27145758.11, 1)
+    expect(legalProjectionSurface([feature])).toBeCloseTo(27130107.84790039, 1)
   })
 
   test('with a Feature', () => {
-    expect(surface(feature)).toBeCloseTo(27145758.11, 1)
-  })
-
-  test('with a Geometry', () => {
-    expect(surface(geometry)).toBeCloseTo(7055.26, 1)
+    expect(legalProjectionSurface(feature)).toBeCloseTo(27130107.84790039, 1)
   })
 })
 

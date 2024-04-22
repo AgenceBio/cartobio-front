@@ -61,7 +61,7 @@
               <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
               <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
                 <ConversionLevel :feature="feature" with-date /><br />
-                {{ inHa(surface(feature)) }}&nbsp;ha
+                {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
               </small>
             </td>
             <td @click="toggleEditForm(feature.id)" v-else>
@@ -81,7 +81,7 @@
             </td>
             <td @click="toggleEditForm(feature.id)" class="numeric">
               <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-                {{ inHa(surface(feature)) }}&nbsp;ha
+                {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
               </span>
             </td>
             <td class="actions">
@@ -116,7 +116,7 @@
 import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from "vue-router";
-import { featureName, cultureLabel, inHa, surface } from '@/components/Features/index.js'
+import { featureName, cultureLabel, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import { useFeaturesStore, useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
 
 import ConversionLevel from './ConversionLevel.vue'

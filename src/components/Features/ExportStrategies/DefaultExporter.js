@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { surface } from '@/components/Features/index.js'
+import { legalProjectionSurface } from '@/components/Features/index.js'
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
@@ -13,7 +13,7 @@ function getSheet () {
   const sheet = aoa_to_sheet([
     ['Numéro bio :', '', operator.numeroBio, '', 'Nom Opérateur:', operator.nom],
     ['Date de saisie :', '', new Date(), '', 'N°PACAGE', operator.numeroPacage],
-    ['Surface graphique totale (en ha) :', '', surface(featureCollection) / 10_000]
+    ['Surface graphique totale (en ha) :', '', legalProjectionSurface(featureCollection) / 10_000]
   ], { cellDates: true })
 
   sheet['C1'].l = { Target: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}`, Tooltip: `https://annuaire.agencebio.org/fiche/${operator.numeroBio}` }
@@ -39,11 +39,12 @@ function getSheet () {
     ['Identifiant CartoBio', 'N°Ilot', 'N°Parcelle', 'Surfaces graphique (ha)', 'Code culture', 'Libellé culture', 'PACAGE', 'Niveau de conversion', 'Date de conversion', 'Pac / Hors Pac / Cueillette', 'Commentaire agriculteur', 'Notes d\'audit'],
   ], { origin: 'A6'})
 
-  sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties: props, id }) => {
+  sheet_add_aoa(sheet, this.getSortedFeatures().map((feature) => {
+    const { geometry, properties: props, id } = feature
     const [ilotId, parcelleId] = [props.NUMERO_I, props.NUMERO_P]
     const firstCulture = props.cultures.at(0)
     const culture = firstCulture ? fromCodeCpf(firstCulture?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
-    const surfaceHa = surface(geometry) / 10_000
+    const surfaceHa = legalProjectionSurface(feature) / 10_000
     const isPac = Boolean(props.PACAGE)
 
     return [

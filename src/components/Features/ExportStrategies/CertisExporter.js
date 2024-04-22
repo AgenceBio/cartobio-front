@@ -1,6 +1,10 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { GROUPE_NIVEAU_CONVERSION, getFeatureGroups, surface } from '@/components/Features/index.js'
+import {
+  GROUPE_NIVEAU_CONVERSION,
+  getFeatureGroups,
+  legalProjectionSurface
+} from '@/components/Features/index.js'
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
@@ -78,8 +82,9 @@ function getSheet () {
     { wch: 16 },
   ]
 
-  sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties }) => {
-    const surfaceHa = surface(geometry) / 10_000
+  sheet_add_aoa(sheet, this.getSortedFeatures().map((feature) => {
+    const { properties } = feature
+    const surfaceHa = legalProjectionSurface(feature) / 10_000
     const culture = properties.cultures.at(0) ? fromCodeCpf(properties.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
     return [
@@ -159,10 +164,10 @@ function getSheet () {
   // totals
   const groups = Object.fromEntries(
     getFeatureGroups(featureCollection, GROUPE_NIVEAU_CONVERSION)
-      .map(({ key, features }) => ([key, surface({ type: 'FeatureCollection', features }) / 10_000]))
+      .map(({ key, features }) => ([key, legalProjectionSurface(features) / 10_000]))
   )
 
-  const totalSurface = (surface(featureCollection) / 10_000)?.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
+  const totalSurface = (legalProjectionSurface(featureCollection) / 10_000)?.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
   sheet_add_aoa(sheet, [
     ['Total C1', groups.CONV?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? '0,00', `Total : ${totalSurface} ha`],
     ['Total C2', groups.AB?.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) ?? '0,00'],

@@ -2,13 +2,17 @@ import { featureCollection, feature } from '@turf/helpers'
 import bbox from '@turf/bbox'
 import difference from '@turf/difference'
 import intersect from '@turf/intersect'
-import area from '@turf/area'
 import { toDateInputString } from '@/components/dates.js'
 import { conversionLevels } from '@/referentiels/ab.js'
 import { parseReference } from "@/components/cadastre.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 import union from "@turf/union"
 import axios from "axios"
+import { LegalProjections, RegionBounds } from "@agencebio/cartobio-types"
+import { reproject } from "reproject"
+import proj4 from "proj4"
+import { polygonArea } from "geometric"
+import bboxPolygon from "@turf/bbox-polygon"
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -293,7 +297,7 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
       key: 'none',
       pivot,
       features: collection.features,
-      surface: inHa(area(featureCollection(collection.features))),
+      surface: inHa(legalProjectionSurface(featureCollection(collection.features))),
     }]
   }
 
@@ -331,7 +335,7 @@ export function getFeatureGroups (collection, pivot = GROUPE_CULTURE) {
     mainKey: groupingKey.split('-').at(0),
     pivot: pivots.at(0),
     features,
-    surface: area(featureCollection(features)),
+    surface: legalProjectionSurface(features)
   })).sort(groupingChoices[pivots.at(0)].sortFn)
 }
 
@@ -461,19 +465,32 @@ export function bounds (featureCollection, defaults = bounds.DEFAULT_BOUNDS) {
 bounds.DEFAULT_BOUNDS = [[-9.86, 41.15], [10.38, 51.56]]
 
 /**
- * @param {FeatureCollection|Feature|Geometry} geometryOrFeature
- * @returns {Number}
+ * @param {CartoBioFeature[]|CartoBioFeature|CartoBioFeatureCollection} feature ou collection - en WGS84
+ * @return {Number} surface en mètres carrés
  */
-export function surface (geometryOrFeature) {
-  if (Array.isArray(geometryOrFeature)) {
-    return area(featureCollection(geometryOrFeature))
+export function legalProjectionSurface(feature) {
+  if (feature.type === 'FeatureCollection') {
+    feature = feature.features
   }
-  else if (['FeatureCollection', 'Feature'].includes(geometryOrFeature.type)) {
-    return area(geometryOrFeature)
+
+  if (Array.isArray(feature)) {
+    return feature.reduce((total, f) => total + legalProjectionSurface(f), 0)
   }
-  else {
-    return area(feature(geometryOrFeature))
-  }
+
+  const area = (Object.entries(RegionBounds).find(([, bounds]) => {
+    return intersect(feature, bboxPolygon(bounds))
+  }) || ['metropole'])[0]
+
+  const projection = LegalProjections[area]
+  const coordinates = reproject(feature, proj4.WGS84, projection).geometry.coordinates
+  const outer = coordinates[0]
+  const inner = coordinates.slice(1)
+
+  // les coordonnées nouvellement projetées sont en mètres carrés,
+  // on peut donc utiliser un simple calcul géométrique d'aire
+  return inner.reduce((total, hole) => {
+    return total - polygonArea(hole)
+  }, polygonArea(outer))
 }
 
 /**

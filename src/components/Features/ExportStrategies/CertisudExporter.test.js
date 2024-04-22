@@ -29,7 +29,7 @@ describe('CertisudExporter', () => {
       ],
       [
         '[ERREUR] culture absente',
-        1.0464881572673355,
+        0.753054443359375,
         '4.1',
         '',
         '',
@@ -37,7 +37,7 @@ describe('CertisudExporter', () => {
       ],
       [
         '[ERREUR] culture inconnue (01.19.99)',
-        1.0464881572673355,
+        0.753054443359375,
         '3.1',
         '',
         '',
@@ -46,7 +46,7 @@ describe('CertisudExporter', () => {
       [
         'Luzerne',
         // expect.closeTo(2.1), // in vite@5 + vitest@1
-        2.092976314534671,
+        1.50610888671875,
         '1.1 (nom personnalisé), Visitée ; 1.2, Prélèvement effectué, À risque',
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),
@@ -55,7 +55,7 @@ describe('CertisudExporter', () => {
       [
         'Luzerne',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
-        1.0464881572673355,
+        0.753054443359375,
         '2.1, 0.70ha, Réduction de conversion (Dérogation acceptée)',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
@@ -64,7 +64,7 @@ describe('CertisudExporter', () => {
       [
         'Trèfle',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
-        1.0464881572673355,
+        0.753054443359375,
         '2.1, 4 feuilles, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
@@ -73,7 +73,7 @@ describe('CertisudExporter', () => {
       [
         'Trèfle',
         // expect.closeTo(1.0), // in vite@5 + vitest@1
-        1.0464881572673355,
+        0.753054443359375,
         '2.2, 4 feuilles, semis le 01/03/2023',
         'AB',
         new Date('2015-01-01T00:00:00.000Z'),

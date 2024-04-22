@@ -4,7 +4,7 @@
 
     <p class="fr-text--lg">
       {{ featureName(feature) }}
-      ({{ inHa(surface(feature)) }} ha)
+      ({{ inHa(legalProjectionSurface(feature)) }} ha)
     </p>
 
     <div class="fr-alert fr-alert--error fr-alert--sm">
@@ -45,7 +45,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import { deletionReasons, featureName, inHa, surface } from '@/components/Features/index.js'
+import { deletionReasons, featureName, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import { useFeaturesStore } from '@/stores/features.js'
 
 import Modal from '@/components/Modal.vue'
