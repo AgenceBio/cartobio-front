@@ -184,7 +184,7 @@ const router = useRouter()
 const maintenance = ref(false)
 const checkStatus = async () => {
   try {
-    const response = await fetch('/.status')
+    const response = await fetch('/status.txt')
     maintenance.value = !(await response.text()).startsWith('OK')
   } catch (error) {
     maintenance.value = false
