@@ -150,8 +150,20 @@
           <p class="fr-notice__title">
             <mark>Vous êtes sur un environnement de test</mark>.
 
-            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
-              Cliquez ici pour accéder à l'environnement avec données réelles.
+          <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
+            Cliquez ici pour accéder à l'environnement avec données réelles.
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+    <div class="fr-notice fr-notice--info" v-if="maintenance">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p class="fr-notice__title">
+            CartoBio rencontre actuellement des problèmes techniques.
+            <a href="https://docs-cartobio.agencebio.org/statut" rel="noreferrer noopener" target="_blank">
+              Visitez la page de statut pour en savoir plus.
             </a>
           </p>
         </div>
@@ -168,6 +180,18 @@ import { storeToRefs } from 'pinia'
 
 const userStore = useUserStore()
 const router = useRouter()
+
+const maintenance = ref(false)
+const checkStatus = async () => {
+  try {
+    const response = await fetch('/.status')
+    maintenance.value = !(await response.text()).startsWith('OK')
+  } catch (error) {
+    maintenance.value = false
+  }
+}
+checkStatus()
+setInterval(checkStatus, 30000)
 
 router.afterEach(() => {
   menuIsOpen.value = false
