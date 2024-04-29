@@ -1,6 +1,6 @@
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 import { utils, write } from "xlsx";
-import { surface } from "@/components/Features/index.js"
+import { legalProjectionSurface } from "@/components/Features/index.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
 
 function getSheet () {
@@ -51,8 +51,9 @@ function getSheet () {
     utils.decode_range('A3:E3')
   ]
 
-  utils.sheet_add_aoa(sheet, this.getSortedFeatures().map(({ geometry, properties: props }) => {
-    const surfaceHa = surface(geometry) / 10_000
+  utils.sheet_add_aoa(sheet, this.getSortedFeatures().map((feature) => {
+    const { properties: props } = feature
+    const surfaceHa = legalProjectionSurface(feature) / 10_000
     const culture = props.cultures.at(0) ? fromCodeCpf(props.cultures.at(0)?.CPF) : { libelle_code_cpf: '[ERREUR] culture absente' }
 
     return [

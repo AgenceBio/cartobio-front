@@ -32,7 +32,7 @@ describe('QualisudExporter', () => {
         '01.19.10.8',
         'Visitée',
         'ilot 1, parcelle 1 (nom personnalisé)',
-        1.0464881572673355,
+        0.753054443359375,
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),
         '1'
@@ -41,7 +41,7 @@ describe('QualisudExporter', () => {
         '01.19.10.8',
         'Prélèvement effectué, À risque',
         'ilot 1, parcelle 2',
-        1.0464881572673355,
+        0.753054443359375,
         'C1',
         new Date('2023-01-01T00:00:00.000Z'),
         '2'
@@ -50,7 +50,7 @@ describe('QualisudExporter', () => {
         '01.19.10.8',
         '0.70ha / 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
         'ilot 2, parcelle 1',
-        1.0464881572673355,
+        0.753054443359375,
         'AB',
         new Date('2021-01-01T00:00:00.000Z'),
         '3'
@@ -59,7 +59,7 @@ describe('QualisudExporter', () => {
         '01.19.10.7',
         '4 feuilles, semis le 01/03/2023',
         'ilot 2, parcelle 2',
-        1.0464881572673355,
+        0.753054443359375,
         'AB',
         new Date('2015-01-01T00:00:00.000Z'),
         '4'
@@ -68,7 +68,7 @@ describe('QualisudExporter', () => {
         '[ERREUR] culture inconnue (01.19.99)',
         '01.19.99 Culture inconnue',
         'ilot 3, parcelle 1',
-        1.0464881572673355,
+        0.753054443359375,
         '',
         '',
         '5'
@@ -77,7 +77,7 @@ describe('QualisudExporter', () => {
         '[ERREUR] culture absente',
         '',
         'ilot 4, parcelle 1',
-        1.0464881572673355,
+        0.753054443359375,
         '',
         '',
         '6'

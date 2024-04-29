@@ -32,7 +32,7 @@ describe('ControlUnionExporter', () => {
       [
         '',
         'Luzerne',
-        1.0464881572673355,
+        0.753054443359375,
         new Date('2023-01-01T00:00:00.000Z'),
         'C1',
         '1.1 (nom personnalisé), Visitée',
@@ -42,7 +42,7 @@ describe('ControlUnionExporter', () => {
       [
         '',
         'Luzerne',
-        1.0464881572673355,
+        0.753054443359375,
         new Date('2023-01-01T00:00:00.000Z'),
         'C1',
         '1.2, Prélèvement effectué, À risque',
@@ -52,7 +52,7 @@ describe('ControlUnionExporter', () => {
       [
         '',
         'Luzerne',
-        1.0464881572673355,
+        0.753054443359375,
         new Date('2021-01-01T00:00:00.000Z'),
         'AB',
         '2.1, 0.70ha / 01.19.10.7 Trèfle, 4 feuilles, semis le 01/03/2023, 0.30ha, Réduction de conversion (Dérogation acceptée)',
@@ -62,7 +62,7 @@ describe('ControlUnionExporter', () => {
       [
         '',
         'Trèfle',
-        1.0464881572673355,
+        0.753054443359375,
         new Date('2015-01-01T00:00:00.000Z'),
         'AB',
         '2.2, 4 feuilles, semis le 01/03/2023',
@@ -72,7 +72,7 @@ describe('ControlUnionExporter', () => {
       [
         '',
         '[ERREUR] culture inconnue (01.19.99)',
-        1.0464881572673355,
+        0.753054443359375,
         '',
         '',
         '3.1, 01.19.99 Culture inconnue',
@@ -82,7 +82,7 @@ describe('ControlUnionExporter', () => {
       [
         '',
         '[ERREUR] culture absente',
-        1.0464881572673355,
+        0.753054443359375,
         '',
         '',
         '4.1',

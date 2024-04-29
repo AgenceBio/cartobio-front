@@ -57,7 +57,7 @@ import { computed, ref } from 'vue'
 import MapPreview from '@/components/Map/Preview.vue'
 import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
 
-import { surface, inHa, FeatureNotFoundError } from '@/components/Features/index.js'
+import { inHa, FeatureNotFoundError, legalProjectionSurface } from '@/components/Features/index.js'
 import { useOperatorStore } from "@/stores/index.js"
 
 const emit = defineEmits(['submit', 'cancel'])
@@ -77,5 +77,5 @@ const lastCreatedRecord = computed(() => operatorStore.records.toSorted()[operat
 
 const importPrevious = ref()
 
-const surfaceTotale = computed(() => inHa(surface(props.featureCollection)))
+const surfaceTotale = computed(() => inHa(legalProjectionSurface(props.featureCollection)))
 </script>

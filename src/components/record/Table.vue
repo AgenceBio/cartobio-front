@@ -62,12 +62,12 @@
           <td class="labels">
             {{ features.length }} parcelles
             <span class="fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
-              - {{ inHa(surface(features)) }}&nbsp;ha
+              - {{ inHa(legalProjectionSurface(features)) }}&nbsp;ha
             </span>
           </td>
           <td class="numeric">
             <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl ">
-            {{ inHa(surface(features)) }}&nbsp;ha
+            {{ inHa(legalProjectionSurface(features)) }}&nbsp;ha
             </span>
           </td>
           <th />
@@ -114,7 +114,13 @@ import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/record/modals/DeleteFeatureModal.vue'
 import FeatureGroup from '@/components/Features/FeatureGroup.vue'
 
-import { featureName, getFeatureGroups, groupingChoices, inHa, surface } from '../Features/index.js'
+import {
+  featureName,
+  getFeatureGroups,
+  groupingChoices,
+  inHa,
+  legalProjectionSurface,
+} from '../Features/index.js'
 import { deleteSingleFeature, updateFeatureCollectionProperties, updateSingleFeature } from '@/cartobio-api.js'
 import toast from "@/components/toast.js"
 import { statsPush } from "@/stats.js"

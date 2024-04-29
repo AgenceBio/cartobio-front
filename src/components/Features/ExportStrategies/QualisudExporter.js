@@ -1,6 +1,6 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { featureName, surface } from '@/components/Features/index.js'
+import { featureName, legalProjectionSurface } from '@/components/Features/index.js'
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
 const { aoa_to_sheet, sheet_add_aoa } = utils
@@ -46,7 +46,8 @@ function getSheet () {
     { wch: 16 },
   ]
 
-  this.getSortedFeatures().forEach(({ geometry, properties }, index) => {
+  this.getSortedFeatures().forEach((feature, index) => {
+    const { properties } = feature
     const firstCulture = properties.cultures.at(0) ? fromCodeCpf(properties.cultures.at(0)?.CPF) : { code_cpf: '[ERREUR] culture absente' }
     const autresInfos = generateAutresInfos([ { properties }], { withName: false, withAnnotations: true, initialCulture: firstCulture?.code_cpf, permissions })
     const rowIndex = 2 + index
@@ -55,8 +56,8 @@ function getSheet () {
       [
         firstCulture?.code_cpf ?? `[ERREUR] culture inconnue (${properties.cultures.at(0)?.CPF})`,
         autresInfos,
-        featureName({ properties }, { placeholder: '', explicitName: true }),
-        surface(geometry) / 10_000,
+        featureName(feature, { placeholder: '', explicitName: true }),
+        legalProjectionSurface(feature) / 10_000,
         properties.conversion_niveau,
         properties.engagement_date ? new Date(properties.engagement_date) : '',
         String(properties.id)
