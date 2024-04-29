@@ -132,7 +132,7 @@ describe("FeatureGroup", () => {
     permissions.canDeleteFeature = true
     await flushPromises()
     expect(menu.find('.fr-icon-delete-line').attributes()).not.toHaveProperty('disabled')
-    menu.find('.fr-icon-delete-line').trigger('click')
+    await menu.find('.fr-icon-delete-line').trigger('click')
     expect(wrapper.emitted('delete:featureId')).toHaveProperty('0', ['2'])
   })
 })
