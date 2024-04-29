@@ -8,13 +8,11 @@ import Matomo from 'vue-matomo'
 import Vue3Toastify, { toast as toastify } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css';
 
-import { useRecordStore, useUserStore } from '@/stores/index.js'
 import App from './App.vue'
 import { version } from "../package.json"
-import { usePermissions } from "@/stores/permissions.js"
 import toast from '@/components/toast.js'
 import { AxiosError } from "axios"
-import { useOperatorStore } from "@/stores/operator.js"
+import { useUserStore } from "@/stores/user.js"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -155,12 +153,14 @@ router.beforeEach(async (to) => {
   await Promise.all([
     (async () => {
       if (to.params.numeroBio) {
+        const { useOperatorStore } = await import('@/stores/operator.js')
         const operatorStore = useOperatorStore()
         await operatorStore.ready(to.params.numeroBio)
       }
     })(),
     (async () => {
       if (to.params.recordId) {
+        const { useRecordStore } = await import('@/stores/record.js')
         const recordStore = useRecordStore()
         await recordStore.ready(to.params.recordId)
       }
@@ -189,6 +189,7 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiredPermissions) {
+    const { usePermissions } = await import('@/stores/permissions.js')
     const permissions = usePermissions()
     const hasPermission = to.meta.requiredPermissions
         .every(permission => permissions[permission])

@@ -2,7 +2,10 @@
 import { computed, ref } from 'vue'
 import { CERTIFICATION_STATE, isCertificationImmutable } from '@/referentiels/ab.js'
 import { updateAuditState } from '@/cartobio-api.js'
-import { useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
+import { useOperatorStore } from "@/stores/operator.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useRecordStore } from "@/stores/record.js"
 import CertificationModal from "@/components/record/modals/CertificationModal.vue"
 import SaveAuditModal from "@/components/record/modals/SaveAuditModal.vue"
 import toast from "@/components/toast.js"

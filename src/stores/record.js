@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, reactive } from 'vue'
-import { useFeaturesStore, useFeaturesSetsStore } from "@/stores/index.js"
+import { useFeaturesStore } from "@/stores/features.js"
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import bbox from '@turf/bbox'
 import { useOperatorStore } from "@/stores/operator.js"
 import { getRecord } from "@/cartobio-api.js"

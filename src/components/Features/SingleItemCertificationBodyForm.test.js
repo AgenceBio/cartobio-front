@@ -3,7 +3,8 @@ import { defineComponent, markRaw } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { flushPromises, mount } from "@vue/test-utils"
 import axios from 'axios'
-import { usePermissions, useRecordStore } from "@/stores/index.js"
+import { useRecordStore } from "@/stores/record.js"
+import { usePermissions } from "@/stores/permissions.js"
 import {
   ANNOTATIONS,
   AnnotationTags,

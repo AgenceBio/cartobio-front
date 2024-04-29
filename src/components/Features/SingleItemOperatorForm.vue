@@ -48,7 +48,8 @@ import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import { featureDetails, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import Modal from '@/components/Modal.vue'
 import CultureSelector from '@/components/Features/CultureSelector.vue'
-import { useFeaturesSetsStore, usePermissions } from "@/stores/index.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import CancelModal from "@/components/Forms/CancelModal.vue"
 
 const props = defineProps({

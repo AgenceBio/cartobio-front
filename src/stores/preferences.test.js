@@ -1,5 +1,5 @@
 import { afterEach, describe, it, expect, vi } from "vitest"
-import { usePreferences } from "./index.js"
+import { usePreferences } from "./preferences.js"
 import { createTestingPinia } from "@pinia/testing"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })

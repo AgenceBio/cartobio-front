@@ -117,7 +117,11 @@ import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from "vue-router";
 import { featureName, cultureLabel, inHa, legalProjectionSurface } from '@/components/Features/index.js'
-import { useFeaturesStore, useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useOperatorStore } from "@/stores/operator.js"
+import { useRecordStore } from "@/stores/record.js"
+import { useFeaturesStore } from "@/stores/features.js"
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
+import { usePermissions } from "@/stores/permissions.js"
 
 import ConversionLevel from './ConversionLevel.vue'
 import ActionDropdown from "@/components/ActionDropdown.vue"

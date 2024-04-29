@@ -108,7 +108,11 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useFeaturesStore, useFeaturesSetsStore, useOperatorStore, usePermissions, useRecordStore } from '@/stores/index.js'
+import { useFeaturesStore } from "@/stores/features.js"
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
+import { useOperatorStore } from "@/stores/operator.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useRecordStore } from "@/stores/record.js"
 
 import MassActionsSelector from '@/components/Features/MassActionsSelector.vue'
 import DeleteFeatureModal from '@/components/record/modals/DeleteFeatureModal.vue'

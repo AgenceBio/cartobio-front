@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { useFeaturesSetsStore } from '@/stores/index.js'
+import { useFeaturesSetsStore } from '@/stores/features-sets.js'
 
 const featuresSet = useFeaturesSetsStore()
 const plural = new Intl.PluralRules('fr-FR', { type: 'cardinal' })

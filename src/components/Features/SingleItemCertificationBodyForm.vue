@@ -67,7 +67,8 @@ import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 
 import { featureDetails, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from '@/referentiels/ab.js'
-import { useFeaturesSetsStore, usePermissions } from '@/stores/index.js'
+import { useFeaturesSetsStore } from "@/stores/features-sets.js"
+import { usePermissions } from "@/stores/permissions.js"
 import { toDateInputString } from '@/components/dates.js'
 
 import AccordionGroup from '@/components/DesignSystem/AccordionGroup.vue'
