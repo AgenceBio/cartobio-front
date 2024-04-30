@@ -41,6 +41,7 @@ export default defineConfig(({ mode }) => {
         includeAssets: ['*.woff2', '*.png', '*.svg', '*.jpg'],
         workbox: {
           maximumFileSizeToCacheInBytes: 5000000,
+          navigateFallbackDenylist: [/^\/api/, /^\/status\.txt/],
         }
       })
     ],
