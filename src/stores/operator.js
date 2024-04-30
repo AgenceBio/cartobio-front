@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
-import { getOperator, getOperatorRecords } from "@/cartobio-api.js"
+import { apiClient } from "@/cartobio-api.js"
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
@@ -48,11 +48,12 @@ export const useOperatorStore = defineStore('operator', () => {
    */
   async function ready (numeroBio) {
     if (String(operator.value.numeroBio) !== numeroBio) {
-      operator.value = await getOperator(numeroBio)
+      const { data: fetchedOperator } = await apiClient.get(`/v2/operator/${numeroBio}`)
+      operator.value = fetchedOperator
       records.value = null
     }
 
-    getOperatorRecords(numeroBio).then((r) => {
+    apiClient.get(`/v2/operator/${numeroBio}/records`).then(({ data: r }) => {
       records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA))
     })
   }

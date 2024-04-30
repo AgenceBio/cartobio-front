@@ -1,32 +1,28 @@
 <script setup>
 import Modal from "@/components/Modal.vue"
 import { reactive } from "vue"
-import { updateAuditState } from "@/cartobio-api.js"
 import toast from "@/components/toast.js"
+import { useRecordStore } from "@/stores/record.js"
 
-const props = defineProps({
-  modelValue: {
-    type: Object,
-    required: true
-  }
-})
-const emit = defineEmits(['close', 'update:modelValue'])
+const emit = defineEmits(['close'])
 
+const recordStore = useRecordStore()
+const { record } = recordStore
 
 const patch = reactive({
-  version_name: props.modelValue.version_name,
-  audit_date: props.modelValue.audit_date,
-  certification_date_fin: props.modelValue.certification_date_fin
+  version_name: record.version_name,
+  audit_date: record.audit_date,
+  certification_date_fin: record.certification_date_fin
 })
 
 async function save() {
-  const record = await updateAuditState(props.modelValue.record_id, {
+  await recordStore.updateInfo({
     version_name: patch.version_name,
-  ...(patch.audit_date && { audit_date: patch.audit_date }),
-  ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin })
+    ...(patch.audit_date && { audit_date: patch.audit_date }),
+    ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin })
   })
+
   toast.success('La version a bien été modifiée')
-  emit('update:modelValue', record)
   emit('close')
 }
 
@@ -48,12 +44,12 @@ async function save() {
         <input type="date" id="audit_date" class="fr-input" v-model="patch.audit_date" />
       </div>
 
-      <div v-if="modelValue.certification_state === 'CERTIFIED'" class="fr-input-group">
-        <label for="certification_date_fin" class="fr-input-group__label">Date de début de validité du certificat</label>
-        <input type="date" id="certification_date_fin" class="fr-input" :value="modelValue.certification_date_debut" disabled />
+      <div v-if="record.certification_state === 'CERTIFIED'" class="fr-input-group">
+        <label for="certification_date_debut" class="fr-input-group__label">Date de début de validité du certificat</label>
+        <input type="date" id="certification_date_debut" class="fr-input" :value="record.certification_date_debut" disabled />
       </div>
 
-      <div v-if="modelValue.certification_state === 'CERTIFIED'" class="fr-input-group">
+      <div v-if="record.certification_state === 'CERTIFIED'" class="fr-input-group">
         <label for="certification_date_fin" class="fr-input-group__label">Date de fin de validité du certificat</label>
         <input type="date" id="certification_date_fin" class="fr-input" v-model="patch.certification_date_fin" />
       </div>

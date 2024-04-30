@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev-sw": "vite build & (sleep 1 && vite preview --port 3000)",
+    "dev-sw": "vite build --watch & (sleep 1 && vite preview --port 3000)",
     "build": "npm run build:app",
     "build:app": "vite build",
     "build:widget": "vite build --config vite.widget.config.js --mode lib",

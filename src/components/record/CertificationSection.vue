@@ -1,14 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { CERTIFICATION_STATE, isCertificationImmutable } from '@/referentiels/ab.js'
-import { updateAuditState } from '@/cartobio-api.js'
 import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import { useOperatorStore } from "@/stores/operator.js"
 import { usePermissions } from "@/stores/permissions.js"
 import { useRecordStore } from "@/stores/record.js"
 import CertificationModal from "@/components/record/modals/CertificationModal.vue"
 import SaveAuditModal from "@/components/record/modals/SaveAuditModal.vue"
-import toast from "@/components/toast.js"
 
 const recordStore = useRecordStore()
 const operatorStore = useOperatorStore()
@@ -23,64 +21,27 @@ const showCertificationModal = ref(false)
 
 const canEndAudit = computed(() => permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets)
 
-async function handleSaveAudit ({ record_id: recordId, patch }) {
-  let newRecord
-  try {
-    newRecord = await updateAuditState(recordId, {
-          ...patch,
-          certification_state: CERTIFICATION_STATE.AUDITED
-        }
-    )
-  } catch (e) {
-    if (e.response?.status === 400) {
-      toast.error(e.response.data.error)
-      return
-    }
+async function handleSaveAudit ({ patch }) {
+  await recordStore.updateInfo({
+    ...patch,
+    certification_state: CERTIFICATION_STATE.AUDITED
+  })
 
-    throw e
-  }
-
-  recordStore.update(newRecord)
   showSaveAuditModal.value = false
 }
 
 async function handleSendAudit () {
-  let newRecord
-  try {
-    newRecord = await updateAuditState(
-        record.record_id,
-        { certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION }
-    )
-  } catch (e) {
-    if (e.response?.status === 400) {
-      toast.error(e.response.data.error)
-      return
-    }
-
-    throw e
-  }
-
-  recordStore.update(newRecord)
+  await recordStore.updateInfo({
+    certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION
+  })
 }
 
-async function handleCertify ({ record_id: recordId, patch }) {
-  let newRecord
-  try {
-    newRecord = await updateAuditState(recordId, {
-          ...patch,
-          certification_state: CERTIFICATION_STATE.CERTIFIED
-        }
-    )
-  } catch (e) {
-    if (e.response?.status === 400) {
-      toast.error(e.response.data.error)
-      return
-    }
+async function handleCertify ({ patch }) {
+  await recordStore.updateInfo({
+    ...patch,
+    certification_state: CERTIFICATION_STATE.CERTIFIED
+  })
 
-    throw e
-  }
-
-  recordStore.update(newRecord)
   showCertificationModal.value = false
 }
 </script>

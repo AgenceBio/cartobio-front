@@ -66,8 +66,6 @@
     <AsyncFeaturesExportModal v-if="exportModal" :operator="operator" :collection="collection" :record="record" @close="exportModal = false" />
     <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
     <EditVersionModal
-        :model-value="record"
-        @update:model-value="recordStore.update($event)"
         v-if="showEditVersionModal"
         @close="showEditVersionModal = false"
     />

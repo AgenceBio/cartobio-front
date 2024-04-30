@@ -11,7 +11,7 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
  * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
  */
 
-const apiClient = axios.create({ baseURL, timeout: 10000 })
+export const apiClient = axios.create({ baseURL, timeout: 10000 })
 
 /**
  *
@@ -53,28 +53,6 @@ export async function pacageLookup (pacage) {
   return data
 }
 
-
-/**
- * @param {string} numeroBio
- * @returns {Promise<import('@agencebio/cartobio-types').AgenceBioNormalizedOperator>}
- */
-export async function getOperator (numeroBio) {
-  const { data } = await apiClient.get(`/v2/operator/${numeroBio}`)
-
-  return data
-}
-
-/**
- * @param {string} numeroBio
- * @return {Promise<import('@agencebio/cartobio-types').NormalizedRecordSummary[]>}
- */
-export async function getOperatorRecords (numeroBio) {
-  const { data } = await apiClient.get(`/v2/operator/${numeroBio}/records`)
-
-  return data
-}
-
-
 /**
  * Creates a new operator Record
  *
@@ -82,61 +60,6 @@ export async function getOperatorRecords (numeroBio) {
  */
 export async function createOperatorRecord (numeroBio, payload) {
   const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload)
-
-  return data
-}
-
-/**
- * @param {UUID} recordId
- * @return {Promise<NormalizedRecord>}
- */
-export async function getRecord (recordId) {
-  const { data } = await apiClient.get(`/v2/audits/${recordId}`)
-
-  return data
-}
-
-/**
- * Delete a single feature
- *
- * @return {Promise<NormalizedRecord>}
- */
-export async function deleteSingleFeature ({ recordId }, { id, reason }) {
-  const { data } = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${id}`, {data: { reason }})
-
-  return data
-}
-
-/**
- * Creates or updates a record based on geographical informations
- *
- * @returns {Promise<NormalizedRecord>}
- */
-export async function updateFeatureCollectionProperties ({ recordId }, featureCollection) {
-  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, featureCollection)
-
-  return data
-}
-
-/**
- * Update/replace properties of a single feature
- *
- * @returns {Promise<NormalizedRecord>}
- */
-export async function updateSingleFeature ({ recordId }, { id, properties, geometry }) {
-  const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles/${id}`, { properties, geometry })
-
-  return data
-}
-
-/**
- *
- * @param {string} recordId
- * @param {Object} patch
- * @returns {Promise<NormalizedRecord>}
- */
-export async function updateAuditState (recordId, patch) {
-  const { data } = await apiClient.patch(`/v2/audits/${recordId}`, patch)
 
   return data
 }
