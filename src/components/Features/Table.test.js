@@ -113,7 +113,7 @@ describe("Features Table", () => {
     await table.find('tr#parcelle-2 td').trigger('click')
     await flushPromises()
 
-    axios.__createMock.put.mockResolvedValueOnce(record)
+    axios.__createMock.put.mockResolvedValueOnce({ data: record })
 
     // this throws if the modal form does not exist
     // it catches the Component reference even if it has been Teleport-ed in the <body>
@@ -138,7 +138,7 @@ describe("Features Table", () => {
     await wrapper.find('#parcelle-3 .menu-container .fr-icon-delete-line').trigger('click')
 
     // we trigger the deletion
-    axios.__createMock.delete.mockResolvedValueOnce(record)
+    axios.__createMock.delete.mockResolvedValueOnce({ data: record })
 
     const modal = wrapper.getComponent(DeleteFeatureModal)
     expect(modal.text()).toContain("parcelle 3")
@@ -182,7 +182,7 @@ describe("Features Table", () => {
     expect(modal.exists()).toEqual(false)
 
     // now, we change a field and we should not be able to close it
-    axios.__createMock.put.mockResolvedValueOnce(record)
+    axios.__createMock.put.mockResolvedValueOnce({ data: record })
 
     table.find('tr.parcelle td').trigger('click')
     await flushPromises()

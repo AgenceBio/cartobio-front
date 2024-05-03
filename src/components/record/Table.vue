@@ -125,7 +125,6 @@ import {
   inHa,
   legalProjectionSurface,
 } from '../Features/index.js'
-import { deleteSingleFeature, updateFeatureCollectionProperties, updateSingleFeature } from '@/cartobio-api.js'
 import toast from "@/components/toast.js"
 import { statsPush } from "@/stats.js"
 
@@ -159,18 +158,12 @@ const maybeDeletedFeatureId = ref(null)
 const userGroupingChoice = ref('CULTURE')
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
 
-const isSaving = ref(false)
-
 async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
-
-  featuresStore.updateMatchingFeatures([{ id, properties }])
   editedFeatureId.value = null
 
-  await performAsyncRecordAction(
-    updateSingleFeature({ recordId: record.value.record_id }, { id, properties }),
-    `Parcelle « ${featureName(featuresStore.getFeatureById(id))} » modifiée.`
-  )
+  await featuresStore.updateSingleFeature({ id, properties })
+  toast.success(`Parcelle « ${featureName(featuresStore.getFeatureById(id))} » modifiée.`)
 }
 
 async function handleSingleFeatureDeletion ({ id, reason }) {
@@ -178,14 +171,14 @@ async function handleSingleFeatureDeletion ({ id, reason }) {
 
   maybeDeletedFeatureId.value = null
 
-  await performAsyncRecordAction(
-    deleteSingleFeature({ recordId: record.value.record_id }, { id, reason }),
-    `Parcelle « ${featureName(featuresStore.getFeatureById(id))} » supprimée.`
-  )
+  const deletedFeatureName = featureName(featuresStore.getFeatureById(id))
+  await featuresStore.deleteSingleFeature({ id, reason })
+  toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`)
 }
 
 async function handleFeatureCollectionSubmit ({ ids, patch }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
+  editedFeatureId.value = null
 
   const featureCollection = {
     type: 'FeatureCollection',
@@ -194,14 +187,8 @@ async function handleFeatureCollectionSubmit ({ ids, patch }) {
       properties: { ...patch }
     }))
   }
-
-  featuresStore.updateMatchingFeatures(featureCollection.features)
-  editedFeatureId.value = null
-
-  performAsyncRecordAction(
-    updateFeatureCollectionProperties({ recordId: record.value.record_id }, featureCollection),
-    'Parcelles modifiées.'
-  )
+  await featuresStore.updateFeatureCollectionProperties(featureCollection)
+  toast.success('Parcelles modifiées.')
 }
 
 function handleFilterClick (id) {
@@ -209,25 +196,6 @@ function handleFilterClick (id) {
 
   if (featuresSets.isToggled(id)) {
     statsPush(['trackEvent', 'Filtre parcelles', id])
-  }
-}
-
-async function performAsyncRecordAction (promise, text = 'Modification enregistrée.') {
-  isSaving.value = true
-
-  try {
-    const updatedRecord = await promise
-    recordStore.update(updatedRecord)
-
-    toast.success(text)
-  }
-  catch (error) {
-    toast.error(
-      "Une erreur d'enregistrement s'est produite. Les données n'ont pas été sauvegardées sur les serveurs CartoBio."
-    )
-  }
-  finally {
-    isSaving.value = false
   }
 }
 </script>

@@ -101,6 +101,7 @@ describe("SingleItemCertificationBodyForm", () => {
     await form.find('#downgraded_state').setValue(CERTIFICATION_BODY_DECISION.ACCEPTED)
 
     // click and assess server update
+    axios.__createMock.put.mockResolvedValueOnce({ data: record })
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)

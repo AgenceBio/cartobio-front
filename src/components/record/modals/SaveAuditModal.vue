@@ -4,7 +4,7 @@
 
     <h2 class="fr-text--lead">{{ operator.nom }}</h2>
 
-    <form id="sendoff-form" @submit.prevent="emit('submit', { record_id: record.record_id, patch })">
+    <form id="sendoff-form" @submit.prevent="emit('submit', { patch })">
       <div class="fr-input-group">
         <label class="fr-label" for="audit_notes">
           Notes finales de l'audit

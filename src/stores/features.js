@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useFeaturesSetsStore } from "@/stores/features-sets.js"
+import { apiClient } from "@/cartobio-api.js"
 
 
 /**
@@ -20,6 +21,7 @@ export const useFeaturesStore = defineStore('features', () => {
   const selectedIds = ref([])
   const activeId = ref(null)
   const hoveredId = ref(null)
+  const recordId = ref(null)
 
   /**
    * @type {reactive<CartoBioFeatureCollection>}
@@ -236,6 +238,35 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   /**
+   * Update/replace properties of a single feature
+   * @param {CartoBioFeature} feature
+   * @returns {Promise<void>}
+   */
+  async function updateSingleFeature ({ id, properties, geometry }) {
+    const { data: updatedRecord } = await apiClient.put(`/v2/audits/${recordId.value}/parcelles/${id}`, { properties, geometry })
+    setAll(updatedRecord.parcelles.features)
+  }
+
+  /**
+   * Creates or updates multiple features properties
+   * @param {CartoBioFeatureCollection} featureCollection
+   * @returns {Promise<void>}
+   */
+  async function updateFeatureCollectionProperties (featureCollection) {
+    const { data: updatedRecord } = await apiClient.patch(`/v2/audits/${recordId.value}/parcelles`, featureCollection)
+    setAll(updatedRecord.parcelles.features)
+  }
+
+  /**
+   * Delete a single feature
+   * @return {Promise<void>}
+   */
+  async function deleteSingleFeature ({ id, reason }) {
+    const { data: updatedRecord } = await apiClient.delete(`/v2/audits/${recordId.value}/parcelles/${id}`, {data: { reason }})
+    setAll(updatedRecord.parcelles.features)
+  }
+
+  /**
    * @param {CartoBioFeature[]} features
    */
   function updateMatchingFeatures (features) {
@@ -255,6 +286,7 @@ export const useFeaturesStore = defineStore('features', () => {
   }
 
   return {
+    recordId,
     activeId,
     hoveredId,
     selectedIds,
@@ -280,6 +312,9 @@ export const useFeaturesStore = defineStore('features', () => {
     toggleAllSelected,
     toggleSingleSelected,
     unselect,
+    updateSingleFeature,
+    updateFeatureCollectionProperties,
+    deleteSingleFeature,
     updateMatchingFeatures
   }
 })
