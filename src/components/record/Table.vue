@@ -85,7 +85,7 @@
       <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
     </table>
 
-    <p class="fr-my-3w" v-if="permissions.canAddParcelle">
+    <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
       <router-link :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
     </p>
   </div>
@@ -127,6 +127,7 @@ import {
 } from '../Features/index.js'
 import toast from "@/components/toast.js"
 import { statsPush } from "@/stats.js"
+import { useOnline } from "@vueuse/core"
 
 defineProps({
   editForm: {
@@ -138,6 +139,7 @@ defineProps({
   },
 })
 
+const isOnline = useOnline()
 const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()

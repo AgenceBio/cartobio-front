@@ -7,7 +7,9 @@ import { usePermissions } from "@/stores/permissions.js"
 import { useRecordStore } from "@/stores/record.js"
 import CertificationModal from "@/components/record/modals/CertificationModal.vue"
 import SaveAuditModal from "@/components/record/modals/SaveAuditModal.vue"
+import { useOnline } from "@vueuse/core"
 
+const isOnline = useOnline()
 const recordStore = useRecordStore()
 const operatorStore = useOperatorStore()
 const featuresSets = useFeaturesSetsStore()
@@ -75,21 +77,35 @@ async function handleCertify ({ patch }) {
   <div class="fr-callout fr-callout--blue-ecume fr-mb-2w" v-if="canEndAudit && record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT">
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
-    <button v-if="permissions.canSaveAudit" class="fr-btn" @click="showSaveAuditModal = true">Terminer l'audit</button>
+    <button
+        v-if="permissions.canSaveAudit"
+        class="fr-btn"
+        @click="showSaveAuditModal = true"
+        :disabled="!isOnline"
+    >Terminer l'audit</button>
     <span v-else>L'auditeur doit maintenant terminer l'audit.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume fr-mb-2w" v-else-if="canEndAudit && record.certification_state === CERTIFICATION_STATE.AUDITED">
     <h3 class="fr-callout__title">Audit terminé</h3>
 
-    <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">Soumettre pour certification</button>
+    <button
+        v-if="permissions.canSendAudit"
+        class="fr-btn"
+        @click="handleSendAudit"
+        :disabled="!isOnline"
+    >Soumettre pour certification</button>
     <span v-else>L'auditeur doit maintenant soumettre l'audit pour certification.</span>
   </div>
 
   <div class="fr-callout fr-callout--blue-ecume fr-mb-2w" v-else-if="canEndAudit && record.certification_state === CERTIFICATION_STATE.PENDING_CERTIFICATION">
     <h3 class="fr-callout__title">Certification en cours</h3>
 
-    <button v-if="permissions.canCertify" class="fr-btn" @click="showCertificationModal = true">Certifier le parcellaire</button>
+    <button
+        v-if="permissions.canCertify"
+        class="fr-btn" @click="showCertificationModal = true"
+        :disabled="!isOnline"
+    >Certifier le parcellaire</button>
     <span v-else>Le chargé de certification doit maintenant certifier le parcellaire.</span>
   </div>
 
