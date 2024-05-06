@@ -1,7 +1,11 @@
 <template>
   <ActionDropdown>
     <template #trigger="{ toggle }">
-      <button class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-down-s-line menu-button" @click="toggle">
+      <button
+          class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-down-s-line menu-button"
+          @click="toggle"
+          :disabled="!isOnline"
+      >
         {{ label }}
       </button>
     </template>
@@ -22,7 +26,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, useOnline } from '@vueuse/core'
 import ActionDropdown from "@/components/ActionDropdown.vue"
 
 defineProps({
@@ -38,6 +42,7 @@ defineProps({
 
 const emit = defineEmits(['submit'])
 
+const isOnline = useOnline()
 const isMenuOpen = ref(false)
 const isModalOpen = ref(false)
 const openerElement = ref(null)

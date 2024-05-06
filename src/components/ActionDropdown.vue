@@ -11,6 +11,10 @@ const props = defineProps({
   withIcons: {
     type: Boolean,
     default: false
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -66,7 +70,12 @@ watch(show, (value) => {
 <template>
   <div class="menu-anchor">
     <slot name="trigger" :toggle="() => show =! show">
-      <button type="button" @click.stop.prevent="show = !show" class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions">
+      <button
+          type="button"
+          @click.stop.prevent="show = !show"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
+          :disabled="props.disabled"
+      >
         Autres actions
       </button>
     </slot>

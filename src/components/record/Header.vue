@@ -4,7 +4,12 @@
     <h1 class="fr-h4 fr-my-0 fr-mb-1v">
       {{ record.version_name }}
 
-      <button v-if="!disableActions" class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
+      <button
+          v-if="!disableActions"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line"
+          @click="showEditVersionModal = true"
+          :disabled="!isOnline"
+      >
         Modifier la version
       </button>
     </h1>
@@ -20,6 +25,7 @@
           <button
               class="fr-btn fr-btn--icon-left fr-btn--tertiary-no-outline fr-icon-git-pull-request-fill show-versions"
               @click.stop.prevent="versionMenu = !versionMenu"
+              :disabled="!isOnline"
           >
             Autres versions <span class="fr-icon-arrow-down-s-line" />
           </button>
@@ -83,7 +89,7 @@ import DeleteParcellaireModal from '@/components/record/modals/DeleteParcelaireM
 import { useFeaturesStore } from "@/stores/features.js"
 import { useOperatorStore } from "@/stores/operator.js"
 import { useRecordStore } from "@/stores/record.js"
-import { onClickOutside } from "@vueuse/core"
+import { onClickOutside, useOnline } from "@vueuse/core"
 import EditVersionModal from "@/components/versions/EditVersionModal.vue"
 
 const AsyncFeaturesExportModal = defineAsyncComponent(() => import('@/components/record/modals/ExportModal.vue'))
@@ -94,6 +100,8 @@ defineProps({
     default: false
   }
 })
+
+const isOnline = useOnline()
 
 const exportModal = ref(false)
 const historyModal = ref(false)
