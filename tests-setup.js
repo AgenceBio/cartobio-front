@@ -73,6 +73,15 @@ vi.stubGlobal('localStorage', {
   setItem: vi.fn()
 })
 
+vi.mock('@vueuse/core', async (importActual) => {
+  const vueuse = await importActual()
+  return {
+    __esModule: true,
+    ...vueuse,
+    useOnline: vi.fn().mockImplementation(() => ({ value: true }))
+  }
+})
+
 vi.stubGlobal('matchMedia', vi.fn(() => ({
   addEventListener: vi.fn(),
   matches: vi.fn().mockReturnValue(true)

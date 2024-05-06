@@ -144,19 +144,30 @@
       </div>
     </div>
 
+    <div class="fr-notice fr-notice--info" v-if="!online">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p class="fr-notice__title">
+            <b>Vous êtes actuellement hors ligne.</b> Seules les exploitations dont le parcellaire a été
+            téléchargé en amont sont visibles. Certaines fonctionnalités être indisponibles.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="fr-notice fr-notice--info" v-if="isStaging">
       <div class="fr-container">
         <div class="fr-notice__body">
           <p class="fr-notice__title">
             <mark>Vous êtes sur un environnement de test</mark>.
 
-          <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
-            Cliquez ici pour accéder à l'environnement avec données réelles.
-          </a>
-        </p>
+            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
+              Cliquez ici pour accéder à l'environnement avec données réelles.
+            </a>
+          </p>
+        </div>
       </div>
     </div>
-  </div>
     <div class="fr-notice fr-notice--info" v-if="maintenance">
       <div class="fr-container">
         <div class="fr-notice__body">
@@ -177,9 +188,11 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore, ROLES } from '@/stores/user.js'
 import { storeToRefs } from 'pinia'
+import { useOnline } from "@vueuse/core"
 
 const userStore = useUserStore()
 const router = useRouter()
+const online = useOnline()
 
 const maintenance = ref(false)
 const checkStatus = async () => {

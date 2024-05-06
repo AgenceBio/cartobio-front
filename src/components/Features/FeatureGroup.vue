@@ -56,7 +56,7 @@
                 <label class="fr-label" :for="'radio-' + feature.id" />
               </div>
             </th>
-            <td @click="toggleEditForm(feature.id)" v-if="isGroupedByCulture">
+            <td @click="isOnline && toggleEditForm(feature.id)" v-if="isGroupedByCulture">
               <span class="culture-name">{{ featureName(feature) }}</span>
               <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
               <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
@@ -64,7 +64,7 @@
                 {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
               </small>
             </td>
-            <td @click="toggleEditForm(feature.id)" v-else>
+            <td @click="isOnline && toggleEditForm(feature.id)" v-else>
               <span class="culture-type" v-if="feature.properties.cultures.length > 1">
                 Multi-cultures<span class="fr-sr-only"> : </span>
                 <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
@@ -74,21 +74,27 @@
               <span class="culture-name" v-else>{{ cultureLabel(feature.properties.cultures[0]) }}</span>
               <small class="feature-precision">{{ featureName(feature) }}</small>
             </td>
-            <td @click="toggleEditForm(feature.id)">
+            <td @click="isOnline && toggleEditForm(feature.id)">
               <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
                 <ConversionLevel :feature="feature" with-date />
               </span>
             </td>
-            <td @click="toggleEditForm(feature.id)" class="numeric">
+            <td @click="isOnline && toggleEditForm(feature.id)" class="numeric">
               <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
                 {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
               </span>
             </td>
             <td class="actions">
-              <button type="button" class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl" :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }" @click="toggleEditForm(feature.id)" aria-label="Modifier" />
+              <button
+                  type="button"
+                  class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
+                  :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
+                  @click="toggleEditForm(feature.id)" aria-label="Modifier"
+                  :disabled="!isOnline"
+              />
 
-              <ActionDropdown with-icons>
-                <li v-if="permissions.canChangeGeometry">
+              <ActionDropdown with-icons :disabled="!isOnline">
+                <li v-if="permissions.canChangeGeometry && isOnline">
                   <router-link :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
                   Modifier le contour
                 </router-link>
@@ -99,7 +105,12 @@
                   </button>
                 </li>
                 <li>
-                  <button type="button" @click.prevent="toggleDeleteForm(feature.id)" :disabled="!permissions.canDeleteFeature" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm">
+                  <button
+                      type="button"
+                      @click.prevent="toggleDeleteForm(feature.id)"
+                      :disabled="!permissions.canDeleteFeature || !isOnline"
+                      class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm"
+                  >
                     Supprimer la parcelle
                   </button>
                 </li>
@@ -125,6 +136,7 @@ import { usePermissions } from "@/stores/permissions.js"
 
 import ConversionLevel from './ConversionLevel.vue'
 import ActionDropdown from "@/components/ActionDropdown.vue"
+import { useOnline } from "@vueuse/core"
 
 
 const route = useRoute()
@@ -133,6 +145,7 @@ const recordStore = useRecordStore()
 const featuresStore = useFeaturesStore()
 const featuresSets = useFeaturesSetsStore()
 const permissions = usePermissions()
+const isOnline = useOnline()
 
 const props = defineProps({
   featureGroup: {

@@ -10,8 +10,15 @@ import { apiClient, createOperatorRecord } from "@/cartobio-api.js"
  * @param {UUID} recordId
  * @return {Promise<NormalizedRecord>}
  */
-async function getRecord (recordId) {
+export async function getRecord (recordId) {
+  if (!navigator.onLine && localStorage.getItem(`record-${recordId}`)) {
+    return JSON.parse(localStorage.getItem(`record-${recordId}`))
+  }
+
   const { data } = await apiClient.get(`/v2/audits/${recordId}`)
+  if (localStorage.getItem(`record-${recordId}`)) {
+    localStorage.setItem(`record-${recordId}`, JSON.stringify(data))
+  }
 
   return data
 }
