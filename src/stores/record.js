@@ -35,6 +35,7 @@ export const useRecordStore = defineStore('record', () => {
   const sets = useFeaturesSetsStore()
 
   const initialState = {
+    numerobio: null,
     record_id: null,
     version_name: null,
     certification_date_debut: null,

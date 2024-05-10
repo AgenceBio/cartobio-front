@@ -8,6 +8,8 @@ import { useLocalStorage } from "@vueuse/core"
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
  * @typedef {import('@vue/reactivity').UnwrapRef} UnwrapRef
+ * @typedef {import('@vue/reactivity').ComputedRef} ComputedRef
+ * @typedef {import('@vueuse/shared').RemovableRef} RemovableRef
  */
 
 function date(record) {
@@ -15,7 +17,13 @@ function date(record) {
 }
 
 export const useOperatorStore = defineStore('operator', () => {
-  const operatorsStorage = useLocalStorage('operators', {})
+
+  /**
+   * @type {RemovableRef<{
+   *   [numeroBio: string]: [import('@agencebio/cartobio-types').AgenceBioNormalizedOperator, import('@agencebio/cartobio-types').NormalizedRecordSummary[]]
+   * }>}
+   */
+  const storage = useLocalStorage('operators', {})
 
   /**
    * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator}
@@ -51,8 +59,8 @@ export const useOperatorStore = defineStore('operator', () => {
    * @return {Promise<void>}
    */
   async function ready (numeroBio) {
-    if (!navigator.onLine && operatorsStorage.value[numeroBio]) {
-      const [operatorData, recordsData] = operatorsStorage.value[numeroBio]
+    if (!navigator.onLine && storage.value[numeroBio]) {
+      const [operatorData, recordsData] = storage.value[numeroBio]
       operator.value = operatorData
       records.value = recordsData
       return
@@ -67,30 +75,65 @@ export const useOperatorStore = defineStore('operator', () => {
     apiClient.get(`/v2/operator/${numeroBio}/records`).then(({ data: r }) => {
       records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA)).map(record => ({
         ...record,
-        storedOffline: localStorage.getItem(`record-${record.record_id}`)
+        storedOffline: !!localStorage.getItem(`record-${record.record_id}`)
       }))
     })
   }
 
   async function downloadOperator() {
-    operatorsStorage.value[operator.value.numeroBio] = [operator.value, records.value]
+    storage.value[operator.value.numeroBio] = [operator.value, records.value]
   }
 
   async function clearDownloadOperator() {
-    delete operatorsStorage.value[operator.value.numeroBio]
+    delete storage.value[operator.value.numeroBio]
   }
 
+  /**
+   * Download a record for offline use.
+   * Resolves true if the record was successfully downloaded, false if the storage is full.
+   * @param recordId
+   * @return {Promise<boolean>}
+   */
   async function downloadRecord (recordId) {
-    const record = await getRecord(recordId)
-    localStorage.setItem(`record-${record.record_id}`, JSON.stringify(record))
-    records.value.find(r => r.record_id === record.record_id).storedOffline = true
-    await downloadOperator()
+    try {
+      const record = await getRecord(recordId)
+      localStorage.setItem(`record-${record.record_id}`, JSON.stringify(record))
+      if (records.value.find(r => r.record_id === record.record_id)) {
+        records.value.find(r => r.record_id === record.record_id).storedOffline = true
+      }
+      await downloadOperator()
+      const [, recordsSummaryStorage] = storage.value[record.numerobio]
+      recordsSummaryStorage.find(r => r.record_id === recordId).storedOffline = true
+    } catch (e) {
+      if (e instanceof DOMException &&
+      // everything except Firefox
+      (e.code === 22 ||
+          // Firefox
+          e.code === 1014 ||
+          // test name field too, because code might not be present
+          // everything except Firefox
+          e.name === "QuotaExceededError" ||
+          // Firefox
+          e.name === "NS_ERROR_DOM_QUOTA_REACHED")) {
+        return false
+      }
+
+      throw e
+    }
+
+    return true
+
   }
 
   async function clearDownloadRecord (recordId) {
+    const numeroBio = JSON.parse(localStorage.getItem(`record-${recordId}`)).numerobio
     localStorage.removeItem(`record-${recordId}`)
-    records.value.find(r => r.record_id === recordId).storedOffline = false
-    if (records.value.every(r => !r.storedOffline)) {
+    if (records.value?.find(r => r.record_id === recordId)) {
+      records.value.find(r => r.record_id === recordId).storedOffline = false
+    }
+    const [, recordsSummaryStorage] = storage.value[numeroBio]
+    recordsSummaryStorage.find(r => r.record_id === recordId).storedOffline = false
+    if (recordsSummaryStorage.every(r => localStorage.getItem(`record-${r.record_id}`) === null)) {
       await clearDownloadOperator()
     }
   }
@@ -108,8 +151,16 @@ export const useOperatorStore = defineStore('operator', () => {
     }
   })
 
+  // Update storedOffline properties when storage changes
+  watch(storage, () => {
+    for (let i = 0; i < records.value?.length; i++) {
+      records.value[i].storedOffline = !!localStorage.getItem(`record-${records.value[i].record_id}`)
+    }
+  })
+
   return {
     // ref
+    storage,
     operator,
     records,
     // computed
