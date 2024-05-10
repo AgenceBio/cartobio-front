@@ -171,7 +171,6 @@ export const useRecordStore = defineStore('record', () => {
     })
   }
 
-
   /**
    * @type {ComputedRef<Boolean>}
    */

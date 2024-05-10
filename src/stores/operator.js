@@ -2,8 +2,7 @@ import { defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
 import { apiClient } from "@/cartobio-api.js"
-import { getRecord } from "@/stores/record.js"
-import { useLocalStorage } from "@vueuse/core"
+import { useCartoBioStorage } from "@/stores/storage.js"
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
@@ -16,14 +15,18 @@ function date(record) {
   return new Date(record.certification_date_debut || record.audit_date || record.created_at)
 }
 
-export const useOperatorStore = defineStore('operator', () => {
+export const getOperator = async (numeroBio) => {
+  const { data } = await apiClient.get(`/v2/operator/${numeroBio}`)
+  return data
+}
 
-  /**
-   * @type {RemovableRef<{
-   *   [numeroBio: string]: [import('@agencebio/cartobio-types').AgenceBioNormalizedOperator, import('@agencebio/cartobio-types').NormalizedRecordSummary[]]
-   * }>}
-   */
-  const storage = useLocalStorage('operators', {})
+export const getRecordsSummary = async (numeroBio) => {
+  const { data } = await apiClient.get(`/v2/operator/${numeroBio}/records`)
+  return data
+}
+
+export const useOperatorStore = defineStore('operator', () => {
+  const storage = useCartoBioStorage()
 
   /**
    * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator}
@@ -59,83 +62,24 @@ export const useOperatorStore = defineStore('operator', () => {
    * @return {Promise<void>}
    */
   async function ready (numeroBio) {
-    if (!navigator.onLine && storage.value[numeroBio]) {
-      const [operatorData, recordsData] = storage.value[numeroBio]
+    if (!navigator.onLine && storage.operators[numeroBio]) {
+      const {operator: operatorData, records: recordsData} = storage.operators[numeroBio]
       operator.value = operatorData
       records.value = recordsData
       return
     }
 
     if (String(operator.value.numeroBio) !== numeroBio) {
-      const { data: fetchedOperator } = await apiClient.get(`/v2/operator/${numeroBio}`)
-      operator.value = fetchedOperator
+      operator.value = await getOperator(numeroBio)
       records.value = null
     }
 
-    apiClient.get(`/v2/operator/${numeroBio}/records`).then(({ data: r }) => {
+    getRecordsSummary(numeroBio).then(r => {
       records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA)).map(record => ({
         ...record,
-        storedOffline: !!localStorage.getItem(`record-${record.record_id}`)
+        storedOffline: !!storage.records[record.record_id]
       }))
     })
-  }
-
-  async function downloadOperator() {
-    storage.value[operator.value.numeroBio] = [operator.value, records.value]
-  }
-
-  async function clearDownloadOperator() {
-    delete storage.value[operator.value.numeroBio]
-  }
-
-  /**
-   * Download a record for offline use.
-   * Resolves true if the record was successfully downloaded, false if the storage is full.
-   * @param recordId
-   * @return {Promise<boolean>}
-   */
-  async function downloadRecord (recordId) {
-    try {
-      const record = await getRecord(recordId)
-      localStorage.setItem(`record-${record.record_id}`, JSON.stringify(record))
-      if (records.value.find(r => r.record_id === record.record_id)) {
-        records.value.find(r => r.record_id === record.record_id).storedOffline = true
-      }
-      await downloadOperator()
-      const [, recordsSummaryStorage] = storage.value[record.numerobio]
-      recordsSummaryStorage.find(r => r.record_id === recordId).storedOffline = true
-    } catch (e) {
-      if (e instanceof DOMException &&
-      // everything except Firefox
-      (e.code === 22 ||
-          // Firefox
-          e.code === 1014 ||
-          // test name field too, because code might not be present
-          // everything except Firefox
-          e.name === "QuotaExceededError" ||
-          // Firefox
-          e.name === "NS_ERROR_DOM_QUOTA_REACHED")) {
-        return false
-      }
-
-      throw e
-    }
-
-    return true
-
-  }
-
-  async function clearDownloadRecord (recordId) {
-    const numeroBio = JSON.parse(localStorage.getItem(`record-${recordId}`)).numerobio
-    localStorage.removeItem(`record-${recordId}`)
-    if (records.value?.find(r => r.record_id === recordId)) {
-      records.value.find(r => r.record_id === recordId).storedOffline = false
-    }
-    const [, recordsSummaryStorage] = storage.value[numeroBio]
-    recordsSummaryStorage.find(r => r.record_id === recordId).storedOffline = false
-    if (recordsSummaryStorage.every(r => localStorage.getItem(`record-${r.record_id}`) === null)) {
-      await clearDownloadOperator()
-    }
   }
 
   function $reset () {
@@ -160,16 +104,10 @@ export const useOperatorStore = defineStore('operator', () => {
 
   return {
     // ref
-    storage,
     operator,
     records,
     // computed
     recordsByYear,
-    // methods
-    downloadOperator,
-    clearDownloadOperator,
-    downloadRecord,
-    clearDownloadRecord,
     ready,
     $reset
   }
