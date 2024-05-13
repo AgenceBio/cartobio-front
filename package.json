@@ -79,6 +79,7 @@
       "@vue/eslint-config-typescript/recommended"
     ],
     "ignorePatterns": [
+      "src/stores/storage.test.js",
       "src/stores/record.test.js",
       "src/components/Features/ExportStrategies/*.test.js",
       "src/components/Features/FeatureGroup.test.js",
