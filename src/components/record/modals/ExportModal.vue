@@ -41,7 +41,7 @@
 
 <script setup>
 import { computed, ref, toRaw } from 'vue'
-import { fromId } from '../../Features/ExportStrategies/index.js'
+import { fromId } from '@/components/Features/ExportStrategies/index.js'
 
 import Modal from '@/components/Modal.vue'
 import { usePermissions } from '@/stores/permissions.js'
