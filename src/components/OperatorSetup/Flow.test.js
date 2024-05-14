@@ -15,7 +15,7 @@ import { sources } from '@/referentiels/imports.js'
 
 const pinia = createTestingPinia({ createSpy: vi.fn })
 
-const activeSources = [sources.TELEPAC, sources.GEOFOLIA, sources.RPG, sources.CVI, sources.MESPARCELLES]
+const activeSources = [sources.TELEPAC, sources.GEOFOLIA, sources.RPG, sources.CVI, sources.MESPARCELLES, sources.ANYGEO]
 const operatorSetupActions = [
   {
     id: 'source',
@@ -91,7 +91,7 @@ describe("OperatorSetupFlow", () => {
     expect(wrapper.text()).toContain('Sélectionner ma dernière déclaration PAC')
   })
 
-  it("should render tab content for telepac", () => {
+  it("should render Telepac import as the default tab", () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
@@ -101,278 +101,6 @@ describe("OperatorSetupFlow", () => {
     })
 
     expect(wrapper.text()).toContain('Sélectionner ma dernière déclaration PAC')
-  })
-
-  it("should import successfully a Geofolia archive", async () => {
-    vi.stubEnv('VUE_APP_PRODUCTION', true)
-
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    // Click on geofolia tab
-    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
-    expect(wrapper.text()).toContain(`Parcelles et interventions (ZIP)`)
-
-    axios.__createMock.post.mockResolvedValueOnce({
-      data: featureCollectionFixture
-    })
-
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-
-    // it is now called during preview
-    const confirmBtn = wrapper.find('.fr-btn')
-    expect(confirmBtn.text()).toEqual('Importer ces données')
-  })
-
-  it("should import from Geofolink", async () => {
-    delete import.meta.env.VUE_APP_PRODUCTION
-
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    axios.__createMock.head.mockResolvedValueOnce({ status: 204 })
-
-    // Click on geofolia tab
-    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
-    expect(wrapper.text()).toContain('Vérification de votre contrat')
-    const form = wrapper.find('form')
-
-    await flushPromises()
-    expect(wrapper.text()).not.toContain('Vérification de votre contrat')
-    expect(axios.__createMock.head).toHaveBeenCalled(1)
-
-    // we should be ready to import (first attempt, not ready)
-    const importBtn = wrapper.find('form .fr-btn')
-    expect(importBtn.text()).toBe('Collecter les parcelles')
-    expect(importBtn.attributes('disabled')).toBe(undefined)
-
-    axios.__createMock.get.mockResolvedValueOnce({ status: 202 })
-    await form.trigger('submit.prevent')
-    expect(wrapper.text()).toContain('Collecte des parcelles en cours')
-
-    await flushPromises()
-    expect(wrapper.text()).toContain('Les données ne sont pas encore prêtes')
-
-    // second attempt, ready to import
-    axios.__createMock.get.mockResolvedValueOnce({
-      data: featureCollectionFixture
-    })
-
-    await form.trigger('submit.prevent')
-    await flushPromises()
-    expect(wrapper.text()).not.toContain('Les données ne sont pas encore prêtes')
-    expect(axios.__createMock.get).toHaveBeenCalled(2)
-
-    const confirmBtn = wrapper.find('.fr-btn')
-    expect(confirmBtn.text()).toEqual('Importer ces données')
-  })
-
-  it("should tell if Geofolink account is not configured", async () => {
-    delete import.meta.env.VUE_APP_PRODUCTION
-
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    // Click on geofolia tab
-    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
-
-    axios.__createMock.head.mockResolvedValueOnce({ status: 404 })
-    await flushPromises()
-
-    // button is now disabled and we should read the manual
-    const importBtn = wrapper.find('form .fr-btn')
-    expect(importBtn.text()).toBe('Collecter les parcelles')
-    expect(importBtn.attributes('disabled')).toBe('')
-    expect(wrapper.text()).toContain('Comment activer la liaison Geofolink avec CartoBio ?')
-  })
-
-  it("should fail on invalid Geofolia archive", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: [ ...operatorSetupActions ],
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    const error = new AxiosError('Fichier invalide')
-    error.response = { status : 400 }
-
-    axios.__createMock.post.mockRejectedValueOnce(error)
-
-    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-
-    expect(wrapper.text()).toContain('Votre fichier n\'est pas reconnu comme un export Geofolia.')
-  })
-
-  it("should fail on unreachable server during Geofolia import", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: [ ...operatorSetupActions ],
-        flowId: 'source',
-        operator: operator
-      },
-      global: {
-        config: {
-          errorHandler (error) {
-            expect(error.message).toBe('Server is down')
-          }
-        }
-      }
-    })
-
-    await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
-
-    const error = new AxiosError('Server is down')
-    error.response = { status : 500 }
-    axios.__createMock.post.mockRejectedValueOnce(error)
-
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-    expect(wrapper.text()).toContain('Erreur inconnue, merci de réessayer plus tard.')
-  })
-
-  it("should import successfully a MesParcelles/TelepacXML archive", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    // Click on mesparcelles tab
-    await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
-    expect(wrapper.text()).toContain(`Sélectionner mon export MesParcelles (service Telepac)`)
-
-    axios.__createMock.post.mockResolvedValueOnce({
-      data: featureCollectionFixture
-    })
-
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-
-    // it is now called during preview
-    const confirmBtn = await wrapper.find('.fr-btn')
-    expect(confirmBtn.text()).toEqual('Importer ces données')
-  })
-
-  it("should fail on invalid MesParcelles/TelepacXML archive", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: [ ...operatorSetupActions ],
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    const error = new AxiosError('Fichier invalide')
-    error.response = { status : 400 }
-    axios.__createMock.post.mockRejectedValueOnce(error)
-
-    await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-
-    expect(wrapper.text()).toContain('Votre fichier ne semble pas être un export MesParcelles valide.')
-  })
-
-  it("should fail on unreachable server during a MesParcelles/TelepacXML import", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: [ ...operatorSetupActions ],
-        flowId: 'source',
-        operator: operator
-      },
-      global: {
-        config: {
-          errorHandler (error) {
-            expect(error.message).toBe('Server is down')
-          }
-        }
-      }
-    })
-
-    await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
-
-    const error = new AxiosError('Server is down')
-    error.response = { status : 500 }
-    axios.__createMock.post.mockRejectedValueOnce(error)
-
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-
-    expect(wrapper.text()).toContain('Erreur inconnue, merci de réessayer plus tard.')
-  })
-
-  it("should render tab content for RPG when selected", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
-    })
-
-    // Click on rpg tab
-    await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
-    expect(wrapper.text()).toContain(`Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit`)
-
-  })
-
-  it("should render tab content for CVI when selected", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      },
-      global: {
-        config: {
-          errorHandler (error) {
-            expect(error.message).toBe('EVV et SIRET non correspondants')
-          }
-        }
-      }
-    })
-
-    // Submit an invalid EVV
-    const error = new AxiosError('EVV et SIRET non correspondants')
-    error.response = { status : 401, data: { error: 'EVV et SIRET non correspondants' } }
-    axios.__createMock.get.mockRejectedValueOnce(error)
-
-    await wrapper.find('ul').find('.import-source-tab--cvi').trigger('click')
-
-    wrapper.getComponent(CviComponent)
-    await wrapper.find('#ncvi-evv').setValue('99999')
-
-    // surprisingly, the click on the submit button… does not trigger the submit event
-    // although it works in a browser UI
-    await wrapper.find('form').trigger('submit')
-    // await wrapper.find('.fr-btn').trigger('click')
-    await flushPromises()
-
-    expect(wrapper.find('.fr-input-group').classes()).toContain('fr-input-group--error')
-    expect(wrapper.find('.fr-input').classes()).toContain('fr-input--error')
-    expect(wrapper.find('.fr-error-text').exists()).toBe(true)
   })
 
   it("should render no tabs otherwise", () => {
@@ -386,84 +114,411 @@ describe("OperatorSetupFlow", () => {
     expect(wrapper.findAll('.fr-tabs__tab')).toHaveLength(0)
   })
 
-  it("should submit convert and save a telepac import", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
+  describe('Telepac import', () => {
+    it("should submit convert and save a telepac import", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      axios.__createMock.post.mockResolvedValueOnce({
+        data: featureCollectionFixture
+      })
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      // it is now called during preview
+      const confirmBtn = await wrapper.find('.fr-btn')
+      expect(confirmBtn.text()).toEqual('Importer ces données')
     })
 
-    axios.__createMock.post.mockResolvedValueOnce({
-      data: featureCollectionFixture
+    it("should handle the case where it cannot convert telepac file (invalid file)", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: [ ...operatorSetupActions ],
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      const error = new AxiosError('Fichier invalide')
+      error.response = { status: 400, data: { message: 'Votre fichier ne semble pas être une déclaration PAC.' } }
+
+      axios.__createMock.post.mockRejectedValueOnce(error)
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Votre fichier ne semble pas être une déclaration PAC.')
     })
-
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
-
-    // it is now called during preview
-    const confirmBtn = await wrapper.find('.fr-btn')
-    expect(confirmBtn.text()).toEqual('Importer ces données')
   })
 
-  it("should handle the case where it cannot convert telepac file (invalid file)", async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: [ ...operatorSetupActions ],
-        flowId: 'source',
-        operator: operator
-      }
+  describe('Anygeo import', () => {
+    it("should submit convert and save a shapefile import", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      await wrapper.find('ul').find('.import-source-tab--anygeo').trigger('click')
+      expect(wrapper.text()).toContain(`QGIS`)
+
+      axios.__createMock.post.mockResolvedValueOnce({
+        data: featureCollectionFixture
+      })
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      // it is now called during preview
+      const confirmBtn = await wrapper.find('.fr-btn')
+      expect(confirmBtn.text()).toEqual('Importer ces données')
     })
 
-    const error = new AxiosError('Fichier invalide')
-    error.response = { status : 400, data: { error: 'Votre fichier ne semble pas être une déclaration' } }
+    it("should handle the case where it cannot convert an invalid file", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: [ ...operatorSetupActions ],
+          flowId: 'source',
+          operator: operator
+        }
+      })
 
-    axios.__createMock.post.mockRejectedValueOnce(error)
+      const error = new AxiosError('Fichier invalide')
+      error.response = { status: 400, data: { message: 'L\'archive ZIP ne peut pas être lue.' } }
 
-    await wrapper.find('input[type="file"]').setValue('')
-    await flushPromises()
+      axios.__createMock.post.mockRejectedValueOnce(error)
 
-    expect(wrapper.text()).toContain('Votre fichier ne semble pas être une déclaration')
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('L\'archive ZIP ne peut pas être lue.')
+    })
   })
 
-  it('should handle incorrect PACAGE numbers', async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
+  describe('Geofolia import', () => {
+    it("should import successfully a Geofolia archive", async () => {
+      vi.stubEnv('VUE_APP_PRODUCTION', true)
+
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      // Click on geofolia tab
+      await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+      expect(wrapper.text()).toContain(`Parcelles et interventions (ZIP)`)
+
+      axios.__createMock.post.mockResolvedValueOnce({
+        data: featureCollectionFixture
+      })
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      // it is now called during preview
+      const confirmBtn = wrapper.find('.fr-btn')
+      expect(confirmBtn.text()).toEqual('Importer ces données')
     })
 
-    // Click on rpg tab
-    await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
-    await wrapper.find('#input-pacage').setValue('12345')
-    await wrapper.find('.fr-btn').trigger('click')
-    expect(wrapper.text()).toContain(`Le numéro de PACAGE est composé de minimum 7 chiffres.`)
+    it("should import from Geofolink", async () => {
+      delete import.meta.env.VUE_APP_PRODUCTION
+
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      axios.__createMock.head.mockResolvedValueOnce({ status: 204 })
+
+      // Click on geofolia tab
+      await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+      expect(wrapper.text()).toContain('Vérification de votre contrat')
+      const form = wrapper.find('form')
+
+      await flushPromises()
+      expect(wrapper.text()).not.toContain('Vérification de votre contrat')
+      expect(axios.__createMock.head).toHaveBeenCalled(1)
+
+      // we should be ready to import (first attempt, not ready)
+      const importBtn = wrapper.find('form .fr-btn')
+      expect(importBtn.text()).toBe('Collecter les parcelles')
+      expect(importBtn.attributes('disabled')).toBe(undefined)
+
+      axios.__createMock.get.mockResolvedValueOnce({ status: 202 })
+      await form.trigger('submit.prevent')
+      expect(wrapper.text()).toContain('Collecte des parcelles en cours')
+
+      await flushPromises()
+      expect(wrapper.text()).toContain('Les données ne sont pas encore prêtes')
+
+      // second attempt, ready to import
+      axios.__createMock.get.mockResolvedValueOnce({
+        data: featureCollectionFixture
+      })
+
+      await form.trigger('submit.prevent')
+      await flushPromises()
+      expect(wrapper.text()).not.toContain('Les données ne sont pas encore prêtes')
+      expect(axios.__createMock.get).toHaveBeenCalled(2)
+
+      const confirmBtn = wrapper.find('.fr-btn')
+      expect(confirmBtn.text()).toEqual('Importer ces données')
+    })
+
+    it("should tell if Geofolink account is not configured", async () => {
+      delete import.meta.env.VUE_APP_PRODUCTION
+
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      // Click on geofolia tab
+      await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+
+      axios.__createMock.head.mockResolvedValueOnce({ status: 404 })
+      await flushPromises()
+
+      // button is now disabled and we should read the manual
+      const importBtn = wrapper.find('form .fr-btn')
+      expect(importBtn.text()).toBe('Collecter les parcelles')
+      expect(importBtn.attributes('disabled')).toBe('')
+      expect(wrapper.text()).toContain('Comment activer la liaison Geofolink avec CartoBio ?')
+    })
+
+    it("should fail on invalid Geofolia archive", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: [ ...operatorSetupActions ],
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      const error = new AxiosError('Fichier invalide')
+      error.response = { status: 400 }
+
+      axios.__createMock.post.mockRejectedValueOnce(error)
+
+      await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Votre fichier n\'est pas reconnu comme un export Geofolia.')
+    })
+
+    it("should fail on unreachable server during Geofolia import", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: [ ...operatorSetupActions ],
+          flowId: 'source',
+          operator: operator
+        },
+        global: {
+          config: {
+            errorHandler (error) {
+              expect(error.message).toBe('Server is down')
+            }
+          }
+        }
+      })
+
+      await wrapper.find('ul').find('.import-source-tab--geofolia').trigger('click')
+
+      const error = new AxiosError('Server is down')
+      error.response = { status: 500 }
+      axios.__createMock.post.mockRejectedValueOnce(error)
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+      expect(wrapper.text()).toContain('Erreur inconnue, merci de réessayer plus tard.')
+    })
   })
 
-  it('should handle correct PACAGE numbers', async () => {
-    const wrapper = mount(OperatorSetupFlow, {
-      props: {
-        actions: operatorSetupActions,
-        flowId: 'source',
-        operator: operator
-      }
+  describe('MesParcelles import', () => {
+    it("should import successfully a MesParcelles/TelepacXML archive", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      // Click on mesparcelles tab
+      await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
+      expect(wrapper.text()).toContain(`Sélectionner mon export MesParcelles (service Telepac)`)
+
+      axios.__createMock.post.mockResolvedValueOnce({
+        data: featureCollectionFixture
+      })
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      // it is now called during preview
+      const confirmBtn = await wrapper.find('.fr-btn')
+      expect(confirmBtn.text()).toEqual('Importer ces données')
     })
 
-    axios.__createMock.get.mockResolvedValueOnce({
-      data: featureCollectionFixture
+    it("should fail on invalid MesParcelles/TelepacXML archive", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: [ ...operatorSetupActions ],
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      const error = new AxiosError('Fichier invalide')
+      error.response = { status: 400 }
+      axios.__createMock.post.mockRejectedValueOnce(error)
+
+      await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Votre fichier ne semble pas être un export MesParcelles valide.')
     })
 
-    // Click on rpg tab
-    await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
-    await wrapper.find('#input-pacage').setValue('012345678')
-    await wrapper.find('.fr-btn').trigger('click')
-    await flushPromises()
+    it("should fail on unreachable server during a MesParcelles/TelepacXML import", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: [ ...operatorSetupActions ],
+          flowId: 'source',
+          operator: operator
+        },
+        global: {
+          config: {
+            errorHandler (error) {
+              expect(error.message).toBe('Server is down')
+            }
+          }
+        }
+      })
 
-    expect(axios.__createMock.get).toHaveBeenCalledOnce()
-    const confirmBtn = await wrapper.find('.fr-btn')
-    expect(confirmBtn.text()).toEqual('Importer ces données')
+      await wrapper.find('ul').find('.import-source-tab--mesparcelles').trigger('click')
+
+      const error = new AxiosError('Server is down')
+      error.response = { status: 500 }
+      axios.__createMock.post.mockRejectedValueOnce(error)
+
+      await wrapper.find('input[type="file"]').setValue('')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Erreur inconnue, merci de réessayer plus tard.')
+    })
+  })
+
+  describe('RPG import', () => {
+    it("should render tab content for RPG when selected", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      // Click on rpg tab
+      await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
+      expect(wrapper.text()).toContain(`Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit`)
+    })
+
+    it('should handle incorrect PACAGE numbers', async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      // Click on rpg tab
+      await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
+      await wrapper.find('#input-pacage').setValue('12345')
+      await wrapper.find('.fr-btn').trigger('click')
+      expect(wrapper.text()).toContain(`Le numéro de PACAGE est composé de minimum 7 chiffres.`)
+    })
+
+    it('should handle correct PACAGE numbers', async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        }
+      })
+
+      axios.__createMock.get.mockResolvedValueOnce({
+        data: featureCollectionFixture
+      })
+
+      // Click on rpg tab
+      await wrapper.find('ul').find('.import-source-tab--rpg').trigger('click')
+      await wrapper.find('#input-pacage').setValue('012345678')
+      await wrapper.find('.fr-btn').trigger('click')
+      await flushPromises()
+
+      expect(axios.__createMock.get).toHaveBeenCalledOnce()
+      const confirmBtn = await wrapper.find('.fr-btn')
+      expect(confirmBtn.text()).toEqual('Importer ces données')
+    })
+  })
+
+  describe('CVI import', () => {
+    it("should render tab content for CVI when selected", async () => {
+      const wrapper = mount(OperatorSetupFlow, {
+        props: {
+          actions: operatorSetupActions,
+          flowId: 'source',
+          operator: operator
+        },
+        global: {
+          config: {
+            errorHandler (error) {
+              expect(error.message).toBe('EVV et SIRET non correspondants')
+            }
+          }
+        }
+      })
+
+      // Submit an invalid EVV
+      const error = new AxiosError('EVV et SIRET non correspondants')
+      error.response = { status: 401, data: { error: 'EVV et SIRET non correspondants' } }
+      axios.__createMock.get.mockRejectedValueOnce(error)
+
+      await wrapper.find('ul').find('.import-source-tab--cvi').trigger('click')
+
+      wrapper.getComponent(CviComponent)
+      await wrapper.find('#ncvi-evv').setValue('99999')
+
+      // surprisingly, the click on the submit button… does not trigger the submit event
+      // although it works in a browser UI
+      await wrapper.find('form').trigger('submit')
+      // await wrapper.find('.fr-btn').trigger('click')
+      await flushPromises()
+
+      expect(wrapper.find('.fr-input-group').classes()).toContain('fr-input-group--error')
+      expect(wrapper.find('.fr-input').classes()).toContain('fr-input--error')
+      expect(wrapper.find('.fr-error-text').exists()).toBe(true)
+    })
   })
 })

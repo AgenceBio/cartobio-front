@@ -123,6 +123,20 @@ export function setAuthorization (userToken) {
   }
 }
 
+
+/**
+ * Turn a geographical file into a GeoJSON
+ *
+ * @param {File} archive
+ * @returns {Promise<CartoBioFeatureCollection>}
+ */
+export async function convertGeographicalFileToGeoJSON (archive) {
+  const form = new FormData()
+  form.append('archive', archive)
+  const { data: geojson } = await apiClient.post(`/v2/convert/anygeo/geojson`, form)
+  return geojson
+}
+
 /**
  * Turn a zipped Shapefile into a GeoJSON
  *
