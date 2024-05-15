@@ -1,6 +1,6 @@
 <template>
   <tbody>
-    <tr @click.stop="open = !open" class="clickable group-header">
+    <tr @click.stop="open = !open" @keydown.enter="open = !open" class="clickable group-header" tabindex="0">
       <td class="selection">
         <div class="fr-checkbox-group single-checkbox">
           <input type="checkbox" :id="'radio-'+ featureGroup.key" :checked="allSelected" @click="toggleFeatureGroup" />
