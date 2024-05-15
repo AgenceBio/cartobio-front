@@ -3,7 +3,7 @@
     <template #trigger="{ toggle }">
       <button
           class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-down-s-line menu-button"
-          @click="toggle"
+          @click.stop.prevent="toggle"
           :disabled="!isOnline"
       >
         {{ label }}
