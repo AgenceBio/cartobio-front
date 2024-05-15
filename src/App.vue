@@ -3,18 +3,23 @@
 
   <RouterView v-slot="{ Component, route }">
     <Suspense>
-      <component
-        :is="Component"
-        :key="route.meta.usePathKey ? route.path : undefined"
-      />
+      <template #default>
+        <main id="content">
+          <component
+          :is="Component"
+          :key="route.meta.usePathKey ? route.path : undefined"
+        />
+        </main>
+      </template>
+
       <template #fallback>
-        <div class="fr-container fr-py-9v">
+        <main class="fr-container fr-py-9v" id="content">
           <div class="fr-grid-row">
             <div class="fr-col-12">
-              <Spinner class="fr-h5">Chargement des données…</Spinner>
+              <Spinner class="fr-h5">Chargement des données …</Spinner>
             </div>
           </div>
-        </div>
+        </main>
       </template>
     </Suspense>
   </RouterView>

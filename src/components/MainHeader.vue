@@ -1,4 +1,19 @@
 <template>
+  <div class="fr-skiplinks">
+    <nav role="navigation" aria-label="Accès rapide" class="fr-container">
+      <ul class="fr-skiplinks__list">
+        <li>
+          <a class="fr-link" href="#content">Contenu</a>
+        </li>
+        <li>
+          <a class="fr-link" href="#header-navigation">Menu</a>
+        </li>
+        <li>
+          <a class="fr-link" href="#footer">Pied de page</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
   <header role="banner" class="fr-header">
     <div class="fr-header__body">
       <div class="fr-container">
@@ -12,7 +27,8 @@
               </div>
 
               <div class="fr-header__operator">
-                <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg logo" alt="L'Agence Bio" />
+                <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
+                  alt="L'Agence Bio" />
               </div>
             </div>
 
@@ -23,19 +39,13 @@
                 </p>
               </router-link>
 
-              <p class="fr-header__service-tagline fr-hidden fr-unhidden-sm">Parcellaire cultivé en Agriculture Biologique</p>
+              <p class="fr-header__service-tagline fr-hidden fr-unhidden-sm">Parcellaire cultivé en Agriculture
+                Biologique</p>
             </div>
 
             <div class="fr-header__navbar">
-              <button
-                  title="Menu"
-                  class="fr-btn--menu fr-btn"
-                  id="mobile-menu-button"
-                  :data-fr-opened="menuIsOpen"
-                  aria-controls="mobile-menu"
-                  aria-haspopup="menu"
-                  @click="menuIsOpen = !menuIsOpen"
-              >
+              <button title="Menu" class="fr-btn--menu fr-btn" id="mobile-menu-button" :data-fr-opened="menuIsOpen"
+                aria-controls="mobile-menu" aria-haspopup="menu" @click="menuIsOpen = !menuIsOpen">
                 Menu
               </button>
             </div>
@@ -43,35 +53,33 @@
 
           <div class="fr-header__tools">
             <div class="fr-header__tools-links">
-              <ul class="fr-btns-group">
+              <ul class="fr-btns-group" id="header-navigation">
                 <li>
                   <router-link to="/projet" class="fr-btn">
                     À propos
                   </router-link>
                 </li>
                 <li>
-                  <a :href="documentationPage" target="_blank" class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill">
+                  <a :href="documentationPage" target="_blank"
+                    class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill">
                     Aide
                   </a>
                 </li>
-              </ul>
-              <ul class="fr-btns-group" v-if="isLogged">
-                <li class="tool-username" aria-hidden="true">
+                <li class="tool-username" aria-hidden="true" v-if="isLogged">
                   <router-link :to="startPage" :class="['fr-btn', 'fr-mr-1w', roleIcon]">
                     {{ user.nom }}
                   </router-link>
                 </li>
-                <li class="tool-logout">
+                <li class="tool-logout" v-if="isLogged">
                   <router-link to="/logout" custom v-slot="{ href }">
                     <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout">
                       Déconnexion
                     </a>
                   </router-link>
                 </li>
-              </ul>
-              <ul class="fr-btns-group" v-else>
-                <li>
-                  <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left" aria-role="button">
+                <li v-if="!isLogged">
+                  <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
+                    aria-role="button">
                     Connexion
                   </router-link>
                 </li>
@@ -81,12 +89,8 @@
         </div>
       </div>
 
-      <div
-          class="fr-header__menu fr-modal fr-hidden-lg"
-          id="mobile-menu"
-          :class="{ 'fr-modal--opened': menuIsOpen }"
-          aria-labelledby="mobile-menu-button"
-      >
+      <div class="fr-header__menu fr-modal fr-hidden-lg" id="mobile-menu" :class="{ 'fr-modal--opened': menuIsOpen }"
+        aria-labelledby="mobile-menu-button">
         <div class="fr-container">
           <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
             Fermer
@@ -95,12 +99,14 @@
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item" v-if="isLogged">
-                <router-link :to="startPage" class="fr-nav__link fr-btn--icon-left" :class="roleIcon" aria-current="false">
+                <router-link :to="startPage" class="fr-nav__link fr-btn--icon-left" :class="roleIcon"
+                  aria-current="false">
                   {{ user.nom }}
                 </router-link>
               </li>
               <li class="fr-nav__item">
-                <a :href="documentationPage" target="_blank" rel="noopener" class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
+                <a :href="documentationPage" target="_blank" rel="noopener"
+                  class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
                   Aide
                 </a>
               </li>
@@ -110,12 +116,14 @@
                 </router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link  v-if="isLogged" to="/logout" custom v-slot="{ href }">
-                  <a :href="href" @click.prevent="logout" class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
+                <router-link v-if="isLogged" to="/logout" custom v-slot="{ href }">
+                  <a :href="href" @click.prevent="logout"
+                    class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
                     Déconnexion
                   </a>
                 </router-link>
-                <router-link v-else to="/login" aria-role="button" class="fr-nav__link  fr-btn--icon-left fr-icon-account-circle-fill">
+                <router-link v-else to="/login" aria-role="button"
+                  class="fr-nav__link  fr-btn--icon-left fr-icon-account-circle-fill">
                   Connexion
                 </router-link>
               </li>
