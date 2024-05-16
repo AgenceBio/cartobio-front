@@ -1,4 +1,4 @@
-# [2.24.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.4...v2.24.0) (2023-05-16)
+# [2.24.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.4...v2.24.0) (2024-05-16)
 
 * Affichage des surfaces avec les projections légales (Antilles, Guyane, Mayotte, Métropole, La Réunion)
 * API Lecture : possibilité d'interroger les données en batch (plusieurs numéro bio en même temps)
@@ -15,7 +15,7 @@
 * Nécessite une authentification pour la séquence d'import ([b0ae7e4](https://github.com/AgenceBio/cartobio-front/commit/b0ae7e4))
 * Import télépac : affiche les erreurs personnalisées plutôt qu'une générique ([04af5f2](https://github.com/AgenceBio/cartobio-front/commit/04af5f2))
 
-# [2.22.0](https://github.com/AgenceBio/cartobio-front/compare/v2.21.0...v2.22.0) (2023-03-11)
+# [2.22.0](https://github.com/AgenceBio/cartobio-front/compare/v2.21.0...v2.22.0) (2024-03-11)
 
 * Gestion des versions d'une exploitation agricole
 * Fonctionnalité de création de version par duplication de version
@@ -35,7 +35,7 @@
 * API écriture : correction d'un bug dans la réception des parcelles sans géométrie
 * API lecture : filtre par date d'audit ou statut de certification
 
-# [2.21.0](https://github.com/AgenceBio/cartobio-front/compare/v2.20.0...v2.21.0) (2023-02-23)
+# [2.21.0](https://github.com/AgenceBio/cartobio-front/compare/v2.20.0...v2.21.0) (2024-02-23)
 
 * Activation de l'import MesParcelles ([#323](https://github.com/AgenceBio/cartobio-front/pull/323))
 * Sélectionne 'en cours de traitement' par défaut sur les annotations de déclassement ([#318](https://github.com/AgenceBio/cartobio-front/pull/318))
@@ -43,7 +43,7 @@
 * API : expose les champs `certification.dateAudit` et `surface` dans l'API Lecture ([#152](https://github.com/AgenceBio/cartobio-api/pull/152), [#151](https://github.com/AgenceBio/cartobio-api/pull/151))
 * Corrections de bugs ([#322](https://github.com/AgenceBio/cartobio-front/pull/322), [#325](https://github.com/AgenceBio/cartobio-front/pull/325), [#159](https://github.com/AgenceBio/cartobio-api/pull/159), [#153](https://github.com/AgenceBio/cartobio-api/pull/153))
 
-# [2.20.0](https://github.com/AgenceBio/cartobio-front/compare/v2.19.0...v2.20.0) (2023-02-10)
+# [2.20.0](https://github.com/AgenceBio/cartobio-front/compare/v2.19.0...v2.20.0) (2024-02-10)
 
 * Préservation des versions précédentes du parcellaire lors des noueaux imports ([3b92b45](https://github.com/AgenceBio/cartobio-front/commit/3b92b45), [5ca8290](https://github.com/AgenceBio/cartobio-front/commit/5ca8290))
 * Sélectionne 'en cours de traitement' par défaut sur les annotations de réduction de période de conversion ([6967c65](https://github.com/AgenceBio/cartobio-front/commit/6967c65))
@@ -56,7 +56,7 @@
 * Le champ « nom » des parcelles n'est plus obligatoire
 * Corrections de bugs
 
-# [2.19.0](https://github.com/AgenceBio/cartobio-front/compare/v2.18.4...v2.19.0) (2023-02-10)
+# [2.19.0](https://github.com/AgenceBio/cartobio-front/compare/v2.18.4...v2.19.0) (2024-02-10)
 
 * nouvelle page d'accueil
 * import de parcellaire depuis ProDouanes/CVI
@@ -65,18 +65,18 @@
 * correction d'un bug de prévisualisation de parcelle à ajouter
 * API de lecture
 
-# [2.18.4](https://github.com/AgenceBio/cartobio-front/compare/v2.18.1...v2.18.4) (2023-01-26)
+# [2.18.4](https://github.com/AgenceBio/cartobio-front/compare/v2.18.1...v2.18.4) (2024-01-26)
 * corrections de bugs
 
-# [2.18.1](https://github.com/AgenceBio/cartobio-front/compare/v2.18.0...v2.18.1) (2023-01-16)
+# [2.18.1](https://github.com/AgenceBio/cartobio-front/compare/v2.18.0...v2.18.1) (2024-01-16)
 * augmente la compatibilité des navigateurs (jusque 2019)
 
-# [2.18.0](https://github.com/AgenceBio/cartobio-front/compare/v2.17.5...v2.18.0) (2023-01-09)
+# [2.18.0](https://github.com/AgenceBio/cartobio-front/compare/v2.17.5...v2.18.0) (2024-01-09)
 * fusionne les pages de vue du parcellaire des OC et des agriculteurs (une seule URL pour les deux)
 * nouveau design de la page de connexion
 * première version de l'ajout de parcellaire vierge
 
-# [2.17.5](https://github.com/AgenceBio/cartobio-front/compare/v2.17.0...v2.17.5) (2023-01-09)
+# [2.17.5](https://github.com/AgenceBio/cartobio-front/compare/v2.17.0...v2.17.5) (2024-01-09)
 * plusieurs corrections de bugs d'affichage
 
 # [2.17.0](https://github.com/AgenceBio/cartobio-front/compare/v2.16.0...v2.17.0) (2023-12-19)
