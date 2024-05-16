@@ -3,7 +3,7 @@ import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import { featureName, legalProjectionSurface } from '@/components/Features/index.js'
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 
-const { aoa_to_sheet, sheet_add_aoa } = utils
+const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -81,18 +81,16 @@ function getSheet () {
 
 class BureauVeritasExporter extends BaseExporter {
   label = 'Tableur'
-  extension = 'csv'
-  mimetype = 'text/csv'
+  extension = 'xlsx'
+  mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
   getSheet = getSheet
 
   toFileData() {
     const sheet = this.getSheet()
-    const workbook = utils.book_new()
-    utils.book_append_sheet(workbook, sheet, 'Export CartoBio')
-    // Cette fonction ajoute un BOM ce que sheet_to_csv ne fait pas
-    const data = write(workbook, { type: "array", bookType: 'csv', FS: ';' })
-    return new Blob([data])
+    const workbook = book_new()
+    book_append_sheet(workbook, sheet, 'Export CartoBio')
+    return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
   }
 }
 
