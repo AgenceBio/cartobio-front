@@ -5,6 +5,9 @@
         <li>
           <a class="fr-link" href="#content">Contenu</a>
         </li>
+        <li v-for="(href, text) of $route.meta.skipLinks" :key="href">
+          <a class="fr-link" :href>{{ text }}</a>
+        </li>
         <li>
           <a class="fr-link" href="#header-navigation">Menu</a>
         </li>

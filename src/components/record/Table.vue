@@ -8,7 +8,7 @@
       </li>
     </ul>
 
-    <table @mouseout="hoveredFeatureId = null">
+    <table @mouseout="hoveredFeatureId = null" id="parcellaire-table">
       <caption>Parcellaire agricole</caption>
       <colgroup>
         <col class="selection" />
