@@ -1,4 +1,4 @@
-##  [2.24.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.4...v2.24.0) (2023-04-22)
+# [2.24.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.4...v2.24.0) (2023-05-16)
 
 * Affichage des surfaces avec les projections légales (Antilles, Guyane, Mayotte, Métropole, La Réunion)
 * API Lecture : possibilité d'interroger les données en batch (plusieurs numéro bio en même temps)
