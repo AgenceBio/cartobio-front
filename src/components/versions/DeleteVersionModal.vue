@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import Modal from "@/components/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
 import toast from "@/components/toast.js"
@@ -13,6 +15,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 const operatorStore = useOperatorStore()
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 async function saveDelete() {
   await deleteRecord(props.record.record_id)
@@ -40,7 +44,7 @@ async function saveDelete() {
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
         <li>
-          <button class="fr-btn fr-icon-delete-bin-line" @click="saveDelete">Supprimer</button>
+          <button class="fr-btn fr-icon-delete-bin-line" @click="saveDelete" ref="autofocusedElement">Supprimer</button>
         </li>
         <li>
           <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>

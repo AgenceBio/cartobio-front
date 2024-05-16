@@ -11,7 +11,7 @@
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
         <label class="fr-label">Date de début de conversion</label>
-        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" required />
+        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" ref="autofocusedElement" required />
       </div>
     </form>
 
@@ -28,7 +28,8 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useFeaturesStore } from '@/stores/features.js'
 import { toDateInputString } from '@/components/dates.js'
@@ -40,6 +41,8 @@ const emit = defineEmits(['submit'])
 
 const store = useFeaturesStore()
 const { selectedIds } = storeToRefs(store)
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
   engagement_date: '',

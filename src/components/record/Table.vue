@@ -99,7 +99,7 @@
   </Teleport>
 
   <p>
-    <a href="#top" class="fr-icon--sm fr-icon-arrow-up-fill">
+    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill">
       retour en haut de page
     </a>
   </p>

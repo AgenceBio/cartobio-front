@@ -18,7 +18,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="handleDelete">
+          <button class="fr-btn" @click="handleDelete" ref="autofocusedElement">
             Supprimer le parcellaire
           </button>
         </li>
@@ -28,6 +28,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useFocus } from '@vueuse/core'
+
 import Modal from "@/components/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
 import { useRecordStore } from "@/stores/record.js"
@@ -41,6 +44,8 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const recordStore = useRecordStore()
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 async function handleDelete() {
   const record = await deleteRecord(props.record.record_id)

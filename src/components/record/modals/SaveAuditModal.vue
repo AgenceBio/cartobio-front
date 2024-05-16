@@ -9,7 +9,7 @@
         <label class="fr-label" for="audit_notes">
           Notes finales de l'audit
         </label>
-        <textarea class="fr-input" id="audit_notes" name="audit_notes" v-model="patch.audit_notes" />
+        <textarea class="fr-input" id="audit_notes" name="audit_notes" v-model="patch.audit_notes" ref="autofocusedElement" />
       </div>
 
       <div class="fr-input-group">
@@ -33,7 +33,8 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 
 import Modal from '@/components/Modal.vue'
 
@@ -48,6 +49,9 @@ const props = defineProps({
     required: true
   }
 })
+
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
   audit_notes: props.record.audit_notes,

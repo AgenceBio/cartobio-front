@@ -9,7 +9,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="handleDelete">
+          <button class="fr-btn" @click="handleDelete" ref="autofocusedElement">
             Supprimer
           </button>
         </li>
@@ -24,7 +24,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import Modal from "@/components/Modal.vue"
+import { useFocus } from '@vueuse/core'
 import { useCartoBioStorage } from "@/stores/storage.js"
 
 const props = defineProps({
@@ -36,6 +38,8 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const storage = useCartoBioStorage()
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 async function handleDelete() {
   storage.clearRecord(props.recordId)

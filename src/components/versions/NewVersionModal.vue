@@ -1,5 +1,6 @@
 <script setup>
-
+import { ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import Modal from "@/components/Modal.vue"
 import { useOperatorStore } from "@/stores/operator.js"
 import { useRecordStore } from "@/stores/record.js"
@@ -10,6 +11,8 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 async function createEmptyVersion() {
    recordStore.update(await createOperatorRecord(operatorStore.operator.numeroBio, {
@@ -36,7 +39,7 @@ async function createEmptyVersion() {
       <div class="fr-card__body">
         <div class="fr-card__content">
           <h3 class="fr-card__title">
-            <router-link :to="`/exploitations/${operatorStore.operator.numeroBio}/import`" class="fr-card__link">
+            <router-link :to="`/exploitations/${operatorStore.operator.numeroBio}/import`" class="fr-card__link" ref="autofocusedElement">
               Importer un parcellaire informatisé
             </router-link>
           </h3>

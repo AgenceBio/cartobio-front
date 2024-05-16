@@ -1,7 +1,11 @@
 <script setup>
+import { ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import Modal from "@/components/Modal.vue"
 
 defineEmits(['close'])
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 </script>
 
 <template>
@@ -20,7 +24,7 @@ defineEmits(['close'])
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline">
         <li>
-          <router-link to="/exploitations/stockage/" class="fr-btn fr-btn--primary">Voir la liste</router-link>
+          <router-link to="/exploitations/stockage/" class="fr-btn fr-btn--primary" ref="autofocusedElement">Voir la liste</router-link>
         </li>
         <li>
           <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>
