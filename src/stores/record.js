@@ -5,20 +5,14 @@ import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import bbox from '@turf/bbox'
 import { useOperatorStore } from "@/stores/operator.js"
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js"
+import { useCartoBioStorage } from "@/stores/storage.js"
 
 /**
  * @param {UUID} recordId
  * @return {Promise<NormalizedRecord>}
  */
 export async function getRecord (recordId) {
-  if (!navigator.onLine && localStorage.getItem(`record-${recordId}`)) {
-    return JSON.parse(localStorage.getItem(`record-${recordId}`))
-  }
-
   const { data } = await apiClient.get(`/v2/audits/${recordId}`)
-  if (localStorage.getItem(`record-${recordId}`)) {
-    localStorage.setItem(`record-${recordId}`, JSON.stringify(data))
-  }
 
   return data
 }
@@ -30,6 +24,7 @@ export async function getRecord (recordId) {
  */
 
 export const useRecordStore = defineStore('record', () => {
+  const storage = useCartoBioStorage()
   const featuresStore = useFeaturesStore()
   const operatorStore = useOperatorStore()
   const sets = useFeaturesSetsStore()
@@ -137,6 +132,13 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   async function ready(recordId) {
+    if (!navigator.onLine && storage.records[recordId]) {
+      await operatorStore.ready(storage.records[recordId].numerobio)
+      reset()
+      update(storage.records[recordId])
+      return
+    }
+
     if (record.record_id === recordId) {
       launchRevalidate()
       return
