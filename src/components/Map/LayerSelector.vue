@@ -1,6 +1,6 @@
 <template>
 <Teleport to=".maplibregl-ctrl-bottom-left">
-  <div class="container maplibregl-ctrl">
+  <div class="container maplibregl-ctrl" ref="layersMenuRef">
     <button
       class="menu-toggle"
       :class="{ 'menu-toggle--satellite': fond === 'satellite', 'menu-toggle--plan': fond === 'plan' }"
@@ -10,8 +10,9 @@
         Calques
       </span>
     </button>
-    <div class="menu" v-if="showMenu" ref="layersMenuRef">
-      <h5 class="fr-mb-2w">Calques</h5>
+
+    <dialog aria-labelledby="map-layers-title" role="dialog" class="menu" :open="showMenu">
+      <h5 id="map-layers-title" class="fr-mb-2w">Calques</h5>
 
       <button
         class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
@@ -42,14 +43,14 @@
         <img src="@/assets/map/cadastre.jpg" alt="" />
         <span>Cadastre</span>
       </button>
-    </div>
+    </dialog>
   </div>
 </Teleport>
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { onClickOutside } from "@vueuse/core"
+import { onBeforeUnmount, ref } from "vue"
+import { onClickOutside, onKeyStroke } from "@vueuse/core"
 import { useTélépac } from "@/referentiels/pac.js";
 
 const showMenu = ref(false)
@@ -73,7 +74,13 @@ defineProps({
 
 defineEmits(['update:fond', 'update:classification', 'update:cadastre'])
 
-onClickOutside(layersMenuRef, () => showMenu.value = false)
+const cancelKeyStroke = onKeyStroke('Escape', () => showMenu.value = false)
+const cancelClickOutside = onClickOutside(layersMenuRef, () => showMenu.value = false)
+
+onBeforeUnmount(() => {
+  cancelClickOutside()
+  cancelKeyStroke()
+})
 </script>
 
 <style scoped>
@@ -125,11 +132,14 @@ onClickOutside(layersMenuRef, () => showMenu.value = false)
 }
 
 .menu {
+  border: none;
   border-radius: 0.3125rem;
   background: #FFF;
+  left: calc(5.5rem + 1.5rem);
   padding: 1.5rem;
   /* shadow / light / lifted */
   box-shadow: 0 6px 18px 0 rgba(0, 0, 18, 0.16);
+  width: 21rem;
 }
 
 .close-button {

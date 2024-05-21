@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest"
-import { flushPromises, mount } from "@vue/test-utils"
+import { mount } from "@vue/test-utils"
 import { NavigationControl, ScaleControl } from 'maplibre-gl'
 
 import MapContainer from "./MapContainer.vue"
@@ -58,9 +58,21 @@ describe('LayerSelector', () => {
     })
 
 
-    const menu = wrapper.getComponent(LayerSelector)
-    expect(menu.find('.menu').exists()).toEqual(false)
-    await menu.find('.menu-toggle--plan').trigger('click')
-    await flushPromises()
+    expect(wrapper.find('.menu').attributes('open')).toBeUndefined()
+
+    await wrapper.find('button.menu-toggle').trigger('click')
+    expect(wrapper.find('.menu').attributes('open')).toEqual('')
+
+    // closes the dialog
+    await wrapper.find('button.menu-toggle').trigger('click')
+    expect(wrapper.find('.menu').attributes('open')).toBeUndefined()
+
+    // closes the dialog via the close button
+    await wrapper.find('button.menu-toggle').trigger('click')
+    await wrapper.find('button.close-button').trigger('click')
+    expect(wrapper.find('.menu').attributes('open')).toBeUndefined()
+
+    // cleans
+    await wrapper.unmount()
   })
 })

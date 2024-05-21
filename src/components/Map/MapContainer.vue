@@ -54,6 +54,7 @@ onMounted(() => {
     ...props.options,
     locale: {
       'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
+      'Map.Title': 'Cartographie du parcellaire',
       'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',
       'NavigationControl.ZoomIn': 'Zoomer',
       'NavigationControl.ZoomOut': 'Dézoomer',
@@ -90,7 +91,10 @@ onMounted(() => {
     map.value.setZoom(zoom)
 
     if (props.mapId) {
-      map.value.getCanvas().setAttribute('id', props.mapId)
+      const canvas = map.value.getCanvas()
+      // until is merged and released https://github.com/maplibre/maplibre-gl-js/pull/4147
+      canvas.setAttribute('aria-label', map.value._getUIString('Map.Title'))
+      canvas.setAttribute('id', props.mapId)
     }
 
     emit('zoom:change', map.value.getZoom())
@@ -116,6 +120,11 @@ defineExpose({
 
 .maplibregl-map {
   font: inherit;
+  overflow: visible;
+
+  [tabindex]:focus {
+    outline-style: solid !important;
+  }
 }
 
 .maplibregl-ctrl-bottom-left {
