@@ -16,7 +16,7 @@
         <li>
           <div class="fr-grid-row">
             <div class="fr-col" v-if="exporter.toFileData">
-              <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport" data-content-piece="Export OC">
+              <button class="fr-btn fr-icon-table-line fr-btn--secondary" @click="ocExport" data-content-piece="Export OC" ref="autofocusedElement">
                 {{ exporter.label }}&nbsp;<small>(<code :aria-label="exporter.label">.{{
                   exporter.extension
                 }}</code>)</small>
@@ -42,7 +42,7 @@
 <script setup>
 import { computed, ref, toRaw } from 'vue'
 import { fromId } from '@/components/Features/ExportStrategies/index.js'
-
+import { useFocus } from '@vueuse/core'
 import Modal from '@/components/Modal.vue'
 import { usePermissions } from '@/stores/permissions.js'
 import { statsPush } from "@/stats.js"
@@ -75,6 +75,8 @@ const exporter = computed(function () {
   })
 })
 const copied = ref(false)
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 function geojsonExport() {
   statsPush(['trackEvent', 'Export', 'Export GeoJSON'])

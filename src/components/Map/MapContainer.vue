@@ -26,6 +26,7 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  mapId: String,
   minInitialZoom: {
     type: [Number, String],
     default: 14,
@@ -53,6 +54,7 @@ onMounted(() => {
     ...props.options,
     locale: {
       'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
+      'Map.Title': 'Cartographie du parcellaire',
       'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',
       'NavigationControl.ZoomIn': 'Zoomer',
       'NavigationControl.ZoomOut': 'Dézoomer',
@@ -88,6 +90,13 @@ onMounted(() => {
     const zoom = Math.min(map.value.getZoom(), parseFloat(props.minInitialZoom))
     map.value.setZoom(zoom)
 
+    if (props.mapId) {
+      const canvas = map.value.getCanvas()
+      // until is merged and released https://github.com/maplibre/maplibre-gl-js/pull/4147
+      canvas.setAttribute('aria-label', map.value._getUIString('Map.Title'))
+      canvas.setAttribute('id', props.mapId)
+    }
+
     emit('zoom:change', map.value.getZoom())
   })
 
@@ -111,6 +120,11 @@ defineExpose({
 
 .maplibregl-map {
   font: inherit;
+  overflow: visible;
+
+  [tabindex]:focus {
+    outline-style: solid !important;
+  }
 }
 
 .maplibregl-ctrl-bottom-left {

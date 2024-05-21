@@ -3,8 +3,8 @@
     <div class="fr-container">
       <div class="fr-footer__body">
         <div class="fr-footer__brand fr-enlarge-link">
-          <a href="/" title="Retour à l’accueil">
-            <p class="fr-logo" title="république française">
+          <a href="https://agencebio.org" title="Accéder au site de l'Agence Bio" tabindex="-1">
+            <p class="fr-logo" title="République française">
               République<br>
               française
             </p>

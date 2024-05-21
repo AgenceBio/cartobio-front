@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import Modal from "@/components/Modal.vue"
 import { reactive } from "vue"
 import toast from "@/components/toast.js"
@@ -8,6 +10,8 @@ const emit = defineEmits(['close'])
 
 const recordStore = useRecordStore()
 const { record } = recordStore
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
   version_name: record.version_name,
@@ -36,7 +40,7 @@ async function save() {
       <div class="fr-input-group">
         <label for="version_name" class="fr-input-group__label">Nom de la version du parcellaire</label>
         <span class="fr-hint-text">Ex: Parcellaire audité 2023</span>
-        <input type="text" id="version_name" class="fr-input" v-model="patch.version_name" />
+        <input type="text" id="version_name" class="fr-input" v-model="patch.version_name" ref="autofocusedElement" />
       </div>
 
       <div v-if="patch.audit_date" class="fr-input-group">

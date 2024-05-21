@@ -1,7 +1,11 @@
 <script setup>
+import { ref } from 'vue'
 import Modal from "@/components/Modal.vue"
+import { useFocus } from '@vueuse/core'
 
 defineEmits(['close', 'cancel'])
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 </script>
 
 <template>
@@ -18,7 +22,7 @@ defineEmits(['close', 'cancel'])
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="$emit('cancel')">
+          <button class="fr-btn" @click="$emit('cancel')" ref="autofocusedElement">
             Revenir au formulaire
           </button>
         </li>

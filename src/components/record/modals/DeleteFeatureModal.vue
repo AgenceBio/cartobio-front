@@ -15,7 +15,7 @@
       <div class="fr-input-group" :class="{ 'fr-input-group--error': requiredError }">
         <label for="deletion-reason" class="fr-label">Raison de la suppression
           <span class="fr-hint-text">Ce champ est obligatoire</span></label>
-        <select id="deletion-reason" name="code" class="fr-select" :class="{ 'fr-input--error': requiredError }" v-model="reason.code" required>
+        <select id="deletion-reason" name="code" class="fr-select" :class="{ 'fr-input--error': requiredError }" v-model="reason.code" ref="autofocusedElement" required>
           <option v-for="({ code, label }) in deletionReasons" :value="code" :key="code">
             {{ label }}
           </option>
@@ -45,6 +45,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
+import { useFocus } from '@vueuse/core'
 import { deletionReasons, featureName, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import { useFeaturesStore } from '@/stores/features.js'
 
@@ -67,6 +68,8 @@ const reason = reactive({
   details: ''
 })
 
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 const requiredError = ref(false)
 watch(() => reason.code, () => {
   requiredError.value = false

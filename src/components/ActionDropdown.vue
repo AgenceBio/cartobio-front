@@ -1,6 +1,6 @@
 <script setup>
-import { onUpdated, ref, watch } from "vue"
-import { onClickOutside, useSwipe } from "@vueuse/core"
+import { onBeforeUnmount, onUpdated, ref, watch } from "vue"
+import { onClickOutside, onKeyStroke, useSwipe } from "@vueuse/core"
 import { useHead } from "@unhead/vue"
 
 const show = ref(false)
@@ -45,8 +45,12 @@ const { direction, lengthY } = useSwipe(
     }
 )
 
-onClickOutside(actionsMenuRef, () => {
-  show.value = false
+const cancelKeyStroke = onKeyStroke('Escape', () => show.value = false)
+const cancelClickOutside = onClickOutside(actionsMenuRef, () => show.value = false)
+
+onBeforeUnmount(() => {
+  cancelClickOutside()
+  cancelKeyStroke()
 })
 
 watch(show, (value) => {
@@ -79,7 +83,7 @@ watch(show, (value) => {
         Autres actions
       </button>
     </slot>
-      <dialog class="menu-container" :open="show">
+      <dialog class="menu-container" :open="show" tabindex="-1">
         <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
           <ul class="fr-menu__list fr-btns-group" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
             <slot/>

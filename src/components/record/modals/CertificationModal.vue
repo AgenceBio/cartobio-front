@@ -9,7 +9,7 @@
         <label class="fr-label" for="certification_date_debut">
           Date de début de validité du certificat
         </label>
-        <input type="date" class="fr-input" id="certification_date_debut" name="certification_date_debut" v-model="patch.certification_date_debut" required />
+        <input type="date" class="fr-input" id="certification_date_debut" name="certification_date_debut" v-model="patch.certification_date_debut" ref="autofocusedElement" required />
       </div>
 
       <div class="fr-input-group">
@@ -33,7 +33,8 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import { certificationDateFin } from '@/referentiels/ab.js'
 import { toDateInputString } from '@/components/dates.js'
 
@@ -50,6 +51,8 @@ const props = defineProps({
     required: true
   }
 })
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const startDate = new Date()
 const endDate = certificationDateFin.AnneePlusDeux(startDate)

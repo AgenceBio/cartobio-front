@@ -10,7 +10,7 @@
 
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
-        <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+        <CultureSelector :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" ref="autofocusedElement" />
       </div>
     </form>
 
@@ -27,7 +27,8 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { useFocus } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useFeaturesStore } from '@/stores/features.js'
 
@@ -39,6 +40,8 @@ const emit = defineEmits(['submit'])
 
 const store = useFeaturesStore()
 const { selectedIds } = storeToRefs(store)
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
   cultures: [ { CPF: '' }]

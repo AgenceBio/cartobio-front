@@ -5,7 +5,7 @@
         <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
           <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
           <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-          <input class="fr-input" id="feature-nom" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameErrors.size }" />
+          <input class="fr-input" id="feature-nom" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameErrors.size }" ref="autofocusedElement" />
           <div v-for="([id, result]) in nameErrors" :key="id" class="fr-hint-text fr-error-text">
             {{ result.errorMessage }}.
           </div>
@@ -44,6 +44,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
+import { useFocus } from '@vueuse/core'
 
 import { featureDetails, inHa, legalProjectionSurface } from '@/components/Features/index.js'
 import Modal from '@/components/Modal.vue'
@@ -67,6 +68,8 @@ const emit = defineEmits(['submit', 'close'])
 const permissions = usePermissions()
 const featuresSet = useFeaturesSetsStore()
 const showCancelModal = ref(false)
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
   NOM: props.feature.properties.NOM || '',
