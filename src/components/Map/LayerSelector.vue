@@ -20,26 +20,26 @@
       >Fermer</button>
 
       <h6 class="fr-my-2w fr-text--md">Fonds de carte</h6>
-      <button class="menu-entry" :class="{ 'active': fond === 'plan' }" @click="$emit('update:fond', 'plan')">
-        <img src="@/assets/map/plan.jpg" alt="Fond plan" />
+      <button class="menu-entry" :class="{ 'active': fond === 'plan' }" @click="$emit('update:fond', 'plan')" aria-label="Choisir le fond plan">
+        <img src="@/assets/map/plan.jpg" alt="" />
         <span>Plan</span>
       </button>
-      <button class="menu-entry" :class="{ 'active': fond === 'satellite' }" @click="$emit('update:fond', 'satellite')">
-        <img src="@/assets/map/satellite.jpg" alt="Fond satellite" />
+      <button class="menu-entry" :class="{ 'active': fond === 'satellite' }" @click="$emit('update:fond', 'satellite')" aria-label="Choisir le fond satellite">
+        <img src="@/assets/map/satellite.jpg" alt="" />
         <span>Satellite</span>
       </button>
 
       <hr class="fr-mt-3w fr-pb-2w" />
 
       <h6 class="fr-mb-2w fr-text--md">Calques</h6>
-      <button aria-label="Calque classification" class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)">
+      <button class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)" :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`">
         <img src="@/assets/map/classification.jpg" alt="" />
         <span>
-          RPG {{ currentCampagne }}
+          <abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}
           <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification</a></small>
         </span>
       </button>
-      <button aria-label="Calque numéros de cadastre" class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)">
+      <button class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)" :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`">
         <img src="@/assets/map/cadastre.jpg" alt="" />
         <span>Cadastre</span>
       </button>

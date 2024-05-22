@@ -17,15 +17,15 @@
           </p>
 
           <ul class="logos logos--certification-bodies">
-            <li><img src="@/assets/logos-oc/ecocert.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/certipaq.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/certisud.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/bureau-veritas.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/certis.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/alpes-controles.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/qualisud.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/ocacia.png" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-oc/control-union.png" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-oc/ecocert.png" alt="Ecocert" class="logo"></li>
+            <li><img src="@/assets/logos-oc/certipaq.png" alt="Certipaq" class="logo"></li>
+            <li><img src="@/assets/logos-oc/certisud.png" alt="Certisud" class="logo"></li>
+            <li><img src="@/assets/logos-oc/bureau-veritas.png" alt="Bureau Veritas" class="logo"></li>
+            <li><img src="@/assets/logos-oc/certis.png" alt="Certis" class="logo"></li>
+            <li><img src="@/assets/logos-oc/alpes-controles.png" alt="Alpes Contrôles" class="logo"></li>
+            <li><img src="@/assets/logos-oc/qualisud.png" alt="Qualisud" class="logo"></li>
+            <li><img src="@/assets/logos-oc/ocacia.png" alt="Ocacia" class="logo"></li>
+            <li><img src="@/assets/logos-oc/control-union.png" alt="Control Union" class="logo"></li>
           </ul>
         </div>
 
@@ -36,10 +36,10 @@
           </p>
 
           <ul class="logos logos--sponsors">
-            <li><img src="@/assets/logos-partenaires/agence-bio.svg" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/inao.svg" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/ofb.svg" alt="" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/asp.svg" alt="" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/agence-bio.svg" alt="L'Agence Bio" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/inao.svg" alt="Institut National de l'Origine et de la Qualité" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/ofb.svg" alt="Office français de la biodiversité" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/asp.svg" alt="Agence de services et de paiement" class="logo"></li>
           </ul>
         </div>
       </div>
