@@ -44,20 +44,17 @@
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/sitemap">Plan du site</router-link>
           </li>
-          <li class="fr-footer__bottom-item">
-            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front">Code source : ouvert</a>
+          <li class="fr-footer__bottom-item fr-footer__bottom-link">
+            Code source :
+            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front">interface</a>
+              et
+            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front"><abbr title="Application Programmable Interface" lang="en">API</abbr></a>
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/accessibilite">Accessibilité: non conforme</router-link>
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/mentions-legales">Mentions légales</router-link>
-          </li>
-          <li class="fr-footer__bottom-item">
-            <router-link class="fr-footer__bottom-link" to="/protection-de-vos-donnees">Données personnelles</router-link>
-          </li>
-          <li class="fr-footer__bottom-item">
-            <router-link class="fr-footer__bottom-link" to="/cookies">Gestion des cookies</router-link>
           </li>
         </ul>
         <div class="fr-footer__bottom-copy">
