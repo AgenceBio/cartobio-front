@@ -1,8 +1,10 @@
 <script setup>
 import Modal from "@/components/Modal.vue"
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 import { updateAuditState } from "@/cartobio-api.js"
 import toast from "@/components/toast.js"
+import { usePermissions } from "@/stores/permissions.js"
+import { useFocus } from "@vueuse/core"
 
 const props = defineProps({
   modelValue: {
@@ -12,6 +14,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'update:modelValue'])
 
+const permissions = usePermissions()
+
+const autofocusedElement = ref()
+useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
   version_name: props.modelValue.version_name,
@@ -43,17 +49,17 @@ async function save() {
         <input type="text" id="version_name" class="fr-input" v-model="patch.version_name" />
       </div>
 
-      <div v-if="patch.audit_date" class="fr-input-group">
+      <div v-if="patch.audit_date && permissions.canChangeAuditDate" class="fr-input-group">
         <label for="audit_date" class="fr-input-group__label">Date d'audit</label>
         <input type="date" id="audit_date" class="fr-input" v-model="patch.audit_date" />
       </div>
 
-      <div v-if="modelValue.certification_state === 'CERTIFIED'" class="fr-input-group">
+      <div v-if="modelValue.certification_state === 'CERTIFIED' && permissions.canChangeCertificationDate" class="fr-input-group">
         <label for="certification_date_fin" class="fr-input-group__label">Date de début de validité du certificat</label>
         <input type="date" id="certification_date_fin" class="fr-input" :value="modelValue.certification_date_debut" disabled />
       </div>
 
-      <div v-if="modelValue.certification_state === 'CERTIFIED'" class="fr-input-group">
+      <div v-if="modelValue.certification_state === 'CERTIFIED' && permissions.canChangeCertificationDate" class="fr-input-group">
         <label for="certification_date_fin" class="fr-input-group__label">Date de fin de validité du certificat</label>
         <input type="date" id="certification_date_fin" class="fr-input" v-model="patch.certification_date_fin" />
       </div>

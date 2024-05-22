@@ -83,6 +83,7 @@
       "src/components/Features/SingleItem*.test.js",
       "src/components/Features/Table.test.js",
       "src/components/OperatorSetup/*.test.js",
+      "src/components/record/Header.test.js",
       "src/pages/certification/exploitations/index.test.js",
       "src/pages/exploitations/\\[numeroBio\\]/index.test.js"
     ],

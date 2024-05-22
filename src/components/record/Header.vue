@@ -1,10 +1,14 @@
 <template>
   <header class="fr-mb-2w">
-    <span class="fr-text--bold" :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
+    <span class="fr-text--bold operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
     <h1 class="fr-h4 fr-my-0 fr-mb-1v">
-      {{ record.version_name }}
+      <span class="version-name">{{ record.version_name }}</span>
 
-      <button v-if="!disableActions" class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line" @click="showEditVersionModal = true">
+      <button
+          v-if="!disableActions"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line  edit-version-info"
+          @click="showEditVersionModal = true"
+      >
         Modifier la version
       </button>
     </h1>
