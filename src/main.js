@@ -49,7 +49,7 @@ if (import.meta.env.PROD && VUE_APP_SENTRY_DSN) {
       dsn: VUE_APP_SENTRY_DSN,
       environment: import.meta.env.VUE_APP_ENVIRONMENT,
       integrations: [
-        new Sentry.BrowserTracing({
+        Sentry.browserTracingIntegration({
           routingInstrumentation: Sentry.vueRouterInstrumentation(router),
         }),
       ],
