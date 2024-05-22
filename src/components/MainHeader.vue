@@ -74,13 +74,12 @@
                   </router-link>
                 </li>
                 <li class="tool-logout" v-if="isLogged">
-                  <router-link to="/logout" custom v-slot="{ href }">
-                    <a :href="href" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" @click.prevent="logout">
-                      Déconnexion
-                    </a>
+                  <router-link to="/logout" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line"
+                    aria-role="button">
+                    Déconnexion
                   </router-link>
                 </li>
-                <li v-if="!isLogged">
+                <li v-else>
                   <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
                     aria-role="button">
                     Connexion
@@ -119,11 +118,8 @@
                 </router-link>
               </li>
               <li class="fr-nav__item fr-hidden-lg">
-                <router-link v-if="isLogged" to="/logout" custom v-slot="{ href }">
-                  <a :href="href" @click.prevent="logout"
-                    class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
-                    Déconnexion
-                  </a>
+                <router-link v-if="isLogged" to="/logout" class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
+                  Déconnexion
                 </router-link>
                 <router-link v-else to="/login" aria-role="button"
                   class="fr-nav__link  fr-btn--icon-left fr-icon-account-circle-fill">
@@ -240,13 +236,6 @@ const roleIcon = computed(() => {
 })
 
 const menuIsOpen = ref(false)
-
-async function logout() {
-  const redirectUrl = (userStore.isOc || userStore.isAgri) ? '/pro' : '/'
-
-  await userStore.logout()
-  await router.push(redirectUrl)
-}
 </script>
 
 <style scoped>
