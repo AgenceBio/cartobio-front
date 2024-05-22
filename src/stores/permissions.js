@@ -51,6 +51,8 @@ export const usePermissions = defineStore('permissions', () => {
   const canSaveAudit = computed(() => Boolean(userStore.isOcAudit))
   const canSendAudit = computed(() => Boolean(userStore.isOcAudit))
   const canCertify = computed(() => Boolean(userStore.isOcCertif))
+  const canChangeAuditDate = isOc
+  const canChangeCertificationDate = computed(() => Boolean(userStore.isOcCertif))
   const canAddAnnotations = isOc
   const canViewAnnotations = isOc
   const canExportAnnotations = isOc
@@ -75,6 +77,8 @@ export const usePermissions = defineStore('permissions', () => {
     canChangeConversionLevel,
     canSaveAudit,
     canSendAudit,
+    canChangeAuditDate,
+    canChangeCertificationDate,
     canCertify,
     $reset
   }
