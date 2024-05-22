@@ -167,6 +167,12 @@ router.beforeEach(async (to) => {
     })(),
   ])
 
+  if (to.path === '/logout') {
+    const path = (userStore.isOc || userStore.isAgri) ? '/pro' : '/'
+    await userStore.logout()
+    return { path }
+  }
+
   if (to.path === '/login' && userStore.isLogged) {
     return { path: userStore.startPage, replace: true }
   }
