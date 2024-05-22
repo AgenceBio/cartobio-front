@@ -1,6 +1,6 @@
 <route lang="yaml">
   meta:
-    generalAudience: true&
+    generalAudience: true
     seo:
       title: Métriques de réussite du projet
   </route>
