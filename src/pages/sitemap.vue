@@ -18,7 +18,7 @@
             <li>
               <router-link to="/login" aria-label="Se connecter au service CartoBio">Connexion</router-link> ou
               <router-link to="/logout" aria-label="Se déconnecter du service CartoBio">déconnexion</router-link></li>
-            <li><router-link to="/exploitations">Liste de mes exploitations agricoles</router-link></li>
+            <li><router-link to="/exploitations">Liste des exploitations</router-link></li>
             <li>
               Centre de support
 
