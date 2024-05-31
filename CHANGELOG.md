@@ -1,4 +1,4 @@
-# [2.25.0](https://github.com/AgenceBio/cartobio-front/compare/v2.24.0...v2.25.0) (2023-05-31)
+# [2.24.1](https://github.com/AgenceBio/cartobio-front/compare/v2.24.0...v2.24.1) (2023-05-31)
 * utilise les projections légales pour les calculs de surface ([ec59177](https://github.com/AgenceBio/cartobio-front/commit/ec59177))
 
 # [2.24.0](https://github.com/AgenceBio/cartobio-front/compare/v2.23.0...v2.24.0) (2023-04-29)
