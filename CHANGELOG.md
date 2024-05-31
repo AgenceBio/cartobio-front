@@ -1,4 +1,10 @@
-##  [2.23.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.0...v2.23.0) (2023-04-22)
+# [2.25.0](https://github.com/AgenceBio/cartobio-front/compare/v2.24.0...v2.25.0) (2023-05-31)
+* utilise les projections légales pour les calculs de surface ([ec59177](https://github.com/AgenceBio/cartobio-front/commit/ec59177))
+
+# [2.24.0](https://github.com/AgenceBio/cartobio-front/compare/v2.23.0...v2.24.0) (2023-04-29)
+* gère les permissions de modifications de date d'audit/certification ([c5dbafd](https://github.com/AgenceBio/cartobio-front/commit/c5dbafd))
+
+# [2.23.0](https://github.com/AgenceBio/cartobio-front/compare/v2.22.0...v2.23.0) (2023-04-22)
 
 * Page parcellaire et header du site adaptés aux mobiles ([5319dec](https://github.com/AgenceBio/cartobio-front/commit/5319dec)) ([b880525](https://github.com/AgenceBio/cartobio-front/commit/b880525))  ([e462118](https://github.com/AgenceBio/cartobio-front/commit/e462118)) ([921217b](https://github.com/AgenceBio/cartobio-front/commit/921217b)) ([2a273c9](https://github.com/AgenceBio/cartobio-front/commit/2a273c9))  ([f1ba46c](https://github.com/AgenceBio/cartobio-front/commit/f1ba46c)) ([db325d3](https://github.com/AgenceBio/cartobio-front/commit/db325d3)) ([1c60c40](https://github.com/AgenceBio/cartobio-front/commit/1c60c40)) ([cdccacc](https://github.com/AgenceBio/cartobio-front/commit/cdccacc)) ([c54bf0e](https://github.com/AgenceBio/cartobio-front/commit/c54bf0e)) ([190e177](https://github.com/AgenceBio/cartobio-front/commit/190e177)) ([fca88db](https://github.com/AgenceBio/cartobio-front/commit/fca88db)) ([5120665](https://github.com/AgenceBio/cartobio-front/commit/5120665)) ([0730b1c](https://github.com/AgenceBio/cartobio-front/commit/0730b1c)) ([00163f1](https://github.com/AgenceBio/cartobio-front/commit/00163f1)) ([9db90d9](https://github.com/AgenceBio/cartobio-front/commit/9db90d9)) ([7dd1c81](https://github.com/AgenceBio/cartobio-front/commit/7dd1c81))
 * Ne déconnecte seulement en présence du code erreur EXPIRED_CREDENTIALS ([ea94b71](https://github.com/AgenceBio/cartobio-front/commit/ea94b71))
