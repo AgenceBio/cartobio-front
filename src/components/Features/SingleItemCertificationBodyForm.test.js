@@ -5,10 +5,10 @@ import { flushPromises, mount } from "@vue/test-utils"
 import axios from 'axios'
 import { useRecordStore } from "@/stores/record.js"
 import { usePermissions } from "@/stores/permissions.js"
+import { useCartoBioStorage } from "@/stores/storage.js"
 import {
   ANNOTATIONS,
   AnnotationTags,
-  AUDITOR_RULES,
   CERTIFICATION_BODY_DECISION,
   LEVEL_AB,
   LEVEL_C1,
@@ -22,14 +22,16 @@ import TableComponent from "../record/Table.vue"
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const recordStore = useRecordStore(pinia)
 const permissions = usePermissions(pinia)
+const storage = useCartoBioStorage(pinia)
 
 describe("SingleItemCertificationBodyForm", () => {
   let wrapper
 
   beforeEach(async () => {
-    recordStore.reset()
+    recordStore.$reset()
     recordStore.update(record)
     permissions.isOc = true
+    storage.online = true
 
     const AsyncComponent = defineComponent({
       components: { TableComponent },
@@ -101,11 +103,13 @@ describe("SingleItemCertificationBodyForm", () => {
     await form.find('#downgraded_state').setValue(CERTIFICATION_BODY_DECISION.ACCEPTED)
 
     // click and assess server update
-    axios.__createMock.put.mockResolvedValueOnce({ data: record })
+    axios.__createMock.patch.mockResolvedValueOnce({ data: record })
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
+    await flushPromises()
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
-    expect(axios.__createMock.put.mock.lastCall).toMatchObject([
+    expect(axios.__createMock.patch).toHaveBeenCalled()
+    expect(axios.__createMock.patch.mock.lastCall).toMatchObject([
       '/v2/audits/054f0d70-c3da-448f-823e-81fcf7c2bf6e/parcelles/2',
       {
         properties: {
@@ -126,6 +130,11 @@ describe("SingleItemCertificationBodyForm", () => {
               code: ANNOTATIONS.RISKY
             }
           ]
+        }
+      },
+      {
+        headers: {
+          "If-Unmodified-Since": expect.any(String)
         }
       }
     ])

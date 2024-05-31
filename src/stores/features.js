@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useFeaturesSetsStore } from "@/stores/features-sets.js"
-import { apiClient } from "@/cartobio-api.js"
+import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js"
 
 
 /**
@@ -242,9 +242,13 @@ export const useFeaturesStore = defineStore('features', () => {
    * @param {CartoBioFeature} feature
    * @returns {Promise<void>}
    */
-  async function updateSingleFeature ({ id, properties, geometry }) {
-    const { data: updatedRecord } = await apiClient.put(`/v2/audits/${recordId.value}/parcelles/${id}`, { properties, geometry })
-    setAll(updatedRecord.parcelles.features)
+  function updateSingleFeature ({ id, properties, geometry }) {
+    const storage = useCartoBioStorage()
+    storage.addSyncOperation(recordId.value, new SyncOperation(
+        SyncOperation.ACTIONS.UPDATE_FEATURE,
+        { properties, geometry },
+        id
+    ))
   }
 
   /**
@@ -253,8 +257,11 @@ export const useFeaturesStore = defineStore('features', () => {
    * @returns {Promise<void>}
    */
   async function updateFeatureCollectionProperties (featureCollection) {
-    const { data: updatedRecord } = await apiClient.patch(`/v2/audits/${recordId.value}/parcelles`, featureCollection)
-    setAll(updatedRecord.parcelles.features)
+    const storage = useCartoBioStorage()
+    storage.addSyncOperation(recordId.value, new SyncOperation(
+      SyncOperation.ACTIONS.UPDATE_COLLECTION,
+      featureCollection
+    ))
   }
 
   /**
@@ -262,8 +269,12 @@ export const useFeaturesStore = defineStore('features', () => {
    * @return {Promise<void>}
    */
   async function deleteSingleFeature ({ id, reason }) {
-    const { data: updatedRecord } = await apiClient.delete(`/v2/audits/${recordId.value}/parcelles/${id}`, {data: { reason }})
-    setAll(updatedRecord.parcelles.features)
+    const storage = useCartoBioStorage()
+    storage.addSyncOperation(recordId.value, new SyncOperation(
+        SyncOperation.ACTIONS.DELETE_FEATURE,
+        { reason },
+        id
+    ))
   }
 
   /**

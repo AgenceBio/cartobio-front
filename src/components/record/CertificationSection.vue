@@ -7,9 +7,7 @@ import { usePermissions } from "@/stores/permissions.js"
 import { useRecordStore } from "@/stores/record.js"
 import CertificationModal from "@/components/record/modals/CertificationModal.vue"
 import SaveAuditModal from "@/components/record/modals/SaveAuditModal.vue"
-import { useOnline } from "@vueuse/core"
 
-const isOnline = useOnline()
 const recordStore = useRecordStore()
 const operatorStore = useOperatorStore()
 const featuresSets = useFeaturesSetsStore()
@@ -23,8 +21,8 @@ const showCertificationModal = ref(false)
 
 const canEndAudit = computed(() => permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets)
 
-async function handleSaveAudit ({ patch }) {
-  await recordStore.updateInfo({
+function handleSaveAudit ({ patch }) {
+  recordStore.updateInfo({
     ...patch,
     certification_state: CERTIFICATION_STATE.AUDITED
   })
@@ -32,14 +30,14 @@ async function handleSaveAudit ({ patch }) {
   showSaveAuditModal.value = false
 }
 
-async function handleSendAudit () {
-  await recordStore.updateInfo({
+function handleSendAudit () {
+  recordStore.updateInfo({
     certification_state: CERTIFICATION_STATE.PENDING_CERTIFICATION
   })
 }
 
-async function handleCertify ({ patch }) {
-  await recordStore.updateInfo({
+function handleCertify ({ patch }) {
+  recordStore.updateInfo({
     ...patch,
     certification_state: CERTIFICATION_STATE.CERTIFIED
   })
@@ -81,7 +79,6 @@ async function handleCertify ({ patch }) {
         v-if="permissions.canSaveAudit"
         class="fr-btn"
         @click="showSaveAuditModal = true"
-        :disabled="!isOnline"
     >Terminer l'audit</button>
     <span v-else>L'auditeur doit maintenant terminer l'audit.</span>
   </div>
@@ -93,7 +90,6 @@ async function handleCertify ({ patch }) {
         v-if="permissions.canSendAudit"
         class="fr-btn"
         @click="handleSendAudit"
-        :disabled="!isOnline"
     >Soumettre pour certification</button>
     <span v-else>L'auditeur doit maintenant soumettre l'audit pour certification.</span>
   </div>
@@ -104,7 +100,6 @@ async function handleCertify ({ patch }) {
     <button
         v-if="permissions.canCertify"
         class="fr-btn" @click="showCertificationModal = true"
-        :disabled="!isOnline"
     >Certifier le parcellaire</button>
     <span v-else>Le chargé de certification doit maintenant certifier le parcellaire.</span>
   </div>

@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue"
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
 import { apiClient } from "@/cartobio-api.js"
 import { useCartoBioStorage } from "@/stores/storage.js"
+import { legalProjectionSurface } from "@/components/Features/index.js"
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
@@ -38,10 +39,13 @@ export const useOperatorStore = defineStore('operator', () => {
    */
   const operator = ref(initialState)
   /**
-   * @type {Ref<UnwrapRef<null | import('@agencebio/cartobio-types').NormalizedRecordSummary[]>>}
+   * @type {Ref<UnwrapRef<null | NormalizedRecordSummary[]>>}
    */
   const records = ref(null)
 
+  /**
+   * @type {ComputedRef<NormalizedRecordSummary[]>}
+   */
   const recordsByYear = computed(() => {
     if (!records.value?.length) return [];
 
@@ -65,8 +69,7 @@ export const useOperatorStore = defineStore('operator', () => {
     if (!navigator.onLine && storage.operators[numeroBio]) {
       const {operator: operatorData, records: recordsData} = storage.operators[numeroBio]
       operator.value = operatorData
-      records.value = recordsData
-      return
+      records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA))
     }
 
     if (String(operator.value.numeroBio) !== numeroBio) {
@@ -75,10 +78,7 @@ export const useOperatorStore = defineStore('operator', () => {
     }
 
     getRecordsSummary(numeroBio).then(r => {
-      records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA)).map(record => ({
-        ...record,
-        storedOffline: !!storage.records[record.record_id]
-      }))
+      records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA))
     })
   }
 
@@ -95,10 +95,22 @@ export const useOperatorStore = defineStore('operator', () => {
     }
   })
 
-  // Update storedOffline properties when storage changes
-  watch(storage, () => {
-    for (let i = 0; i < records.value?.length; i++) {
-      records.value[i].storedOffline = !!localStorage.getItem(`record-${records.value[i].record_id}`)
+  // Keep operator store records summary updated with storage
+  watch([records, () => storage.records], () => {
+    if (!records.value) return
+    for (let i = 0; i < records.value.length; i++) {
+      if (!storage.records[records.value[i].record_id]) continue
+
+      const [updatedRecord, hasChanges] = storage.getRecordWithQueuedOps(records.value[i].record_id)
+      if (!hasChanges) continue
+
+      records.value[i].version_name = updatedRecord.version_name
+      records.value[i].certification_state = updatedRecord.certification_state
+      records.value[i].audit_date = updatedRecord.audit_date
+      records.value[i].certification_date_debut = updatedRecord.certification_date_debut
+      records.value[i].certification_date_fin = updatedRecord.certification_date_fin
+      records.value[i].parcelles = updatedRecord.parcelles.features.length
+      records.value[i].surface = legalProjectionSurface(updatedRecord.parcelles.features)
     }
   })
 
