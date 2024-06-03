@@ -66,7 +66,7 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useFocus } from '@vueuse/core'
 
-import { featureDetails, inHa, legalProjectionSurface } from '@/components/Features/index.js'
+import { featureDetails, inHa } from '@/components/Features/index.js'
 import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from '@/referentiels/ab.js'
 import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import { usePermissions } from "@/stores/permissions.js"
@@ -79,6 +79,7 @@ import AnnotationsSelector from "@/components/Features/AnnotationsSelector.vue";
 import CultureSelector from "@/components/Features/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/Features/ConversionLevelSelector.vue";
 import CancelModal from "@/components/Forms/CancelModal.vue"
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const props = defineProps({
   feature: {

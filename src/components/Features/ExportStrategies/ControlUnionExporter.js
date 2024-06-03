@@ -1,7 +1,7 @@
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
 import { utils, write } from "xlsx";
-import { legalProjectionSurface } from "@/components/Features/index.js"
 import { fromCodeCpf } from "@agencebio/rosetta-cultures"
+import { legalProjectionSurface } from "@/utils/features.js"
 
 function getSheet () {
   const { featureCollection, operator, permissions } = this

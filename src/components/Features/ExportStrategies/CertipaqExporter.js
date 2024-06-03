@@ -5,11 +5,11 @@ import {
   featureName,
   getFeatureGroups,
   GROUPE_CULTURE,
-  GROUPE_NIVEAU_CONVERSION,
-  legalProjectionSurface
+  GROUPE_NIVEAU_CONVERSION
 } from '@/components/Features/index.js'
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const { aoa_to_sheet, sheet_add_aoa } = utils
 const { decode_range: R } = utils

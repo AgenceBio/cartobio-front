@@ -46,10 +46,11 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
 import { useFocus } from '@vueuse/core'
-import { deletionReasons, featureName, inHa, legalProjectionSurface } from '@/components/Features/index.js'
+import { deletionReasons, featureName, inHa } from '@/components/Features/index.js'
 import { useFeaturesStore } from '@/stores/features.js'
 
 import Modal from '@/components/Modal.vue'
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const props = defineProps({
   featureId: {

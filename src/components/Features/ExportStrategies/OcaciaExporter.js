@@ -3,12 +3,12 @@ import { fromCodeCpf } from '@agencebio/rosetta-cultures'
 import {
   GROUPE_NIVEAU_CONVERSION,
   featureName,
-  getFeatureGroups,
-  legalProjectionSurface
+  getFeatureGroups
 } from '@/components/Features/index.js'
 import { certificationStates, yearLabel } from '@/referentiels/ab.js'
 
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils
 const { decode_range: R } = utils

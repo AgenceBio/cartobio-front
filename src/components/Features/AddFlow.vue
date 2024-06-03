@@ -80,7 +80,7 @@ import { computed, markRaw, reactive, ref, toRaw, watch } from 'vue'
 import CadastreField from '@/components/Forms/CadastreField.vue'
 import { submitNewParcelle } from '@/cartobio-api.js';
 import { featureCollection } from '@turf/helpers'
-import { diff, featureName, inHa, legalProjectionSurface, merge } from './index.js'
+import { diff, featureName, inHa, merge } from './index.js'
 import CommuneSelect from "@/components/Forms/CommuneSelect.vue";
 import { useRouter } from "vue-router";
 import { useFeaturesStore } from "@/stores/features.js"
@@ -91,6 +91,7 @@ import CertificationBodyEditForm from "@/components/Features/SingleItemCertifica
 import OperatorEditForm from "@/components/Features/SingleItemOperatorForm.vue"
 import { statsPush } from "@/stats.js"
 import toast from "@/components/toast.js"
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const props = defineProps({
   backLink: {

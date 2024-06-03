@@ -13,7 +13,6 @@ import { version } from "../package.json"
 import toast from '@/components/toast.js'
 import { AxiosError } from "axios"
 import { useUserStore } from "@/stores/user.js"
-import { useCartoBioStorage } from "@/stores/storage.js"
 
 const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
@@ -208,6 +207,7 @@ router.beforeEach(async (to) => {
 })
 
 router.afterEach(async() => {
+  const { useCartoBioStorage } = await import('@/stores/storage.js')
   const storage = useCartoBioStorage()
   await storage.sync()
 })
