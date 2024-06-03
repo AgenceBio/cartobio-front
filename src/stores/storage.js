@@ -177,9 +177,15 @@ export const useCartoBioStorage = defineStore('storage', () => {
   const operators = computed(() => operatorsStorage.value)
 
   /**
+   * Records with queued operations applied
+   *
    * @type {ComputedRef<{[recordId: string]: NormalizedRecord}>}
    */
-  const records = computed(() => recordsStorage.value)
+  const records = computed(() =>
+    Object.fromEntries(Object.entries(recordsStorage.value).map(
+      ([id,]) => [id, getRecordWithQueuedOps(id)]
+    ))
+  )
 
   /**
    * @type {Ref<UnwrapRef<Set<string>>>} - list of record ids that have conflicts
@@ -261,12 +267,12 @@ export const useCartoBioStorage = defineStore('storage', () => {
 
   /**
    * @param recordId
-   * @return {[NormalizedRecord, boolean]} - the record and a boolean indicating if there are queued operations for this record
+   * @return {NormalizedRecord} - the record and a boolean indicating if there are queued operations for this record
    */
   function getRecordWithQueuedOps (recordId) {
     let record = recordsStorage.value[recordId]
 
-    if (!syncQueues.value[recordId]) return [record, false]
+    if (!syncQueues.value[recordId]) return record
 
     const changes = syncQueues.value[recordId].operations
 
@@ -274,7 +280,7 @@ export const useCartoBioStorage = defineStore('storage', () => {
       record = changes[i].apply(record)
     }
 
-    return [record, true]
+    return record
   }
 
   /**
@@ -344,7 +350,7 @@ export const useCartoBioStorage = defineStore('storage', () => {
   }
 
   const syncing = ref(false)
-  watch(() => [online, syncQueues], async ([, syncQueues]) => {
+  async function sync() {
     if (!navigator.onLine) return
     if (syncing.value) return
     syncing.value = true
@@ -359,6 +365,9 @@ export const useCartoBioStorage = defineStore('storage', () => {
           }
         } catch (e) {
           if (e.response?.status === 412 || e.response?.status === 404) {
+            if (!recordsStorage[recordId]) {
+              await addRecord(recordId)
+            }
             conflicts.value.add(recordId)
           }
 
@@ -368,7 +377,8 @@ export const useCartoBioStorage = defineStore('storage', () => {
     } finally {
       syncing.value = false
     }
-  }, { deep: true })
+  }
+  watch(() => [online, syncQueues], sync, { deep: true })
 
 
   return {
@@ -384,9 +394,9 @@ export const useCartoBioStorage = defineStore('storage', () => {
     conflicts,
     // store methods
     addRecord,
-    getRecordWithQueuedOps,
     clearRecord,
     addSyncOperation,
+    sync,
     resolveConflict,
   }
 })

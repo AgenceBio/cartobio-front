@@ -98,20 +98,19 @@ export const useOperatorStore = defineStore('operator', () => {
   // Keep operator store records summary updated with storage
   watch([records, () => storage.records], () => {
     if (!records.value) return
-    for (let i = 0; i < records.value.length; i++) {
-      if (!storage.records[records.value[i].record_id]) continue
+    records.value.map(r => {
+      const updatedRecord = storage.records[r.record_id]
+      if (!updatedRecord) return r
 
-      const [updatedRecord, hasChanges] = storage.getRecordWithQueuedOps(records.value[i].record_id)
-      if (!hasChanges) continue
-
-      records.value[i].version_name = updatedRecord.version_name
-      records.value[i].certification_state = updatedRecord.certification_state
-      records.value[i].audit_date = updatedRecord.audit_date
-      records.value[i].certification_date_debut = updatedRecord.certification_date_debut
-      records.value[i].certification_date_fin = updatedRecord.certification_date_fin
-      records.value[i].parcelles = updatedRecord.parcelles.features.length
-      records.value[i].surface = legalProjectionSurface(updatedRecord.parcelles.features)
-    }
+      r.version_name = updatedRecord.version_name
+      r.certification_state = updatedRecord.certification_state
+      r.audit_date = updatedRecord.audit_date
+      r.certification_date_debut = updatedRecord.certification_date_debut
+      r.certification_date_fin = updatedRecord.certification_date_fin
+      r.parcelles = updatedRecord.parcelles.features.length
+      r.surface = legalProjectionSurface(updatedRecord.parcelles.features)
+      return r
+    })
   })
 
   return {
