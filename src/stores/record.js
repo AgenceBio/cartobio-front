@@ -113,10 +113,10 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   async function ready(recordId) {
-    if (!navigator.onLine && storage.records[recordId]) {
+    if (storage.syncQueues[recordId] || !navigator.onLine && storage.records[recordId]) {
       await operatorStore.ready(storage.records[recordId].numerobio)
       $reset()
-      update(storage.getRecordWithQueuedOps(recordId)[0])
+      update(storage.records[recordId])
       return
     }
 
@@ -168,7 +168,7 @@ export const useRecordStore = defineStore('record', () => {
     const { data } = await apiClient.get(`/v2/audits/${recordId}`)
 
     // Update storage if requested or if already present and no local changes are pending
-    if ((store || storage.records[recordId]) && !storage.syncQueues[recordId]) {
+    if (store || (storage.records[recordId] && !storage.syncQueues[recordId])) {
       storage.recordsStorage[recordId] = data
     }
 
@@ -191,15 +191,12 @@ export const useRecordStore = defineStore('record', () => {
   const hasFeatures = computed(() => featuresStore.hasFeatures)
 
   /**
-   * Keep store in sync with storage and queued operations
+   * Keep store in sync with storage
    */
-  watch(() => {
-    if (!record.record_id) return
-    return [storage.records[record.record_id], storage.syncQueues[record.record_id]]
-  }, async () => {
+  watch(() => record.record_id && storage.records[record.record_id], async () => {
     if (!record.record_id) return
 
-    if (storage.records[record.record_id]?.updated_at > record.updated_at) {
+    if (storage.syncQueues[record.record_id]?.operations.length || storage.records[record.record_id]?.updated_at > record.updated_at) {
       await ready(record.record_id)
     }
   })

@@ -58,7 +58,7 @@ describe('storage', () => {
           "1"
       ))
 
-      expect(storage.getRecordWithQueuedOps(recordId)[0].parcelles.features.length).toBe(3)
+      expect(storage.records[recordId].parcelles.features.length).toBe(3)
     })
 
     it('should return the record with feature update operations applied', async () => {
@@ -70,7 +70,7 @@ describe('storage', () => {
           "1"
       ))
 
-      expect(storage.getRecordWithQueuedOps(recordId)[0].parcelles.features[0].properties.NOM).toEqual('Nom test')
+      expect(storage.records[recordId].parcelles.features[0].properties.NOM).toEqual('Nom test')
     })
 
     it('should return the record with record info operations applied', async () => {
@@ -82,7 +82,7 @@ describe('storage', () => {
       ))
 
       expect(
-        storage.getRecordWithQueuedOps(recordId)[0].version_name
+        storage.records[recordId].version_name
       ).toBe('Version test au nom changé')
     })
 
@@ -102,7 +102,7 @@ describe('storage', () => {
       ))
 
     expect(
-      storage.getRecordWithQueuedOps(recordId)[0].parcelles.features.map(f => f.properties.conversion_niveau)
+      storage.records[recordId].parcelles.features.map(f => f.properties.conversion_niveau)
     ).toStrictEqual(['CONV', 'CONV', 'CONV'])
     })
   })
