@@ -1,7 +1,7 @@
 import { utils, write } from 'xlsx'
 import { fromCodeCpf } from '@agencebio/rosetta-cultures'
-import { legalProjectionSurface } from '@/components/Features/index.js'
 import BaseExporter, { generateAutresInfos } from "@/components/Features/ExportStrategies/BaseExporter.js";
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils
 const { decode_range: R } = utils

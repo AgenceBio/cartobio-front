@@ -57,8 +57,9 @@ import { computed, ref } from 'vue'
 import MapPreview from '@/components/Map/Preview.vue'
 import ReferenceCadastrale from '@/components/Features/ReferenceCadastrale.vue';
 
-import { inHa, FeatureNotFoundError, legalProjectionSurface } from '@/components/Features/index.js'
+import { inHa, FeatureNotFoundError } from '@/components/Features/index.js'
 import { useOperatorStore } from "@/stores/operator.js"
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const emit = defineEmits(['submit', 'cancel'])
 const props = defineProps({

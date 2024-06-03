@@ -9,12 +9,12 @@ import {
   featureName,
   getFeatureGroups,
   groupingChoices,
-  sortByAccessor,
-  legalProjectionSurface
+  sortByAccessor
 } from './index.js'
 import { GROUPE_NONE, GROUPE_CULTURE, GROUPE_ILOT, GROUPE_NIVEAU_CONVERSION } from './index.js'
 import { feature as newFeature, featureCollection } from '@turf/helpers'
 import axios from 'axios'
+import { legalProjectionSurface } from "@/utils/features.js"
 
 const geometry = {
   type: "Polygon",

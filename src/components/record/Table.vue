@@ -123,11 +123,12 @@ import {
   getFeatureGroups,
   groupingChoices,
   inHa,
-  legalProjectionSurface,
+
 } from '../Features/index.js'
 import toast from "@/components/toast.js"
 import { statsPush } from "@/stats.js"
 import { useOnline } from "@vueuse/core"
+import { legalProjectionSurface } from "@/utils/features.js"
 
 defineProps({
   editForm: {

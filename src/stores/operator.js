@@ -3,7 +3,8 @@ import { computed, ref, watch } from "vue"
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js"
 import { apiClient } from "@/cartobio-api.js"
 import { useCartoBioStorage } from "@/stores/storage.js"
-import { legalProjectionSurface } from "@/components/Features/index.js"
+
+import { legalProjectionSurface } from "@/utils/features.js"
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref

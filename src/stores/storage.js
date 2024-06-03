@@ -1,9 +1,7 @@
 import { defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 import { useLocalStorage, useOnline } from "@vueuse/core"
-import { getOperator, getRecordsSummary } from "@/stores/operator.js"
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js"
-import { useRecordStore } from "@/stores/record.js"
 
 /**
  * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
@@ -153,7 +151,6 @@ export class SyncOperation {
 }
 
 export const useCartoBioStorage = defineStore('storage', () => {
-  const recordStore = useRecordStore()
   /**
    * @type {RemovableRef<{
    *   [numeroBio: string]: {
@@ -221,6 +218,7 @@ export const useCartoBioStorage = defineStore('storage', () => {
    * @return {Promise<void>}
    */
   async function addOperator(numeroBio) {
+    const { getOperator, getRecordsSummary } = await import("@/stores/operator.js")
     const [operator, records] = await Promise.all([
       getOperator(numeroBio),
       getRecordsSummary(numeroBio)
@@ -242,8 +240,9 @@ export const useCartoBioStorage = defineStore('storage', () => {
    * @return {Promise<boolean>} - true if the record was successfully downloaded, false if the storage is full.
    */
   async function addRecord (recordId) {
+    const { useRecordStore } = await import('@/stores/record.js')
     try {
-      const record = await recordStore.getRecord(recordId, true)
+      const record = await useRecordStore().getRecord(recordId, true)
       await addOperator(record.numerobio)
     } catch (e) {
       if (e instanceof DOMException &&
@@ -340,7 +339,8 @@ export const useCartoBioStorage = defineStore('storage', () => {
       delete syncQueues.value[recordId]
     } else {
       // we remove operations on deleted features
-      const newRecord = await recordStore.getRecord(recordId, true)
+      const { useRecordStore } = await import('@/stores/record.js')
+      const newRecord = await useRecordStore().getRecord(recordId, true)
       syncQueues.value[recordId].operations = syncQueues.value[recordId].operations.filter(
           op => newRecord.parcelles.features.find(f => f.id === op.featureId)
       )
