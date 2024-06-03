@@ -22,7 +22,7 @@ vi.mock('axios', async (importActual) => {
     get: vi.fn(),
     post: vi.fn(),
     head: vi.fn(),
-    put: vi.fn(),
+    patch: vi.fn(),
     defaults: {
       headers: {
         common: {}
@@ -38,7 +38,7 @@ vi.mock('axios', async (importActual) => {
       get: vi.fn(),
       head: vi.fn(),
       post: vi.fn(),
-      put: vi.fn()
+      patch: vi.fn()
     },
     post: vi.fn(),
     AxiosError: axios.AxiosError
@@ -90,7 +90,8 @@ vi.stubGlobal('matchMedia', vi.fn(() => ({
 vi.spyOn(global, 'navigator', 'get').mockImplementation(() => ({
   clipboard: {
     writeText: vi.fn()
-  }
+  },
+  onLine: true
 }))
 
 beforeEach(() => vi.clearAllMocks())

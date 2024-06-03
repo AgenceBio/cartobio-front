@@ -90,10 +90,9 @@
                   class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
                   :class="{'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
                   @click="toggleEditForm(feature.id)" aria-label="Modifier"
-                  :disabled="!isOnline"
               />
 
-              <ActionDropdown with-icons :disabled="!isOnline">
+              <ActionDropdown with-icons>
                 <li v-if="permissions.canChangeGeometry && isOnline">
                   <router-link :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`" type="button" class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
                   Modifier le contour
@@ -108,7 +107,7 @@
                   <button
                       type="button"
                       @click.prevent="toggleDeleteForm(feature.id)"
-                      :disabled="!permissions.canDeleteFeature || !isOnline"
+                      :disabled="!permissions.canDeleteFeature"
                       class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm"
                   >
                     Supprimer la parcelle
@@ -195,7 +194,7 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
     open.value = true
 
     setTimeout(() => {
-      document.querySelector(`tr#parcelle-${newItems[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      document?.querySelector(`tr#parcelle-${newItems[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }, 200)
   }
 })

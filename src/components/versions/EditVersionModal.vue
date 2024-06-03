@@ -22,8 +22,8 @@ const patch = reactive({
   certification_date_fin: record.certification_date_fin
 })
 
-async function save() {
-  await recordStore.updateInfo({
+function save() {
+  recordStore.updateInfo({
     version_name: patch.version_name,
     ...(patch.audit_date && { audit_date: patch.audit_date }),
     ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin })

@@ -8,7 +8,6 @@
           v-if="!disableActions"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info"
           @click="showEditVersionModal = true"
-          :disabled="!isOnline"
       >
         Modifier la version
       </button>

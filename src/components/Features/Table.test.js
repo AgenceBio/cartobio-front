@@ -8,6 +8,7 @@ import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/components/Features/index
 import { useFeaturesStore } from "@/stores/features.js"
 import { usePermissions } from "@/stores/permissions.js"
 import { useRecordStore } from "@/stores/record.js"
+import { useCartoBioStorage } from "@/stores/storage.js"
 
 import record from './__fixtures__/record-with-features.json' assert { type: 'json' }
 import Modal from "@/components/Modal.vue"
@@ -16,14 +17,16 @@ import EditForm from "@/components/Features/SingleItemOperatorForm.vue"
 import TableComponent from "../record/Table.vue"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+const storageStore = useCartoBioStorage(pinia)
 const recordStore = useRecordStore(pinia)
 const featuresStore = useFeaturesStore(pinia)
 const permissions = usePermissions(pinia)
 
 describe("Features Table", () => {
   beforeEach(() => {
-    recordStore.reset()
+    recordStore.$reset()
     recordStore.update(record)
+    storageStore.online = true
   })
 
   afterEach(() => {
@@ -113,7 +116,7 @@ describe("Features Table", () => {
     await table.find('tr#parcelle-2 td').trigger('click')
     await flushPromises()
 
-    axios.__createMock.put.mockResolvedValueOnce({ data: record })
+    axios.__createMock.patch.mockResolvedValueOnce({ data: record })
 
     // this throws if the modal form does not exist
     // it catches the Component reference even if it has been Teleport-ed in the <body>
@@ -123,8 +126,9 @@ describe("Features Table", () => {
     //submit form
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
+    await flushPromises()
     // modal is down, and the table should be updated
-    expect(axios.__createMock.put).toHaveBeenCalled()
+    expect(axios.__createMock.patch).toHaveBeenCalled()
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false)
   })
 
@@ -182,7 +186,7 @@ describe("Features Table", () => {
     expect(modal.exists()).toEqual(false)
 
     // now, we change a field and we should not be able to close it
-    axios.__createMock.put.mockResolvedValueOnce({ data: record })
+    axios.__createMock.patch.mockResolvedValueOnce({ data: record })
 
     table.find('tr.parcelle td').trigger('click')
     await flushPromises()

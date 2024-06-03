@@ -11,7 +11,7 @@ const featuresStore = useFeaturesStore(pinia)
 const store = useRecordStore(pinia)
 const operatorStore = useOperatorStore(pinia)
 
-afterEach(() => store.reset())
+afterEach(() => store.$reset())
 
 describe('exists', () => {
   it('does not exist by default', () => {
@@ -77,18 +77,6 @@ describe('bounds', () => {
   })
 })
 
-describe('replace', () => {
-  it('does not keep track of previous data, even when it is from the same record/operator', () => {
-    store.update(record)
-    expect(store.record).toHaveProperty('record_id', '054f0d70-c3da-448f-823e-81fcf7c2bf6e')
-    expect(store.record).toHaveProperty('certification_state', 'OPERATOR_DRAFT')
-
-    store.replace({ record_id: 'newId' })
-    expect(store.record).toHaveProperty('record_id', 'newId')
-    expect(store.record).toHaveProperty('certification_state', null)
-  })
-})
-
 
 describe('update', () => {
   it('has a blank slate by default', () => {
@@ -116,7 +104,7 @@ describe('update', () => {
 
   it('resets the feature store as well', () => {
     store.update(record)
-    store.reset()
+    store.$reset()
     expect(featuresStore.all).toHaveLength(0)
   })
 })

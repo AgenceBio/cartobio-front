@@ -1,19 +1,28 @@
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createTestingPinia } from "@pinia/testing"
-import { useCartoBioStorage } from "@/stores/storage.js"
+import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js"
 import record from '@/components/Features/__fixtures__/record-with-features.json' assert { type: 'json' }
 import operator from '@/components/Features/__fixtures__/operator.json' assert { type: 'json' }
+import axios from "axios"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 
-vi.mock('@/stores/record.js', () => ({
-  getRecord: vi.fn(() => Promise.resolve(record))
-}))
 
-vi.mock('@/stores/operator.js', () => ({
-  getOperator: vi.fn(() => Promise.resolve(operator)),
-  getRecordsSummary: vi.fn(() => Promise.resolve([]))
-}))
+beforeEach(() => {
+  axios.__createMock.get.mockResolvedValue({
+    data: record
+  })
+})
+
+vi.mock('@/stores/operator.js', async (importOriginal) => {
+  const original = await importOriginal()
+
+  return ({
+    ...original,
+    getOperator: vi.fn(() => Promise.resolve(operator)),
+    getRecordsSummary: vi.fn(() => Promise.resolve([]))
+  })
+})
 
 
 const storage = useCartoBioStorage(pinia)
@@ -37,5 +46,64 @@ describe('storage', () => {
 
     expect(storage.records).not.toHaveProperty(record.record_id)
     expect(storage.operators).not.toHaveProperty(record.numerobio)
+  })
+
+  describe('getRecordWithQueuedOps', () => {
+    it('should return the record with deleted feature operations applied', async () => {
+      const recordId = record.record_id
+      await storage.addRecord(recordId)
+      storage.addSyncOperation(recordId, new SyncOperation(
+          SyncOperation.ACTIONS.DELETE_FEATURE,
+          { reason: 'error' },
+          "1"
+      ))
+
+      expect(storage.getRecordWithQueuedOps(recordId)[0].parcelles.features.length).toBe(3)
+    })
+
+    it('should return the record with feature update operations applied', async () => {
+      const recordId = record.record_id
+      await storage.addRecord(recordId)
+      storage.addSyncOperation(recordId, new SyncOperation(
+          SyncOperation.ACTIONS.UPDATE_FEATURE,
+          { type: 'Feature', properties: { NOM: 'Nom test' } },
+          "1"
+      ))
+
+      expect(storage.getRecordWithQueuedOps(recordId)[0].parcelles.features[0].properties.NOM).toEqual('Nom test')
+    })
+
+    it('should return the record with record info operations applied', async () => {
+      const recordId = record.record_id
+      await storage.addRecord(recordId)
+      storage.addSyncOperation(recordId, new SyncOperation(
+          SyncOperation.ACTIONS.RECORD_INFO,
+          { version_name: 'Version test au nom changé' }
+      ))
+
+      expect(
+        storage.getRecordWithQueuedOps(recordId)[0].version_name
+      ).toBe('Version test au nom changé')
+    })
+
+    it('should return the record with feature collection operations applied', async () => {
+      const recordId = record.record_id
+      await storage.addRecord(recordId)
+      storage.addSyncOperation(recordId, new SyncOperation(
+          SyncOperation.ACTIONS.UPDATE_COLLECTION,
+          {
+            type: 'FeatureCollection',
+            features: [
+              { id: "1", properties: { conversion_niveau: 'CONV' } },
+              { id: "2", properties: { conversion_niveau: 'CONV' } },
+              { id: "3", properties: { conversion_niveau: 'CONV' } }
+            ]
+          }
+      ))
+
+    expect(
+      storage.getRecordWithQueuedOps(recordId)[0].parcelles.features.map(f => f.properties.conversion_niveau)
+    ).toStrictEqual(['CONV', 'CONV', 'CONV'])
+    })
   })
 })

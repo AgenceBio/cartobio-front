@@ -31,7 +31,7 @@ describe("RecordHeader", () => {
   afterEach(() => {
     operatorStore.$reset()
     userStore.$reset()
-    recordStore.reset()
+    recordStore.$reset()
   })
 
   it('should display store informations', () => {

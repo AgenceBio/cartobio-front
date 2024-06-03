@@ -1,21 +1,11 @@
 import { defineStore } from 'pinia'
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useFeaturesStore } from "@/stores/features.js"
 import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import bbox from '@turf/bbox'
 import { useOperatorStore } from "@/stores/operator.js"
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js"
-import { useCartoBioStorage } from "@/stores/storage.js"
-
-/**
- * @param {UUID} recordId
- * @return {Promise<NormalizedRecord>}
- */
-export async function getRecord (recordId) {
-  const { data } = await apiClient.get(`/v2/audits/${recordId}`)
-
-  return data
-}
+import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js"
 
 /**
  * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
@@ -77,12 +67,20 @@ export const useRecordStore = defineStore('record', () => {
   })
 
   /**
-   * Soft update of a record
+   * Soft partial update of a record, used internally to update the store with new values.
    *
-   * Use case: when navigating from /parcellaire/:id to /parcellaire/:id/new-stuff
-   * @param {NormalizedRecord} updatedRecord
+   * You should not use this method to update a record from outside the store
+   * (there are dedicated methods for this which handle offline and syncing).
+   * External use case should be limited to previews of yet non-existing records.
+   *
+   * @param {Partial<NormalizedRecord>} updatedRecord
    */
   function update (updatedRecord = {}) {
+    // Prevent updating with outdated or identical data
+    if (updatedRecord.updated_at && record.updated_at && updatedRecord.updated_at <= record.updated_at) {
+      return
+    }
+
     Object.entries(record).forEach(([key]) => {
       if (key in updatedRecord) {
         record[key] = updatedRecord[key]
@@ -100,32 +98,15 @@ export const useRecordStore = defineStore('record', () => {
 
   /**
    * Update non-geographical data for a record (name, audit and certification dates, etc.)
+   *
    * @param {Partial<Omit<NormalizedRecord, 'parcelles', 'operator'>>} patch
    * @returns {Promise<void>}
    */
-  async function updateInfo (patch) {
-    const { data: updatedRecord } = await apiClient.patch(`/v2/audits/${record.record_id}`, patch)
-    update(updatedRecord)
-
-    /* Update also version info in operatorStore version list */
-    const recordSummary = operatorStore.records.find(record => record.record_id === updatedRecord.record_id)
-    Object.entries(patch).forEach(([key]) => {
-      recordSummary[key] = updatedRecord[key]
-    })
+  function updateInfo (patch) {
+    storage.addSyncOperation(record.record_id, new SyncOperation(SyncOperation.ACTIONS.RECORD_INFO, patch))
   }
 
-  /**
-   * Replace a record with new values
-   * Use case: when navigating from /parcellaire/1234 to /parcellaire/9999 or even /parcellaires then /parcellaire/1234
-   *
-   * @param {NormalizedRecord} maybeNewRecord
-   */
-  function replace (maybeNewRecord) {
-    reset()
-    update(maybeNewRecord)
-  }
-
-  function reset() {
+  function $reset() {
     update({ ...initialState, metadata: { ...initialState.metadata } })
     featuresStore.$reset()
     sets.$reset()
@@ -134,8 +115,8 @@ export const useRecordStore = defineStore('record', () => {
   async function ready(recordId) {
     if (!navigator.onLine && storage.records[recordId]) {
       await operatorStore.ready(storage.records[recordId].numerobio)
-      reset()
-      update(storage.records[recordId])
+      $reset()
+      update(storage.getRecordWithQueuedOps(recordId)[0])
       return
     }
 
@@ -146,7 +127,7 @@ export const useRecordStore = defineStore('record', () => {
 
     const newRecord = await getRecord(recordId)
     await operatorStore.ready(newRecord.numerobio)
-    reset()
+    $reset()
     update(newRecord)
   }
 
@@ -154,6 +135,10 @@ export const useRecordStore = defineStore('record', () => {
     getRecord(record.record_id).then(update)
   }
 
+  /**
+   * @param id
+   * @return {Promise<NormalizedRecord>}
+   */
   async function duplicate(id) {
     const recordSummary = operatorStore.records.find(record => record.record_id === id)
     const record = await getRecord(id)
@@ -171,6 +156,23 @@ export const useRecordStore = defineStore('record', () => {
       parcelles: recordSummary.parcelles,
       surface: recordSummary.surface,
     })
+    return newRecord
+  }
+
+  /**
+   * @param {UUID} recordId
+   * @param {boolean} store
+   * @return {Promise<NormalizedRecord>}
+   */
+  async function getRecord (recordId, store= false) {
+    const { data } = await apiClient.get(`/v2/audits/${recordId}`)
+
+    // Update storage if requested or if already present and no local changes are pending
+    if ((store || storage.records[recordId]) && !storage.syncQueues[recordId]) {
+      storage.recordsStorage[recordId] = data
+    }
+
+    return data
   }
 
   /**
@@ -188,20 +190,35 @@ export const useRecordStore = defineStore('record', () => {
    */
   const hasFeatures = computed(() => featuresStore.hasFeatures)
 
+  /**
+   * Keep store in sync with storage and queued operations
+   */
+  watch(() => {
+    if (!record.record_id) return
+    return [storage.records[record.record_id], storage.syncQueues[record.record_id]]
+  }, async () => {
+    if (!record.record_id) return
+
+    if (storage.records[record.record_id]?.updated_at > record.updated_at) {
+      await ready(record.record_id)
+    }
+  })
+
   return {
+    // current record
     record,
     // computed
     bounds,
     exists,
     hasFeatures,
     isSetup,
-    // methods
-    $reset: reset,
-    replace,
-    reset,
+    // current record methods
     update,
     updateInfo,
+    // store methods
+    $reset,
     ready,
     duplicate,
+    getRecord,
   }
 })
