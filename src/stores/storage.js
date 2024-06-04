@@ -35,7 +35,7 @@ class SyncQueue {
   /**
    * @param recordId
    * @param {Date} unmodifiedSince
-   * @return {Promise<SyncOperation>|null}
+   * @return {Date|null} - the new unmodifiedSince date or null if there are no more operations
    */
   async syncNext(recordId, unmodifiedSince) {
     if (this.operations.length === 0) return null
@@ -47,30 +47,34 @@ class SyncQueue {
         'If-Unmodified-Since': unmodifiedSince.toUTCString()
     }}
     const op = this.operations[0]
+    let result
     switch (op.action) {
       case SyncOperation.ACTIONS.RECORD_INFO:
-        await apiClient.patch(`/v2/audits/${recordId}`, op.payload, config)
+        result = await apiClient.patch(`/v2/audits/${recordId}`, op.payload, config)
         break
       case SyncOperation.ACTIONS.DELETE_FEATURE:
-        await apiClient.delete(`/v2/audits/${recordId}/parcelles/${op.featureId}`, { data: op.payload, ...config })
+        result = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${op.featureId}`, { data: op.payload, ...config })
         break
       case SyncOperation.ACTIONS.UPDATE_FEATURE:
-        await apiClient.patch(`/v2/audits/${recordId}/parcelles/${op.featureId}`, op.payload, config)
+        result = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${op.featureId}`, op.payload, config)
         break
       case SyncOperation.ACTIONS.UPDATE_COLLECTION:
-        await apiClient.patch(`/v2/audits/${recordId}/parcelles`, op.payload, config)
+        result = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, op.payload, config)
         break
     }
 
-    return this.operations.shift()
+    this.operations.shift()
+    return new Date(result.data.updated_at)
   }
 
   /**
    * @param recordId
    */
   async sync(recordId) {
-    while (await this.syncNext(recordId, this.ifUnmodifiedSince)) {
-      this.ifUnmodifiedSince = new Date()
+    let updated = this.ifUnmodifiedSince;
+    while (updated !== null) {
+      this.ifUnmodifiedSince = updated
+      updated = await this.syncNext(recordId, this.ifUnmodifiedSince);
     }
   }
 }
