@@ -9,9 +9,9 @@ const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 
 
 beforeEach(() => {
-  axios.__createMock.get.mockResolvedValue({
-    data: record
-  })
+  axios.__createMock.get.mockResolvedValue({ data: record })
+  axios.__createMock.patch.mockResolvedValue({ data: record })
+  axios.__createMock.delete.mockResolvedValue({ data: record })
 })
 
 vi.mock('@/stores/operator.js', async (importOriginal) => {
