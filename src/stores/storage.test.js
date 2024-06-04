@@ -103,7 +103,7 @@ describe('storage', () => {
 
     expect(
       storage.records[recordId].parcelles.features.map(f => f.properties.conversion_niveau)
-    ).toStrictEqual(['CONV', 'CONV', 'CONV'])
+    ).toStrictEqual(['CONV', 'CONV', 'CONV', 'AB'])
     })
   })
 })

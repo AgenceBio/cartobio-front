@@ -138,7 +138,6 @@ export class SyncOperation {
               features[i].properties
           )
         }
-        result.parcelles.features = result.parcelles.features.filter(f => features.find(f2 => f2.id === f.id))
         return result
       }
       case SyncOperation.ACTIONS.DELETE_FEATURE:
