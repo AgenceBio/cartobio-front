@@ -60,7 +60,7 @@ const hasErrors = computed(() => errors.value.size > 0)
 const query = ref(fromCodeCpf(props.modelValue)?.libelle_code_cpf || '')
 
 const choices = computed(() => {
-  const selectableCpf = cpf
+  const selectableCpf = cpf.CPF
       .filter(({ is_selectable }) => is_selectable)
       .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf))
 
