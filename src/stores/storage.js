@@ -134,7 +134,7 @@ export class SyncOperation {
         const features = this.payload.features
         for (let i = 0; i < features.length; i++) {
           Object.assign(
-              result.parcelles.features.find(f => f.id === features[i].id).properties,
+              result.parcelles.features.find(f => f.id === features[i].id)?.properties || {},
               features[i].properties
           )
         }
@@ -145,7 +145,7 @@ export class SyncOperation {
         return result
       case SyncOperation.ACTIONS.UPDATE_FEATURE:
         Object.assign(
-            result.parcelles.features.find(f => f.id === this.featureId).properties,
+            result.parcelles.features.find(f => f.id === this.featureId)?.properties || {},
             this.payload.properties
         )
         return result
