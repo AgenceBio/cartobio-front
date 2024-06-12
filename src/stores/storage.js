@@ -372,6 +372,7 @@ export const useCartoBioStorage = defineStore('storage', () => {
               await addRecord(recordId)
             }
             conflicts.value.add(recordId)
+            continue
           }
 
           throw e
