@@ -18,7 +18,7 @@ const modalRecordId = ref(null)
     <ul class="fr-text--bold">
       <li v-for="conflict in storage.conflicts" :key="conflict">
         <a href="#" @click="modalRecordId = conflict">
-          {{ storage.operators[storage.records[conflict].numerobio].operator.nom }}
+          {{ storage.operators[storage.records[conflict].numerobio].operator.nom }} - {{ storage.records[conflict].version_name }}
         </a>
       </li>
     </ul>

@@ -328,13 +328,20 @@ export const useCartoBioStorage = defineStore('storage', () => {
 
     if (duplicate) {
       const newRecord = await createOperatorRecord(record.numerobio, {
-        versionName: `${record.version_name} (copie hors-ligne)`,
-        geojson: record.parcelles,
+        version_name: `${record.version_name} (copie hors-ligne)`,
+        parcelles: record.parcelles,
+        certification_state: record.certification_state,
+        certification_date_debut: record.certification_date_debut,
+        certification_date_fin: record.certification_date_fin,
         metadata: {
           provenance: window.location.host,
           source: 'Copie lors de la résolution de conflits',
           copy_of: record.record_id
-        }
+        },
+        audit_date: record.audit_date,
+        audit_notes: record.audit_notes,
+        audit_demandes: record.audit_demandes,
+        audit_history: record.audit_history
       })
       await addRecord(newRecord.record_id)
       syncQueues.value[newRecord.record_id] = syncQueues.value[recordId]

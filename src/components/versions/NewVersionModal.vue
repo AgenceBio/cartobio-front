@@ -16,7 +16,7 @@ useFocus(autofocusedElement, { initialValue: true })
 
 async function createEmptyVersion() {
    recordStore.update(await createOperatorRecord(operatorStore.operator.numeroBio, {
-    geojson: { type: 'FeatureCollection', features: [] },
+    parcelles: { type: 'FeatureCollection', features: [] },
     metadata: {
       provenance: window.location.host,
       source: sources.MANUAL,

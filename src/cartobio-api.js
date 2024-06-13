@@ -56,6 +56,8 @@ export async function pacageLookup (pacage) {
 /**
  * Creates a new operator Record
  *
+ * @param {string} numeroBio
+ * @param {Partial<NormalizedRecord>} payload
  * @returns {Promise<NormalizedRecord>}
  */
 export async function createOperatorRecord (numeroBio, payload) {
