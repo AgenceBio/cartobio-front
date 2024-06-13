@@ -143,8 +143,8 @@ export const useRecordStore = defineStore('record', () => {
     const recordSummary = operatorStore.records.find(record => record.record_id === id)
     const record = await getRecord(id)
     const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
-      versionName: `Copie de ${record.version_name}`,
-      geojson: record.parcelles,
+      version_name: `Copie de ${record.version_name}`,
+      parcelles: record.parcelles,
       metadata: {
         provenance: window.location.host,
         source: 'Copie de version existante',

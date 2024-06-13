@@ -123,7 +123,7 @@ async function handlePreviewConfirmation (importPrevious) {
   const { numeroBio } = props.operator
 
   record.value = await createOperatorRecord(numeroBio, {
-    geojson: featureCollection.value,
+    parcelles: featureCollection.value,
     metadata: metadata.value,
     importPrevious
   })
@@ -135,7 +135,7 @@ async function handleUploadAndSave ({ geojson, metadata, source }) {
   const { numeroBio } = props.operator
 
   record.value = await createOperatorRecord(numeroBio, {
-    geojson,
+    parcelles: geojson,
     metadata: {
       ...metadata,
       provenance: window.location.host,
