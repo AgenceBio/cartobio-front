@@ -4,6 +4,8 @@ import { config } from '@vue/test-utils'
 import { createHead } from '@unhead/vue'
 import { createPinia, setActivePinia } from "pinia"
 import routes from '~pages'
+import record from "@/components/Features/__fixtures__/record-with-features.json"
+import operator from "@/components/Features/__fixtures__/operator.json"
 
 setActivePinia(createPinia())
 
@@ -19,7 +21,11 @@ vi.mock('axios', async (importActual) => {
   const axios = await importActual()
   const createMock = {
     delete: vi.fn(),
-    get: vi.fn(),
+    get: vi.fn((path) => {
+      if (path.includes('/operator') && path.includes('/records')) return { data: [record] }
+      if (path.includes('/operator')) return { data: operator }
+      if (path.includes('/audits')) return { data: record }
+    }),
     post: vi.fn(),
     head: vi.fn(),
     patch: vi.fn(),
@@ -35,7 +41,11 @@ vi.mock('axios', async (importActual) => {
       create: vi.fn().mockReturnValue(createMock),
       __createMock: createMock,
       delete: vi.fn(),
-      get: vi.fn(),
+      get: vi.fn((path) => {
+        if (path.includes('operator') && path.includes('records')) return { data: [record] }
+        if (path.includes('operator')) return { data: operator }
+        if (path.includes('audits')) return { data: record }
+      }),
       head: vi.fn(),
       post: vi.fn(),
       patch: vi.fn()

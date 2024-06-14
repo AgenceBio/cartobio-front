@@ -2,28 +2,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createTestingPinia } from "@pinia/testing"
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js"
 import record from '@/components/Features/__fixtures__/record-with-features.json' assert { type: 'json' }
-import operator from '@/components/Features/__fixtures__/operator.json' assert { type: 'json' }
 import axios from "axios"
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 
 
 beforeEach(() => {
-  axios.__createMock.get.mockResolvedValue({ data: record })
   axios.__createMock.patch.mockResolvedValue({ data: record })
   axios.__createMock.delete.mockResolvedValue({ data: record })
 })
-
-vi.mock('@/stores/operator.js', async (importOriginal) => {
-  const original = await importOriginal()
-
-  return ({
-    ...original,
-    getOperator: vi.fn(() => Promise.resolve(operator)),
-    getRecordsSummary: vi.fn(() => Promise.resolve([]))
-  })
-})
-
 
 const storage = useCartoBioStorage(pinia)
 
