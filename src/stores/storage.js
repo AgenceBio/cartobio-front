@@ -358,7 +358,7 @@ export const useCartoBioStorage = defineStore('storage', () => {
       const { useRecordStore } = await import('@/stores/record.js')
       const newRecord = await useRecordStore().getRecord(recordId, true)
       syncQueues.value[recordId].operations = syncQueues.value[recordId].operations.filter(
-          op => newRecord.parcelles.features.find(f => f.id === op.featureId)
+          op => !op.featureId || newRecord.parcelles.features.find(f => String(f.id) === String(op.featureId))
       )
       syncQueues.value[recordId].ifUnmodifiedSince = new Date()
     }
