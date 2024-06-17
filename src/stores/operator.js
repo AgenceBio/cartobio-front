@@ -4,8 +4,6 @@ import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension
 import { apiClient } from "@/cartobio-api.js"
 import { useCartoBioStorage } from "@/stores/storage.js"
 
-import { legalProjectionSurface } from "@/utils/features.js"
-
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
  * @typedef {import('@vue/reactivity').UnwrapRef} UnwrapRef
@@ -15,16 +13,6 @@ import { legalProjectionSurface } from "@/utils/features.js"
 
 function date(record) {
   return new Date(record.certification_date_debut || record.audit_date || record.created_at)
-}
-
-export const getOperator = async (numeroBio) => {
-  const { data } = await apiClient.get(`/v2/operator/${numeroBio}`)
-  return data
-}
-
-export const getRecordsSummary = async (numeroBio) => {
-  const { data } = await apiClient.get(`/v2/operator/${numeroBio}/records`)
-  return data
 }
 
 export const useOperatorStore = defineStore('operator', () => {
@@ -67,20 +55,15 @@ export const useOperatorStore = defineStore('operator', () => {
    * @return {Promise<void>}
    */
   async function ready (numeroBio) {
+    let operatorData, recordsData
     if (!navigator.onLine && storage.operators[numeroBio]) {
-      const {operator: operatorData, records: recordsData} = storage.operators[numeroBio]
-      operator.value = operatorData
-      records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA))
+      ({ operator: operatorData, records: recordsData } = storage.operators[numeroBio])
+    } else {
+      ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio))
     }
 
-    if (String(operator.value.numeroBio) !== numeroBio) {
-      operator.value = await getOperator(numeroBio)
-      records.value = null
-    }
-
-    getRecordsSummary(numeroBio).then(r => {
-      records.value = r.sort((recordA, recordB) => date(recordB) - date(recordA))
-    })
+    operator.value = operatorData
+    records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA))
   }
 
   function $reset () {
@@ -96,23 +79,19 @@ export const useOperatorStore = defineStore('operator', () => {
     }
   })
 
-  // Keep operator store records summary updated with storage
-  watch([records, () => storage.records], () => {
-    if (!records.value) return
-    records.value.map(r => {
-      const updatedRecord = storage.records[r.record_id]
-      if (!updatedRecord) return r
+  async function getOperator (numeroBio, store = false) {
+    const [{ data: operatorData }, { data: recordsData }] = await Promise.all([
+        apiClient.get(`/v2/operator/${numeroBio}`),
+        apiClient.get(`/v2/operator/${numeroBio}/records`)
+    ])
 
-      r.version_name = updatedRecord.version_name
-      r.certification_state = updatedRecord.certification_state
-      r.audit_date = updatedRecord.audit_date
-      r.certification_date_debut = updatedRecord.certification_date_debut
-      r.certification_date_fin = updatedRecord.certification_date_fin
-      r.parcelles = updatedRecord.parcelles.features.length
-      r.surface = legalProjectionSurface(updatedRecord.parcelles.features)
-      return r
-    })
-  })
+    // Update storage if requested or if already present
+    if (store || (storage.operators[numeroBio])) {
+      storage.operatorsStorage[numeroBio] = { operator: operatorData, records: recordsData }
+    }
+
+    return { operator: operatorData, records: recordsData }
+  }
 
   return {
     // ref
@@ -120,7 +99,9 @@ export const useOperatorStore = defineStore('operator', () => {
     records,
     // computed
     recordsByYear,
+    // store methods
     ready,
-    $reset
+    $reset,
+    getOperator,
   }
 })

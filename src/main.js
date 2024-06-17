@@ -150,22 +150,15 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to) => {
   // Preload stores for checking permissions
-  await Promise.all([
-    (async () => {
-      if (to.params.numeroBio) {
-        const { useOperatorStore } = await import('@/stores/operator.js')
-        const operatorStore = useOperatorStore()
-        await operatorStore.ready(to.params.numeroBio)
-      }
-    })(),
-    (async () => {
-      if (to.params.recordId) {
-        const { useRecordStore } = await import('@/stores/record.js')
-        const recordStore = useRecordStore()
-        await recordStore.ready(to.params.recordId)
-      }
-    })(),
-  ])
+  if (to.params.recordId) {
+    const { useRecordStore } = await import('@/stores/record.js')
+    const recordStore = useRecordStore()
+    await recordStore.ready(to.params.recordId) // will load also the operator
+  } else if (to.params.numeroBio) {
+    const { useOperatorStore } = await import('@/stores/operator.js')
+    const operatorStore = useOperatorStore()
+    await operatorStore.ready(to.params.numeroBio)
+  }
 
   if (to.path === '/logout') {
     const path = (userStore.isOc || userStore.isAgri) ? '/pro' : '/'

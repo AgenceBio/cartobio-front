@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive } from 'vue'
 import { useFeaturesStore } from "@/stores/features.js"
 import { useFeaturesSetsStore } from "@/stores/features-sets.js"
 import bbox from '@turf/bbox'
@@ -76,11 +76,6 @@ export const useRecordStore = defineStore('record', () => {
    * @param {Partial<NormalizedRecord>} updatedRecord
    */
   function update (updatedRecord = {}) {
-    // Prevent updating with outdated or identical data
-    if (updatedRecord.updated_at && record.updated_at && updatedRecord.updated_at <= record.updated_at) {
-      return
-    }
-
     Object.entries(record).forEach(([key]) => {
       if (key in updatedRecord) {
         record[key] = updatedRecord[key]
@@ -113,26 +108,16 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   async function ready(recordId) {
-    if (storage.syncQueues[recordId] || !navigator.onLine && storage.records[recordId]) {
-      await operatorStore.ready(storage.records[recordId].numerobio)
-      $reset()
-      update(storage.records[recordId])
-      return
+    let newRecord
+    if ((storage.syncQueues[recordId] || !navigator.onLine) && storage.records[recordId]) {
+      newRecord = storage.records[recordId]
+    } else {
+      newRecord = await getRecord(recordId)
     }
 
-    if (record.record_id === recordId) {
-      launchRevalidate()
-      return
-    }
-
-    const newRecord = await getRecord(recordId)
     await operatorStore.ready(newRecord.numerobio)
-    $reset()
+    if (record.record_id !== recordId) $reset()
     update(newRecord)
-  }
-
-  function launchRevalidate() {
-    getRecord(record.record_id).then(update)
   }
 
   /**
@@ -164,7 +149,7 @@ export const useRecordStore = defineStore('record', () => {
    * @param {boolean} store
    * @return {Promise<NormalizedRecord>}
    */
-  async function getRecord (recordId, store= false) {
+  async function getRecord (recordId, store = false) {
     const { data } = await apiClient.get(`/v2/audits/${recordId}`)
 
     // Update storage if requested or if already present and no local changes are pending
@@ -189,17 +174,6 @@ export const useRecordStore = defineStore('record', () => {
    * @type {ComputedRef<Boolean>}
    */
   const hasFeatures = computed(() => featuresStore.hasFeatures)
-
-  /**
-   * Keep store in sync with storage
-   */
-  watch(() => record.record_id && storage.records[record.record_id], async () => {
-    if (!record.record_id) return
-
-    if (storage.syncQueues[record.record_id]?.operations.length || storage.records[record.record_id]?.updated_at > record.updated_at) {
-      await ready(record.record_id)
-    }
-  })
 
   return {
     // current record

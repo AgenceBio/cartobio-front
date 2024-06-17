@@ -104,6 +104,7 @@ describe("SingleItemCertificationBodyForm", () => {
 
     // click and assess server update
     axios.__createMock.patch.mockResolvedValueOnce({ data: record })
+    axios.__createMock.get.mockResolvedValueOnce({ data: record })
     await form.find('.fr-modal__footer button.fr-btn').trigger('click')
 
     await flushPromises()

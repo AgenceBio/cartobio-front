@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 import { useLocalStorage, useOnline } from "@vueuse/core"
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js"
+import { legalProjectionSurface } from "@/utils/features.js"
 
 /**
  * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
@@ -153,6 +154,19 @@ export class SyncOperation {
   }
 }
 
+/**
+ * @param {NormalizedRecord} record
+ * @param {SyncOperation[]} changes
+ * @return {NormalizedRecord} - the record and a boolean indicating if there are queued operations for this record
+ */
+function getRecordWithQueuedOps (record, changes) {
+  for (let i = 0; i < changes.length; i++) {
+    record = changes[i].apply(record)
+  }
+
+  return record
+}
+
 export const useCartoBioStorage = defineStore('storage', () => {
   /**
    * @type {RemovableRef<{
@@ -174,7 +188,26 @@ export const useCartoBioStorage = defineStore('storage', () => {
   /**
    * @type {ComputedRef<{[numeroBio: string]: {operator: AgenceBioNormalizedOperator, records: NormalizedRecordSummary[]}}>}
    */
-  const operators = computed(() => operatorsStorage.value)
+  const operators = computed(() =>
+    Object.fromEntries(Object.entries(operatorsStorage.value).map(
+      ([numeroBio, { operator, records }]) => [numeroBio, {
+        operator,
+        records: records?.map(r => {
+          const updatedRecord = records[r.record_id]
+          if (!updatedRecord) return r
+
+          r.version_name = updatedRecord.version_name
+          r.certification_state = updatedRecord.certification_state
+          r.audit_date = updatedRecord.audit_date
+          r.certification_date_debut = updatedRecord.certification_date_debut
+          r.certification_date_fin = updatedRecord.certification_date_fin
+          r.parcelles = updatedRecord.parcelles.features.length
+          r.surface = legalProjectionSurface(updatedRecord.parcelles.features)
+          return r
+        })
+      }]
+    ))
+  )
 
   /**
    * Records with queued operations applied
@@ -183,7 +216,10 @@ export const useCartoBioStorage = defineStore('storage', () => {
    */
   const records = computed(() =>
     Object.fromEntries(Object.entries(recordsStorage.value).map(
-      ([id,]) => [id, getRecordWithQueuedOps(id)]
+      ([id,]) => [id, getRecordWithQueuedOps(
+          recordsStorage.value[id],
+          syncQueues.value[id]?.operations || []
+      )]
     ))
   )
 
@@ -216,20 +252,6 @@ export const useCartoBioStorage = defineStore('storage', () => {
   )
 
   /**
-   * Add an operator to the store.
-   * @param numeroBio
-   * @return {Promise<void>}
-   */
-  async function addOperator(numeroBio) {
-    const { getOperator, getRecordsSummary } = await import("@/stores/operator.js")
-    const [operator, records] = await Promise.all([
-      getOperator(numeroBio),
-      getRecordsSummary(numeroBio)
-    ])
-    operatorsStorage.value[numeroBio] = { operator, records }
-  }
-
-  /**
    * Clear an operator from the store.
    * @param numeroBio
    */
@@ -244,9 +266,11 @@ export const useCartoBioStorage = defineStore('storage', () => {
    */
   async function addRecord (recordId) {
     const { useRecordStore } = await import('@/stores/record.js')
+    const { useOperatorStore } = await import('@/stores/operator.js')
+    const operatorStore = useOperatorStore()
     try {
       const record = await useRecordStore().getRecord(recordId, true)
-      await addOperator(record.numerobio)
+      await operatorStore.getOperator(record.numerobio, true)
     } catch (e) {
       if (e instanceof DOMException &&
           // everything except Firefox
@@ -265,24 +289,6 @@ export const useCartoBioStorage = defineStore('storage', () => {
     }
 
     return true
-  }
-
-  /**
-   * @param recordId
-   * @return {NormalizedRecord} - the record and a boolean indicating if there are queued operations for this record
-   */
-  function getRecordWithQueuedOps (recordId) {
-    let record = recordsStorage.value[recordId]
-
-    if (!syncQueues.value[recordId]) return record
-
-    const changes = syncQueues.value[recordId].operations
-
-    for (let i = 0; i < changes.length; i++) {
-      record = changes[i].apply(record)
-    }
-
-    return record
   }
 
   /**
@@ -361,17 +367,29 @@ export const useCartoBioStorage = defineStore('storage', () => {
 
   const syncing = ref(false)
   async function sync() {
-    if (!navigator.onLine) return
+    const { useRecordStore } = await import('@/stores/record.js')
+    const { useOperatorStore } = await import('@/stores/operator.js')
+    const recordStore = useRecordStore()
+    const operatorStore = useOperatorStore()
+
+    if (!navigator.onLine) {
+      return await recordStore.ready(recordStore.record.record_id)
+    }
     if (syncing.value) return
     syncing.value = true
+
 
     try {
       for (const [recordId, queue] of Object.entries(syncQueues.value)) {
         try {
           await queue.sync(recordId)
           delete syncQueues.value[recordId]
-          if (records.value[recordId]) {
+          if (recordStore.record.record_id === recordId) {
+            await recordStore.ready(recordId)
+          } else if (records.value[recordId]) {
             await addRecord(recordId) // update storage
+          } else if (operatorStore.records.find(r => r.record_id === recordId)) {
+            await operatorStore.ready(recordId)
           }
         } catch (e) {
           if (e.response?.status === 412 || e.response?.status === 404) {
@@ -389,8 +407,8 @@ export const useCartoBioStorage = defineStore('storage', () => {
       syncing.value = false
     }
   }
-  watch(() => [online, syncQueues], sync, { deep: true })
 
+  watch(() => [online, syncQueues], sync, { deep: true })
 
   return {
     // storage ref
