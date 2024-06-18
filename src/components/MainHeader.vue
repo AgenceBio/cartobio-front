@@ -156,7 +156,7 @@
         <div class="fr-notice__body">
           <p class="fr-notice__title">
             <b>Vous êtes actuellement hors ligne.</b> Seules les exploitations dont le parcellaire a été
-            téléchargé en amont sont visibles. Certaines fonctionnalités être indisponibles.
+            téléchargé en amont sont visibles. Certaines fonctionnalités sont indisponibles.
           </p>
         </div>
       </div>
