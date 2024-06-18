@@ -373,7 +373,14 @@ export const useCartoBioStorage = defineStore('storage', () => {
     const operatorStore = useOperatorStore()
 
     if (!navigator.onLine) {
-      return await recordStore.ready(recordStore.record.record_id)
+      if (recordStore.record.record_id) {
+        return await recordStore.ready(recordStore.record.record_id)
+      }
+      if (operatorStore.operator.numerobio) {
+        return await operatorStore.ready(operatorStore.operator.numerobio)
+      }
+
+      return
     }
     if (syncing.value) return
     syncing.value = true
