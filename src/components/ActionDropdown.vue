@@ -34,7 +34,6 @@ const { direction, lengthY } = useSwipe(
         } else {
           down.value = '16px'
         }
-        console.log(down.value)
       },
       onSwipeEnd: () => {
         if (lengthY.value < -30) {

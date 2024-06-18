@@ -149,12 +149,13 @@ router.isReady().then(() => {
 })
 
 router.beforeEach(async (to) => {
+  const { useRecordStore } = await import('@/stores/record.js')
+  const recordStore = useRecordStore()
   // Preload stores for checking permissions
   if (to.params.recordId) {
-    const { useRecordStore } = await import('@/stores/record.js')
-    const recordStore = useRecordStore()
     await recordStore.ready(to.params.recordId) // will load also the operator
   } else if (to.params.numeroBio) {
+    recordStore.$reset()
     const { useOperatorStore } = await import('@/stores/operator.js')
     const operatorStore = useOperatorStore()
     await operatorStore.ready(to.params.numeroBio)
