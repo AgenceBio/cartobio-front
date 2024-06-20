@@ -10,5 +10,5 @@
 </template>
 
 <script setup>
-import StatsSection from '@/components/Landing/Stats.vue'
+import StatsSection from '@/components/landing-page/Stats.vue'
 </script>

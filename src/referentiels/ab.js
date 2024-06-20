@@ -1,3 +1,5 @@
+import { CertificationState } from "@agencebio/cartobio-types"
+
 export const LEVEL_UNKNOWN = undefined
 export const LEVEL_CONVENTIONAL = 'CONV'
 export const LEVEL_C1 = 'C1'
@@ -6,46 +8,37 @@ export const LEVEL_C3 = 'C3'
 export const LEVEL_AB = 'AB'
 export const LEVEL_MAYBE_AB = 'AB?'
 
-/** @enum {string} */
-export const CERTIFICATION_STATE = {
-  UNKNOWN: 'UNKNOWN',
-  OPERATOR_DRAFT: 'OPERATOR_DRAFT', // Phase 2
-  AUDITED: 'AUDITED', // Phase 3
-  PENDING_CERTIFICATION: 'PENDING_CERTIFICATION', // Phase 4
-  CERTIFIED: 'CERTIFIED', // Phase 5
-}
-
-export const certificationStates = {
-  UNKNOWN: {
+export const certificationStatesLabels = {
+  [undefined]: {
     label: 'Non renseigné',
     color: 'fr-badge--warning'
   },
-  [CERTIFICATION_STATE.OPERATOR_DRAFT]: {
+  [CertificationState.OPERATOR_DRAFT]: {
     label: 'Parcellaire importé',
     color: 'fr-badge--info'
   },
-  [CERTIFICATION_STATE.AUDITED]: {
+  [CertificationState.AUDITED]: {
     label: 'Audit terminé',
     color: 'fr-badge--new'
   },
-  [CERTIFICATION_STATE.PENDING_CERTIFICATION]: {
+  [CertificationState.PENDING_CERTIFICATION]: {
     label: 'Certification en cours',
     color: 'fr-badge--new'
   },
-  [CERTIFICATION_STATE.CERTIFIED]: {
+  [CertificationState.CERTIFIED]: {
     label: 'Certifié',
     color: 'fr-badge--success'
   },
 }
 
 /**
- * @param {CERTIFICATION_STATE} state
+ * @param {CertificationState} state
  * @returns {Boolean}
  */
 export function isCertificationImmutable (state) {
   return [
-    CERTIFICATION_STATE.PENDING_CERTIFICATION,
-    CERTIFICATION_STATE.CERTIFIED,
+    CertificationState.PENDING_CERTIFICATION,
+    CertificationState.CERTIFIED,
   ].includes(state)
 }
 

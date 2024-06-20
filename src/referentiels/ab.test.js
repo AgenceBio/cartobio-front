@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, test, expect, vi } from 'vitest';
 
-import { certificationDateFin, getConversionLevel, isCertificationImmutable, isABLevel, CERTIFICATION_STATE } from './ab.js'
+import { certificationDateFin, getConversionLevel, isCertificationImmutable, isABLevel } from './ab.js'
+import { CertificationState } from "@agencebio/cartobio-types"
 import { LEVEL_UNKNOWN, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, LEVEL_MAYBE_AB } from './ab.js'
 
 const dateNow = new Date('2021-01-01T09:00:00.000+02:00')
@@ -13,10 +14,10 @@ beforeAll(() => {
 
 describe('isCertificationImmutable', () => {
   test('immutable with Operateur and Auditeur when Pending Certification and Certified', () => {
-    expect(isCertificationImmutable(CERTIFICATION_STATE.OPERATOR_DRAFT)).toEqual(false)
-    expect(isCertificationImmutable(CERTIFICATION_STATE.AUDITED)).toEqual(false)
-    expect(isCertificationImmutable(CERTIFICATION_STATE.PENDING_CERTIFICATION)).toEqual(true)
-    expect(isCertificationImmutable(CERTIFICATION_STATE.CERTIFIED)).toEqual(true)
+    expect(isCertificationImmutable(CertificationState.OPERATOR_DRAFT)).toEqual(false)
+    expect(isCertificationImmutable(CertificationState.AUDITED)).toEqual(false)
+    expect(isCertificationImmutable(CertificationState.PENDING_CERTIFICATION)).toEqual(true)
+    expect(isCertificationImmutable(CertificationState.CERTIFIED)).toEqual(true)
   })
 })
 

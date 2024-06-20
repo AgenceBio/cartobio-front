@@ -4,8 +4,8 @@ import { config } from '@vue/test-utils'
 import { createHead } from '@unhead/vue'
 import { createPinia, setActivePinia } from "pinia"
 import routes from '~pages'
-import record from "@/components/Features/__fixtures__/record-with-features.json"
-import operator from "@/components/Features/__fixtures__/operator.json"
+import record from "@/utils/__fixtures__/record-with-features.json"
+import operator from "@/utils/__fixtures__/operator.json"
 
 setActivePinia(createPinia())
 

@@ -5,7 +5,7 @@ import axios from 'axios'
 
 import Notification from "./Notification.ce.vue"
 
-import operator from '@/components/Features/__fixtures__/operator.json' assert { type: 'json' }
+import operator from '@/utils/__fixtures__/operator.json' assert { type: 'json' }
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 

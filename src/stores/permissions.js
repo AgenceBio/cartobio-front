@@ -1,8 +1,8 @@
 import { useRecordStore } from "@/stores/record.js"
 import { useUserStore } from "@/stores/user.js"
-import { CERTIFICATION_STATE } from "@/referentiels/ab.js"
 import { computed } from "vue"
 import { defineStore } from "pinia"
+import { CertificationState } from "@agencebio/cartobio-types"
 
 export const usePermissions = defineStore('permissions', () => {
   const userStore = useUserStore()
@@ -20,7 +20,7 @@ export const usePermissions = defineStore('permissions', () => {
     }
 
     if (isAgri.value) {
-      return recordStore.record.certification_state === CERTIFICATION_STATE.OPERATOR_DRAFT;
+      return recordStore.record.certification_state === CertificationState.OPERATOR_DRAFT;
     }
 
     return false

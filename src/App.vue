@@ -34,7 +34,7 @@ import { computed } from 'vue'
 
 import MainHeader from '@/components/MainHeader.vue'
 import MainFooter from '@/components/MainFooter.vue'
-import Spinner from '@/components/Spinner.vue'
+import Spinner from '@/components/widgets/Spinner.vue'
 
 const route = useRoute()
 const title = computed(() => route.meta?.seo?.title)

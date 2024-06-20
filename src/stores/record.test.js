@@ -3,8 +3,8 @@ import { useFeaturesStore } from "./features.js"
 import { useOperatorStore } from "./operator.js"
 import { useRecordStore } from "./record.js"
 import { createTestingPinia } from "@pinia/testing"
-import record from '@/components/Features/__fixtures__/record-with-features.json' assert { type: 'json' }
-import operator from '@/components/Features/__fixtures__/operator.json' assert { type: 'json' }
+import record from '@/utils/__fixtures__/record-with-features.json' assert { type: 'json' }
+import operator from '@/utils/__fixtures__/operator.json' assert { type: 'json' }
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
 const featuresStore = useFeaturesStore(pinia)

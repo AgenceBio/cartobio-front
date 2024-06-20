@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useFocus } from '@vueuse/core'
-import Modal from "@/components/Modal.vue"
+import Modal from "@/components/widgets/Modal.vue"
 import { useOperatorStore } from "@/stores/operator.js"
 import { useRecordStore } from "@/stores/record.js"
 import { sources } from "@/referentiels/imports.js"
