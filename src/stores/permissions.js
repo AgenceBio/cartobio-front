@@ -39,6 +39,7 @@ export const usePermissions = defineStore('permissions', () => {
   const canDeleteParcellaire = canEditParcellaire
 
   const canCreateVersion = computed(() => isOc.value || isAgri.value)
+  const canEditVersion = computed(() => canEditParcellaire.value)
 
   const canChangeCulture = canEditParcellaire
   const canChangeGeometry = canEditParcellaire
@@ -72,6 +73,7 @@ export const usePermissions = defineStore('permissions', () => {
     canDeleteParcellaire,
     canEditParcellaire,
     canCreateVersion,
+    canEditVersion,
     canChangeCulture,
     canChangeGeometry,
     canAddParcelleNote,

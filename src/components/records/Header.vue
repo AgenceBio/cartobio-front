@@ -5,7 +5,7 @@
       <span class="version-name">{{ record.version_name }}</span>
 
       <button
-          v-if="!disableActions"
+          v-if="!disableActions && permissions.canEditVersion"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info"
           @click="showEditVersionModal = true"
       >
@@ -90,6 +90,7 @@ import { useOperatorStore } from "@/stores/operator.js"
 import { useRecordStore } from "@/stores/record.js"
 import { onClickOutside, useOnline } from "@vueuse/core"
 import EditVersionModal from "@/components/forms/EditVersionForm.vue"
+import { usePermissions } from "@/stores/permissions.js"
 
 const AsyncFeaturesExportModal = defineAsyncComponent(() => import('@/components/records/ExportModal.vue'))
 
@@ -108,6 +109,7 @@ const deleteModal = ref(false)
 const featuresStore = useFeaturesStore()
 const operatorStore = useOperatorStore()
 const recordStore = useRecordStore()
+const permissions = usePermissions()
 const { record } = recordStore
 const { operator } = operatorStore
 const { collection, hasFeatures } = storeToRefs(featuresStore)
