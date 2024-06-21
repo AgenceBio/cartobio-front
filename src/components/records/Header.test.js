@@ -45,7 +45,8 @@ describe("RecordHeader", () => {
   describe('Modifier la version', () => {
     afterEach(() => userStore.$reset())
 
-    it("should print version name field to everybody", async () => {
+    it("should allow agri when OPERATOR_DRAFT", async () => {
+      userStore.isAgri = true
       let wrapper = mount(AsyncComponent)
       await wrapper.find('.edit-version-info').trigger('click')
 
@@ -53,41 +54,21 @@ describe("RecordHeader", () => {
       expect(modal.find('#version_name').exists()).toBe(true)
     })
 
-    it("should print audit date field only for Certification Body", async () => {
+    it("should only allow Certification Body after", async () => {
       recordStore.update({ certification_state: 'AUDITED', audit_date: '2024-01-01' })
       userStore.isOc = false
       userStore.isOcCertif = false
-
       let wrapper = mount(AsyncComponent)
-      await wrapper.find('.edit-version-info').trigger('click')
-
-      const modal = wrapper.getComponent(EditVersionModal)
-      expect(modal.find('#audit_date').exists()).toBe(false)
+      await flushPromises()
+      expect(await wrapper.find('.edit-version-info').exists()).toBe(false)
 
       userStore.isOc = true
       userStore.isOcCertif = true
+      wrapper = mount(AsyncComponent)
+      await wrapper.find('.edit-version-info').trigger('click')
       await flushPromises()
+      const modal = wrapper.getComponent(EditVersionModal)
       expect(modal.find('#audit_date').exists()).toBe(true)
-    })
-
-    it("should print certification date fields only for Certification Body", async () => {
-      recordStore.update({ certification_state: 'CERTIFIED', audit_date: '2024-01-01' })
-      userStore.isOc = false
-      userStore.isOcCertif = false
-
-      let wrapper = mount(AsyncComponent)
-      await wrapper.find('.edit-version-info').trigger('click')
-
-      const modal = wrapper.getComponent(EditVersionModal)
-      expect(modal.find('#certification_date_debut').exists()).toBe(false)
-      expect(modal.find('#certification_date_fin').exists()).toBe(false)
-
-      userStore.isOc = true
-      userStore.isOcCertif = true
-      await flushPromises()
-      console.log(modal.html())
-      expect(modal.find('#certification_date_debut').exists()).toBe(true)
-      expect(modal.find('#certification_date_fin').exists()).toBe(true)
     })
   })
 
