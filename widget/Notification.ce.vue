@@ -22,9 +22,9 @@
 <script setup>
 import { computed, markRaw, onBeforeMount, ref, watch } from 'vue'
 
-import Loading from '@/components/Loading.vue'
-import OperatorSetupFlow from '@/components/OperatorSetup/Flow.vue'
-import FlowMultiSources from '@/components/OperatorSetup/Flows/MultiSources.vue'
+import Loading from '@/components/widgets/Loading.vue'
+import OperatorSetupFlow from '@/components/setup/Flow/index.vue'
+import FlowMultiSources from '@/components/setup/MultiSources/index.vue'
 import { exchangeNotificationToken, setAuthorization } from '@/cartobio-api.js'
 import { sources } from '@/referentiels/imports.js'
 

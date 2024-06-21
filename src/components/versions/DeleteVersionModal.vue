@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useFocus } from '@vueuse/core'
-import Modal from "@/components/Modal.vue"
+import Modal from "@/components/widgets/Modal.vue"
 import { deleteRecord } from "@/cartobio-api.js"
-import toast from "@/components/toast.js"
+import toast from "@/utils/toast.js"
 import { useOperatorStore } from "@/stores/operator.js"
 
 const props = defineProps({

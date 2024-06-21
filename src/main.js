@@ -10,7 +10,7 @@ import 'vue3-toastify/dist/index.css';
 
 import App from './App.vue'
 import { version } from "../package.json"
-import toast from '@/components/toast.js'
+import toast from '@/utils/toast.js'
 import { AxiosError } from "axios"
 import { useUserStore } from "@/stores/user.js"
 

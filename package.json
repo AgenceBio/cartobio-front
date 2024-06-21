@@ -81,12 +81,12 @@
     "ignorePatterns": [
       "src/stores/storage.test.js",
       "src/stores/record.test.js",
-      "src/components/Features/ExportStrategies/*.test.js",
-      "src/components/Features/FeatureGroup.test.js",
-      "src/components/Features/SingleItem*.test.js",
-      "src/components/Features/Table.test.js",
-      "src/components/OperatorSetup/*.test.js",
-      "src/components/record/Header.test.js",
+      "src/utils/export-strategies/*.test.js",
+      "src/components/records/Table/FeatureGroup.test.js",
+      "src/components/forms/SingleItem*.test.js",
+      "src/components/setup/Flow/index.test.js",
+      "src/components/records/Table/index.test.js",
+      "src/components/records/Header.test.js",
       "src/pages/certification/exploitations/index.test.js",
       "src/pages/exploitations/\\[numeroBio\\]/index.test.js"
     ],

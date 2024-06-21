@@ -157,8 +157,8 @@
 </template>
 
 <script setup>
-import PartnersSection from '@/components/Landing/Partners.vue'
-import ProductFlowSection from '@/components/Landing/ProductFlow.vue'
+import PartnersSection from '@/components/landing-page/Partners.vue'
+import ProductFlowSection from '@/components/landing-page/ProductFlow.vue'
 </script>
 
 <style scoped>
