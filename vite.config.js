@@ -16,6 +16,19 @@ export default defineConfig(({ mode }) => {
 
     build: {
       sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'maplibre-gl': ['maplibre-gl'],
+            'xlsx': ['xlsx'],
+            'rosetta-cultures': ['@agencebio/rosetta-cultures'],
+            'cartobio-types': ['@agencebio/cartobio-types'],
+            'framework': ['vue', 'vue-router', '@vueuse/core', 'axios'],
+            'sentry': ['@sentry/vue'],
+            'proj4': ['proj4'],
+          }
+        }
+      },
     },
 
     plugins: [
