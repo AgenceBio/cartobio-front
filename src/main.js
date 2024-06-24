@@ -92,41 +92,12 @@ app
 const userStore = useUserStore()
 userStore.enablePersistance()
 
-function handlerAPIErrors(error) {
-  if (
-      error.name === "AxiosError" &&
-      [
-        AxiosError.ETIMEDOUT,
-        AxiosError.ECONNABORTED,
-        AxiosError.ERR_NETWORK
-      ].includes(error.code)
-  ) {
-    toast.error('Une erreur de réseau est survenue. Vérifiez votre connexion internet.')
-    return true
-  }
-
-  // Token has expired, as stated by the API error code
-  // We disconnect and force render the current page to trigger the login mechanism
-  if (error?.response?.data?.code === 'EXPIRED_CREDENTIALS') {
-    const { path, params } = router.currentRoute.value
-
-    userStore.logout()
-    router.push({ path, params, force: true })
-    return true
-  }
-}
-
 app.config.errorHandler = (error) => {
-  if (handlerAPIErrors(error)) return false
-
   toast.error('Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.')
-  console.error(error)
   throw error;
 }
 
 router.onError((error, to) => {
-  if (handlerAPIErrors(error)) return false
-
   // refresh the page if the app is redeployed while being in use
   // this should be handled with a basic ServiceWorker/offline-first approach
   // it could also be done as a Toast, with a reload action to offer a less surprising experience
@@ -162,6 +133,13 @@ router.beforeEach(async (to) => {
       await operatorStore.ready(to.params.numeroBio)
     }
   } catch (error) {
+    if (error?.response?.data?.code === 'EXPIRED_CREDENTIALS') {
+      const { path, params } = router.currentRoute.value
+
+      userStore.logout()
+      return { path, params, replace: true }
+    }
+
     if (error?.response?.status === 404) {
       toast.error('L\'exploitation demandée n\'existe pas.')
       return false
@@ -174,6 +152,19 @@ router.beforeEach(async (to) => {
 
     if (error?.response?.status === 401) {
       return { path: '/login', replace: true }
+    }
+
+    if (
+        error.name === "AxiosError" &&
+        [
+          AxiosError.ETIMEDOUT,
+          AxiosError.ECONNABORTED,
+          AxiosError.ERR_NETWORK
+        ].includes(error.code)
+    ) {
+      toast.error('Une erreur de réseau est survenue. Si vous connexion ' +
+          'est instable, vous pouvez passer en mode hors-ligne.')
+      return false
     }
 
     throw error
@@ -221,5 +212,22 @@ router.beforeEach(async (to) => {
 router.afterEach(async() => {
   const { useCartoBioStorage } = await import('@/stores/storage.js')
   const storage = useCartoBioStorage()
-  await storage.sync()
+  try {
+    await storage.sync()
+  } catch (error) {
+    if (
+        error.name === "AxiosError" &&
+        [
+          AxiosError.ETIMEDOUT,
+          AxiosError.ECONNABORTED,
+          AxiosError.ERR_NETWORK
+        ].includes(error.code)
+    ) {
+      toast.error('Une erreur de réseau est survenue. Si vous connexion ' +
+          'est instable, vous pouvez passer en mode hors-ligne.')
+      return
+    }
+
+    throw error
+  }
 })
