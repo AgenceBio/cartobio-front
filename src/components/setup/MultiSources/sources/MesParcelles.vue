@@ -16,7 +16,7 @@
       <h3 class="fr-alert__title">Où récupérer le fichier demandé ?</h3>
 
       <p>
-        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-du-fichier-mesparcelles" target="_blank">import MesParcelles</a>
+        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-du-fichier-mesparcelles" target="_blank">import MesParcelles<lien-externe /></a>
         de notre documentation pour une aide illustrée et pas à pas.
       </p>
     </div>

@@ -25,12 +25,12 @@
               <ul>
                 <li>
                   <a href="https://docs-cartobio.agencebio.org/organisme-certification" aria-label="Centre de support pour organisme de certification" target="_blank" rel="noopener">
-                    Organisme de certification
+                    Organisme de certification<lien-externe />
                   </a>
                 </li>
                 <li>
                   <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/" aria-label="Centre de support pour agriculteur·ice" target="_blank" rel="noopener">
-                    Agriculteur·ice
+                    Agriculteur·ice<lien-externe />
                   </a>
                 </li>
               </ul>

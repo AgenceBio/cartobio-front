@@ -28,8 +28,8 @@ describe("MainHeader", () => {
     const wrapper = mount(MainHeader)
 
     expect(wrapper.find('.tool-username').exists()).toEqual(false)
-    expect(wrapper.find('.fr-header__tools').text()).toEqual('À propos  Aide  Connexion')
-    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Aide  À propos de CartoBio  Connexion')
+    expect(wrapper.find('.fr-header__tools').text()).toEqual('À propos  Aide Connexion')
+    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Aide À propos de CartoBio  Connexion')
   })
 
   test("with a warning header", async () => {
@@ -58,7 +58,7 @@ describe("MainHeader", () => {
     })
 
     expect(wrapper.find('.tool-username').exists()).toEqual(false)
-    expect(wrapper.find('.fr-header__tools').text()).toEqual('À propos  Aide  Connexion')
+    expect(wrapper.find('.fr-header__tools').text()).toEqual('À propos  Aide Connexion')
   })
 
   test("as a certification body", async () => {
@@ -69,7 +69,7 @@ describe("MainHeader", () => {
     await flushPromises()
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-medal-fill')).toEqual(true)
-    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Nom Aide  À propos de CartoBio  Déconnexion')
+    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Nom Aide À propos de CartoBio  Déconnexion')
     expect(wrapper.find('.fr-nav[role="navigation"] a').attributes('href')).toEqual('/certification/exploitations')
     expect(wrapper.find('.fr-nav[role="navigation"] a[target="_blank"]').attributes('href')).toEqual('https://docs-cartobio.agencebio.org/organisme-certification')
 
@@ -85,7 +85,7 @@ describe("MainHeader", () => {
     await flushPromises()
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-plant-fill')).toEqual(true)
-    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Nom Aide  À propos de CartoBio  Déconnexion')
+    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Nom Aide À propos de CartoBio  Déconnexion')
     expect(wrapper.find('.fr-nav[role="navigation"] a').attributes('href')).toEqual('/exploitations')
     expect(wrapper.find('.fr-nav[role="navigation"] a[target="_blank"]').attributes('href')).toEqual('https://docs-cartobio.agencebio.org/agriculteurs.trices')
   })
@@ -98,6 +98,6 @@ describe("MainHeader", () => {
     await flushPromises()
 
     expect(wrapper.find('.tool-username a').classes('fr-icon-account-circle-fill')).toEqual(true)
-    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Nom Aide  À propos de CartoBio  Déconnexion')
+    expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual('Nom Aide À propos de CartoBio  Déconnexion')
   })
 })

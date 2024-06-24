@@ -12,7 +12,7 @@
                   <li>
                     <span>
                       <strong class="fr-text--lead">Localiser votre territoire</strong><br />
-                      <a href="https://www.agencebio.org/cartobio/" class="fr-link  fr-icon-arrow-right-line fr-link--icon-right" target="_blank">Naviguer sur la carte</a>
+                      <a href="https://www.agencebio.org/cartobio/" class="fr-link  fr-icon-arrow-right-line fr-link--icon-right" target="_blank">Naviguer sur la carte<lien-externe /></a>
                     </span>
                   </li>
                   <li>

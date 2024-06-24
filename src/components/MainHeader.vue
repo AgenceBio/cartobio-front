@@ -65,7 +65,7 @@
                 <li>
                   <a :href="documentationPage" target="_blank"
                     class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill">
-                    Aide
+                    Aide<lien-externe />
                   </a>
                 </li>
                 <li class="tool-username" aria-hidden="true" v-if="isLogged">
@@ -109,7 +109,7 @@
               <li class="fr-nav__item">
                 <a :href="documentationPage" target="_blank" rel="noopener"
                   class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
-                  Aide
+                  Aide<lien-externe />
                 </a>
               </li>
               <li class="fr-nav__item">
@@ -181,7 +181,7 @@
           <p class="fr-notice__title">
             CartoBio rencontre actuellement des problèmes techniques.
             <a href="https://docs-cartobio.agencebio.org/statut" rel="noreferrer noopener" target="_blank">
-              Visitez la page de statut pour en savoir plus.
+              Visitez la page de statut pour en savoir plus.<lien-externe />
             </a>
           </p>
         </div>

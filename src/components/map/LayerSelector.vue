@@ -36,7 +36,7 @@
         <img src="@/assets/map/classification.jpg" alt="" />
         <span>
           <abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}
-          <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification</a></small>
+          <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification<lien-externe /></a></small>
         </span>
       </button>
       <button class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)" :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`">

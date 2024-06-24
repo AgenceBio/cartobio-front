@@ -37,13 +37,13 @@
           Nous contacter par
           <a href="mailto:support-cartobio@agencebio.org">courrier électronique</a>
           ou par
-          <a href="https://www.agencebio.org/pied-de-page/contact/" target="_blank" rel="noopener">formulaire de contact</a>.
+          <a href="https://www.agencebio.org/pied-de-page/contact/" target="_blank" rel="noopener">formulaire de contact<lien-externe /></a>.
         </p>
 
         <h2>En savoir plus</h2>
         <p>Pour en savoir plus sur la politique d’accessibilité numérique de l’État :&nbsp;<a
             href="https://accessibilite.numerique.gouv.fr/" target="_blank"
-            rel="nofollow">https://accessibilite.numerique.gouv.fr/</a></p>
+            rel="nofollow">https://accessibilite.numerique.gouv.fr/<lien-externe /></a></p>
         <h2>Sécurité</h2>
         <p>Le site est protégé par un certificat électronique, matérialisé pour la grande majorité des
           navigateurs par un cadenas. Cette protection participe à la confidentialité des échanges.

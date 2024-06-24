@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createHead } from '@unhead/vue'
@@ -67,6 +67,11 @@ app
   .use(router)
   .use(head)
   .use(pinia)
+  .component('LienExterne', {
+    setup () {
+      return () => h('span', { class: 'fr-sr-only', innerHTML: ' (ouvre un nouvel onglet)' })
+    }
+  })
   .use(
     Vue3Toastify,
     {
