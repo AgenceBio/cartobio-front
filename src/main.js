@@ -152,13 +152,31 @@ router.beforeEach(async (to) => {
   const { useRecordStore } = await import('@/stores/record.js')
   const recordStore = useRecordStore()
   // Preload stores for checking permissions
-  if (to.params.recordId) {
-    await recordStore.ready(to.params.recordId) // will load also the operator
-  } else if (to.params.numeroBio) {
-    recordStore.$reset()
-    const { useOperatorStore } = await import('@/stores/operator.js')
-    const operatorStore = useOperatorStore()
-    await operatorStore.ready(to.params.numeroBio)
+  try {
+    if (to.params.recordId) {
+      await recordStore.ready(to.params.recordId) // will load also the operator
+    } else if (to.params.numeroBio) {
+      recordStore.$reset()
+      const { useOperatorStore } = await import('@/stores/operator.js')
+      const operatorStore = useOperatorStore()
+      await operatorStore.ready(to.params.numeroBio)
+    }
+  } catch (error) {
+    if (error?.response?.status === 404) {
+      toast.error('L\'exploitation demandée n\'existe pas.')
+      return false
+    }
+
+    if (error?.response?.status === 403) {
+      toast.error('Vous n\'avez pas les droits pour accéder à cette page.')
+      return { path: userStore.startPage, replace: true }
+    }
+
+    if (error?.response?.status === 401) {
+      return { path: '/login', replace: true }
+    }
+
+    throw error
   }
 
   if (to.path === '/logout') {
