@@ -1,3 +1,8 @@
+# [2.25.0](https://github.com/AgenceBio/cartobio-front/compare/v2.25.0...v2.25.1) (2023-06-24)
+
+* Permissions sur l'édition et la suppression de versions ([d11abc7](https://github.com/AgenceBio/cartobio-front/commit/d11abc7))
+* Traite les erreurs 40x d'API ([0b95524](https://github.com/AgenceBio/cartobio-front/commit/0b95524))
+
 # [2.25.0](https://github.com/AgenceBio/cartobio-front/compare/v2.24.1...v2.25.0) (2023-06-20)
 
 * Lecture, édition des parcellaires hors-ligne et synchronisation ([61bda43](https://github.com/AgenceBio/cartobio-front/commit/61bda43)) ([42dc155](https://github.com/AgenceBio/cartobio-front/commit/42dc155)) ([8d16ab0](https://github.com/AgenceBio/cartobio-front/commit/8d16ab0)) ([b272284](https://github.com/AgenceBio/cartobio-front/commit/b272284)) ([1a10eba](https://github.com/AgenceBio/cartobio-front/commit/1a10eba)) ([ca73699](https://github.com/AgenceBio/cartobio-front/commit/ca73699)) ([c448afa](https://github.com/AgenceBio/cartobio-front/commit/c448afa))
