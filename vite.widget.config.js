@@ -26,6 +26,12 @@ export default defineConfig(({ mode }) => {
 
     build: {
       ...resolvedConfig.build,
+      rollupOptions: {
+        ...resolvedConfig.build.rollupOptions,
+        output: {
+          manualChunks: null
+        }
+      },
 
       emptyOutDir: mode === 'lib',
       outDir: resolve(join(__dirname, 'dist', 'notification-webcomponent')),
