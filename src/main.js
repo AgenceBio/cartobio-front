@@ -231,3 +231,8 @@ router.afterEach(async() => {
     throw error
   }
 })
+
+window.addEventListener('vite:preloadError', (e) => {
+  e.preventDefault() // prevent the default handling
+  window.location.reload() // refresh the page
+})
