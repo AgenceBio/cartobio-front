@@ -399,6 +399,10 @@ export const useCartoBioStorage = defineStore('storage', () => {
             await operatorStore.ready(recordId)
           }
         } catch (e) {
+          if (e.response?.status === 403 || e.response?.status === 401) {
+            continue
+          }
+
           if (e.response?.status === 412 || e.response?.status === 404) {
             if (!recordsStorage[recordId]) {
               await addRecord(recordId)
