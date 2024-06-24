@@ -2,7 +2,7 @@
   meta:
     generalAudience: true
     seo:
-      title: Découvrez les parcelles bio autour de chez vous
+      title: Page d'accueil (grand public)
   </route>
 
 <template>

@@ -2,7 +2,7 @@
   meta:
     generalAudience: true
     seo:
-      title: Métriques de réussite du projet
+      title: Statistiques publiques des parcellaires agricoles en conversion ou certifiés en Agriculture Bioliogique
   </route>
 
 <template>
