@@ -84,9 +84,7 @@
           </td>
         </tr>
       </tbody>
-      <tbody v-else>
-        <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
-      </tbody>
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
     </table>
 
     <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
