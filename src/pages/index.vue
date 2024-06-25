@@ -2,7 +2,7 @@
   meta:
     generalAudience: true
     seo:
-      title: Découvrez les parcelles bio autour de chez vous
+      title: Page d'accueil (grand public)
   </route>
 
 <template>
@@ -25,7 +25,7 @@
                 <ul class="fr-btns-group fr-btns-group--inline">
                   <li>
                     <a class="fr-btn" href="https://www.agencebio.org/cartobio/" rel="noopener" target="_blank">
-                      Localiser le bio près de chez moi
+                      Localiser le bio près de chez moi<lien-externe />
                     </a>
                   </li>
                 </ul>
@@ -84,7 +84,7 @@
 
           <p>
             <a class="fr-btn fr-btn--secondary" href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/" target="_blank"  rel="noopener">
-              Accéder aux données
+              Accéder aux données<lien-externe />
             </a>
           </p>
         </div>

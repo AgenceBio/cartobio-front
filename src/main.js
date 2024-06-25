@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createHead } from '@unhead/vue'
@@ -17,9 +17,9 @@ import { useUserStore } from "@/stores/user.js"
 const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
 
+const app = createApp(App)
 const pinia = createPinia()
 const head = createHead()
-const app = createApp(App)
 const router = createRouter({
   routes,
   history: createWebHistory(),
@@ -67,6 +67,11 @@ app
   .use(router)
   .use(head)
   .use(pinia)
+  .component('LienExterne', {
+    setup () {
+      return () => h('span', { class: 'fr-sr-only', innerHTML: ' (ouvre un nouvel onglet)' })
+    }
+  })
   .use(
     Vue3Toastify,
     {

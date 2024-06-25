@@ -324,7 +324,7 @@ export const useFeaturesSetsStore = defineStore('features-sets', () => {
         .filter(([, { featureIds, required }]) => {
           return featureIds.includes(featureId) && (filterRequired ? filterRequired && required : true)
         })
-        .map(([key, { details, label, ...rest }]) => ([
+        .map(([key, { details, ...rest }]) => ([
           key,
           {
             ...rest,

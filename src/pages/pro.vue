@@ -1,7 +1,7 @@
 <route lang="yaml">
   meta:
     seo:
-      title: Votre parcellaire cultivé en agriculture biologique
+      title: Page d'accueil (agriculteurs·rices)
   </route>
 
 <template>

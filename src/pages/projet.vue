@@ -85,12 +85,12 @@ meta:
         <p>
           CartoBio a été initialement proposé par l’Agence Bio & INAO auprès du programme Entrepreneur d’Intérêt Général (EIG), avant d’être incubé par la DINUM sous le programme Beta.gouv.fr.
           <br />
-          <a href="https://eig.etalab.gouv.fr/defis/cartobio/" target="_blank">Découvrir le défi EIG 2019</a>
+          <a href="https://eig.etalab.gouv.fr/defis/cartobio/" target="_blank">Découvrir le défi EIG 2019<lien-externe /></a>
         </p>
         <p>
           Beta.gouv.fr est l’incubateur des services numériques de l’État. Il a recours à des équipes pluridisciplinaires et une résolution de problèmes d’usages grâce à des solutions numériques innovantes construites petit à petit.
           <br />
-          <a href="https://beta.gouv.fr/approche" target="_blank">En savoir plus sur l’approche</a>
+          <a href="https://beta.gouv.fr/approche" target="_blank">En savoir plus sur l’approche<lien-externe /></a>
         </p>
         <p>La première version du projet est d’abord destinée uniquement aux Organismes de Certification, comme un outil supplémentaire de préparation de leur contrôle. L’impact n’a pas été concluant, expliqué par un manque de prise en main de l’outil par les utilisateurs.</p>
         <p>En 2021, le projet est redéveloppé en étroite collaboration avec le MASA et le Cebio dans le cadre des aides PAC Bio. CartoBio vise à remplacer l'attestation de production végétale, et d’anticiper l’augmentation du nombre d’engagements en bio.</p>

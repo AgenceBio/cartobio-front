@@ -30,13 +30,12 @@
       </li>
 
       <li>
-        Formulaire de contact&nbsp;: <router-link
-          to="/contact">https://cartobio.agencebio.org/contact</router-link>
+        Formulaire de contact&nbsp;: <a href="https://www.agencebio.org/pied-de-page/contact/" target="_blank" rel="noopener">https://www.agencebio.org/pied-de-page/contact/<lien-externe /></a>
       </li>
       <li>
         Adresse&nbsp;: <span>Agence Bio, 12, rue Henri Rol Tanguy, 93100 MONTREUIL</span>
       </li>
-      <li>Twitter : <a href="https://twitter.com/agence_bio">@agence_bio</a></li>
+      <li>Twitter : <a href="https://twitter.com/agence_bio" target="_blank" rel="noopener noreferrer">@agence_bio<lien-externe /></a></li>
     </ul>
     <p>
       Nous essayons de répondre dans les <span>4 jours ouvrés</span>.
@@ -47,9 +46,9 @@
       obtenu de réponse satisfaisante.</p>
     <p>Vous pouvez&nbsp;:</p>
     <ul>
-      <li>Écrire un message au <a href="https://formulaire.defenseurdesdroits.fr/">Défenseur des droits</a></li>
-      <li>Contacter <a href="https://www.defenseurdesdroits.fr/saisir/delegues">le délégué du Défenseur des droits dans
-          votre région</a></li>
+      <li>Écrire un message au <a href="https://formulaire.defenseurdesdroits.fr/" target="_blank" rel="noopener">Défenseur des droits<lien-externe /></a></li>
+      <li>Contacter <a href="https://www.defenseurdesdroits.fr/saisir/delegues" target="_blank" rel="noopener">le délégué du Défenseur des droits dans
+          votre région<lien-externe /></a></li>
       <li>Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)&nbsp;:<br>
         Défenseur des droits<br>
         Libre réponse 71120 75342 Paris CEDEX 07</li>
@@ -57,8 +56,8 @@
     <hr>
     <p>
       Cette déclaration d’accessibilité a été créé le <span>20 juin 2022</span> grâce au <a
-        href="https://betagouv.github.io/a11y-generateur-declaration/#create">Générateur de Déclaration d’Accessibilité de
-        BetaGouv</a>.
+        href="https://betagouv.github.io/a11y-generateur-declaration/#create" target="_blank" rel="noopener">Générateur de Déclaration d’Accessibilité de
+        BetaGouv<lien-externe /></a>.
     </p>
   </div>
 </template>

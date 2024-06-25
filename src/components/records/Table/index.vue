@@ -9,8 +9,10 @@
       </li>
     </ul>
 
-    <table @mouseout="hoveredFeatureId = null" id="parcellaire-table">
-      <caption>Parcellaire agricole</caption>
+    <table @mouseout="hoveredFeatureId = null" id="parcellaire-table" aria-describedby="operator-features-summary-global">
+      <caption>
+        Parcelles agricoles {{ record.version_name }} de l'opérateur {{ operator.nom }}
+      </caption>
       <colgroup>
         <col class="selection" />
         <col class="accordion" />
@@ -23,7 +25,7 @@
           <td class="selection" colspan="2">
             <div class="fr-checkbox-group single-checkbox">
               <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
-              <label class="fr-label" for="radio-mass-edit" />
+              <label class="fr-label" for="radio-mass-edit" aria-label="Désélectionner toutes les parcelles" />
             </div>
           </td>
           <td colspan="3">
@@ -35,15 +37,15 @@
         </tr>
         <tr>
           <th colspan="2">
-            <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
+            <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures && selectedFeatureIds.length === 0">
               <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
-              <label class="fr-label" for="radio-select-all" />
+              <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
             </div>
           </th>
           <th class="labels" scope="col">
             <div class="seamless-select">
               <label for="plots-group-by">Parcelles par </label>
-              <b>{{ groupingChoices[userGroupingChoice].label }}</b>
+              <b>{{ groupingChoiceLabel }}</b>
               <select id="plots-group-by" v-model="userGroupingChoice">
                 <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
                   {{ label }}
@@ -82,9 +84,18 @@
           </td>
         </tr>
       </tbody>
-
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
+      <tbody v-else>
+        <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
+      </tbody>
     </table>
+
+    <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
+      Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}.
+      Actuellement, {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
+    </p>
+    <p id="operator-features-summary-global" class="fr-sr-only" v-else>
+      Ce parcellaire ne contient aucune parcelle.
+    </p>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
       <router-link :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
@@ -155,6 +166,7 @@ const maybeDeletedFeatureId = ref(null)
 
 const userGroupingChoice = ref('CULTURE')
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
+const groupingChoiceLabel = computed(() => groupingChoices[userGroupingChoice.value].label)
 
 async function handleSingleFeatureSubmit ({ id, properties }) {
   statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
@@ -274,6 +286,13 @@ function handleFilterClick (id) {
   background-color: var(--background-alt-blue-france);
   background-position: top, bottom;
   background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
+}
+
+.fr-table thead,
+.fr-table .summary {
+  td, th {
+    padding-left: 0.6rem;
+  }
 }
 
 .fr-table .summary.summary__mass-actions {

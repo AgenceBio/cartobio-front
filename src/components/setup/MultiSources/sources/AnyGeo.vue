@@ -2,8 +2,8 @@
   <div>
     <p>
       Vous pouvez importer un fichier géographique exporté depuis
-      CartoBio, le <a href="https://www.geoportail.gouv.fr/" target="_blank" rel="noopener noreferrer">Geoportail</a>
-      ou encore <a href="https://qgis.org" target="_blank" rel="noopener noreferrer">QGIS</a>.
+      CartoBio, le <a href="https://www.geoportail.gouv.fr/" target="_blank" rel="noopener noreferrer">Geoportail<lien-externe /></a>
+      ou encore <a href="https://qgis.org" target="_blank" rel="noopener noreferrer">QGIS<lien-externe /></a>.
     </p>
 
     <p>

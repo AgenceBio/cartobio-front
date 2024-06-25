@@ -40,7 +40,7 @@ const route = useRoute()
 const title = computed(() => route.meta?.seo?.title)
 
 // SEO
-useHead({ title, titleTemplate: '%s — CartoBio (beta)' })
+useHead({ title, titleTemplate: '%s — CartoBio' })
 </script>
 
 <style>

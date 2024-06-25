@@ -77,7 +77,7 @@ onMounted(() => {
       onAdd: () => {
         const el = document.createElement('div')
         el.className = 'maplibregl-ctrl maplibregl-ctrl-attrib'
-        el.innerHTML = '<a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" target="_blank">Sources des données et licences</a>'
+        el.innerHTML = '<a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" target="_blank">Sources des données et licences<span class="fr-sr-only"> (ouvre un nouvel onglet)</span></a>'
         return el
       }
     }, 'bottom-right')

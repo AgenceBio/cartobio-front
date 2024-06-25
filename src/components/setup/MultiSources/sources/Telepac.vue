@@ -16,7 +16,7 @@
       <h3 class="fr-alert__title">Où récupérer le fichier demandé ?</h3>
 
       <p>
-        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-de-la-declaration-pac" target="_blank">import de la déclaration PAC</a>
+        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-de-la-declaration-pac" target="_blank">import de la déclaration PAC<lien-externe /></a>
         de notre documentation pour une aide illustrée et pas à pas.
       </p>
     </div>

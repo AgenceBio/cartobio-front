@@ -18,7 +18,7 @@ describe("CertificationState", () => {
     const wrapper = mount(State, { props: {
       record: { 'certification_state': CertificationState.CERTIFIED, certification_date_debut: new Date('2023-01-01') }
   } })
-    expect(wrapper.text()).toContain("Certifié 2023")
+    expect(wrapper.text()).toContain("Certifié2023")
     expect(wrapper.attributes()).toHaveProperty('aria-label', "Certifié en 2023")
   })
 })

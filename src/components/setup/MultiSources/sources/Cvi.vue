@@ -19,7 +19,7 @@
       </div>
 
       <p>
-        <a href="https://www.guide-viticulteur.com/mon-exploitation/je-minstalle/jobtiens-mon-numero-de-cvi-evv-ou-ppm" class="fr-link" rel="noopener" target="_blank">Où trouver mon numéro EVV ?</a>
+        <a href="https://www.guide-viticulteur.com/mon-exploitation/je-minstalle/jobtiens-mon-numero-de-cvi-evv-ou-ppm" class="fr-link" rel="noopener" target="_blank">Où trouver mon numéro EVV ?<lien-externe /></a>
       </p>
 
       <div class="fr-input-group">
