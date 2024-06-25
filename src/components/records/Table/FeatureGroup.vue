@@ -205,10 +205,6 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 
   if (newItems.length === 1 && newItems.length !== featureIds.value.length) {
     open.value = true
-
-    setTimeout(() => {
-      document?.querySelector(`tr#parcelle-${newItems[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }, 200)
   }
 })
 </script>
