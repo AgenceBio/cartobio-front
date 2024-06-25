@@ -25,7 +25,7 @@
           <td class="selection" colspan="2">
             <div class="fr-checkbox-group single-checkbox">
               <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
-              <label class="fr-label" for="radio-mass-edit" />
+              <label class="fr-label" for="radio-mass-edit" aria-label="Désélectionner toutes les parcelles" />
             </div>
           </td>
           <td colspan="3">
@@ -37,9 +37,9 @@
         </tr>
         <tr>
           <th colspan="2">
-            <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
+            <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures && selectedFeatureIds.length === 0">
               <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
-              <label class="fr-label" for="radio-select-all" :aria-label="allSelected ? 'Tout désélectionner' : 'Tout sélectionner'" />
+              <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
             </div>
           </th>
           <th class="labels" scope="col">
