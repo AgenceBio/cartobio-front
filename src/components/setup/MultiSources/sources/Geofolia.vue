@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h3 class="fr-sr-only">Import Geofolia</h3>
+
     <div v-if="erreur" class="fr-alert fr-alert--error fr-mb-6w">
       <h3 class="fr-alert__title">Échec de l'import</h3>
       <p>{{ erreur }}</p>

@@ -13,7 +13,7 @@
           <div class="fr-card">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h1>
+                <h1 class="fr-label--success">
                   Découvrez les parcelles bio autour de chez vous
                 </h1>
 
@@ -41,7 +41,7 @@
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-md-5">
-          <h3>Comprendre son environnement</h3>
+          <h2 class="fr-h3">Comprendre son environnement</h2>
 
           <ul class="list-marks">
             <li>
@@ -54,7 +54,7 @@
         </div>
 
         <div class="fr-col-md-5 fr-col-offset-md-1">
-          <h3>Évaluer la qualité de vie</h3>
+          <h2 class="fr-h3">Évaluer la qualité de vie</h2>
 
           <ul class="list-marks">
             <li>
@@ -100,6 +100,12 @@
 
   <div class="fr-container--fluid fr-py-4w">
     <div class="fr-container">
+      <div class="fr-grid-row">
+        <div class="fr-col-12">
+          <h2>Les avantages de CartoBio</h2>
+        </div>
+      </div>
+
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-md-6">
           <div class="fr-card background-alt">
@@ -180,11 +186,6 @@ a:not(.fr-btn),
   color: var(--btn-background-color-default);
 }
 
-h1, h2, :deep(h2) {
-  --text-title-grey: var(--btn-background-color-default);
-}
-
-
 .hero {
   background-color: #e9eddf;
   background-image: url('@/assets/screenshots/map-background.png');
@@ -208,9 +209,6 @@ h1, h2, :deep(h2) {
   }
 }
 
-h2 {
-  color: var(--btn-background-color-default);
-}
 .background-alt {
   background-color: var(--green-bourgeon-975-75);
 }

@@ -79,7 +79,7 @@ watch(show, (value) => {
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
           :disabled="props.disabled"
       >
-        Autres actions
+        Choix des actions
       </button>
     </slot>
       <dialog class="menu-container" :open="show" tabindex="-1">

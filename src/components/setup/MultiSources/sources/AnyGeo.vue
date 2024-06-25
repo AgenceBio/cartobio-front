@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h3 class="fr-sr-only">Import par fichier géographique</h3>
+
     <p>
       Vous pouvez importer un fichier géographique exporté depuis
       CartoBio, le <a href="https://www.geoportail.gouv.fr/" target="_blank" rel="noopener noreferrer">Geoportail<lien-externe /></a>

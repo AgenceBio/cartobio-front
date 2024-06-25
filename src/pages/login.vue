@@ -15,7 +15,7 @@
             <Spinner v-else-if="(!isVerifying && isLogged && (store.isOc || store.isAgri))">Chargement de vos exploitations…</Spinner>
 
             <div class="fr-connect-group" v-else-if="!isLogged">
-              <h2>Connexion à CartoBio</h2>
+              <h1 class="fr-h2">Connexion à CartoBio</h1>
 
               <p class="fr-my-9v">
                 <router-link to="/login/agencebio" class="fr-btn">

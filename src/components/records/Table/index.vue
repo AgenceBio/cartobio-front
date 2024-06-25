@@ -9,7 +9,9 @@
       </li>
     </ul>
 
-    <table @mouseout="hoveredFeatureId = null" id="parcellaire-table" aria-describedby="operator-features-summary-global">
+    <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
+
+    <table @mouseout="hoveredFeatureId = null" aria-describedby="operator-features-summary-global" id="parcellaire-table">
       <caption>
         Parcelles agricoles {{ record.version_name }} de l'opérateur {{ operator.nom }}
       </caption>
