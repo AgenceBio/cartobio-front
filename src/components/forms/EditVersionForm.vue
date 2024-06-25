@@ -26,9 +26,9 @@ const patch = reactive({
 function save() {
   recordStore.updateInfo({
     version_name: patch.version_name,
-    ...(patch.audit_date && { audit_date: patch.audit_date }),
-    ...(!record.certification_date_debut && { certification_date_debut: patch.certification_date_debut }),
-    ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin })
+    ...(patch.audit_date && permissions.canChangeAuditDate && { audit_date: patch.audit_date }),
+    ...(patch.certification_date_debut && permissions.canChangeCertificationDate && { certification_date_debut: patch.certification_date_debut }),
+    ...(patch.certification_date_fin && permissions.canChangeCertificationDate && { certification_date_fin: patch.certification_date_fin })
   })
 
   toast.success('La version a bien été modifiée')
@@ -55,7 +55,7 @@ function save() {
 
       <div v-if="record.certification_state === 'CERTIFIED' && permissions.canChangeCertificationDate" class="fr-input-group">
         <label for="certification_date_debut" class="fr-input-group__label">Date de début de validité du certificat</label>
-        <input type="date" id="certification_date_debut" class="fr-input" :value="record.certification_date_debut" />
+        <input type="date" id="certification_date_debut" class="fr-input" v-model="patch.certification_date_debut" />
       </div>
 
       <div v-if="record.certification_state === 'CERTIFIED' && permissions.canChangeCertificationDate" class="fr-input-group">
