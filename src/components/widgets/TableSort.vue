@@ -3,7 +3,7 @@
     <slot name="default" />
   </label>
 
-  <button v-if="showControl" type="button" :aria-pressed="isAscending || isDescending" :id="id" class="fr-btn fr-btn--tertiary-no-outline" @click="emit('update:modelValue', { sort: code, order: !isAscending ? 'asc' : 'desc' })">
+  <button v-if="showControl" type="button" :aria-pressed="isAscending || isDescending" :id="id" class="fr-btn fr-btn--tertiary-no-outline" @click="emit('update:modelValue', { sort: code, order: !isAscending ? 'asc' : 'desc' })" :aria-label="`Trier par ${$slots.default()[0].children.toLocaleLowerCase()}`">
     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M7 0L13 6H1L7 0Z" :fill="isAscending ? '#000091' : '#929292'"/>
       <path fill-rule="evenodd" clip-rule="evenodd" d="M7 16L1 10L13 10L7 16Z" :fill="isDescending ? '#000091' : '#929292'"/>

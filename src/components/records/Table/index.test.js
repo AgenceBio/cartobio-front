@@ -37,7 +37,7 @@ describe("Features Table", () => {
     const wrapper = mount(TableComponent)
 
     expect(wrapper.find('tr.summary td:nth-child(2)').text()).toContain("4 parcelles")
-    expect(wrapper.findAll('table tbody')).toHaveLength(3)
+    expect(wrapper.findAll('table.group-table tbody')).toHaveLength(3)
     expect(wrapper.find('#parcelle-1').attributes()).toHaveProperty('hidden', '')
   })
 
@@ -86,7 +86,7 @@ describe("Features Table", () => {
 
     // await rendering
     await flushPromises()
-    const groups = wrapper.findAll('table tbody')
+    const groups = wrapper.findAll('tbody.feature-group')
 
     expect(groups.at(0).find('th[scope="row"]').text()).toContain('26108')
     expect(groups.at(1).find('th[scope="row"]').text()).toContain('26113')

@@ -1,7 +1,7 @@
 <template>
   <span :class="['fr-badge', stateInfo.color]" :aria-label="dateLabel ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label">
-    {{ stateInfo.label }}
-    <span v-if="showDate && dateLabel" class="year">{{ dateLabel }}</span>
+    <span aria-hidden>{{ stateInfo.label }}</span>
+    <span v-if="showDate && dateLabel" class="year" aria-hidden>{{ dateLabel }}</span>
   </span>
 </template>
 
