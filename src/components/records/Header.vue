@@ -1,17 +1,21 @@
 <template>
   <header class="fr-mb-2w">
-    <span class="fr-text--bold operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</span>
-    <h1 class="fr-h4 fr-my-0 fr-mb-1v">
-      <span class="version-name">{{ record.version_name }}</span>
+    <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
+
+    <div class="heading">
+      <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
+        {{ record.version_name }}
+      </h2>
 
       <button
-          v-if="!disableActions && permissions.canEditVersion"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info"
-          @click="showEditVersionModal = true"
+        v-if="!disableActions && permissions.canEditVersion"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info"
+        @click="showEditVersionModal = true"
       >
         Modifier la version
       </button>
-    </h1>
+    </div>
+
 
     <p class="state fr-subtitle">
       <ParcellaireState :record="record" />
@@ -137,6 +141,16 @@ header {
 
   & > p.state {
     margin: 0 0 0.5rem;
+  }
+
+  .heading {
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+  }
+
+  .operator-name {
+    margin: 0;
   }
 }
 

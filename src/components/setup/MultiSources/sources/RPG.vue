@@ -50,9 +50,12 @@ const importRPG = async () => {
 
 <template>
   <div>
+    <h3 class="fr-sr-only">Import Registre Parcellaire Graphique (RPG)</h3>
+
     <p>
       Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit.
     </p>
+
     <form @submit.prevent="importRPG">
       <div class="fr-input-group" :class="{'fr-input-group--disabled': loading, 'fr-input-group--error': !!erreur}">
         <label class="fr-label" for="input-pacage">Numéro d'identification PAC (numéro de PACAGE)</label>

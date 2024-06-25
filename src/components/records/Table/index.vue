@@ -9,7 +9,9 @@
       </li>
     </ul>
 
-    <table @mouseout="hoveredFeatureId = null" id="parcellaire-table" aria-describedby="operator-features-summary-global">
+    <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
+
+    <table @mouseout="hoveredFeatureId = null" aria-describedby="operator-features-summary-global" id="parcellaire-table">
       <caption>
         Parcelles agricoles {{ record.version_name }} de l'opérateur {{ operator.nom }}
       </caption>
@@ -84,9 +86,7 @@
           </td>
         </tr>
       </tbody>
-      <tbody v-else>
-        <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
-      </tbody>
+      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
     </table>
 
     <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">

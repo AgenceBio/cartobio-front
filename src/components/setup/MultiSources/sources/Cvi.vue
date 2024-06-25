@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h3 class="fr-sr-only">Import Casier Viticole Informatisé (CVI)</h3>
+
     <div v-if="errors.length" class="fr-alert fr-alert--error fr-mb-6w">
       <p v-for="error in errors" :key="error">{{ error }}</p>
     </div>

@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h5 class="fr-h5">Ajouter une parcelle</h5>
+    <h3 class="fr-h5">Ajouter une parcelle</h3>
 
     <form @submit.prevent="">
       <article class="fr-pl-5w fr-mb-5w">

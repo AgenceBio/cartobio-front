@@ -54,10 +54,12 @@ onMounted(() => {
     ...props.options,
     locale: {
       'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
+      'Marker.Title': 'Marqueur',
       'Map.Title': 'Cartographie du parcellaire',
       'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',
       'NavigationControl.ZoomIn': 'Zoomer',
       'NavigationControl.ZoomOut': 'Dézoomer',
+      'Popup.Close': 'Fermer l\'infobulle'
     }
   })
 
@@ -92,8 +94,6 @@ onMounted(() => {
 
     if (props.mapId) {
       const canvas = map.value.getCanvas()
-      // until is merged and released https://github.com/maplibre/maplibre-gl-js/pull/4147
-      canvas.setAttribute('aria-label', map.value._getUIString('Map.Title'))
       canvas.setAttribute('id', props.mapId)
     }
 

@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h3 class="fr-sr-only">Import Telepac</h3>
+
     <div class="fr-upload-group fr-mb-5w">
       <input type="file" ref="fileInput" accept=".zip,.xml" @change="handleFileUpload" hidden />
       <button class="fr-btn fr-icon-upload-line fr-btn--icon-left" @click="fileInput.click()">
