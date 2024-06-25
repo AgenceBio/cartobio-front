@@ -17,9 +17,9 @@ import { useUserStore } from "@/stores/user.js"
 const { VUE_APP_MATOMO_SITE_ID:siteId = '58', VUE_APP_API_ENDPOINT } = import.meta.env
 const { VUE_APP_SENTRY_DSN } = import.meta.env
 
+const app = createApp(App)
 const pinia = createPinia()
 const head = createHead()
-const app = createApp(App)
 const router = createRouter({
   routes,
   history: createWebHistory(),
