@@ -48,6 +48,7 @@ useHead({ title, titleTemplate: '%s — CartoBio' })
 
 @import '@gouvfr/dsfr/dsfr.css';
 @import '@gouvfr/dsfr/utility/icons/icons.css';
+@import '@/styles/variables.css';
 
 a[aria-disabled] {
   --text-action-high-blue-france: gray;
