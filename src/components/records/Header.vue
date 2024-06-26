@@ -9,18 +9,16 @@
 
       <button
         v-if="!disableActions && permissions.canEditVersion"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
         @click="showEditVersionModal = true"
       >
         Modifier la version
       </button>
     </div>
 
-
     <p class="state fr-subtitle">
       <ParcellaireState :record="record" />
     </p>
-
 
     <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--sm fr-btns-group--inline-sm fr-btns-group--icon-left">
       <nav role="navigation" class="fr-translate fr-nav">
@@ -63,6 +61,13 @@
       <button v-if="hasFeatures" class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2" @click="exportModal = true">
         Exporter
       </button>
+
+      <button v-if="!disableActions && permissions.canEditVersion"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden-sm"
+          @click="showEditVersionModal = true"
+        >
+          Modifier la version
+        </button>
     </div>
   </header>
 
