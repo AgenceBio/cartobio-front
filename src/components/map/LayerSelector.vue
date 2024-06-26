@@ -55,7 +55,7 @@ import { useTélépac } from "@/referentiels/pac.js";
 
 const showMenu = ref(false)
 const layersMenuRef = ref(null)
-const { campagne: currentCampagne } = useTélépac()
+const { preloadedCampagne: currentCampagne } = useTélépac()
 
 defineProps({
   fond: {
