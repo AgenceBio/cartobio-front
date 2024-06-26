@@ -173,6 +173,8 @@ watch(show, (value) => {
     padding: 0.75rem !important;
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
+
+    --hover-tint: var(--background-default-grey-hover) !important;
   }
 }
 </style>

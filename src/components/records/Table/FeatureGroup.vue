@@ -328,5 +328,9 @@ td:has(table) {
 
 table tr[aria-current="location"] {
   background-color: var(--background-alt-blue-france-hover) !important;
+
+  button, :deep(button) { /* same pattern as in [numeroBio]/index.vue */
+    --hover-tint: var(--background-alt-blue-france-active);
+  }
 }
 </style>
