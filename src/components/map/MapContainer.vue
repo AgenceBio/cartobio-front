@@ -51,9 +51,16 @@ onMounted(() => {
     hash: false,
     bounds: props.bounds,
     padding: 50,
+    // interactiveness
+    dragRotate: false,
+    touchPitch: false,
+    cooperativeGestures: false /* ça serait à mieux tester pour l'activer, de préférence seulement sur mobile, c'est le seul cas où le scroll est capturé par la carte */,
     ...props.options,
     locale: {
       'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
+      'CooperativeGesturesHandler.MacHelpText': 'Utilisez la touche ⌘ combinée à un geste multi-touch pour zoomer sur la carte',
+      'CooperativeGesturesHandler.WindowsHelpText': 'Utilisez la touche Control combinée au scroll de souris pour zoomer sur la carte',
+      'CooperativeGesturesHandler.MobileHelpText': 'Utilisez deux doigts pour vous déplacer sur la carte',
       'Marker.Title': 'Marqueur',
       'Map.Title': 'Cartographie du parcellaire',
       'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',

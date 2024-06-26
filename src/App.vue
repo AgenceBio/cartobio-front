@@ -48,6 +48,7 @@ useHead({ title, titleTemplate: '%s — CartoBio' })
 
 @import '@gouvfr/dsfr/dsfr.css';
 @import '@gouvfr/dsfr/utility/icons/icons.css';
+@import '@/styles/variables.css';
 
 a[aria-disabled] {
   --text-action-high-blue-france: gray;
@@ -59,11 +60,22 @@ a[aria-disabled] {
 .clickable {
   cursor: pointer;
 }
-tr.clickable:hover {
-  background-color: var(--background-alt-blue-france-hover) !important;
-}
-tr.clickable:hover th:first-of-type {
-  text-decoration: underline;
+
+.fr-table {
+  &.table-data table {
+    @media (width >= 62em) {
+      display: table;
+    }
+  }
+
+  table {
+    tr.clickable:hover {
+      background-color: var(--background-alt-blue-france-hover) !important;
+    }
+    tr.clickable:hover th:first-of-type {
+      text-decoration: underline;
+    }
+  }
 }
 
 .fr-col--center,

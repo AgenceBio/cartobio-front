@@ -93,7 +93,10 @@ const mapBounds = computed(() => bounds(props.featureCollection))
 .map {
   background: #ccc;
   height: 276px;
-  max-width: 40vw;
   width: 100%;
+
+  @media (width >= 78em) {
+    max-width: 40vw;
+  }
 }
 </style>

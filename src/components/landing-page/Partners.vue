@@ -72,19 +72,35 @@ defineProps({
     flex-wrap: wrap;
 
     li {
-      width: 30%;
+      @media (width < 36rem) {
+        flex: 1;
+      }
+      @media (width >= 36rem) {
+        width: 30%;
+      }
     }
   }
 
   &.logos--sponsors {
     gap: 2rem;
 
-    li:first-child {
-      text-align: left;
+    @media (width < 36rem) {
+      flex-wrap: wrap;
+      align-items: center;
+
+      li {
+        flex: 1;
+      }
     }
 
-    li:last-child {
-      text-align: right;
+    @media (width >= 36rem) {
+      li:first-child {
+        text-align: left;
+      }
+
+      li:last-child {
+        text-align: right;
+      }
     }
   }
 }
