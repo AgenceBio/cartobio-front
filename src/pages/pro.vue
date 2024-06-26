@@ -12,7 +12,7 @@
           <div class="fr-card fr-card--no-border">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h1>
+                <h1 class="fr-h2 fr-h1-sm">
                   Agriculteurs·rices, gagnez du temps sur vos tâches administratives
                 </h1>
 
@@ -40,20 +40,20 @@
         </div>
       </div>
 
-      <div class="advantages fr-grid-row fr-grid-row--align-center fr-text--bold fr-py-9v">
-        <div class="fr-col-4">
+      <ul class="advantages fr-text--bold fr-py-9v">
+        <li>
           <img src="@gouvfr/dsfr/artwork/pictograms/digital/calendar.svg" role="illustration" alt="" />
           Rapide
-        </div>
-        <div class="fr-col-4">
+        </li>
+        <li>
           <img src="@gouvfr/dsfr/artwork/pictograms/map/map.svg" role="illustration" alt="" />
           Efficace
-        </div>
-        <div class="fr-col-4">
+        </li>
+        <li>
           <img src="@gouvfr/dsfr/artwork/pictograms/system/success.svg" role="illustration" alt="" />
           Gratuit
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </div>
 
@@ -140,13 +140,13 @@ h1, h2, :deep(h2) {
 }
 
 .advantages {
-  flex-direction: column;
+  display: flex;
   align-items: center;
-}
+  list-style: none;
 
-@media (min-width: 36em) {
-  .advantages {
-    flex-direction: row;
+  li {
+    flex: 1;
+    text-align: center;
   }
 }
 
