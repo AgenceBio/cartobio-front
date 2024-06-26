@@ -18,13 +18,13 @@
         <div class="fr-footer__content">
           <div class="fr-footer__content-desc">
             <p>
-              <b class="fr-icon-leaf-fill fr-icon--sm fr-icon--left">Aidez-nous à améliorer ce service !</b><br />
+              <strong class="fr-icon-leaf-fill fr-icon--sm fr-icon--left fr-mb-2v">Aidez-nous à améliorer ce service !</strong><br />
               Si vous rencontrez un problème,
               vous n'arrivez pas à finaliser une action
               ou vous avez un commentaire sur cette page,
               envoyez-nous un message à l'adresse suivante :
             </p>
-            <p>
+            <p class="fr-my-2v">
               <a class="fr-btn fr-icon-mail-fill fr-btn--icon-left" :href="'mailto:support-cartobio@agencebio.org?subject=' + mailtoSubject">support-cartobio@agencebio.org</a>
             </p>
             <p class="fr-text--bold">Merci !</p>
