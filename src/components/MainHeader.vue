@@ -25,7 +25,7 @@
             <div class="fr-header__brand-top">
               <div class="fr-header__logo">
                 <p class="fr-logo">
-                  Agence Bio
+                  République<br>française
                 </p>
               </div>
 
@@ -38,7 +38,7 @@
             <div class="fr-header__service">
               <router-link :to="startPage" rel="home">
                 <p class="fr-header__service-title">
-                  CartoBio <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">beta</span>
+                  CartoBio
                 </p>
               </router-link>
 
