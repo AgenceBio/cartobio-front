@@ -1,6 +1,6 @@
 <template>
   <ValidationErrors />
-  <div class="fr-table fr-table--bordered fr-table--no-caption fr-my-6v">
+  <div class="fr-table table-data fr-table--bordered fr-table--no-caption fr-my-6v">
     <ul class="fr-tags-group fr-tags-group--tags fr-my-6v" v-if="permissions.canViewAnnotations">
       <li :key="id" v-for="{ active, id, count, label, required } in tags">
         <button class="fr-tag" :class="{'fr-tag--dismiss': active, [`tag--${id}`]: true, 'fr-icon-warning-fill fr-tag--icon-left': required }" :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`" @click="handleFilterClick(id)">
@@ -256,9 +256,6 @@ function handleFilterClick (id) {
 }
 
 .fr-table table {
-  display: table;
-  overflow: initial;
-
   & th:empty,
   & td:empty {
     padding: 0;
