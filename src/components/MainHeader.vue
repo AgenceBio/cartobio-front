@@ -32,6 +32,19 @@
               <div class="fr-header__operator">
                 <img src="@/assets/logo-agence-bio.svg" class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
                   alt="L'Agence Bio" />
+
+                <router-link :to="startPage" rel="home" class="fr-hidden-lg">
+                  <p class="fr-header__service-title">
+                    CartoBio
+                  </p>
+                </router-link>
+              </div>
+
+              <div class="fr-header__navbar">
+                <button title="Menu" class="fr-btn--menu fr-btn" id="mobile-menu-button" :data-fr-opened="menuIsOpen"
+                  aria-controls="mobile-menu" aria-haspopup="menu" @click="menuIsOpen = !menuIsOpen">
+                  Menu
+                </button>
               </div>
             </div>
 
@@ -42,15 +55,10 @@
                 </p>
               </router-link>
 
-              <p class="fr-header__service-tagline fr-hidden fr-unhidden-sm">Parcellaire cultivé en Agriculture
-                Biologique</p>
-            </div>
-
-            <div class="fr-header__navbar">
-              <button title="Menu" class="fr-btn--menu fr-btn" id="mobile-menu-button" :data-fr-opened="menuIsOpen"
-                aria-controls="mobile-menu" aria-haspopup="menu" @click="menuIsOpen = !menuIsOpen">
-                Menu
-              </button>
+              <p class="fr-header__service-tagline">
+                Parcellaire cultivé en Agriculture
+                Biologique
+              </p>
             </div>
           </div>
 
@@ -90,45 +98,44 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="fr-header__menu fr-modal fr-hidden-lg" id="mobile-menu" :class="{ 'fr-modal--opened': menuIsOpen }"
+    <div class="fr-header__menu fr-modal fr-hidden-lg" id="mobile-menu" :class="{ 'fr-modal--opened': menuIsOpen }"
         aria-labelledby="mobile-menu-button">
-        <div class="fr-container">
-          <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
-            Fermer
-          </button>
-          <div class="fr-header__menu-links" />
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
-            <ul class="fr-nav__list">
-              <li class="fr-nav__item" v-if="isLogged">
-                <router-link :to="startPage" class="fr-nav__link fr-btn--icon-left" :class="roleIcon"
-                  aria-current="false">
-                  {{ user.nom }}
-                </router-link>
-              </li>
-              <li class="fr-nav__item">
-                <a :href="documentationPage" target="_blank" rel="noopener"
-                  class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
-                  Aide<lien-externe />
-                </a>
-              </li>
-              <li class="fr-nav__item">
-                <router-link to="/projet" class="fr-nav__link">
-                  À propos de CartoBio
-                </router-link>
-              </li>
-              <li class="fr-nav__item fr-hidden-lg">
-                <router-link v-if="isLogged" to="/logout" class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
-                  Déconnexion
-                </router-link>
-                <router-link v-else to="/login" aria-role="button"
-                  class="fr-nav__link  fr-btn--icon-left fr-icon-account-circle-fill">
-                  Connexion
-                </router-link>
-              </li>
-            </ul>
-          </nav>
-        </div>
+      <div class="fr-container">
+        <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
+          Fermer
+        </button>
+        <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+          <ul class="fr-nav__list">
+            <li class="fr-nav__item" v-if="isLogged">
+              <router-link :to="startPage" class="fr-nav__link fr-btn--icon-left" :class="roleIcon"
+                aria-current="false">
+                {{ user.nom }}
+              </router-link>
+            </li>
+            <li class="fr-nav__item">
+              <a :href="documentationPage" target="_blank" rel="noopener"
+                class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill">
+                Aide<lien-externe />
+              </a>
+            </li>
+            <li class="fr-nav__item">
+              <router-link to="/projet" class="fr-nav__link">
+                À propos de CartoBio
+              </router-link>
+            </li>
+            <li class="fr-nav__item fr-hidden-lg">
+              <router-link v-if="isLogged" to="/logout" class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line">
+                Déconnexion
+              </router-link>
+              <router-link v-else to="/login" aria-role="button"
+                class="fr-nav__link  fr-btn--icon-left fr-icon-account-circle-fill">
+                Connexion
+              </router-link>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
 
@@ -239,21 +246,18 @@ const menuIsOpen = ref(false)
 </script>
 
 <style scoped>
+@media (width < 36em) {
+  .fr-header__service {
+    display: none;
+  }
+
+  .fr-logo:after {
+    display: none;
+  }
+}
+
 .logo {
   width: 3.5rem;
-}
-
-.fr-header__brand {
-  flex-shrink: 0;
-}
-
-.fr-header__brand-top {
-  width: auto;
-}
-
-.fr-header__service {
-  width: auto;
-  box-shadow: none;
 }
 
 .tool-username {
