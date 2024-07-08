@@ -395,8 +395,8 @@ export const useCartoBioStorage = defineStore('storage', () => {
             await recordStore.ready(recordId)
           } else if (records.value[recordId]) {
             await addRecord(recordId) // update storage
-          } else if (operatorStore.records.find(r => r.record_id === recordId)) {
-            await operatorStore.ready(recordId)
+          } else if (operatorStore.records?.find(r => r.record_id === recordId)) {
+            await operatorStore.ready(operatorStore.records.find(r => r.record_id === recordId).numerobio)
           }
         } catch (e) {
           if (e.response?.status === 403 || e.response?.status === 401) {
