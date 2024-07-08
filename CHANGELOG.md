@@ -1,3 +1,7 @@
+# [2.25.0](https://github.com/AgenceBio/cartobio-front/compare/v2.25.1...v2.25.4) (2023-07-08)
+* Corrections de bugs divers d'accessibilité
+* Correction d'un bug sur la synchronisation
+
 # [2.25.0](https://github.com/AgenceBio/cartobio-front/compare/v2.25.0...v2.25.1) (2023-06-24)
 
 * Permissions sur l'édition et la suppression de versions ([d11abc7](https://github.com/AgenceBio/cartobio-front/commit/d11abc7))
