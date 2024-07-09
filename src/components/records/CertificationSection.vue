@@ -25,7 +25,8 @@ const canEndAudit = computed(() => permissions.isOc && recordStore.hasFeatures &
 function handleSaveAudit ({ patch }) {
   recordStore.updateInfo({
     ...patch,
-    certification_state: CertificationState.AUDITED
+    certification_state: CertificationState.AUDITED,
+    audit_date: new Date().toISOString().split('T')[0]
   })
 
   showSaveAuditModal.value = false
@@ -106,7 +107,7 @@ function handleCertify ({ patch }) {
   </div>
 
   <Teleport to="body">
-    <SaveAuditModal :operator="operator" :record="record" v-if="showSaveAuditModal" @close="showSaveAuditModal = false" @submit="handleSaveAudit" />
+    <SaveAuditModal v-if="showSaveAuditModal" @close="showSaveAuditModal = false" @submit="handleSaveAudit" />
     <CertificationModal :operator="operator" :record="record" v-if="showCertificationModal" @close="showCertificationModal = false" @submit="handleCertify" />
   </Teleport>
 </template>

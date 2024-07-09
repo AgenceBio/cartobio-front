@@ -33,6 +33,19 @@ class SyncQueue {
     this.ifUnmodifiedSince = ifUnmodifiedSince
   }
 
+  mergeAuditDateOperations() {
+    this.operations = this.operations.reduce((acc, op) => {
+      if (op.action === SyncOperation.ACTIONS.RECORD_INFO && 'audit_date' in op.payload) {
+        const firstAuditDateOp = acc.find(op => op.action === SyncOperation.ACTIONS.RECORD_INFO && 'audit_date' in op.payload)
+        if (firstAuditDateOp) {
+          firstAuditDateOp.payload.audit_date = op.payload.audit_date
+        }
+      }
+
+      return acc.concat([op])
+    }, [])
+  }
+
   /**
    * @param recordId
    * @param {Date} unmodifiedSince
@@ -72,6 +85,7 @@ class SyncQueue {
    * @param recordId
    */
   async sync(recordId) {
+    this.mergeAuditDateOperations()
     let updated = this.ifUnmodifiedSince;
     while (updated !== null) {
       this.ifUnmodifiedSince = updated
@@ -190,10 +204,11 @@ export const useCartoBioStorage = defineStore('storage', () => {
    */
   const operators = computed(() =>
     Object.fromEntries(Object.entries(operatorsStorage.value).map(
-      ([numeroBio, { operator, records }]) => [numeroBio, {
+      ([numeroBio, { operator, records: recordsSummary }]) => [numeroBio, {
         operator,
-        records: records?.map(r => {
-          const updatedRecord = records[r.record_id]
+        records: recordsSummary?.map(r => {
+          if (!syncQueues.value[r.record_id]) return r
+          const updatedRecord = records.value[r.record_id]
           if (!updatedRecord) return r
 
           r.version_name = updatedRecord.version_name
@@ -227,6 +242,11 @@ export const useCartoBioStorage = defineStore('storage', () => {
    * @type {Ref<UnwrapRef<Set<string>>>} - list of record ids that have conflicts
    */
   const conflicts = ref(/** @type Set<string> */new Set())
+
+  /**
+   * @type {Ref<UnwrapRef<Set<string>>>} - list of record ids that have audit_date conflicts with other verions
+   */
+  const dateConflicts = ref(/** @type Set<string> */new Set())
 
   /**
    * @type {RemovableRef<{
@@ -391,6 +411,8 @@ export const useCartoBioStorage = defineStore('storage', () => {
         try {
           await queue.sync(recordId)
           delete syncQueues.value[recordId]
+          conflicts.value.delete(recordId)
+          dateConflicts.value.delete(recordId)
           if (recordStore.record.record_id === recordId) {
             await recordStore.ready(recordId)
           } else if (records.value[recordId]) {
@@ -400,6 +422,11 @@ export const useCartoBioStorage = defineStore('storage', () => {
           }
         } catch (e) {
           if (e.response?.status === 403 || e.response?.status === 401) {
+            continue
+          }
+
+          if (e.response?.status === 400 && e.response.data.message === 'Un parcellaire ne peut pas avoir deux versions avec la même date d\'audit.') {
+            dateConflicts.value.add(recordId)
             continue
           }
 
@@ -432,6 +459,7 @@ export const useCartoBioStorage = defineStore('storage', () => {
     online,
     // state ref
     conflicts,
+    dateConflicts,
     // store methods
     addRecord,
     clearRecord,

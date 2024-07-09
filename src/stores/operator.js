@@ -60,6 +60,10 @@ export const useOperatorStore = defineStore('operator', () => {
       ({ operator: operatorData, records: recordsData } = storage.operators[numeroBio])
     } else {
       ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio))
+      recordsData = recordsData.map(serverR => storage.syncQueues[serverR.record_id] ?
+          storage.operators[numeroBio]?.records.find(storageR => storageR.record_id === serverR.record_id) || serverR
+          : serverR
+      )
     }
 
     operator.value = operatorData
@@ -87,7 +91,10 @@ export const useOperatorStore = defineStore('operator', () => {
 
     // Update storage if requested or if already present
     if (store || (storage.operators[numeroBio])) {
-      storage.operatorsStorage[numeroBio] = { operator: operatorData, records: recordsData }
+      storage.operatorsStorage = {
+        ...storage.operatorsStorage,
+        [numeroBio]: { operator: operatorData, records: recordsData }
+      }
     }
 
     return { operator: operatorData, records: recordsData }
