@@ -25,7 +25,8 @@ const canEndAudit = computed(() => permissions.isOc && recordStore.hasFeatures &
 function handleSaveAudit ({ patch }) {
   recordStore.updateInfo({
     ...patch,
-    certification_state: CertificationState.AUDITED
+    certification_state: CertificationState.AUDITED,
+    audit_date: new Date().toISOString().split('T')[0]
   })
 
   showSaveAuditModal.value = false
