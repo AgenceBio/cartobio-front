@@ -106,7 +106,7 @@ function handleCertify ({ patch }) {
   </div>
 
   <Teleport to="body">
-    <SaveAuditModal :operator="operator" :record="record" v-if="showSaveAuditModal" @close="showSaveAuditModal = false" @submit="handleSaveAudit" />
+    <SaveAuditModal v-if="showSaveAuditModal" @close="showSaveAuditModal = false" @submit="handleSaveAudit" />
     <CertificationModal :operator="operator" :record="record" v-if="showCertificationModal" @close="showCertificationModal = false" @submit="handleCertify" />
   </Teleport>
 </template>
