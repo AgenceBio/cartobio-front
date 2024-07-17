@@ -88,8 +88,8 @@ app
     enableLinkTracking: true,
     discardHashTag: true,
     enableHeartBeatTimer: 15,
-    trackerUrl: 'https://cartobio.agencebio.org/s/',
-    trackerScriptUrl: 'https://cartobio.agencebio.org/s/index.js',
+    trackerUrl: 'https://matomo.agencebio.org/matomo.php',
+    trackerScriptUrl: 'https://matomo.agencebio.org/matomo.js',
     trackSiteSearch: (to) => to.path === '/certification/exploitations' && to.query.search || null,
   })
 
