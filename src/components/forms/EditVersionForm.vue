@@ -21,7 +21,17 @@ useFocus(autofocusedElement, { initialValue: true })
 const patch = reactive({
   version_name: record.version_name,
   audit_date: record.audit_date,
+  certification_date_debut: record.certification_date_debut,
   certification_date_fin: record.certification_date_fin
+})
+
+const datesCertificationConflict = computed(() => {
+  if (!patch.certification_date_debut || !patch.certification_date_fin) {
+    return false;
+  }
+  const debutCertificationDate = new Date(patch.certification_date_debut)
+  const finCertificationDate = new Date(patch.certification_date_fin)
+  return debutCertificationDate >= finCertificationDate
 })
 
 const dateConflict = computed(() => {
@@ -38,6 +48,7 @@ function save() {
   recordStore.updateInfo({
     version_name: patch.version_name,
     ...(patch.audit_date && { audit_date: patch.audit_date }),
+    ...(patch.certification_date_debut && { certification_date_debut: patch.certification_date_debut }),
     ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin })
   })
 
@@ -79,19 +90,25 @@ function save() {
 
       <div v-if="record.certification_state === 'CERTIFIED' && permissions.canChangeCertificationDate" class="fr-input-group">
         <label for="certification_date_debut" class="fr-input-group__label">Date de début de validité du certificat</label>
-        <input type="date" id="certification_date_debut" class="fr-input" :value="record.certification_date_debut" />
+        <input type="date" id="certification_date_debut" class="fr-input" v-model="patch.certification_date_debut" required />
       </div>
 
       <div v-if="record.certification_state === 'CERTIFIED' && permissions.canChangeCertificationDate" class="fr-input-group">
         <label for="certification_date_fin" class="fr-input-group__label">Date de fin de validité du certificat</label>
-        <input type="date" id="certification_date_fin" class="fr-input" v-model="patch.certification_date_fin" />
+        <input type="date" id="certification_date_fin" class="fr-input" v-model="patch.certification_date_fin" required />
+      </div>
+
+      <div v-if="datesCertificationConflict" class="fr-alert fr-alert--error fr-mb-2w">
+        <p class="fr-text--sm">
+          La date de début de validé du certificat doit être antérieure à la date de fin de validité de celui-ci.
+        </p>
       </div>
     </form>
 
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline">
         <li>
-          <button type="submit" class="fr-btn" form="version-edit-form" :disabled="dateConflict">Enregistrer</button>
+          <button type="submit" class="fr-btn" form="version-edit-form" :disabled="dateConflict || datesCertificationConflict">Enregistrer</button>
         </li>
         <li>
           <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>
