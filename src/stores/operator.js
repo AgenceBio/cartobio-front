@@ -28,9 +28,9 @@ export const useOperatorStore = defineStore('operator', () => {
    */
   const operator = ref(initialState)
   /**
-   * @type {Ref<UnwrapRef<null | NormalizedRecordSummary[]>>}
+   * @type {Ref<UnwrapRef<NormalizedRecordSummary[]>>}
    */
-  const records = ref(null)
+  const records = ref([])
 
   /**
    * @type {ComputedRef<NormalizedRecordSummary[]>}
@@ -72,7 +72,7 @@ export const useOperatorStore = defineStore('operator', () => {
 
   function $reset () {
     operator.value = { ...initialState }
-    records.value = null
+    records.value = []
   }
 
   watch(operator, () => {
