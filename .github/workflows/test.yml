@@ -1,6 +1,7 @@
 name: Build and deploy (test)
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "test"
@@ -12,7 +13,6 @@ on:
       - '*.example'
       - 'netlify.toml'
       - '*.md'
-  workflow_dispatch:
 
 jobs:
   deploy:
