@@ -1,6 +1,6 @@
 # CartoBio
 
-Application de suivi et de certificaton du parcellaire bio à destination des _opérateurs bio_[^1] et aux _organismes de certification_.
+Application de suivi et de certificaton du parcellaire bio à destination des _opérateurs bio_[^1] et des _organismes de certification_.
 
 Cette application implémente [la maquette Figma CartoBio][maquette-figma] ainsi que le [Système de Design de l'État](https://www.systeme-de-design.gouv.fr/) avec [Vue 3], [Vue Router], [Vue Pages] et [Pinia].
 
