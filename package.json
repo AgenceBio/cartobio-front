@@ -1,6 +1,6 @@
 {
   "name": "@agencebio/cartobio-front",
-  "version": "2.25.6",
+  "version": "2.26.0",
   "private": true,
   "type": "module",
   "scripts": {
