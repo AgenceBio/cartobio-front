@@ -15,6 +15,15 @@ export const apiClient = axios.create({ baseURL, timeout: 10000 })
 
 /**
  *
+ * @returns {Promise<String>}
+ */
+export async function getVersion () {
+  const { data: {version: version }} = await apiClient.get('/version')
+  return version
+}
+
+/**
+ *
  * @param {{ evv: String, numeroBio: String }} params
  * @returns {Promise<FeatureCollection>}
  */

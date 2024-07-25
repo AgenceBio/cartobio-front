@@ -14,6 +14,10 @@ export default defineConfig(({ mode }) => {
   return {
     envPrefix: 'VUE_APP_',
 
+    define: {
+      '__APP_VERSION__': JSON.stringify(require('./package.json').version)
+    },
+
     build: {
       sourcemap: true,
       rollupOptions: {

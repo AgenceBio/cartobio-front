@@ -46,9 +46,9 @@
           </li>
           <li class="fr-footer__bottom-item fr-footer__bottom-link">
             Code source :
-            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front">interface<lien-externe /></a>
+            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front">interface<lien-externe /></a> {{ versions.front }}
               et
-            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front"><abbr title="Application Programmable Interface" lang="en">API</abbr><lien-externe /></a>
+            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front"><abbr title="Application Programmable Interface" lang="en">API</abbr><lien-externe /></a> {{ versions.api }}
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/accessibilite">Accessibilité: non conforme</router-link>
@@ -69,8 +69,18 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { onMounted, computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
+import { getVersion } from '@/cartobio-api.js';
+
+const versions = reactive({
+  front: __APP_VERSION__,
+  api: ''
+})
+
+onMounted(async () => {
+  versions.api = await getVersion()
+})
 
 const route = useRoute()
 const mailtoSubject = computed(() => encodeURIComponent(`À propos de la page ${route.path}`))
