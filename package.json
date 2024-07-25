@@ -47,7 +47,7 @@
     "vue-matomo": "^4.1.0",
     "vue-router": "^4.0.12",
     "vue3-toastify": "^0.1.11",
-    "xlsx": "git+https://git.sheetjs.com/sheetjs/sheetjs.git"
+    "xlsx": "git+https://git.sheetjs.com/sheetjs/sheetjs.git#2669c7c"
   },
   "devDependencies": {
     "@agencebio/cartobio-types": "^1.6.1",
