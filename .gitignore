@@ -5,3 +5,4 @@ dist
 dist-webcomponent
 dist-ssr
 *.local
+.env
