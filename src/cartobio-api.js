@@ -44,10 +44,12 @@ export async function searchOperators ({ input, page, sort, order }) {
 }
 
 /**
+ * @param {number?} limit
+ * @param {number?} offset
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
-export async function getUserOperators () {
-  const { data } = await apiClient.get(`/v2/operators`)
+export async function getUserOperators (limit, offset) {
+  const { data } = await apiClient.get(`/v2/operators`, { params: { limit, offset } })
 
   return data
 }
