@@ -48,7 +48,7 @@
             Code source :
             <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front">interface<lien-externe /></a> {{ versions.front }}
               et
-            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front"><abbr title="Application Programmable Interface" lang="en">API</abbr><lien-externe /></a> {{ versions.api }}
+            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-api"><abbr title="Application Programmable Interface" lang="en">API</abbr><lien-externe /></a> {{ versions.api }}
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/accessibilite">Accessibilité: non conforme</router-link>
