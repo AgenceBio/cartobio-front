@@ -6,3 +6,4 @@ dist-webcomponent
 dist-ssr
 *.local
 .env
+.idea
