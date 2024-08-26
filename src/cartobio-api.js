@@ -11,7 +11,7 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
  * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
  */
 
-export const apiClient = axios.create({ baseURL, timeout: 10000 })
+export const apiClient = axios.create({ baseURL, timeout: 20000 })
 
 /**
  *
