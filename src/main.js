@@ -98,6 +98,15 @@ const userStore = useUserStore()
 userStore.enablePersistance()
 
 app.config.errorHandler = (error) => {
+  if (error?.response?.data?.code === 'EXPIRED_CREDENTIALS') {
+    const { path, params } = router.currentRoute.value
+
+    userStore.logout()
+    router.replace({ path, params});
+
+    return;
+  }
+
   toast.error('Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.')
   throw error;
 }
@@ -167,7 +176,7 @@ router.beforeEach(async (to) => {
           AxiosError.ERR_NETWORK
         ].includes(error.code)
     ) {
-      toast.error('Une erreur de réseau est survenue. Si vous connexion ' +
+      toast.error('Une erreur de réseau est survenue. Si votre connexion ' +
           'est instable, vous pouvez passer en mode hors-ligne.')
       return false
     }
@@ -228,7 +237,7 @@ router.afterEach(async() => {
           AxiosError.ERR_NETWORK
         ].includes(error.code)
     ) {
-      toast.error('Une erreur de réseau est survenue. Si vous connexion ' +
+      toast.error('Une erreur de réseau est survenue. Si votre connexion ' +
           'est instable, vous pouvez passer en mode hors-ligne.')
       return
     }
