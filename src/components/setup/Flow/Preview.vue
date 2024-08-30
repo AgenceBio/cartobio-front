@@ -21,7 +21,7 @@
     <div v-if="operatorStore.records?.length" class="fr-alert fr-alert--info fr-mb-3w">
       Récupération des informations
       <p>
-        Vous pouvez récupérer les informations renseignées sur le dernier parcellaire certifié&nbsp;:
+        Vous pouvez récupérer les informations renseignées sur le dernier parcellaire créé&nbsp;:
         dates et niveaux de conversion, parcelles ajoutées manuellement, variété des parcelles de la culture principale,
         commentaires et noms de parcelle modifiés.
       </p>
