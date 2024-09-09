@@ -81,8 +81,7 @@ const props = defineProps({
 })
 
 const operatorStore = useOperatorStore()
-const lastCreatedRecord = computed(() => operatorStore.records.toSorted()[operatorStore.records.length - 1])
-
+const lastCreatedRecord = computed(() => operatorStore.records.toSorted((recordA, recordB) => new Date(recordB.created_at) - new Date(recordA.created_at))[0])
 const importPrevious = ref()
 
 const surfaceTotale = computed(() => inHa(legalProjectionSurface(props.featureCollection)))
