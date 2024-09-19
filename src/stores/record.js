@@ -125,11 +125,26 @@ export const useRecordStore = defineStore('record', () => {
    * @return {Promise<NormalizedRecord>}
    */
   async function duplicate(id) {
+    const uuidRegex = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const recordSummary = operatorStore.records.find(record => record.record_id === id)
     const record = await getRecord(id)
+
     const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
       version_name: `Copie de ${record.version_name}`,
-      parcelles: record.parcelles,
+      parcelles: {
+        ...record.parcelles,
+        features: record.parcelles.features.map((p) => ({
+          ...p,
+          properties: {
+            ...p.properties,
+            cultures: p.properties.cultures.map((c) => (
+              {
+                ...c,
+                id: c.id && uuidRegex.test(c.id) ? c.id : crypto.randomUUID()
+              }))
+          }
+        })),
+      },
       metadata: {
         provenance: window.location.host,
         source: 'Copie de version existante',
