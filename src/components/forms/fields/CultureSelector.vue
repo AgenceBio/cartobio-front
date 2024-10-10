@@ -1,46 +1,78 @@
 <template>
-  <fieldset class="culture-group fr-card fr-mb-1w fr-p-2w" v-for="(culture) in uuidedCultures" :key="culture.id">
-    <AsyncCultureTypeSelector :disabled-input="disabledInput" :feature-id="featureId" :culture="culture"
-      :modelValue="culture.CPF" @update:modelValue="$CPF => updateCulture(culture.id, 'CPF', $CPF)" />
+  <fieldset class="culture-group fr-card fr-mb-1w fr-p-2w" v-for="culture in uuidedCultures" :key="culture.id">
+    <AsyncCultureTypeSelector
+      :disabled-input="disabledInput"
+      :feature-id="featureId"
+      :culture="culture"
+      :modelValue="culture.CPF"
+      @update:modelValue="($CPF) => updateCulture(culture.id, 'CPF', $CPF)"
+    />
 
     <div class="fr-input-group">
       <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>
       <div class="fr-hint-text">Précisions sur la culture, le cépage, etc.</div>
       <div class="fr-input-wrap">
-        <input type="text" autocomplete="cartobio-variete" class="fr-input" :id="`variete-${culture.id}`"
-          :value="culture.variete" @input="updateCulture(culture.id, 'variete', $event.target.value)" name="variete"
-          v-bind:disabled="disabledInput" />
+        <input
+          type="text"
+          autocomplete="cartobio-variete"
+          class="fr-input"
+          :id="`variete-${culture.id}`"
+          :value="culture.variete"
+          @input="updateCulture(culture.id, 'variete', $event.target.value)"
+          name="variete"
+          v-bind:disabled="disabledInput"
+        />
       </div>
     </div>
 
     <div class="horizontal-stack">
       <div class="fr-input-group">
         <label class="fr-label" :for="`superficie-${culture.id}`">Superficie (facultatif)</label>
-        <input type="number" min="0" step="0.00001" class="fr-input" :id="`superficie-${culture.id}`"
-          :value="culture.surface" @input="updateCulture(culture.id, 'surface', $event.target.value)" name="surface"
-          v-bind:disabled="disabledInput" />
-        <div class="fr-hint-text">
-          Exprimée en <abbr title="hectare">ha</abbr>.
-        </div>
+        <input
+          type="number"
+          min="0"
+          step="0.00001"
+          class="fr-input"
+          :id="`superficie-${culture.id}`"
+          :value="culture.surface"
+          @input="updateCulture(culture.id, 'surface', $event.target.value)"
+          name="surface"
+          v-bind:disabled="disabledInput"
+        />
+        <div class="fr-hint-text">Exprimée en <abbr title="hectare">ha</abbr>.</div>
       </div>
 
       <div class="fr-input-group">
         <label class="fr-label" :for="`date_semis-${culture.id}`">Date des semis (facultatif)</label>
-        <input type="date" class="fr-input" :id="`date_semis-${culture.id}`" :value="culture.date_semis"
-          @input="updateCulture(culture.id, 'date_semis', $event.target.value)" name="date_semis"
-          v-bind:disabled="disabledInput" />
+        <input
+          type="date"
+          class="fr-input"
+          :id="`date_semis-${culture.id}`"
+          :value="culture.date_semis"
+          @input="updateCulture(culture.id, 'date_semis', $event.target.value)"
+          name="date_semis"
+          v-bind:disabled="disabledInput"
+        />
       </div>
     </div>
 
-    <button type="button" v-if="!disabledInput"
+    <button
+      type="button"
+      v-if="!disabledInput"
       class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line fr-btn--icon-left"
-      :disabled="!canBeDeleted" @click="removeCulture(culture.id)">
+      :disabled="!canBeDeleted"
+      @click="removeCulture(culture.id)"
+    >
       Supprimer
     </button>
   </fieldset>
   é
-  <button type="button" v-if="!disabledInput"
-    class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left" @click="appendEmptyCulture">
+  <button
+    type="button"
+    v-if="!disabledInput"
+    class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
+    @click="appendEmptyCulture"
+  >
     Ajouter une autre culture
   </button>
 </template>
@@ -56,16 +88,15 @@ const props = defineProps({
     required: true,
   },
   featureId: {
-    type: String
+    type: String,
   },
   disabledInput: {
     type: Boolean,
     default: () => false,
-  }
-})
+  },
+});
 
-
-const emit = defineEmits(['change'])
+const emit = defineEmits(["change"]);
 
 const uuidedCultures = computed(() => {
   const uuidRegex =
@@ -103,9 +134,9 @@ function updateCulture(cultureId, field, value) {
   const updatedCultures = uuidedCultures.value.map((culture) =>
     culture.id === cultureId
       ? {
-        ...culture,
-        [field]: value,
-      }
+          ...culture,
+          [field]: value,
+        }
       : culture
   );
 
@@ -127,7 +158,7 @@ function updateCulture(cultureId, field, value) {
   margin-bottom: 1rem;
 }
 
-.horizontal-stack>.fr-input-group {
+.horizontal-stack > .fr-input-group {
   flex-grow: 1;
 }
 </style>

@@ -6,8 +6,13 @@
       Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
     </div>
 
-    <input v-if="disabledInput && fromCodeCpf(culture.CPF)" type="text" v-bind:disabled="disabledInput" class="fr-input"
-      :value="fromCodeCpf(culture.CPF).libelle_code_cpf" />
+    <input
+      v-if="disabledInput && fromCodeCpf(culture.CPF)"
+      type="text"
+      v-bind:disabled="disabledInput"
+      class="fr-input"
+      :value="fromCodeCpf(culture.CPF).libelle_code_cpf"
+    />
 
     <div v-else ref="autocompleteRef"></div>
 
@@ -20,8 +25,8 @@
 </template>
 
 <script setup>
-import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from 'vue';
-import { useFeaturesSetsStore } from '@/stores/features-sets.js'
+import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from "vue";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 
 import { autocomplete } from "@algolia/autocomplete-js";
 import "@algolia/autocomplete-theme-classic";
@@ -44,18 +49,18 @@ const props = defineProps({
   },
   modelValue: {
     type: String,
-    required: true
+    required: true,
   },
   disabledInput: {
     type: Boolean,
-    default: () => false
-  }
-})
+    default: () => false,
+  },
+});
 
-const emit = defineEmits(['update:modelValue'])
-const autocompleteProps = shallowRef(null)
-const autocompleteRef = ref(null)
-const showMore = ref(false)
+const emit = defineEmits(["update:modelValue"]);
+const autocompleteProps = shallowRef(null);
+const autocompleteRef = ref(null);
+const showMore = ref(false);
 
 const featuresSets = useFeaturesSetsStore();
 const errors = computed(() => featuresSets.byFeatureDetail(props.featureId, props.culture.id, true));
@@ -154,11 +159,15 @@ onMounted(() => {
       renderer: { createElement: h, Fragment, render },
     });
 
-    autocompleteProps.value.setQuery?.(requirePrecision.value ? '' : query.value)
+    autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
   }
-})
+});
 
-onBeforeUnmount(() => { if (!props.disabledInput) { autocompleteProps.value.setIsOpen(false) } })
+onBeforeUnmount(() => {
+  if (!props.disabledInput) {
+    autocompleteProps.value.setIsOpen(false);
+  }
+});
 </script>
 
 <style>
