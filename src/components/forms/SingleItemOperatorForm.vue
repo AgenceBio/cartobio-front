@@ -27,26 +27,26 @@
       </div>
 
       <CultureSelector
-        v-if="permissions.canEditParcellaire"
+        v-if="permissions.canChangeCulture"
         :feature-id="feature.properties.id"
         :cultures="patch.cultures"
         @change="($cultures) => (patch.cultures = $cultures)"
       />
 
-      <AccordionGroup v-if="!permissions.canEditParcellaire">
+      <AccordionGroup v-if="!permissions.canChangeCulture">
         <AccordionSection title="Culture">
           <CultureSelector
-            :disabled-input="!permissions.canEditParcellaire"
+            :disabled-input="true"
             :feature-id="feature.properties.id"
             :cultures="patch.cultures"
             @change="($cultures) => (patch.cultures = $cultures)"
           />
         </AccordionSection>
         <AccordionSection title="Annotations d'audit">
-          <div v-if="!permissions.canEditParcellaire">
+          <div>
             <ConversionLevelSelector
               :feature-id="feature.properties.id"
-              :readonly="!permissions.canEditParcellaire"
+              :readonly="true"
               v-model="patch.conversion_niveau"
             />
 
@@ -60,7 +60,7 @@
                 v-model="patch.engagement_date"
                 name="engagement_date"
                 id="engagement_date"
-                :disabled="!permissions.canEditParcellaire"
+                :disabled="true"
               />
             </div>
           </div>

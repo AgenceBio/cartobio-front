@@ -20,7 +20,7 @@
           :value="culture.variete"
           @input="updateCulture(culture.id, 'variete', $event.target.value)"
           name="variete"
-          v-bind:disabled="disabledInput"
+          :disabled="disabledInput"
         />
       </div>
     </div>
@@ -37,7 +37,7 @@
           :value="culture.surface"
           @input="updateCulture(culture.id, 'surface', $event.target.value)"
           name="surface"
-          v-bind:disabled="disabledInput"
+          :disabled="disabledInput"
         />
         <div class="fr-hint-text">Exprimée en <abbr title="hectare">ha</abbr>.</div>
       </div>
@@ -51,7 +51,7 @@
           :value="culture.date_semis"
           @input="updateCulture(culture.id, 'date_semis', $event.target.value)"
           name="date_semis"
-          v-bind:disabled="disabledInput"
+          :disabled="disabledInput"
         />
       </div>
     </div>

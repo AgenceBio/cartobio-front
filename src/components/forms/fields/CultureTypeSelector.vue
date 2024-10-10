@@ -9,7 +9,7 @@
     <input
       v-if="disabledInput && fromCodeCpf(culture.CPF)"
       type="text"
-      v-bind:disabled="disabledInput"
+      :disabled="disabledInput"
       class="fr-input"
       :value="fromCodeCpf(culture.CPF).libelle_code_cpf"
     />
