@@ -5,19 +5,19 @@
 </template>
 
 <script setup>
-import { provide, ref } from 'vue'
+import { provide, ref } from "vue";
 
 const props = defineProps({
   constraintToggle: {
     type: Boolean,
-    default: true
-  }
-})
+    default: true,
+  },
+});
 
-const openElement = ref(null)
+const openElement = ref(null);
 
 if (props.constraintToggle) {
-  provide('openAccordion', openElement)
+  provide("openAccordion", openElement);
 }
 </script>
 

@@ -5,8 +5,15 @@
         <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
           <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
           <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-          <input class="fr-input" id="feature-nom" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameErrors.size }" ref="autofocusedElement" />
-          <div v-for="([id, result]) in nameErrors" :key="id" class="fr-hint-text fr-error-text">
+          <input
+            class="fr-input"
+            id="feature-nom"
+            v-model="patch.NOM"
+            :required="requiredName"
+            :class="{ 'fr-input--error': nameErrors.size }"
+            ref="autofocusedElement"
+          />
+          <div v-for="[id, result] in nameErrors" :key="id" class="fr-hint-text fr-error-text">
             {{ result.errorMessage }}.
           </div>
         </div>
@@ -19,7 +26,12 @@
         </ul>
       </div>
 
-      <CultureSelector v-if="permissions.canChangeCulture" :feature-id="feature.properties.id" :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+      <CultureSelector
+        v-if="permissions.canChangeCulture"
+        :feature-id="feature.properties.id"
+        :cultures="patch.cultures"
+        @change="($cultures) => (patch.cultures = $cultures)"
+      />
 
       <div class="fr-input-group">
         <label class="fr-label" for="feature-commentaires">
@@ -38,77 +50,76 @@
       </div>
     </template>
   </Modal>
-  <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')"/>
+  <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')" />
 </template>
 
-
 <script setup>
-import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
-import { useFocus } from '@vueuse/core'
+import { computed, onBeforeUnmount, reactive, ref, watch } from "vue";
+import { useFocus } from "@vueuse/core";
 
-import Modal from '@/components/widgets/Modal.vue'
-import CultureSelector from '@/components/forms/fields/CultureSelector.vue'
-import { usePermissions } from "@/stores/permissions.js"
-import { useFeaturesSetsStore } from "@/stores/features-sets.js"
-import CancelModal from "@/components/forms/CancelModal.vue"
-import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js"
+import Modal from "@/components/widgets/Modal.vue";
+import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
+import { usePermissions } from "@/stores/permissions.js";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
+import CancelModal from "@/components/forms/CancelModal.vue";
+import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js";
 
 const props = defineProps({
   feature: {
     type: Object,
-    required: true
+    required: true,
   },
   requiredName: {
     type: Boolean,
-    default: false
-  }
-})
-const emit = defineEmits(['submit', 'close'])
+    default: false,
+  },
+});
+const emit = defineEmits(["submit", "close"]);
 
-const permissions = usePermissions()
-const featuresSet = useFeaturesSetsStore()
-const showCancelModal = ref(false)
-const autofocusedElement = ref()
-useFocus(autofocusedElement, { initialValue: true })
+const permissions = usePermissions();
+const featuresSet = useFeaturesSetsStore();
+const showCancelModal = ref(false);
+const autofocusedElement = ref();
+useFocus(autofocusedElement, { initialValue: true });
 
 const patch = reactive({
-  NOM: props.feature.properties.NOM || '',
+  NOM: props.feature.properties.NOM || "",
   cultures: props.feature.properties.cultures,
-  commentaires: props.feature.properties.commentaires || '',
-})
+  commentaires: props.feature.properties.commentaires || "",
+});
 
-const details = featureDetails(props.feature)
-const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, 'name'))
+const details = featureDetails(props.feature);
+const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
 
 const validate = () => {
-  const set = featuresSet.byFeature(props.feature.id, true)
+  const set = featuresSet.byFeature(props.feature.id, true);
 
   if (set.size) {
-    return false
+    return false;
   }
 
-  emit('submit', { id: props.feature.id, properties: patch })
-}
+  emit("submit", { id: props.feature.id, properties: patch });
+};
 
-
-function handleClose () {
+function handleClose() {
   if (featuresSet.isDirty) {
-    showCancelModal.value = true
-  }
-  else {
-    emit('close')
+    showCancelModal.value = true;
+  } else {
+    emit("close");
   }
 }
 
-onBeforeUnmount(() => featuresSet.setCandidate([]))
+onBeforeUnmount(() => featuresSet.setCandidate([]));
 
 watch(patch, (properties) => {
-  featuresSet.setCandidate([{
-    id: props.feature.id,
-    properties: {
-      ...props.feature.properties,
-      ...properties
-    }
-  }])
-})
+  featuresSet.setCandidate([
+    {
+      id: props.feature.id,
+      properties: {
+        ...props.feature.properties,
+        ...properties,
+      },
+    },
+  ]);
+});
 </script>

@@ -1,5 +1,11 @@
 <template>
-  <component :is="Modal" v-bind="$attrs" icon="fr-icon-calendar-2-line" data-track-content data-content-name="Modale d'historique">
+  <component
+    :is="Modal"
+    v-bind="$attrs"
+    icon="fr-icon-calendar-2-line"
+    data-track-content
+    data-content-name="Modale d'historique"
+  >
     <template #title>{{ operator.nom }}</template>
 
     <div class="history-cards" role="list">
@@ -9,19 +15,19 @@
 </template>
 
 <script setup>
-import Modal from '@/components/widgets/Modal.vue'
-import HistoryEntry from './HistoryEntry.vue'
+import Modal from "@/components/widgets/Modal.vue";
+import HistoryEntry from "./HistoryEntry.vue";
 
 defineProps({
   operator: {
     type: Object,
-    required: true
+    required: true,
   },
   record: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 </script>
 
 <style scoped>

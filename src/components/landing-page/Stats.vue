@@ -37,47 +37,47 @@
 </template>
 
 <script setup>
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive } from "vue";
 
-import axios from "axios"
+import axios from "axios";
 
-const roundedPercent = Intl.NumberFormat('fr-FR', {
-  style: 'percent',
-  maximumFractionDigits: 1
-})
+const roundedPercent = Intl.NumberFormat("fr-FR", {
+  style: "percent",
+  maximumFractionDigits: 1,
+});
 
-const largeNumbers = Intl.NumberFormat('fr-FR', {
-  style: 'decimal',
-  notation: 'compact',
-  compactDisplay: 'short'
-})
+const largeNumbers = Intl.NumberFormat("fr-FR", {
+  style: "decimal",
+  notation: "compact",
+  compactDisplay: "short",
+});
 
 const stats = reactive({
   surfaceBioCouverte: 2776553,
   surfaceRpgBioCouverte: 2360070,
-  get surfaceCartographiéConnuee () {
-    return roundedPercent.format(this.cartobioSurfaceCouverte / this.surfaceBioCouverte)
+  get surfaceCartographiéConnuee() {
+    return roundedPercent.format(this.cartobioSurfaceCouverte / this.surfaceBioCouverte);
   },
   cartobioExploitationsCount: 0,
   cartobioParcellesCount: 0,
   cartobioSurfaceCouverte: 0,
   opendataDownloadCount: 518, // datapass.api.gouv.fr + demandes manuelles
-})
+});
 
 onMounted(async () => {
-  const { data } = await axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`)
-  const { dataGouv, stats: cartobio } = data
+  const { data } = await axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`);
+  const { dataGouv, stats: cartobio } = data;
 
-  const dataGouvAccumulatedDownloads = dataGouv.resources.reduce((sum, resource) => sum + (resource.metrics.views ?? 0), stats.opendataDownloadCount)
+  const dataGouvAccumulatedDownloads = dataGouv.resources.reduce(
+    (sum, resource) => sum + (resource.metrics.views ?? 0),
+    stats.opendataDownloadCount
+  );
 
-  stats.opendataDownloadCount = largeNumbers.format(dataGouvAccumulatedDownloads)
-  stats.cartobioExploitationsCount = largeNumbers.format(cartobio.parcellaires)
-  stats.cartobioParcellesCount = largeNumbers.format(cartobio.parcelles)
-  stats.cartobioSurfaceCouverte = cartobio.surface
-})
-
-
-
+  stats.opendataDownloadCount = largeNumbers.format(dataGouvAccumulatedDownloads);
+  stats.cartobioExploitationsCount = largeNumbers.format(cartobio.parcellaires);
+  stats.cartobioParcellesCount = largeNumbers.format(cartobio.parcelles);
+  stats.cartobioSurfaceCouverte = cartobio.surface;
+});
 </script>
 
 <style scoped>

@@ -7,7 +7,10 @@ title: WebComponent pour le Portail de Notification de l'Agence Bio
 ```html
 <notification-cartobio auth-token="..."></notification-cartobio>
 
-<script type="module" src="https://cartobio-preprod.agencebio.org/notification-webcomponent/notification-cartobio.es.js"></script>
+<script
+  type="module"
+  src="https://cartobio-preprod.agencebio.org/notification-webcomponent/notification-cartobio.es.js"
+></script>
 ```
 
 ## Propriétés du composant

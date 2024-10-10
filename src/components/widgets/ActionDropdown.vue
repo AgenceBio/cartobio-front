@@ -1,94 +1,92 @@
 <script setup>
-import { onBeforeUnmount, onUpdated, ref, watch } from "vue"
-import { onClickOutside, onKeyStroke, useSwipe } from "@vueuse/core"
-import { useHead } from "@unhead/vue"
+import { onBeforeUnmount, onUpdated, ref, watch } from "vue";
+import { onClickOutside, onKeyStroke, useSwipe } from "@vueuse/core";
+import { useHead } from "@unhead/vue";
 
-const show = ref(false)
-const fadeIn = ref(false)
-const actionsMenuRef = ref(null)
+const show = ref(false);
+const fadeIn = ref(false);
+const actionsMenuRef = ref(null);
 
 const props = defineProps({
   withIcons: {
     type: Boolean,
-    default: false
+    default: false,
   },
   disabled: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
 onUpdated(() => {
   setTimeout(() => {
-    fadeIn.value = show.value
-  }, 1)
-})
+    fadeIn.value = show.value;
+  }, 1);
+});
 
-const down = ref('16px')
-const { direction, lengthY } = useSwipe(
-    actionsMenuRef,
-    {
-      onSwipe: () => {
-        if (direction.value === 'DOWN' && lengthY.value < 0) {
-          down.value = (16 + lengthY.value) + 'px'
-        } else {
-          down.value = '16px'
-        }
-      },
-      onSwipeEnd: () => {
-        if (lengthY.value < -30) {
-          show.value = false
-          down.value = '16px'
-        }
-      }
+const down = ref("16px");
+const { direction, lengthY } = useSwipe(actionsMenuRef, {
+  onSwipe: () => {
+    if (direction.value === "DOWN" && lengthY.value < 0) {
+      down.value = 16 + lengthY.value + "px";
+    } else {
+      down.value = "16px";
     }
-)
+  },
+  onSwipeEnd: () => {
+    if (lengthY.value < -30) {
+      show.value = false;
+      down.value = "16px";
+    }
+  },
+});
 
-const cancelKeyStroke = onKeyStroke('Escape', () => show.value = false)
-const cancelClickOutside = onClickOutside(actionsMenuRef, () => show.value = false)
+const cancelKeyStroke = onKeyStroke("Escape", () => (show.value = false));
+const cancelClickOutside = onClickOutside(actionsMenuRef, () => (show.value = false));
 
 onBeforeUnmount(() => {
-  cancelClickOutside()
-  cancelKeyStroke()
-})
+  cancelClickOutside();
+  cancelKeyStroke();
+});
 
 watch(show, (value) => {
-  if (value && !window.matchMedia('(min-width: 580px)').matches) {
-    useHead({ htmlAttrs: {
-        'style': 'overflow: hidden;',
-        tagDuplicateStrategy: 'replace'
-      }
-    })
+  if (value && !window.matchMedia("(min-width: 580px)").matches) {
+    useHead({
+      htmlAttrs: {
+        style: "overflow: hidden;",
+        tagDuplicateStrategy: "replace",
+      },
+    });
   } else {
     useHead({
       htmlAttrs: {
-        'style': '',
-        tagDuplicateStrategy: 'replace'
-      }
-    })
+        style: "",
+        tagDuplicateStrategy: "replace",
+      },
+    });
   }
-})
+});
 </script>
 
 <template>
   <div class="menu-anchor">
-    <slot name="trigger" :toggle="() => show =! show">
+    <slot name="trigger" :toggle="() => (show = !show)">
       <button
-          type="button"
-          @click.stop.prevent="show = !show"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
-          :disabled="props.disabled"
+        type="button"
+        @click.stop.prevent="show = !show"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
+        :disabled="props.disabled"
       >
         Choix des actions
       </button>
     </slot>
-      <dialog class="menu-container" :open="show" tabindex="-1">
-        <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
-          <ul class="fr-menu__list fr-btns-group" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
-            <slot/>
-          </ul>
-        </div>
-      </dialog>
+    <dialog class="menu-container" :open="show" tabindex="-1">
+      <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
+        <ul class="fr-menu__list fr-btns-group" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
+          <slot />
+        </ul>
+      </div>
+    </dialog>
   </div>
 </template>
 
