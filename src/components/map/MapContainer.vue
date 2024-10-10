@@ -5,26 +5,26 @@
 </template>
 
 <script setup>
-import { onMounted, onUpdated, provide, ref, shallowRef, watch } from 'vue'
-import { Map as MapLibre, NavigationControl, ScaleControl } from 'maplibre-gl'
+import { onMounted, onUpdated, provide, ref, shallowRef, watch } from "vue";
+import { Map as MapLibre, NavigationControl, ScaleControl } from "maplibre-gl";
 
-const map = shallowRef(null)
-const mapContainer = ref(null)
+const map = shallowRef(null);
+const mapContainer = ref(null);
 
-provide('map', map)
+provide("map", map);
 
 const props = defineProps({
   showAttribution: {
     type: Boolean,
-    default: false
+    default: false,
   },
   bounds: {
     type: Array,
-    required: true
+    required: true,
   },
   controls: {
     type: Boolean,
-    default: true
+    default: true,
   },
   mapId: String,
   minInitialZoom: {
@@ -37,12 +37,12 @@ const props = defineProps({
   options: {
     type: Object,
     default() {
-      return {}
-    }
+      return {};
+    },
   },
-})
+});
 
-const emit = defineEmits(['zoom:change'])
+const emit = defineEmits(["zoom:change"]);
 
 onMounted(() => {
   map.value = new MapLibre({
@@ -57,69 +57,81 @@ onMounted(() => {
     cooperativeGestures: false /* ça serait à mieux tester pour l'activer, de préférence seulement sur mobile, c'est le seul cas où le scroll est capturé par la carte */,
     ...props.options,
     locale: {
-      'AttributionControl.ToggleAttribution': 'Déplier/replier les informations',
-      'CooperativeGesturesHandler.MacHelpText': 'Utilisez la touche ⌘ combinée à un geste multi-touch pour zoomer sur la carte',
-      'CooperativeGesturesHandler.WindowsHelpText': 'Utilisez la touche Control combinée au scroll de souris pour zoomer sur la carte',
-      'CooperativeGesturesHandler.MobileHelpText': 'Utilisez deux doigts pour vous déplacer sur la carte',
-      'Marker.Title': 'Marqueur',
-      'Map.Title': 'Cartographie du parcellaire',
-      'NavigationControl.ResetBearing': 'Restaurer l’orientation au nord',
-      'NavigationControl.ZoomIn': 'Zoomer',
-      'NavigationControl.ZoomOut': 'Dézoomer',
-      'Popup.Close': 'Fermer l\'infobulle'
-    }
-  })
+      "AttributionControl.ToggleAttribution": "Déplier/replier les informations",
+      "CooperativeGesturesHandler.MacHelpText":
+        "Utilisez la touche ⌘ combinée à un geste multi-touch pour zoomer sur la carte",
+      "CooperativeGesturesHandler.WindowsHelpText":
+        "Utilisez la touche Control combinée au scroll de souris pour zoomer sur la carte",
+      "CooperativeGesturesHandler.MobileHelpText": "Utilisez deux doigts pour vous déplacer sur la carte",
+      "Marker.Title": "Marqueur",
+      "Map.Title": "Cartographie du parcellaire",
+      "NavigationControl.ResetBearing": "Restaurer l’orientation au nord",
+      "NavigationControl.ZoomIn": "Zoomer",
+      "NavigationControl.ZoomOut": "Dézoomer",
+      "Popup.Close": "Fermer l'infobulle",
+    },
+  });
 
   if (props.controls) {
-    map.value.addControl(new NavigationControl(), 'bottom-right')
-    map.value.addControl({
-      onAdd: () => {
-        const el = document.createElement('div')
-        el.className = 'maplibregl-ctrl maplibregl-ctrl-group cartobio-controls'
-        return el
-      }
-    }, 'bottom-right')
+    map.value.addControl(new NavigationControl(), "bottom-right");
+    map.value.addControl(
+      {
+        onAdd: () => {
+          const el = document.createElement("div");
+          el.className = "maplibregl-ctrl maplibregl-ctrl-group cartobio-controls";
+          return el;
+        },
+      },
+      "bottom-right"
+    );
   }
 
   if (props.showAttribution) {
-    map.value.addControl({
-      onAdd: () => {
-        const el = document.createElement('div')
-        el.className = 'maplibregl-ctrl maplibregl-ctrl-attrib'
-        el.innerHTML = '<a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" target="_blank">Sources des données et licences<span class="fr-sr-only"> (ouvre un nouvel onglet)</span></a>'
-        return el
-      }
-    }, 'bottom-right')
+    map.value.addControl(
+      {
+        onAdd: () => {
+          const el = document.createElement("div");
+          el.className = "maplibregl-ctrl maplibregl-ctrl-attrib";
+          el.innerHTML =
+            '<a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" target="_blank">Sources des données et licences<span class="fr-sr-only"> (ouvre un nouvel onglet)</span></a>';
+          return el;
+        },
+      },
+      "bottom-right"
+    );
 
-    map.value.addControl(new ScaleControl({ maxWidth: 80, unit: 'metric' }), 'bottom-right')
+    map.value.addControl(new ScaleControl({ maxWidth: 80, unit: "metric" }), "bottom-right");
   }
 
-  map.value.once('load', () => {
+  map.value.once("load", () => {
     // avoid the map to be too much on the nose of a single feature
-    const zoom = Math.min(map.value.getZoom(), parseFloat(props.minInitialZoom))
-    map.value.setZoom(zoom)
+    const zoom = Math.min(map.value.getZoom(), parseFloat(props.minInitialZoom));
+    map.value.setZoom(zoom);
 
     if (props.mapId) {
-      const canvas = map.value.getCanvas()
-      canvas.setAttribute('id', props.mapId)
+      const canvas = map.value.getCanvas();
+      canvas.setAttribute("id", props.mapId);
     }
 
-    emit('zoom:change', map.value.getZoom())
-  })
+    emit("zoom:change", map.value.getZoom());
+  });
 
-  map.value.on('zoomend', () => emit('zoom:change', map.value.getZoom()))
-})
+  map.value.on("zoomend", () => emit("zoom:change", map.value.getZoom()));
+});
 
-onUpdated(() => map.value && map.value.resize())
+onUpdated(() => map.value && map.value.resize());
 
-watch(() => props.bounds, (bounds) => {
-  if (!bounds || !map.value) return
-  map.value.fitBounds(bounds, { padding: 50 })
-})
+watch(
+  () => props.bounds,
+  (bounds) => {
+    if (!bounds || !map.value) return;
+    map.value.fitBounds(bounds, { padding: 50 });
+  }
+);
 
 defineExpose({
   map,
-})
+});
 </script>
 
 <style>
@@ -135,16 +147,16 @@ defineExpose({
 }
 
 .maplibregl-ctrl-bottom-left {
-  z-index: 10;    /* has to be above maplibregl-ctrl-bottom-right to overlap it */
+  z-index: 10; /* has to be above maplibregl-ctrl-bottom-right to overlap it */
 }
 
 .maplibregl-ctrl-bottom-right {
   display: grid;
   grid-template-columns: auto 40px auto;
   grid-template-areas:
-    'null null custom-controls'
-    'null null group-controls'
-    'attribution scale scale';
+    "null null custom-controls"
+    "null null group-controls"
+    "attribution scale scale";
 
   padding: 0;
 
@@ -153,7 +165,7 @@ defineExpose({
   }
 
   .maplibregl-ctrl-attrib {
-    background-color: hsla(0,0%,100%, .90);
+    background-color: hsla(0, 0%, 100%, 0.9);
     font-size: 0.75rem;
     grid-area: attribution;
     margin-right: 1rem;
@@ -180,6 +192,6 @@ defineExpose({
 
 <style lang="postcss" scoped>
 .maplibre-container .maplibregl-canvas-container {
-  z-index: 0
+  z-index: 0;
 }
 </style>

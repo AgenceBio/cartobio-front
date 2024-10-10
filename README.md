@@ -10,9 +10,10 @@ Les erreurs sont centralisées avec [Sentry](https://github.com/getsentry/sentry
 
 ### Outils nécessaires
 
-* `node` 20
+- `node` 20
 
 On pourra utiliser `nvm` pour faciliter la gestion de différentes versions de node (cf. [`.nvmrc`](.nvmrc)) :
+
 ```sh
 nvm install && nvm use
 ```
@@ -25,6 +26,7 @@ Bien vérifier l'API mobilisée paramétrée avec `VUE_APP_API_ENDPOINT`.
 ### Application
 
 Récupérer les dépendances :
+
 ```sh
 # Versions verrouillées
 npm ci
@@ -34,12 +36,14 @@ npm install
 ```
 
 Démarrer :
+
 ```sh
 npm start
 ```
 
 Ouvrir :
-* http://localhost:3000/
+
+- http://localhost:3000/
 
 ### WebComponent Notification
 
@@ -56,7 +60,8 @@ npm start -- --config vite.widget.config.js
 ```
 
 Ouvrir :
-* http://localhost:3000/
+
+- http://localhost:3000/
 
 La page documente son intégration dans une page web tout en proposant une version interactive.
 
@@ -78,7 +83,7 @@ Les fichiers produits sont dans le répertoire `dist`.
 
 ### Environnement de test
 
-Chaque commit/push sur la branche `test` déploie en test :  [Build and deploy (test)](https://github.com/AgenceBio/cartobio-front/actions/workflows/test.yml)
+Chaque commit/push sur la branche `test` déploie en test : [Build and deploy (test)](https://github.com/AgenceBio/cartobio-front/actions/workflows/test.yml)
 
 ### Environnement de préproduction
 

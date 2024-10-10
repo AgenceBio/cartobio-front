@@ -3,7 +3,16 @@
   <div class="fr-table table-data fr-table--bordered fr-table--no-caption fr-my-6v">
     <ul class="fr-tags-group fr-tags-group--tags fr-my-6v" v-if="permissions.canViewAnnotations">
       <li :key="id" v-for="{ active, id, count, label, required } in tags">
-        <button class="fr-tag" :class="{'fr-tag--dismiss': active, [`tag--${id}`]: true, 'fr-icon-warning-fill fr-tag--icon-left': required }" :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`" @click="handleFilterClick(id)">
+        <button
+          class="fr-tag"
+          :class="{
+            'fr-tag--dismiss': active,
+            [`tag--${id}`]: true,
+            'fr-icon-warning-fill fr-tag--icon-left': required,
+          }"
+          :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`"
+          @click="handleFilterClick(id)"
+        >
           {{ label }} ({{ count }})
         </button>
       </li>
@@ -11,9 +20,20 @@
 
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
 
-    <table @mouseout="hoveredFeatureId = null" aria-describedby="operator-features-summary-global" id="parcellaire-table">
+    <table
+      @mouseout="hoveredFeatureId = null"
+      aria-describedby="operator-features-summary-global"
+      id="parcellaire-table"
+    >
       <caption>
-        Parcelles agricoles {{ record.version_name }} de l'opérateur {{ operator.nom }}
+        Parcelles agricoles
+        {{
+          record.version_name
+        }}
+        de l'opérateur
+        {{
+          operator.nom
+        }}
       </caption>
       <colgroup>
         <col class="selection" />
@@ -23,7 +43,7 @@
         <col class="actions" />
       </colgroup>
       <thead>
-        <tr v-if="(selectedFeatureIds.length > 0)" class="summary summary__mass-actions">
+        <tr v-if="selectedFeatureIds.length > 0" class="summary summary__mass-actions">
           <td class="selection" colspan="2">
             <div class="fr-checkbox-group single-checkbox">
               <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
@@ -33,7 +53,12 @@
           <td colspan="3">
             <div>
               {{ selectedFeatureIds.length }} parcelles sélectionnées
-              <MassActionsSelector v-if="massActions.length" :actions="massActions" label="Modifier" @submit="handleFeatureCollectionSubmit" />
+              <MassActionsSelector
+                v-if="massActions.length"
+                :actions="massActions"
+                label="Modifier"
+                @submit="handleFeatureCollectionSubmit"
+              />
             </div>
           </td>
         </tr>
@@ -56,13 +81,11 @@
             </div>
           </th>
           <th scope="col" class="numeric">
-            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl ">
-              Surface
-            </span>
+            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"> Surface </span>
           </th>
           <th />
         </tr>
-        <tr class="summary" v-if="(selectedFeatureIds.length === 0 && hasFeatures)">
+        <tr class="summary" v-if="selectedFeatureIds.length === 0 && hasFeatures">
           <td colspan="2"></td>
           <td class="labels">
             {{ features.length }} parcelles
@@ -71,8 +94,8 @@
             </span>
           </td>
           <td class="numeric">
-            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl ">
-            {{ inHa(legalProjectionSurface(features)) }}&nbsp;ha
+            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+              {{ inHa(legalProjectionSurface(features)) }}&nbsp;ha
             </span>
           </td>
           <th />
@@ -81,131 +104,147 @@
 
       <tbody v-if="!hasFeatures">
         <tr>
-          <td colspan="4">
-            Votre parcellaire est vide.
-          </td>
+          <td colspan="4">Votre parcellaire est vide.</td>
         </tr>
       </tbody>
-      <FeatureGroup v-for="featureGroup in featureGroups" :featureGroup="featureGroup" :key="featureGroup.key" @edit:featureId="(featuredId) => editedFeatureId = featuredId" @delete:featureId="(featureId) => maybeDeletedFeatureId = featureId" />
+      <FeatureGroup
+        v-for="featureGroup in featureGroups"
+        :featureGroup="featureGroup"
+        :key="featureGroup.key"
+        @edit:featureId="(featuredId) => (editedFeatureId = featuredId)"
+        @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
+      />
     </table>
 
     <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
-      Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}.
-      Actuellement, {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
+      Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}. Actuellement,
+      {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
     </p>
-    <p id="operator-features-summary-global" class="fr-sr-only" v-else>
-      Ce parcellaire ne contient aucune parcelle.
-    </p>
+    <p id="operator-features-summary-global" class="fr-sr-only" v-else>Ce parcellaire ne contient aucune parcelle.</p>
 
     <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
-      <router-link :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`" class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line">Ajouter une parcelle</router-link>
+      <router-link
+        :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`"
+        class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line"
+        >Ajouter une parcelle</router-link
+      >
     </p>
   </div>
 
   <Teleport to="body">
-    <Component  v-if="editedFeatureId && editForm" :is="editForm" :feature="editedFeature" @submit="handleSingleFeatureSubmit" @close="editedFeatureId = null" icon="fr-icon-file-text-fill">
+    <Component
+      v-if="editedFeatureId && editForm"
+      :is="editForm"
+      :feature="editedFeature"
+      @submit="handleSingleFeatureSubmit"
+      @close="editedFeatureId = null"
+      icon="fr-icon-file-text-fill"
+    >
       <template #title>Modification de parcelle</template>
     </Component>
 
-    <DeleteFeatureModal v-if="maybeDeletedFeatureId" @close="maybeDeletedFeatureId = false" :feature-id="maybeDeletedFeatureId" @submit="handleSingleFeatureDeletion" />
+    <DeleteFeatureModal
+      v-if="maybeDeletedFeatureId"
+      @close="maybeDeletedFeatureId = false"
+      :feature-id="maybeDeletedFeatureId"
+      @submit="handleSingleFeatureDeletion"
+    />
   </Teleport>
 
   <p>
-    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill">
-      retour en haut de page
-    </a>
+    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill"> retour en haut de page </a>
   </p>
 </template>
 <script setup>
-import { computed, ref } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed, ref } from "vue";
+import { storeToRefs } from "pinia";
 
-import { useFeaturesStore } from "@/stores/features.js"
-import { useFeaturesSetsStore } from "@/stores/features-sets.js"
-import { useOperatorStore } from "@/stores/operator.js"
-import { usePermissions } from "@/stores/permissions.js"
-import { useRecordStore } from "@/stores/record.js"
+import { useFeaturesStore } from "@/stores/features.js";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
+import { useOperatorStore } from "@/stores/operator.js";
+import { usePermissions } from "@/stores/permissions.js";
+import { useRecordStore } from "@/stores/record.js";
 
-import MassActionsSelector from '@/components/records/Table/MassActionsSelector.vue'
-import DeleteFeatureModal from '@/components/forms/DeleteFeatureForm.vue'
-import FeatureGroup from '@/components/records/Table/FeatureGroup.vue'
+import MassActionsSelector from "@/components/records/Table/MassActionsSelector.vue";
+import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
+import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
 
-import toast from "@/utils/toast.js"
-import { statsPush } from "@/stats.js"
-import { useOnline } from "@vueuse/core"
-import { featureName, getFeatureGroups, groupingChoices, inHa, legalProjectionSurface } from "@/utils/features.js"
-import ValidationErrors from "@/components/records/Table/ValidationErrors.vue"
+import toast from "@/utils/toast.js";
+import { statsPush } from "@/stats.js";
+import { useOnline } from "@vueuse/core";
+import { featureName, getFeatureGroups, groupingChoices, inHa, legalProjectionSurface } from "@/utils/features.js";
+import ValidationErrors from "@/components/records/Table/ValidationErrors.vue";
 
 defineProps({
   editForm: {
-    type: Object
+    type: Object,
   },
   massActions: {
     type: Array,
-    default: () => ([])
+    default: () => [],
   },
-})
+});
 
-const isOnline = useOnline()
-const operatorStore = useOperatorStore()
-const recordStore = useRecordStore()
-const featuresStore = useFeaturesStore()
-const featuresSets = useFeaturesSetsStore()
-const permissions = usePermissions()
+const isOnline = useOnline();
+const operatorStore = useOperatorStore();
+const recordStore = useRecordStore();
+const featuresStore = useFeaturesStore();
+const featuresSets = useFeaturesSetsStore();
+const permissions = usePermissions();
 
-const { operator } = storeToRefs(operatorStore)
-const { record } = storeToRefs(recordStore)
-const { hits: features, tags } = storeToRefs(featuresSets)
-const { hasFeatures, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore)
-const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore)
-const { getFeatureById, toggleAllSelected } = featuresStore
+const { operator } = storeToRefs(operatorStore);
+const { record } = storeToRefs(recordStore);
+const { hits: features, tags } = storeToRefs(featuresSets);
+const { hasFeatures, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore);
+const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore);
+const { getFeatureById, toggleAllSelected } = featuresStore;
 
-const editedFeatureId = ref(null)
-const editedFeature = computed(() => editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null)
-const maybeDeletedFeatureId = ref(null)
+const editedFeatureId = ref(null);
+const editedFeature = computed(() => (editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null));
+const maybeDeletedFeatureId = ref(null);
 
-const userGroupingChoice = ref('CULTURE')
-const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value))
-const groupingChoiceLabel = computed(() => groupingChoices[userGroupingChoice.value].label)
+const userGroupingChoice = ref("CULTURE");
+const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value));
+const groupingChoiceLabel = computed(() => groupingChoices[userGroupingChoice.value].label);
 
-async function handleSingleFeatureSubmit ({ id, properties }) {
-  statsPush(['trackEvent', 'Parcelles', 'Modification individuelle (sauvegarde)'])
-  editedFeatureId.value = null
+async function handleSingleFeatureSubmit({ id, properties }) {
+  statsPush(["trackEvent", "Parcelles", "Modification individuelle (sauvegarde)"]);
+  editedFeatureId.value = null;
 
-  await featuresStore.updateSingleFeature({ id, properties })
-  toast.success(`Parcelle « ${featureName(featuresStore.getFeatureById(id))} » modifiée.`)
+  await featuresStore.updateSingleFeature({ id, properties });
+  toast.success(`Parcelle « ${featureName(featuresStore.getFeatureById(id))} » modifiée.`);
 }
 
-async function handleSingleFeatureDeletion ({ id, reason }) {
-  statsPush(['trackEvent', 'Parcelles', 'Suppression individuelle (sauvegarde)'])
+async function handleSingleFeatureDeletion({ id, reason }) {
+  statsPush(["trackEvent", "Parcelles", "Suppression individuelle (sauvegarde)"]);
 
-  maybeDeletedFeatureId.value = null
+  maybeDeletedFeatureId.value = null;
 
-  const deletedFeatureName = featureName(featuresStore.getFeatureById(id))
-  await featuresStore.deleteSingleFeature({ id, reason })
-  toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`)
+  const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
+  await featuresStore.deleteSingleFeature({ id, reason });
+  toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 }
 
-async function handleFeatureCollectionSubmit ({ ids, patch }) {
-  statsPush(['trackEvent', 'Parcelles', 'Modification multiple (sauvegarde)'])
-  editedFeatureId.value = null
+async function handleFeatureCollectionSubmit({ ids, patch }) {
+  statsPush(["trackEvent", "Parcelles", "Modification multiple (sauvegarde)"]);
+  editedFeatureId.value = null;
 
   const featureCollection = {
-    type: 'FeatureCollection',
-    features: ids.map(id => ({
+    type: "FeatureCollection",
+    features: ids.map((id) => ({
       id,
-      properties: { ...patch }
-    }))
-  }
-  await featuresStore.updateFeatureCollectionProperties(featureCollection)
-  toast.success('Parcelles modifiées.')
+      properties: { ...patch },
+    })),
+  };
+  await featuresStore.updateFeatureCollectionProperties(featureCollection);
+  toast.success("Parcelles modifiées.");
 }
 
-function handleFilterClick (id) {
-  featuresSets.toggle(id)
+function handleFilterClick(id) {
+  featuresSets.toggle(id);
 
   if (featuresSets.isToggled(id)) {
-    statsPush(['trackEvent', 'Filtre parcelles', id])
+    statsPush(["trackEvent", "Filtre parcelles", id]);
   }
 }
 </script>
@@ -265,7 +304,7 @@ function handleFilterClick (id) {
   }
 
   th:has(span.fr-hidden.fr-unhidden-sm),
-  td:has(span.fr-hidden.fr-unhidden-sm){
+  td:has(span.fr-hidden.fr-unhidden-sm) {
     @media (max-width: 579px) {
       padding: 0;
     }
@@ -282,12 +321,14 @@ function handleFilterClick (id) {
   background-repeat: no-repeat;
   background-color: var(--background-alt-blue-france);
   background-position: top, bottom;
-  background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
+  background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)),
+    linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
 }
 
 .fr-table thead,
 .fr-table .summary {
-  td, th {
+  td,
+  th {
     padding-left: 0.6rem;
   }
 }
@@ -300,7 +341,7 @@ function handleFilterClick (id) {
   z-index: var(--z-index-dropdown);
 }
 
-.fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before{
+.fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before {
   box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
 }
 

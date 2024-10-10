@@ -8,7 +8,8 @@
 
 @font-face {
   font-family: Marianne;
-  src: url("../assets/Marianne-Regular_Italic.woff2") format("woff2"), url("../assets/Marianne-Regular_Italic.woff") format("woff");
+  src: url("../assets/Marianne-Regular_Italic.woff2") format("woff2"),
+    url("../assets/Marianne-Regular_Italic.woff") format("woff");
   font-weight: 400;
   font-style: italic;
   font-display: swap;

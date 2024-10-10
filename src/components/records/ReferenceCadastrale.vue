@@ -6,21 +6,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { parseReference } from '@/utils/cadastre.js'
+import { computed } from "vue";
+import { parseReference } from "@/utils/cadastre.js";
 
 const props = defineProps({
   reference: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const parsedReference = computed(() => parseReference(props.reference))
+const parsedReference = computed(() => parseReference(props.reference));
 </script>
 
 <style scoped>
 .reference--section {
-  margin-right: .3rem;
+  margin-right: 0.3rem;
 }
 </style>

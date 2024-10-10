@@ -18,7 +18,7 @@
   clip-path: inset(0 3ch 0 0);
   display: inline-block;
   font-family: monospace;
-  font-size: .8em;
-  margin-right: .5rem;
+  font-size: 0.8em;
+  margin-right: 0.5rem;
 }
 </style>

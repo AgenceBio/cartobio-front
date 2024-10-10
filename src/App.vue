@@ -5,10 +5,7 @@
     <Suspense>
       <template #default>
         <main id="content">
-          <component
-          :is="Component"
-          :key="route.meta.usePathKey ? route.path : undefined"
-        />
+          <component :is="Component" :key="route.meta.usePathKey ? route.path : undefined" />
         </main>
       </template>
 
@@ -28,27 +25,27 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
-import { useHead } from '@unhead/vue'
-import { computed } from 'vue'
+import { useRoute } from "vue-router";
+import { useHead } from "@unhead/vue";
+import { computed } from "vue";
 
-import MainHeader from '@/components/MainHeader.vue'
-import MainFooter from '@/components/MainFooter.vue'
-import Spinner from '@/components/widgets/Spinner.vue'
+import MainHeader from "@/components/MainHeader.vue";
+import MainFooter from "@/components/MainFooter.vue";
+import Spinner from "@/components/widgets/Spinner.vue";
 
-const route = useRoute()
-const title = computed(() => route.meta?.seo?.title)
+const route = useRoute();
+const title = computed(() => route.meta?.seo?.title);
 
 // SEO
-useHead({ title, titleTemplate: '%s — CartoBio' })
+useHead({ title, titleTemplate: "%s — CartoBio" });
 </script>
 
 <style>
 @charset "utf-8";
 
-@import '@gouvfr/dsfr/dsfr.css';
-@import '@gouvfr/dsfr/utility/icons/icons.css';
-@import '@/styles/variables.css';
+@import "@gouvfr/dsfr/dsfr.css";
+@import "@gouvfr/dsfr/utility/icons/icons.css";
+@import "@/styles/variables.css";
 
 a[aria-disabled] {
   --text-action-high-blue-france: gray;

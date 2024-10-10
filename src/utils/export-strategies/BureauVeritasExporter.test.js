@@ -1,21 +1,21 @@
-import { describe, test, expect, vi } from 'vitest'
-import { usePermissions } from '@/stores/permissions.js'
-import { createTestingPinia } from "@pinia/testing"
-import Exporter from './BureauVeritasExporter.js'
-import record from '@/utils/__fixtures__/record-for-exports.json' assert { type: 'json' }
+import { describe, test, expect, vi } from "vitest";
+import { usePermissions } from "@/stores/permissions.js";
+import { createTestingPinia } from "@pinia/testing";
+import Exporter from "./BureauVeritasExporter.js";
+import record from "@/utils/__fixtures__/record-for-exports.json" assert { type: "json" };
 
-const pinia = createTestingPinia({ createSpy: vi.fn })
-const permissions = usePermissions(pinia)
-permissions.isOc = true
+const pinia = createTestingPinia({ createSpy: vi.fn });
+const permissions = usePermissions(pinia);
+permissions.isOc = true;
 
-describe('BureauVeritasExporter', () => {
-  test('list by features', () => {
+describe("BureauVeritasExporter", () => {
+  test("list by features", () => {
     const exporter = new Exporter({
       featureCollection: record.parcelles,
       operator: record.operator,
       record: record,
-      permissions
-    })
+      permissions,
+    });
 
     const expectation = [
       [
@@ -28,32 +28,10 @@ describe('BureauVeritasExporter', () => {
         "Surface",
         "Unité",
         "Classement",
-        "Date conversion"
+        "Date conversion",
       ],
-      [
-        "27B/6",
-        "",
-        "[ERREUR] culture absente",
-        "",
-        "",
-        "Ilots : 4.1",
-        0.753054443359375,
-        "ha",
-        "",
-        "",
-      ],
-      [
-        "PV",
-        "",
-        "[ERREUR] culture inconnue (01.19.99)",
-        "",
-        "",
-        "Ilots : 3.1",
-        0.753054443359375,
-        "ha",
-        "",
-        "",
-      ],
+      ["27B/6", "", "[ERREUR] culture absente", "", "", "Ilots : 4.1", 0.753054443359375, "ha", "", ""],
+      ["PV", "", "[ERREUR] culture inconnue (01.19.99)", "", "", "Ilots : 3.1", 0.753054443359375, "ha", "", ""],
       [
         "",
         "Surfaces fourragères",
@@ -102,8 +80,8 @@ describe('BureauVeritasExporter', () => {
         "AB",
         "2015-01-01",
       ],
-    ]
+    ];
 
-    expect(exporter.toJSON()).toEqual(expectation)
-  })
-})
+    expect(exporter.toJSON()).toEqual(expectation);
+  });
+});

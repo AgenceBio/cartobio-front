@@ -3,9 +3,7 @@
   "sources": {
     "rpg-anon": {
       "type": "vector",
-      "tiles": [
-        "https://cartobio.agencebio.org/tiles/rpg-2022/{z}/{x}/{y}.pbf"
-      ],
+      "tiles": ["https://cartobio.agencebio.org/tiles/rpg-2022/{z}/{x}/{y}.pbf"],
       "attribution": "<a href='https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771' target='_blank'>Parcelles en Agriculture Biologique (AB) déclarées à la PAC</a>"
     }
   },
@@ -18,10 +16,15 @@
       "minzoom": 8,
       "maxzoom": 24,
       "paint": {
-        "fill-color": ["case",
+        "fill-color": [
+          "case",
           ["==", ["get", "BIO"], 1],
           "#9fe3d2",
-          ["in", ["get", "CODE_CULTU"], ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]],
+          [
+            "in",
+            ["get", "CODE_CULTU"],
+            ["literal", ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"]]
+          ],
           "#fff1bd",
           "#ffd6a4"
         ],
@@ -36,18 +39,53 @@
       "minzoom": 8,
       "maxzoom": 24,
       "paint": {
-        "line-color": ["case",
+        "line-color": [
+          "case",
           ["==", ["get", "BIO"], 1],
           "#54cdaf",
-          ["in", ["get", "CODE_CULTU"], ["literal", [
-            "GFP", "PTR", "BOP", "BRH", "BRO", "CAE", "CEE", "CRA", "DTY", "FET", "FLO", "J5M", "J6P", "J6S", "JNO", "MLG", "PAT", "PCL", "PRL", "PPH", "RGA", "ROS", "SPH", "SPL", "XFE"
-          ]]],
+          [
+            "in",
+            ["get", "CODE_CULTU"],
+            [
+              "literal",
+              [
+                "GFP",
+                "PTR",
+                "BOP",
+                "BRH",
+                "BRO",
+                "CAE",
+                "CEE",
+                "CRA",
+                "DTY",
+                "FET",
+                "FLO",
+                "J5M",
+                "J6P",
+                "J6S",
+                "JNO",
+                "MLG",
+                "PAT",
+                "PCL",
+                "PRL",
+                "PPH",
+                "RGA",
+                "ROS",
+                "SPH",
+                "SPL",
+                "XFE"
+              ]
+            ]
+          ],
           "#ffe586",
           "#ffc177"
         ],
         "line-opacity": 0.9,
         "line-width": {
-          "stops": [[9, 0], [12, 1]]
+          "stops": [
+            [9, 0],
+            [12, 1]
+          ]
         }
       }
     }

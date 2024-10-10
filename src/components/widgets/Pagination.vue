@@ -37,14 +37,15 @@
 </template>
 
 <script setup>
-defineProps(['currentPage', 'maxPage']);
-defineEmits('changePage');
+defineProps(["currentPage", "maxPage"]);
+defineEmits("changePage");
 </script>
 
 <style scoped>
 .fr-btns-group--pagination {
-  .fr-label, .fr-select {
-    font-size: inherit;   /* reset size so as they are consistent */
+  .fr-label,
+  .fr-select {
+    font-size: inherit; /* reset size so as they are consistent */
   }
 
   .fr-btn {

@@ -1,6 +1,10 @@
-
 <template>
-  <Modal v-bind="$attrs" icon="fr-icon-calendar-2-line" data-track-content data-content-name="Modale de modification multiple du niveau de conversion">
+  <Modal
+    v-bind="$attrs"
+    icon="fr-icon-calendar-2-line"
+    data-track-content
+    data-content-name="Modale de modification multiple du niveau de conversion"
+  >
     <template #title>Modification du niveau de conversion</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
@@ -16,9 +20,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="mass-edit-form">
-            Enregistrer
-          </button>
+          <button class="fr-btn" form="mass-edit-form">Enregistrer</button>
         </li>
       </ul>
     </template>
@@ -26,22 +28,20 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useFeaturesStore } from '@/stores/features.js'
+import { reactive } from "vue";
+import { storeToRefs } from "pinia";
+import { useFeaturesStore } from "@/stores/features.js";
 
-import Modal from '@/components/widgets/Modal.vue'
+import Modal from "@/components/widgets/Modal.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 
-defineProps({ })
-const emit = defineEmits(['submit'])
+defineProps({});
+const emit = defineEmits(["submit"]);
 
-const store = useFeaturesStore()
-const { selectedIds } = storeToRefs(store)
+const store = useFeaturesStore();
+const { selectedIds } = storeToRefs(store);
 
 const patch = reactive({
-  conversion_niveau: '',
-})
-
-
+  conversion_niveau: "",
+});
 </script>

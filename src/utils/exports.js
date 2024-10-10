@@ -1,16 +1,23 @@
-import DefaultExporter from '@/utils/export-strategies/DefaultExporter.js'
-import BureauVeritasExporter from '@/utils/export-strategies/BureauVeritasExporter.js'
-import CertipaqExporter from '@/utils/export-strategies/CertipaqExporter.js'
-import CertisExporter from '@/utils/export-strategies/CertisExporter.js'
-import CertisudExporter from '@/utils/export-strategies/CertisudExporter.js'
-import ControlUnionExporter from "@/utils/export-strategies/ControlUnionExporter.js"
+import DefaultExporter from "@/utils/export-strategies/DefaultExporter.js";
+import BureauVeritasExporter from "@/utils/export-strategies/BureauVeritasExporter.js";
+import CertipaqExporter from "@/utils/export-strategies/CertipaqExporter.js";
+import CertisExporter from "@/utils/export-strategies/CertisExporter.js";
+import CertisudExporter from "@/utils/export-strategies/CertisudExporter.js";
+import ControlUnionExporter from "@/utils/export-strategies/ControlUnionExporter.js";
 import OcaciaExporter from "@/utils/export-strategies/OcaciaExporter.js";
 import QualisudExporter from "@/utils/export-strategies/QualisudExporter.js";
 
-export default DefaultExporter
-export { BureauVeritasExporter, CertipaqExporter, CertisExporter, ControlUnionExporter, OcaciaExporter, QualisudExporter }
+export default DefaultExporter;
+export {
+  BureauVeritasExporter,
+  CertipaqExporter,
+  CertisExporter,
+  ControlUnionExporter,
+  OcaciaExporter,
+  QualisudExporter,
+};
 
-const isProduction = Boolean(import.meta.env.PROD)
+const isProduction = Boolean(import.meta.env.PROD);
 
 const exporters = new Map([
   // Use a custom exporter in development to ease testing
@@ -24,8 +31,8 @@ const exporters = new Map([
   // [7, BureauAlpesControlesExporter],
   [10, ControlUnionExporter],
   [11, OcaciaExporter],
-])
+]);
 
-export function fromId (ocId) {
-  return exporters.has(ocId) ? exporters.get(ocId) : DefaultExporter
+export function fromId(ocId) {
+  return exporters.has(ocId) ? exporters.get(ocId) : DefaultExporter;
 }

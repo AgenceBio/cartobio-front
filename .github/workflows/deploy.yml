@@ -4,72 +4,72 @@ on:
   workflow_dispatch:
   push:
     tags:
-    - "v2.*"
+      - "v2.*"
     paths-ignore:
-    - 'docs/**'
-    - 'CHANGELOG.md'
-    - 'bin/**'
-    - 'infrastructure/**'
-    - '*.example'
-    - 'netlify.toml'
-    - '*.md'
+      - "docs/**"
+      - "CHANGELOG.md"
+      - "bin/**"
+      - "infrastructure/**"
+      - "*.example"
+      - "netlify.toml"
+      - "*.md"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: production
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-        cache: 'npm'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
-    - name: Assign env variables to a .env file
-      run: env | grep VUE_APP > .env.local
-      env:
-        VUE_APP_MATOMO_SITE_ID: 10
-        VUE_APP_API_ENDPOINT: "https://cartobio.agencebio.org/api"
-        VUE_APP_PRELOADED_CAMPAGNE_PAC: 2022
-        VUE_APP_PRODUCTION: true
-        VUE_APP_ENVIRONMENT: production
-        VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
+      - name: Assign env variables to a .env file
+        run: env | grep VUE_APP > .env.local
+        env:
+          VUE_APP_MATOMO_SITE_ID: 10
+          VUE_APP_API_ENDPOINT: "https://cartobio.agencebio.org/api"
+          VUE_APP_PRELOADED_CAMPAGNE_PAC: 2022
+          VUE_APP_PRODUCTION: true
+          VUE_APP_ENVIRONMENT: production
+          VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
 
-    - run: npm clean-install-test
-    - run: |
-        npm run build:app
-        npm run build:widget -- --base "https://cartobio.agencebio.org/notification-webcomponent/"
+      - run: npm clean-install-test
+      - run: |
+          npm run build:app
+          npm run build:widget -- --base "https://cartobio.agencebio.org/notification-webcomponent/"
 
-    - name: Install SSH Key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
-        known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.AGENCEBIO_SSH_KNOWN_HOSTS }}
 
-    - name: rsync
-      run: |
-        rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
-      env:
-        REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
-        REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
-        REMOTE_PATH: /var/www/cartobio.agencebio.org/
+      - name: rsync
+        run: |
+          rsync -avzr --delete --exclude 'node_modules' --exclude '.git*' ./dist/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
+        env:
+          REMOTE_HOST: ${{ secrets.AGENCEBIO_SSH_HOST }}
+          REMOTE_USER: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+          REMOTE_PATH: /var/www/cartobio.agencebio.org/
 
-    - id: version
-      run: echo v=$(node -p "require('./package.json').version") >> "$GITHUB_OUTPUT"
+      - id: version
+        run: echo v=$(node -p "require('./package.json').version") >> "$GITHUB_OUTPUT"
 
-    - name: Create Sentry production release
-      uses: getsentry/action-release@v1
-      env:
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        SENTRY_ORG: betagouv
-        SENTRY_PROJECT: cartobio-front
-        SENTRY_URL: https://sentry.incubateur.net/
-        SENTRY_LOG_LEVEL: debug
-      with:
-        environment: production
-        # On a pas l'intégration GitHub qui permet que Sentry récupère dans
-        # l'autre sens les commits liés à la release, donc on skip
-        set_commits: skip
-        # Permet d'avoir le nom de la version sans le v
-        version: "${{ steps.version.outputs.v }}"
-        sourcemaps: dist/assets/
+      - name: Create Sentry production release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: betagouv
+          SENTRY_PROJECT: cartobio-front
+          SENTRY_URL: https://sentry.incubateur.net/
+          SENTRY_LOG_LEVEL: debug
+        with:
+          environment: production
+          # On a pas l'intégration GitHub qui permet que Sentry récupère dans
+          # l'autre sens les commits liés à la release, donc on skip
+          set_commits: skip
+          # Permet d'avoir le nom de la version sans le v
+          version: "${{ steps.version.outputs.v }}"
+          sourcemaps: dist/assets/
