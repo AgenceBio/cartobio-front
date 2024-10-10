@@ -66,7 +66,7 @@
       Supprimer
     </button>
   </fieldset>
-  é
+
   <button
     type="button"
     v-if="!disabledInput"
