@@ -12,7 +12,7 @@
           <p>
             Importez en un clic les données géographiques
             via une déclaration <b>PAC</b>, le dossier <b>nCVI</b>,
-            ou le parcellaire <b>MSA</b>.
+            <b>MesParcelles</b> ou <b>Geofolia</b>.
           </p>
           <p>
             Vous pourrez mettre à jour les parcelles

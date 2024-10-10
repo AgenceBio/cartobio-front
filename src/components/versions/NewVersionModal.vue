@@ -44,7 +44,9 @@ async function createEmptyVersion() {
             </router-link>
           </h3>
           <p class="fr-card__desc">
-            Importez en un clic votre parcellaire informatisé via votre déclaration PAC, MesParcelles, ou Geofolia.
+            Importez en un clic votre parcellaire informatisé
+            via votre déclaration <b>PAC</b>, le dossier <b>nCVI</b>,
+            <b>MesParcelles</b> ou <b>Geofolia</b>.
           </p>
         </div>
       </div>
