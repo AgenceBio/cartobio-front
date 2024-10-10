@@ -6,7 +6,9 @@
       Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
     </div>
 
-    <div ref="autocompleteRef"></div>
+    <input v-if="disabledInput && fromCodeCpf(culture.CPF)" type="text" v-bind:disabled="disabledInput" class="fr-input" :value="fromCodeCpf(culture.CPF).libelle_code_cpf"/>
+
+    <div v-else ref="autocompleteRef"></div>
 
     <div v-for="([id, result]) in errors" :key="id" class="fr-hint-text fr-error-text">
       {{ result.errorMessage }}.
@@ -19,7 +21,7 @@
 </template>
 
 <script setup>
-import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from 'vue'
+import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from 'vue';
 import { useFeaturesSetsStore } from '@/stores/features-sets.js'
 
 import { autocomplete } from '@algolia/autocomplete-js'
@@ -44,11 +46,14 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: true
+  },
+  disabledInput: {
+    type: Boolean,
+    default : () => false
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
-
 const autocompleteProps = shallowRef(null)
 const autocompleteRef = ref(null)
 const showMore = ref(false)
@@ -76,6 +81,7 @@ const choices = computed(() => {
 const requirePrecision = computed(() => props.modelValue && !(fromCodeCpf(props.modelValue)?.is_selectable))
 
 onMounted(() => {
+  if(!props.disabledInput){
   autocompleteProps.value = autocomplete({
     container: autocompleteRef.value,
     placeholder: props.placeholder,
@@ -151,9 +157,10 @@ onMounted(() => {
   })
 
   autocompleteProps.value.setQuery?.(requirePrecision.value ? '' : query.value)
+}
 })
 
-onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false))
+onBeforeUnmount(() => {if(!props.disabledInput){autocompleteProps.value.setIsOpen(false)}})
 </script>
 
 <style>

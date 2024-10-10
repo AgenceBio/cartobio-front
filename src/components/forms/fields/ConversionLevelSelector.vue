@@ -3,7 +3,7 @@
     <label class="fr-label">Niveau de conversion</label>
 
     <div class="fr-radio-group fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
-      <input type="radio" :id="'conversion-' + niveau.value" :value="niveau.value" :readonly="readonly" :checked="niveau.value === modelValue" @change="emit('update:modelValue', niveau.value)" name="conversion_niveau">
+      <input type="radio" :id="'conversion-' + niveau.value" :value="niveau.value" v-bind:disabled="readonly" :checked="niveau.value === modelValue" @change="emit('update:modelValue', niveau.value)" name="conversion_niveau">
       <label class="fr-label" :for="'conversion-' + niveau.value">
         {{ niveau.label }}
       </label>
