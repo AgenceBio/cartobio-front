@@ -1,6 +1,7 @@
 <template>
   <fieldset class="culture-group fr-card fr-mb-1w fr-p-2w" v-for="culture in uuidedCultures" :key="culture.id">
     <AsyncCultureTypeSelector
+      :disabled-input="disabledInput"
       :feature-id="featureId"
       :culture="culture"
       :modelValue="culture.CPF"
@@ -19,6 +20,7 @@
           :value="culture.variete"
           @input="updateCulture(culture.id, 'variete', $event.target.value)"
           name="variete"
+          :disabled="disabledInput"
         />
       </div>
     </div>
@@ -35,6 +37,7 @@
           :value="culture.surface"
           @input="updateCulture(culture.id, 'surface', $event.target.value)"
           name="surface"
+          :disabled="disabledInput"
         />
         <div class="fr-hint-text">Exprimée en <abbr title="hectare">ha</abbr>.</div>
       </div>
@@ -48,12 +51,14 @@
           :value="culture.date_semis"
           @input="updateCulture(culture.id, 'date_semis', $event.target.value)"
           name="date_semis"
+          :disabled="disabledInput"
         />
       </div>
     </div>
 
     <button
       type="button"
+      v-if="!disabledInput"
       class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line fr-btn--icon-left"
       :disabled="!canBeDeleted"
       @click="removeCulture(culture.id)"
@@ -64,6 +69,7 @@
 
   <button
     type="button"
+    v-if="!disabledInput"
     class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
     @click="appendEmptyCulture"
   >
@@ -83,6 +89,10 @@ const props = defineProps({
   },
   featureId: {
     type: String,
+  },
+  disabledInput: {
+    type: Boolean,
+    default: () => false,
   },
 });
 
@@ -147,6 +157,7 @@ function updateCulture(cultureId, field, value) {
   gap: 1em;
   margin-bottom: 1rem;
 }
+
 .horizontal-stack > .fr-input-group {
   flex-grow: 1;
 }
