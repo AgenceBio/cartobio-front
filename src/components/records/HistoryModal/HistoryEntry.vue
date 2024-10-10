@@ -14,7 +14,10 @@
 
           <p v-if="entry.description">{{ entry.description }}</p>
 
-          <p v-if="entry.type === EventType.FEATURE_COLLECTION_CREATE && entry.metadata?.source" class="fr-icon-download-line">
+          <p
+            v-if="entry.type === EventType.FEATURE_COLLECTION_CREATE && entry.metadata?.source"
+            class="fr-icon-download-line"
+          >
             {{ entry.metadata.source }}
             {{ entry.metadata.campagne }}<span v-if="entry.metadata.pacage">, PACAGE {{ entry.metadata.pacage }}</span>
             <span v-if="entry.metadata.evv">, EVV {{ entry.metadata.evv }}</span>
@@ -26,8 +29,11 @@
             </li>
           </ul>
 
-          <p v-if="entry.type === EventType.FEATURE_COLLECTION_UPDATE && entry.featureIds" class="fr-icon-arrow-right-line">
-            {{ plurals(entry.featureIds.length, { one: 'parcelle', other: 'parcelles' }) }}
+          <p
+            v-if="entry.type === EventType.FEATURE_COLLECTION_UPDATE && entry.featureIds"
+            class="fr-icon-arrow-right-line"
+          >
+            {{ plurals(entry.featureIds.length, { one: "parcelle", other: "parcelles" }) }}
           </p>
 
           <p v-if="entry.type === EventType.FEATURE_DELETE" class="fr-icon-arrow-right-line">
@@ -44,29 +50,29 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { ddmmmmyyyy } from '@/utils/dates.js'
-import { EventType } from '@agencebio/cartobio-types'
+import { computed } from "vue";
+import { ddmmmmyyyy } from "@/utils/dates.js";
+import { EventType } from "@agencebio/cartobio-types";
 
-import ActionType from '@/components/records/HistoryModal/ActionType.vue'
-import ReferenceCadastrale from '@/components/records/ReferenceCadastrale.vue';
-import { deletionReasons } from "@/utils/features.js"
+import ActionType from "@/components/records/HistoryModal/ActionType.vue";
+import ReferenceCadastrale from "@/components/records/ReferenceCadastrale.vue";
+import { deletionReasons } from "@/utils/features.js";
 
 const props = defineProps({
   entry: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const RE = /OC/
-const isOc = computed(() => RE.test(props.entry.user?.mainGroup?.nom))
+const RE = /OC/;
+const isOc = computed(() => RE.test(props.entry.user?.mainGroup?.nom));
 
-const pr = new Intl.PluralRules('fr-FR')
-function plurals (count, { zero, one, other }) {
-  const rules = { zero, one, other }
-  const suffix = rules[pr.select(count)]
-  return `${count} ${suffix}`
+const pr = new Intl.PluralRules("fr-FR");
+function plurals(count, { zero, one, other }) {
+  const rules = { zero, one, other };
+  const suffix = rules[pr.select(count)];
+  return `${count} ${suffix}`;
 }
 
 /**
@@ -74,12 +80,12 @@ function plurals (count, { zero, one, other }) {
  */
 const deletionReason = computed(() => {
   if (props.entry.type === EventType.FEATURE_DELETE && props.entry.metadata) {
-    const { code, details } = props.entry.metadata.reason
-    return details || (deletionReasons.find(r => r.code === code)?.label ?? '')
+    const { code, details } = props.entry.metadata.reason;
+    return details || (deletionReasons.find((r) => r.code === code)?.label ?? "");
   }
 
-  return ''
-})
+  return "";
+});
 </script>
 
 <style scoped>
@@ -109,7 +115,8 @@ const deletionReason = computed(() => {
     padding: 0;
   }
 
-  p[class*="fr-icon"], li[class*="fr-icon"] {
+  p[class*="fr-icon"],
+  li[class*="fr-icon"] {
     color: var(--text-mention-grey);
     font-size: 0.75rem;
 

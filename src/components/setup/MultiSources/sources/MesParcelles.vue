@@ -18,7 +18,12 @@
       <h3 class="fr-alert__title">Où récupérer le fichier demandé ?</h3>
 
       <p>
-        Consultez la page <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-du-fichier-mesparcelles" target="_blank">import MesParcelles<lien-externe /></a>
+        Consultez la page
+        <a
+          href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-du-fichier-mesparcelles"
+          target="_blank"
+          >import MesParcelles<lien-externe
+        /></a>
         de notre documentation pour une aide illustrée et pas à pas.
       </p>
     </div>
@@ -26,34 +31,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { convertTelepacFileToGeoJSON } from '@/cartobio-api.js'
-import { sources } from "@/referentiels/imports.js"
+import { ref } from "vue";
+import { convertTelepacFileToGeoJSON } from "@/cartobio-api.js";
+import { sources } from "@/referentiels/imports.js";
 
-const emit = defineEmits(['upload:start', 'upload:complete'])
+const emit = defineEmits(["upload:start", "upload:complete"]);
 
-const fileInput = ref(null)
-const erreur = ref('')
+const fileInput = ref(null);
+const erreur = ref("");
 
-async function handleFileUpload () {
-  const warnings = []
-  const [file] = fileInput.value.files
+async function handleFileUpload() {
+  const warnings = [];
+  const [file] = fileInput.value.files;
 
-  emit('upload:start')
+  emit("upload:start");
 
   try {
-    const geojson = await convertTelepacFileToGeoJSON(file)
+    const geojson = await convertTelepacFileToGeoJSON(file);
     const metadata = {
       pacage: geojson.features.at(0)?.properties?.PACAGE,
-    }
+    };
 
-    emit('upload:complete', { geojson, source: sources.MESPARCELLES, warnings, metadata })
+    emit("upload:complete", { geojson, source: sources.MESPARCELLES, warnings, metadata });
   } catch (error) {
     if (error.response?.status >= 400 && error.response?.status < 500) {
-      erreur.value = 'Votre fichier ne semble pas être un export MesParcelles valide.'
+      erreur.value = "Votre fichier ne semble pas être un export MesParcelles valide.";
     } else {
-      erreur.value = 'Erreur inconnue, merci de réessayer plus tard.'
-      throw error
+      erreur.value = "Erreur inconnue, merci de réessayer plus tard.";
+      throw error;
     }
   }
 }

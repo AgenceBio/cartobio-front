@@ -5,14 +5,14 @@
 </template>
 
 <script setup>
-import { readonly, computed } from 'vue'
+import { readonly, computed } from "vue";
 
-import { EventType } from '@agencebio/cartobio-types'
-import { CertificationState } from '@agencebio/cartobio-types'
-import { sources } from '@/referentiels/imports.js'
-import { usePermissions } from '@/stores/permissions.js'
+import { EventType } from "@agencebio/cartobio-types";
+import { CertificationState } from "@agencebio/cartobio-types";
+import { sources } from "@/referentiels/imports.js";
+import { usePermissions } from "@/stores/permissions.js";
 
-const permissions = usePermissions()
+const permissions = usePermissions();
 
 const props = defineProps({
   metadata: {
@@ -21,65 +21,66 @@ const props = defineProps({
   },
   state: {
     type: String,
-    default: (rawProps) => rawProps.state ?? ''
+    default: (rawProps) => rawProps.state ?? "",
   },
   type: {
     type: String,
-    default: (rawProps) => !rawProps.type && rawProps.state ? EventType.CERTIFICATION_STATE_CHANGE : (rawProps.type ?? '')
+    default: (rawProps) =>
+      !rawProps.type && rawProps.state ? EventType.CERTIFICATION_STATE_CHANGE : rawProps.type ?? "",
   },
-})
+});
 
 const TYPES_MAP = readonly({
   [EventType.CERTIFICATION_STATE_CHANGE]: {
     // Phase 2
     [CertificationState.OPERATOR_DRAFT]: {
-      label: props.metadata?.source === sources.MANUAL ? 'Parcellaire créé' : 'Parcellaire importé',
-      color: 'fr-badge--info fr-badge--icon-left fr-icon-info-line'
+      label: props.metadata?.source === sources.MANUAL ? "Parcellaire créé" : "Parcellaire importé",
+      color: "fr-badge--info fr-badge--icon-left fr-icon-info-line",
     },
     // Phase 3
     [CertificationState.AUDITED]: {
-      label: permissions.isAgri ? 'Certification en cours' : 'Audit terminé',
-      color: 'fr-badge--new fr-badge--icon-left fr-icon-flashlight-fill'
+      label: permissions.isAgri ? "Certification en cours" : "Audit terminé",
+      color: "fr-badge--new fr-badge--icon-left fr-icon-flashlight-fill",
     },
     // Phase 4
     [CertificationState.PENDING_CERTIFICATION]: {
-      label: 'Certification en cours',
-      color: 'fr-badge--new fr-badge--icon-left fr-icon-flashlight-fill'
+      label: "Certification en cours",
+      color: "fr-badge--new fr-badge--icon-left fr-icon-flashlight-fill",
     },
     // Phase 5
     [CertificationState.CERTIFIED]: {
-      label: 'Certifié',
-      color: 'fr-badge--success fr-badge--icon-left fr-icon-checkbox-circle-fill'
+      label: "Certifié",
+      color: "fr-badge--success fr-badge--icon-left fr-icon-checkbox-circle-fill",
     },
   },
   [EventType.FEATURE_COLLECTION_CREATE]: {
-    label: props.metadata?.source === sources.MANUAL ? 'Parcellaire créé' : 'Parcellaire importé',
-    color: 'fr-badge--blue-cumulus fr-badge--icon-left fr-icon-info-line'
+    label: props.metadata?.source === sources.MANUAL ? "Parcellaire créé" : "Parcellaire importé",
+    color: "fr-badge--blue-cumulus fr-badge--icon-left fr-icon-info-line",
   },
   [EventType.FEATURE_COLLECTION_DELETE]: {
-    label: 'Parcellaire supprimé',
-    color: 'fr-badge--brown-caramel fr-badge--icon-left fr-icon-delete-line'
+    label: "Parcellaire supprimé",
+    color: "fr-badge--brown-caramel fr-badge--icon-left fr-icon-delete-line",
   },
   [EventType.FEATURE_COLLECTION_UPDATE]: {
-    label: 'Parcelles modifiées',
-    color: 'fr-badge--icon-left fr-icon-info-line'
+    label: "Parcelles modifiées",
+    color: "fr-badge--icon-left fr-icon-info-line",
   },
   [EventType.FEATURE_CREATE]: {
-    label: 'Nouvelle parcelle',
-    color: 'fr-badge--icon-left fr-icon-add-line'
+    label: "Nouvelle parcelle",
+    color: "fr-badge--icon-left fr-icon-add-line",
   },
   [EventType.FEATURE_DELETE]: {
-    label: 'Parcelle supprimée',
-    color: 'fr-badge--icon-left fr-icon-minus-line'
+    label: "Parcelle supprimée",
+    color: "fr-badge--icon-left fr-icon-minus-line",
   },
   [EventType.FEATURE_UPDATE]: {
-    label: 'Parcelle modifiée',
-    color: 'fr-badge--icon-left fr-icon-info-line'
+    label: "Parcelle modifiée",
+    color: "fr-badge--icon-left fr-icon-info-line",
   },
-})
+});
 
-const typeId = computed(() => props.type in TYPES_MAP ? props.type : null)
-const typeInfo = computed(() => TYPES_MAP[typeId.value][props.state] ?? TYPES_MAP[typeId.value])
+const typeId = computed(() => (props.type in TYPES_MAP ? props.type : null));
+const typeInfo = computed(() => TYPES_MAP[typeId.value][props.state] ?? TYPES_MAP[typeId.value]);
 </script>
 
 <style scoped>

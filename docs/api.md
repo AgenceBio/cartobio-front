@@ -42,7 +42,7 @@ $ curl -H "Authorization: Bearer ${CARTOBIO_TOKEN}" https://cartobio.agencebio.o
 **Exemple de réponse** :
 
 ```json
-{"test":"OK"}
+{ "test": "OK" }
 ```
 
 Et maintenant, en cas d'identification incorrecte :
@@ -54,7 +54,7 @@ $ curl https://cartobio.agencebio.org/api/v1/test
 **Exemple de réponse** :
 
 ```json
-{"error":"We could not verify the provided token."}
+{ "error": "We could not verify the provided token." }
 ```
 
 ## Formats de réponse
@@ -184,7 +184,8 @@ $ curl https://cartobio.agencebio.org/api/v1/parcels
     },
 
     ...
-  ]
+
+]
 }</pre></code></details>
 
 ## Récupérer le parcellaire d'un·e opérateur·ice
@@ -290,7 +291,8 @@ $ curl https://cartobio.agencebio.org/api/v1/parcels/operator/11
     },
 
     ...
-  ]
+
+]
 }</pre></code></details>
 
 ## Récupérer le parcellaire bio anonymisé
@@ -304,11 +306,10 @@ dans un délai raisonnable.
 
 [📮 Nous contacter par e-mail][contact].
 
-
-
 [contact]: mailto:support-cartobio@agencebio.org?subject=Question%20%C3%A0%20propos%20de%20l'API%20CartoBio
 [ask-token]: mailto:support-cartobio@agencebio.org?subject=Demande%20%de%jeton%20%pour%20l'API%20CartoBio,%20Merci%20!
 [ask-wip-feature]: mailto:support-cartobio@agencebio.org?subject=API%20CartoBio%20%3A%20%C3%A0%20propos%20d'une%20future%20fonctionnalit%C3%A9
 
-[^1]: Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
-      Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.
+[^1]:
+    Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
+    Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.

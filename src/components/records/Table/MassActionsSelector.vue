@@ -2,16 +2,16 @@
   <ActionDropdown>
     <template #trigger="{ toggle }">
       <button
-          class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-down-s-line menu-button"
-          @click.stop.prevent="toggle"
+        class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-down-s-line menu-button"
+        @click.stop.prevent="toggle"
       >
         {{ label }}
       </button>
     </template>
-    <li v-for="({ label, component }) in actions" :key="label">
+    <li v-for="{ label, component } in actions" :key="label">
       <button
-          class="fr-btn fr-text--sm fr-btn--sm fr-btn--tertiary-no-outline"
-          @click="openModalWithComponent(component)"
+        class="fr-btn fr-text--sm fr-btn--sm fr-btn--tertiary-no-outline"
+        @click="openModalWithComponent(component)"
       >
         {{ label }}
       </button>
@@ -19,44 +19,49 @@
   </ActionDropdown>
 
   <Teleport to="body">
-    <Component :is="modalComponent" v-if="(modalComponent && isModalOpen)" @close="isModalOpen = false" @submit="handleSubmit" />
+    <Component
+      :is="modalComponent"
+      v-if="modalComponent && isModalOpen"
+      @close="isModalOpen = false"
+      @submit="handleSubmit"
+    />
   </Teleport>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
-import ActionDropdown from "@/components/widgets/ActionDropdown.vue"
+import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 
 defineProps({
   label: {
     type: String,
-    required: true
+    required: true,
   },
   actions: {
     type: Array,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emit = defineEmits(['submit'])
+const emit = defineEmits(["submit"]);
 
-const isMenuOpen = ref(false)
-const isModalOpen = ref(false)
-const openerElement = ref(null)
-const modalComponent = ref(null)
+const isMenuOpen = ref(false);
+const isModalOpen = ref(false);
+const openerElement = ref(null);
+const modalComponent = ref(null);
 
-onClickOutside(openerElement, () => isMenuOpen.value = false)
+onClickOutside(openerElement, () => (isMenuOpen.value = false));
 
-function openModalWithComponent (component) {
-  modalComponent.value = component
-  isModalOpen.value = true
-  isMenuOpen.value = false
+function openModalWithComponent(component) {
+  modalComponent.value = component;
+  isModalOpen.value = true;
+  isMenuOpen.value = false;
 }
 
-function handleSubmit ({ ids, patch }) {
-  emit('submit', { ids, patch })
-  isModalOpen.value = false
+function handleSubmit({ ids, patch }) {
+  emit("submit", { ids, patch });
+  isModalOpen.value = false;
 }
 </script>
 

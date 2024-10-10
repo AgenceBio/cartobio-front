@@ -1,8 +1,8 @@
 <route lang="yaml">
-  meta:
-    seo:
-      title: Page d'accueil (agriculteurs·rices)
-  </route>
+meta:
+  seo:
+    title: Page d'accueil (agriculteurs·rices)
+</route>
 
 <template>
   <div class="fr-container--fluid fr-py-9v">
@@ -12,9 +12,7 @@
           <div class="fr-card fr-card--no-border">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h1 class="fr-h2 fr-h1-sm">
-                  Agriculteurs·rices, gagnez du temps sur vos tâches administratives
-                </h1>
+                <h1 class="fr-h2 fr-h1-sm">Agriculteurs·rices, gagnez du temps sur vos tâches administratives</h1>
 
                 <p class="fr-card__desc fr-text--lead">
                   Partagez votre parcellaire avec votre organisme de certification sur CartoBio.
@@ -23,9 +21,7 @@
               <div class="fr-card__footer">
                 <ul class="fr-btns-group fr-btns-group--inline">
                   <li>
-                    <router-link class="fr-btn" to="/certification/exploitations">
-                      Se connecter
-                    </router-link>
+                    <router-link class="fr-btn" to="/certification/exploitations"> Se connecter </router-link>
                   </li>
                 </ul>
               </div>
@@ -74,10 +70,7 @@
               <strong>Passer plus de temps à valoriser vos pratiques</strong>
               plutôt qu'à parler d'administratif.
             </li>
-            <li>
-              <strong>Transmettez</strong> vos données automatiquement
-              aux services numériques.
-            </li>
+            <li><strong>Transmettez</strong> vos données automatiquement aux services numériques.</li>
           </ul>
         </div>
 
@@ -85,13 +78,8 @@
           <h3>Moins de risque d'erreurs</h3>
 
           <ul class="list-marks">
-            <li>
-              Coordonnez-vous avec votre Organisme de Certification.
-            </li>
-            <li>
-              <strong>Partagez</strong> les données géographiques
-              entre différents services.
-            </li>
+            <li>Coordonnez-vous avec votre Organisme de Certification.</li>
+            <li><strong>Partagez</strong> les données géographiques entre différents services.</li>
           </ul>
         </div>
       </div>
@@ -106,15 +94,14 @@
 </template>
 
 <script setup>
-import PartnersSection from '@/components/landing-page/Partners.vue'
-import ProductFlowSection from '@/components/landing-page/ProductFlow.vue'
+import PartnersSection from "@/components/landing-page/Partners.vue";
+import ProductFlowSection from "@/components/landing-page/ProductFlow.vue";
 </script>
 
 <style scoped>
 .list-marks {
   font-size: 1.25rem; /* as .fr-text--lead */
   padding-left: 0;
-
 
   li {
     background: url("@/assets/check-line.svg") no-repeat left center;
@@ -127,7 +114,9 @@ import ProductFlowSection from '@/components/landing-page/ProductFlow.vue'
   }
 }
 
-h1, h2, :deep(h2) {
+h1,
+h2,
+:deep(h2) {
   --text-title-grey: var(--blue-france-sun-113-625);
 }
 

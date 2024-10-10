@@ -12,7 +12,12 @@
                   <li>
                     <span>
                       <strong class="fr-text--lead">Localiser votre territoire</strong><br />
-                      <a href="https://www.agencebio.org/cartobio/" class="fr-link  fr-icon-arrow-right-line fr-link--icon-right" target="_blank">Naviguer sur la carte<lien-externe /></a>
+                      <a
+                        href="https://www.agencebio.org/cartobio/"
+                        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                        target="_blank"
+                        >Naviguer sur la carte<lien-externe
+                      /></a>
                     </span>
                   </li>
                   <li>
@@ -32,14 +37,18 @@
                   <li>
                     <span>
                       <strong class="fr-text--lead">Importer votre parcellaire</strong><br />
-                      <router-link to="/certification/exploitations" class="fr-link fr-icon-arrow-right-line fr-link--icon-right">Se connecter</router-link>
+                      <router-link
+                        to="/certification/exploitations"
+                        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                        >Se connecter</router-link
+                      >
                     </span>
                   </li>
                   <li>
                     <span>
                       <strong class="fr-text--lead">Faciliter votre audit</strong><br />
-                      À partir du 1er janvier 2024, tous les organismes de
-                      certification réaliseront leurs audits sur CartoBio.
+                      À partir du 1er janvier 2024, tous les organismes de certification réaliseront leurs audits sur
+                      CartoBio.
                     </span>
                   </li>
                   <li>
@@ -68,20 +77,20 @@
 defineProps({
   generalAudience: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 </script>
 
 <style scoped>
 .fr-container--fluid {
-  --bg-color: #F5F5FE;
-  --text-accent-color: #6A6AF4;
+  --bg-color: #f5f5fe;
+  --text-accent-color: #6a6af4;
   --title-accent-color: #000091;
 }
 .fr-container--fluid.general-audience {
   --bg-color: transparent;
-  --text-accent-color: #27A658;
+  --text-accent-color: #27a658;
   --title-accent-color: var(--success-425-625);
 }
 

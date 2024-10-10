@@ -11,16 +11,23 @@
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <div class="fr-input-group">
         <label class="fr-label">Date de début de conversion</label>
-        <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" min="1985-01-01" :max="maxDate" ref="autofocusedElement" required />
+        <input
+          type="date"
+          class="fr-input"
+          v-model="patch.engagement_date"
+          name="engagement_date"
+          min="1985-01-01"
+          :max="maxDate"
+          ref="autofocusedElement"
+          required
+        />
       </div>
     </form>
 
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="mass-edit-form">
-            Enregistrer
-          </button>
+          <button class="fr-btn" form="mass-edit-form">Enregistrer</button>
         </li>
       </ul>
     </template>
@@ -28,25 +35,25 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
-import { useFocus } from '@vueuse/core'
-import { storeToRefs } from 'pinia'
-import { useFeaturesStore } from '@/stores/features.js'
-import { toDateInputString } from '@/utils/dates.js'
+import { computed, reactive, ref } from "vue";
+import { useFocus } from "@vueuse/core";
+import { storeToRefs } from "pinia";
+import { useFeaturesStore } from "@/stores/features.js";
+import { toDateInputString } from "@/utils/dates.js";
 
-import Modal from '@/components/widgets/Modal.vue'
+import Modal from "@/components/widgets/Modal.vue";
 
-defineProps({ })
-const emit = defineEmits(['submit'])
+defineProps({});
+const emit = defineEmits(["submit"]);
 
-const store = useFeaturesStore()
-const { selectedIds } = storeToRefs(store)
-const autofocusedElement = ref()
-useFocus(autofocusedElement, { initialValue: true })
+const store = useFeaturesStore();
+const { selectedIds } = storeToRefs(store);
+const autofocusedElement = ref();
+useFocus(autofocusedElement, { initialValue: true });
 
 const patch = reactive({
-  engagement_date: '',
-})
+  engagement_date: "",
+});
 
-const maxDate = computed(() => toDateInputString(new Date()))
+const maxDate = computed(() => toDateInputString(new Date()));
 </script>

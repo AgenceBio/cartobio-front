@@ -1,9 +1,14 @@
-import { utils, write } from 'xlsx'
-import { fromCodeCpf } from '@agencebio/rosetta-cultures'
+import { utils, write } from "xlsx";
+import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import BaseExporter, { generateAutresInfos } from "@/utils/export-strategies/BaseExporter.js";
-import { getFeatureGroups, GROUPE_CULTURE, GROUPE_DATE_ENGAGEMENT, GROUPE_NIVEAU_CONVERSION } from "@/utils/features.js"
+import {
+  getFeatureGroups,
+  GROUPE_CULTURE,
+  GROUPE_DATE_ENGAGEMENT,
+  GROUPE_NIVEAU_CONVERSION,
+} from "@/utils/features.js";
 
-const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
+const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils;
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -15,20 +20,20 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils
  * @param {{ featureCollection: FeatureCollection, operator: {}}} params
  * @returns {WorkSheet}
  */
-function getSheet () {
-  const { featureCollection, permissions } = this
+function getSheet() {
+  const { featureCollection, permissions } = this;
   const sheet = aoa_to_sheet([
     [
-      'Cultures en place lors du contrôle',
-      'Surfaces déclarées',
-      'Autres infos (ilot.parcelle, semis, etc.)',
-      'Classement proposé',
-      'Depuis',
-      'Id. Parcelles'
+      "Cultures en place lors du contrôle",
+      "Surfaces déclarées",
+      "Autres infos (ilot.parcelle, semis, etc.)",
+      "Classement proposé",
+      "Depuis",
+      "Id. Parcelles",
     ],
-  ])
+  ]);
 
-  sheet['!cols'] = [
+  sheet["!cols"] = [
     // Produit
     { wch: 40 },
     // Surface
@@ -40,44 +45,58 @@ function getSheet () {
     // Date de conversion
     { wch: 10 },
     // Id. Parcelles (CPF)
-    { wch: 40 }
-  ]
+    { wch: 40 },
+  ];
 
-  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(({ features, mainKey, surface }, index) => {
-    const culture = fromCodeCpf(mainKey)
-    const autresInfos = generateAutresInfos(features, { withAnnotations: true, withExplicitName: true, withName: true, pivot: mainKey, permissions })
+  getFeatureGroups(featureCollection, [GROUPE_CULTURE, GROUPE_NIVEAU_CONVERSION, GROUPE_DATE_ENGAGEMENT]).forEach(
+    ({ features, mainKey, surface }, index) => {
+      const culture = fromCodeCpf(mainKey);
+      const autresInfos = generateAutresInfos(features, {
+        withAnnotations: true,
+        withExplicitName: true,
+        withName: true,
+        pivot: mainKey,
+        permissions,
+      });
 
-    sheet_add_aoa(sheet, [
-      [
-        mainKey === '__nogroup__' ? '[ERREUR] culture absente' : (culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`),
-        surface / 10_000,
-        autresInfos,
-        features.at(0).properties.conversion_niveau ?? '',
-        features.at(0).properties.engagement_date ? new Date(features.at(0).properties.engagement_date) : '',
-        features.map(({ properties }) => String(properties.id)).join(',')
-      ]
-    ], { origin: `A${2 + index}`, cellDates: true });
+      sheet_add_aoa(
+        sheet,
+        [
+          [
+            mainKey === "__nogroup__"
+              ? "[ERREUR] culture absente"
+              : culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
+            surface / 10_000,
+            autresInfos,
+            features.at(0).properties.conversion_niveau ?? "",
+            features.at(0).properties.engagement_date ? new Date(features.at(0).properties.engagement_date) : "",
+            features.map(({ properties }) => String(properties.id)).join(","),
+          ],
+        ],
+        { origin: `A${2 + index}`, cellDates: true }
+      );
 
-    // surface is a 2 digits figure
-    sheet[`B${2 + index}`].t = 'n'
-    sheet[`B${2 + index}`].z = '0.00'
-  })
+      // surface is a 2 digits figure
+      sheet[`B${2 + index}`].t = "n";
+      sheet[`B${2 + index}`].z = "0.00";
+    }
+  );
 
-  return sheet
+  return sheet;
 }
 
 export default class CertisudExporter extends BaseExporter {
-  label = 'Excel'
-  extension = 'xlsx'
-  mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  label = "Excel";
+  extension = "xlsx";
+  mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-  getSheet = getSheet
+  getSheet = getSheet;
 
   toFileData() {
-    const sheet = this.getSheet()
-    const workbook = book_new()
-    book_append_sheet(workbook, sheet, 'Parcellaire')
+    const sheet = this.getSheet();
+    const workbook = book_new();
+    book_append_sheet(workbook, sheet, "Parcellaire");
 
-    return new Blob([write(workbook, { bookType: this.extension, type: 'array' })], { type: this.mimetype })
+    return new Blob([write(workbook, { bookType: this.extension, type: "array" })], { type: this.mimetype });
   }
 }

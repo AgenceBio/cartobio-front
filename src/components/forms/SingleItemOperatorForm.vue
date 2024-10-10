@@ -20,8 +20,8 @@
         </ul>
       </div>
 
-      <CultureSelector v-if="permissions.canEditParcellaire" :feature-id="feature.properties.id" :cultures="patch.cultures"
-        @change="$cultures => patch.cultures = $cultures" />
+      <CultureSelector v-if="permissions.canEditParcellaire" :feature-id="feature.properties.id"
+        :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
 
 
       <AccordionGroup v-if="!permissions.canEditParcellaire">
@@ -70,10 +70,9 @@
   <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')" />
 </template>
 
-
 <script setup>
-import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
-import { useFocus } from '@vueuse/core'
+import { computed, onBeforeUnmount, reactive, ref, watch } from "vue";
+import { useFocus } from "@vueuse/core";
 
 import AccordionGroup from '@/components/widgets/AccordionGroup.vue'
 import AccordionSection from '@/components/widgets/Accordion.vue'
@@ -89,7 +88,7 @@ import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.j
 const props = defineProps({
   feature: {
     type: Object,
-    required: true
+    required: true,
   },
   requiredName: {
     type: Boolean,
@@ -104,11 +103,11 @@ const autofocusedElement = ref()
 useFocus(autofocusedElement, { initialValue: true })
 
 const patch = reactive({
-  NOM: props.feature.properties.NOM || '',
+  NOM: props.feature.properties.NOM || "",
   cultures: props.feature.properties.cultures,
   commentaires: props.feature.properties.commentaires || '',
   conversion_niveau: props.feature.properties.conversion_niveau || '',
-  engagement_date : props.feature.properties.engagement_date || ''
+  engagement_date: props.feature.properties.engagement_date || ''
 })
 
 const details = featureDetails(props.feature)
@@ -117,34 +116,34 @@ const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].i
 
 
 const validate = () => {
-  const set = featuresSet.byFeature(props.feature.id, true)
+  const set = featuresSet.byFeature(props.feature.id, true);
 
   if (set.size) {
-    return false
+    return false;
   }
 
-  emit('submit', { id: props.feature.id, properties: patch })
-}
+  emit("submit", { id: props.feature.id, properties: patch });
+};
 
-
-function handleClose () {
+function handleClose() {
   if (featuresSet.isDirty) {
-    showCancelModal.value = true
-  }
-  else {
-    emit('close')
+    showCancelModal.value = true;
+  } else {
+    emit("close");
   }
 }
 
-onBeforeUnmount(() => featuresSet.setCandidate([]))
+onBeforeUnmount(() => featuresSet.setCandidate([]));
 
 watch(patch, (properties) => {
-  featuresSet.setCandidate([{
-    id: props.feature.id,
-    properties: {
-      ...props.feature.properties,
-      ...properties
-    }
-  }])
-})
+  featuresSet.setCandidate([
+    {
+      id: props.feature.id,
+      properties: {
+        ...props.feature.properties,
+        ...properties,
+      },
+    },
+  ]);
+});
 </script>

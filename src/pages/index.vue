@@ -1,9 +1,9 @@
 <route lang="yaml">
-  meta:
-    generalAudience: true
-    seo:
-      title: Page d'accueil (grand public)
-  </route>
+meta:
+  generalAudience: true
+  seo:
+    title: Page d'accueil (grand public)
+</route>
 
 <template>
   <div class="fr-container--fluid fr-py-9v hero">
@@ -13,9 +13,7 @@
           <div class="fr-card">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h1 class="fr-label--success">
-                  Découvrez les parcelles bio autour de chez vous
-                </h1>
+                <h1 class="fr-label--success">Découvrez les parcelles bio autour de chez vous</h1>
 
                 <p class="fr-card__desc fr-text--lead">
                   Explorez votre territoire grâce à nos données sur l'agriculture biologique.
@@ -44,11 +42,10 @@
           <h2 class="fr-h3">Comprendre son environnement</h2>
 
           <ul class="list-marks">
+            <li>Visualisez votre territoire grâce à <strong>nos données cartographiques</strong>.</li>
             <li>
-              Visualisez votre territoire grâce à <strong>nos données cartographiques</strong>.
-            </li>
-            <li>
-              Profitez de <strong>données fiables</strong>, complètes et mises à jour régulièrement par les acteurs de la filière biologique.
+              Profitez de <strong>données fiables</strong>, complètes et mises à jour régulièrement par les acteurs de
+              la filière biologique.
             </li>
           </ul>
         </div>
@@ -57,12 +54,8 @@
           <h2 class="fr-h3">Évaluer la qualité de vie</h2>
 
           <ul class="list-marks">
-            <li>
-              Regardez la part de <strong>parcelles bio</strong> autour de vous.
-            </li>
-            <li>
-              <strong>Observez l'évolution</strong> de l'agriculture biologique au fil des années.
-            </li>
+            <li>Regardez la part de <strong>parcelles bio</strong> autour de vous.</li>
+            <li><strong>Observez l'évolution</strong> de l'agriculture biologique au fil des années.</li>
           </ul>
         </div>
       </div>
@@ -77,13 +70,15 @@
         <div class="fr-col-md-8">
           <h2>Des données en libre accès</h2>
 
-          <p>
-            Téléchargez nos données géographiques pour les manipuler
-            ou les intégrer dans vos outils.
-          </p>
+          <p>Téléchargez nos données géographiques pour les manipuler ou les intégrer dans vos outils.</p>
 
           <p>
-            <a class="fr-btn fr-btn--secondary" href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/" target="_blank"  rel="noopener">
+            <a
+              class="fr-btn fr-btn--secondary"
+              href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/"
+              target="_blank"
+              rel="noopener"
+            >
               Accéder aux données<lien-externe />
             </a>
           </p>
@@ -93,9 +88,7 @@
   </section>
 
   <PartnersSection sponsors>
-    <template #headline>
-      Des données contrôlées issues de la filière biologique
-    </template>
+    <template #headline> Des données contrôlées issues de la filière biologique </template>
   </PartnersSection>
 
   <div class="fr-container--fluid fr-py-4w">
@@ -114,9 +107,7 @@
                 <h3>Pour les agriculteurs</h3>
 
                 <ul class="list-marks fr-card__desc">
-                  <li>
-                    Partagez votre parcellaire avec votre organisme de certification.
-                  </li>
+                  <li>Partagez votre parcellaire avec votre organisme de certification.</li>
                 </ul>
               </div>
               <div class="fr-card__footer">
@@ -139,9 +130,7 @@
                 <h3>Pour les organismes de certification</h3>
 
                 <ul class="list-marks fr-card__desc">
-                  <li>
-                    Facilitez votre suivi du parcellaire avec des données cartographiques.
-                  </li>
+                  <li>Facilitez votre suivi du parcellaire avec des données cartographiques.</li>
                 </ul>
               </div>
 
@@ -163,15 +152,15 @@
 </template>
 
 <script setup>
-import PartnersSection from '@/components/landing-page/Partners.vue'
-import ProductFlowSection from '@/components/landing-page/ProductFlow.vue'
+import PartnersSection from "@/components/landing-page/Partners.vue";
+import ProductFlowSection from "@/components/landing-page/ProductFlow.vue";
 </script>
 
 <style scoped>
 .fr-container--fluid,
 fr-container {
   --btn-background-color-default: var(--success-425-625);
-  --btn-background-color-active: #0C5127;
+  --btn-background-color-active: #0c5127;
   --btn-color-default: var(--background-color-default);
 
   /* overrides default color */
@@ -188,7 +177,7 @@ a:not(.fr-btn),
 
 .hero {
   background-color: #e9eddf;
-  background-image: url('@/assets/screenshots/map-background.png');
+  background-image: url("@/assets/screenshots/map-background.png");
   background-position: center center;
   background-size: cover;
 }
@@ -196,7 +185,6 @@ a:not(.fr-btn),
 .list-marks {
   font-size: 1.25rem; /* as .fr-text--lead */
   padding-left: 0;
-
 
   li {
     background: url("@/assets/check-line.svg") no-repeat left center;
