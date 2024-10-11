@@ -7,7 +7,7 @@
         type="radio"
         :id="'conversion-' + niveau.value"
         :value="niveau.value"
-        :readonly="readonly"
+        :disabled="readonly"
         :checked="niveau.value === modelValue"
         @change="emit('update:modelValue', niveau.value)"
         name="conversion_niveau"
