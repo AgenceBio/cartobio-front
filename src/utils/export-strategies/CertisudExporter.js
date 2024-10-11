@@ -65,7 +65,7 @@ function getSheet() {
           [
             mainKey === "__nogroup__"
               ? "[ERREUR] culture absente"
-              : culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
+              : (culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`),
             surface / 10_000,
             autresInfos,
             features.at(0).properties.conversion_niveau ?? "",
@@ -73,13 +73,13 @@ function getSheet() {
             features.map(({ properties }) => String(properties.id)).join(","),
           ],
         ],
-        { origin: `A${2 + index}`, cellDates: true }
+        { origin: `A${2 + index}`, cellDates: true },
       );
 
       // surface is a 2 digits figure
       sheet[`B${2 + index}`].t = "n";
       sheet[`B${2 + index}`].z = "0.00";
-    }
+    },
   );
 
   return sheet;

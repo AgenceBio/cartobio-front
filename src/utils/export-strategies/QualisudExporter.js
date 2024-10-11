@@ -72,7 +72,7 @@ function getSheet() {
           String(properties.id),
         ],
       ],
-      { origin: `A${rowIndex}`, cellDates: true }
+      { origin: `A${rowIndex}`, cellDates: true },
     );
 
     // surface is a 2 digits figure

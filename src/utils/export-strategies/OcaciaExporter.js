@@ -106,7 +106,7 @@ function getSheet() {
         // Ilot
         featureName(
           { properties: props },
-          { explicitName: false, ilotLabel: "", parcelleLabel: "", separator: ".", placeholder: "" }
+          { explicitName: false, ilotLabel: "", parcelleLabel: "", separator: ".", placeholder: "" },
         ),
         // Culture
         culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures.at(0)?.CPF})`,
@@ -156,7 +156,7 @@ function getSheet() {
         String(props.id),
       ];
     }),
-    { origin: "A4", cellDates: true }
+    { origin: "A4", cellDates: true },
   );
 
   // Formattage des cellules, s'il y a une valeur
@@ -181,7 +181,7 @@ function getSheet() {
     getFeatureGroups(featureCollection, GROUPE_NIVEAU_CONVERSION).map(({ key, features }) => [
       key,
       legalProjectionSurface(features) / 10_000,
-    ])
+    ]),
   );
 
   sheet_add_aoa(
@@ -195,7 +195,7 @@ function getSheet() {
         groups.C3?.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) ?? 0,
       ],
     ],
-    { origin: "F2" }
+    { origin: "F2" },
   );
 
   sheet["I1"].v = (legalProjectionSurface(featureCollection) / 10_000)?.toLocaleString("fr-FR", {

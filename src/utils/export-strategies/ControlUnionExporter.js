@@ -27,7 +27,7 @@ function getSheet() {
         "Code culture",
       ],
     ],
-    { origin: "A2" }
+    { origin: "A2" },
   );
 
   sheet["!cols"] = [
@@ -77,7 +77,7 @@ function getSheet() {
         culture?.code_cpf,
       ];
     }),
-    { origin: "A7", cellDates: true }
+    { origin: "A7", cellDates: true },
   );
 
   // Formattage des cellules

@@ -428,7 +428,7 @@ describe("featureName", () => {
 
     expect(featureName(feature)).toEqual("ilot 1, parcelle 1 (les muriers)");
     expect(featureName(feature, { explicitName: false, ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual(
-      "1.1"
+      "1.1",
     );
     expect(featureName(feature, { ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual("1.1 (les muriers)");
   });
@@ -623,12 +623,12 @@ describe("applyCadastreGeometries()", () => {
         newFeature(
           { type: "Polygon", coordinates },
           { ...baseCollection.features.at(0).properties, COMMUNE_LABEL: "Seillonnaz", COMMUNE: "01400" },
-          { id: 1 }
+          { id: 1 },
         ),
         newFeature(
           { type: "Polygon", coordinates },
           { ...baseCollection.features.at(1).properties, COMMUNE_LABEL: "Seillonnaz", COMMUNE: "01400" },
-          { id: 2 }
+          { id: 2 },
         ),
       ]),
       warnings: [],
@@ -649,7 +649,7 @@ describe("applyCadastreGeometries()", () => {
         newFeature(
           { type: "Polygon", coordinates },
           { ...baseCollection.features.at(1).properties, COMMUNE_LABEL: "Seillonnaz", COMMUNE: "01400" },
-          { id: 2 }
+          { id: 2 },
         ),
       ]),
       warnings: [new FeatureNotFoundError("014000000D0006")],

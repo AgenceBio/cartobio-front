@@ -222,7 +222,7 @@ function getSheet() {
         String(properties.id),
       ];
     }),
-    { origin: "A8", cellDates: true }
+    { origin: "A8", cellDates: true },
   );
 
   // Formattage des cellules, s'il y a une valeur
@@ -247,7 +247,7 @@ function getSheet() {
     getFeatureGroups(featureCollection, GROUPE_NIVEAU_CONVERSION).map(({ key, features }) => [
       key,
       legalProjectionSurface(features) / 10_000,
-    ])
+    ]),
   );
 
   const totalSurface = (legalProjectionSurface(featureCollection) / 10_000)?.toLocaleString("fr-FR", {
@@ -266,7 +266,7 @@ function getSheet() {
       ["Total bio", groups.C2?.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) ?? "0,00"],
       ["Total conv", groups.C3?.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) ?? "0,00"],
     ],
-    { origin: "P1" }
+    { origin: "P1" },
   );
 
   return sheet;

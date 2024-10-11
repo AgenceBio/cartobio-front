@@ -16,7 +16,7 @@ function getSheet() {
       ["Date de saisie :", "", new Date(), "", "N°PACAGE", operator.numeroPacage],
       ["Surface graphique totale (en ha) :", "", legalProjectionSurface(featureCollection) / 10_000],
     ],
-    { cellDates: true }
+    { cellDates: true },
   );
 
   sheet["C1"].l = {
@@ -65,7 +65,7 @@ function getSheet() {
         "Notes d'audit",
       ],
     ],
-    { origin: "A6" }
+    { origin: "A6" },
   );
 
   sheet_add_aoa(
@@ -99,7 +99,7 @@ function getSheet() {
         props.auditeur_notes ?? "",
       ];
     }),
-    { origin: "A7", cellDates: true }
+    { origin: "A7", cellDates: true },
   );
 
   // Formatting cells

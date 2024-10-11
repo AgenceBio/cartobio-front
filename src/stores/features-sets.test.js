@@ -148,7 +148,7 @@ describe("results", () => {
             required: false,
           },
         ],
-      ])
+      ]),
     );
   });
 
@@ -198,7 +198,7 @@ describe("byFeature()", () => {
             required: false,
           },
         ],
-      ])
+      ]),
     );
   });
 
@@ -225,7 +225,7 @@ describe("byFeatureProperty()", () => {
             required: false,
           },
         ],
-      ])
+      ]),
     );
   });
 });
@@ -247,7 +247,7 @@ describe("byFeatureDetail()", () => {
             required: true,
           },
         ],
-      ])
+      ]),
     );
   });
 

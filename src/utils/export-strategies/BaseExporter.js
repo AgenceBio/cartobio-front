@@ -34,7 +34,7 @@ export default class BaseExporter {
           parcelleLabel: "",
           separator: ".",
         });
-      })
+      }),
     );
   }
 
@@ -57,7 +57,7 @@ export default class BaseExporter {
           ...obj,
           [header.at(index)]: value,
         }),
-        {}
+        {},
       );
     });
 
@@ -92,7 +92,7 @@ export function generateAutresInfos(
     pivot = null,
     initialCulture,
     permissions = {},
-  } = {}
+  } = {},
 ) {
   const dateFmnt = new Intl.DateTimeFormat("fr-FR", {
     timeZone: "Europe/Paris",
@@ -115,8 +115,8 @@ export function generateAutresInfos(
             explicitName: withExplicitName,
           })
         : withExplicitName
-        ? feature.properties.NOM ?? ""
-        : "";
+          ? (feature.properties.NOM ?? "")
+          : "";
       const notes = withNotes ? feature.properties.auditeur_notes : "";
       const annotations =
         withAnnotations && permissions.canExportAnnotations && Array.isArray(feature.properties.annotations)
@@ -138,7 +138,7 @@ export function generateAutresInfos(
             withSurface && c.surface ? `${c.surface}ha` : "",
           ]
             .filter(dropEmptyItem)
-            .join(", ")
+            .join(", "),
         )
         .filter(dropEmptyItem)
         .join(" / ");

@@ -27,3 +27,4 @@ jobs:
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2
+      - run: npm run prettier:check

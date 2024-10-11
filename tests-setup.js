@@ -97,7 +97,7 @@ vi.stubGlobal(
   vi.fn(() => ({
     addEventListener: vi.fn(),
     matches: vi.fn().mockReturnValue(true),
-  }))
+  })),
 );
 
 vi.spyOn(global, "navigator", "get").mockImplementation(() => ({

@@ -85,7 +85,7 @@ function getSheet() {
             culture?.groupe,
             mainKey === "__nogroup__"
               ? "[ERREUR] culture absente"
-              : culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`,
+              : (culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${mainKey})`),
             culture?.code_bureau_veritas,
             // Complément certificat (variété)
             varietes,
@@ -97,13 +97,13 @@ function getSheet() {
             features.at(0).properties.engagement_date,
           ],
         ],
-        { origin: `B${2 + index}`, cellDates: true }
+        { origin: `B${2 + index}`, cellDates: true },
       );
 
       // surface is a 2 digits figure
       sheet[`G${2 + index}`].t = "n";
       sheet[`G${2 + index}`].z = "0.00";
-    }
+    },
   );
 
   return sheet;

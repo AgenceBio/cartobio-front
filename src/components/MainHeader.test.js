@@ -72,7 +72,7 @@ describe("MainHeader", () => {
     expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual("Nom Aide À propos de CartoBio  Déconnexion");
     expect(wrapper.find('.fr-nav[role="navigation"] a').attributes("href")).toEqual("/certification/exploitations");
     expect(wrapper.find('.fr-nav[role="navigation"] a[target="_blank"]').attributes("href")).toEqual(
-      "https://docs-cartobio.agencebio.org/organisme-certification"
+      "https://docs-cartobio.agencebio.org/organisme-certification",
     );
 
     await wrapper.find(".tool-logout a").trigger("click");
@@ -90,7 +90,7 @@ describe("MainHeader", () => {
     expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual("Nom Aide À propos de CartoBio  Déconnexion");
     expect(wrapper.find('.fr-nav[role="navigation"] a').attributes("href")).toEqual("/exploitations");
     expect(wrapper.find('.fr-nav[role="navigation"] a[target="_blank"]').attributes("href")).toEqual(
-      "https://docs-cartobio.agencebio.org/agriculteurs.trices"
+      "https://docs-cartobio.agencebio.org/agriculteurs.trices",
     );
   });
 

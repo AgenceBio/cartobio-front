@@ -63,6 +63,6 @@ export function toString(objectReference) {
   const { commune, prefix = "000", section = "", number = "" } = objectReference;
   return `${padLeadingZero(commune, 5)}${padLeadingZero(prefix, 3)}${padLeadingZero(section, 2)}${padLeadingZero(
     number,
-    4
+    4,
   )}`;
 }

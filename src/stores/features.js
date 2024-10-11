@@ -166,7 +166,7 @@ export const useFeaturesStore = defineStore("features", () => {
           }
         });
       },
-      { deep: true }
+      { deep: true },
     );
 
     watch(activeId, (id, previousId) => {
@@ -233,7 +233,7 @@ export const useFeaturesStore = defineStore("features", () => {
             JSON.stringify({
               ...feature.properties,
               ...matchingFeature.properties,
-            })
+            }),
           ),
         };
       }
@@ -251,7 +251,7 @@ export const useFeaturesStore = defineStore("features", () => {
     const storage = useCartoBioStorage();
     storage.addSyncOperation(
       recordId.value,
-      new SyncOperation(SyncOperation.ACTIONS.UPDATE_FEATURE, { properties, geometry }, id)
+      new SyncOperation(SyncOperation.ACTIONS.UPDATE_FEATURE, { properties, geometry }, id),
     );
   }
 
@@ -264,7 +264,7 @@ export const useFeaturesStore = defineStore("features", () => {
     const storage = useCartoBioStorage();
     storage.addSyncOperation(
       recordId.value,
-      new SyncOperation(SyncOperation.ACTIONS.UPDATE_COLLECTION, featureCollection)
+      new SyncOperation(SyncOperation.ACTIONS.UPDATE_COLLECTION, featureCollection),
     );
   }
 

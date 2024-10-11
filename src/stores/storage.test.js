@@ -40,7 +40,7 @@ describe("storage", () => {
       await storage.addRecord(recordId);
       storage.addSyncOperation(
         recordId,
-        new SyncOperation(SyncOperation.ACTIONS.DELETE_FEATURE, { reason: "error" }, "1")
+        new SyncOperation(SyncOperation.ACTIONS.DELETE_FEATURE, { reason: "error" }, "1"),
       );
 
       expect(storage.records[recordId].parcelles.features.length).toBe(3);
@@ -54,8 +54,8 @@ describe("storage", () => {
         new SyncOperation(
           SyncOperation.ACTIONS.UPDATE_FEATURE,
           { type: "Feature", properties: { NOM: "Nom test" } },
-          "1"
-        )
+          "1",
+        ),
       );
 
       expect(storage.records[recordId].parcelles.features[0].properties.NOM).toEqual("Nom test");
@@ -66,7 +66,7 @@ describe("storage", () => {
       await storage.addRecord(recordId);
       storage.addSyncOperation(
         recordId,
-        new SyncOperation(SyncOperation.ACTIONS.RECORD_INFO, { version_name: "Version test au nom changé" })
+        new SyncOperation(SyncOperation.ACTIONS.RECORD_INFO, { version_name: "Version test au nom changé" }),
       );
 
       expect(storage.records[recordId].version_name).toBe("Version test au nom changé");
@@ -84,7 +84,7 @@ describe("storage", () => {
             { id: "2", properties: { conversion_niveau: "CONV" } },
             { id: "3", properties: { conversion_niveau: "CONV" } },
           ],
-        })
+        }),
       );
 
       expect(storage.records[recordId].parcelles.features.map((f) => f.properties.conversion_niveau)).toStrictEqual([

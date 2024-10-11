@@ -49,7 +49,7 @@ export const useOperatorStore = defineStore("operator", () => {
         acc[acc.length - 1].records.push(record);
         return acc;
       },
-      [{ year: records.value[0].created_at.split("-")[0], records: [] }]
+      [{ year: records.value[0].created_at.split("-")[0], records: [] }],
     );
   });
 
@@ -67,7 +67,7 @@ export const useOperatorStore = defineStore("operator", () => {
         storage.syncQueues[serverR.record_id]
           ? storage.operators[numeroBio]?.records.find((storageR) => storageR.record_id === serverR.record_id) ||
             serverR
-          : serverR
+          : serverR,
       );
     }
 

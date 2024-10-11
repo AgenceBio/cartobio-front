@@ -25,7 +25,7 @@ describe("deriveRolesFromGroups()", () => {
             nom: "Rôle farfelu",
           },
         ],
-      })
+      }),
     ).toEqual([ROLES.OC_CERTIF, ROLES.OC_AUDIT]);
   });
 
@@ -39,7 +39,7 @@ describe("deriveRolesFromGroups()", () => {
             nom: "Rôle farfelu",
           },
         ],
-      })
+      }),
     ).toEqual([ROLES.UNKNOWN]);
   });
 
@@ -51,7 +51,7 @@ describe("deriveRolesFromGroups()", () => {
           id: 1,
           nom: "Super OC",
         },
-      })
+      }),
     ).toEqual([ROLES.OC_CERTIF, ROLES.OC_AUDIT]);
   });
 });

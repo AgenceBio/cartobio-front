@@ -15,7 +15,9 @@
     "start": "vite",
     "test": "vitest --coverage",
     "posttest": "eslint ./src",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 1 -u"
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 1 -u",
+    "prettier:format": "prettier --write \"**/*.{ts,tsx,js,md,json,css,yaml}\"",
+    "prettier:check": "prettier --check \"**/*.{ts,tsx,js,md,json,css,yaml}\""
   },
   "engines": {
     "node": "^20.0.0"
@@ -62,6 +64,7 @@
     "eslint": "^8.6.0",
     "jsdom": "^24.0.0",
     "postcss-preset-env": "^8.3.2",
+    "prettier": "3.3.3",
     "typescript": "^5.0.4",
     "vite": "^5.4.8",
     "vite-plugin-pages": "^0.32.0",

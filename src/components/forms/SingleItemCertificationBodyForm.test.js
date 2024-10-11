@@ -96,7 +96,7 @@ describe("SingleItemCertificationBodyForm", () => {
 
     expect(form.find("#reduced_conversion_period_state").element.value).toEqual(CERTIFICATION_BODY_DECISION.PENDING);
     expect(form.find("#reduced_conversion_period_state").element.selectedOptions[0].textContent).toEqual(
-      "En cours de traitement"
+      "En cours de traitement",
     );
 
     // we toggle and cancel the tag

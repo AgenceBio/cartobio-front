@@ -27,7 +27,7 @@ function getSheet() {
       // A2: B2
       ["Date de saisie :", new Date()],
     ],
-    { cellDates: true }
+    { cellDates: true },
   );
 
   sheet["B1"].l = {
@@ -125,7 +125,7 @@ function getSheet() {
         "Code culture",
       ],
     ],
-    { origin: "A4" }
+    { origin: "A4" },
   );
 
   const ilotOptions = {
@@ -198,7 +198,7 @@ function getSheet() {
         culture?.code_cpf,
       ];
     }),
-    { origin: "A6", cellDates: true }
+    { origin: "A6", cellDates: true },
   );
 
   // Formattage des cellules, s'il y a une valeur
@@ -217,7 +217,7 @@ function getSheet() {
     getFeatureGroups(featureCollection, GROUPE_NIVEAU_CONVERSION).map(({ key, features }) => [
       key,
       legalProjectionSurface(features) / 10_000,
-    ])
+    ]),
   );
 
   sheet_add_aoa(
@@ -234,14 +234,14 @@ function getSheet() {
         (legalProjectionSurface(featureCollection) / 10_000)?.toLocaleString("fr-FR", { maximumFractionDigits: 2 }),
       ],
     ],
-    { origin: "S4" }
+    { origin: "S4" },
   );
 
   // Totaux par niveau de conversion ET par type de culture
   sheet_add_aoa(
     sheet,
     [["Surfaces par culture"], ["Culture", "Somme de AB", "Somme de C1", "Somme de C2", "Somme de C3", "Somme de C0"]],
-    { origin: "S7" }
+    { origin: "S7" },
   );
 
   getFeatureGroups(featureCollection, GROUPE_CULTURE).forEach(({ key, features }, index) => {
@@ -250,7 +250,7 @@ function getSheet() {
       getFeatureGroups({ type: "FeatureCollection", features }, GROUPE_NIVEAU_CONVERSION).map(({ key, features }) => [
         key,
         legalProjectionSurface(features) / 10_000,
-      ])
+      ]),
     );
 
     sheet_add_aoa(
@@ -265,7 +265,7 @@ function getSheet() {
           groups.CONV?.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) ?? 0,
         ],
       ],
-      { origin: `S${9 + index}` }
+      { origin: `S${9 + index}` },
     );
   });
 

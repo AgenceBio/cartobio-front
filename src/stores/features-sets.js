@@ -238,7 +238,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
 
                     return map;
                   }, new Map())
-                  .values()
+                  .values(),
               );
             },
             select(f) {
@@ -246,7 +246,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             },
           },
         ],
-      ])
+      ]),
   );
 
   /**
@@ -271,8 +271,8 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
               },
             ];
           })
-          .filter(([, { count }]) => count)
-      )
+          .filter(([, { count }]) => count),
+      ),
   );
 
   /**
@@ -291,7 +291,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
         return definition.items ? definition.items(allCandidate) : [{ id, ...result }];
       })
       .map(({ id, ...item }) => ({ id, ...item, active: isToggled(id) }))
-      .sort(({ count: countA }, { count: countB }) => countB - countA)
+      .sort(({ count: countA }, { count: countB }) => countB - countA),
   );
 
   /**
@@ -340,7 +340,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             featureIds: [featureId],
             details: details.filter((d) => d.at(0) === featureId),
           },
-        ])
+        ]),
     );
   }
 
@@ -351,7 +351,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
    */
   function byFeatureProperty(featureId, property, filterRequired = false) {
     return new Map(
-      Array.from(byFeature(featureId, filterRequired).entries()).filter(([, { property: prop }]) => prop === property)
+      Array.from(byFeature(featureId, filterRequired).entries()).filter(([, { property: prop }]) => prop === property),
     );
   }
 
@@ -363,8 +363,8 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
   function byFeatureDetail(featureId, detailId, filterRequired = false) {
     return new Map(
       Array.from(byFeature(featureId, filterRequired).entries()).filter(([, { details }]) =>
-        details.some(([fid, r]) => fid === featureId && (Array.isArray(r) ? r.at(0) === detailId : false))
-      )
+        details.some(([fid, r]) => fid === featureId && (Array.isArray(r) ? r.at(0) === detailId : false)),
+      ),
     );
   }
 

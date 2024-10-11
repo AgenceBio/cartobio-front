@@ -385,7 +385,7 @@ export function getFeatureById(features, id) {
  */
 export function featureName(
   feature,
-  { explicitName = true, ilotLabel = "ilot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {}
+  { explicitName = true, ilotLabel = "ilot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {},
 ) {
   const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10);
   const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10);
@@ -575,7 +575,7 @@ async function fetchCadastreGeometry(q, baseFeature) {
         COMMUNE_LABEL: cadastreFeature.properties.city,
         COMMUNE: `${cadastreFeature.properties.departmentcode}${cadastreFeature.properties.municipalitycode}`,
       },
-      { id: baseFeature.id ?? baseFeature.properties.id }
+      { id: baseFeature.id ?? baseFeature.properties.id },
     ),
   };
 }
@@ -595,7 +595,7 @@ export async function applyCadastreGeometries(baseCollection, field = "cadastre"
       if (!feature.geometry && Array.isArray(feature.properties[field])) {
         return fetchCadastreGeometry(feature.properties[field][0], feature);
       }
-    })
+    }),
   );
 
   const featureCollection = {

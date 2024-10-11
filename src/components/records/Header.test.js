@@ -114,7 +114,7 @@ describe("RecordHeader", () => {
           certification_date_fin: newCertificationDateFin,
           version_name: "Version créée le 01/01/2024",
         },
-        expect.anything()
+        expect.anything(),
       );
     });
   });

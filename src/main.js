@@ -168,7 +168,7 @@ router.beforeEach(async (to) => {
     ) {
       toast.error(
         "Une erreur de réseau est survenue. Si votre connexion " +
-          "est instable, vous pouvez passer en mode hors-ligne."
+          "est instable, vous pouvez passer en mode hors-ligne.",
       );
       return false;
     }
@@ -224,7 +224,7 @@ router.afterEach(async () => {
     ) {
       toast.error(
         "Une erreur de réseau est survenue. Si votre connexion " +
-          "est instable, vous pouvez passer en mode hors-ligne."
+          "est instable, vous pouvez passer en mode hors-ligne.",
       );
       return;
     }

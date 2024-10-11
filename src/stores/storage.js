@@ -37,7 +37,7 @@ class SyncQueue {
     this.operations = this.operations.reduce((acc, op) => {
       if (op.action === SyncOperation.ACTIONS.RECORD_INFO && "audit_date" in op.payload) {
         const firstAuditDateOp = acc.find(
-          (op) => op.action === SyncOperation.ACTIONS.RECORD_INFO && "audit_date" in op.payload
+          (op) => op.action === SyncOperation.ACTIONS.RECORD_INFO && "audit_date" in op.payload,
         );
         if (firstAuditDateOp) {
           firstAuditDateOp.payload.audit_date = op.payload.audit_date;
@@ -157,7 +157,7 @@ export class SyncOperation {
         for (let i = 0; i < features.length; i++) {
           Object.assign(
             result.parcelles.features.find((f) => f.id === features[i].id)?.properties || {},
-            features[i].properties
+            features[i].properties,
           );
         }
         return result;
@@ -168,7 +168,7 @@ export class SyncOperation {
       case SyncOperation.ACTIONS.UPDATE_FEATURE:
         Object.assign(
           result.parcelles.features.find((f) => f.id === this.featureId)?.properties || {},
-          this.payload.properties
+          this.payload.properties,
         );
         return result;
     }
@@ -230,8 +230,8 @@ export const useCartoBioStorage = defineStore("storage", () => {
             return r;
           }),
         },
-      ])
-    )
+      ]),
+    ),
   );
 
   /**
@@ -244,8 +244,8 @@ export const useCartoBioStorage = defineStore("storage", () => {
       Object.entries(recordsStorage.value).map(([id]) => [
         id,
         getRecordWithQueuedOps(recordsStorage.value[id], syncQueues.value[id]?.operations || []),
-      ])
-    )
+      ]),
+    ),
   );
 
   /**
@@ -274,13 +274,13 @@ export const useCartoBioStorage = defineStore("storage", () => {
               recordId,
               new SyncQueue(
                 queue.operations.map((op) => new SyncOperation(op.action, op.payload, op.featureId)),
-                new Date(queue.ifUnmodifiedSince)
+                new Date(queue.ifUnmodifiedSince),
               ),
-            ])
+            ]),
           ),
         write: JSON.stringify,
       },
-    }
+    },
   );
 
   /**
@@ -392,7 +392,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
       const { useRecordStore } = await import("@/stores/record.js");
       const newRecord = await useRecordStore().getRecord(recordId, true);
       syncQueues.value[recordId].operations = syncQueues.value[recordId].operations.filter(
-        (op) => !op.featureId || newRecord.parcelles.features.find((f) => String(f.id) === String(op.featureId))
+        (op) => !op.featureId || newRecord.parcelles.features.find((f) => String(f.id) === String(op.featureId)),
       );
       syncQueues.value[recordId].ifUnmodifiedSince = new Date();
     }
