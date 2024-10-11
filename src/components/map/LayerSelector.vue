@@ -1,61 +1,88 @@
 <template>
-<Teleport to=".maplibregl-ctrl-bottom-left">
-  <div class="container maplibregl-ctrl" ref="layersMenuRef">
-    <button
-      class="menu-toggle"
-      :class="{ 'menu-toggle--satellite': fond === 'satellite', 'menu-toggle--plan': fond === 'plan' }"
-      @click="showMenu = !showMenu"
-    >
-      <span class="fr-icon--sm fr-mb-1v">
-        Calques
-      </span>
-    </button>
-
-    <dialog aria-labelledby="map-layers-title" role="dialog" class="menu" :open="showMenu">
-      <h5 id="map-layers-title" class="fr-mb-2w">Calques</h5>
-
+  <Teleport to=".maplibregl-ctrl-bottom-left">
+    <div class="container maplibregl-ctrl" ref="layersMenuRef">
       <button
-        class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
-        @click="showMenu = false"
-      >Fermer</button>
-
-      <h6 class="fr-my-2w fr-text--md">Fonds de carte</h6>
-      <button class="menu-entry" :class="{ 'active': fond === 'plan' }" @click="$emit('update:fond', 'plan')" aria-label="Choisir le fond plan">
-        <img src="@/assets/map/plan.jpg" alt="" />
-        <span>Plan</span>
-      </button>
-      <button class="menu-entry" :class="{ 'active': fond === 'satellite' }" @click="$emit('update:fond', 'satellite')" aria-label="Choisir le fond satellite">
-        <img src="@/assets/map/satellite.jpg" alt="" />
-        <span>Satellite</span>
+        class="menu-toggle"
+        :class="{ 'menu-toggle--satellite': fond === 'satellite', 'menu-toggle--plan': fond === 'plan' }"
+        @click="showMenu = !showMenu"
+      >
+        <span class="fr-icon--sm fr-mb-1v"> Calques </span>
       </button>
 
-      <hr class="fr-mt-3w fr-pb-2w" />
+      <dialog aria-labelledby="map-layers-title" role="dialog" class="menu" :open="showMenu">
+        <h5 id="map-layers-title" class="fr-mb-2w">Calques</h5>
 
-      <h6 class="fr-mb-2w fr-text--md">Calques</h6>
-      <button class="menu-entry" :class="{ 'active': classification }" @click="$emit('update:classification', !classification)" :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`">
-        <img src="@/assets/map/classification.jpg" alt="" />
-        <span>
-          <abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}
-          <small class="fr-hint-text">Voir la <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte" @click.stop target="_blank">méthode de classification<lien-externe /></a></small>
-        </span>
-      </button>
-      <button class="menu-entry" :class="{ 'active': cadastre }" @click="$emit('update:cadastre', !cadastre)" :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`">
-        <img src="@/assets/map/cadastre.jpg" alt="" />
-        <span>Cadastre</span>
-      </button>
-    </dialog>
-  </div>
-</Teleport>
+        <button
+          class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
+          @click="showMenu = false"
+        >
+          Fermer
+        </button>
+
+        <h6 class="fr-my-2w fr-text--md">Fonds de carte</h6>
+        <button
+          class="menu-entry"
+          :class="{ active: fond === 'plan' }"
+          @click="$emit('update:fond', 'plan')"
+          aria-label="Choisir le fond plan"
+        >
+          <img src="@/assets/map/plan.jpg" alt="" />
+          <span>Plan</span>
+        </button>
+        <button
+          class="menu-entry"
+          :class="{ active: fond === 'satellite' }"
+          @click="$emit('update:fond', 'satellite')"
+          aria-label="Choisir le fond satellite"
+        >
+          <img src="@/assets/map/satellite.jpg" alt="" />
+          <span>Satellite</span>
+        </button>
+
+        <hr class="fr-mt-3w fr-pb-2w" />
+
+        <h6 class="fr-mb-2w fr-text--md">Calques</h6>
+        <button
+          class="menu-entry"
+          :class="{ active: classification }"
+          @click="$emit('update:classification', !classification)"
+          :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`"
+        >
+          <img src="@/assets/map/classification.jpg" alt="" />
+          <span>
+            <abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}
+            <small class="fr-hint-text"
+              >Voir la
+              <a
+                href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
+                @click.stop
+                target="_blank"
+                >méthode de classification<lien-externe /></a
+            ></small>
+          </span>
+        </button>
+        <button
+          class="menu-entry"
+          :class="{ active: cadastre }"
+          @click="$emit('update:cadastre', !cadastre)"
+          :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`"
+        >
+          <img src="@/assets/map/cadastre.jpg" alt="" />
+          <span>Cadastre</span>
+        </button>
+      </dialog>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { onBeforeUnmount, ref } from "vue"
-import { onClickOutside, onKeyStroke } from "@vueuse/core"
+import { onBeforeUnmount, ref } from "vue";
+import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useTélépac } from "@/referentiels/pac.js";
 
-const showMenu = ref(false)
-const layersMenuRef = ref(null)
-const { preloadedCampagne: currentCampagne } = useTélépac()
+const showMenu = ref(false);
+const layersMenuRef = ref(null);
+const { preloadedCampagne: currentCampagne } = useTélépac();
 
 defineProps({
   fond: {
@@ -69,22 +96,21 @@ defineProps({
   cadastre: {
     type: Boolean,
     required: true,
-  }
-})
+  },
+});
 
-defineEmits(['update:fond', 'update:classification', 'update:cadastre'])
+defineEmits(["update:fond", "update:classification", "update:cadastre"]);
 
-const cancelKeyStroke = onKeyStroke('Escape', () => showMenu.value = false)
-const cancelClickOutside = onClickOutside(layersMenuRef, () => showMenu.value = false)
+const cancelKeyStroke = onKeyStroke("Escape", () => (showMenu.value = false));
+const cancelClickOutside = onClickOutside(layersMenuRef, () => (showMenu.value = false));
 
 onBeforeUnmount(() => {
-  cancelClickOutside()
-  cancelKeyStroke()
-})
+  cancelClickOutside();
+  cancelKeyStroke();
+});
 </script>
 
 <style scoped>
-
 .container {
   display: flex;
   gap: 1rem;
@@ -124,17 +150,23 @@ onBeforeUnmount(() => {
 }
 
 .menu-toggle--satellite {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 21.88%, #000 89.58%), url(@/assets/map/plan.jpg) center / cover, lightgray 50% / contain no-repeat;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 21.88%, #000 89.58%),
+    url(@/assets/map/plan.jpg) center / cover,
+    lightgray 50% / contain no-repeat;
 }
 
 .menu-toggle--plan {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 21.88%, #000 89.58%), url(@/assets/map/satellite.jpg) center / cover, lightgray 50% / contain no-repeat;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 21.88%, #000 89.58%),
+    url(@/assets/map/satellite.jpg) center / cover,
+    lightgray 50% / contain no-repeat;
 }
 
 .menu {
   border: none;
   border-radius: 0.3125rem;
-  background: #FFF;
+  background: #fff;
   left: calc(5.5rem + 1.5rem);
   padding: 1.5rem;
   /* shadow / light / lifted */

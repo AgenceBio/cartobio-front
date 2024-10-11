@@ -1,25 +1,25 @@
 <script setup>
-import Modal from "@/components/widgets/Modal.vue"
-import { useCartoBioStorage } from "@/stores/storage.js"
+import Modal from "@/components/widgets/Modal.vue";
+import { useCartoBioStorage } from "@/stores/storage.js";
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 const props = defineProps({
   recordId: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const storage = useCartoBioStorage()
+const storage = useCartoBioStorage();
 
 async function duplicate() {
-  await storage.resolveConflict(props.recordId, true)
-  emit('close')
+  await storage.resolveConflict(props.recordId, true);
+  emit("close");
 }
 
 async function merge() {
-  await storage.resolveConflict(props.recordId, false)
-  emit('close')
+  await storage.resolveConflict(props.recordId, false);
+  emit("close");
 }
 </script>
 
@@ -27,14 +27,15 @@ async function merge() {
   <Modal @close="$emit('close')" v-bind="$attrs" icon="fr-icon-warning-fill">
     <template #title>Conflit entre versions</template>
     <p>
-      Il semblerait qu’une autre personne ait effectué des modifications sur un parcellaire pendant que vous le modifiiez hors-ligne :
+      Il semblerait qu’une autre personne ait effectué des modifications sur un parcellaire pendant que vous le
+      modifiiez hors-ligne :
     </p>
     <p>
-      Version : <b>{{ storage.records[recordId].version_name }}</b> de l’exploitation <b>{{ storage.operators[storage.records[recordId].numerobio].nom }}</b><br/>
+      Version : <b>{{ storage.records[recordId].version_name }}</b> de l’exploitation
+      <b>{{ storage.operators[storage.records[recordId].numerobio].nom }}</b
+      ><br />
     </p>
-    <p>
-      Souhaitez-vous tout de même appliquer les changements faits hors-ligne sur cette version ?
-    </p>
+    <p>Souhaitez-vous tout de même appliquer les changements faits hors-ligne sur cette version ?</p>
 
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline">
@@ -49,6 +50,4 @@ async function merge() {
   </Modal>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

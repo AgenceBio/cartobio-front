@@ -18,14 +18,14 @@ Nous destinons l'API Territoires de CartoBio aux **acteurs des territoires**.<br
 - [GeoJSON](https://geojson.org/)
 - [ESRI Shapefile](https://fr.wikipedia.org/wiki/Shapefile)
 
-**Exemple de requête pour récupérer du GeoJSON :
+\*\*Exemple de requête pour récupérer du GeoJSON :
 
 ```bash
 $ curl https://cartobio.agencebio.org/api/v1/territoires/test
 $ curl -H 'Accept: application/json' https://cartobio.agencebio.org/api/v1/territoires/test
 ```
 
-**Exemple de requête pour récupérer du ESRI Shapefile :
+\*\*Exemple de requête pour récupérer du ESRI Shapefile :
 
 ```bash
 $ curl -H 'Accept: application/vnd.shp+octet-stream' https://cartobio.agencebio.org/api/v1/territoires/test
@@ -136,7 +136,8 @@ $ curl https://cartobio.agencebio.org/api/v1/territoires/epci/200067106
     },
 
     ...
-  ]
+
+]
 }</code></pre></details>
 
 ## Récupérer le parcellaire bio anonyme pour ma commune
@@ -242,7 +243,8 @@ $ curl https://cartobio.agencebio.org/api/v1/territoires/epci/64102
     },
 
     ...
-  ]
+
+]
 }</code></pre></details>
 
 ## Récupérer le parcellaire bio anonyme pour un contour géographique
@@ -354,7 +356,8 @@ $ curl -X PUT --upload-file -H 'Content-Type: application/json' contour.geojson 
     },
 
     ...
-  ]
+
+]
 }</code></pre></details>
 
 # Une question ? Un problème ? Besoin d'aide ?
@@ -364,11 +367,10 @@ dans un délai raisonnable.
 
 [📮 Nous contacter par e-mail][contact].
 
-
-
 [contact]: mailto:support-cartobio@agencebio.org?subject=Question%20%C3%A0%20propos%20de%20l'API%20CartoBio
 [ask-token]: mailto:support-cartobio@agencebio.org?subject=Demande%20%de%jeton%20%pour%20l'API%20CartoBio,%20Merci%20!
 [ask-wip-feature]: mailto:support-cartobio@agencebio.org?subject=API%20CartoBio%20%3A%20%C3%A0%20propos%20d'une%20future%20fonctionnalit%C3%A9
 
-[^1]: Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
-      Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.
+[^1]:
+    Nous sommes un service public. Nous ne collectons pas de données personnelles. Nous ne revendons pas de données.<br>
+    Les seules données générées sont liées à l'activité de l'API, afin d'en améliorer sa robustesse.

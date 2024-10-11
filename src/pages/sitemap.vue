@@ -1,9 +1,9 @@
 <route lang="yaml">
-  meta:
-    generalAudience: true
-    seo:
-      title: Plan du site
-  </route>
+meta:
+  generalAudience: true
+  seo:
+    title: Plan du site
+</route>
 
 <template>
   <div class="fr-container fr-py-16v">
@@ -17,19 +17,30 @@
             <li><router-link to="/pro">Accueil (professionnels)</router-link></li>
             <li>
               <router-link to="/login" aria-label="Se connecter au service CartoBio">Connexion</router-link> ou
-              <router-link to="/logout" aria-label="Se déconnecter du service CartoBio">déconnexion</router-link></li>
+              <router-link to="/logout" aria-label="Se déconnecter du service CartoBio">déconnexion</router-link>
+            </li>
             <li><router-link to="/exploitations">Liste des exploitations</router-link></li>
             <li>
               Centre de support
 
               <ul>
                 <li>
-                  <a href="https://docs-cartobio.agencebio.org/organisme-certification" aria-label="Centre de support pour organisme de certification" target="_blank" rel="noopener">
+                  <a
+                    href="https://docs-cartobio.agencebio.org/organisme-certification"
+                    aria-label="Centre de support pour organisme de certification"
+                    target="_blank"
+                    rel="noopener"
+                  >
                     Organisme de certification<lien-externe />
                   </a>
                 </li>
                 <li>
-                  <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/" aria-label="Centre de support pour agriculteur·ice" target="_blank" rel="noopener">
+                  <a
+                    href="https://docs-cartobio.agencebio.org/agriculteurs.trices/"
+                    aria-label="Centre de support pour agriculteur·ice"
+                    target="_blank"
+                    rel="noopener"
+                  >
                     Agriculteur·ice<lien-externe />
                   </a>
                 </li>

@@ -10,13 +10,17 @@
                 <slot name="title" />
               </h2>
 
-              <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="global-modal" @click="emit('close')" v-if="!noCloseButton">
+              <button
+                class="fr-btn--close fr-btn"
+                title="Fermer la fenêtre modale"
+                aria-controls="global-modal"
+                @click="emit('close')"
+                v-if="!noCloseButton"
+              >
                 Fermer
               </button>
             </div>
             <div class="fr-modal__content">
-
-
               <slot name="default" v-bind="$attrs" />
             </div>
 
@@ -29,55 +33,55 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useHead } from '@unhead/vue'
-import { onClickOutside, onKeyStroke } from '@vueuse/core'
-import { useContentTracking } from "@/stats.js"
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useHead } from "@unhead/vue";
+import { onClickOutside, onKeyStroke } from "@vueuse/core";
+import { useContentTracking } from "@/stats.js";
 
-useContentTracking()
+useContentTracking();
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 defineProps({
   icon: String,
   noCloseButton: Boolean,
-})
+});
 
-const target = ref(null)
+const target = ref(null);
 
-const cancelKeyStroke = onKeyStroke('Escape', () => emit('close'))
+const cancelKeyStroke = onKeyStroke("Escape", () => emit("close"));
 const cancelClickOutside = onClickOutside(target, (event) => {
-  const range = document.createRange()
-  range.selectNode(target.value)
-  const isOutside = range.intersectsNode(event.target)
+  const range = document.createRange();
+  range.selectNode(target.value);
+  const isOutside = range.intersectsNode(event.target);
 
   if (isOutside) {
-    emit('close')
+    emit("close");
   }
-})
+});
 
 onMounted(() => {
   useHead({
     htmlAttrs: {
-      'data-fr-scrolling': true,
-      tagDuplicateStrategy: 'replace'
-    }
-  })
-})
+      "data-fr-scrolling": true,
+      tagDuplicateStrategy: "replace",
+    },
+  });
+});
 
 onBeforeUnmount(() => {
   useHead({
     htmlAttrs: {
-      'data-fr-scrolling': false,
-      tagDuplicateStrategy: 'replace'
-    }
-  })
-  cancelClickOutside()
-  cancelKeyStroke()
+      "data-fr-scrolling": false,
+      tagDuplicateStrategy: "replace",
+    },
+  });
+  cancelClickOutside();
+  cancelKeyStroke();
 
   useHead({
-    htmlAttrs: {}
-  })
-})
+    htmlAttrs: {},
+  });
+});
 </script>
 
 <style scoped>

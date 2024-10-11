@@ -1,7 +1,7 @@
 <route lang="yaml">
-  meta:
-    seo:
-      title: Connexion sécurisée à votre compte
+meta:
+  seo:
+    title: Connexion sécurisée à votre compte
 </route>
 
 <template>
@@ -12,7 +12,9 @@
           <div>
             <Spinner v-if="isVerifying">Vérification des informations en cours</Spinner>
 
-            <Spinner v-else-if="(!isVerifying && isLogged && (store.isOc || store.isAgri))">Chargement de vos exploitations…</Spinner>
+            <Spinner v-else-if="!isVerifying && isLogged && (store.isOc || store.isAgri)"
+              >Chargement de vos exploitations…</Spinner
+            >
 
             <div class="fr-connect-group" v-else-if="!isLogged">
               <h1 class="fr-h2">Connexion à CartoBio</h1>
@@ -24,7 +26,13 @@
               </p>
 
               <p>
-                <a href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/connexion" class="fr-link" target="_blank" rel="noopener" title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre">
+                <a
+                  href="https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/connexion"
+                  class="fr-link"
+                  target="_blank"
+                  rel="noopener"
+                  title="Qu'est-ce que mon compte Agence Bio ? - nouvelle fenêtre"
+                >
                   Comment se connecter ?<lien-externe />
                 </a>
               </p>
@@ -34,15 +42,13 @@
               <div class="fr-alert fr-alert--warning">
                 <h3 class="fr-alert__title">Droits d'accès inadaptés</h3>
                 <p>
-                  Votre connexion a correctement abouti.
-                  Malheureusement nous ne sommes pas en mesure de vous identifier comme un
-                  operateur agricole ou une personne travaillant au sein d'une organisme
-                  de certification.
+                  Votre connexion a correctement abouti. Malheureusement nous ne sommes pas en mesure de vous identifier
+                  comme un operateur agricole ou une personne travaillant au sein d'une organisme de certification.
                 </p>
 
                 <p>
-                  Si vous pensez que ce n'est pas normal, contactez une personne
-                  en charge des accès à CartoBio au sein de votre organisme de certification.
+                  Si vous pensez que ce n'est pas normal, contactez une personne en charge des accès à CartoBio au sein
+                  de votre organisme de certification.
                 </p>
               </div>
             </div>
@@ -54,48 +60,47 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user.js'
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { useUserStore } from "@/stores/user.js";
 
-import { verifyToken } from '@/cartobio-api.js'
+import { verifyToken } from "@/cartobio-api.js";
 
-import Spinner from '@/components/widgets/Spinner.vue'
+import Spinner from "@/components/widgets/Spinner.vue";
 
-const store = useUserStore()
-const route = useRoute()
-const router = useRouter()
+const store = useUserStore();
+const route = useRoute();
+const router = useRouter();
 
-const { token, isLogged } = storeToRefs(store)
-const isVerifying = ref(false)
+const { token, isLogged } = storeToRefs(store);
+const isVerifying = ref(false);
 
 onMounted(async () => {
-  const hashOrUserToken = route.hash ? (new URLSearchParams(route.hash)).get('#token') : token.value
+  const hashOrUserToken = route.hash ? new URLSearchParams(route.hash).get("#token") : token.value;
 
   if (!hashOrUserToken) {
-    return
+    return;
   }
 
-  isVerifying.value = true
+  isVerifying.value = true;
 
   try {
     const [res] = await Promise.all([
       verifyToken(hashOrUserToken),
-      new Promise((resolve) => setTimeout(resolve, 1000))
-    ])
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+    ]);
 
     if (res.id) {
-      store.login(hashOrUserToken)
-      router.replace('/login')
+      store.login(hashOrUserToken);
+      router.replace("/login");
     }
 
     if (store.isLogged) {
-      router.replace(route.query.returnto || store.startPage)
+      router.replace(route.query.returnto || store.startPage);
     }
+  } finally {
+    isVerifying.value = false;
   }
-  finally {
-    isVerifying.value = false
-  }
-})
+});
 </script>

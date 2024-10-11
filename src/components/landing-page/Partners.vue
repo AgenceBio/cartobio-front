@@ -17,29 +17,43 @@
           </p>
 
           <ul class="logos logos--certification-bodies">
-            <li><img src="@/assets/logos-oc/ecocert.png" alt="Ecocert" class="logo"></li>
-            <li><img src="@/assets/logos-oc/certipaq.png" alt="Certipaq" class="logo"></li>
-            <li><img src="@/assets/logos-oc/certisud.png" alt="Certisud" class="logo"></li>
-            <li><img src="@/assets/logos-oc/bureau-veritas.png" alt="Bureau Veritas" class="logo"></li>
-            <li><img src="@/assets/logos-oc/certis.png" alt="Certis" class="logo"></li>
-            <li><img src="@/assets/logos-oc/alpes-controles.png" alt="Alpes Contrôles" class="logo"></li>
-            <li><img src="@/assets/logos-oc/qualisud.png" alt="Qualisud" class="logo"></li>
-            <li><img src="@/assets/logos-oc/ocacia.png" alt="Ocacia" class="logo"></li>
-            <li><img src="@/assets/logos-oc/control-union.png" alt="Control Union" class="logo"></li>
+            <li><img src="@/assets/logos-oc/ecocert.png" alt="Ecocert" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/certipaq.png" alt="Certipaq" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/certisud.png" alt="Certisud" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/bureau-veritas.png" alt="Bureau Veritas" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/certis.png" alt="Certis" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/alpes-controles.png" alt="Alpes Contrôles" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/qualisud.png" alt="Qualisud" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/ocacia.png" alt="Ocacia" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/control-union.png" alt="Control Union" class="logo" /></li>
           </ul>
         </div>
 
-        <div :class="{ 'fr-col-12': !certificationBodies, 'fr-col-lg-6 fr-col-offset-lg-1': certificationBodies }" v-if="sponsors">
+        <div
+          :class="{ 'fr-col-12': !certificationBodies, 'fr-col-lg-6 fr-col-offset-lg-1': certificationBodies }"
+          v-if="sponsors"
+        >
           <p>
-            Le projet est soutenu par le <strong>ministère de la Transition Écologique et de la Cohésion des Territoires</strong>
-            et le <strong>ministère de l'Agriculture et de la Souveraineté alimentaire</strong> et ses partenaires :
+            Le projet est soutenu par le
+            <strong>ministère de la Transition Écologique et de la Cohésion des Territoires</strong> et le
+            <strong>ministère de l'Agriculture et de la Souveraineté alimentaire</strong> et ses partenaires :
           </p>
 
           <ul class="logos logos--sponsors">
-            <li><img src="@/assets/logos-partenaires/agence-bio.svg" alt="L'Agence Bio" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/inao.svg" alt="Institut National de l'Origine et de la Qualité" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/ofb.svg" alt="Office français de la biodiversité" class="logo"></li>
-            <li><img src="@/assets/logos-partenaires/asp.svg" alt="Agence de services et de paiement" class="logo"></li>
+            <li><img src="@/assets/logos-partenaires/agence-bio.svg" alt="L'Agence Bio" class="logo" /></li>
+            <li>
+              <img
+                src="@/assets/logos-partenaires/inao.svg"
+                alt="Institut National de l'Origine et de la Qualité"
+                class="logo"
+              />
+            </li>
+            <li>
+              <img src="@/assets/logos-partenaires/ofb.svg" alt="Office français de la biodiversité" class="logo" />
+            </li>
+            <li>
+              <img src="@/assets/logos-partenaires/asp.svg" alt="Agence de services et de paiement" class="logo" />
+            </li>
           </ul>
         </div>
       </div>
@@ -51,13 +65,13 @@
 defineProps({
   certificationBodies: {
     type: Boolean,
-    default: false
+    default: false,
   },
   sponsors: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 </script>
 
 <style scoped>

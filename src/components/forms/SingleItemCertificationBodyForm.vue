@@ -5,8 +5,15 @@
         <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
           <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
           <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-          <input class="fr-input" id="feature-nom" v-model="patch.NOM" :required="requiredName" :class="{ 'fr-input--error': nameErrors.size }" ref="autofocusedElement" />
-          <div v-for="([id, result]) in nameErrors" :key="id" class="fr-hint-text fr-error-text">
+          <input
+            class="fr-input"
+            id="feature-nom"
+            v-model="patch.NOM"
+            :required="requiredName"
+            :class="{ 'fr-input--error': nameErrors.size }"
+            ref="autofocusedElement"
+          />
+          <div v-for="[id, result] in nameErrors" :key="id" class="fr-hint-text fr-error-text">
             {{ result.errorMessage }}.
           </div>
         </div>
@@ -30,18 +37,46 @@
             </figcaption>
           </figure>
 
-          <CultureSelector :feature-id="feature.properties.id" :cultures="patch.cultures" @change="$cultures => patch.cultures = $cultures" />
+          <CultureSelector
+            :feature-id="feature.properties.id"
+            :cultures="patch.cultures"
+            @change="($cultures) => (patch.cultures = $cultures)"
+          />
         </AccordionSection>
 
-        <AccordionSection title="Annotations d'audit" :open="open" :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])">
-          <ConversionLevelSelector :feature-id="feature.properties.id" :readonly="!permissions.canChangeConversionLevel" v-model="patch.conversion_niveau" />
+        <AccordionSection
+          title="Annotations d'audit"
+          :open="open"
+          :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
+        >
+          <ConversionLevelSelector
+            :feature-id="feature.properties.id"
+            :readonly="!permissions.canChangeConversionLevel"
+            v-model="patch.conversion_niveau"
+          />
 
           <div class="fr-input-group" v-if="isAB">
-            <label class="fr-label" for="engagement_date">Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label>
-            <input type="date" class="fr-input" v-model="patch.engagement_date" name="engagement_date" id="engagement_date" :required="isEngagementDateRequired" :disabled="!isAB" min="1985-01-01" :max="maxDate" />
+            <label class="fr-label" for="engagement_date"
+              >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
+            >
+            <input
+              type="date"
+              class="fr-input"
+              v-model="patch.engagement_date"
+              name="engagement_date"
+              id="engagement_date"
+              :required="isEngagementDateRequired"
+              :disabled="!isAB"
+              min="1985-01-01"
+              :max="maxDate"
+            />
           </div>
 
-          <AnnotationsSelector v-if="permissions.canAddAnnotations" v-model="patch.annotations" :feature-id="feature.properties.id" />
+          <AnnotationsSelector
+            v-if="permissions.canAddAnnotations"
+            v-model="patch.annotations"
+            :feature-id="feature.properties.id"
+          />
 
           <div class="fr-input-group">
             <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
@@ -59,98 +94,99 @@
       </div>
     </template>
   </Modal>
-  <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')"/>
+  <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')" />
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { useFocus } from '@vueuse/core'
+import { computed, onBeforeUnmount, reactive, ref, watch } from "vue";
+import { useFocus } from "@vueuse/core";
 
-import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from '@/referentiels/ab.js'
-import { useFeaturesSetsStore } from "@/stores/features-sets.js"
-import { usePermissions } from "@/stores/permissions.js"
-import { toDateInputString } from '@/utils/dates.js'
+import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from "@/referentiels/ab.js";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
+import { usePermissions } from "@/stores/permissions.js";
+import { toDateInputString } from "@/utils/dates.js";
 
-import AccordionGroup from '@/components/widgets/AccordionGroup.vue'
-import AccordionSection from '@/components/widgets/Accordion.vue'
-import Modal from '@/components/widgets/Modal.vue'
+import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
+import AccordionSection from "@/components/widgets/Accordion.vue";
+import Modal from "@/components/widgets/Modal.vue";
 import AnnotationsSelector from "@/components/forms/fields/AnnotationsSelector.vue";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
-import CancelModal from "@/components/forms/CancelModal.vue"
-import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js"
+import CancelModal from "@/components/forms/CancelModal.vue";
+import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js";
 
 const props = defineProps({
   feature: {
     type: Object,
-    required: true
+    required: true,
   },
   open: {
     type: Boolean,
-    default: false
+    default: false,
   },
   requiredName: {
     type: Boolean,
-    default: false
-  }
-})
-const emit = defineEmits(['submit', 'close'])
+    default: false,
+  },
+});
+const emit = defineEmits(["submit", "close"]);
 
-const permissions = usePermissions()
-const featuresSet = useFeaturesSetsStore()
-const showCancelModal = ref(false)
-const autofocusedElement = ref()
-useFocus(autofocusedElement, { initialValue: true })
+const permissions = usePermissions();
+const featuresSet = useFeaturesSetsStore();
+const showCancelModal = ref(false);
+const autofocusedElement = ref();
+useFocus(autofocusedElement, { initialValue: true });
 
 const patch = reactive({
-  NOM: props.feature.properties.NOM || '',
+  NOM: props.feature.properties.NOM || "",
   annotations: props.feature.properties.annotations || [],
-  conversion_niveau: props.feature.properties.conversion_niveau || '',
+  conversion_niveau: props.feature.properties.conversion_niveau || "",
   cultures: props.feature.properties.cultures || [],
   engagement_date: props.feature.properties.engagement_date,
-  auditeur_notes: props.feature.properties.auditeur_notes || '',
-})
+  auditeur_notes: props.feature.properties.auditeur_notes || "",
+});
 
-const isAB = computed(() => isABLevel(patch.conversion_niveau))
-const maxDate = computed(() => toDateInputString(new Date()))
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau))
-const details = featureDetails(props.feature)
-const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, 'name'))
+const isAB = computed(() => isABLevel(patch.conversion_niveau));
+const maxDate = computed(() => toDateInputString(new Date()));
+const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau));
+const details = featureDetails(props.feature);
+const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
 
-function requiresAction (properties) {
-  return properties.some(property => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0)
+function requiresAction(properties) {
+  return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
 }
 
 const validate = () => {
-  const set = featuresSet.byFeature(props.feature.id, true)
+  const set = featuresSet.byFeature(props.feature.id, true);
 
   if (set.size) {
-    return false
+    return false;
   }
 
-  emit('submit', { id: props.feature.id, properties: patch })
-}
+  emit("submit", { id: props.feature.id, properties: patch });
+};
 
-function handleClose () {
+function handleClose() {
   if (featuresSet.isDirty) {
-    showCancelModal.value = true
-  }
-  else {
-    emit('close')
+    showCancelModal.value = true;
+  } else {
+    emit("close");
   }
 }
 
-onBeforeUnmount(() => featuresSet.setCandidate([]))
+onBeforeUnmount(() => featuresSet.setCandidate([]));
 
 watch(patch, (properties) => {
-  featuresSet.setCandidate([{
-    id: props.feature.id,
-    properties: {
-      ...props.feature.properties,
-      ...properties
-    }
-  }])
-})
+  featuresSet.setCandidate([
+    {
+      id: props.feature.id,
+      properties: {
+        ...props.feature.properties,
+        ...properties,
+      },
+    },
+  ]);
+});
 </script>
 
 <style scoped>
@@ -159,7 +195,7 @@ watch(patch, (properties) => {
   border-left: none;
   border-radius: 5px;
 }
-  .fr-quote blockquote p {
-    font-weight: normal;
-  }
+.fr-quote blockquote p {
+  font-weight: normal;
+}
 </style>

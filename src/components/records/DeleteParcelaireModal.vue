@@ -3,24 +3,20 @@
     <template #title>Suppression du parcellaire</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
-      <p>
-        Supprimer le parcellaire pour importer un nouveau fichier.
-      </p>
+      <p>Supprimer le parcellaire pour importer un nouveau fichier.</p>
     </div>
 
     <div class="fr-alert fr-alert--error fr-my-3w">
       <p>
-        Attention, toutes les modifications effectuées sur le parcellaire depuis le dernier import,
-        ainsi que les notes d'audit, seront également perdues.
+        Attention, toutes les modifications effectuées sur le parcellaire depuis le dernier import, ainsi que les notes
+        d'audit, seront également perdues.
       </p>
     </div>
 
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="handleDelete" ref="autofocusedElement">
-            Supprimer le parcellaire
-          </button>
+          <button class="fr-btn" @click="handleDelete" ref="autofocusedElement">Supprimer le parcellaire</button>
         </li>
       </ul>
     </template>
@@ -28,28 +24,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useFocus } from '@vueuse/core'
+import { ref } from "vue";
+import { useFocus } from "@vueuse/core";
 
-import Modal from "@/components/widgets/Modal.vue"
-import { deleteRecord } from "@/cartobio-api.js"
-import { useRecordStore } from "@/stores/record.js"
+import Modal from "@/components/widgets/Modal.vue";
+import { deleteRecord } from "@/cartobio-api.js";
+import { useRecordStore } from "@/stores/record.js";
 
 const props = defineProps({
   record: {
     type: Object,
-    required: true
+    required: true,
   },
-})
-const emit = defineEmits(['close'])
+});
+const emit = defineEmits(["close"]);
 
-const recordStore = useRecordStore()
-const autofocusedElement = ref()
-useFocus(autofocusedElement, { initialValue: true })
+const recordStore = useRecordStore();
+const autofocusedElement = ref();
+useFocus(autofocusedElement, { initialValue: true });
 
 async function handleDelete() {
-  const record = await deleteRecord(props.record.record_id)
-  recordStore.update(record)
-  emit('close')
+  const record = await deleteRecord(props.record.record_id);
+  recordStore.update(record);
+  emit("close");
 }
 </script>

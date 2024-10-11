@@ -20,13 +20,16 @@
       <ParcellaireState :record="record" />
     </p>
 
-    <div v-if="disableActions === false" class="actions fr-btns-group fr-btns-group--sm fr-btns-group--inline-sm fr-btns-group--icon-left">
+    <div
+      v-if="disableActions === false"
+      class="actions fr-btns-group fr-btns-group--sm fr-btns-group--inline-sm fr-btns-group--icon-left"
+    >
       <nav role="navigation" class="fr-translate fr-nav">
         <div class="fr-nav-item">
           <button
-              class="fr-btn fr-btn--icon-left fr-btn--tertiary-no-outline fr-icon-git-pull-request-fill show-versions"
-              @click.stop.prevent="versionMenu = !versionMenu"
-              :disabled="!isOnline"
+            class="fr-btn fr-btn--icon-left fr-btn--tertiary-no-outline fr-icon-git-pull-request-fill show-versions"
+            @click.stop.prevent="versionMenu = !versionMenu"
+            :disabled="!isOnline"
           >
             Autres versions <span class="fr-icon-arrow-down-s-line" />
           </button>
@@ -38,11 +41,12 @@
                 </a>
                 <div class="fr-menu fr-translate__menu">
                   <ul v-if="versionMenu === year" class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
-                    <li
-                        v-for="record in records"
-                        :key="record?.record_id"
-                    >
-                      <router-link :to="`/exploitations/${operator.numeroBio}/${record.record_id}`" class="fr-nav__link" href="#">
+                    <li v-for="record in records" :key="record?.record_id">
+                      <router-link
+                        :to="`/exploitations/${operator.numeroBio}/${record.record_id}`"
+                        class="fr-nav__link"
+                        href="#"
+                      >
                         {{ record.version_name }}
                       </router-link>
                     </li>
@@ -54,20 +58,29 @@
         </div>
       </nav>
 
-      <button v-if="canDisplayHistory" class="history-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line" @click="historyModal = true">
+      <button
+        v-if="canDisplayHistory"
+        class="history-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line"
+        @click="historyModal = true"
+      >
         Historique
       </button>
 
-      <button v-if="hasFeatures" class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2" @click="exportModal = true">
+      <button
+        v-if="hasFeatures"
+        class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2"
+        @click="exportModal = true"
+      >
         Exporter
       </button>
 
-      <button v-if="!disableActions && permissions.canEditVersion"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden-sm"
-          @click="showEditVersionModal = true"
-        >
-          Modifier la version
-        </button>
+      <button
+        v-if="!disableActions && permissions.canEditVersion"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden-sm"
+        @click="showEditVersionModal = true"
+      >
+        Modifier la version
+      </button>
     </div>
   </header>
 
@@ -75,64 +88,66 @@
     <OperatorHistoryModal :record="record" :operator="operator" v-if="historyModal" @close="historyModal = false" />
   </Teleport>
 
-
   <Teleport to="body">
-    <AsyncFeaturesExportModal v-if="exportModal" :operator="operator" :collection="collection" :record="record" @close="exportModal = false" />
-    <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
-    <EditVersionModal
-        v-if="showEditVersionModal"
-        @close="showEditVersionModal = false"
+    <AsyncFeaturesExportModal
+      v-if="exportModal"
+      :operator="operator"
+      :collection="collection"
+      :record="record"
+      @close="exportModal = false"
     />
+    <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
+    <EditVersionModal v-if="showEditVersionModal" @close="showEditVersionModal = false" />
   </Teleport>
 </template>
 
 <script setup>
-import { computed, defineAsyncComponent, ref } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed, defineAsyncComponent, ref } from "vue";
+import { storeToRefs } from "pinia";
 
-import ParcellaireState from '@/components/records/State.vue'
-import OperatorHistoryModal from '@/components/records/HistoryModal/index.vue'
-import DeleteParcellaireModal from '@/components/records/DeleteParcelaireModal.vue'
+import ParcellaireState from "@/components/records/State.vue";
+import OperatorHistoryModal from "@/components/records/HistoryModal/index.vue";
+import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.vue";
 
-import { useFeaturesStore } from "@/stores/features.js"
-import { useOperatorStore } from "@/stores/operator.js"
-import { useRecordStore } from "@/stores/record.js"
-import { onClickOutside, useOnline } from "@vueuse/core"
-import EditVersionModal from "@/components/forms/EditVersionForm.vue"
-import { usePermissions } from "@/stores/permissions.js"
+import { useFeaturesStore } from "@/stores/features.js";
+import { useOperatorStore } from "@/stores/operator.js";
+import { useRecordStore } from "@/stores/record.js";
+import { onClickOutside, useOnline } from "@vueuse/core";
+import EditVersionModal from "@/components/forms/EditVersionForm.vue";
+import { usePermissions } from "@/stores/permissions.js";
 
-const AsyncFeaturesExportModal = defineAsyncComponent(() => import('@/components/records/ExportModal.vue'))
+const AsyncFeaturesExportModal = defineAsyncComponent(() => import("@/components/records/ExportModal.vue"));
 
 defineProps({
   disableActions: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const isOnline = useOnline()
+const isOnline = useOnline();
 
-const exportModal = ref(false)
-const historyModal = ref(false)
-const deleteModal = ref(false)
-const featuresStore = useFeaturesStore()
-const operatorStore = useOperatorStore()
-const recordStore = useRecordStore()
-const permissions = usePermissions()
-const { record } = recordStore
-const { operator } = operatorStore
-const { collection, hasFeatures } = storeToRefs(featuresStore)
-const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && record.audit_history.length)
+const exportModal = ref(false);
+const historyModal = ref(false);
+const deleteModal = ref(false);
+const featuresStore = useFeaturesStore();
+const operatorStore = useOperatorStore();
+const recordStore = useRecordStore();
+const permissions = usePermissions();
+const { record } = recordStore;
+const { operator } = operatorStore;
+const { collection, hasFeatures } = storeToRefs(featuresStore);
+const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && record.audit_history.length);
 
-const versionMenu = ref(false)
-const versionMenuRef = ref(null)
-const showEditVersionModal = ref(false)
+const versionMenu = ref(false);
+const versionMenuRef = ref(null);
+const showEditVersionModal = ref(false);
 
 onClickOutside(versionMenuRef, ({ target }) => {
-  if (!target.classList.contains('show-versions')) {
-    versionMenu.value = false
+  if (!target.classList.contains("show-versions")) {
+    versionMenu.value = false;
   }
-})
+});
 </script>
 
 <style scoped>

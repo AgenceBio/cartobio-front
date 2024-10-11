@@ -1,8 +1,15 @@
 <template>
   <div style="display: flex">
     <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center">{{ message }}</div>
-    <button v-if="actionLabel" @click="actionCb" class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w">{{ actionLabel }} </button>
-    <button class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w fr-btn--icon-right fr-icon-close-line" @click="closeToast">Fermer</button>
+    <button v-if="actionLabel" @click="actionCb" class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w">
+      {{ actionLabel }}
+    </button>
+    <button
+      class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w fr-btn--icon-right fr-icon-close-line"
+      @click="closeToast"
+    >
+      Fermer
+    </button>
   </div>
 </template>
 
@@ -10,23 +17,21 @@
 defineProps({
   message: {
     type: String,
-    required: true
+    required: true,
   },
   closeToast: {
     type: Function,
-    required: true
+    required: true,
   },
   actionLabel: {
     type: String,
-    required: false
+    required: false,
   },
   actionCb: {
     type: Function,
-    required: false
-  }
-})
+    required: false,
+  },
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

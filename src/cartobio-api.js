@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from "axios";
 
-const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
+const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
 
 /**
  * @typedef {import('geojson').FeatureCollection} FeatureCollection
@@ -11,15 +11,17 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env
  * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
  */
 
-export const apiClient = axios.create({ baseURL, timeout: 20000 })
+export const apiClient = axios.create({ baseURL, timeout: 20000 });
 
 /**
  *
  * @returns {Promise<String>}
  */
-export async function getVersion () {
-  const { data: {version: version }} = await apiClient.get('/version')
-  return version
+export async function getVersion() {
+  const {
+    data: { version: version },
+  } = await apiClient.get("/version");
+  return version;
 }
 
 /**
@@ -27,20 +29,20 @@ export async function getVersion () {
  * @param {{ evv: String, numeroBio: String }} params
  * @returns {Promise<FeatureCollection>}
  */
-export async function getOperatorNcviFeatures ({ evv, numeroBio }) {
-  const { data } = await apiClient.get(`/v2/import/evv/${evv}+${numeroBio}`)
+export async function getOperatorNcviFeatures({ evv, numeroBio }) {
+  const { data } = await apiClient.get(`/v2/import/evv/${evv}+${numeroBio}`);
 
-  return data
+  return data;
 }
 
 /**
  * @param {string} input
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
-export async function searchOperators ({ input, page, sort, order }) {
-  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, sort, order })
+export async function searchOperators({ input, page, sort, order }) {
+  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, sort, order });
 
-  return data
+  return data;
 }
 
 /**
@@ -48,20 +50,20 @@ export async function searchOperators ({ input, page, sort, order }) {
  * @param {number?} offset
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
-export async function getUserOperators (limit, offset) {
-  const { data } = await apiClient.get(`/v2/operators`, { params: { limit, offset } })
+export async function getUserOperators(limit, offset) {
+  const { data } = await apiClient.get(`/v2/operators`, { params: { limit, offset } });
 
-  return data
+  return data;
 }
 
 /**
  * @param {string} pacage
  * @returns {Promise<FeatureCollection>}
  */
-export async function pacageLookup (pacage) {
-  const { data } = await apiClient.get(`/v2/import/pacage/${pacage}`)
+export async function pacageLookup(pacage) {
+  const { data } = await apiClient.get(`/v2/import/pacage/${pacage}`);
 
-  return data
+  return data;
 }
 
 /**
@@ -71,18 +73,18 @@ export async function pacageLookup (pacage) {
  * @param {Partial<NormalizedRecord>} payload
  * @returns {Promise<NormalizedRecord>}
  */
-export async function createOperatorRecord (numeroBio, payload) {
-  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload)
+export async function createOperatorRecord(numeroBio, payload) {
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload);
 
-  return data
+  return data;
 }
 
 /**
  * @param {string} recordId
  * @returns {Promise<void>}
  */
-export async function deleteRecord (recordId) {
-  await apiClient.delete(`/v2/audits/${recordId}`)
+export async function deleteRecord(recordId) {
+  await apiClient.delete(`/v2/audits/${recordId}`);
 }
 
 /**
@@ -90,26 +92,26 @@ export async function deleteRecord (recordId) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function submitNewParcelle ({ recordId }, feature) {
+export async function submitNewParcelle({ recordId }, feature) {
   const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
-    feature
-  })
+    feature,
+  });
 
-  return data
+  return data;
 }
 
 /**
  * @param {string} userToken
  * @returns {Promise<CartoBioUser>}
  */
-export async function verifyToken (userToken) {
+export async function verifyToken(userToken) {
   const { data } = await apiClient.get(`/v2/user/verify`, {
     headers: {
-      Authorization: `Bearer ${userToken}`
-    }
-  })
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
 
-  return data
+  return data;
 }
 
 /**
@@ -117,25 +119,23 @@ export async function verifyToken (userToken) {
  * @param token
  * @return {Promise<{ operator: AgenceBioNormalizedOperator, token: CartoBioUser}>}
  */
-export async function exchangeNotificationToken (token) {
+export async function exchangeNotificationToken(token) {
   const { data } = await apiClient.get(`/v2/user/exchangeToken`, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  return data
+  return data;
 }
 
-export function setAuthorization (userToken) {
+export function setAuthorization(userToken) {
   if (userToken) {
-    apiClient.defaults.headers.common['Authorization'] = `Bearer ${userToken}`
-  }
-  else {
-    delete apiClient.defaults.headers.common['Authorization']
+    apiClient.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
+  } else {
+    delete apiClient.defaults.headers.common["Authorization"];
   }
 }
-
 
 /**
  * Turn a geographical file into a GeoJSON
@@ -143,11 +143,11 @@ export function setAuthorization (userToken) {
  * @param {File} archive
  * @returns {Promise<CartoBioFeatureCollection>}
  */
-export async function convertGeographicalFileToGeoJSON (archive) {
-  const form = new FormData()
-  form.append('archive', archive)
-  const { data: geojson } = await apiClient.post(`/v2/convert/anygeo/geojson`, form)
-  return geojson
+export async function convertGeographicalFileToGeoJSON(archive) {
+  const form = new FormData();
+  form.append("archive", archive);
+  const { data: geojson } = await apiClient.post(`/v2/convert/anygeo/geojson`, form);
+  return geojson;
 }
 
 /**
@@ -156,11 +156,11 @@ export async function convertGeographicalFileToGeoJSON (archive) {
  * @param {File} archive
  * @returns {Promise<CartoBioFeatureCollection>}
  */
-export async function convertTelepacFileToGeoJSON (archive) {
-  const form = new FormData()
-  form.append('archive', archive)
-  const { data: geojson } = await apiClient.post(`/v2/convert/telepac/geojson`, form)
-  return geojson
+export async function convertTelepacFileToGeoJSON(archive) {
+  const form = new FormData();
+  form.append("archive", archive);
+  const { data: geojson } = await apiClient.post(`/v2/convert/telepac/geojson`, form);
+  return geojson;
 }
 
 /**
@@ -169,11 +169,11 @@ export async function convertTelepacFileToGeoJSON (archive) {
  * @param {File} archive
  * @returns {Promise<CartoBioFeatureCollection>}
  */
-export async function convertGeofoliaArchiveToGeoJSON (archive) {
-  const form = new FormData()
-  form.append('archive', archive)
-  const { data: geojson } = await apiClient.post(`/v2/convert/geofolia/geojson`, form)
-  return geojson
+export async function convertGeofoliaArchiveToGeoJSON(archive) {
+  const form = new FormData();
+  form.append("archive", archive);
+  const { data: geojson } = await apiClient.post(`/v2/convert/geofolia/geojson`, form);
+  return geojson;
 }
 
 /**
@@ -182,9 +182,9 @@ export async function convertGeofoliaArchiveToGeoJSON (archive) {
  * @param {File} archive
  * @returns {Promise<Number>}
  */
-export async function checkGeofoliaAccountStatus (numeroBio) {
-  const { status } = await apiClient.head(`/v2/import/geofolia/${numeroBio}`)
-  return status
+export async function checkGeofoliaAccountStatus(numeroBio) {
+  const { status } = await apiClient.head(`/v2/import/geofolia/${numeroBio}`);
+  return status;
 }
 
 /**
@@ -194,7 +194,7 @@ export async function checkGeofoliaAccountStatus (numeroBio) {
  * @param {File} archive
  * @returns {Promise<GeoJSON>}
  */
-export async function getOperatorGeofoliaFeatures (numeroBio) {
-  const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`)
-  return geojson
+export async function getOperatorGeofoliaFeatures(numeroBio) {
+  const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`);
+  return geojson;
 }

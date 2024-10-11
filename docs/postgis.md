@@ -66,12 +66,11 @@ Se rendre sur l'[interface d'administration du GeoServer][geoserver], puis :
 1. Data › Layers › New Layer (from `cartobio:postgis`)
 2. `anon_rpgbio_20xx` et soit `Publish again`, soit `Publish`
 3. Data ›`Bounding Boxes` : cliquer sur **Compute from data**, puis sur **Compute from native bounds**, puis cliquer sur `Save`
-3. Tile Caching › Cocher **application/json;type=geojson**, **application/json;type=topojson** et **application/vnd.mapbox-vector-tile**, puis cliquer sur `Save`
+4. Tile Caching › Cocher **application/json;type=geojson**, **application/json;type=topojson** et **application/vnd.mapbox-vector-tile**, puis cliquer sur `Save`
 
-6. Profiter
+5. Profiter
 
 Le calque est désormais disponible pour être consommé du côté
 de l'application `Cartobio-Presentation`.
-
 
 [geoserver]: http://91.134.137.224:8088/geoserver/web/

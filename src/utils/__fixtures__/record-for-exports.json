@@ -27,7 +27,15 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[ [2.0, 44.0], [2.0013, 44.0], [2.0013, 44.0013], [2.0013, 44.0013], [2.0, 44.0] ]]
+          "coordinates": [
+            [
+              [2.0, 44.0],
+              [2.0013, 44.0],
+              [2.0013, 44.0013],
+              [2.0013, 44.0013],
+              [2.0, 44.0]
+            ]
+          ]
         },
         "properties": {
           "id": 1,
@@ -37,9 +45,7 @@
           "NOM": "nom personnalisé",
           "engagement_date": "2023-01-01",
           "conversion_niveau": "C1",
-          "cultures": [
-            { "id": 1, "CPF": "01.19.10.8" }
-          ],
+          "cultures": [{ "id": 1, "CPF": "01.19.10.8" }],
           "commentaire": "parcelle de Luzerne",
           "annotations": [
             {
@@ -55,7 +61,15 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[ [2.0, 44.0], [2.0013, 44.0], [2.0013, 44.0013], [2.0013, 44.0013], [2.0, 44.0] ]]
+          "coordinates": [
+            [
+              [2.0, 44.0],
+              [2.0013, 44.0],
+              [2.0013, 44.0013],
+              [2.0013, 44.0013],
+              [2.0, 44.0]
+            ]
+          ]
         },
         "properties": {
           "id": 2,
@@ -64,9 +78,7 @@
           "COMMUNE": "26108",
           "engagement_date": "2023-01-01",
           "conversion_niveau": "C1",
-          "cultures": [
-            { "id": 1, "CPF": "01.19.10.8" }
-          ],
+          "cultures": [{ "id": 1, "CPF": "01.19.10.8" }],
           "commentaire": "deuxième parcelle de Luzerne engagée au même moment (groupement par NIVEAU + DATE)",
           "annotations": [
             {
@@ -87,7 +99,15 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[ [2.0, 44.0], [2.0013, 44.0], [2.0013, 44.0013], [2.0013, 44.0013], [2.0, 44.0] ]]
+          "coordinates": [
+            [
+              [2.0, 44.0],
+              [2.0013, 44.0],
+              [2.0013, 44.0013],
+              [2.0013, 44.0013],
+              [2.0, 44.0]
+            ]
+          ]
         },
         "properties": {
           "id": 3,
@@ -117,7 +137,15 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[ [2.0, 44.0], [2.0013, 44.0], [2.0013, 44.0013], [2.0013, 44.0013], [2.0, 44.0] ]]
+          "coordinates": [
+            [
+              [2.0, 44.0],
+              [2.0013, 44.0],
+              [2.0013, 44.0013],
+              [2.0013, 44.0013],
+              [2.0, 44.0]
+            ]
+          ]
         },
         "properties": {
           "id": 4,
@@ -125,9 +153,7 @@
           "NUMERO_P": "2",
           "engagement_date": "2015-01-01",
           "conversion_niveau": "AB",
-          "cultures": [
-            { "id": 1, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }
-          ],
+          "cultures": [{ "id": 1, "CPF": "01.19.10.7", "date_semis": "2023-03-01", "variete": "4 feuilles" }],
           "commentaire": "deuxième parcelle de trèfle engagée à un autre moment que la précédente"
         }
       },
@@ -136,7 +162,15 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[ [2.0, 44.0], [2.0013, 44.0], [2.0013, 44.0013], [2.0013, 44.0013], [2.0, 44.0] ]]
+          "coordinates": [
+            [
+              [2.0, 44.0],
+              [2.0013, 44.0],
+              [2.0013, 44.0013],
+              [2.0013, 44.0013],
+              [2.0, 44.0]
+            ]
+          ]
         },
         "properties": {
           "id": 6,
@@ -151,15 +185,21 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[ [2.0, 44.0], [2.0013, 44.0], [2.0013, 44.0013], [2.0013, 44.0013], [2.0, 44.0] ]]
+          "coordinates": [
+            [
+              [2.0, 44.0],
+              [2.0013, 44.0],
+              [2.0013, 44.0013],
+              [2.0013, 44.0013],
+              [2.0, 44.0]
+            ]
+          ]
         },
         "properties": {
           "id": 5,
           "NUMERO_I": "3",
           "NUMERO_P": "1",
-          "cultures": [
-            { "id": 1, "CPF": "01.19.99" }
-          ],
+          "cultures": [{ "id": 1, "CPF": "01.19.99" }],
           "commentaire": "sans code CPF valide, ni date d'engagement ou autre"
         }
       }
