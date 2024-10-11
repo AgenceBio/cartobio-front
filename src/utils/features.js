@@ -1,18 +1,18 @@
-import { LegalProjections, RegionBounds } from "@agencebio/cartobio-types"
-import intersect from "@turf/intersect"
-import bboxPolygon from "@turf/bbox-polygon"
-import { reproject } from "reproject"
-import proj4 from "proj4"
-import { polygonArea } from "geometric"
-import union from "@turf/union"
-import axios from "axios"
-import { feature, featureCollection } from "@turf/helpers"
-import { parseReference } from "@/utils/cadastre.js"
-import bbox from "@turf/bbox"
-import { fromCodeCpf } from "@agencebio/rosetta-cultures"
-import difference from "@turf/difference"
-import { conversionLevels } from "@/referentiels/ab.js"
-import { toDateInputString } from "@/utils/dates.js"
+import { LegalProjections, RegionBounds } from "@agencebio/cartobio-types";
+import intersect from "@turf/intersect";
+import bboxPolygon from "@turf/bbox-polygon";
+import { reproject } from "reproject";
+import proj4 from "proj4";
+import { polygonArea } from "geometric";
+import union from "@turf/union";
+import axios from "axios";
+import { feature, featureCollection } from "@turf/helpers";
+import { parseReference } from "@/utils/cadastre.js";
+import bbox from "@turf/bbox";
+import { fromCodeCpf } from "@agencebio/rosetta-cultures";
+import difference from "@turf/difference";
+import { conversionLevels } from "@/referentiels/ab.js";
+import { toDateInputString } from "@/utils/dates.js";
 
 /**
  * @typedef {import('geojson').Feature} Feature
@@ -65,34 +65,33 @@ import { toDateInputString } from "@/utils/dates.js"
  * @property {String} label
  */
 
-
 /**
  * @param {CartoBioFeature[]|CartoBioFeature|CartoBioFeatureCollection} feature ou collection - en WGS84
  * @return {Number} surface en mètres carrés
  */
 export function legalProjectionSurface(feature) {
-  if (feature.type === 'FeatureCollection') {
-    feature = feature.features
+  if (feature.type === "FeatureCollection") {
+    feature = feature.features;
   }
 
   if (Array.isArray(feature)) {
-    return feature.reduce((total, f) => total + legalProjectionSurface(f), 0)
+    return feature.reduce((total, f) => total + legalProjectionSurface(f), 0);
   }
 
   const area = (Object.entries(RegionBounds).find(([, bounds]) => {
-    return intersect(feature, bboxPolygon(bounds))
-  }) || ['metropole'])[0]
+    return intersect(feature, bboxPolygon(bounds));
+  }) || ["metropole"])[0];
 
-  const projection = LegalProjections[area]
-  const coordinates = reproject(feature, proj4.WGS84, projection).geometry.coordinates
-  const outer = coordinates[0]
-  const inner = coordinates.slice(1)
+  const projection = LegalProjections[area];
+  const coordinates = reproject(feature, proj4.WGS84, projection).geometry.coordinates;
+  const outer = coordinates[0];
+  const inner = coordinates.slice(1);
 
   // les coordonnées nouvellement projetées sont en mètres carrés,
   // on peut donc utiliser un simple calcul géométrique d'aire
   return inner.reduce((total, hole) => {
-    return total - polygonArea(hole)
-  }, polygonArea(outer))
+    return total - polygonArea(hole);
+  }, polygonArea(outer));
 }
 
 /**
@@ -103,36 +102,36 @@ export function legalProjectionSurface(feature) {
  * @property {Number} surface
  */
 
-export const GROUPE_NONE = ''
-export const GROUPE_COMMUNE = 'COMMUNE'
-export const GROUPE_CULTURE = 'CULTURE'
-export const GROUPE_ILOT = 'ILOT'
-export const GROUPE_NIVEAU_CONVERSION = 'NIVEAU_CONVERSION'
-export const GROUPE_DATE_ENGAGEMENT = 'DATE_ENGAGEMENT'
-export const GROUPE_ANNEE_ENGAGEMENT = 'ANNEE_ENGAGEMENT'
+export const GROUPE_NONE = "";
+export const GROUPE_COMMUNE = "COMMUNE";
+export const GROUPE_CULTURE = "CULTURE";
+export const GROUPE_ILOT = "ILOT";
+export const GROUPE_NIVEAU_CONVERSION = "NIVEAU_CONVERSION";
+export const GROUPE_DATE_ENGAGEMENT = "DATE_ENGAGEMENT";
+export const GROUPE_ANNEE_ENGAGEMENT = "ANNEE_ENGAGEMENT";
 /**  @enum {String} */
 export const DeletionReasonsCode = {
-  FEATURE_COLLECTION_LIFECYCLE: 'lifecycle',
-  OTHER: 'other',
-  USER_ERROR: 'error'
-}
+  FEATURE_COLLECTION_LIFECYCLE: "lifecycle",
+  OTHER: "other",
+  USER_ERROR: "error",
+};
 /**
  * @type {DeletionReason[]}
  */
 export const deletionReasons = [
-  { code: DeletionReasonsCode.USER_ERROR, label: 'Erreur' },
-  { code: DeletionReasonsCode.FEATURE_COLLECTION_LIFECYCLE, label: 'Évolution du parcellaire' },
-  { code: DeletionReasonsCode.OTHER, label: 'Autre' },
-]
+  { code: DeletionReasonsCode.USER_ERROR, label: "Erreur" },
+  { code: DeletionReasonsCode.FEATURE_COLLECTION_LIFECYCLE, label: "Évolution du parcellaire" },
+  { code: DeletionReasonsCode.OTHER, label: "Autre" },
+];
 
 class FeatureError extends ReferenceError {
-  name = 'FeatureError'
-  #label = 'Erreur de parcelle'
+  name = "FeatureError";
+  #label = "Erreur de parcelle";
 
   constructor(featureId) {
-    super(`Problème avec la parcelle ${featureId}`)
+    super(`Problème avec la parcelle ${featureId}`);
 
-    this.id = featureId
+    this.id = featureId;
   }
 
   /**
@@ -141,32 +140,32 @@ class FeatureError extends ReferenceError {
    * @returns {String}
    */
   toString() {
-    return this.message
+    return this.message;
   }
 
   /**
    * As POSTed via the HTTP API
    */
   valueOf() {
-    return { id: this.id, name: this.#label }
+    return { id: this.id, name: this.#label };
   }
 }
 
 export class FeatureNotFoundError extends FeatureError {
-  name = 'FeatureNotFoundError'
-  label = 'Parcelle introuvable'
+  name = "FeatureNotFoundError";
+  label = "Parcelle introuvable";
 
   toString() {
-    return `La référence cadastrale ${this.id} est introuvable dans le parcellaire informatisé.`
+    return `La référence cadastrale ${this.id} est introuvable dans le parcellaire informatisé.`;
   }
 }
 
 export class FeatureWithoutGeometryError extends FeatureError {
-  name = 'FeatureWithoutGeometryError'
-  label = 'Contour géographique absent'
+  name = "FeatureWithoutGeometryError";
+  label = "Contour géographique absent";
 
   toString() {
-    return `Impossible d'obtenir le dessin géographique de la référence cadastrale ${this.id} n'a pas été retournée par le parcellaire informatisé.`
+    return `Impossible d'obtenir le dessin géographique de la référence cadastrale ${this.id} n'a pas été retournée par le parcellaire informatisé.`;
   }
 }
 
@@ -175,8 +174,8 @@ export class FeatureWithoutGeometryError extends FeatureError {
  */
 export const SORT = {
   ASCENDING: 1,
-  DESCENDING: -1
-}
+  DESCENDING: -1,
+};
 
 /**
  *
@@ -185,126 +184,130 @@ export const SORT = {
  * @returns {function(GroupOrFeature, GroupOrFeature): Number}
  */
 export function sortByAccessor(propertyAccessor, order = SORT.ASCENDING) {
-  const isNumeric = (d) => typeof d === 'number' || Number.isNaN(parseInt(d, 10)) === false
+  const isNumeric = (d) => typeof d === "number" || Number.isNaN(parseInt(d, 10)) === false;
 
   return function sortByAscendingFeatureGroupProperty(groupA, groupB) {
-    const a = String(propertyAccessor(groupA))
-    const b = String(propertyAccessor(groupB))
+    const a = String(propertyAccessor(groupA));
+    const b = String(propertyAccessor(groupB));
 
-    return a.localeCompare(b, 'fr-FR', {
-      usage: 'sort',
-      numeric: isNumeric(propertyAccessor(groupA))
-    }) * order
-  }
+    return (
+      a.localeCompare(b, "fr-FR", {
+        usage: "sort",
+        numeric: isNumeric(propertyAccessor(groupA)),
+      }) * order
+    );
+  };
 }
 
-const NO_GROUP = '__nogroup__'
+const NO_GROUP = "__nogroup__";
 export const PACNotationOptions = {
-  ilotLabel: '',
-  parcelleLabel: '',
-  separator: '.'
-}
+  ilotLabel: "",
+  parcelleLabel: "",
+  separator: ".",
+};
 /**
  * @type {Record<string, GroupingChoice>}
  */
 export const groupingChoices = {
   [GROUPE_COMMUNE]: {
-    label: 'commune',
-    labelNoGroup: 'Commune inconnue',
+    label: "commune",
+    labelNoGroup: "Commune inconnue",
     datapoint: (d) => d.properties.COMMUNE || NO_GROUP,
     groupLabelFn({ featureSample: d }) {
       if (d.properties.COMMUNE_LABEL) {
-        return `${d.properties.COMMUNE_LABEL} (${d.properties.COMMUNE.slice(0, -3)})`
+        return `${d.properties.COMMUNE_LABEL} (${d.properties.COMMUNE.slice(0, -3)})`;
       } else if (d.properties.COMMUNE) {
-        return d.properties.COMMUNE
+        return d.properties.COMMUNE;
       } else {
-        return this.labelNoGroup
+        return this.labelNoGroup;
       }
     },
     sortFn: sortByAccessor((g) => g.surface, SORT.DESCENDING),
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ILOT]: {
-    label: 'îlot PAC',
-    labelNoGroup: 'Non précisé ou hors-PAC',
+    label: "îlot PAC",
+    labelNoGroup: "Non précisé ou hors-PAC",
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => 'NUMERO_I' in d.properties ? d.properties.NUMERO_I : NO_GROUP,
+    datapoint: (d) => ("NUMERO_I" in d.properties ? d.properties.NUMERO_I : NO_GROUP),
     groupLabelFn({ featureSample: d }) {
       if (d.properties.NUMERO_I) {
-        return `Îlot ${d.properties.NUMERO_I}`
+        return `Îlot ${d.properties.NUMERO_I}`;
       } else {
-        return this.labelNoGroup
+        return this.labelNoGroup;
       }
     },
     sortFn: sortByAccessor((g) => parseInt(g.features.at(0).properties.NUMERO_I, 10) || Infinity, SORT.ASCENDING),
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
-    label: 'type de culture',
-    labelNoGroup: 'Absence de culture',
-    labelUnknown: 'Culture inconnue',
+    label: "type de culture",
+    labelNoGroup: "Absence de culture",
+    labelUnknown: "Culture inconnue",
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => Array.isArray(d.properties.cultures) && d.properties.cultures.length ? d.properties.cultures.map(({ CPF }) => CPF) : [NO_GROUP],
+    datapoint: (d) =>
+      Array.isArray(d.properties.cultures) && d.properties.cultures.length
+        ? d.properties.cultures.map(({ CPF }) => CPF)
+        : [NO_GROUP],
     groupLabelFn({ datapoint }) {
-      return datapoint === NO_GROUP ? this.labelNoGroup : (fromCodeCpf(datapoint)?.libelle_code_cpf || this.labelUnknown)
+      return datapoint === NO_GROUP ? this.labelNoGroup : fromCodeCpf(datapoint)?.libelle_code_cpf || this.labelUnknown;
     },
-    sortFn: sortByAccessor((g) => fromCodeCpf(g.mainKey)?.libelle_code_cpf || '', SORT.ASCENDING),
-    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
+    sortFn: sortByAccessor((g) => fromCodeCpf(g.mainKey)?.libelle_code_cpf || "", SORT.ASCENDING),
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_NIVEAU_CONVERSION]: {
-    label: 'niveau de conversion',
-    labelNoGroup: 'Niveau de conversion inconnu',
+    label: "niveau de conversion",
+    labelNoGroup: "Niveau de conversion inconnu",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.conversion_niveau || NO_GROUP,
     groupLabelFn({ groupingKey }) {
-      return conversionLevels.find(({ value }) => value === groupingKey)?.label || this.labelNoGroup
+      return conversionLevels.find(({ value }) => value === groupingKey)?.label || this.labelNoGroup;
     },
     sortFn: sortByAccessor((g) => g.surface, SORT.DESCENDING),
-    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
-    label: 'année de début de conversion',
-    labelNoGroup: 'Absence de date de début de conversion',
+    label: "année de début de conversion",
+    labelNoGroup: "Absence de date de début de conversion",
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP,
+    datapoint: (d) => (d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP),
     groupLabelFn({ groupingKey }) {
-      return groupingKey === NO_GROUP ? this.labelNoGroup : groupingKey
+      return groupingKey === NO_GROUP ? this.labelNoGroup : groupingKey;
     },
     sortFn: sortByAccessor((g) => g.features.at(0).properties.engagement_date, SORT.DESCENDING),
-    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
-}
+};
 
 Object.defineProperty(groupingChoices, GROUPE_DATE_ENGAGEMENT, {
   enumerable: false,
   value: {
     label: null,
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => d.properties.engagement_date ? toDateInputString(new Date(d.properties.engagement_date)) : '',
-    groupLabelFn: ({ groupingKey }) => groupingKey || 'Année de début de conversion inconnue',
+    datapoint: (d) => (d.properties.engagement_date ? toDateInputString(new Date(d.properties.engagement_date)) : ""),
+    groupLabelFn: ({ groupingKey }) => groupingKey || "Année de début de conversion inconnue",
     sortFn: sortByAccessor((g) => g.key, SORT.DESCENDING),
-    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING)
+    sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
-})
-
+});
 
 export function createGroupingKeys(elements) {
   const keys = elements.reduce((keys, item, i) => {
     if (Array.isArray(item)) {
-      keys = item.map(subkey => [...keys, subkey])
+      keys = item.map((subkey) => [...keys, subkey]);
     } else {
       // we init for the first item
       if (i === 0) {
-        keys.push([])
+        keys.push([]);
       }
 
-      keys.forEach(k => k.push(item))
+      keys.forEach((k) => k.push(item));
     }
 
-    return keys
-  }, [])
+    return keys;
+  }, []);
 
-  return Array.from(new Set(keys.map(key => key.join('-'))))
+  return Array.from(new Set(keys.map((key) => key.join("-"))));
 }
 
 /**
@@ -315,17 +318,19 @@ export function createGroupingKeys(elements) {
  */
 export function getFeatureGroups(collection, pivot = GROUPE_CULTURE) {
   // Use a default pivot if none is provided
-  if (pivot === '' || (Array.isArray(pivot) && pivot.length === 0)) {
-    return [{
-      label: '',
-      key: 'none',
-      pivot,
-      features: collection.features,
-      surface: inHa(legalProjectionSurface(featureCollection(collection.features))),
-    }]
+  if (pivot === "" || (Array.isArray(pivot) && pivot.length === 0)) {
+    return [
+      {
+        label: "",
+        key: "none",
+        pivot,
+        features: collection.features,
+        surface: inHa(legalProjectionSurface(featureCollection(collection.features))),
+      },
+    ];
   }
 
-  const pivots = Array.isArray(pivot) ? pivot : [pivot]
+  const pivots = Array.isArray(pivot) ? pivot : [pivot];
 
   /**
    * If [CULTURE, NIVEAU_CONVERSION, ANNEE_CONVERSION]
@@ -334,33 +339,34 @@ export function getFeatureGroups(collection, pivot = GROUPE_CULTURE) {
    * With step 1 [ [01.92, AB, 2019], [01.26.1, AB, 2019], [01.92, AB, 2010] ]
    */
   const groups = collection.features.reduce((groups, feature) => {
-    const datapoints = pivots.map(pivot => groupingChoices[pivot].datapoint(feature))
-    const groupingKeys = createGroupingKeys(datapoints)
+    const datapoints = pivots.map((pivot) => groupingChoices[pivot].datapoint(feature));
+    const groupingKeys = createGroupingKeys(datapoints);
 
-    groupingKeys.forEach(groupKey => {
+    groupingKeys.forEach((groupKey) => {
       if (!groups.has(groupKey)) {
-        groups.set(groupKey, [])
+        groups.set(groupKey, []);
       }
 
-      groups.set(groupKey, [...groups.get(groupKey), feature].sort(groupingChoices[pivots.at(0)].sortFeaturesFn))
-    })
+      groups.set(groupKey, [...groups.get(groupKey), feature].sort(groupingChoices[pivots.at(0)].sortFeaturesFn));
+    });
 
-    return groups
-  }, new Map())
+    return groups;
+  }, new Map());
 
-
-  return Array.from(groups).map(([groupingKey, features]) => ({
-    label: groupingChoices[pivots.at(0)].groupLabelFn({
-      featureSample: features[0],
-      groupingKey,
-      datapoint: groupingKey.split('-').at(0)
-    }),
-    key: groupingKey,
-    mainKey: groupingKey.split('-').at(0),
-    pivot: pivots.at(0),
-    features,
-    surface: legalProjectionSurface(features)
-  })).sort(groupingChoices[pivots.at(0)].sortFn)
+  return Array.from(groups)
+    .map(([groupingKey, features]) => ({
+      label: groupingChoices[pivots.at(0)].groupLabelFn({
+        featureSample: features[0],
+        groupingKey,
+        datapoint: groupingKey.split("-").at(0),
+      }),
+      key: groupingKey,
+      mainKey: groupingKey.split("-").at(0),
+      pivot: pivots.at(0),
+      features,
+      surface: legalProjectionSurface(features),
+    }))
+    .sort(groupingChoices[pivots.at(0)].sortFn);
 }
 
 /**
@@ -369,7 +375,7 @@ export function getFeatureGroups(collection, pivot = GROUPE_CULTURE) {
  * @returns {Feature}
  */
 export function getFeatureById(features, id) {
-  return features.find(feature => feature.id === id)
+  return features.find((feature) => feature.id === id);
 }
 
 /**
@@ -377,69 +383,63 @@ export function getFeatureById(features, id) {
  * @param {{ explicitName?: boolean, ilotLabel?: string, parcelleLabel?: string, separator?: string, placeholder?: string}} options
  * @returns {String}
  */
-export function featureName(feature, {
-  explicitName = true,
-  ilotLabel = 'ilot ',
-  parcelleLabel = 'parcelle ',
-  separator = ', ',
-  placeholder = '-'
-} = {}) {
-  const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10)
-  const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10)
+export function featureName(
+  feature,
+  { explicitName = true, ilotLabel = "ilot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {},
+) {
+  const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10);
+  const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10);
 
   if (feature.properties.NOM || !Number.isNaN(NUMERO_I) || !Number.isNaN(NUMERO_P)) {
     const name = [
-      Number.isNaN(NUMERO_I) === false ? `${ilotLabel}${NUMERO_I}` : '',
-      Number.isNaN(NUMERO_P) === false ? `${parcelleLabel}${NUMERO_P}` : '',
+      Number.isNaN(NUMERO_I) === false ? `${ilotLabel}${NUMERO_I}` : "",
+      Number.isNaN(NUMERO_P) === false ? `${parcelleLabel}${NUMERO_P}` : "",
     ]
-        .filter(d => d)
-        .join(separator)
+      .filter((d) => d)
+      .join(separator);
 
     if (!name) {
-      return feature.properties.NOM ?? placeholder
+      return feature.properties.NOM ?? placeholder;
     }
 
-    return `${name ?? placeholder}${explicitName && feature.properties.NOM ? ` (${feature.properties.NOM})` : ''}`
+    return `${name ?? placeholder}${explicitName && feature.properties.NOM ? ` (${feature.properties.NOM})` : ""}`;
   }
 
   if (feature.properties.cadastre) {
     if (Array.isArray(feature.properties.cadastre)) {
-      const references = feature.properties.cadastre.map(cadastre => parseReference(cadastre))
-      return `Parcelles ${references.map(cadastre => cadastre.number).join(separator)}`
+      const references = feature.properties.cadastre.map((cadastre) => parseReference(cadastre));
+      return `Parcelles ${references.map((cadastre) => cadastre.number).join(separator)}`;
     }
 
-    const { prefix, section, number } = parseReference(feature.properties.cadastre)
-    return [
-      'Reférence cadastrale',
-      prefix !== '000' ? prefix : '',
-      section,
-      number
-    ].filter(d => d).join(' ')
+    const { prefix, section, number } = parseReference(feature.properties.cadastre);
+    return ["Reférence cadastrale", prefix !== "000" ? prefix : "", section, number].filter((d) => d).join(" ");
   } else {
-    return placeholder
+    return placeholder;
   }
 }
 
 export function featureDetails(feature) {
-  const details = []
+  const details = [];
 
   if (feature.properties.cadastre) {
-    const cadastre = Array.isArray(feature.properties.cadastre) ? feature.properties.cadastre : [feature.properties.cadastre]
+    const cadastre = Array.isArray(feature.properties.cadastre)
+      ? feature.properties.cadastre
+      : [feature.properties.cadastre];
 
     cadastre
-        .map(ref => parseReference(ref))
-        .forEach(({ section, number }) => {
-          details.push(`Parcelle cadastrale ${number} (Section ${section}, ${feature.properties.COMMUNE_LABEL})`)
-        })
+      .map((ref) => parseReference(ref))
+      .forEach(({ section, number }) => {
+        details.push(`Parcelle cadastrale ${number} (Section ${section}, ${feature.properties.COMMUNE_LABEL})`);
+      });
   }
 
-  return details
+  return details;
 }
 
-const cultureList = new Intl.ListFormat('fr', {
-  style: 'short',
-  type: 'conjunction' // "et"
-})
+const cultureList = new Intl.ListFormat("fr", {
+  style: "short",
+  type: "conjunction", // "et"
+});
 
 /**
  *
@@ -449,12 +449,12 @@ const cultureList = new Intl.ListFormat('fr', {
  */
 export function cultureLabel(culture, { withCode = false } = {}) {
   if (!culture) {
-    return groupingChoices[GROUPE_CULTURE].labelNoGroup
+    return groupingChoices[GROUPE_CULTURE].labelNoGroup;
   }
 
-  const label = fromCodeCpf(culture.CPF)?.libelle_code_cpf || groupingChoices[GROUPE_CULTURE].labelUnknown
+  const label = fromCodeCpf(culture.CPF)?.libelle_code_cpf || groupingChoices[GROUPE_CULTURE].labelUnknown;
 
-  return withCode ? `${culture.CPF ?? culture.TYPE} ${label}` : label
+  return withCode ? `${culture.CPF ?? culture.TYPE} ${label}` : label;
 }
 
 /**
@@ -463,9 +463,9 @@ export function cultureLabel(culture, { withCode = false } = {}) {
  * @returns {string}
  */
 export function cultureLabels(cultures, options) {
-  const labels = new Set(cultures.map(culture => cultureLabel(culture, options)))
+  const labels = new Set(cultures.map((culture) => cultureLabel(culture, options)));
 
-  return cultureList.format(labels)
+  return cultureList.format(labels);
 }
 
 /**
@@ -473,25 +473,30 @@ export function cultureLabels(cultures, options) {
  * @returns {String}
  */
 export function inHa(value) {
-  return parseFloat((value / 10000))
-      .toLocaleString('fr-FR', {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 2
-      })
+  return parseFloat(value / 10000).toLocaleString("fr-FR", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
 }
 
 export function bounds(featureCollection, defaults = bounds.DEFAULT_BOUNDS) {
-  if (!featureCollection?.type || (featureCollection?.type === 'FeatureCollection' && !featureCollection.features.length)) {
-    return defaults
+  if (
+    !featureCollection?.type ||
+    (featureCollection?.type === "FeatureCollection" && !featureCollection.features.length)
+  ) {
+    return defaults;
   }
 
   // if the input is out of bounds (eg: absent geometry), bbox returns [Infinite, Infinite, -Infinite, -Infinite]
   // but mostly, MapLibre fails if the bounds are not withing the Web Mercator bounds
-  const result = bbox(featureCollection)
-  return Math.abs(result.at(0)) > 90 ? defaults : result
+  const result = bbox(featureCollection);
+  return Math.abs(result.at(0)) > 90 ? defaults : result;
 }
 
-bounds.DEFAULT_BOUNDS = [[-9.86, 41.15], [10.38, 51.56]]
+bounds.DEFAULT_BOUNDS = [
+  [-9.86, 41.15],
+  [10.38, 51.56],
+];
 
 /**
  * Returns a geometry, without any content part of a feature collection
@@ -507,11 +512,11 @@ export function diff(feature, featureCollection) {
     }
 
     if (!intersect(reducedFeature, target)) {
-      return reducedFeature
+      return reducedFeature;
     }
 
-    return difference(reducedFeature, target)
-  }, feature)
+    return difference(reducedFeature, target);
+  }, feature);
 }
 
 /**
@@ -523,11 +528,11 @@ export function diff(feature, featureCollection) {
 export function merge(features) {
   return features.reduce((mergedFeature, feature) => {
     if (mergedFeature === null) {
-      return feature
+      return feature;
     }
 
-    return union(mergedFeature, feature)
-  }, null)
+    return union(mergedFeature, feature);
+  }, null);
 }
 
 /**
@@ -539,37 +544,40 @@ export function merge(features) {
  * @returns {Promise<{ geometry: Geometry, feature: Feature }>}
  */
 async function fetchCadastreGeometry(q, baseFeature) {
-
-  const { data } = await axios.get('https://data.geopf.fr/geocodage/search', {
+  const { data } = await axios.get("https://data.geopf.fr/geocodage/search", {
     params: {
       q,
-      index: 'parcel',
+      index: "parcel",
       limit: 1,
-      returntruegeometry: true
-    }
-  })
+      returntruegeometry: true,
+    },
+  });
 
   /** @type {IgnFeature=} */
-  const cadastreFeature = data.features.at(0)
+  const cadastreFeature = data.features.at(0);
 
   if (!cadastreFeature) {
-    throw new FeatureNotFoundError(q)
+    throw new FeatureNotFoundError(q);
   }
 
-  const geometry = cadastreFeature.properties.truegeometry
+  const geometry = cadastreFeature.properties.truegeometry;
 
   if (!geometry) {
-    throw new FeatureWithoutGeometryError(q)
+    throw new FeatureWithoutGeometryError(q);
   }
 
   return {
     geometry,
-    feature: feature(geometry, {
-      ...baseFeature.properties,
-      COMMUNE_LABEL: cadastreFeature.properties.city,
-      COMMUNE: `${cadastreFeature.properties.departmentcode}${cadastreFeature.properties.municipalitycode}`
-    }, { id: baseFeature.id ?? baseFeature.properties.id })
-  }
+    feature: feature(
+      geometry,
+      {
+        ...baseFeature.properties,
+        COMMUNE_LABEL: cadastreFeature.properties.city,
+        COMMUNE: `${cadastreFeature.properties.departmentcode}${cadastreFeature.properties.municipalitycode}`,
+      },
+      { id: baseFeature.id ?? baseFeature.properties.id },
+    ),
+  };
 }
 
 /**
@@ -579,27 +587,30 @@ async function fetchCadastreGeometry(q, baseFeature) {
  * @throws {Error}
  * @returns {Promise<{ featureCollection: FeatureCollection, warnings: String[] }>}
  */
-export async function applyCadastreGeometries(baseCollection, field = 'cadastre') {
-  const warnings = []
+export async function applyCadastreGeometries(baseCollection, field = "cadastre") {
+  const warnings = [];
 
-  const results = await Promise.allSettled(baseCollection.features.map(feature => {
-    if (!feature.geometry && Array.isArray(feature.properties[field])) {
-      return fetchCadastreGeometry(feature.properties[field][0], feature)
-    }
-  }))
+  const results = await Promise.allSettled(
+    baseCollection.features.map((feature) => {
+      if (!feature.geometry && Array.isArray(feature.properties[field])) {
+        return fetchCadastreGeometry(feature.properties[field][0], feature);
+      }
+    }),
+  );
 
   const featureCollection = {
     ...baseCollection,
-    features: results.map(({ status, value, reason }) => {
-      if (status === 'rejected') {
-        warnings.push(reason)
-        return
-      }
+    features: results
+      .map(({ status, value, reason }) => {
+        if (status === "rejected") {
+          warnings.push(reason);
+          return;
+        }
 
-      return value.feature
-    }).filter(feature => feature)
-  }
+        return value.feature;
+      })
+      .filter((feature) => feature),
+  };
 
-  return { featureCollection, warnings }
+  return { featureCollection, warnings };
 }
-

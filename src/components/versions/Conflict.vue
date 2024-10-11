@@ -1,10 +1,10 @@
 <script setup>
-import { useCartoBioStorage } from "@/stores/storage.js"
-import VersionConflictModal from "@/components/versions/VersionConflictModal.vue"
-import { ref } from "vue"
+import { useCartoBioStorage } from "@/stores/storage.js";
+import VersionConflictModal from "@/components/versions/VersionConflictModal.vue";
+import { ref } from "vue";
 
-const storage = useCartoBioStorage()
-const modalRecordId = ref(null)
+const storage = useCartoBioStorage();
+const modalRecordId = ref(null);
 </script>
 
 <template>
@@ -18,21 +18,22 @@ const modalRecordId = ref(null)
     <ul class="fr-text--bold" v-if="storage.conflicts.size">
       <li v-for="conflict in storage.conflicts" :key="conflict">
         <a href="#" @click="modalRecordId = conflict">
-          {{ storage.operators[storage.records[conflict].numerobio].operator.nom }} - {{ storage.records[conflict].version_name }}
+          {{ storage.operators[storage.records[conflict].numerobio].operator.nom }} -
+          {{ storage.records[conflict].version_name }}
         </a>
       </li>
     </ul>
 
     <p v-if="storage.dateConflicts.size">
-      Les exploitations suivantes ont des dates d'audit en conflit.
-      Vous devez modifier les dates de l'une ou l'autre pour résoudre le conflit.
+      Les exploitations suivantes ont des dates d'audit en conflit. Vous devez modifier les dates de l'une ou l'autre
+      pour résoudre le conflit.
     </p>
 
     <ul v-if="storage.dateConflicts.size">
       <li v-for="dateConflict in storage.dateConflicts" :key="dateConflict">
         <span class="fr-text--bold">
-          {{ storage.operators[storage.records[dateConflict].numerobio].operator.nom }}
-        </span><br/>
+          {{ storage.operators[storage.records[dateConflict].numerobio].operator.nom }} </span
+        ><br />
         La version
         <span class="fr-text--bold">
           <router-link :to="`/exploitations/${storage.records[dateConflict].numerobio}/${dateConflict}`">
@@ -41,10 +42,22 @@ const modalRecordId = ref(null)
         </span>
         ne peut être synchronisée à la même date d'audit que
         <span class="fr-text--bold">
-          <router-link :to="`/exploitations/${storage.records[dateConflict].numerobio}/${storage.operators[storage.records[dateConflict].numerobio].records
-            .find(otherRecord => otherRecord.record_id !== dateConflict && otherRecord.audit_date === storage.records[dateConflict].audit_date)?.record_id}`">
-          {{ storage.operators[storage.records[dateConflict].numerobio].records
-            .find(otherRecord => otherRecord.record_id !== dateConflict && otherRecord.audit_date === storage.records[dateConflict].audit_date)?.version_name }}
+          <router-link
+            :to="`/exploitations/${storage.records[dateConflict].numerobio}/${
+              storage.operators[storage.records[dateConflict].numerobio].records.find(
+                (otherRecord) =>
+                  otherRecord.record_id !== dateConflict &&
+                  otherRecord.audit_date === storage.records[dateConflict].audit_date,
+              )?.record_id
+            }`"
+          >
+            {{
+              storage.operators[storage.records[dateConflict].numerobio].records.find(
+                (otherRecord) =>
+                  otherRecord.record_id !== dateConflict &&
+                  otherRecord.audit_date === storage.records[dateConflict].audit_date,
+              )?.version_name
+            }}
           </router-link>
         </span>
       </li>
@@ -52,14 +65,8 @@ const modalRecordId = ref(null)
   </div>
 
   <Teleport to="body">
-    <VersionConflictModal
-      v-if="modalRecordId"
-      :record-id="modalRecordId"
-      @close="modalRecordId = null"
-    />
+    <VersionConflictModal v-if="modalRecordId" :record-id="modalRecordId" @close="modalRecordId = null" />
   </Teleport>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

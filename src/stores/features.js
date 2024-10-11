@@ -1,8 +1,7 @@
-import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
-import { useFeaturesSetsStore } from "@/stores/features-sets.js"
-import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js"
-
+import { defineStore } from "pinia";
+import { computed, ref, watch } from "vue";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
+import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
 
 /**
  * @typedef {import('@/referentiels/ab.js').UserAnnotation} UserAnnotation
@@ -13,203 +12,207 @@ import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js"
  * @typedef {import('@agencebio/cartobio-types').CartoBioFeature} CartoBioFeature
  */
 
-export function collectIds (features) {
-  return features.map(({ id }) => String(id)).sort()
+export function collectIds(features) {
+  return features.map(({ id }) => String(id)).sort();
 }
 
-export const useFeaturesStore = defineStore('features', () => {
-  const selectedIds = ref([])
-  const activeId = ref(null)
-  const hoveredId = ref(null)
-  const recordId = ref(null)
+export const useFeaturesStore = defineStore("features", () => {
+  const selectedIds = ref([]);
+  const activeId = ref(null);
+  const hoveredId = ref(null);
+  const recordId = ref(null);
 
   /**
    * @type {reactive<CartoBioFeatureCollection>}
    */
   const collection = ref({
-    type: 'FeatureCollection',
-    features: []
-  })
+    type: "FeatureCollection",
+    features: [],
+  });
 
   /**
    * @type {reactive<CartoBioFeatureCollection>}
    */
   const candidateCollection = ref({
-    type: 'FeatureCollection',
-    features: []
-  })
+    type: "FeatureCollection",
+    features: [],
+  });
 
   /**
    * @return {CartoBioFeature}
    */
-  function getFeatureById (id) {
-    return collection.value.features.find(feature => String(feature.id) === String(id))
+  function getFeatureById(id) {
+    return collection.value.features.find((feature) => String(feature.id) === String(id));
   }
 
   /**
    * @type {ComputedRef<CartoBioFeature[]>}
    */
-  const all = computed(() => collection.value.features)
+  const all = computed(() => collection.value.features);
 
   /**
    * @type {ComputedRef<CartoBioFeature[]>}
    */
-  const allCandidate = computed(() => mergeFeatures(collection.value.features, candidateCollection.value.features))
+  const allCandidate = computed(() => mergeFeatures(collection.value.features, candidateCollection.value.features));
 
   /**
    * @type {ComputedRef<Boolean>}
    */
-  const isDirty = computed(() => JSON.stringify(all.value) !== JSON.stringify(allCandidate.value))
+  const isDirty = computed(() => JSON.stringify(all.value) !== JSON.stringify(allCandidate.value));
 
   /**
    * @type {ComputedRef<Boolean>}
    */
-  const hasFeatures = computed(() => collection.value.features.length > 0)
+  const hasFeatures = computed(() => collection.value.features.length > 0);
 
   /**
    * @type {ComputedRef<CartoBioFeature[]>}
    */
   const allSelected = computed(() => {
-    const sets = useFeaturesSetsStore()
-    const collectedIds = collectIds(sets.hits)
+    const sets = useFeaturesSetsStore();
+    const collectedIds = collectIds(sets.hits);
 
-    return collectedIds.toString() === selectedIds.value.sort().toString()
-  })
+    return collectedIds.toString() === selectedIds.value.sort().toString();
+  });
 
   /**
    * @type {ComputedRef<CartoBioFeature>}
    */
   const activeFeature = computed(() => {
-    return activeId.value ? getFeatureById(activeId.value) : null
-  })
+    return activeId.value ? getFeatureById(activeId.value) : null;
+  });
 
   /**
    * @type {ComputedRef<CartoBioFeature|null>}
    */
   const hoveredFeature = computed(() => {
-    return hoveredId.value ? getFeatureById(hoveredId.value) : null
-  })
+    return hoveredId.value ? getFeatureById(hoveredId.value) : null;
+  });
 
   /**
    * @type {ComputedRef<CartoBioFeature[]>}
    */
   const selectedFeatures = computed(() => {
-    return selectedIds.value.map(getFeatureById)
-  })
+    return selectedIds.value.map(getFeatureById);
+  });
 
   /**
    * @param {CartoBioFeature[]} features
    */
-  function setAll (features) {
-    collection.value.features = [...features]
+  function setAll(features) {
+    collection.value.features = [...features];
   }
 
   /**
    *
    * @param {CartoBioFeature[]} features
    */
-  function setCandidate (features) {
-    candidateCollection.value.features = [...features]
+  function setCandidate(features) {
+    candidateCollection.value.features = [...features];
   }
 
-  function toggleAllSelected () {
-    const sets = useFeaturesSetsStore()
-    selectedIds.value = allSelected.value ? [] : collectIds(sets.hits)
+  function toggleAllSelected() {
+    const sets = useFeaturesSetsStore();
+    selectedIds.value = allSelected.value ? [] : collectIds(sets.hits);
   }
 
   /**
    * @param {String} featureId
    */
-  function toggleSingleSelected (featureId) {
+  function toggleSingleSelected(featureId) {
     selectedIds.value = selectedIds.value.includes(String(featureId))
-      // we remove it if it was available
-      ? selectedIds.value.filter(id => String(id) !== String(featureId))
-      // otherwise, we add it to the select list
-      : selectedIds.value.concat([String(featureId)])
+      ? // we remove it if it was available
+        selectedIds.value.filter((id) => String(id) !== String(featureId))
+      : // otherwise, we add it to the select list
+        selectedIds.value.concat([String(featureId)]);
   }
 
   /**
    * @param  {...String} ids
    */
-  function select (...ids) {
-    selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids.map(String)]))
+  function select(...ids) {
+    selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids.map(String)]));
   }
 
   /**
    * @param  {...String} ids
    */
-  function unselect (...ids) {
-    selectedIds.value = selectedIds.value.filter(id => ids.map(String).includes(String(id)) === false)
+  function unselect(...ids) {
+    selectedIds.value = selectedIds.value.filter((id) => ids.map(String).includes(String(id)) === false);
   }
 
-  function bindMaplibreFeatureState (map, source) {
+  function bindMaplibreFeatureState(map, source) {
     watch(hoveredId, (id, previousId) => {
       if (id) {
-        map.setFeatureState({ source, id }, { hover: true })
+        map.setFeatureState({ source, id }, { hover: true });
       }
 
-      if (previousId){
-        map.setFeatureState({ source, id: previousId }, { hover: false })
+      if (previousId) {
+        map.setFeatureState({ source, id: previousId }, { hover: false });
       }
-    })
+    });
 
-    watch(() => selectedIds, (currentIds) => {
-      currentIds.value.forEach(id => {
-        map.setFeatureState({ source, id }, { selected: true })
-      })
+    watch(
+      () => selectedIds,
+      (currentIds) => {
+        currentIds.value.forEach((id) => {
+          map.setFeatureState({ source, id }, { selected: true });
+        });
 
-      collection.value.features.forEach(({ id }) => {
-        const { selected } = map.getFeatureState({ id, source })
-        if (selected && !currentIds.value.includes(id)) {
-          map.setFeatureState({ source, id }, { selected: false })
-        }
-      })
-    }, { deep: true })
+        collection.value.features.forEach(({ id }) => {
+          const { selected } = map.getFeatureState({ id, source });
+          if (selected && !currentIds.value.includes(id)) {
+            map.setFeatureState({ source, id }, { selected: false });
+          }
+        });
+      },
+      { deep: true },
+    );
 
     watch(activeId, (id, previousId) => {
       if (id) {
-        map.setFeatureState({ source, id }, { selected: true })
+        map.setFeatureState({ source, id }, { selected: true });
       }
 
-      if (previousId){
-        map.setFeatureState({ source, id: previousId }, { selected: false })
+      if (previousId) {
+        map.setFeatureState({ source, id: previousId }, { selected: false });
       }
-    })
+    });
 
     map.on("styledata", () => {
       if (map.getSource(source) === undefined) {
         return;
       }
 
-      selectedIds.value.forEach(id => {
-        map.setFeatureState({ source, id }, { selected: true })
-      })
-    })
+      selectedIds.value.forEach((id) => {
+        map.setFeatureState({ source, id }, { selected: true });
+      });
+    });
   }
 
-  function bindMaplibreInteractions (map, layer) {
-    map.on('mousemove', layer, ({ features }) => {
+  function bindMaplibreInteractions(map, layer) {
+    map.on("mousemove", layer, ({ features }) => {
       if (features.length) {
-        hoveredId.value = features[0].id
-        map.getCanvas().style.cursor = "pointer"
+        hoveredId.value = features[0].id;
+        map.getCanvas().style.cursor = "pointer";
       }
-    })
+    });
 
-    map.on('mouseleave', layer, () => {
+    map.on("mouseleave", layer, () => {
       if (hoveredId.value) {
-        hoveredId.value = null
-        map.getCanvas().style.cursor = ""
+        hoveredId.value = null;
+        map.getCanvas().style.cursor = "";
       }
-    })
+    });
 
-    map.on('click', layer, ({ lngLat }) => {
-      const point = map.project(lngLat)
-      const features = map.queryRenderedFeatures(point, { layers: [layer] })
+    map.on("click", layer, ({ lngLat }) => {
+      const point = map.project(lngLat);
+      const features = map.queryRenderedFeatures(point, { layers: [layer] });
 
       if (features.length) {
-        toggleSingleSelected(features[0].id)
+        toggleSingleSelected(features[0].id);
       }
-    })
+    });
   }
 
   /**
@@ -219,22 +222,24 @@ export const useFeaturesStore = defineStore('features', () => {
    * @param {CartoBioFeature[]} source
    * @returns {CartoBioFeature[]}
    */
-  function mergeFeatures (target, source) {
-    return target.map(feature => {
-      const matchingFeature = source.find(({ id }) => feature.id === id)
+  function mergeFeatures(target, source) {
+    return target.map((feature) => {
+      const matchingFeature = source.find(({ id }) => feature.id === id);
 
       if (matchingFeature) {
         return {
           ...feature,
-          properties: JSON.parse(JSON.stringify({
-            ...feature.properties,
-            ...matchingFeature.properties
-          }))
-        }
+          properties: JSON.parse(
+            JSON.stringify({
+              ...feature.properties,
+              ...matchingFeature.properties,
+            }),
+          ),
+        };
       }
 
-      return feature
-    })
+      return feature;
+    });
   }
 
   /**
@@ -242,13 +247,12 @@ export const useFeaturesStore = defineStore('features', () => {
    * @param {CartoBioFeature} feature
    * @returns {Promise<void>}
    */
-  function updateSingleFeature ({ id, properties, geometry }) {
-    const storage = useCartoBioStorage()
-    storage.addSyncOperation(recordId.value, new SyncOperation(
-        SyncOperation.ACTIONS.UPDATE_FEATURE,
-        { properties, geometry },
-        id
-    ))
+  function updateSingleFeature({ id, properties, geometry }) {
+    const storage = useCartoBioStorage();
+    storage.addSyncOperation(
+      recordId.value,
+      new SyncOperation(SyncOperation.ACTIONS.UPDATE_FEATURE, { properties, geometry }, id),
+    );
   }
 
   /**
@@ -256,44 +260,40 @@ export const useFeaturesStore = defineStore('features', () => {
    * @param {CartoBioFeatureCollection} featureCollection
    * @returns {Promise<void>}
    */
-  async function updateFeatureCollectionProperties (featureCollection) {
-    const storage = useCartoBioStorage()
-    storage.addSyncOperation(recordId.value, new SyncOperation(
-      SyncOperation.ACTIONS.UPDATE_COLLECTION,
-      featureCollection
-    ))
+  async function updateFeatureCollectionProperties(featureCollection) {
+    const storage = useCartoBioStorage();
+    storage.addSyncOperation(
+      recordId.value,
+      new SyncOperation(SyncOperation.ACTIONS.UPDATE_COLLECTION, featureCollection),
+    );
   }
 
   /**
    * Delete a single feature
    * @return {Promise<void>}
    */
-  async function deleteSingleFeature ({ id, reason }) {
-    const storage = useCartoBioStorage()
-    storage.addSyncOperation(recordId.value, new SyncOperation(
-        SyncOperation.ACTIONS.DELETE_FEATURE,
-        { reason },
-        id
-    ))
+  async function deleteSingleFeature({ id, reason }) {
+    const storage = useCartoBioStorage();
+    storage.addSyncOperation(recordId.value, new SyncOperation(SyncOperation.ACTIONS.DELETE_FEATURE, { reason }, id));
   }
 
   /**
    * @param {CartoBioFeature[]} features
    */
-  function updateMatchingFeatures (features) {
-    collection.value.features = mergeFeatures(collection.value.features, features)
+  function updateMatchingFeatures(features) {
+    collection.value.features = mergeFeatures(collection.value.features, features);
   }
 
-  function commitCandidate () {
-    collection.value.features = [...candidateCollection.value.features]
+  function commitCandidate() {
+    collection.value.features = [...candidateCollection.value.features];
   }
 
-  function $reset () {
-    selectedIds.value = []
-    activeId.value = null
-    hoveredId.value = null
-    setAll([])
-    setCandidate([])
+  function $reset() {
+    selectedIds.value = [];
+    activeId.value = null;
+    hoveredId.value = null;
+    setAll([]);
+    setCandidate([]);
   }
 
   return {
@@ -326,6 +326,6 @@ export const useFeaturesStore = defineStore('features', () => {
     updateSingleFeature,
     updateFeatureCollectionProperties,
     deleteSingleFeature,
-    updateMatchingFeatures
-  }
-})
+    updateMatchingFeatures,
+  };
+});

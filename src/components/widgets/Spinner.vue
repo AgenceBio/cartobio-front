@@ -21,7 +21,7 @@
   position: relative;
 }
 .spin::before {
-  animation: .7s linear infinite spinner;
+  animation: 0.7s linear infinite spinner;
   animation-play-state: inherit;
   border: solid 5px var(--background-alt-grey-hover);
   border-bottom-color: var(--background-action-high-blue-france);

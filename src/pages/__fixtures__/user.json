@@ -7,8 +7,6 @@
     "nom": "CartobiOC",
     "numeroControleEu": "FR-BIO-999"
   },
-  "groups": [
-    { "nom": "Auditeur"}
-  ],
-  "mainGroup": {"nom": "Auditeur"}
+  "groups": [{ "nom": "Auditeur" }],
+  "mainGroup": { "nom": "Auditeur" }
 }
