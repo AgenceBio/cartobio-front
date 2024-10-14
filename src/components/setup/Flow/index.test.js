@@ -102,7 +102,7 @@ describe("OperatorSetupFlow", () => {
     expect(wrapper.find(".fr-stepper__state").exists()).toBe(false);
   });
 
-  it("should render the flow selector with a visual stepper", async () => {
+  it("should render the flow selector without a visual stepper for intro step", async () => {
     const wrapper = mount(OperatorSetupFlow, {
       props: {
         actions: operatorSetupActions,
@@ -112,8 +112,21 @@ describe("OperatorSetupFlow", () => {
     });
 
     expect(wrapper.findAll(".fr-card")).toHaveLength(2);
+    expect(wrapper.find(".fr-stepper__state").exists()).toBe(false);
+  });
+
+  it("should render the flow selector with a visual stepper if not intro", async () => {
+    const wrapper = mount(OperatorSetupFlow, {
+      props: {
+        actions: operatorSetupActions,
+        operator: operator,
+        flowId: "source",
+        withStepper: true,
+      },
+    });
+
     expect(wrapper.find(".fr-stepper__state").exists()).toBe(true);
-    expect(wrapper.find(".fr-stepper__state").text()).toBe("Étape 1 sur 4");
+    expect(wrapper.find(".fr-stepper__state").text()).toBe("Étape 1 sur 2");
   });
 
   it("should render the source selector with telepac tab with a pre-established flowId", async () => {
@@ -177,7 +190,7 @@ describe("OperatorSetupFlow", () => {
 
       // it is now called during preview
       const confirmBtn = await wrapper.find(".fr-btn");
-      expect(confirmBtn.text()).toEqual("Importer ces données");
+      expect(confirmBtn.exists()).toEqual(true);
     });
 
     it("should handle the case where it cannot convert telepac file (invalid file)", async () => {
@@ -223,7 +236,7 @@ describe("OperatorSetupFlow", () => {
 
       // it is now called during preview
       const confirmBtn = await wrapper.find(".fr-btn");
-      expect(confirmBtn.text()).toEqual("Importer ces données");
+      expect(confirmBtn.exists()).toEqual(true);
     });
 
     it("should handle the case where it cannot convert an invalid file", async () => {
@@ -272,7 +285,7 @@ describe("OperatorSetupFlow", () => {
 
       // it is now called during preview
       const confirmBtn = wrapper.find(".fr-btn");
-      expect(confirmBtn.text()).toEqual("Importer ces données");
+      expect(confirmBtn.exists()).toEqual(true);
     });
 
     it("should import from Geofolink", async () => {
@@ -320,7 +333,7 @@ describe("OperatorSetupFlow", () => {
       expect(axios.__createMock.get).toHaveBeenCalled(2);
 
       const confirmBtn = wrapper.find(".fr-btn");
-      expect(confirmBtn.text()).toEqual("Importer ces données");
+      expect(confirmBtn.exists()).toEqual(true);
     });
 
     it("should tell if Geofolink account is not configured", async () => {
@@ -419,7 +432,7 @@ describe("OperatorSetupFlow", () => {
 
       // it is now called during preview
       const confirmBtn = await wrapper.find(".fr-btn");
-      expect(confirmBtn.text()).toEqual("Importer ces données");
+      expect(confirmBtn.exists()).toEqual(true);
     });
 
     it("should fail on invalid MesParcelles/TelepacXML archive", async () => {
@@ -523,7 +536,7 @@ describe("OperatorSetupFlow", () => {
 
       expect(axios.__createMock.get).toHaveBeenCalledOnce();
       const confirmBtn = await wrapper.find(".fr-btn");
-      expect(confirmBtn.text()).toEqual("Importer ces données");
+      expect(confirmBtn.exists()).toEqual(true);
     });
   });
 

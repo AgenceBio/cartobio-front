@@ -79,7 +79,7 @@
       </fieldset>
 
       <p>
-        <button class="fr-btn" type="submit">Importer ces données</button>
+        <button class="fr-btn" type="submit">Terminer et accéder au parcellaire</button>
       </p>
     </form>
   </section>
@@ -97,7 +97,7 @@ import FeaturesLayer from "@/components/map/FeaturesLayer.vue";
 import MapContainer from "@/components/map/MapContainer.vue";
 import GeojsonLayer from "@/components/map/GeojsonLayer.vue";
 
-const emit = defineEmits(["submit", "cancel"]);
+const emit = defineEmits(["submit"]);
 const props = defineProps({
   featureCollection: {
     type: Object,
