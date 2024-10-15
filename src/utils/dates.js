@@ -26,6 +26,13 @@ const mmyyIntl = new Intl.DateTimeFormat("fr-FR", {
   year: "numeric",
 });
 
+// 08h58
+const hhmmIntl = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
+  hour: "numeric",
+  minute: "numeric",
+});
+
 export function onValidDate(date, fn) {
   const dateObj = new Date(date);
 
@@ -81,4 +88,12 @@ export function now() {
  */
 export function toDateInputString(date) {
   return date.toISOString().split("T").at(0);
+}
+
+/**
+ * @param {String} date
+ * @returns {String} formatted date as hhmm
+ */
+export function hhmm(date) {
+  return onValidDate(date, (d) => hhmmIntl.format(d));
 }
