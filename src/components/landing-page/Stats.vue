@@ -1,32 +1,32 @@
 <template>
   <div class="fr-container--fluid fr-py-9v">
-    <div class="fr-container container--stats">
+    <div class="fr-container">
       <div class="fr-grid-row">
         <div class="fr-col-12">
           <h2 class="fr-h4">Les chiffres</h2>
         </div>
       </div>
-
-      <ul class="fr-grid-row fr-raw-list">
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.cartobioExploitationsCount }}</span>
-          Parcellaires certifiés
-        </li>
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.cartobioParcellesCount }}</span>
-          Parcelles renseignées
-        </li>
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.surfaceCartographiéConnuee }}</span>
-          De la surface connue en bio cartographiée
-        </li>
-
-        <li class="fr-col-md-3">
-          <span class="fr-display--xl fr-text-title--blue-france">{{ stats.opendataDownloadCount }}</span>
-          Téléchargements des données
-        </li>
-      </ul>
-
+      <div class="tableauPlaceholder" id="viz1729071118803" style="position: relative">
+        <object class="tableauViz" style="display: none">
+          <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+          <param name="embed_code_version" value="3" />
+          <param name="site_root" value="" />
+          <param name="name" value="Pagestatistique/StatistiqueCartoBio" />
+          <param name="tabs" value="no" />
+          <param name="toolbar" value="yes" />
+          <param
+            name="static_image"
+            value="https://public.tableau.com/static/images/Pa/Pagestatistique/StatistiqueCartoBio/1.png"
+          />
+          <param name="animate_transition" value="yes" />
+          <param name="display_static_image" value="yes" />
+          <param name="display_spinner" value="yes" />
+          <param name="display_overlay" value="yes" />
+          <param name="display_count" value="yes" />
+          <param name="language" value="fr-FR" />
+          <param name="filter" value="publish=yes" />
+        </object>
+      </div>
       <div class="fr-grid-row" v-if="$slots['footer-link']">
         <p class="fr-col-12 fr-mt-3w">
           <slot name="footer-link" />
@@ -37,52 +37,33 @@
 </template>
 
 <script setup>
-import { onMounted, reactive } from "vue";
-
-import axios from "axios";
-
-const roundedPercent = Intl.NumberFormat("fr-FR", {
-  style: "percent",
-  maximumFractionDigits: 1,
-});
-
-const largeNumbers = Intl.NumberFormat("fr-FR", {
-  style: "decimal",
-  notation: "compact",
-  compactDisplay: "short",
-});
-
-const stats = reactive({
-  surfaceBioCouverte: 2776553,
-  surfaceRpgBioCouverte: 2360070,
-  get surfaceCartographiéConnuee() {
-    return roundedPercent.format(this.cartobioSurfaceCouverte / this.surfaceBioCouverte);
-  },
-  cartobioExploitationsCount: 0,
-  cartobioParcellesCount: 0,
-  cartobioSurfaceCouverte: 0,
-  opendataDownloadCount: 518, // datapass.api.gouv.fr + demandes manuelles
-});
+import { onMounted } from "vue";
 
 onMounted(async () => {
-  const { data } = await axios.get(`${import.meta.env.VUE_APP_API_ENDPOINT}/v2/stats`);
-  const { dataGouv, stats: cartobio } = data;
+  const divElement = document.getElementById("viz1729071118803");
+  const vizElement = divElement.getElementsByTagName("object")[0];
 
-  const dataGouvAccumulatedDownloads = dataGouv.resources.reduce(
-    (sum, resource) => sum + (resource.metrics.views ?? 0),
-    stats.opendataDownloadCount,
-  );
+  if (divElement.offsetWidth > 800) {
+    vizElement.style.minWidth = "1069px";
+    vizElement.style.maxWidth = "1869px";
+    vizElement.style.width = "100%";
+    vizElement.style.minHeight = "1360px";
+    vizElement.style.maxHeight = "2060px";
+    //vizElement.style.height=(divElement.offsetWidth_0.75)+'px';
+  } else if (divElement.offsetWidth > 500) {
+    vizElement.style.minWidth = "1069px";
+    vizElement.style.maxWidth = "1869px";
+    vizElement.style.width = "100%";
+    vizElement.style.minHeight = "1360px";
+    vizElement.style.maxHeight = "2060px";
+    //vizElement.style.height=(divElement.offsetWidth_0.75)+'px';
+  } else {
+    vizElement.style.width = "100%";
+    vizElement.style.height = "4327px";
+  }
 
-  stats.opendataDownloadCount = largeNumbers.format(dataGouvAccumulatedDownloads);
-  stats.cartobioExploitationsCount = largeNumbers.format(cartobio.parcellaires);
-  stats.cartobioParcellesCount = largeNumbers.format(cartobio.parcelles);
-  stats.cartobioSurfaceCouverte = cartobio.surface;
+  const scriptElement = document.createElement("script");
+  scriptElement.src = "https://public.tableau.com/javascripts/api/viz_v1.js";
+  divElement.insertBefore(scriptElement, vizElement);
 });
 </script>
-
-<style scoped>
-.container--stats span {
-  display: block;
-  margin: 0;
-}
-</style>
