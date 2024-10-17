@@ -8,8 +8,8 @@
 
         <div class="fr-card__desc">
           <p>
-            Importez en un clic les données géographiques via une déclaration <b>PAC</b>, le dossier <b>nCVI</b>, ou le
-            parcellaire <b>MSA</b>.
+            Importez en un clic les données géographiques via une déclaration <b>PAC</b>, le dossier <b>nCVI</b>,
+            <b>MesParcelles</b> ou <b>Geofolia</b>.
           </p>
           <p>Vous pourrez mettre à jour les parcelles ayant changé depuis cette déclaration.</p>
         </div>
