@@ -26,6 +26,14 @@ const mmyyIntl = new Intl.DateTimeFormat("fr-FR", {
   year: "numeric",
 });
 
+// 07/12/2022
+const jjmmyyIntl = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+});
+
 // 08h58
 const hhmmIntl = new Intl.DateTimeFormat("fr-FR", {
   timeZone: "Europe/Paris",
@@ -72,6 +80,14 @@ export function monthYearDateFormat(date) {
  */
 export function mmyyyy(date) {
   return onValidDate(date, (d) => mmyyIntl.format(d));
+}
+
+/**
+ * @param {String} date
+ * @returns {String} formatted date as JJ MM YYYY
+ */
+export function jjmmyyyy(date) {
+  return onValidDate(date, (d) => jjmmyyIntl.format(d));
 }
 
 /**

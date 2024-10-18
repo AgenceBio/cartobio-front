@@ -235,3 +235,53 @@ export const certificationDateFin = {
     return d;
   },
 };
+
+export const notificationsStateLevel = {
+  ["BROUILLON"]: {
+    label: "Brouillon",
+    color: "#D3D3D3",
+    textColor: "#808080",
+    icon: "fr-icon-article-line",
+  },
+  ["ARRETEE"]: {
+    label: "Arrêtée",
+    color: "#FFE9E9",
+    textColor: "#CE0500",
+    icon: "fr-icon-error-fill",
+  },
+  ["NON ENGAGEE"]: {
+    label: "Non engagée",
+    color: "#FBE769",
+    textColor: "#66673D",
+    icon: "fr-icon-stop-circle-line",
+  },
+  // NOTE : Pas sûr d'avoir cette enum
+  // ["NON ENGAGEE-CHT OC"]: {
+  //   label: "Certification en cours",
+  //   color: "fr-badge--new",
+  // },
+  ["ENGAGEE FUTUR"]: {
+    label: "Engagée future",
+    color: "#E3E3FD",
+    textColor: "#000091",
+    icon: "fr-icon-time-line",
+  },
+  ["SUSPENDUE"]: {
+    label: "Suspendue",
+    color: "#FDDFDB",
+    textColor: "#A94645",
+    icon: "fr-icon-pause-circle-line",
+  },
+  ["ENGAGEE"]: {
+    label: "Engagée",
+    color: "#9EF9BE",
+    textColor: "#297254",
+    icon: "fr-icon-success-line",
+  },
+  ["RETIREE"]: {
+    label: "Retirée",
+    color: "#EEE4D9",
+    textColor: "#6A6156",
+    icon: "fr-icon-close-circle-line",
+  },
+};
