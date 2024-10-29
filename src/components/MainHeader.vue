@@ -171,6 +171,9 @@
             <li class="fr-nav__item">
               <router-link to="/pro" class="fr-nav__link"> Agriculteur·ice </router-link>
             </li>
+            <li class="fr-nav__item">
+              <router-link to="/stats" class="fr-nav__link"> Les chiffres </router-link>
+            </li>
           </ul>
         </nav>
       </div>
