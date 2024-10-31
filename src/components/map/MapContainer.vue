@@ -185,6 +185,13 @@ defineExpose({
   }
 }
 
+.maplibregl-ctrl-top-left {
+  padding: 0;
+  background-color: hsla(0, 0%, 100%, 0.9);
+  font-size: 0.75rem;
+  margin-right: 1rem;
+}
+
 .legend > * {
   pointer-events: initial;
 }
