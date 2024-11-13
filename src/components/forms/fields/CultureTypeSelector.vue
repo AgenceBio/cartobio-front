@@ -6,7 +6,15 @@
       Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
     </div>
 
-    <div ref="autocompleteRef"></div>
+    <input
+      v-if="disabledInput && fromCodeCpf(culture.CPF)"
+      type="text"
+      :disabled="disabledInput"
+      class="fr-input"
+      :value="fromCodeCpf(culture.CPF).libelle_code_cpf"
+    />
+
+    <div v-else ref="autocompleteRef"></div>
 
     <div v-for="[id, result] in errors" :key="id" class="fr-hint-text fr-error-text">{{ result.errorMessage }}.</div>
 
@@ -43,10 +51,13 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  disabledInput: {
+    type: Boolean,
+    default: () => false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
-
 const autocompleteProps = shallowRef(null);
 const autocompleteRef = ref(null);
 const showMore = ref(false);
@@ -74,83 +85,89 @@ const choices = computed(() => {
 const requirePrecision = computed(() => props.modelValue && !fromCodeCpf(props.modelValue)?.is_selectable);
 
 onMounted(() => {
-  autocompleteProps.value = autocomplete({
-    container: autocompleteRef.value,
-    placeholder: props.placeholder,
-    openOnFocus: true,
-    id: `cpf-${props.culture.id}`,
-    classNames: {
-      form: "fr-input",
-    },
+  if (!props.disabledInput) {
+    autocompleteProps.value = autocomplete({
+      container: autocompleteRef.value,
+      placeholder: props.placeholder,
+      openOnFocus: true,
+      id: `cpf-${props.culture.id}`,
+      classNames: {
+        form: "fr-input",
+      },
 
-    // helps react to query and isOpen changes
-    onStateChange({ state }) {
-      query.value = state.query;
-    },
+      // helps react to query and isOpen changes
+      onStateChange({ state }) {
+        query.value = state.query;
+      },
 
-    getSources() {
-      return [
-        {
-          sourceId: "cultures",
-          getItems({ query }) {
-            let items;
+      getSources() {
+        return [
+          {
+            sourceId: "cultures",
+            getItems({ query }) {
+              let items;
 
-            if (query.length > 1) {
-              items = new Fuse(choices.value, {
-                keys: ["libelle_code_cpf"],
-                minMatchCharLength: 2,
-                threshold: 0.4,
-              })
-                .search(query)
-                .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
-            } else if (requirePrecision.value || showMore.value) {
-              items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
-            } else {
-              items = [];
-            }
-
-            if (requirePrecision.value && !showMore.value) {
-              items.push({
-                libelle: "Voir toutes les cultures",
-                code: "showMore",
-              });
-            }
-
-            return items;
-          },
-          templates: {
-            item({ item, html }) {
-              if (item.code === "showMore") {
-                return html`<span class="fr-link">Voir toutes les cultures</span>`;
+              if (query.length > 1) {
+                items = new Fuse(choices.value, {
+                  keys: ["libelle_code_cpf"],
+                  minMatchCharLength: 2,
+                  threshold: 0.4,
+                })
+                  .search(query)
+                  .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
+              } else if (requirePrecision.value || showMore.value) {
+                items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
+              } else {
+                items = [];
               }
 
-              return item.libelle;
+              if (requirePrecision.value && !showMore.value) {
+                items.push({
+                  libelle: "Voir toutes les cultures",
+                  code: "showMore",
+                });
+              }
+
+              return items;
+            },
+            templates: {
+              item({ item, html }) {
+                if (item.code === "showMore") {
+                  return html`<span class="fr-link">Voir toutes les cultures</span>`;
+                }
+
+                return item.libelle;
+              },
+            },
+            onSelect: function (event) {
+              if (event.item.code === "showMore") {
+                showMore.value = true;
+                event.setQuery("");
+                event.setIsOpen(true);
+                return nextTick(() => {
+                  event.refresh();
+                });
+              }
+
+              event.setQuery(event.item.libelle);
+              emit("update:modelValue", event.item.code);
             },
           },
-          onSelect: function (event) {
-            if (event.item.code === "showMore") {
-              showMore.value = true;
-              event.setQuery("");
-              event.setIsOpen(true);
-              return nextTick(() => {
-                event.refresh();
-              });
-            }
+        ];
+      },
 
-            event.setQuery(event.item.libelle);
-            emit("update:modelValue", event.item.code);
-          },
-        },
-      ];
-    },
+      renderer: { createElement: h, Fragment, render },
+    });
 
-    renderer: { createElement: h, Fragment, render },
-  });
-
-  autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
+    autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
+  }
 });
 
-onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false));
+onBeforeUnmount(() => {
+  if (!props.disabledInput) {
+    autocompleteProps.value.setIsOpen(false);
+  }
+});
 </script>
 
 <style>
@@ -192,8 +209,10 @@ onBeforeUnmount(() => autocompleteProps.value.setIsOpen(false));
   --border-width: 2px;
   --aa-search-input-height: calc((0.5rem * 2) + 1.5rem - var(--border-width));
   align-items: flex-start;
-  margin-top: calc(var(--border-width) * -1); /* to counteract the align-items: center of the container */
+  margin-top: calc(var(--border-width) * -1);
+  /* to counteract the align-items: center of the container */
 }
+
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
 }
