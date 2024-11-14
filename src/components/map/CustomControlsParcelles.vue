@@ -1,12 +1,28 @@
 <script setup>
 import { ref } from "vue";
 
-const emit = defineEmits(["editContour", "divide", "cutBorders"]);
+const emit = defineEmits(["editContour", "divide", "cutBorders", "mesure", "delete", "undo", "redo"]);
 const props = defineProps({
   mode: {
     type: String,
     required: true,
     default: "modif",
+  },
+  canUndo: {
+    type: Boolean,
+    required: true,
+  },
+  canRedo: {
+    type: Boolean,
+    required: true,
+  },
+  canDelete: {
+    type: Boolean,
+    required: true,
+  },
+  mesureActive: {
+    type: Boolean,
+    required: true,
   },
 });
 const currentMode = ref(props.mode);
@@ -18,14 +34,28 @@ const selectModif = () => {
 
 const selectDivid = () => {
   emit("divide");
-  console.log("test");
   currentMode.value = "divid";
-  console.log(currentMode.value);
 };
 
 const selectCutBorders = () => {
   emit("cutBorders");
   currentMode.value = "cutBorder";
+};
+
+const selectMesure = () => {
+  emit("mesure");
+};
+
+const supprimer = () => {
+  emit("delete");
+};
+
+const undo = () => {
+  emit("undo");
+};
+
+const redo = () => {
+  emit("redo");
 };
 </script>
 
@@ -34,26 +64,26 @@ const selectCutBorders = () => {
     <div class="command-modif-parcellaire maplibregl-ctrl">
       <div class="left-buttons">
         <button
-          :class="currentMode.value === 'modif' ? 'selected-button' : ''"
+          :class="currentMode === 'modif' ? 'selected-button' : ''"
           type="button"
           title="Modifier"
           aria-label="Modifier"
           @click="selectModif()"
         >
-          <span class="fr-icon-edit-fill" aria-hidden="true"></span>
+          <span class="ri-shape-line" aria-hidden="true" style="font-size: 1.5em"></span>
           <span class="button-text">Modifier</span>
         </button>
 
         <div class="separator"></div>
 
         <button
-          :class="currentMode.value == 'divid' ? 'selected-button' : ''"
+          :class="currentMode == 'divid' ? 'selected-button' : ''"
           type="button"
           title="Diviser"
           aria-label="Diviser"
           @click="selectDivid()"
         >
-          <span class="fr-icon-bug-fill" aria-hidden="true"></span>
+          <span class="ri-scissors-cut-fill" aria-hidden="true" style="font-size: 1.5em"></span>
           <span class="button-text">Diviser</span>
         </button>
 
@@ -61,27 +91,36 @@ const selectCutBorders = () => {
 
         <button
           type="button"
-          :class="currentMode.value === 'cutBorder' ? 'selected-button' : ''"
+          :class="currentMode === 'cutBorder' ? 'selected-button' : ''"
           title="Découper les bordures"
           aria-label="Découper les bordures"
           @click="selectCutBorders()"
         >
-          <span class="fr-icon-bug-fill" aria-hidden="true"></span>
+          <span class="fr-icon-crop-line" aria-hidden="true"></span>
           <span class="button-text">Découper les bordures</span>
         </button>
         <div class="separator"></div>
       </div>
 
       <div class="right-buttons">
-        <button type="button" title="Mesurer" aria-label="Annuler">
-          <span class="fr-icon-bug-fill" aria-hidden="true"></span>
+        <button
+          type="button"
+          title="Mesurer"
+          :class="mesureActive ? 'selected-button' : ''"
+          @click="selectMesure()"
+          aria-label="Mesurer"
+        >
+          <span class="ri-ruler-fill" aria-hidden="true" style="font-size: 1.5em"></span>
         </button>
         <div class="separator"></div>
-        <button type="button" title="Annuler" aria-label="Annuler">
-          <span class="fr-icon-bug-fill" aria-hidden="true"></span>
+        <button type="button" title="Supprimer" aria-label="Supprimer" :disabled="!canDelete" @click="supprimer()">
+          <span class="fr-icon-delete-fill" aria-hidden="true"></span>
         </button>
-        <button type="button" title="Rétablir" aria-label="Rétablir">
-          <span class="fr-icon-bug-fill" aria-hidden="true"></span>
+        <button type="button" title="Annuler" aria-label="Annuler" :disabled="!canUndo" @click="undo()">
+          <span class="fr-icon-arrow-go-back-fill" aria-hidden="true"></span>
+        </button>
+        <button type="button" title="Rétablir" aria-label="Rétablir" :disabled="!canRedo" @click="redo()">
+          <span class="fr-icon-arrow-go-forward-fill" aria-hidden="true"></span>
         </button>
       </div>
     </div>
@@ -124,8 +163,8 @@ button {
   padding: 8px 12px;
   border: none;
   background: none;
+  color: #000091;
   border-radius: 4px;
-  color: #666;
   cursor: pointer;
   font-size: 14px;
 }
