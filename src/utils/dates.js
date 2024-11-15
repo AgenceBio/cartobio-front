@@ -33,6 +33,8 @@ const jjmmyyIntl = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "numeric",
   year: "numeric",
+})
+
 // 08h58
 const hhmmIntl = new Intl.DateTimeFormat("fr-FR", {
   timeZone: "Europe/Paris",

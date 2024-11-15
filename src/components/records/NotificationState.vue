@@ -1,5 +1,5 @@
 <template>
-  <span :class="[badgeClasses.class]" :style="badgeClasses.style">
+  <span :class="badgeClasses.class" :style="badgeClasses.style">
     <span :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
     <span v-if="text && record !== 'BROUILLON'" class="mr-1">Notification&nbsp;</span>
     <span :class="{ lowercase: text && record !== 'BROUILLON' }">{{ stateInfo.label }}</span>
@@ -31,7 +31,7 @@ const badgeClasses = computed(() => {
   };
 
   return {
-    class: [...baseClasses],
+    class: [baseClasses],
     style: colorClasses,
   };
 });
