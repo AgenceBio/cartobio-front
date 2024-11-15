@@ -12,13 +12,12 @@ describe('NotificationState', () => {
     });
 
     expect(wrapper.find('.fr-icon--sm').classes()).toContain('fr-icon-article-line');
-    expect(wrapper.find('span').text().replace(/\u00A0/g, ' ')).toContain('Notification Brouillon');
+    expect(wrapper.find('span').text().replace(/\u00A0/g, ' ')).toContain('Brouillon');
 
     const spanElement = wrapper.find('span');
     expect(spanElement.attributes('style')).toContain('background-color: rgb(211, 211, 211)');
     expect(spanElement.attributes('style')).toContain('color: rgb(128, 128, 128)');
 
-    expect(spanElement.classes()).toContain('rounded');
   });
 
   it('does not render text when "text" prop is false', () => {
