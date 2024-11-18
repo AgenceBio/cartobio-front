@@ -4,9 +4,7 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import BaseExporter, { generateAutresInfos } from "@/utils/export-strategies/BaseExporter.js";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, legalProjectionSurface } from "@/utils/features.js";
 
-
-import {jjmmyyyy} from "../dates"
-
+import { jjmmyyyy } from "../dates";
 
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils;
 const { decode_range: R } = utils;

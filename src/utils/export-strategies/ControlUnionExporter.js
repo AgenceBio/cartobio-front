@@ -3,9 +3,7 @@ import { utils, write } from "xlsx";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { legalProjectionSurface } from "@/utils/features.js";
 
-
-import {jjmmyyyy} from "../dates"
-
+import { jjmmyyyy } from "../dates";
 
 function getSheet() {
   const { featureCollection, operator, permissions } = this;
