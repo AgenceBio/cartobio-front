@@ -1,18 +1,26 @@
 function filterProductions(notifications) {
-  return notifications.filter(n => n.productionId != null);
+  return notifications.filter((n) => n.productionId != null);
 }
 
 function excludeOldNonEngagees(notifications) {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  return notifications.filter(n => {
+  return notifications.filter((n) => {
     const certificationDate = new Date(n.updatedAt);
     return !(n.etatCertification === "NON ENGAGEE" && certificationDate < sixMonthsAgo);
   });
 }
 
-const priorityOrder = ["RETIREE", "ENGAGEE", "SUSPENDUE", "ENGAGEE FUTUR", "NON ENGAGEE-CHT OC", "ARRETEE", "NON ENGAGEE"];
+const priorityOrder = [
+  "RETIREE",
+  "ENGAGEE",
+  "SUSPENDUE",
+  "ENGAGEE FUTUR",
+  "NON ENGAGEE-CHT OC",
+  "ARRETEE",
+  "NON ENGAGEE",
+];
 
 function sortByPriority(notifications) {
   return notifications.sort((a, b) => {
@@ -25,7 +33,7 @@ function sortByPriority(notifications) {
 function resolveConflicts(notifications) {
   const groupedNotifications = {};
 
-  notifications.forEach(n => {
+  notifications.forEach((n) => {
     const key = `${n.numeroBio}-${n.organismeCertificateurId}`;
     if (!groupedNotifications[key]) {
       groupedNotifications[key] = [];
@@ -33,7 +41,7 @@ function resolveConflicts(notifications) {
     groupedNotifications[key].push(n);
   });
 
-  Object.keys(groupedNotifications).forEach(key => {
+  Object.keys(groupedNotifications).forEach((key) => {
     const group = groupedNotifications[key];
 
     group.sort((a, b) => {
@@ -49,7 +57,7 @@ function resolveConflicts(notifications) {
   return Object.values(groupedNotifications).flat();
 }
 
-export function filterAndSortNotifications(notifications,options) {
+export function filterAndSortNotifications(notifications, options) {
   let filtered = !options ? filterProductions(notifications) : notifications;
   filtered = excludeOldNonEngagees(filtered);
   filtered = sortByPriority(filtered);
