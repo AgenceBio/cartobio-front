@@ -11,6 +11,8 @@ import {
   legalProjectionSurface,
 } from "@/utils/features.js";
 
+import { jjmmyyyy } from "../dates";
+
 const { aoa_to_sheet, sheet_add_aoa } = utils;
 const { decode_range: R } = utils;
 
@@ -172,7 +174,7 @@ function getSheet() {
         props.conversion_niveau === "C2" ? surfaceHa : "",
         props.conversion_niveau === "C3" ? surfaceHa : "",
         // Date conv
-        props.engagement_date ? new Date(props.engagement_date) : "",
+        props.engagement_date ? jjmmyyyy(new Date(props.engagement_date)) : "",
         // Observation / date de semis #K
         generateAutresInfos([{ id, geometry, properties: props }], {
           withAnnotations: true,

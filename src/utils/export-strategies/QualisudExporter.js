@@ -3,6 +3,8 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import BaseExporter, { generateAutresInfos } from "@/utils/export-strategies/BaseExporter.js";
 import { featureName, legalProjectionSurface } from "@/utils/features.js";
 
+import { jjmmyyyy } from "../dates";
+
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils;
 
 /**
@@ -68,7 +70,7 @@ function getSheet() {
           featureName(feature, { placeholder: "", explicitName: true }),
           legalProjectionSurface(feature) / 10_000,
           properties.conversion_niveau,
-          properties.engagement_date ? new Date(properties.engagement_date) : "",
+          properties.engagement_date ? jjmmyyyy(new Date(properties.engagement_date)) : "",
           String(properties.id),
         ],
       ],

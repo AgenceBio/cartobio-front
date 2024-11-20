@@ -6,6 +6,8 @@ import { legalProjectionSurface } from "@/utils/features.js";
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils;
 const { decode_range: R } = utils;
 
+import { jjmmyyyy } from "../dates";
+
 function getSheet() {
   const { featureCollection, operator, permissions } = this;
   // First sheet
@@ -87,7 +89,7 @@ function getSheet() {
         culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${firstCulture?.CPF})`,
         props.PACAGE,
         props.conversion_niveau,
-        props.engagement_date ? new Date(props.engagement_date) : "",
+        props.engagement_date ? jjmmyyyy(new Date(props.engagement_date)) : "",
         isPac ? "PAC" : "",
         generateAutresInfos([{ id, geometry, properties: props }], {
           withAnnotations: true,

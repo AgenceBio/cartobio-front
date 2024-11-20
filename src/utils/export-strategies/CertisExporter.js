@@ -4,6 +4,8 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import BaseExporter, { generateAutresInfos } from "@/utils/export-strategies/BaseExporter.js";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, legalProjectionSurface } from "@/utils/features.js";
 
+import { jjmmyyyy } from "../dates";
+
 const { aoa_to_sheet, sheet_add_aoa, book_append_sheet, book_new } = utils;
 const { decode_range: R } = utils;
 
@@ -155,7 +157,7 @@ function getSheet() {
         // Surface graphique (ha)
         surfaceHa,
         // Date de début de conversion
-        properties.engagement_date ? new Date(properties.engagement_date) : "",
+        properties.engagement_date ? jjmmyyyy(new Date(properties.engagement_date)) : "",
         // Précédent\n(année n-1)
         "",
         // Type de culture
