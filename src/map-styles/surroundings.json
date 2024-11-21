@@ -3,16 +3,16 @@
   "sources": {
     "rpg-anon": {
       "type": "vector",
-      "tiles": ["https://cartobio.agencebio.org/tiles/rpg-2022/{z}/{x}/{y}.pbf"],
+      "tiles": ["https://cartobio.agencebio.org/tiles/rpg-2023/{z}/{x}/{y}.pbf"],
       "attribution": "<a href='https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771' target='_blank'>Parcelles en Agriculture Biologique (AB) déclarées à la PAC</a>"
     }
   },
   "layers": [
     {
-      "id": "rpg-anon-2022-fill",
+      "id": "rpg-anon-2023-fill",
       "type": "fill",
       "source": "rpg-anon",
-      "source-layer": "rpg2022",
+      "source-layer": "rpg2023",
       "minzoom": 8,
       "maxzoom": 24,
       "paint": {
@@ -32,10 +32,10 @@
       }
     },
     {
-      "id": "rpg-anon-2022-border",
+      "id": "rpg-anon-2023-border",
       "type": "line",
       "source": "rpg-anon",
-      "source-layer": "rpg2022",
+      "source-layer": "rpg2023",
       "minzoom": 8,
       "maxzoom": 24,
       "paint": {
