@@ -253,7 +253,7 @@ export const notificationsStateLevel = {
     label: "Non engagée",
     color: "#FBE769",
     textColor: "#66673D",
-    icon: "fr-icon-stop-circle-line--sm",
+    icon: "fr-icon-stop-circle-line",
   },
   // NOTE : Pas sûr d'avoir cette enum
   // ["NON ENGAGEE-CHT OC"]: {
@@ -264,24 +264,24 @@ export const notificationsStateLevel = {
     label: "Engagée future",
     color: "#E3E3FD",
     textColor: "#000091",
-    icon: "fr-icon-time-line--sm",
+    icon: "fr-icon-time-line",
   },
   ["SUSPENDUE"]: {
     label: "Suspendue",
     color: "#FDDFDB",
     textColor: "#A94645",
-    icon: "fr-icon-pause-circle-line--sm",
+    icon: "fr-icon-pause-circle-line",
   },
   ["ENGAGEE"]: {
     label: "Engagée",
     color: "#9EF9BE",
     textColor: "#297254",
-    icon: "fr-icon-sucess-line--sm",
+    icon: "fr-icon-sucess-line",
   },
   ["RETIREE"]: {
     label: "Retirée",
     color: "#EEE4D9",
     textColor: "#6A6156",
-    icon: "fr-icon-close-circle-line--sm",
+    icon: "fr-icon-close-circle-line",
   },
 };

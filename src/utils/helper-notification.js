@@ -1,7 +1,3 @@
-function filterProductions(notifications) {
-  return notifications.filter((n) => n.productionId != null);
-}
-
 function excludeOldNonEngagees(notifications) {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -57,9 +53,8 @@ function resolveConflicts(notifications) {
   return Object.values(groupedNotifications).flat();
 }
 
-export function filterAndSortNotifications(notifications, options) {
-  let filtered = !options ? filterProductions(notifications) : notifications;
-  filtered = excludeOldNonEngagees(filtered);
+export function filterAndSortNotifications(notifications) {
+  let filtered = excludeOldNonEngagees(notifications);
   filtered = sortByPriority(filtered);
   return resolveConflicts(filtered);
 }
