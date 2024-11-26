@@ -244,7 +244,7 @@ export const notificationsStateLevel = {
     icon: "fr-icon-article-line",
   },
   ["ARRETEE"]: {
-    label: "Arretée",
+    label: "Arrêtée",
     color: "#FFE9E9",
     textColor: "#CE0500",
     icon: "fr-icon-error-fill",

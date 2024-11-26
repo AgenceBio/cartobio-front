@@ -43,7 +43,7 @@ const stateInfo = computed(() => notificationsStateLevel[props.record]);
   padding: 4px 8px;
   border-radius: 9999px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   display: inline-flex;
   align-items: center;
 }
