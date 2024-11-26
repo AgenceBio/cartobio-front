@@ -126,8 +126,12 @@ const patch = reactive({
   NOM: props.feature.properties.NOM || "",
   cultures: props.feature.properties.cultures,
   commentaires: props.feature.properties.commentaires || "",
-  conversion_niveau: props.feature.properties.conversion_niveau || "",
-  engagement_date: props.feature.properties.engagement_date || "",
+  ...(!permissions.canChangeCulture
+    ? {
+        conversion_niveau: props.feature.properties.conversion_niveau || "",
+        engagement_date: props.feature.properties.engagement_date,
+      }
+    : {}),
 });
 
 const details = featureDetails(props.feature);
