@@ -14,6 +14,11 @@
         <span class="fr-text--bold">Étape suivante&nbsp;:</span> {{ nextStep.title }}
       </p>
     </div>
+    <div lass="fr-stepper" v-else>
+      <h2 class="fr-stepper__title">
+        {{ currentStep.title }}
+      </h2>
+    </div>
 
     <slot name="introduction" v-if="isStep('intro')" />
 
@@ -43,10 +48,13 @@
       v-else-if="isStep('preview')"
     />
 
-    <p v-if="(!flowId && !isStep('intro')) || (flowId && !isStep('setup'))">
+    <p v-if="(!flowId && !isStep('intro') && !isStep('setup')) || (flowId && !isStep('setup'))">
       <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" @click="goBack">
         Revenir à l’étape précédente
       </button>
+    </p>
+    <p v-else-if="isStep('setup')">
+      <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" @click="goBack">Retour</button>
     </p>
   </section>
 </template>
@@ -58,7 +66,9 @@ import PreviewStep from "@/components/setup/Flow/Preview.vue";
 
 import { useRecordStore } from "@/stores/record.js";
 import { createOperatorRecord } from "@/cartobio-api.js";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const recordStore = useRecordStore();
 
 const emit = defineEmits(["error", "upload", "submit", "redirect"]);
@@ -122,12 +132,20 @@ const currentFlow = computed(() => {
 
 function goBack() {
   if (isStep("setup")) {
+    if (props.flowId) {
+      return router.back();
+    }
     currentFlowId.value = props.flowId;
   } else if (isStep("preview")) {
     recordStore.update({ parcelles: { type: "FeatureCollection", features: [] } });
     featureCollection.value = null;
     metadata.value = null;
   }
+}
+
+function redirect(record) {
+  recordStore.update(record);
+  emit("redirect", unref(record));
 }
 
 function handleFlowSelection(flowId) {
@@ -165,8 +183,7 @@ async function handlePreviewConfirmation(importPrevious, recordId) {
 
   emit("submit", unref(record.value));
 
-  recordStore.update(record.value);
-  emit("redirect", unref(record.value));
+  redirect(record.value);
 }
 
 async function handleUploadAndSave({ geojson, metadata, source }) {
@@ -182,6 +199,8 @@ async function handleUploadAndSave({ geojson, metadata, source }) {
   });
 
   emit("submit", unref(record.value));
+
+  redirect(record.value);
 }
 </script>
 
