@@ -29,7 +29,7 @@
         </div>
         <div class="data-form" v-if="operatorStore.records?.length">
           <fieldset class="fr-fieldset" id="radio-import" aria-labelledby="radio-import-legend">
-            <legend class="fr-fieldset__legend fr-fieldset__legend--regular" id="radio-import-legend">
+            <legend class="fr-fieldset__legend fr-fieldset__legend--bold custom-legend" id="radio-import-legend">
               Souhaitez-vous récupérer les informations renseignées dans une version précédente ?
             </legend>
 
@@ -44,8 +44,9 @@
                     value="oui"
                     required="required"
                   />
-                  <label class="fr-label" for="radio-import-oui">Oui</label>
-                  <small class="grey--text">Recommandé par l’organisme de certification</small>
+                  <label class="fr-label" for="radio-import-oui"
+                    >Oui<small class="grey--text">Recommandé par l’organisme de certification</small></label
+                  >
                 </div>
               </div>
               <div class="fr-fieldset__element">
@@ -63,7 +64,7 @@
               </div>
             </div>
           </fieldset>
-          <fieldset class="fr-fieldset">
+          <fieldset class="fr-fieldset version-select">
             <div class="fr-fieldset__element">
               <label class="fr-label" for="select-version">Sélectionner la version</label>
               <select
@@ -79,36 +80,42 @@
               </select>
             </div>
           </fieldset>
-          <button
-            v-if="operatorStore.records?.length"
-            class="fr-btn fr-btn--tertiary-no-outline"
-            @click.stop.prevent="showDetails = !showDetails"
-          >
-            Quelles informations sont reprises ?<span
-              :class="showDetails ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
-            />
-          </button>
-          <div v-if="showDetails && operatorStore.records?.length">
+          <div v-if="showDetails && operatorStore.records?.length" class="more-infos-text">
             <small>
               Vous pouvez récupérer les informations renseignées dans une version de votre choix : dates et niveaux de
               conversion, parcelles ajoutées manuellement, variété (si la culture est identique), notes de certification
-              et noms de parcelles modifiés. Pour plus d’information : Accéder à la
+              et noms de parcelles modifiés.
+              <br />
+              Pour plus d’information:
               <a
+                class="fr-link"
+                target="_blank"
                 :href="
                   permissions.isAgri
                     ? 'https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/gestion-des-versions-de-parcellaire/importer-une-nouvelle-version-de-parcellaire'
                     : 'https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/gestion-des-versions-de-parcellaire/importer-une-nouvelle-version'
                 "
-                >FAQ</a
+                >Accéder à la FAQ</a
               >
             </small>
           </div>
+          <button
+            v-if="operatorStore.records?.length"
+            class="more-infos fr-btn--tertiary-no-outline"
+            @click.stop.prevent="showDetails = !showDetails"
+          >
+            Quelles informations sont reprises ?<span
+              :class="showDetails ? 'fr-icon-arrow-down-s-line' : 'fr-icon-arrow-up-s-line'"
+            />
+          </button>
         </div>
       </div>
 
       <Spinner v-if="isLoading">Import en cours</Spinner>
       <p v-else>
-        <button class="fr-btn" type="submit">Terminer et accéder au parcellaire</button>
+        <button class="fr-btn fr-btn--icon-right fr-icon-check-line" type="submit">
+          Terminer et accéder au parcellaire
+        </button>
       </p>
     </form>
   </section>
@@ -217,7 +224,7 @@ const submitForm = () => {
   }
 
   .data-form {
-    padding-left: 1rem;
+    padding-left: 3rem;
   }
 
   .list-options {
@@ -235,10 +242,33 @@ const submitForm = () => {
     box-shadow: inset -1px 0 0 0 #ddd;
     -webkit-box-shadow: inset -1px 0 0 0 var(--border-default-grey);
     box-shadow: inset -1px 0 0 0 var(--border-default-grey);
+    margin-right: 1em;
   }
 
   small {
     color: var(--text-mention-grey);
+  }
+
+  .custom-legend {
+    padding-top: 1em;
+    font-size: 1.25rem;
+  }
+
+  .version-select {
+    width: 50%;
+    padding: 0 0 0 0.25rem;
+  }
+
+  .version-select .fr-fieldset__element {
+    padding-right: 0;
+  }
+
+  .more-infos {
+    padding-left: 0;
+  }
+
+  .more-infos-text {
+    margin-bottom: 1em;
   }
 }
 </style>
