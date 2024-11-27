@@ -66,7 +66,6 @@ export default class BaseExporter {
     for (const key in sheet) {
       const cell = sheet[key];
       if (cell.z === "m/d/yy") {
-        console.log("here");
         cell.t = "d";
         cell.z = "dd/mm/yyyy"; // Mise à jour du format z
       }
