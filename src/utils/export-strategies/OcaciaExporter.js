@@ -129,7 +129,7 @@ function getSheet() {
         props.conversion_niveau === "C2" ? surfaceHa : "",
         props.conversion_niveau === "C3" ? surfaceHa : "",
         // Date conv #K
-        props.engagement_date ? (new Date(props.engagement_date)) : "",
+        props.engagement_date ? new Date(props.engagement_date) : "",
         // Observation / date de semis
         generateAutresInfos([{ id, geometry, properties: props }], {
           withAnnotations: true,

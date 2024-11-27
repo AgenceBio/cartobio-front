@@ -3,7 +3,6 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import BaseExporter, { generateAutresInfos } from "@/utils/export-strategies/BaseExporter.js";
 import { featureName, legalProjectionSurface } from "@/utils/features.js";
 
-
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils;
 
 /**

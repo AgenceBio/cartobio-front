@@ -69,9 +69,7 @@ function getSheet() {
             surface / 10_000,
             autresInfos,
             features.at(0).properties.conversion_niveau ?? "",
-            features.at(0).properties.engagement_date
-              ? new Date(features.at(0).properties.engagement_date)
-              : "",
+            features.at(0).properties.engagement_date ? new Date(features.at(0).properties.engagement_date) : "",
             features.map(({ properties }) => String(properties.id)).join(","),
           ],
         ],
