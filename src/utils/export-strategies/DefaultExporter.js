@@ -6,8 +6,6 @@ import { legalProjectionSurface } from "@/utils/features.js";
 const { book_new, aoa_to_sheet, sheet_add_aoa, book_append_sheet } = utils;
 const { decode_range: R } = utils;
 
-import { jjmmyyyy } from "../dates";
-
 function getSheet() {
   const { featureCollection, operator, permissions } = this;
   // First sheet
