@@ -1,4 +1,5 @@
 <script setup>
+import { useWindowWidth } from "@/composables/useWindowWidth";
 import { ref } from "vue";
 
 const emit = defineEmits(["editContour", "divide", "cutBorders", "mesure", "delete", "undo", "redo"]);
@@ -26,6 +27,7 @@ const props = defineProps({
   },
 });
 const currentMode = ref(props.mode);
+const windowWidth = useWindowWidth();
 
 const selectModif = () => {
   emit("editContour");
@@ -57,6 +59,8 @@ const undo = () => {
 const redo = () => {
   emit("redo");
 };
+
+console.log(windowWidth.value);
 </script>
 
 <template>
@@ -71,7 +75,7 @@ const redo = () => {
           @click="selectModif()"
         >
           <span class="ri-shape-line" aria-hidden="true" style="font-size: 1.5em"></span>
-          <span class="button-text">Modifier</span>
+          <span v-if="windowWidth > 780" class="button-text">Modifier</span>
         </button>
 
         <div class="separator"></div>
@@ -84,7 +88,7 @@ const redo = () => {
           @click="selectDivid()"
         >
           <span class="ri-scissors-cut-fill" aria-hidden="true" style="font-size: 1.5em"></span>
-          <span class="button-text">Diviser</span>
+          <span v-if="windowWidth > 780" class="button-text">Diviser</span>
         </button>
 
         <div class="separator"></div>
@@ -97,7 +101,9 @@ const redo = () => {
           @click="selectCutBorders()"
         >
           <span class="fr-icon-crop-line" aria-hidden="true"></span>
-          <span class="button-text">Découper les bordures</span>
+          <span v-if="windowWidth > 780" class="button-text">{{
+            windowWidth > 1280 ? "Découper les bordures" : "Bordure"
+          }}</span>
         </button>
         <div class="separator"></div>
       </div>
@@ -182,10 +188,12 @@ button:hover {
   color: #000091;
 }
 
-.maplibregl-ctrl-top-left {
-  margin-left: 15% !important;
-  margin-top: 20px !important;
-  z-index: 1000 !important;
+@media (min-width: 780px) {
+  .maplibregl-ctrl-top-left {
+    margin-left: 15% !important;
+    margin-top: 20px !important;
+    z-index: 1000 !important;
+  }
 }
 
 .selected-button {
