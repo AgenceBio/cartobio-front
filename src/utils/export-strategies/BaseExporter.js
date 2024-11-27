@@ -59,15 +59,24 @@ export default class BaseExporter {
         }),
         {},
       );
-    });
+    })
 
     const sheet = json_to_sheet(data, { header });
+
+    for (const key in sheet) {
+      const cell = sheet[key];
+      if (cell.z === 'm/d/yy') {
+        console.log("here")
+        cell.t = "d"
+        cell.z = 'dd/mm/yyyy'; // Mise à jour du format z
+      }
+    }
+
     return sheet_to_csv(sheet, { FS: "\t" });
   }
 
   async toClipboard() {
     const data = this.toCSV();
-
     return navigator.clipboard.writeText(data);
   }
 }

@@ -8,8 +8,6 @@ import {
   GROUPE_NIVEAU_CONVERSION,
 } from "@/utils/features.js";
 
-import { jjmmyyyy } from "../dates";
-
 const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils;
 
 /**
@@ -72,7 +70,7 @@ function getSheet() {
             autresInfos,
             features.at(0).properties.conversion_niveau ?? "",
             features.at(0).properties.engagement_date
-              ? jjmmyyyy(new Date(features.at(0).properties.engagement_date))
+              ? new Date(features.at(0).properties.engagement_date)
               : "",
             features.map(({ properties }) => String(properties.id)).join(","),
           ],

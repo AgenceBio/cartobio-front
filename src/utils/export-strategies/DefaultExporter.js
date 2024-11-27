@@ -89,7 +89,7 @@ function getSheet() {
         culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${firstCulture?.CPF})`,
         props.PACAGE,
         props.conversion_niveau,
-        props.engagement_date ? jjmmyyyy(new Date(props.engagement_date)) : "",
+        props.engagement_date ? new Date(props.engagement_date) : "",
         isPac ? "PAC" : "",
         generateAutresInfos([{ id, geometry, properties: props }], {
           withAnnotations: true,
