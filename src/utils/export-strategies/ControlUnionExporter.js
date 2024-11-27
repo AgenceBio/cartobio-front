@@ -3,8 +3,6 @@ import { utils, write } from "xlsx";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { legalProjectionSurface } from "@/utils/features.js";
 
-import { jjmmyyyy } from "../dates";
-
 function getSheet() {
   const { featureCollection, operator, permissions } = this;
   // First sheet
@@ -66,7 +64,7 @@ function getSheet() {
         props.cadastre,
         culture?.libelle_code_cpf ?? `[ERREUR] culture inconnue (${props.cultures.at(0)?.CPF})`,
         surfaceHa,
-        props.engagement_date ? jjmmyyyy(new Date(props.engagement_date)) : "",
+        props.engagement_date ? new Date(props.engagement_date) : "",
         props.conversion_niveau,
         generateAutresInfos([{ properties: props }], {
           withAnnotations: true,
