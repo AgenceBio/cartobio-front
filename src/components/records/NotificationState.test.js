@@ -43,7 +43,7 @@ describe("NotificationState", () => {
       },
     });
 
-    expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-sucess-line");
+    expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-success-line");
     expect(
       wrapper
         .find("span")
