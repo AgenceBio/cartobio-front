@@ -71,7 +71,7 @@ export const useOperatorStore = defineStore("operator", () => {
           : serverR,
       );
     }
-    operatorData.certificats = filterAndSortNotifications(operatorData.certificats, true);
+    operatorData.certificats = filterAndSortNotifications(operatorData.certificats);
     operator.value = operatorData;
     records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA));
   }
@@ -94,6 +94,7 @@ export const useOperatorStore = defineStore("operator", () => {
       apiClient.get(`/v2/operator/${numeroBio}`),
       apiClient.get(`/v2/operator/${numeroBio}/records`),
     ]);
+
 
     // Update storage if requested or if already present
     if (store || storage.operators[numeroBio]) {

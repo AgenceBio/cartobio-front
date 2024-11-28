@@ -276,7 +276,7 @@ export const notificationsStateLevel = {
     label: "Engagée",
     color: "#9EF9BE",
     textColor: "#297254",
-    icon: "fr-icon-sucess-line",
+    icon: "fr-icon-success-line",
   },
   ["RETIREE"]: {
     label: "Retirée",
