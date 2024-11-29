@@ -41,7 +41,6 @@ const badgeClasses = computed(() => {
     style: colorClasses,
   };
 });
-console.log(props.record);
 const stateInfo = computed(() => notificationsStateLevel[props.record]);
 </script>
 
