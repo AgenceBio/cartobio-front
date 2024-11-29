@@ -1,8 +1,12 @@
 <template>
   <span :class="badgeClasses.class" :style="badgeClasses.style">
-    <span :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
+    <span
+      v-if="stateInfo"
+      :class="['icon', 'fr-icon--sm', stateInfo != null ? stateInfo.icon : '']"
+      aria-hidden="true"
+    ></span>
     <span v-if="text && record !== 'BROUILLON'" class="mr-1">Notification&nbsp;</span>
-    <span :class="{ lowercase: text && record !== 'BROUILLON' }">{{ stateInfo.label }}</span>
+    <span :class="{ lowercase: text && record !== 'BROUILLON' }">{{ stateInfo ? stateInfo.label : "-" }}</span>
   </span>
 </template>
 
@@ -24,11 +28,13 @@ const props = defineProps({
 
 const badgeClasses = computed(() => {
   const baseClasses = ["component"];
-
-  const colorClasses = {
-    backgroundColor: `${stateInfo.value.color} !important`,
-    color: `${stateInfo.value.textColor} !important`,
-  };
+  let colorClasses;
+  if (stateInfo.value != null) {
+    colorClasses = {
+      backgroundColor: `${stateInfo.value.color} !important`,
+      color: `${stateInfo.value.textColor} !important`,
+    };
+  }
 
   return {
     class: [baseClasses],
