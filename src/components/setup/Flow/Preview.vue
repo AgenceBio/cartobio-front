@@ -34,7 +34,7 @@
             </legend>
 
             <div class="list-options">
-              <div class="fr-fieldset__element shadow-right">
+              <div class="fr-fieldset__element first-choice">
                 <div class="fr-radio-group">
                   <input
                     type="radio"
@@ -75,18 +75,19 @@
                 :disabled="importPrevious != 'oui'"
               >
                 <option :value="record.record_id" :key="record.record_id" v-for="record in sortedRecords">
-                  {{ record.version_name }}
+                  {{ getShortVersionName(record.version_name) }}
                 </option>
               </select>
             </div>
           </fieldset>
-          <div v-if="showDetails && operatorStore.records?.length" class="more-infos-text">
+          <div v-show="showDetails && operatorStore.records?.length" class="more-infos-text">
             <small>
               Vous pouvez récupérer les informations renseignées dans une version de votre choix : dates et niveaux de
               conversion, parcelles ajoutées manuellement, variété (si la culture est identique), notes de certification
               et noms de parcelles modifiés.
               <br />
-              Pour plus d’information:
+              <br />
+              Pour plus d’information :
               <a
                 class="fr-link"
                 target="_blank"
@@ -197,6 +198,22 @@ const submitForm = () => {
 
   emit("submit", importPrev, importPrev ? selectedRecord.value : null);
 };
+
+const getShortVersionName = (name) => {
+  const maxLength = 40;
+
+  if (name.length < maxLength) {
+    return name;
+  }
+
+  const index = name.indexOf(" ", maxLength);
+
+  if (index != -1) {
+    return name.slice(0, index) + " ...";
+  }
+
+  return name;
+};
 </script>
 
 <style>
@@ -235,9 +252,12 @@ const submitForm = () => {
     .fr-fieldset__element {
       flex: 1;
     }
+    .first-choice {
+      flex: 2;
+    }
   }
 
-  .shadow-right {
+  .first-choice {
     -webkit-box-shadow: inset -1px 0 0 0 #ddd;
     box-shadow: inset -1px 0 0 0 #ddd;
     -webkit-box-shadow: inset -1px 0 0 0 var(--border-default-grey);
@@ -255,7 +275,7 @@ const submitForm = () => {
   }
 
   .version-select {
-    width: 50%;
+    width: 66%;
     padding: 0 0 0 0.25rem;
   }
 
@@ -265,6 +285,7 @@ const submitForm = () => {
 
   .more-infos {
     padding-left: 0;
+    font-size: 0.8em;
   }
 
   .more-infos-text {
