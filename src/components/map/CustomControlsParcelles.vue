@@ -59,8 +59,6 @@ const undo = () => {
 const redo = () => {
   emit("redo");
 };
-
-console.log(windowWidth.value);
 </script>
 
 <template>
