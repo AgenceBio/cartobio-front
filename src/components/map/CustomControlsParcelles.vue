@@ -66,32 +66,30 @@ const redo = () => {
     <div class="command-modif-parcellaire maplibregl-ctrl">
       <div class="left-buttons">
         <button
+          class="fr-btn fr-btn--tertiary"
           :class="currentMode === 'modif' ? 'selected-button' : ''"
           type="button"
           title="Modifier"
           aria-label="Modifier"
           @click="selectModif()"
         >
-          <span class="ri-shape-line" aria-hidden="true" style="font-size: 1.5em"></span>
+          <span class="ri-shape-line" aria-hidden="true" style="font-size: 1.2em"></span>
           <span v-if="windowWidth > 780" class="button-text">Modifier</span>
         </button>
-
-        <div class="separator"></div>
-
         <button
+          class="fr-btn fr-btn--tertiary"
           :class="currentMode == 'divid' ? 'selected-button' : ''"
           type="button"
           title="Diviser"
           aria-label="Diviser"
           @click="selectDivid()"
         >
-          <span class="ri-scissors-cut-fill" aria-hidden="true" style="font-size: 1.5em"></span>
+          <span class="ri-scissors-cut-line" aria-hidden="true" style="font-size: 1.2em"></span>
           <span v-if="windowWidth > 780" class="button-text">Diviser</span>
         </button>
 
-        <div class="separator"></div>
-
         <button
+          class="fr-btn fr-btn--tertiary"
           type="button"
           :class="currentMode === 'cutBorder' ? 'selected-button' : ''"
           title="Découper les bordures"
@@ -114,17 +112,17 @@ const redo = () => {
           @click="selectMesure()"
           aria-label="Mesurer"
         >
-          <span class="ri-ruler-fill" aria-hidden="true" style="font-size: 1.5em"></span>
+          <span class="ri-ruler-line" aria-hidden="true" style="font-size: 1.5em"></span>
         </button>
         <div class="separator"></div>
         <button type="button" title="Supprimer" aria-label="Supprimer" :disabled="!canDelete" @click="supprimer()">
-          <span class="fr-icon-delete-fill" aria-hidden="true"></span>
+          <span class="fr-icon-delete-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
         <button type="button" title="Annuler" aria-label="Annuler" :disabled="!canUndo" @click="undo()">
-          <span class="fr-icon-arrow-go-back-fill" aria-hidden="true"></span>
+          <span class="fr-icon-arrow-go-back-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
         <button type="button" title="Rétablir" aria-label="Rétablir" :disabled="!canRedo" @click="redo()">
-          <span class="fr-icon-arrow-go-forward-fill" aria-hidden="true"></span>
+          <span class="fr-icon-arrow-go-forward-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
       </div>
     </div>
@@ -135,9 +133,9 @@ const redo = () => {
 .command-modif-parcellaire {
   display: inline-flex;
   justify-content: space-between;
-  padding: 4px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 6px 4px;
+  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 
 .left-buttons {
@@ -160,17 +158,9 @@ const redo = () => {
   margin: 0 4px;
 }
 
-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+button.fr-btn {
   border: none;
-  background: none;
-  color: #000091;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+  box-shadow: none;
 }
 
 .right-buttons button {
@@ -184,11 +174,12 @@ button:hover {
 .button-text {
   margin-left: 4px;
   color: #000091;
+  font-size: 0.875em;
 }
 
 @media (min-width: 780px) {
   .maplibregl-ctrl-top-left {
-    margin-left: 15% !important;
+    margin-left: 9% !important;
     margin-top: 20px !important;
     z-index: 1000 !important;
   }
