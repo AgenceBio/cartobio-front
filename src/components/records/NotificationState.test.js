@@ -6,7 +6,13 @@ describe("NotificationState", () => {
   it('renders correctly for "BROUILLON" state', () => {
     const wrapper = mount(NotificationState, {
       props: {
-        record: "BROUILLON",
+        operator: {
+          notifications: [
+            {
+              status: "BROUILLON",
+            },
+          ],
+        },
         text: true,
       },
     });
@@ -24,10 +30,46 @@ describe("NotificationState", () => {
     expect(spanElement.attributes("style")).toContain("color: rgb(128, 128, 128)");
   });
 
+  it('does not render "BROUILLON" state IF another notifications exists', () => {
+    const wrapper = mount(NotificationState, {
+      props: {
+        operator: {
+          notifications: [
+            {
+              status: "BROUILLON",
+            },
+            {
+              status: "ENGAGEE",
+            },
+          ],
+        },
+        text: true,
+      },
+    });
+
+    expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-success-line");
+    expect(
+      wrapper
+        .find("span")
+        .text()
+        .replace(/\u00A0/g, " "),
+    ).toContain("Engagée");
+
+    const spanElement = wrapper.find("span");
+    expect(spanElement.attributes("style")).toContain("background-color: rgb(158, 249, 190)");
+    expect(spanElement.attributes("style")).toContain("color: rgb(41, 114, 84)");
+  });
+
   it('does not render text when "text" prop is false', () => {
     const wrapper = mount(NotificationState, {
       props: {
-        record: "BROUILLON",
+        operator: {
+          notifications: [
+            {
+              etatCertification: "BROUILLON",
+            },
+          ],
+        },
         text: false,
       },
     });
@@ -38,7 +80,13 @@ describe("NotificationState", () => {
   it('applies styles and classes for "ENGAGEE" state', () => {
     const wrapper = mount(NotificationState, {
       props: {
-        record: "ENGAGEE",
+        operator: {
+          certificats: [
+            {
+              status: "ENGAGEE",
+            },
+          ],
+        },
         text: true,
       },
     });
