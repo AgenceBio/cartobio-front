@@ -15,7 +15,7 @@
     </div>
     <form @submit.prevent="submitForm">
       <div :class="{ 'copy-data': !!operatorStore.records?.length }">
-        <div class="fr-mb-3w">
+        <div>
           <MapContainer
             :controls="false"
             class="map map--preview"
@@ -26,6 +26,14 @@
             <GeojsonLayer :style="baseStyle" name="base" />
             <FeaturesLayer :data="featureCollection" />
           </MapContainer>
+          <div class="fr-mt-3w">
+            <Spinner v-if="isLoading">Import en cours</Spinner>
+            <p v-else>
+              <button class="fr-btn fr-btn--icon-right fr-icon-check-line" type="submit">
+                Terminer et accéder au parcellaire
+              </button>
+            </p>
+          </div>
         </div>
         <div class="data-form" v-if="operatorStore.records?.length">
           <fieldset class="fr-fieldset" id="radio-import" aria-labelledby="radio-import-legend">
@@ -111,13 +119,6 @@
           </button>
         </div>
       </div>
-
-      <Spinner v-if="isLoading">Import en cours</Spinner>
-      <p v-else>
-        <button class="fr-btn fr-btn--icon-right fr-icon-check-line" type="submit">
-          Terminer et accéder au parcellaire
-        </button>
-      </p>
     </form>
   </section>
 </template>
