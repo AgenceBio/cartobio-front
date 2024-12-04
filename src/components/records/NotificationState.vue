@@ -5,8 +5,10 @@
       :class="['icon', 'fr-icon--sm', stateInfo != null ? stateInfo.icon : '']"
       aria-hidden="true"
     ></span>
-    <span v-if="text && record !== 'BROUILLON'" class="mr-1">Notification&nbsp;</span>
-    <span :class="{ lowercase: text && record !== 'BROUILLON' }">{{ stateInfo ? stateInfo.label : "-" }}</span>
+    <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
+    <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
+      stateInfo ? stateInfo.label : "-"
+    }}</span>
   </span>
 </template>
 
@@ -16,14 +18,30 @@ import { computed } from "vue";
 import { notificationsStateLevel } from "@/referentiels/ab.js";
 
 const props = defineProps({
-  record: {
-    type: String,
+  operator: {
+    type: Object,
     required: true,
   },
   text: {
     type: Boolean,
     default: false,
   },
+});
+
+const stateInfo = computed(() => {
+  const array = props.operator.certificats ?? props.operator.notifications;
+
+  array.sort((a, b) => new Date(b.dateSignatureContrat) - new Date(a.dateSignatureContrat));
+
+  for (const notif of array) {
+    const currentStatut = notif.etatCertification || notif.status;
+
+    if (currentStatut != "BROUILLON") {
+      return notificationsStateLevel[currentStatut];
+    }
+  }
+
+  return notificationsStateLevel["BROUILLON"];
 });
 
 const badgeClasses = computed(() => {
@@ -41,14 +59,13 @@ const badgeClasses = computed(() => {
     style: colorClasses,
   };
 });
-const stateInfo = computed(() => notificationsStateLevel[props.record]);
 </script>
 
 <style>
 .component {
-  padding: 4px 8px;
+  padding: 2px 8px;
   border-radius: 9999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   display: inline-flex;
   align-items: center;
