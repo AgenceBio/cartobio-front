@@ -85,7 +85,7 @@ const redo = () => {
           aria-label="Diviser"
           @click="selectDivid()"
         >
-          <span class="ri-scissors-cut-fill" aria-hidden="true" style="font-size: 1.5em"></span>
+          <span class="ri-scissors-cut-line" aria-hidden="true" style="font-size: 1.5em"></span>
           <span v-if="windowWidth > 780" class="button-text">Diviser</span>
         </button>
 
@@ -114,17 +114,17 @@ const redo = () => {
           @click="selectMesure()"
           aria-label="Mesurer"
         >
-          <span class="ri-ruler-fill" aria-hidden="true" style="font-size: 1.5em"></span>
+          <span class="ri-ruler-line" aria-hidden="true" style="font-size: 1.5em"></span>
         </button>
         <div class="separator"></div>
         <button type="button" title="Supprimer" aria-label="Supprimer" :disabled="!canDelete" @click="supprimer()">
-          <span class="fr-icon-delete-fill" aria-hidden="true"></span>
+          <span class="fr-icon-delete-line" aria-hidden="true"></span>
         </button>
         <button type="button" title="Annuler" aria-label="Annuler" :disabled="!canUndo" @click="undo()">
-          <span class="fr-icon-arrow-go-back-fill" aria-hidden="true"></span>
+          <span class="fr-icon-arrow-go-back-line" aria-hidden="true"></span>
         </button>
         <button type="button" title="Rétablir" aria-label="Rétablir" :disabled="!canRedo" @click="redo()">
-          <span class="fr-icon-arrow-go-forward-fill" aria-hidden="true"></span>
+          <span class="fr-icon-arrow-go-forward-line" aria-hidden="true"></span>
         </button>
       </div>
     </div>
