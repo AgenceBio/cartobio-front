@@ -63,9 +63,9 @@ const badgeClasses = computed(() => {
 
 <style>
 .component {
-  padding: 4px 8px;
+  padding: 2px 8px;
   border-radius: 9999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   display: inline-flex;
   align-items: center;
