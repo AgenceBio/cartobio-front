@@ -1,18 +1,23 @@
 <template>
   <section class="operator-setup-flow">
-    <div class="fr-stepper" v-if="withStepper">
+    <div class="fr-stepper" v-if="withStepper && currentStep.withStepper">
       <h2 class="fr-stepper__title">
-        <span class="fr-stepper__state">Étape {{ currentStepIndex + 1 }} sur {{ allSteps.length }}</span>
+        <span class="fr-stepper__state">Étape {{ displayedStepIndex + 1 }} sur {{ displayedStep.length }}</span>
         {{ currentStep.title }}
       </h2>
       <div
         class="fr-stepper__steps"
-        :data-fr-current-step="currentStepIndex + 1"
-        :data-fr-steps="allSteps.length"
+        :data-fr-current-step="displayedStepIndex + 1"
+        :data-fr-steps="displayedStep.length"
       ></div>
       <p class="fr-stepper__details" v-if="nextStep">
         <span class="fr-text--bold">Étape suivante&nbsp;:</span> {{ nextStep.title }}
       </p>
+    </div>
+    <div lass="fr-stepper" v-else>
+      <h2 class="fr-stepper__title">
+        {{ currentStep.title }}
+      </h2>
     </div>
 
     <slot name="introduction" v-if="isStep('intro')" />
@@ -32,19 +37,24 @@
       :is="currentFlow.component"
       v-bind="currentFlow.extraProps"
       @submit="handleUpload"
+      :is-loading="isLoading"
       v-else-if="isStep('setup')"
     />
     <PreviewStep
       :featureCollection="featureCollection"
       :warnings="warnings"
+      :is-loading="isLoading"
       @submit="handlePreviewConfirmation"
-      @cancel="resetFlow"
       v-else-if="isStep('preview')"
     />
-    <OutroStep @submit="handleRedirection" @cancel="resetFlow" v-else-if="isStep('outro')" />
 
-    <p v-if="(!flowId && !isStep('intro')) || (flowId && !isStep('setup') && !isStep('outro'))">
-      <button class="fr-btn fr-btn--secondary" @click="resetFlow">Recommencer l'import</button>
+    <p v-if="(!flowId && !isStep('intro') && !isStep('setup')) || (flowId && !isStep('setup'))">
+      <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" @click="goBack">
+        Revenir à l’étape précédente
+      </button>
+    </p>
+    <p v-else-if="isStep('setup')">
+      <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" @click="goBack">Retour</button>
     </p>
   </section>
 </template>
@@ -53,11 +63,12 @@
 import { computed, markRaw, provide, readonly, ref, shallowRef, unref } from "vue";
 
 import PreviewStep from "@/components/setup/Flow/Preview.vue";
-import OutroStep from "@/components/setup/Flow/Outro.vue";
 
 import { useRecordStore } from "@/stores/record.js";
 import { createOperatorRecord } from "@/cartobio-api.js";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const recordStore = useRecordStore();
 
 const emit = defineEmits(["error", "upload", "submit", "redirect"]);
@@ -86,15 +97,16 @@ const featureCollection = shallowRef(null);
 const metadata = shallowRef(null);
 const record = shallowRef(null);
 const warnings = ref([]);
+const isLoading = ref(false);
 
 const allSteps = readonly([
-  { key: "intro", title: "Bienvenue sur CartoBio", condition: () => true },
-  { key: "setup", title: "Choix des données géographiques", condition: () => currentFlowId.value },
-  { key: "preview", title: "Prévisualisation", condition: () => featureCollection.value },
+  { key: "intro", title: "Bienvenue sur CartoBio", condition: () => true, withStepper: false },
+  { key: "setup", title: "Choix des données géographiques", condition: () => currentFlowId.value, withStepper: true },
   {
-    key: "outro",
-    title: "Accéder au parcellaire",
-    condition: () => record.value?.metadata && "source" in record.value.metadata,
+    key: "preview",
+    title: props.flowId ? "Récupération des données" : "Prévisualisation",
+    condition: () => featureCollection.value,
+    withStepper: true,
   },
 ]);
 
@@ -102,6 +114,8 @@ const isStep = (stepId) => currentStep.value.key === stepId;
 const currentStepKey = computed(() => [...allSteps].reverse().find(({ condition }) => condition()).key);
 const currentStepIndex = computed(() => allSteps.findIndex(({ key }) => key === currentStepKey.value));
 const currentStep = computed(() => allSteps.at(currentStepIndex.value));
+const displayedStep = computed(() => allSteps.filter((s) => s.withStepper));
+const displayedStepIndex = computed(() => displayedStep.value.findIndex(({ key }) => key === currentStep.value.key));
 const nextStep = computed(() => {
   return currentStepIndex.value + 1 < allSteps.length ? allSteps[currentStepIndex.value + 1] : null;
 });
@@ -116,11 +130,22 @@ const currentFlow = computed(() => {
   }
 });
 
-function resetFlow() {
-  currentFlowId.value = props.flowId;
-  recordStore.update({ parcelles: { type: "FeatureCollection", features: [] } });
-  featureCollection.value = null;
-  metadata.value = null;
+function goBack() {
+  if (isStep("setup")) {
+    if (props.flowId) {
+      return router.back();
+    }
+    currentFlowId.value = props.flowId;
+  } else if (isStep("preview")) {
+    recordStore.update({ parcelles: { type: "FeatureCollection", features: [] } });
+    featureCollection.value = null;
+    metadata.value = null;
+  }
+}
+
+function redirect(record) {
+  recordStore.update(record);
+  emit("redirect", unref(record));
 }
 
 function handleFlowSelection(flowId) {
@@ -140,16 +165,25 @@ function handleUpload({ geojson, metadata: data, source, warnings: warns }) {
   emit("upload", { geojson, metadata: unref(metadata), warnings: warns });
 }
 
-async function handlePreviewConfirmation(importPrevious) {
+async function handlePreviewConfirmation(importPrevious, recordId) {
   const { numeroBio } = props.operator;
 
-  record.value = await createOperatorRecord(numeroBio, {
-    parcelles: featureCollection.value,
-    metadata: metadata.value,
-    importPrevious,
-  });
+  isLoading.value = true;
+  try {
+    record.value = await createOperatorRecord(numeroBio, {
+      parcelles: featureCollection.value,
+      metadata: metadata.value,
+      importPrevious,
+      recordId,
+    });
+  } catch (_e) {
+    isLoading.value = false;
+    return;
+  }
 
   emit("submit", unref(record.value));
+
+  redirect(record.value);
 }
 
 async function handleUploadAndSave({ geojson, metadata, source }) {
@@ -165,11 +199,13 @@ async function handleUploadAndSave({ geojson, metadata, source }) {
   });
 
   emit("submit", unref(record.value));
-}
 
-function handleRedirection() {
-  recordStore.update(record.value);
-
-  emit("redirect", unref(record.value));
+  redirect(record.value);
 }
 </script>
+
+<style scoped>
+.fr-btn.fr-btn--secondary.setup {
+  margin-top: 1rem;
+}
+</style>
