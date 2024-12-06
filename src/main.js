@@ -70,7 +70,7 @@ app
     },
   })
   .use(Vue3Toastify, {
-    autoClose: false,
+    autoClose: 4000,
     position: toastify.POSITION.BOTTOM_LEFT,
     width: "auto",
     limit: 3,
