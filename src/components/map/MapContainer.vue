@@ -148,6 +148,12 @@ defineExpose({
 
 .maplibregl-ctrl-bottom-left {
   z-index: 10; /* has to be above maplibregl-ctrl-bottom-right to overlap it */
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  width: 67%;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .maplibregl-ctrl-bottom-right {
@@ -157,8 +163,9 @@ defineExpose({
     "null null custom-controls"
     "null null group-controls"
     "attribution scale scale";
-
   padding: 0;
+  bottom: 12px;
+  right: 12px;
 
   .maplibregl-ctrl {
     margin: 0;
