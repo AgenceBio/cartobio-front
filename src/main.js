@@ -70,8 +70,8 @@ app
     },
   })
   .use(Vue3Toastify, {
-    autoClose: false,
-    position: toastify.POSITION.BOTTOM_LEFT,
+    autoClose: 4000,
+    position: toastify.POSITION.BOTTOM_RIGHT,
     width: "auto",
     limit: 3,
   })
