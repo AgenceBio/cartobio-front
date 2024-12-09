@@ -1,11 +1,14 @@
 function excludeOldNonEngagees(notifications) {
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  return notifications;
 
-  return notifications.filter((n) => {
-    const certificationDate = new Date(n.updatedAt);
-    return !(n.etatCertification === "NON ENGAGEE" && certificationDate < sixMonthsAgo);
-  });
+  //FIXME: En attente de savoir si on gère la pagination ou pas
+  // const sixMonthsAgo = new Date();
+  // sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  // return notifications.filter((n) => {
+  //   const certificationDate = new Date(n.updatedAt);
+  //   return !(n.etatCertification === "NON ENGAGEE" && certificationDate < sixMonthsAgo);
+  // });
 }
 
 const priorityOrder = [
