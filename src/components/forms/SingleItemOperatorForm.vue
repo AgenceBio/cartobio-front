@@ -33,40 +33,44 @@
         @change="($cultures) => (patch.cultures = $cultures)"
       />
 
-      <AccordionGroup v-if="!permissions.canChangeCulture">
-        <AccordionSection title="Culture">
-          <CultureSelector
-            :disabled-input="true"
-            :feature-id="feature.properties.id"
-            :cultures="patch.cultures"
-            @change="($cultures) => (patch.cultures = $cultures)"
-          />
-        </AccordionSection>
-        <AccordionSection title="Annotations d'audit">
-          <div>
-            <ConversionLevelSelector
+      <template v-if="!permissions.canChangeCulture">
+        <AccordionGroup>
+          <AccordionSection title="Culture">
+            <CultureSelector
+              :disabled-input="true"
               :feature-id="feature.properties.id"
-              :readonly="true"
-              v-model="patch.conversion_niveau"
+              :cultures="patch.cultures"
+              @change="($cultures) => (patch.cultures = $cultures)"
             />
-
-            <div class="fr-input-group">
-              <label class="fr-label" for="engagement_date"
-                >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
-              >
-              <input
-                type="date"
-                class="fr-input"
-                v-model="patch.engagement_date"
-                name="engagement_date"
-                id="engagement_date"
-                :disabled="true"
+          </AccordionSection>
+        </AccordionGroup>
+        <AccordionGroup>
+          <AccordionSection title="Annotations d'audit">
+            <div>
+              <ConversionLevelSelector
+                :feature-id="feature.properties.id"
+                :readonly="true"
+                v-model="patch.conversion_niveau"
               />
+
+              <div class="fr-input-group">
+                <label class="fr-label" for="engagement_date"
+                  >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
+                >
+                <input
+                  type="date"
+                  class="fr-input"
+                  v-model="patch.engagement_date"
+                  name="engagement_date"
+                  id="engagement_date"
+                  :disabled="true"
+                />
+              </div>
             </div>
-          </div>
-        </AccordionSection>
-        <br />
-      </AccordionGroup>
+          </AccordionSection>
+          <br />
+        </AccordionGroup>
+      </template>
 
       <div class="fr-input-group">
         <label class="fr-label" for="feature-commentaires">

@@ -43,7 +43,9 @@
             @change="($cultures) => (patch.cultures = $cultures)"
           />
         </AccordionSection>
+      </AccordionGroup>
 
+      <AccordionGroup :constraint-toggle="!open">
         <AccordionSection
           title="Annotations d'audit"
           :open="open"
