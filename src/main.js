@@ -71,7 +71,7 @@ app
   })
   .use(Vue3Toastify, {
     autoClose: 4000,
-    position: toastify.POSITION.BOTTOM_LEFT,
+    position: toastify.POSITION.BOTTOM_RIGHT,
     width: "auto",
     limit: 3,
   })
