@@ -158,6 +158,10 @@ const redo = () => {
   margin: 0 4px;
 }
 
+button {
+  color: #000091;
+}
+
 button.fr-btn {
   border: none;
   box-shadow: none;
