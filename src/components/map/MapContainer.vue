@@ -18,6 +18,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showScale: {
+    type: Boolean,
+    default: false,
+  },
   bounds: {
     type: Array,
     required: true,
@@ -99,7 +103,9 @@ onMounted(() => {
       },
       "bottom-right",
     );
+  }
 
+  if (props.showAttribution || props.showScale) {
     map.value.addControl(new ScaleControl({ maxWidth: 80, unit: "metric" }), "bottom-right");
   }
 
