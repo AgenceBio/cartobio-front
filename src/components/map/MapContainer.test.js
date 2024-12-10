@@ -40,6 +40,19 @@ describe("MapContainer", () => {
     expect(attributionSpy).toHaveProperty("0.onAdd");
     expect(attributionSpy).toHaveProperty("1", "bottom-right");
   });
+
+  test("we display navigation control and scale", async () => {
+    const wrapper = mount(MapContainer, {
+      props: { showScale: true, bounds: [] },
+    });
+
+    expect(NavigationControl).toHaveBeenCalledOnce();
+    expect(ScaleControl).toHaveBeenCalledOnce();
+
+    const attributionSpy = wrapper.vm.map.addControl.mock.calls.at(1);
+    expect(attributionSpy).toHaveProperty("0.onAdd");
+    expect(attributionSpy).toHaveProperty("1", "bottom-right");
+  });
 });
 
 describe("LayerSelector", () => {

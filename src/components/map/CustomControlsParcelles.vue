@@ -158,7 +158,13 @@ const redo = () => {
   margin: 0 4px;
 }
 
-button.fr-btn {
+.left-buttons button:not(:disabled),
+.right-buttons button:not(:disabled) {
+  color: #000091;
+}
+
+.left-buttons button.fr-btn,
+.right-buttons button.fr-btn {
   border: none;
   box-shadow: none;
 }
@@ -189,7 +195,7 @@ button:hover {
   background-color: #ececfe !important;
 }
 
-.maplibregl-ctrl {
+.maplibregl-ctrl-top-left .maplibregl-ctrl {
   margin: 0px !important;
 }
 </style>
