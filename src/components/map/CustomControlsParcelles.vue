@@ -158,11 +158,13 @@ const redo = () => {
   margin: 0 4px;
 }
 
-button {
+.left-buttons button:not(:disabled),
+.right-buttons button:not(:disabled) {
   color: #000091;
 }
 
-button.fr-btn {
+.left-buttons button.fr-btn,
+.right-buttons button.fr-btn {
   border: none;
   box-shadow: none;
 }
