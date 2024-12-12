@@ -175,6 +175,7 @@ defineExpose({
 
   .maplibregl-ctrl {
     margin: 0;
+    justify-self: end;
   }
 
   .maplibregl-ctrl-attrib {
