@@ -195,7 +195,7 @@ button:hover {
   background-color: #ececfe !important;
 }
 
-.maplibregl-ctrl {
+.maplibregl-ctrl-top-left .maplibregl-ctrl {
   margin: 0px !important;
 }
 </style>
