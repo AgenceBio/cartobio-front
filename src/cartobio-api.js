@@ -101,6 +101,19 @@ export async function submitNewParcelle({ recordId }, feature) {
 }
 
 /**
+ * Add a new plot without id to a feature collection
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function divideNewParcelle(recordId, featureId, features) {
+  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles/${featureId}/`, {
+    features,
+  });
+
+  return data;
+}
+
+/**
  * @param {string} userToken
  * @returns {Promise<CartoBioUser>}
  */
