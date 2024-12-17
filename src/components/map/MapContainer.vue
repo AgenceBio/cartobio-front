@@ -18,6 +18,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showScale: {
+    type: Boolean,
+    default: false,
+  },
   bounds: {
     type: Array,
     required: true,
@@ -99,7 +103,9 @@ onMounted(() => {
       },
       "bottom-right",
     );
+  }
 
+  if (props.showAttribution || props.showScale) {
     map.value.addControl(new ScaleControl({ maxWidth: 80, unit: "metric" }), "bottom-right");
   }
 
@@ -148,6 +154,12 @@ defineExpose({
 
 .maplibregl-ctrl-bottom-left {
   z-index: 10; /* has to be above maplibregl-ctrl-bottom-right to overlap it */
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  width: 67%;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .maplibregl-ctrl-bottom-right {
@@ -157,11 +169,13 @@ defineExpose({
     "null null custom-controls"
     "null null group-controls"
     "attribution scale scale";
-
   padding: 0;
+  bottom: 12px;
+  right: 12px;
 
   .maplibregl-ctrl {
     margin: 0;
+    justify-self: end;
   }
 
   .maplibregl-ctrl-attrib {
@@ -183,6 +197,13 @@ defineExpose({
   .cartobio-controls {
     grid-area: custom-controls;
   }
+}
+
+.maplibregl-ctrl-top-left {
+  padding: 0;
+  background-color: hsla(0, 0%, 100%, 0.9);
+  font-size: 0.75rem;
+  margin-right: 1rem;
 }
 
 .legend > * {

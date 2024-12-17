@@ -142,7 +142,7 @@
                       type="button"
                       class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm"
                     >
-                      Modifier le contour
+                      Modifier la parcelle
                     </router-link>
                   </li>
                   <li v-else>
@@ -151,7 +151,7 @@
                       disabled
                       class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm"
                     >
-                      Modifier le contour
+                      Modifier la parcelle
                     </button>
                   </li>
                   <li>
