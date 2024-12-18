@@ -93,8 +93,7 @@
               Vous pouvez récupérer les informations renseignées dans une version de votre choix : dates et niveaux de
               conversion, parcelles ajoutées manuellement, variété (si la culture est identique), notes de certification
               et noms de parcelles modifiés.
-              <br />
-              <br />
+              <span class="carriage-return"></span>
               Pour plus d’information :
               <a
                 class="fr-link"
@@ -114,7 +113,8 @@
             @click.stop.prevent="showDetails = !showDetails"
           >
             Quelles informations sont reprises ?<span
-              :class="showDetails ? 'fr-icon-arrow-down-s-line' : 'fr-icon-arrow-up-s-line'"
+              class="icon-info"
+              :class="showDetails ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
             />
           </button>
         </div>
@@ -291,6 +291,17 @@ const getShortVersionName = (name) => {
 
   .more-infos-text {
     margin-bottom: 1em;
+  }
+
+  .icon-info::before {
+    font-size: 1em;
+    width: 1.2rem;
+    margin-left: 0.5em;
+  }
+
+  .carriage-return {
+    height: 1rem;
+    display: block;
   }
 }
 </style>
