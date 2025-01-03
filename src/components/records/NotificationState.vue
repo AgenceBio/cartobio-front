@@ -31,7 +31,7 @@ const props = defineProps({
 const stateInfo = computed(() => {
   const array = props.operator.certificats ?? props.operator.notifications;
 
-  array.sort((a, b) => new Date(b.dateSignatureContrat) - new Date(a.dateSignatureContrat));
+  array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
 
   for (const notif of array) {
     const currentStatut = notif.etatCertification || notif.status;
