@@ -29,6 +29,7 @@ export const useRecordStore = defineStore("record", () => {
     created_at: null,
     updated_at: null,
     audit_date: null,
+    oc_id: null,
     audit_notes: "",
     audit_demandes: "",
     audit_history: [],

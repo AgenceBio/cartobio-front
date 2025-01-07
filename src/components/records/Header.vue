@@ -6,6 +6,7 @@
       <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
         {{ record.version_name }}
       </h2>
+      <span v-if="readonly" class="readonly-badge">Lecture seule</span>
 
       <button
         v-if="!disableActions && permissions.canEditVersion"
@@ -115,6 +116,7 @@ import { useRecordStore } from "@/stores/record.js";
 import { onClickOutside, useOnline } from "@vueuse/core";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";
 import { usePermissions } from "@/stores/permissions.js";
+import { useUserStore } from "@/stores/user";
 
 const AsyncFeaturesExportModal = defineAsyncComponent(() => import("@/components/records/ExportModal.vue"));
 
@@ -133,6 +135,7 @@ const deleteModal = ref(false);
 const featuresStore = useFeaturesStore();
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
+const userStore = useUserStore();
 const permissions = usePermissions();
 const { record } = recordStore;
 const { operator } = operatorStore;
@@ -142,7 +145,9 @@ const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && 
 const versionMenu = ref(false);
 const versionMenuRef = ref(null);
 const showEditVersionModal = ref(false);
-
+const readonly = computed(
+  () => permissions.isOc && recordStore.record.oc_id !== userStore.user?.organismeCertificateur?.id,
+);
 onClickOutside(versionMenuRef, ({ target }) => {
   if (!target.classList.contains("show-versions")) {
     versionMenu.value = false;
@@ -224,5 +229,16 @@ header {
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
   }
+}
+
+.readonly-badge {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--background-default-grey-active);
+  font-weight: 700;
+  margin-bottom: 0.25em;
 }
 </style>

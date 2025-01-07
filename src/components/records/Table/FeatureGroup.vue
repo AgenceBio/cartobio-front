@@ -98,7 +98,7 @@
                   />
                 </div>
               </th>
-              <td @click="isOnline && toggleEditForm(feature.id)" v-if="isGroupedByCulture">
+              <td @click="clickFeature(feature.id)" v-if="isGroupedByCulture">
                 <span class="culture-name">{{ featureName(feature) }}</span>
                 <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
                 <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
@@ -128,15 +128,22 @@
               </td>
               <td class="actions">
                 <button
+                  v-if="!readonly"
                   type="button"
-                  class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
-                  :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
+                  class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
                   @click="toggleEditForm(feature.id)"
                   aria-label="Modifier"
                 />
+                <button
+                  v-else
+                  type="button"
+                  class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line"
+                  @click="toggleViewForm(feature.id)"
+                  aria-label="Modifier"
+                />
 
-                <ActionDropdown with-icons>
-                  <li v-if="permissions.canChangeGeometry && isOnline">
+                <ActionDropdown v-if="!readonly" with-icons>
+                  <li v-if="permissions.canChangeGeometry && isOnline" class="more-actions">
                     <router-link
                       :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`"
                       type="button"
@@ -195,11 +202,13 @@ import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 import { useOnline } from "@vueuse/core";
 import { cultureLabel, featureName, inHa, legalProjectionSurface } from "@/utils/features.js";
+import { useUserStore } from "@/stores/user";
 
 const route = useRoute();
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
+const userStore = useUserStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
 const isOnline = useOnline();
@@ -211,7 +220,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit:featureId", "delete:featureId"]);
+const emit = defineEmits(["edit:featureId", "view:featureId", "delete:featureId"]);
 
 const { selectedIds, hoveredId } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
@@ -225,11 +234,28 @@ const groupErrors = computed(() => {
   return featureIds.value.reduce((sum, id) => sum + featuresSets.byFeature(id, true).size, 0);
 });
 
+const readonly = computed(() => {
+  return permissions.isOc && recordStore.record.oc_id !== userStore.user?.organismeCertificateur?.id;
+});
+
 function toggleEditForm(featureId) {
+  if (readonly.value) {
+    return;
+  }
   return emit("edit:featureId", featureId);
 }
 
+function toggleViewForm(featureId) {
+  if (!readonly.value) {
+    return;
+  }
+  return emit("view:featureId", featureId);
+}
+
 function toggleDeleteForm(featureId) {
+  if (readonly.value) {
+    return;
+  }
   return emit("delete:featureId", featureId);
 }
 
@@ -239,6 +265,18 @@ function toggleFeatureGroup() {
     featuresStore.unselect(...featureIds.value);
   } else {
     featuresStore.select(...featureIds.value);
+  }
+}
+
+function clickFeature(featureId) {
+  if (!isOnline) {
+    return;
+  }
+
+  if (readonly.value) {
+    toggleViewForm(featureId);
+  } else {
+    toggleEditForm(featureId);
   }
 }
 
