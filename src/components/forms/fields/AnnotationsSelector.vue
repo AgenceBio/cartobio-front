@@ -16,6 +16,7 @@
           type="button"
           :aria-pressed="isSelected(annotationId)"
           @click="toggleAnnotation(annotationId)"
+          :disabled="readonly"
         >
           {{ annotation.label }}
         </button>
@@ -92,6 +93,10 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => [],
+  },
+  readonly: {
+    type: Boolean,
+    default: false,
   },
 });
 

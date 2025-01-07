@@ -44,7 +44,7 @@ describe("RecordHeader", () => {
     expect(wrapper.find(".version-name").text()).toEqual("Version créée le 01/01/2024");
   });
 
-  describe("Modifier la version", () => {
+  describe("modify version", () => {
     afterEach(() => userStore.$reset());
 
     it("should allow agri when OPERATOR_DRAFT", async () => {
@@ -64,6 +64,11 @@ describe("RecordHeader", () => {
       await flushPromises();
       expect(await wrapper.find(".edit-version-info").exists()).toBe(false);
 
+      userStore.user = {
+        organismeCertificateur: {
+          id: 1,
+        },
+      };
       userStore.isOc = true;
       userStore.isOcCertif = true;
       wrapper = mount(AsyncComponent);
@@ -116,6 +121,21 @@ describe("RecordHeader", () => {
         },
         expect.anything(),
       );
+    });
+    it("I should see readonly badge if we are not the creator of record", async () => {
+      userStore.isOc = true;
+      userStore.isAgri = false;
+      userStore.user = {
+        organismeCertificateur: {
+          id: 2,
+        },
+      };
+
+      let wrapper = mount(AsyncComponent);
+
+      await flushPromises();
+      expect(await wrapper.find(".readonly-badge").exists()).toBe(true);
+      expect(await wrapper.find(".edit-version-info").exists()).toBe(false);
     });
   });
 });
