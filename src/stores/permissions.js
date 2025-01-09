@@ -15,7 +15,7 @@ export const usePermissions = defineStore("permissions", () => {
   // Tests
 
   const canEditParcellaire = computed(() => {
-    if (isOc.value) {
+    if (isOc.value && recordStore.record.oc_id === userStore.user?.organismeCertificateur?.id) {
       return true;
     }
 
@@ -39,7 +39,7 @@ export const usePermissions = defineStore("permissions", () => {
   const canDeleteParcellaire = canEditParcellaire;
 
   const canCreateVersion = computed(() => isOc.value || isAgri.value);
-  const canEditVersion = computed(() => canEditParcellaire.value);
+  const canEditVersion = canEditParcellaire;
 
   const canChangeCulture = canEditParcellaire;
   const canChangeGeometry = canEditParcellaire;
@@ -48,7 +48,7 @@ export const usePermissions = defineStore("permissions", () => {
     return Boolean(recordStore.record.certification_state);
   });
 
-  const canChangeConversionLevel = isOc;
+  const canChangeConversionLevel = computed(() => isOc.value && canEditParcellaire.value);
 
   const canSaveAudit = computed(() => Boolean(userStore.isOcAudit));
   const canSendAudit = computed(() => Boolean(userStore.isOcAudit));

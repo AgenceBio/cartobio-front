@@ -15,10 +15,12 @@ import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
 import EditForm from "@/components/forms/SingleItemOperatorForm.vue";
 import TableComponent from "@/components/records/Table/index.vue";
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/utils/features.js";
+import { useUserStore } from "@/stores/user";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const storageStore = useCartoBioStorage(pinia);
 const recordStore = useRecordStore(pinia);
+const userStore = useUserStore(pinia);
 const featuresStore = useFeaturesStore(pinia);
 const permissions = usePermissions(pinia);
 
@@ -103,6 +105,11 @@ describe("Features Table", () => {
   });
 
   test("we click on a row to edit a feature in a Modal, then save", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 1,
+      },
+    };
     const AsyncComponent = defineComponent({
       components: { TableComponent },
       template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>',
@@ -132,7 +139,45 @@ describe("Features Table", () => {
     expect(wrapper.findComponent(EditForm).exists()).toEqual(false);
   });
 
+  test("we click on a row to view a feature in a Modal, then close", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 2,
+      },
+    };
+    const AsyncComponent = defineComponent({
+      components: { TableComponent },
+      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>',
+    });
+
+    const wrapper = mount(AsyncComponent, {
+      props: { editForm: markRaw(EditForm) },
+    });
+
+    const table = wrapper.getComponent(TableComponent);
+    await table.find("tr#parcelle-2 td").trigger("click");
+    await flushPromises();
+
+    // this throws if the modal form does not exist
+    // it catches the Component reference even if it has been Teleport-ed in the <body>
+    const form = wrapper.getComponent(EditForm);
+    expect(table.vm.viewedFeatureId).toEqual("2");
+
+    //submit form
+    await form.find(".fr-modal__footer button.fr-btn").trigger("click");
+
+    await flushPromises();
+    // modal is down, and the table should be updated
+    expect(axios.__createMock.patch).not.toHaveBeenCalled();
+    expect(wrapper.findComponent(EditForm).exists()).toEqual(false);
+  });
+
   test("we delete a feature", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 1,
+      },
+    };
     permissions.canDeleteFeature = true;
 
     const wrapper = mount(TableComponent);
@@ -155,6 +200,19 @@ describe("Features Table", () => {
       code: DeletionReasonsCode.OTHER,
       details: "Parce que",
     });
+  });
+
+  test("there is not other action if we are not the correct OC", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 2,
+      },
+    };
+    permissions.canDeleteFeature = true;
+
+    const wrapper = mount(TableComponent);
+
+    expect(wrapper.find(".more-actions").exists()).toEqual(false);
   });
 
   test("we open a modal and test various cases it should remain open, or close", async () => {
