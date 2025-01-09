@@ -75,7 +75,7 @@
               <b>{{ groupingChoiceLabel }}</b>
               <select id="plots-group-by" v-model="userGroupingChoice">
                 <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
-                  {{ label }}
+                  &nbsp;&nbsp;{{ label }}
                 </option>
               </select>
             </div>
