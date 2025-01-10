@@ -249,6 +249,12 @@ export const notificationsStateLevel = {
     textColor: "#CE0500",
     icon: "fr-icon-error-fill",
   },
+  ["ARRETEE CHANGEMENT OC"]: {
+    label: "Arrêtée - changement OC",
+    color: "#FFE9E9",
+    textColor: "#CE0500",
+    icon: "fr-icon-error-fill",
+  },
   ["NON ENGAGEE"]: {
     label: "Non engagée",
     color: "#FBE769",
