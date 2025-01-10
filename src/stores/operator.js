@@ -50,7 +50,16 @@ export const useOperatorStore = defineStore("operator", () => {
         acc[acc.length - 1].records.push(record);
         return acc;
       },
-      [{ year: records.value[0].created_at.split("-")[0], records: [] }],
+      [
+        {
+          year: (
+            records.value[0].certification_date_debut ||
+            records.value[0].audit_date ||
+            records.value[0].created_at
+          ).split("-")[0],
+          records: [],
+        },
+      ],
     );
   });
 
