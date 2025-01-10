@@ -20,7 +20,9 @@ const displayCallout = computed(() => record.audit_demandes && isCertificationIm
 const showSaveAuditModal = ref(false);
 const showCertificationModal = ref(false);
 
-const canEndAudit = computed(() => permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets);
+const canEndAudit = computed(
+  () => permissions.canEditParcellaire && permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets,
+);
 
 function handleSaveAudit({ patch }) {
   recordStore.updateInfo({
