@@ -41,7 +41,8 @@ const displayedNotif = computed(() => {
     // L'oc connecté a des notifications le conernant on ne traite que celle-ci
     array = array.filter((n) => n.organismeCertificateurId === user.organismeCertificateur.id);
   }
-  array.sort((a, b) => new Date(b.dateSignatureContrat) - new Date(a.dateSignatureContrat));
+
+  array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
 
   for (const notif of array) {
     const currentStatut = notif.etatCertification || notif.status;
