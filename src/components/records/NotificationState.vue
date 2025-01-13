@@ -1,13 +1,18 @@
 <template>
-  <span class="component" :style="getStyle()">
-    <span
-      v-if="stateInfo"
-      :class="['icon', 'fr-icon--sm', stateInfo != null ? stateInfo.icon : '']"
-      aria-hidden="true"
-    ></span>
-    <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
-    <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{ getLabel() }}</span>
-  </span>
+  <div :class="{ 'margin-top': isChangementOc() }">
+    <span class="component" :style="getStyle()">
+      <span
+        v-if="stateInfo"
+        :class="['icon', 'fr-icon--sm', stateInfo != null ? stateInfo.icon : '']"
+        aria-hidden="true"
+      ></span>
+      <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
+      <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
+        stateInfo ? stateInfo.label : "-"
+      }}</span>
+    </span>
+    <div v-if="isChangementOc()" class="fr-hint-text">changement d'OC</div>
+  </div>
 </template>
 
 <script setup>
@@ -66,7 +71,7 @@ const stateInfo = computed(() => {
     user.organismeCertificateur &&
     displayedNotif.value.organismeCertificateurId !== user.organismeCertificateur.id
   ) {
-    return notificationsStateLevel["ARRETEE CHANGEMENT OC"];
+    return notificationsStateLevel["ARRETEE"];
   }
   return notificationsStateLevel[currentStatut];
 });
@@ -82,20 +87,15 @@ function getStyle() {
   };
 }
 
-function getLabel() {
-  if (!stateInfo.value) {
-    return "-";
-  }
-
-  if (
+function isChangementOc() {
+  return (
     isOc &&
     user.organismeCertificateur &&
-    displayedNotif.value.organismeCertificateurId === user.organismeCertificateur.id &&
-    displayedNotif.value.isUpdatedByNewOc === 1
-  ) {
-    return stateInfo.value.label + " - changement OC";
-  }
-  return stateInfo.value.label;
+    displayedNotif.value &&
+    ((displayedNotif.value.organismeCertificateurId === user.organismeCertificateur.id &&
+      displayedNotif.value.isUpdatedByNewOc === 1) ||
+      displayedNotif.value.organismeCertificateurId !== user.organismeCertificateur.id)
+  );
 }
 </script>
 
@@ -115,5 +115,9 @@ function getLabel() {
 
 .lowercase {
   text-transform: lowercase;
+}
+
+.margin-top {
+  margin-top: 0.2rem;
 }
 </style>
