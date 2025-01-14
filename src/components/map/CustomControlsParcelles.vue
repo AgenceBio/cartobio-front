@@ -25,8 +25,12 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  disable: {
+    type: Boolean,
+    required: true,
+  },
 });
-const currentMode = ref(props.mode);
+const currentMode = ref(!props.disable ? props.mode : "");
 const windowWidth = useWindowWidth();
 
 const selectModif = () => {
@@ -72,6 +76,7 @@ const redo = () => {
           title="Modifier"
           aria-label="Modifier"
           @click="selectModif()"
+          :disabled="disable"
         >
           <span class="ri-shape-line" aria-hidden="true" style="font-size: 1.2em"></span>
           <span v-if="windowWidth > 780" class="button-text">Modifier</span>
@@ -83,6 +88,7 @@ const redo = () => {
           title="Diviser"
           aria-label="Diviser"
           @click="selectDivid()"
+          :disabled="disable"
         >
           <span class="ri-scissors-cut-line" aria-hidden="true" style="font-size: 1.2em"></span>
           <span v-if="windowWidth > 780" class="button-text">Diviser</span>
@@ -95,6 +101,7 @@ const redo = () => {
           title="Découper les bordures"
           aria-label="Découper les bordures"
           @click="selectCutBorders()"
+          :disabled="disable"
         >
           <span class="fr-icon-crop-line" aria-hidden="true"></span>
           <span v-if="windowWidth > 780" class="button-text">{{
@@ -111,17 +118,24 @@ const redo = () => {
           :class="mesureActive ? 'selected-button' : ''"
           @click="selectMesure()"
           aria-label="Mesurer"
+          :disabled="disable"
         >
           <span class="ri-ruler-line" aria-hidden="true" style="font-size: 1.5em"></span>
         </button>
         <div class="separator"></div>
-        <button type="button" title="Supprimer" aria-label="Supprimer" :disabled="!canDelete" @click="supprimer()">
+        <button
+          type="button"
+          title="Supprimer"
+          aria-label="Supprimer"
+          :disabled="!canDelete || disable"
+          @click="supprimer()"
+        >
           <span class="fr-icon-delete-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
-        <button type="button" title="Annuler" aria-label="Annuler" :disabled="!canUndo" @click="undo()">
+        <button type="button" title="Annuler" aria-label="Annuler" :disabled="!canUndo || disable" @click="undo()">
           <span class="fr-icon-arrow-go-back-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
-        <button type="button" title="Rétablir" aria-label="Rétablir" :disabled="!canRedo" @click="redo()">
+        <button type="button" title="Rétablir" aria-label="Rétablir" :disabled="!canRedo || disable" @click="redo()">
           <span class="fr-icon-arrow-go-forward-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
       </div>
@@ -129,7 +143,7 @@ const redo = () => {
   </Teleport>
 </template>
 
-<style>
+<style scoped>
 .command-modif-parcellaire {
   display: inline-flex;
   justify-content: space-between;
@@ -175,6 +189,10 @@ const redo = () => {
 
 button:hover {
   background-color: #f5f5f5;
+}
+
+button:disabled .button-text {
+  color: gray;
 }
 
 .button-text {
