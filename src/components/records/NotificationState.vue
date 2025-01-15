@@ -11,7 +11,7 @@
         stateInfo ? stateInfo.label : "-"
       }}</span>
     </span>
-    <div v-if="isChangementOc()" class="fr-hint-text">changement d'OC</div>
+    <div v-if="isChangementOc()" class="fr-hint-text oc-change">Changement OC</div>
   </div>
 </template>
 
@@ -119,5 +119,9 @@ function isChangementOc() {
 
 .margin-top {
   margin-top: 0.2rem;
+}
+
+.oc-change {
+  margin-left: 11px;
 }
 </style>

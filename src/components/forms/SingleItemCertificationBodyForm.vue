@@ -70,7 +70,7 @@
               name="engagement_date"
               id="engagement_date"
               :required="isEngagementDateRequired"
-              :disabled="!isAB"
+              :disabled="!isAB || readonly"
               min="1985-01-01"
               :max="maxDate"
             />
