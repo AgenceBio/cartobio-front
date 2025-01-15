@@ -4,9 +4,8 @@
 
     <div class="heading">
       <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
-        {{ record.version_name }}
+        {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
       </h2>
-      <span v-if="readonly" class="readonly-badge">Lecture seule</span>
 
       <button
         v-if="!disableActions && permissions.canEditVersion"
@@ -230,13 +229,15 @@ header {
 }
 
 .readonly-badge {
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 9999px;
   font-size: 12px;
   display: inline-flex;
   align-items: center;
   background-color: var(--background-default-grey-active);
-  font-weight: 700;
   margin-bottom: 0.25em;
+  font-weight: 400;
+  line-height: 23px;
+  margin-left: 1.2em;
 }
 </style>
