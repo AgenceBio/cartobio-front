@@ -28,10 +28,13 @@
           </MapContainer>
           <div class="fr-mt-3w">
             <Spinner v-if="isLoading">Import en cours</Spinner>
-            <p v-else>
+            <p v-else-if="isOnCartobio">
               <button class="fr-btn fr-btn--icon-right fr-icon-check-line" type="submit">
                 Terminer et accéder au parcellaire
               </button>
+            </p>
+            <p v-else-if="!isOnCartobio">
+              <button class="fr-btn fr-btn--icon-right fr-icon-check-line" type="submit">Terminer l'import</button>
             </p>
           </div>
         </div>
@@ -138,6 +141,8 @@ import { usePermissions } from "@/stores/permissions";
 import { CertificationState } from "@agencebio/cartobio-types";
 import Spinner from "@/components/widgets/Spinner.vue";
 
+const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
+
 const emit = defineEmits(["submit"]);
 const props = defineProps({
   featureCollection: {
@@ -157,6 +162,7 @@ const props = defineProps({
 const operatorStore = useOperatorStore();
 const permissions = usePermissions();
 
+const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
 const sortedRecords = computed(
   () =>
     operatorStore.records?.toSorted((recordA, recordB) => {

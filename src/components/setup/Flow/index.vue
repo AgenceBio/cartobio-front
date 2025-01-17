@@ -48,12 +48,29 @@
       v-else-if="isStep('preview')"
     />
 
-    <p v-if="(!flowId && !isStep('intro') && !isStep('setup')) || (flowId && !isStep('setup'))">
-      <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" @click="goBack">
+    <div v-else-if="isStep('end')">
+      <section>
+        <p>Félicitations, votre parcellaire a été créé sur Cartobio</p>
+        <p>Votre organisme de certification y aura accès pour votre audit.</p>
+        <p>
+          <button class="fr-btn fr-btn--secondary" @click="redirectToCartoBio">
+            Accéder à mon parcellaire sur CartoBio
+          </button>
+        </p>
+      </section>
+    </div>
+
+    <p
+      v-if="
+        (!flowId && !isStep('intro') && !isStep('setup') && !isStep('end')) ||
+        (flowId && !isStep('setup') && !isStep('end'))
+      "
+    >
+      <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" :disabled="isLoading" @click="goBack">
         Revenir à l’étape précédente
       </button>
     </p>
-    <p v-else-if="isStep('setup')">
+    <p v-else-if="isStep('setup') && isOnCartobio">
       <button :class="`fr-btn fr-btn--secondary ${currentStep.key}`" @click="goBack">Retour</button>
     </p>
   </section>
@@ -67,6 +84,8 @@ import PreviewStep from "@/components/setup/Flow/Preview.vue";
 import { useRecordStore } from "@/stores/record.js";
 import { createOperatorRecord } from "@/cartobio-api.js";
 import { useRouter } from "vue-router";
+
+const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
 
 const router = useRouter();
 const recordStore = useRecordStore();
@@ -99,6 +118,8 @@ const record = shallowRef(null);
 const warnings = ref([]);
 const isLoading = ref(false);
 
+const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
+
 const allSteps = readonly([
   { key: "intro", title: "Bienvenue sur CartoBio", condition: () => true, withStepper: false },
   { key: "setup", title: "Choix des données géographiques", condition: () => currentFlowId.value, withStepper: true },
@@ -107,6 +128,12 @@ const allSteps = readonly([
     title: props.flowId ? "Récupération des données" : "Prévisualisation",
     condition: () => featureCollection.value,
     withStepper: true,
+  },
+  {
+    key: "end",
+    title: "Importation réussie",
+    condition: () => record.value != null,
+    withStepper: false,
   },
 ]);
 
@@ -122,7 +149,6 @@ const nextStep = computed(() => {
 
 const currentFlow = computed(() => {
   const flow = props.actions.find(({ id }) => id === currentFlowId.value);
-
   if (!flow || !flow.wizzard) {
     return { component: null, extraProps: {} };
   } else {
@@ -183,7 +209,9 @@ async function handlePreviewConfirmation(importPrevious, recordId) {
 
   emit("submit", unref(record.value));
 
-  redirect(record.value);
+  if (isOnCartobio) {
+    redirect(record.value);
+  }
 }
 
 async function handleUploadAndSave({ geojson, metadata, source }) {
@@ -197,9 +225,9 @@ async function handleUploadAndSave({ geojson, metadata, source }) {
       source,
     },
   });
+}
 
-  emit("submit", unref(record.value));
-
+function redirectToCartoBio() {
   redirect(record.value);
 }
 </script>
