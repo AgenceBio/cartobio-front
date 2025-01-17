@@ -85,7 +85,9 @@ import { useRecordStore } from "@/stores/record.js";
 import { createOperatorRecord } from "@/cartobio-api.js";
 import { useRouter } from "vue-router";
 
-const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
+const { VUE_APP_API_ENDPOINT } = import.meta.env;
+
+const baseURL = VUE_APP_API_ENDPOINT || "https://cartobio.agencebio.org";
 
 const router = useRouter();
 const recordStore = useRecordStore();

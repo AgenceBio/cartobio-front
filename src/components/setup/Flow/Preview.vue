@@ -141,7 +141,9 @@ import { usePermissions } from "@/stores/permissions";
 import { CertificationState } from "@agencebio/cartobio-types";
 import Spinner from "@/components/widgets/Spinner.vue";
 
-const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
+const { VUE_APP_API_ENDPOINT } = import.meta.env;
+
+const baseURL = VUE_APP_API_ENDPOINT || "https://cartobio.agencebio.org";
 
 const emit = defineEmits(["submit"]);
 const props = defineProps({
