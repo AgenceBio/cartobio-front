@@ -75,7 +75,7 @@
               <b>{{ groupingChoiceLabel }}</b>
               <select id="plots-group-by" v-model="userGroupingChoice">
                 <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
-                  {{ label }}
+                  &nbsp;&nbsp;{{ label }}
                 </option>
               </select>
             </div>
@@ -112,6 +112,7 @@
         :featureGroup="featureGroup"
         :key="featureGroup.key"
         @edit:featureId="(featuredId) => (editedFeatureId = featuredId)"
+        @view:featureId="(featuredId) => (viewedFeatureId = featuredId)"
         @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
       />
     </table>
@@ -133,7 +134,7 @@
 
   <Teleport to="body">
     <Component
-      v-if="editedFeatureId && editForm"
+      v-if="editedFeature && editForm"
       :is="editForm"
       :feature="editedFeature"
       @submit="handleSingleFeatureSubmit"
@@ -141,6 +142,17 @@
       icon="fr-icon-file-text-fill"
     >
       <template #title>Modification de parcelle</template>
+    </Component>
+    <Component
+      v-if="viewedFeature && editForm"
+      :is="editForm"
+      :feature="viewedFeature"
+      :readonly="true"
+      @close="viewedFeatureId = null"
+      @submit="viewedFeatureId = null"
+      icon="fr-icon-file-text-fill"
+    >
+      <template #title>Visualisation de parcelle</template>
     </Component>
 
     <DeleteFeatureModal
@@ -179,6 +191,9 @@ defineProps({
   editForm: {
     type: Object,
   },
+  viewForm: {
+    type: Object,
+  },
   massActions: {
     type: Array,
     default: () => [],
@@ -202,6 +217,8 @@ const { getFeatureById, toggleAllSelected } = featuresStore;
 const editedFeatureId = ref(null);
 const editedFeature = computed(() => (editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null));
 const maybeDeletedFeatureId = ref(null);
+const viewedFeatureId = ref(null);
+const viewedFeature = computed(() => (viewedFeatureId.value ? getFeatureById(viewedFeatureId.value) : null));
 
 const userGroupingChoice = ref("CULTURE");
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, userGroupingChoice.value));

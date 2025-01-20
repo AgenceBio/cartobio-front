@@ -12,6 +12,7 @@
             :required="requiredName"
             :class="{ 'fr-input--error': nameErrors.size }"
             ref="autofocusedElement"
+            :disabled="readonly"
           />
           <div v-for="[id, result] in nameErrors" :key="id" class="fr-hint-text fr-error-text">
             {{ result.errorMessage }}.
@@ -41,6 +42,7 @@
             :feature-id="feature.properties.id"
             :cultures="patch.cultures"
             @change="($cultures) => (patch.cultures = $cultures)"
+            :disabled-input="readonly"
           />
         </AccordionSection>
       </AccordionGroup>
@@ -53,7 +55,7 @@
         >
           <ConversionLevelSelector
             :feature-id="feature.properties.id"
-            :readonly="!permissions.canChangeConversionLevel"
+            :readonly="!permissions.canChangeConversionLevel || readonly"
             v-model="patch.conversion_niveau"
           />
 
@@ -68,7 +70,7 @@
               name="engagement_date"
               id="engagement_date"
               :required="isEngagementDateRequired"
-              :disabled="!isAB"
+              :disabled="!isAB || readonly"
               min="1985-01-01"
               :max="maxDate"
             />
@@ -78,9 +80,10 @@
             v-if="permissions.canAddAnnotations"
             v-model="patch.annotations"
             :feature-id="feature.properties.id"
+            :readonly="readonly"
           />
 
-          <div class="fr-input-group">
+          <div v-if="!readonly" class="fr-input-group">
             <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
             <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
           </div>
@@ -92,7 +95,9 @@
 
     <template #footer>
       <div class="fr-input-group">
-        <button class="fr-btn" type="submit" form="single-feature-edit-form">Enregistrer</button>
+        <button class="fr-btn" type="submit" form="single-feature-edit-form">
+          {{ readonly ? "Fermer" : "Enregistrer" }}
+        </button>
       </div>
     </template>
   </Modal>
@@ -130,6 +135,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits(["submit", "close"]);
 
@@ -159,6 +168,10 @@ function requiresAction(properties) {
 }
 
 const validate = () => {
+  if (props.readonly) {
+    emit("close");
+    return;
+  }
   const set = featuresSet.byFeature(props.feature.id, true);
 
   if (set.size) {
@@ -169,7 +182,7 @@ const validate = () => {
 };
 
 function handleClose() {
-  if (featuresSet.isDirty) {
+  if (featuresSet.isDirty && !props.readonly) {
     showCancelModal.value = true;
   } else {
     emit("close");
@@ -179,6 +192,10 @@ function handleClose() {
 onBeforeUnmount(() => featuresSet.setCandidate([]));
 
 watch(patch, (properties) => {
+  if (props.readonly) {
+    return;
+  }
+
   featuresSet.setCandidate([
     {
       id: props.feature.id,

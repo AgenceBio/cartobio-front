@@ -218,17 +218,17 @@ router.afterEach(async () => {
   try {
     await storage.sync();
   } catch (error) {
-    if (
-      error.name === "AxiosError" &&
-      [AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)
-    ) {
-      toast.error(
-        "Une erreur de réseau est survenue. Si votre connexion " +
-          "est instable, vous pouvez passer en mode hors-ligne.",
-      );
-      return;
+    if (error.name === "AxiosError") {
+      if ([AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)) {
+        toast.error(
+          "Une erreur de réseau est survenue. Si votre connexion " +
+            "est instable, vous pouvez passer en mode hors-ligne.",
+        );
+        return;
+      } else if (error.code === AxiosError.ERR_BAD_REQUEST) {
+        toast.error("Un problème technique est survenu. Veuillez réessayer ultérieurement.");
+      }
     }
-
     throw error;
   }
 });
