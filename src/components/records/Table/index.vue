@@ -21,7 +21,7 @@
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
 
     <table
-      @mouseout="hoveredFeatureId = null"
+      @mouseout="hoveredFeatureId = editedFeatureId"
       aria-describedby="operator-features-summary-global"
       id="parcellaire-table"
     >
@@ -138,7 +138,7 @@
       :is="editForm"
       :feature="editedFeature"
       @submit="handleSingleFeatureSubmit"
-      @close="editedFeatureId = null"
+      @close="closeModal"
       icon="fr-icon-file-text-fill"
     >
       <template #title>Modification de parcelle</template>
@@ -263,6 +263,11 @@ function handleFilterClick(id) {
   if (featuresSets.isToggled(id)) {
     statsPush(["trackEvent", "Filtre parcelles", id]);
   }
+}
+
+function closeModal() {
+  editedFeatureId.value = null;
+  hoveredFeatureId.value = null;
 }
 </script>
 
