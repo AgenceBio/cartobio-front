@@ -67,7 +67,7 @@
       </button>
 
       <button
-        v-if="hasFeatures"
+        v-if="hasFeatures && !readonly"
         class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2"
         @click="exportModal = true"
       >
