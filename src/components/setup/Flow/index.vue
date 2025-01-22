@@ -134,7 +134,7 @@ const allSteps = readonly([
   {
     key: "end",
     title: "Importation réussie",
-    condition: () => record.value != null,
+    condition: () => !isOnCartobio && record.value != null,
     withStepper: false,
   },
 ]);
