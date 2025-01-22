@@ -11,7 +11,7 @@
         stateInfo ? stateInfo.label : "-"
       }}</span>
     </span>
-    <div v-if="isChangementOc()" class="fr-hint-text oc-change">Changement OC</div>
+    <div v-if="isChangementOc()" class="fr-hint-text oc-change text-center">En attente de validation OC</div>
   </div>
 </template>
 
@@ -88,14 +88,7 @@ function getStyle() {
 }
 
 function isChangementOc() {
-  return (
-    isOc &&
-    user.organismeCertificateur &&
-    displayedNotif.value &&
-    ((displayedNotif.value.organismeCertificateurId === user.organismeCertificateur.id &&
-      displayedNotif.value.isUpdatedByNewOc === 1) ||
-      displayedNotif.value.organismeCertificateurId !== user.organismeCertificateur.id)
-  );
+  return stateInfo.value.label === notificationsStateLevel["NON ENGAGEE"].label;
 }
 </script>
 
