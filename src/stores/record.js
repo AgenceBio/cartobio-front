@@ -23,6 +23,7 @@ export const useRecordStore = defineStore("record", () => {
     numerobio: null,
     record_id: null,
     version_name: null,
+    annee_reference_controle: null,
     certification_date_debut: null,
     certification_date_fin: null,
     certification_state: null,
@@ -132,6 +133,7 @@ export const useRecordStore = defineStore("record", () => {
 
     const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
       version_name: `Copie de ${record.version_name}`,
+      annee_reference_controle: record.annee_reference_controle,
       parcelles: {
         ...record.parcelles,
         features: record.parcelles.features.map((p) => ({

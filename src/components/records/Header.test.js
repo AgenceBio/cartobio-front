@@ -109,6 +109,7 @@ describe("RecordHeader", () => {
       expect(axios.__createMock.patch).toHaveBeenCalledWith(
         "/v2/audits/054f0d70-c3da-448f-823e-81fcf7c2bf6e",
         {
+          annee_reference_controle: null,
           audit_date: "2024-01-01",
           certification_date_debut: newCertificationDateDebut,
           certification_date_fin: newCertificationDateFin,
