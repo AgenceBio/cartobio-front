@@ -16,7 +16,7 @@
         </div>
       </td>
       <td class="accordion">
-        <span class="fr-icon fr-icon-arrow-down-s-line" :aria-checked="open" aria-role="button" />
+        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
       </td>
       <th class="labels" scope="row" :data-group-id="featureGroup.key">
         {{ featureGroup.label }}
@@ -24,11 +24,8 @@
           {{ inHa(featureGroup.surface) }}&nbsp;ha
         </small>
       </th>
-      <td class="surface numeric">
-        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{ inHa(featureGroup.surface) }}&nbsp;ha
-        </span>
-      </td>
+      <td></td>
+
       <td class="actions">
         <span
           v-if="groupErrors"
@@ -36,146 +33,110 @@
           :title="`${groupErrors} parcelles à amender`"
         />
       </td>
+      <td class="surface numeric">
+        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+          {{ inHa(featureGroup.surface) }}&nbsp;ha
+        </span>
+      </td>
     </tr>
-    <tr>
-      <td colspan="7">
-        <table
-          class="fr-table group-table fr-table--no-caption"
-          :aria-describedby="`operator-features-summary-${featureGroup.key}`"
-        >
-          <caption>
-            Parcelles
-            {{
-              featureGroup.label.toLocaleLowerCase()
-            }}
-          </caption>
-          <colgroup>
-            <col class="selection" />
-            <col class="labels" />
-            <col class="certification" />
-            <col class="surface" />
-            <col class="actions" />
-          </colgroup>
-          <tbody>
-            <tr :hidden="!open" class="intermediate-header">
-              <th scope="col" aria-hidden></th>
-              <th scope="col" v-if="isGroupedByCulture">Nom</th>
-              <th scope="col" v-else>Culture</th>
-              <th scope="col" class="certification">
-                <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">Certification</span>
-              </th>
-              <th scope="col" class="surface">
-                <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">Surface</span>
-              </th>
-              <th scope="col" class="actions">Actions</th>
-            </tr>
-            <tr
-              class="parcelle clickable"
-              :class="{ 'parcelle--is-new': feature.id === Number(route.query?.new) }"
-              :id="'parcelle-' + feature.id"
-              :hidden="!open"
-              v-for="feature in featureGroup.features"
-              :key="feature.id"
-              @mouseover="hoveredId = feature.id"
-              :aria-current="feature.id === hoveredId ? 'location' : null"
-            >
-              <th scope="row">
-                <div class="fr-checkbox-group single-checkbox">
-                  <input
-                    type="checkbox"
-                    :id="'radio-' + feature.id"
-                    :checked="selectedIds.includes(feature.id)"
-                    @click="toggleSingleSelected(feature.id)"
-                  />
-                  <label
-                    class="fr-label"
-                    :for="'radio-' + feature.id"
-                    :aria-label="
-                      selectedIds.includes(feature.id)
-                        ? `Désélectionner ${featureName(feature)}`
-                        : `Sélectionner ${featureName(feature)}`
-                    "
-                  />
-                </div>
-              </th>
-              <td @click="clickFeature(feature.id)" v-if="isGroupedByCulture">
-                <span class="culture-name">{{ featureName(feature) }}</span>
-                <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
-                <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
-                  <ConversionLevel :feature="feature" with-date /><br />
-                  {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
-                </small>
-              </td>
-              <td @click="isOnline && toggleEditForm(feature.id)" v-else>
-                <span class="culture-type" v-if="feature.properties.cultures.length > 1">
-                  Multi-cultures<span class="fr-sr-only"> : </span>
-                  <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
-                    <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
-                  </small>
-                </span>
-                <span class="culture-name" v-else>{{ cultureLabel(feature.properties.cultures[0]) }}</span>
-                <small class="feature-precision">{{ featureName(feature) }}</small>
-              </td>
-              <td @click="isOnline && toggleEditForm(feature.id)">
-                <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-                  <ConversionLevel :feature="feature" with-date />
-                </span>
-              </td>
-              <td @click="isOnline && toggleEditForm(feature.id)" class="numeric">
-                <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-                  {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
-                </span>
-              </td>
-              <td class="actions">
-                <button
-                  v-if="!readonly"
-                  type="button"
-                  class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
-                  @click="toggleEditForm(feature.id)"
-                  aria-label="Modifier"
-                />
-                <button
-                  v-else
-                  type="button"
-                  class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line"
-                  @click="toggleViewForm(feature.id)"
-                  aria-label="Modifier"
-                />
+    <tr
+      class="parcelle clickable"
+      :class="{ 'parcelle--is-new': feature.id === Number(route.query?.new) }"
+      :id="'parcelle-' + feature.id"
+      :hidden="!open"
+      v-for="feature in featureGroup.features"
+      :key="feature.id"
+      @mouseover="hoveredId = feature.id"
+      :aria-current="feature.id === hoveredId ? 'location' : null"
+    >
+      <th scope="row">
+        <div class="fr-checkbox-group single-checkbox">
+          <input
+            type="checkbox"
+            :id="'radio-' + feature.id"
+            :checked="selectedIds.includes(feature.id)"
+            @click="toggleSingleSelected(feature.id)"
+          />
+          <label
+            class="fr-label"
+            :for="'radio-' + feature.id"
+            :aria-label="
+              selectedIds.includes(feature.id)
+                ? `Désélectionner ${featureName(feature)}`
+                : `Sélectionner ${featureName(feature)}`
+            "
+          />
+        </div>
+      </th>
+      <td></td>
+      <td @click="isOnline && toggleEditForm(feature.id)" v-if="isGroupedByCulture">
+        <span class="culture-name">{{ featureName(feature) }}</span>
+        <br />
+        <small class="font-blue">{{ getTimeAgo(feature) }}</small>
+        <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
+        <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
+          <ConversionLevel :feature="feature" with-date /><br />
+          {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
+        </small>
+      </td>
+      <td @click="isOnline && toggleEditForm(feature.id)" v-else>
+        <span class="culture-type" v-if="feature.properties.cultures.length > 1">
+          Multi-cultures<span class="fr-sr-only"> : </span>
+          <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
+            <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
+          </small>
+        </span>
+        <span class="culture-name" v-else>{{ cultureLabel(feature.properties.cultures[0]) }}</span>
+        <br />
+        <small class="feature-precision">{{ featureName(feature) }}</small>
+        <br />
+        <small class="font-blue">{{ getTimeAgo(feature) }}</small>
+      </td>
+      <td @click="isOnline && toggleEditForm(feature.id)">
+        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+          <ConversionLevel :feature="feature" with-date />
+        </span>
+      </td>
+      <td @click="isOnline && toggleEditForm(feature.id)" class="numeric">
+        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+          {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
+        </span>
+      </td>
+      <td class="actions">
+        <button
+          type="button"
+          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
+          :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
+          @click="toggleEditForm(feature.id)"
+          aria-label="Modifier"
+        />
 
-                <ActionDropdown v-if="!readonly" with-icons>
-                  <li v-if="permissions.canChangeGeometry && isOnline" class="more-actions">
-                    <router-link
-                      :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`"
-                      type="button"
-                      class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm"
-                    >
-                      Modifier la parcelle
-                    </router-link>
-                  </li>
-                  <li v-else>
-                    <button
-                      type="button"
-                      disabled
-                      class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm"
-                    >
-                      Modifier la parcelle
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      @click.prevent="toggleDeleteForm(feature.id)"
-                      :disabled="!permissions.canDeleteFeature"
-                      class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm"
-                    >
-                      Supprimer la parcelle
-                    </button>
-                  </li>
-                </ActionDropdown>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <ActionDropdown with-icons>
+          <li v-if="permissions.canChangeGeometry && isOnline">
+            <router-link
+              :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`"
+              type="button"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm"
+            >
+              Modifier la parcelle
+            </router-link>
+          </li>
+          <li v-else>
+            <button type="button" disabled class="fr-btn fr-btn--tertiary-no-outline fr-icon-geometry fr-text--sm">
+              Modifier la parcelle
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              @click.prevent="toggleDeleteForm(feature.id)"
+              :disabled="!permissions.canDeleteFeature"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm"
+            >
+              Supprimer la parcelle
+            </button>
+          </li>
+        </ActionDropdown>
 
         <p :id="`operator-features-summary-${featureGroup.key}`" class="fr-sr-only">
           Liste de {{ featureGroup.features.length }} parcelles cultivées en
@@ -201,7 +162,7 @@ import { usePermissions } from "@/stores/permissions.js";
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 import { useOnline } from "@vueuse/core";
-import { cultureLabel, featureName, inHa, legalProjectionSurface } from "@/utils/features.js";
+import { cultureLabel, featureName, inHa, legalProjectionSurface, getTimeAgo } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
 
 const route = useRoute();
@@ -420,5 +381,9 @@ table tr[aria-current="location"] {
     /* same pattern as in [numeroBio]/index.vue */
     --hover-tint: var(--background-alt-blue-france-active);
   }
+}
+
+.font-blue {
+  color: #000091;
 }
 </style>
