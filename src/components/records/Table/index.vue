@@ -20,7 +20,7 @@
 
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
     <div class="fr-search-bar" id="header-search" role="search">
-      <label class="fr-label" for="search-784-input"> Recherche </label>
+      <label class="fr-label" for="search-784-input"> Rechercher un parcellaire </label>
       <input
         class="fr-input"
         placeholder="Rechercher un parcellaire"
@@ -53,8 +53,8 @@
         <col class="surface" />
         <col class="actions" />
       </colgroup>
-      <thead>
-        <tr v-if="selectedFeatureIds.length > 0" class="summary summary__mass-actions">
+      <thead class="summary summary__mass-actions">
+        <tr v-if="selectedFeatureIds.length > 0">
           <td class="selection" colspan="2">
             <div class="fr-checkbox-group single-checkbox">
               <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
@@ -92,7 +92,7 @@
             </div>
           </th>
         </tr>
-        <tr class="background-white">
+        <tr class="background-white header-tab">
           <th scope="col" aria-hidden class="selection">
             <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
               <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
@@ -113,10 +113,9 @@
       <tbody></tbody>
       <tbody v-if="!hasFeatures">
         <tr>
-          <td colspan="4">Votre parcellaire est vide.</td>
+          <td colspan="7">Votre parcellaire est vide.</td>
         </tr>
       </tbody>
-
       <FeatureGroup
         v-for="featureGroup in featureGroups"
         :featureGroup="featureGroup"
@@ -124,6 +123,7 @@
         @edit:featureId="(featuredId) => (editedFeatureId = featuredId)"
         @view:featureId="(featuredId) => (viewedFeatureId = featuredId)"
         @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
+        @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
       />
     </table>
 
@@ -183,7 +183,7 @@
   </p>
 </template>
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features.js";
@@ -217,6 +217,8 @@ defineProps({
   },
 });
 
+const emit = defineEmits(["zoom:featureId"]);
+
 const isOnline = useOnline();
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
@@ -232,7 +234,9 @@ const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresSto
 const { getFeatureById, toggleAllSelected } = featuresStore;
 
 const editedFeatureId = ref(null);
+const zoomFeatureId = ref(null);
 const editedFeature = computed(() => (editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null));
+const zoomFeature = computed(() => (zoomFeatureId.value ? getFeatureById(zoomFeatureId.value) : null));
 const maybeDeletedFeatureId = ref(null);
 const viewedFeatureId = ref(null);
 const viewedFeature = computed(() => (viewedFeatureId.value ? getFeatureById(viewedFeatureId.value) : null));
@@ -288,6 +292,10 @@ function closeModal() {
   editedFeatureId.value = null;
   hoveredFeatureId.value = null;
 }
+
+watch(zoomFeature, (newValue) => {
+  emit("zoom:featureId", newValue);
+});
 </script>
 
 <style>
@@ -340,6 +348,7 @@ function closeModal() {
 
 .fr-table table {
   width: 100%;
+  max-width: 100%;
 
   & th:empty,
   & td:empty {
@@ -438,5 +447,19 @@ function closeModal() {
 .font-little {
   font-size: 16px;
   margin-left: 10%;
+}
+.actions {
+  width: 20%;
+}
+
+.fr-search-bar {
+  margin-bottom: 20px;
+}
+.header-tab {
+  color: black;
+}
+
+.labels-group-by {
+  color:black;
 }
 </style>

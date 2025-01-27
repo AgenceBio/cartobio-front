@@ -18,13 +18,18 @@
       <td class="accordion">
         <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
       </td>
-      <th class="labels" scope="row" :data-group-id="featureGroup.key">
+      <th colspan="2" class="labels" scope="row" :data-group-id="featureGroup.key">
         {{ featureGroup.label }}
         <small class="group-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
           {{ inHa(featureGroup.surface) }}&nbsp;ha
         </small>
       </th>
-      <td></td>
+
+       <td class="surface numeric labels-header">
+        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+          {{ inHa(featureGroup.surface) }}&nbsp;ha
+        </span>
+      </td>
 
       <td class="actions">
         <span
@@ -33,15 +38,14 @@
           :title="`${groupErrors} parcelles à amender`"
         />
       </td>
-      <td class="surface numeric">
-        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{ inHa(featureGroup.surface) }}&nbsp;ha
-        </span>
-      </td>
+
     </tr>
     <tr
       class="parcelle clickable"
-      :class="{ 'parcelle--is-new': feature.id === Number(route.query?.new) }"
+      :class="{
+        'parcelle--is-new': feature.id === Number(route.query?.new),
+        'background-selected': selectedIds.includes(feature.id),
+      }"
       :id="'parcelle-' + feature.id"
       :hidden="!open"
       v-for="feature in featureGroup.features"
@@ -55,7 +59,10 @@
             type="checkbox"
             :id="'radio-' + feature.id"
             :checked="selectedIds.includes(feature.id)"
-            @click="toggleSingleSelected(feature.id)"
+            @click="
+              toggleSingleSelected(feature.id);
+              selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+            "
           />
           <label
             class="fr-label"
@@ -69,9 +76,14 @@
         </div>
       </th>
       <td></td>
-      <td @click="isOnline && toggleEditForm(feature.id)" v-if="isGroupedByCulture">
+      <td
+        @click="
+          isOnline && toggleSingleSelected(feature.id);
+          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+        "
+        v-if="isGroupedByCulture"
+      >
         <span class="culture-name">{{ featureName(feature) }}</span>
-        <br />
         <small class="font-blue">{{ getTimeAgo(feature) }}</small>
         <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
         <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
@@ -79,7 +91,13 @@
           {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
         </small>
       </td>
-      <td @click="isOnline && toggleEditForm(feature.id)" v-else>
+      <td
+        @click="
+          isOnline && toggleSingleSelected(feature.id);
+          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+        "
+        v-else
+      >
         <span class="culture-type" v-if="feature.properties.cultures.length > 1">
           Multi-cultures<span class="fr-sr-only"> : </span>
           <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
@@ -87,17 +105,26 @@
           </small>
         </span>
         <span class="culture-name" v-else>{{ cultureLabel(feature.properties.cultures[0]) }}</span>
-        <br />
         <small class="feature-precision">{{ featureName(feature) }}</small>
-        <br />
         <small class="font-blue">{{ getTimeAgo(feature) }}</small>
       </td>
-      <td @click="isOnline && toggleEditForm(feature.id)">
+      <td
+        @click="
+          isOnline && toggleSingleSelected(feature.id);
+          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+        "
+      >
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           <ConversionLevel :feature="feature" with-date />
         </span>
       </td>
-      <td @click="isOnline && toggleEditForm(feature.id)" class="numeric">
+      <td
+        @click="
+          isOnline && toggleSingleSelected(feature.id);
+          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+        "
+        class="numeric"
+      >
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
         </span>
@@ -109,6 +136,13 @@
           :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
           @click="toggleEditForm(feature.id)"
           aria-label="Modifier"
+        />
+        <button
+          type="button"
+          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
+          :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-search-line': true }"
+          @click="pressZoom(feature.id)"
+          aria-label="Zoom"
         />
 
         <ActionDropdown with-icons>
@@ -181,7 +215,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit:featureId", "view:featureId", "delete:featureId"]);
+const emit = defineEmits(["edit:featureId", "view:featureId", "delete:featureId", "zoom:featureId"]);
 
 const { selectedIds, hoveredId } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
@@ -222,6 +256,10 @@ function toggleDeleteForm(featureId) {
     return;
   }
   return emit("delete:featureId", featureId);
+}
+
+function pressZoom(featureId) {
+  return emit("zoom:featureId", featureId);
 }
 
 function toggleFeatureGroup() {
@@ -267,8 +305,11 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 
   padding-left: 0;
   padding-right: 0; /* to text align buttons/texts in this column, and because actions are already padded */
-  position: relative;
+  position: block;
+  display: flex;
   text-align: left;
+  align-items: center;
+  top: 50%;
   white-space: nowrap;
 }
 
@@ -352,10 +393,6 @@ td:has(table) {
   background-image: linear-gradient(180deg, var(--grey-625-425), var(--grey-625-425));
 }
 
-.group-table tr.parcelle :where(.culture-type, .culture-name) {
-  display: block;
-}
-
 .group-table tr.parcelle span > .feature-precision {
   display: block;
 }
@@ -385,5 +422,26 @@ table tr[aria-current="location"] {
 
 .font-blue {
   color: #000091;
+}
+
+
+.culture-name {
+  display: block;
+  max-width: 20ch;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.feature-precision {
+  display: block;
+  max-width: 20ch;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.background-selected {
+  background-color: var(--background-alt-blue-france-hover) !important;
 }
 </style>

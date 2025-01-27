@@ -366,24 +366,22 @@ export function getFeatureGroups(collection, pivot = GROUPE_CULTURE, input) {
       key: groupingKey,
       mainKey: groupingKey.split("-").at(0),
       pivot: pivots.at(0),
-      features : features.filter(feature =>{
-        if(input){
+      features: features.filter((feature) => {
+        if (input) {
           return (
             (feature.properties.NOM && feature.properties.NOM.toLowerCase().includes(input)) ||
             (feature.properties.NUMERO_I && feature.properties.NUMERO_I == input) ||
             (feature.properties.NUMERO_P && feature.properties.NUMERO_P == input) ||
             (input.toLowerCase().includes("ilot") && input.match(/\d+/)?.[0] == feature.properties.NUMERO_I) ||
             (input.toLowerCase().includes("parcelle") && input.match(/\d+/)?.[0] == feature.properties.NUMERO_P)
-        );
+          );
         }
-        else {
-          return true
-        }}
-      ),
+        return true;
+      }),
       surface: legalProjectionSurface(features),
     }))
     .sort(groupingChoices[pivots.at(0)].sortFn)
-    .filter(e=>e.features.length > 0);
+    .filter((e) => e.features.length > 0);
 }
 
 /**
@@ -632,31 +630,36 @@ export async function applyCadastreGeometries(baseCollection, field = "cadastre"
   return { featureCollection, warnings };
 }
 
-
 /**
  * @param {Feature} feature
  * @returns {String}
  */
 export function getTimeAgo(feature) {
   const now = new Date();
-  const date = new Date(feature.properties.updatedAt);
-  const diffInMs = now - date;
-  const diffInMinutes = Math.floor(diffInMs / 1000 / 60);
+  now.setHours(now.getHours());
+  if (feature.properties.updatedAt !== feature.properties.createdAt) {
+    const date = new Date(feature.properties.updatedAt);
+    const diffInMs = now - date;
+    const diffInMinutes = Math.floor(diffInMs / 1000 / 60);
 
-  if (diffInMinutes < 60) {
+    if (diffInMinutes < 60) {
       return `Modifié il y a ${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""}`;
-  } else if (diffInMinutes < 1440) { // 1440 minutes = 24 heures
+    } else if (diffInMinutes < 1440) {
+      // 1440 minutes = 24 heures
       const diffInHours = Math.floor(diffInMinutes / 60);
       return `Modifié il y a ${diffInHours} heure${diffInHours > 1 ? "s" : ""}`;
-  } else if (diffInMinutes < 10080) { // 10080 minutes = 7 jours
+    } else if (diffInMinutes < 10080) {
+      // 10080 minutes = 7 jours
       const diffInDays = Math.floor(diffInMinutes / 1440);
       return `Modifié il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
-  } else {
+    } else {
       const formattedDate = date.toLocaleDateString("fr-FR", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
       return `Modifié le ${formattedDate}`;
+    }
   }
+  return "";
 }
