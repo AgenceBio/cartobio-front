@@ -66,8 +66,8 @@ describe("FeatureGroup", () => {
     const headers = header.findAll("*");
     expect(headers.at(1).text()).toEqual("Culture");
 
-    // we should have a multi culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-2 .culture-type").text()).toEqual("Multi-cultures : Ail, Pomelos et pamplemousses");
+    // we should have a multi culture name within the 3rd cellF
+    expect(wrapper.find("#parcelle-2 .culture-type").text()).toEqual("Multi-cultures : Ail, Pamplemousse et pomelo");
 
     // we should have a single culture name within the 3rd cell
     expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("Ail");
