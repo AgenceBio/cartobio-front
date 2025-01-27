@@ -636,6 +636,7 @@ export async function applyCadastreGeometries(baseCollection, field = "cadastre"
  */
 export function getTimeAgo(feature) {
   const now = new Date();
+  now.setHours(now.getHours()-1)
   const date = new Date(feature.properties.updatedAt);
   const diffInMs = now - date;
   const diffInMinutes = Math.floor(diffInMs / 1000 / 60);

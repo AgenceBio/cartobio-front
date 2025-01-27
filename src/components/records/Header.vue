@@ -1,6 +1,6 @@
 <template>
   <header class="fr-mb-2w header-class">
-    <div>
+    <div class="name-parcellaire">
       <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
 
       <div class="heading">
@@ -231,5 +231,19 @@ header {
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
   }
+}
+
+.name-parcellaire {
+  max-width: 40%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.version-name {
+  max-width: 90%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 </style>
