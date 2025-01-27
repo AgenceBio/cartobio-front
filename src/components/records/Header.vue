@@ -1,19 +1,21 @@
 <template>
-  <header class="fr-mb-2w">
-    <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
+  <header class="fr-mb-2w header-class">
+    <div class="name-parcellaire">
+      <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
 
-    <div class="heading">
-      <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
-        {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
-      </h2>
+      <div class="heading">
+        <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
+          {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
+        </h2>
 
-      <button
-        v-if="!disableActions && permissions.canEditVersion"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
-        @click="showEditVersionModal = true"
-      >
-        Modifier la version
-      </button>
+        <button
+          v-if="!disableActions && permissions.canEditVersion"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
+          @click="showEditVersionModal = true"
+        >
+          Modifier la version
+        </button>
+      </div>
     </div>
 
     <p class="state fr-subtitle">
@@ -155,7 +157,7 @@ onClickOutside(versionMenuRef, ({ target }) => {
 <style scoped>
 header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
 
   h1 .fr-btn {
     vertical-align: text-bottom;
@@ -163,6 +165,9 @@ header {
 
   & > p.state {
     margin: 0 0 0.5rem;
+    align-items: flex-end;
+    justify-items: center;
+    display: flex;
   }
 
   .heading {
@@ -182,6 +187,8 @@ header {
   flex-direction: row;
   column-gap: 0.5rem;
   margin: 0;
+  align-items: flex-end;
+  justify-items: center;
 
   .fr-btn {
     margin: 0;
@@ -228,6 +235,19 @@ header {
   }
 }
 
+.name-parcellaire {
+  max-width: 40%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.version-name {
+  max-width: 90%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
 .readonly-badge {
   padding: 0px 8px;
   border-radius: 9999px;

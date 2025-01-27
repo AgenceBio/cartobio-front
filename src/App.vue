@@ -68,7 +68,7 @@ a[aria-disabled] {
 
   table {
     tr.clickable:hover {
-      background-color: var(--background-alt-blue-france-hover) !important;
+      background-color: #ececfe !important;
     }
     tr.clickable:hover th:first-of-type {
       text-decoration: underline;
