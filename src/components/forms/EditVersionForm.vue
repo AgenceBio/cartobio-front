@@ -18,8 +18,11 @@ const { record } = recordStore;
 const autofocusedElement = ref();
 useFocus(autofocusedElement, { initialValue: true });
 
+const currentYear = new Date().getFullYear();
+
 const patch = reactive({
   version_name: record.version_name,
+  annee_reference_controle: record.annee_reference_controle,
   audit_date: record.audit_date,
   certification_date_debut: record.certification_date_debut,
   certification_date_fin: record.certification_date_fin,
@@ -49,6 +52,7 @@ const dateConflict = computed(() => {
 function save() {
   recordStore.updateInfo({
     version_name: patch.version_name,
+    annee_reference_controle: patch.annee_reference_controle,
     ...(patch.audit_date && { audit_date: patch.audit_date }),
     ...(patch.certification_date_debut && { certification_date_debut: patch.certification_date_debut }),
     ...(patch.certification_date_fin && { certification_date_fin: patch.certification_date_fin }),
@@ -68,6 +72,20 @@ function save() {
         <label for="version_name" class="fr-input-group__label">Nom de la version du parcellaire</label>
         <span class="fr-hint-text">Ex: Parcellaire audité 2023</span>
         <input type="text" id="version_name" class="fr-input" v-model="patch.version_name" ref="autofocusedElement" />
+      </div>
+
+      <div class="fr-input-group">
+        <label for="annee_reference_controle" class="fr-label">Année de référence contrôle</label>
+        <select
+          class="fr-select small"
+          name="annee_reference_controle"
+          id="annee_reference_controle"
+          v-model="patch.annee_reference_controle"
+        >
+          <option :value="currentYear" :key="currentYear">{{ currentYear }}</option>
+          <option :value="currentYear - 1" :key="currentYear - 1">{{ currentYear - 1 }}</option>
+          <option :value="currentYear - 2" :key="currentYear - 2">{{ currentYear - 2 }}</option>
+        </select>
       </div>
 
       <div v-if="patch.audit_date && permissions.canChangeAuditDate" class="fr-input-group">
@@ -146,4 +164,8 @@ function save() {
   </Modal>
 </template>
 
-<style scoped></style>
+<style scoped>
+.fr-select.small {
+  width: 30%;
+}
+</style>

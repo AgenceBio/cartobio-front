@@ -9,13 +9,13 @@ import { createTestingPinia } from "@pinia/testing";
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const permissions = usePermissions(pinia);
 const recordStore = useRecordStore(pinia);
-const user = useUserStore(pinia);
+const userStore = useUserStore(pinia);
 
 describe("roles", () => {
   afterEach(() => permissions.$reset());
 
   it("should be able to perform Operateur actions", () => {
-    user.roles = [ROLES.OPERATEUR];
+    userStore.roles = [ROLES.OPERATEUR];
 
     expect(permissions.isAgri).toEqual(true);
     expect(permissions.canAddParcelle).toEqual(false);
@@ -44,11 +44,22 @@ describe("roles", () => {
   });
 
   it("should be able to perform Certification actions", () => {
-    user.roles = [ROLES.OC_CERTIF];
+    userStore.roles = [ROLES.OC_CERTIF];
 
     expect(permissions.isOc).toEqual(true);
-    expect(permissions.canAddParcelle).toEqual(true);
+    expect(permissions.canAddParcelle).toEqual(false);
 
+    userStore.user = { organismeCertificateur: { id: 2 } };
+    recordStore.record.oc_id = 1;
+
+    expect(permissions.canAddParcelle).toEqual(false);
+    expect(permissions.canDeleteFeature).toEqual(false);
+    expect(permissions.canDeleteParcellaire).toEqual(false);
+    expect(permissions.canChangeCulture).toEqual(false);
+    expect(permissions.canAddParcelleNote).toEqual(false);
+    expect(permissions.canChangeConversionLevel).toEqual(false);
+
+    userStore.user = { organismeCertificateur: { id: 1 } };
     recordStore.record.certification_state = CertificationState.OPERATOR_DRAFT;
 
     expect(permissions.canAddParcelle).toEqual(true);
@@ -74,12 +85,14 @@ describe("roles", () => {
   });
 
   it("should be able to perform Auditeur actions", () => {
-    user.roles = [ROLES.OC_AUDIT];
+    userStore.roles = [ROLES.OC_AUDIT];
 
     expect(permissions.isOc).toEqual(true);
-    expect(permissions.canAddParcelle).toEqual(true);
+    expect(permissions.canAddParcelle).toEqual(false);
 
     recordStore.record.certification_state = CertificationState.OPERATOR_DRAFT;
+    userStore.user = { organismeCertificateur: { id: 1 } };
+    recordStore.record.oc_id = 1;
 
     expect(permissions.canAddParcelle).toEqual(true);
     expect(permissions.canDeleteFeature).toEqual(true);
@@ -104,7 +117,7 @@ describe("roles", () => {
   });
 
   it("unknwon role cannot do anything", () => {
-    user.roles = [ROLES.UNKNOWN];
+    userStore.roles = [ROLES.UNKNOWN];
 
     expect(permissions.isAgri).toEqual(false);
     expect(permissions.isOc).toEqual(false);

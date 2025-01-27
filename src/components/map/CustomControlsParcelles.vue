@@ -143,7 +143,7 @@ const redo = () => {
   </Teleport>
 </template>
 
-<style scoped>
+<style>
 .command-modif-parcellaire {
   display: inline-flex;
   justify-content: space-between;

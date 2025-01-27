@@ -32,7 +32,7 @@
       <button class="fr-btn" title="Rechercher">Rechercher un parcellaire</button>
     </div>
     <table
-      @mouseout="hoveredFeatureId = null"
+      @mouseout="hoveredFeatureId = editedFeatureId"
       aria-describedby="operator-features-summary-global"
       id="parcellaire-table"
     >
@@ -86,7 +86,7 @@
               <b class="font-blue">{{ groupingChoiceLabel }}</b>
               <select id="plots-group-by" v-model="userGroupingChoice">
                 <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
-                  {{ label }}
+                  &nbsp;&nbsp;{{ label }}
                 </option>
               </select>
             </div>
@@ -121,6 +121,7 @@
         :featureGroup="featureGroup"
         :key="featureGroup.key"
         @edit:featureId="(featuredId) => (editedFeatureId = featuredId)"
+        @view:featureId="(featuredId) => (viewedFeatureId = featuredId)"
         @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
         @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
       />
@@ -143,11 +144,11 @@
 
   <Teleport to="body">
     <Component
-      v-if="editedFeatureId && editForm"
+      v-if="editedFeature && editForm"
       :is="editForm"
       :feature="editedFeature"
       @submit="handleSingleFeatureSubmit"
-      @close="editedFeatureId = null"
+      @close="closeModal"
       icon="fr-icon-file-text-fill"
     >
       <template #title
@@ -156,6 +157,17 @@
           ilot {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
         </div>
       </template>
+    </Component>
+    <Component
+      v-if="viewedFeature && editForm"
+      :is="editForm"
+      :feature="viewedFeature"
+      :readonly="true"
+      @close="viewedFeatureId = null"
+      @submit="viewedFeatureId = null"
+      icon="fr-icon-file-text-fill"
+    >
+      <template #title>Visualisation de parcelle</template>
     </Component>
 
     <DeleteFeatureModal
@@ -196,6 +208,9 @@ defineProps({
   editForm: {
     type: Object,
   },
+  viewForm: {
+    type: Object,
+  },
   massActions: {
     type: Array,
     default: () => [],
@@ -223,6 +238,8 @@ const zoomFeatureId = ref(null);
 const editedFeature = computed(() => (editedFeatureId.value ? getFeatureById(editedFeatureId.value) : null));
 const zoomFeature = computed(() => (zoomFeatureId.value ? getFeatureById(zoomFeatureId.value) : null));
 const maybeDeletedFeatureId = ref(null);
+const viewedFeatureId = ref(null);
+const viewedFeature = computed(() => (viewedFeatureId.value ? getFeatureById(viewedFeatureId.value) : null));
 
 const userGroupingChoice = ref("CULTURE");
 const featureGroups = computed(() =>
@@ -274,6 +291,10 @@ function handleFilterClick(id) {
 watch(zoomFeature, (newValue) => {
   emit("zoom:featureId", newValue);
 });
+function closeModal() {
+  editedFeatureId.value = null;
+  hoveredFeatureId.value = null;
+}
 </script>
 
 <style>

@@ -3,6 +3,8 @@ import { computed, ref, watch } from "vue";
 import { useLocalStorage, useOnline } from "@vueuse/core";
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
 import { legalProjectionSurface } from "@/utils/features.js";
+import { AxiosError } from "axios";
+import toast from "@/utils/toast.js";
 
 /**
  * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
@@ -454,6 +456,10 @@ export const useCartoBioStorage = defineStore("storage", () => {
             continue;
           }
 
+          if (e.response?.status === 400) {
+            delete syncQueues.value[recordId];
+          }
+
           throw e;
         }
       }
@@ -462,7 +468,28 @@ export const useCartoBioStorage = defineStore("storage", () => {
     }
   }
 
-  watch(() => [online, syncQueues], sync, { deep: true });
+  watch(
+    () => [online, syncQueues],
+    async () => {
+      try {
+        await sync();
+      } catch (error) {
+        if (error.name === "AxiosError") {
+          if ([AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)) {
+            toast.error(
+              "Une erreur de réseau est survenue. Si votre connexion " +
+                "est instable, vous pouvez passer en mode hors-ligne.",
+            );
+            return;
+          } else if (error.code === AxiosError.ERR_BAD_REQUEST) {
+            toast.error("Un problème technique est survenu. Veuillez réessayer ultérieurement.");
+          }
+        }
+        throw error;
+      }
+    },
+    { deep: true },
+  );
 
   return {
     // storage ref

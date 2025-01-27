@@ -15,10 +15,12 @@ import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
 import EditForm from "@/components/forms/SingleItemOperatorForm.vue";
 import TableComponent from "@/components/records/Table/index.vue";
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/utils/features.js";
+import { useUserStore } from "@/stores/user";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const storageStore = useCartoBioStorage(pinia);
 const recordStore = useRecordStore(pinia);
+const userStore = useUserStore(pinia);
 const featuresStore = useFeaturesStore(pinia);
 const permissions = usePermissions(pinia);
 
@@ -101,6 +103,11 @@ describe("Features Table", () => {
   });
 
   test("we delete a feature", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 1,
+      },
+    };
     permissions.canDeleteFeature = true;
 
     const wrapper = mount(TableComponent);
@@ -123,6 +130,19 @@ describe("Features Table", () => {
       code: DeletionReasonsCode.OTHER,
       details: "Parce que",
     });
+  });
+
+  test("there is not other action if we are not the correct OC", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 2,
+      },
+    };
+    permissions.canDeleteFeature = true;
+
+    const wrapper = mount(TableComponent);
+
+    expect(wrapper.find(".more-actions").exists()).toEqual(false);
   });
 
   test("we open a modal and test various cases it should remain open, or close", async () => {

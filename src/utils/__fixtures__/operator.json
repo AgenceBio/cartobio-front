@@ -14,5 +14,8 @@
       "codeCommune": "42271"
     }
   ],
-  "certificats": []
+  "certificats": [],
+  "organismeCertificateur": {
+    "id": 1
+  }
 }

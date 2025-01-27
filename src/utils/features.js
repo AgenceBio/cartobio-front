@@ -212,12 +212,15 @@ export const groupingChoices = {
   [GROUPE_COMMUNE]: {
     label: "commune",
     labelNoGroup: "Commune inconnue",
+    labelEtranger: "Parcelles à l'étranger",
     datapoint: (d) => d.properties.COMMUNE || NO_GROUP,
     groupLabelFn({ featureSample: d }) {
       if (d.properties.COMMUNE_LABEL) {
         return `${d.properties.COMMUNE_LABEL} (${d.properties.COMMUNE.slice(0, -3)})`;
       } else if (d.properties.COMMUNE) {
         return d.properties.COMMUNE;
+      } else if (d.properties.etranger) {
+        return this.labelEtranger;
       } else {
         return this.labelNoGroup;
       }
