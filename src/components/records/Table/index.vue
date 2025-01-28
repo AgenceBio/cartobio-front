@@ -459,6 +459,6 @@ function closeModal() {
 }
 
 .labels-group-by {
-  color:black;
+  color: black;
 }
 </style>
