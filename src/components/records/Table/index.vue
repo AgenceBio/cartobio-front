@@ -100,7 +100,7 @@
             </div>
           </th>
           <th class="open"></th>
-          <th scope="col" class="labels">Parcelle</th>
+          <th scope="col" class="labels">{{ userGroupingChoice === "CULTURE" ? "Parcelle" : "Culture" }}</th>
           <th scope="col" class="certification">
             <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">Certification</span>
           </th>
@@ -153,8 +153,11 @@
     >
       <template #title
         >Modification de parcelle
-        <div class="font-little">
-          ilot {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
+        <div
+          class="font-little"
+          v-if="editedFeature.properties.NUMERO_I != null && editedFeature.properties.NUMERO_P != null"
+        >
+          Îlot {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
         </div>
       </template>
     </Component>
@@ -460,6 +463,6 @@ watch(zoomFeature, (newValue) => {
 }
 
 .labels-group-by {
-  color:black;
+  color: black;
 }
 </style>

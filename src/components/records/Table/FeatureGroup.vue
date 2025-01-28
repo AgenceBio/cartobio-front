@@ -25,7 +25,7 @@
         </small>
       </th>
 
-       <td class="surface numeric labels-header">
+      <td class="surface numeric labels-header">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           {{ inHa(featureGroup.surface) }}&nbsp;ha
         </span>
@@ -38,13 +38,13 @@
           :title="`${groupErrors} parcelles à amender`"
         />
       </td>
-
     </tr>
     <tr
       class="parcelle clickable"
       :class="{
         'parcelle--is-new': feature.id === Number(route.query?.new),
         'background-selected': selectedIds.includes(feature.id),
+        'background-white': !selectedIds.includes(feature.id),
       }"
       :id="'parcelle-' + feature.id"
       :hidden="!open"
@@ -76,13 +76,7 @@
         </div>
       </th>
       <td></td>
-      <td
-        @click="
-          isOnline && toggleSingleSelected(feature.id);
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-        v-if="isGroupedByCulture"
-      >
+      <td @click="pressZoom(feature.id)" v-if="isGroupedByCulture">
         <span class="culture-name">{{ featureName(feature) }}</span>
         <small class="font-blue">{{ getTimeAgo(feature) }}</small>
         <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
@@ -91,13 +85,7 @@
           {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
         </small>
       </td>
-      <td
-        @click="
-          isOnline && toggleSingleSelected(feature.id);
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-        v-else
-      >
+      <td @click="pressZoom(feature.id)" v-else>
         <span class="culture-type" v-if="feature.properties.cultures.length > 1">
           Multi-cultures<span class="fr-sr-only"> : </span>
           <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
@@ -108,23 +96,12 @@
         <small class="feature-precision">{{ featureName(feature) }}</small>
         <small class="font-blue">{{ getTimeAgo(feature) }}</small>
       </td>
-      <td
-        @click="
-          isOnline && toggleSingleSelected(feature.id);
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-      >
+      <td @click="pressZoom(feature.id)">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           <ConversionLevel :feature="feature" with-date />
         </span>
       </td>
-      <td
-        @click="
-          isOnline && toggleSingleSelected(feature.id);
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-        class="numeric"
-      >
+      <td @click="pressZoom(feature.id)" class="numeric">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
         </span>
@@ -138,15 +115,14 @@
           aria-label="Modifier"
         />
         <button
+          v-else
           type="button"
-          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
-          :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-search-line': true }"
-          @click="pressZoom(feature.id)"
-          aria-label="Zoom"
+          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line ri-xl"
+          @click="toggleViewForm(feature.id)"
+          aria-label="Modifier"
         />
-
-        <ActionDropdown with-icons>
-          <li v-if="permissions.canChangeGeometry && isOnline">
+        <ActionDropdown with-icons v-if="!readonly">
+          <li v-if="permissions.canChangeGeometry && isOnline" class="more-actions">
             <router-link
               :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`"
               type="button"
@@ -268,18 +244,6 @@ function toggleFeatureGroup() {
     featuresStore.unselect(...featureIds.value);
   } else {
     featuresStore.select(...featureIds.value);
-  }
-}
-
-function clickFeature(featureId) {
-  if (!isOnline) {
-    return;
-  }
-
-  if (readonly.value) {
-    toggleViewForm(featureId);
-  } else {
-    toggleEditForm(featureId);
   }
 }
 
@@ -424,7 +388,6 @@ table tr[aria-current="location"] {
   color: #000091;
 }
 
-
 .culture-name {
   display: block;
   max-width: 20ch;
@@ -443,5 +406,9 @@ table tr[aria-current="location"] {
 
 .background-selected {
   background-color: var(--background-alt-blue-france-hover) !important;
+}
+
+.background-white {
+  background-color: white !important;
 }
 </style>

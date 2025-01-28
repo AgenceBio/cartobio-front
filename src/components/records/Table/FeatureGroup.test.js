@@ -39,7 +39,7 @@ describe("FeatureGroup", () => {
     expect(wrapper.find("#parcelle-2 .feature-precision").text()).toEqual("Multi-culture");
 
     // we should have a single culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("ilot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("îlot 2, parcelle 1");
   });
 
   test("non-culture grouping has different column name", async () => {
@@ -54,7 +54,7 @@ describe("FeatureGroup", () => {
 
     // we should have a single culture name within the 3rd cell
     expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("Ail");
-    expect(wrapper.find("#parcelle-4 .feature-precision").text()).toEqual("ilot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .feature-precision").text()).toEqual("îlot 2, parcelle 1");
   });
 
   test("toggles on and off all group items", async () => {

@@ -27,7 +27,7 @@ export default {
           ["boolean", ["feature-state", "selected"], false],
           "#000091",
           ["boolean", ["feature-state", "hover"], false],
-          "#c6c6e2",
+          "#9393c0",
           ["boolean", ["==", ["get", "TYPE"], "BOR"], false],
           //--blue-france-main-525
           "#6a6af4",
