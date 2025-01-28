@@ -153,8 +153,11 @@
     >
       <template #title
         >Modification de parcelle
-        <div class="font-little">
-          ilot {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
+        <div
+          class="font-little"
+          v-if="editedFeature.properties.NUMERO_I != null && editedFeature.properties.NUMERO_P != null"
+        >
+          Ilôt {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
         </div>
       </template>
     </Component>
