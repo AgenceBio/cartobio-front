@@ -20,7 +20,7 @@
 
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
     <div class="fr-search-bar" id="header-search" role="search">
-      <label class="fr-label" for="search-784-input"> Recherche </label>
+      <label class="fr-label" for="search-784-input"> Rechercher un parcellaire </label>
       <input
         class="fr-input"
         placeholder="Rechercher un parcellaire"
@@ -456,5 +456,9 @@ function closeModal() {
 }
 .header-tab {
   color: black;
+}
+
+.labels-group-by {
+  color:black;
 }
 </style>
