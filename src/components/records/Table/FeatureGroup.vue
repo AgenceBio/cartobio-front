@@ -25,7 +25,7 @@
         </small>
       </th>
 
-       <td class="surface numeric labels-header">
+      <td class="surface numeric labels-header">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           {{ inHa(featureGroup.surface) }}&nbsp;ha
         </span>
@@ -38,7 +38,6 @@
           :title="`${groupErrors} parcelles à amender`"
         />
       </td>
-
     </tr>
     <tr
       class="parcelle clickable"
@@ -78,7 +77,8 @@
       <td></td>
       <td
         @click="
-          isOnline && toggleSingleSelected(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
         v-if="isGroupedByCulture"
@@ -93,7 +93,8 @@
       </td>
       <td
         @click="
-          isOnline && toggleSingleSelected(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
         v-else
@@ -110,7 +111,8 @@
       </td>
       <td
         @click="
-          isOnline && toggleSingleSelected(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
       >
@@ -120,7 +122,8 @@
       </td>
       <td
         @click="
-          isOnline && toggleSingleSelected(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
         class="numeric"
@@ -388,7 +391,6 @@ table tr[aria-current="location"] {
 .font-blue {
   color: #000091;
 }
-
 
 .culture-name {
   display: block;

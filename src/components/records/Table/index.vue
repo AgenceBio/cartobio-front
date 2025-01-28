@@ -438,6 +438,6 @@ watch(zoomFeature, (newValue) => {
 }
 
 .labels-group-by {
-  color:black;
+  color: black;
 }
 </style>
