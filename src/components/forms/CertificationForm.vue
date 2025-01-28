@@ -12,6 +12,20 @@
 
     <form id="sendoff-form" @submit.prevent="emit('submit', { record_id: record.record_id, patch })">
       <div class="fr-input-group">
+        <label for="annee_reference_controle" class="fr-label">Année de référence contrôle</label>
+        <select
+          class="fr-select small"
+          name="annee_reference_controle"
+          id="annee_reference_controle"
+          v-model="patch.annee_reference_controle"
+        >
+          <option :value="currentYear" :key="currentYear">{{ currentYear }}</option>
+          <option :value="currentYear - 1" :key="currentYear - 1">{{ currentYear - 1 }}</option>
+          <option :value="currentYear - 2" :key="currentYear - 2">{{ currentYear - 2 }}</option>
+        </select>
+      </div>
+
+      <div class="fr-input-group">
         <label class="fr-label" for="certification_date_debut"> Date de début de validité du certificat </label>
         <input
           type="date"
@@ -72,8 +86,17 @@ useFocus(autofocusedElement, { initialValue: true });
 const startDate = new Date();
 const endDate = certificationDateFin.AnneePlusDeux(startDate);
 
+const currentYear = new Date().getFullYear();
+
 const patch = reactive({
+  annee_reference_controle: props.record.annee_reference_controle,
   certification_date_debut: props.record.certification_date_debut ?? toDateInputString(startDate),
   certification_date_fin: props.record.certification_date_fin ?? toDateInputString(endDate),
 });
 </script>
+
+<style scoped>
+.fr-select.small {
+  width: 30%;
+}
+</style>

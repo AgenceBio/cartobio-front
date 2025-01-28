@@ -16,6 +16,7 @@
           type="button"
           :aria-pressed="isSelected(annotationId)"
           @click="toggleAnnotation(annotationId)"
+          :disabled="readonly"
         >
           {{ annotation.label }}
         </button>
@@ -41,6 +42,7 @@
       id="reduced_conversion_period_state"
       :value="getMetadata(ANNOTATIONS.REDUCED_CONVERSION_PERIOD, ANNOTATIONS.METADATA_STATE)"
       @change="updateMetadata(ANNOTATIONS.REDUCED_CONVERSION_PERIOD, ANNOTATIONS.METADATA_STATE, $event.target.value)"
+      :disabled="readonly"
     >
       <option :value="key" :key="key" v-for="({ label }, key) in reducedConversionStates">
         {{ label }}
@@ -57,6 +59,7 @@
       id="downgraded_state"
       :value="getMetadata(ANNOTATIONS.DOWNGRADED, ANNOTATIONS.METADATA_STATE)"
       @change="updateMetadata(ANNOTATIONS.DOWNGRADED, ANNOTATIONS.METADATA_STATE, $event.target.value)"
+      :disabled="readonly"
     >
       <option :value="key" :key="key" v-for="({ label }, key) in downgradedStates">
         {{ label }}
@@ -92,6 +95,10 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => [],
+  },
+  readonly: {
+    type: Boolean,
+    default: false,
   },
 });
 

@@ -54,7 +54,7 @@ const props = defineProps({
   },
   disabledInput: {
     type: Boolean,
-    default: () => false,
+    default: false,
   },
 });
 

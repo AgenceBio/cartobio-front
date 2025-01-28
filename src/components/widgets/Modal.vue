@@ -96,3 +96,8 @@ onBeforeUnmount(() => {
   display: none;
 }
 </style>
+<style>
+:root[data-fr-scrolling] body {
+  position: inherit !important;
+}
+</style>
