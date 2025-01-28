@@ -36,11 +36,35 @@
               <p class="fr-quote__author">Notes de l'exploitant‧e</p>
             </figcaption>
           </figure>
+          <div class="fr-card fr-p-2w fr-mb-3w" v-if="feature.properties.CODE_CULTURE">
+            <div class="fr-mb-3w import-pac">
+              <span class="fr-label">Culture de l'import PAC</span>
+              <span class="fr-hint-text">réalisé le {{ jjmmyyyy(feature.properties.createdAt) }}</span>
+            </div>
+            <div class="code-culture">
+              {{ feature.properties.CODE_CULTURE }}
+              <template v-if="feature.properties.CODE_PRECISION"> - {{ feature.properties.CODE_PRECISION }}</template>
+              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
+                :
+                {{
+                  getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "").libelle
+                }}</template
+              >
+            </div>
+            <div class="fr-hint-text">
+              Code culture
+              <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
+              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
+                : culture</template
+              >
+            </div>
+          </div>
 
           <CultureSelector
             :feature-id="feature.properties.id"
             :cultures="patch.cultures"
             @change="($cultures) => (patch.cultures = $cultures)"
+            :disabled-input="readonly"
           />
         </AccordionSection>
       </AccordionGroup>
@@ -116,6 +140,8 @@ import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import CancelModal from "@/components/forms/CancelModal.vue";
 import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js";
+import { getCulturePAC } from "@agencebio/rosetta-cultures";
+import { jjmmyyyy } from "@/utils/dates";
 
 const props = defineProps({
   feature: {
@@ -199,5 +225,13 @@ watch(patch, (properties) => {
 }
 .fr-quote blockquote p {
   font-weight: normal;
+}
+.import-pac {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.code-culture {
+  line-height: 0.8rem;
 }
 </style>
