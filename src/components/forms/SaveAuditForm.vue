@@ -80,7 +80,7 @@ const emit = defineEmits(["submit"]);
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
 const { operator } = storeToRefs(operatorStore);
-const { record } = storeToRefs(recordStore);
+const { record } = recordStore;
 
 const autofocusedElement = ref();
 useFocus(autofocusedElement, { initialValue: true });
