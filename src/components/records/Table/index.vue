@@ -20,7 +20,7 @@
 
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
     <div class="fr-search-bar" id="header-search" role="search">
-      <label class="fr-label" for="search-784-input"> Recherche </label>
+      <label class="fr-label" for="search-784-input"> Rechercher un parcellaire </label>
       <input
         class="fr-input"
         placeholder="Rechercher un parcellaire"
@@ -153,8 +153,11 @@
     >
       <template #title
         >Modification de parcelle
-        <div class="font-little">
-          ilot {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
+        <div
+          class="font-little"
+          v-if="editedFeature.properties.NUMERO_I != null && editedFeature.properties.NUMERO_P != null"
+        >
+          Ilôt {{ editedFeature.properties.NUMERO_I }}, parcelle {{ editedFeature.properties.NUMERO_P }}
         </div>
       </template>
     </Component>
@@ -455,6 +458,10 @@ function closeModal() {
   margin-bottom: 20px;
 }
 .header-tab {
+  color: black;
+}
+
+.labels-group-by {
   color: black;
 }
 </style>

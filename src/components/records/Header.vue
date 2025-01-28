@@ -15,12 +15,11 @@
         >
           Modifier la version
         </button>
+        <p class="state fr-subtitle">
+          <ParcellaireState :record="record" />
+        </p>
       </div>
     </div>
-
-    <p class="state fr-subtitle">
-      <ParcellaireState :record="record" />
-    </p>
 
     <div
       v-if="disableActions === false"
@@ -163,10 +162,9 @@ header {
     vertical-align: text-bottom;
   }
 
-  & > p.state {
+  p.state {
     margin: 0 0 0.5rem;
-    align-items: flex-end;
-    justify-items: center;
+    align-items: end;
     display: flex;
   }
 
@@ -236,7 +234,7 @@ header {
 }
 
 .name-parcellaire {
-  max-width: 40%;
+  max-width: 60%;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -248,6 +246,7 @@ header {
   overflow-wrap: break-word;
   white-space: normal;
 }
+
 .readonly-badge {
   padding: 0px 8px;
   border-radius: 9999px;

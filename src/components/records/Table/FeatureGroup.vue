@@ -18,13 +18,18 @@
       <td class="accordion">
         <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
       </td>
-      <th class="labels" scope="row" :data-group-id="featureGroup.key">
+      <th colspan="2" class="labels" scope="row" :data-group-id="featureGroup.key">
         {{ featureGroup.label }}
         <small class="group-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
           {{ inHa(featureGroup.surface) }}&nbsp;ha
         </small>
       </th>
-      <td></td>
+
+      <td class="surface numeric labels-header">
+        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
+          {{ inHa(featureGroup.surface) }}&nbsp;ha
+        </span>
+      </td>
 
       <td class="actions">
         <span
@@ -32,11 +37,6 @@
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-warning-fill fr-icon--warning"
           :title="`${groupErrors} parcelles à amender`"
         />
-      </td>
-      <td class="surface numeric labels-header">
-        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{ inHa(featureGroup.surface) }}&nbsp;ha
-        </span>
       </td>
     </tr>
     <tr
@@ -77,7 +77,8 @@
       <td></td>
       <td
         @click="
-          clickFeature(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
         v-if="isGroupedByCulture"
@@ -92,7 +93,8 @@
       </td>
       <td
         @click="
-          clickFeature(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
         v-else
@@ -109,7 +111,8 @@
       </td>
       <td
         @click="
-          clickFeature(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
       >
@@ -119,7 +122,8 @@
       </td>
       <td
         @click="
-          clickFeature(feature.id);
+          toggleSingleSelected(feature.id);
+
           selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
         "
         class="numeric"
@@ -273,18 +277,6 @@ function toggleFeatureGroup() {
   }
 }
 
-function clickFeature(featureId) {
-  if (!isOnline) {
-    return;
-  }
-
-  if (readonly.value) {
-    toggleViewForm(featureId);
-  } else {
-    toggleEditForm(featureId);
-  }
-}
-
 watch(selectedIds, (selectedIds, prevSelectedIds) => {
   const newItems = featureIds.value.filter((id) => {
     return selectedIds.includes(id) && !prevSelectedIds.includes(id);
@@ -307,8 +299,11 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 
   padding-left: 0;
   padding-right: 0; /* to text align buttons/texts in this column, and because actions are already padded */
-  position: relative;
+  position: block;
+  display: flex;
   text-align: left;
+  align-items: center;
+  top: 50%;
   white-space: nowrap;
 }
 
@@ -421,10 +416,6 @@ table tr[aria-current="location"] {
 
 .font-blue {
   color: #000091;
-}
-
-.labels-header {
-  float: right;
 }
 
 .culture-name {
