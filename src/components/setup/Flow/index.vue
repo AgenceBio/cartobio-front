@@ -227,7 +227,8 @@ async function handleUploadAndSave({ geojson, metadata, source }) {
       source,
     },
   });
-  emit("submit", unref(record.value));
+
+  emit("redirect", unref(record.value));
 }
 
 function redirectToCartoBio() {
