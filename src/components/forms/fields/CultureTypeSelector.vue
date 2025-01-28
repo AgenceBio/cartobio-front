@@ -33,6 +33,7 @@ import "@algolia/autocomplete-theme-classic";
 import Fuse from "fuse.js";
 import cpf from "@agencebio/rosetta-cultures/data/cpf.json";
 import { fromCodeCpf, fromCodePacAll } from "@agencebio/rosetta-cultures";
+import { useFeaturesStore } from "@/stores/features";
 
 const props = defineProps({
   culture: {
@@ -66,6 +67,9 @@ const featuresSets = useFeaturesSetsStore();
 const errors = computed(() => featuresSets.byFeatureDetail(props.featureId, props.culture.id, true));
 const hasErrors = computed(() => errors.value.size > 0);
 
+const features = useFeaturesStore();
+const feature = computed(() => features.getFeatureById(props.featureId));
+
 const query = ref(fromCodeCpf(props.modelValue)?.libelle_code_cpf || "");
 
 const choices = computed(() => {
@@ -73,9 +77,9 @@ const choices = computed(() => {
     a.libelle_code_cpf.localeCompare(b.libelle_code_cpf),
   );
 
-  if (!requirePrecision.value || !props.culture.TYPE || showMore.value) return selectableCpf;
+  if (!requirePrecision.value || !feature.value.properties.CODE_CULTURE || showMore.value) return selectableCpf;
 
-  const selectableFromPac = fromCodePacAll(props.culture.TYPE)
+  const selectableFromPac = fromCodePacAll(feature.value.properties.CODE_CULTURE)
     .filter((c) => c.is_selectable)
     .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf));
 
@@ -115,10 +119,8 @@ onMounted(() => {
                 })
                   .search(query)
                   .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
-              } else if (requirePrecision.value || showMore.value) {
-                items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
               } else {
-                items = [];
+                items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
               }
 
               if (requirePrecision.value && !showMore.value) {
