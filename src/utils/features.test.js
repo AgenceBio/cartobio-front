@@ -412,7 +412,7 @@ describe("featureName", () => {
       },
     };
 
-    expect(featureName(feature)).toEqual("ilot 1, parcelle 1");
+    expect(featureName(feature)).toEqual("îlot 1, parcelle 1");
     expect(featureName(feature, { ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual("1.1");
   });
 
@@ -426,7 +426,7 @@ describe("featureName", () => {
       },
     };
 
-    expect(featureName(feature)).toEqual("ilot 1, parcelle 1 (les muriers)");
+    expect(featureName(feature)).toEqual("îlot 1, parcelle 1 (les muriers)");
     expect(featureName(feature, { explicitName: false, ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual(
       "1.1",
     );
@@ -442,7 +442,7 @@ describe("featureName", () => {
       },
     };
 
-    expect(featureName(feature)).toEqual("ilot 1");
+    expect(featureName(feature)).toEqual("îlot 1");
     expect(featureName(feature, { ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual("1");
   });
 

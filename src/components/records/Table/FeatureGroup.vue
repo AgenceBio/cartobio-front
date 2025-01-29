@@ -143,7 +143,7 @@
         <button
           v-else
           type="button"
-          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line"
+          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line ri-xl"
           @click="toggleViewForm(feature.id)"
           aria-label="Modifier"
         />
