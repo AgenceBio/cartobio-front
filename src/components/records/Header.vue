@@ -144,7 +144,9 @@ const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && 
 const versionMenu = ref(false);
 const versionMenuRef = ref(null);
 const showEditVersionModal = ref(false);
-const readonly = computed(() => permissions.isOc && record.oc_id !== userStore.user?.organismeCertificateur?.id);
+const readonly = computed(
+  () => permissions.isOc && record.oc_id != null && record.oc_id !== userStore.user?.organismeCertificateur?.id,
+);
 onClickOutside(versionMenuRef, ({ target }) => {
   if (!target.classList.contains("show-versions")) {
     versionMenu.value = false;
