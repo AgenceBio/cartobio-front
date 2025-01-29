@@ -15,7 +15,10 @@ export const usePermissions = defineStore("permissions", () => {
   // Tests
 
   const canEditParcellaire = computed(() => {
-    if (isOc.value && recordStore.record.oc_id === userStore.user?.organismeCertificateur?.id) {
+    if (
+      isOc.value &&
+      (recordStore.record.oc_id === null || recordStore.record.oc_id === userStore.user?.organismeCertificateur?.id)
+    ) {
       return true;
     }
 
