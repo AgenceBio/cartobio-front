@@ -368,12 +368,28 @@ export function getFeatureGroups(collection, pivot = GROUPE_CULTURE, input) {
       pivot: pivots.at(0),
       features: features.filter((feature) => {
         if (input) {
+          const inputLower = input
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")
+            .toLowerCase();
+          const matches = input.match(/\d+/g);
+          const matchIlot = inputLower.includes("ilot") ? matches?.[0] : null;
+          const matchParcelle = inputLower.includes("parcelle")
+            ? matches?.length > 1
+              ? matches[1]
+              : matches?.[0]
+            : null;
+
           return (
-            (feature.properties.NOM && feature.properties.NOM.toLowerCase().includes(input)) ||
+            (feature.properties.NOM && feature.properties.NOM.toLowerCase().includes(inputLower)) ||
             (feature.properties.NUMERO_I && feature.properties.NUMERO_I == input) ||
             (feature.properties.NUMERO_P && feature.properties.NUMERO_P == input) ||
-            (input.toLowerCase().includes("ilot") && input.match(/\d+/)?.[0] == feature.properties.NUMERO_I) ||
-            (input.toLowerCase().includes("parcelle") && input.match(/\d+/)?.[0] == feature.properties.NUMERO_P)
+            (feature.properties.NUMERO_I && feature.properties.NUMERO_P == input) ||
+            (feature.properties.NUMERO_P && feature.properties.NUMERO_P == input) ||
+            (matchIlot && matchParcelle
+              ? feature.properties.NUMERO_I == matchIlot && feature.properties.NUMERO_P == matchParcelle
+              : (matchIlot && feature.properties.NUMERO_I == matchIlot) ||
+                (matchParcelle && feature.properties.NUMERO_P == matchParcelle))
           );
         }
         return true;
@@ -400,7 +416,7 @@ export function getFeatureById(features, id) {
  */
 export function featureName(
   feature,
-  { explicitName = true, ilotLabel = "ilot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {},
+  { explicitName = true, ilotLabel = "îlot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {},
 ) {
   const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10);
   const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10);
@@ -638,22 +654,21 @@ export function getTimeAgo(feature) {
   if (feature.properties.updatedAt !== feature.properties.createdAt) return "";
 
   const now = new Date();
-  now.setHours(now.getHours());
-
   const date = new Date(feature.properties.updatedAt);
   const diffInMs = now - date;
   const diffInMinutes = Math.floor(diffInMs / 1000 / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInMinutes / 1440);
+  const diffInMonths = Math.floor(diffInDays / 30);
 
   if (diffInMinutes < 60) {
     return `Modifié il y a ${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""}`;
-  } else if (diffInMinutes < 1440) {
-    // 1440 minutes = 24 heures
-    const diffInHours = Math.floor(diffInMinutes / 60);
+  } else if (diffInHours < 24) {
     return `Modifié il y a ${diffInHours} heure${diffInHours > 1 ? "s" : ""}`;
-  } else if (diffInMinutes < 10080) {
-    // 10080 minutes = 7 jours
-    const diffInDays = Math.floor(diffInMinutes / 1440);
+  } else if (diffInDays < 30) {
     return `Modifié il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
+  } else if (diffInMonths < 12) {
+    return `Modifié il y a ${diffInMonths} mois`;
   } else {
     const formattedDate = date.toLocaleDateString("fr-FR", {
       year: "numeric",
