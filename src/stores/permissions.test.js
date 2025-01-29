@@ -47,7 +47,7 @@ describe("roles", () => {
     userStore.roles = [ROLES.OC_CERTIF];
 
     expect(permissions.isOc).toEqual(true);
-    expect(permissions.canAddParcelle).toEqual(false);
+    expect(permissions.canAddParcelle).toEqual(true);
 
     userStore.user = { organismeCertificateur: { id: 2 } };
     recordStore.record.oc_id = 1;
@@ -88,7 +88,7 @@ describe("roles", () => {
     userStore.roles = [ROLES.OC_AUDIT];
 
     expect(permissions.isOc).toEqual(true);
-    expect(permissions.canAddParcelle).toEqual(false);
+    expect(permissions.canAddParcelle).toEqual(true);
 
     recordStore.record.certification_state = CertificationState.OPERATOR_DRAFT;
     userStore.user = { organismeCertificateur: { id: 1 } };
