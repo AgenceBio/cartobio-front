@@ -27,7 +27,27 @@
         </ul>
       </div>
 
-      <div class="fr-card fr-p-2w fr-mb-3w" v-if="feature.properties.CODE_CULTURE">
+      <AccordionGroup :constraint-toggle="!open">
+        <AccordionSection title="Culture" :open="open" :requires-action="requiresAction(['commentaires', 'cultures'])">
+          <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
+            <blockquote>
+              <p>{{ feature.properties.commentaires }}</p>
+            </blockquote>
+            <figcaption>
+              <p class="fr-quote__author">Notes de l'exploitant‧e</p>
+            </figcaption>
+          </figure>
+
+          <CultureSelector
+            :feature-id="feature.properties.id"
+            :cultures="patch.cultures"
+            @change="($cultures) => (patch.cultures = $cultures)"
+            :disabled-input="readonly"
+          />
+        </AccordionSection>
+      </AccordionGroup>
+
+      <div class="fr-card fr-p-2w fr-my-3w" v-if="feature.properties.CODE_CULTURE">
         <div class="fr-mb-3w import-pac">
           <span class="fr-label">Culture de l'import PAC</span>
           <span class="fr-hint-text">réalisé le {{ jjmmyyyy(feature.properties.createdAt) }}</span>
@@ -50,26 +70,6 @@
           >
         </div>
       </div>
-
-      <AccordionGroup :constraint-toggle="!open">
-        <AccordionSection title="Culture" :open="open" :requires-action="requiresAction(['commentaires', 'cultures'])">
-          <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
-            <blockquote>
-              <p>{{ feature.properties.commentaires }}</p>
-            </blockquote>
-            <figcaption>
-              <p class="fr-quote__author">Notes de l'exploitant‧e</p>
-            </figcaption>
-          </figure>
-
-          <CultureSelector
-            :feature-id="feature.properties.id"
-            :cultures="patch.cultures"
-            @change="($cultures) => (patch.cultures = $cultures)"
-            :disabled-input="readonly"
-          />
-        </AccordionSection>
-      </AccordionGroup>
 
       <AccordionGroup :constraint-toggle="!open">
         <AccordionSection
@@ -242,5 +242,13 @@ watch(patch, (properties) => {
 }
 .fr-quote blockquote p {
   font-weight: normal;
+}
+.import-pac {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.code-culture {
+  line-height: 0.8rem;
 }
 </style>
