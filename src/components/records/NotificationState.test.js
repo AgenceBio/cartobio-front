@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import NotificationState from "./NotificationState.vue";
 
 describe("NotificationState", () => {
-  it('renders correctly for "BROUILLON" state', () => {
+  it('renders correctly for "BROUILLON" state', async () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
@@ -16,6 +16,7 @@ describe("NotificationState", () => {
         text: true,
       },
     });
+    await flushPromises();
 
     expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-article-line");
     expect(
@@ -30,7 +31,7 @@ describe("NotificationState", () => {
     expect(spanElement.attributes("style")).toContain("color: rgb(128, 128, 128)");
   });
 
-  it('does not render "BROUILLON" state IF another notifications exists', () => {
+  it('does not render "BROUILLON" state IF another notifications exists', async () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
@@ -46,6 +47,7 @@ describe("NotificationState", () => {
         text: true,
       },
     });
+    await flushPromises();
 
     expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-success-line");
     expect(
@@ -60,7 +62,7 @@ describe("NotificationState", () => {
     expect(spanElement.attributes("style")).toContain("color: rgb(41, 114, 84)");
   });
 
-  it('does not render text when "text" prop is false', () => {
+  it('does not render text when "text" prop is false', async () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
@@ -73,11 +75,12 @@ describe("NotificationState", () => {
         text: false,
       },
     });
+    await flushPromises();
 
     expect(wrapper.find(".mr-1").exists()).toBe(false);
   });
 
-  it('applies styles and classes for "ENGAGEE" state', () => {
+  it('applies styles and classes for "ENGAGEE" state', async () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
@@ -90,6 +93,7 @@ describe("NotificationState", () => {
         text: true,
       },
     });
+    await flushPromises();
 
     expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-success-line");
     expect(
