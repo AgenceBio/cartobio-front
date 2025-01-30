@@ -37,6 +37,29 @@
               <p class="fr-quote__author">Notes de l'exploitant‧e</p>
             </figcaption>
           </figure>
+          <div class="fr-card fr-p-2w fr-mb-3w" v-if="feature.properties.CODE_CULTURE">
+            <div class="fr-mb-3w import-pac">
+              <span class="fr-label">Culture de l'import PAC</span>
+              <span class="fr-hint-text">réalisé le {{ jjmmyyyy(feature.properties.createdAt) }}</span>
+            </div>
+            <div class="code-culture">
+              {{ feature.properties.CODE_CULTURE }}
+              <template v-if="feature.properties.CODE_PRECISION"> - {{ feature.properties.CODE_PRECISION }}</template>
+              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
+                :
+                {{
+                  getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "").libelle
+                }}</template
+              >
+            </div>
+            <div class="fr-hint-text">
+              Code culture
+              <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
+              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
+                : culture</template
+              >
+            </div>
+          </div>
 
           <CultureSelector
             :feature-id="feature.properties.id"
@@ -46,30 +69,6 @@
           />
         </AccordionSection>
       </AccordionGroup>
-
-      <div class="fr-card fr-p-2w fr-my-3w" v-if="feature.properties.CODE_CULTURE">
-        <div class="fr-mb-3w import-pac">
-          <span class="fr-label">Culture de l'import PAC</span>
-          <span class="fr-hint-text">réalisé le {{ jjmmyyyy(feature.properties.createdAt) }}</span>
-        </div>
-        <div class="code-culture">
-          {{ feature.properties.CODE_CULTURE }}
-          <template v-if="feature.properties.CODE_PRECISION"> - {{ feature.properties.CODE_PRECISION }}</template>
-          <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
-            :
-            {{
-              getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "").libelle
-            }}</template
-          >
-        </div>
-        <div class="fr-hint-text">
-          Code culture
-          <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
-          <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
-            : culture</template
-          >
-        </div>
-      </div>
 
       <AccordionGroup :constraint-toggle="!open">
         <AccordionSection
