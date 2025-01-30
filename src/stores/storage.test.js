@@ -3,7 +3,7 @@ import { createTestingPinia } from "@pinia/testing";
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
 import record from "@/utils/__fixtures__/record-with-features.json" assert { type: "json" };
 import axios from "axios";
-
+import axios, { AxiosError } from "axios";
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 
 beforeEach(() => {
@@ -93,6 +93,24 @@ describe("storage", () => {
         "CONV",
         "AB",
       ]);
+    });
+  });
+
+  describe("handling of errors", () => {
+    it("should pop operation if 400 code is returned", async () => {
+      const recordId = record.record_id;
+      await storage.addRecord(recordId);
+
+      const error = new AxiosError("BAD_REQUEST_AXIOS");
+      error.response = { status: 400, data: { message: "bad request" } };
+      axios.__createMock.patch.mockRejectedValueOnce(error);
+
+      storage.addSyncOperation(
+        recordId,
+        new SyncOperation(SyncOperation.ACTIONS.RECORD_INFO, { version_name: "Version test au nom changé" }),
+      );
+
+      expect(storage.sync).rejects.toThrow("BAD_REQUEST_AXIOS");
     });
   });
 });
