@@ -211,6 +211,16 @@ header {
     border-radius: 0.3125rem;
     margin: 0;
     width: auto;
+    grid-template-columns: auto;
+    background-color: #fff;
+    z-index: 1;
+    position: relative;
+
+    @media (min-width: 62em) {
+      .fr-translate .fr-menu__list {
+        grid-template-columns: auto auto;
+      }
+    }
 
     li {
       position: relative;
