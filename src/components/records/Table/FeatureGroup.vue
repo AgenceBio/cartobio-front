@@ -44,6 +44,7 @@
       :class="{
         'parcelle--is-new': feature.id === Number(route.query?.new),
         'background-selected': selectedIds.includes(feature.id),
+        'background-white': !selectedIds.includes(feature.id),
       }"
       :id="'parcelle-' + feature.id"
       :hidden="!open"
@@ -401,5 +402,9 @@ table tr[aria-current="location"] {
 
 .background-selected {
   background-color: var(--background-alt-blue-france-hover) !important;
+}
+
+.background-white {
+  background-color: white !important;
 }
 </style>
