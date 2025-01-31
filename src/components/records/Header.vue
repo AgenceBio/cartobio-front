@@ -229,6 +229,7 @@ header {
       white-space: nowrap;
       max-height: 500px;
       overflow: auto;
+      overflow-x: hidden;
     }
   }
 
@@ -243,9 +244,7 @@ header {
 
   .white-space-break {
     white-space: break-spaces;
-    min-width: 30ch;
-    max-width: 40ch;
-    width: max-content;
+    width: 35ch;
   }
 }
 
