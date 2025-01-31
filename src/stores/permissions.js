@@ -72,6 +72,13 @@ export const usePermissions = defineStore("permissions", () => {
     for (const notif of array) {
       const currentStatut = notif.etatCertification || notif.status;
       if (currentStatut != "BROUILLON") {
+        if (
+          isOc.value &&
+          userStore.user.organismeCertificateur &&
+          notif.organismeCertificateurId !== userStore.user.organismeCertificateur.id
+        ) {
+          return "ARRETEE";
+        }
         return currentStatut;
       }
     }
