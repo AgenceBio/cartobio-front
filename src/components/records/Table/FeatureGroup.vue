@@ -75,14 +75,7 @@
         </div>
       </th>
       <td></td>
-      <td
-        @click="
-          toggleSingleSelected(feature.id);
-
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-        v-if="isGroupedByCulture"
-      >
+      <td @click="pressZoom(feature.id)" v-if="isGroupedByCulture">
         <span class="culture-name">{{ featureName(feature) }}</span>
         <small class="font-blue">{{ getTimeAgo(feature) }}</small>
         <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
@@ -91,14 +84,7 @@
           {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
         </small>
       </td>
-      <td
-        @click="
-          toggleSingleSelected(feature.id);
-
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-        v-else
-      >
+      <td @click="pressZoom(feature.id)" v-else>
         <span class="culture-type" v-if="feature.properties.cultures.length > 1">
           Multi-cultures<span class="fr-sr-only"> : </span>
           <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
@@ -109,25 +95,12 @@
         <small class="feature-precision">{{ featureName(feature) }}</small>
         <small class="font-blue">{{ getTimeAgo(feature) }}</small>
       </td>
-      <td
-        @click="
-          toggleSingleSelected(feature.id);
-
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-      >
+      <td @click="pressZoom(feature.id)">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           <ConversionLevel :feature="feature" with-date />
         </span>
       </td>
-      <td
-        @click="
-          toggleSingleSelected(feature.id);
-
-          selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-        "
-        class="numeric"
-      >
+      <td @click="pressZoom(feature.id)" class="numeric">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
           {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
         </span>
@@ -147,14 +120,6 @@
           @click="toggleViewForm(feature.id)"
           aria-label="Modifier"
         />
-        <button
-          type="button"
-          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
-          :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-search-line': true }"
-          @click="pressZoom(feature.id)"
-          aria-label="Zoom"
-        />
-
         <ActionDropdown with-icons v-if="!readonly">
           <li v-if="permissions.canChangeGeometry && isOnline" class="more-actions">
             <router-link
