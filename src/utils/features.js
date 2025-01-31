@@ -380,8 +380,8 @@ export function getFeatureGroups(collection, pivot = GROUPE_CULTURE, input) {
               : matches?.[0]
             : null;
 
-          const searchAllIlot = inputLower.trim() === "ilot";
-          const searchAllParcelle = inputLower.trim() === "parcelle";
+          const searchAllIlot = "ilot".includes(inputLower.trim());
+          const searchAllParcelle = "parcelle".includes(inputLower.trim());
 
           return (
             (feature.properties.NOM &&
@@ -668,12 +668,12 @@ export function getTimeAgo(feature) {
   const diffInDays = Math.floor(diffInMinutes / 1440);
   const diffInMonths = Math.floor(diffInDays / 30);
 
-  if (diffInMinutes < 0) {
+  if (diffInMinutes < 1) {
     return "Modifié à l'instant";
   } else if (diffInMinutes < 60) {
-    return `Modifié il y a ${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""}`;
+    return `Modifié il y a ${diffInMinutes} min`;
   } else if (diffInHours < 24) {
-    return `Modifié il y a ${diffInHours} heure${diffInHours > 1 ? "s" : ""}`;
+    return `Modifié il y a ${diffInHours} h`;
   } else if (diffInDays < 30) {
     return `Modifié il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
   } else if (diffInMonths < 12) {
