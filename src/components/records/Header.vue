@@ -227,6 +227,8 @@ header {
       top: 0;
       width: auto;
       white-space: nowrap;
+      max-height: 500px;
+      overflow: auto;
     }
   }
 
