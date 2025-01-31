@@ -45,7 +45,7 @@
                     <li v-for="record in records" :key="record?.record_id">
                       <router-link
                         :to="`/exploitations/${operator.numeroBio}/${record.record_id}`"
-                        class="fr-nav__link"
+                        class="fr-nav__link white-space-break"
                         href="#"
                       >
                         {{ record.version_name }}
@@ -232,6 +232,13 @@ header {
     padding: 0.75rem !important;
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
+  }
+
+  .white-space-break {
+    white-space: break-spaces;
+    min-width: 30ch;
+    max-width: 40ch;
+    width: max-content;
   }
 }
 
