@@ -44,7 +44,7 @@
                     <li v-for="record in records" :key="record?.record_id">
                       <router-link
                         :to="`/exploitations/${operator.numeroBio}/${record.record_id}`"
-                        class="fr-nav__link"
+                        class="fr-nav__link white-space-break"
                         href="#"
                       >
                         {{ record.version_name }}
@@ -202,6 +202,11 @@ header {
     border-radius: 0.3125rem;
     margin: 0;
     width: auto;
+    grid-template-columns: auto;
+    grid-auto-flow: row;
+    background-color: #fff;
+    z-index: 1;
+    position: relative;
 
     li {
       position: relative;
@@ -213,6 +218,9 @@ header {
       top: 0;
       width: auto;
       white-space: nowrap;
+      max-height: 500px;
+      overflow: auto;
+      overflow-x: hidden;
     }
   }
 
@@ -223,6 +231,11 @@ header {
     padding: 0.75rem !important;
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
+  }
+
+  .white-space-break {
+    white-space: break-spaces;
+    width: 35ch;
   }
 }
 </style>
