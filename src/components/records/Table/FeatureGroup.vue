@@ -110,8 +110,7 @@
         <button
           v-if="!readonly"
           type="button"
-          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
-          :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
+          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
           @click="toggleEditForm(feature.id)"
           aria-label="Modifier"
         />
