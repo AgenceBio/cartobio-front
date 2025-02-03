@@ -3,10 +3,12 @@ import { useUserStore } from "@/stores/user.js";
 import { computed } from "vue";
 import { defineStore } from "pinia";
 import { CertificationState } from "@agencebio/cartobio-types";
+import { useOperatorStore } from "./operator";
 
 export const usePermissions = defineStore("permissions", () => {
   const userStore = useUserStore();
   const recordStore = useRecordStore();
+  const operatorStore = useOperatorStore();
 
   // proxy the values so as they can be overriden by unit tests
   const isOc = computed(() => userStore.isOc);
@@ -41,7 +43,9 @@ export const usePermissions = defineStore("permissions", () => {
 
   const canDeleteParcellaire = canEditParcellaire;
 
-  const canCreateVersion = computed(() => isOc.value || isAgri.value);
+  const canCreateVersion = computed(
+    () => (isOc.value || isAgri.value) && getStatus(operatorStore.operator) !== "ARRETEE",
+  );
   const canEditVersion = canEditParcellaire;
 
   const canChangeCulture = canEditParcellaire;
@@ -61,6 +65,24 @@ export const usePermissions = defineStore("permissions", () => {
   const canAddAnnotations = isOc;
   const canViewAnnotations = isOc;
   const canExportAnnotations = isOc;
+
+  function getStatus(operator) {
+    const array = operator.certificats ?? operator.notifications ?? [];
+
+    for (const notif of array) {
+      const currentStatut = notif.etatCertification || notif.status;
+      if (currentStatut != "BROUILLON") {
+        if (
+          isOc.value &&
+          userStore.user.organismeCertificateur &&
+          notif.organismeCertificateurId !== userStore.user.organismeCertificateur.id
+        ) {
+          return "ARRETEE";
+        }
+        return currentStatut;
+      }
+    }
+  }
 
   return {
     // convenience proxy
