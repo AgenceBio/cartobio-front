@@ -108,6 +108,7 @@
       </td>
       <td class="actions">
         <button
+          v-if="!readonly"
           type="button"
           class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl"
           :class="{ 'fr-btn': true, 'fr-btn--tertiary-no-outline': true, 'fr-icon-edit-line': true }"
