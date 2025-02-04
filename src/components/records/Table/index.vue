@@ -297,7 +297,9 @@ function closeModal() {
 }
 
 watch(zoomFeature, (newValue) => {
-  emit("zoom:featureId", newValue);
+  if (newValue) {
+    emit("zoom:featureId", newValue);
+  }
 });
 </script>
 
