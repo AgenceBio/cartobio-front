@@ -92,7 +92,7 @@ const userStore = useUserStore();
 userStore.enablePersistance();
 
 app.config.errorHandler = (error) => {
-  if (error?.response?.data?.code === "EXPIRED_CREDENTIALS") {
+  if (error?.response?.data?.code === "EXPIRED_CREDENTIALS" || error?.response?.data?.code === "INVALID_CREDENTIALS") {
     const { path, params } = router.currentRoute.value;
 
     userStore.logout();
@@ -141,7 +141,10 @@ router.beforeEach(async (to) => {
       await operatorStore.ready(to.params.numeroBio);
     }
   } catch (error) {
-    if (error?.response?.data?.code === "EXPIRED_CREDENTIALS") {
+    if (
+      error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
+      error?.response?.data?.code === "INVALID_CREDENTIALS"
+    ) {
       const { path, params } = router.currentRoute.value;
 
       userStore.logout();
