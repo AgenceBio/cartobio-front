@@ -20,16 +20,16 @@
 
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
     <div class="fr-search-bar" id="header-search" role="search">
-      <label class="fr-label" for="search-784-input"> Rechercher un parcellaire </label>
+      <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
       <input
         class="fr-input"
-        placeholder="Rechercher un parcellaire"
+        placeholder="Rechercher une parcelle"
         type="search"
         id="search-784-input"
         name="search-784-input"
         v-model="filterInput"
       />
-      <button class="fr-btn" title="Rechercher">Rechercher un parcellaire</button>
+      <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
     </div>
     <table
       @mouseout="hoveredFeatureId = editedFeatureId"
@@ -297,7 +297,9 @@ function closeModal() {
 }
 
 watch(zoomFeature, (newValue) => {
-  emit("zoom:featureId", newValue);
+  if (newValue) {
+    emit("zoom:featureId", newValue);
+  }
 });
 </script>
 

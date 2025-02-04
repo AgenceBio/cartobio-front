@@ -9,7 +9,7 @@
     <span v-if="isOc">à préciser</span>
     <span v-else>{{ conversionLevel.shortLabel }}</span>
 
-    <small v-if="!isOc" class="help">à préciser par l'OC</small>
+    <small v-if="!isOc"> à préciser par l'OC</small>
   </span>
   <span v-else>
     {{ conversionLevel.shortLabel }}
@@ -53,9 +53,5 @@ const isAB = computed(() => isABLevel(props.feature.properties.conversion_niveau
 <style scoped>
 time {
   color: var(--text-mention-grey);
-}
-
-.help {
-  display: inline-block;
 }
 </style>
