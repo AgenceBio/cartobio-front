@@ -211,3 +211,15 @@ export async function getOperatorGeofoliaFeatures(numeroBio) {
   const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`);
   return geojson;
 }
+
+
+/**
+ * Retrieves data for a XLSX export
+ *
+ * @param {string}
+ * @returns {Promise<any>}
+ */
+export async function getDataXLSX() {
+  const data = await apiClient.get('/v2/exportParcellaire');
+  return data
+}
