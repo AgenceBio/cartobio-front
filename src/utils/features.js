@@ -240,8 +240,8 @@ export const groupingChoices = {
         return this.labelNoGroup;
       }
     },
-    sortFn: sortByAccessor((g) => parseInt(g.features.at(0).properties.NUMERO_I, 10) || Infinity, SORT.ASCENDING),
-    sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
+    sortFn: sortByAccessor((g) => parseInt(g.features.at(0)?.properties?.NUMERO_I, 10) || Infinity, SORT.ASCENDING),
+    sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
     label: "type de culture",
@@ -277,7 +277,7 @@ export const groupingChoices = {
     groupLabelFn({ groupingKey }) {
       return groupingKey === NO_GROUP ? this.labelNoGroup : groupingKey;
     },
-    sortFn: sortByAccessor((g) => g.features.at(0).properties.engagement_date, SORT.DESCENDING),
+    sortFn: sortByAccessor((g) => g.features?.at(0)?.properties?.engagement_date ?? 0, SORT.DESCENDING),
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
 };
@@ -349,7 +349,6 @@ export function getFeatureGroups(collection, pivot = GROUPE_CULTURE, input) {
       if (!groups.has(groupKey)) {
         groups.set(groupKey, []);
       }
-
       groups.set(groupKey, [...groups.get(groupKey), feature].sort(groupingChoices[pivots.at(0)].sortFeaturesFn));
     });
 
