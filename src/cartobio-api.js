@@ -269,3 +269,14 @@ export async function getDepartements() {
   const { data: departements } = await apiClient.get(`/v2/departements`);
   return departements;
 }
+
+/**
+ * Retrieves data for a XLSX export
+ *
+ * @param {string}
+ * @returns {Promise<any>}
+ */
+export async function getDataXLSX() {
+  const data = await apiClient.get('/v2/exportParcellaire');
+  return data
+}
