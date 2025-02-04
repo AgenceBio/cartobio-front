@@ -248,6 +248,6 @@ watch(patch, (properties) => {
   gap: 0.5rem;
 }
 .code-culture {
-  line-height: 0.8rem;
+  line-height: 1.2rem;
 }
 </style>
