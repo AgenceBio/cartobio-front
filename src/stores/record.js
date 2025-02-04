@@ -23,6 +23,7 @@ export const useRecordStore = defineStore("record", () => {
     numerobio: null,
     record_id: null,
     version_name: null,
+    annee_reference_controle: null,
     certification_date_debut: null,
     certification_date_fin: null,
     certification_state: null,

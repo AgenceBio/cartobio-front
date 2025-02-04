@@ -40,27 +40,31 @@ export const useOperatorStore = defineStore("operator", () => {
     if (!records.value?.length) return [];
 
     // Versions years is same as yearLabel output with fallback to created_at
-    return records.value.reduce(
-      (acc, record) => {
-        const year = (record.certification_date_debut || record.audit_date || record.created_at).split("-")[0];
-        if (acc[acc.length - 1].year !== year) {
-          acc.push({ year, records: [] });
-        }
+    return records.value
+      .reduce(
+        (acc, record) => {
+          const year = (
+            record.annee_reference_controle || (record.audit_date || record.created_at).split("-")[0]
+          ).toString();
 
-        acc[acc.length - 1].records.push(record);
-        return acc;
-      },
-      [
-        {
-          year: (
-            records.value[0].certification_date_debut ||
-            records.value[0].audit_date ||
-            records.value[0].created_at
-          ).split("-")[0],
-          records: [],
+          if (!acc.some((e) => e.year === year)) {
+            acc.push({ year, records: [] });
+          }
+
+          acc.find((e) => e.year === year).records.push(record);
+          return acc;
         },
-      ],
-    );
+        [
+          {
+            year: (
+              records.value[0].annee_reference_controle ||
+              (records.value[0].audit_date || records.value[0].created_at).split("-")[0]
+            ).toString(),
+            records: [],
+          },
+        ],
+      )
+      .sort((a, b) => b.year - a.year);
   });
 
   /**
