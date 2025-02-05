@@ -106,7 +106,7 @@ export async function submitNewParcelle({ recordId }, feature) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function divideNewParcelle(recordId, featureId, features) {
-  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles/${featureId}/`, {
+  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles/${featureId}`, {
     features,
   });
 

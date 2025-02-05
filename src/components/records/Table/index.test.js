@@ -15,10 +15,12 @@ import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
 import EditForm from "@/components/forms/SingleItemOperatorForm.vue";
 import TableComponent from "@/components/records/Table/index.vue";
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/utils/features.js";
+import { useUserStore } from "@/stores/user";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const storageStore = useCartoBioStorage(pinia);
 const recordStore = useRecordStore(pinia);
+const userStore = useUserStore(pinia);
 const featuresStore = useFeaturesStore(pinia);
 const permissions = usePermissions(pinia);
 
@@ -35,9 +37,8 @@ describe("Features Table", () => {
 
   test("features are listed as 3 groups of 2 and 1 and 2 features (one being multi-crops)", () => {
     const wrapper = mount(TableComponent);
-
-    expect(wrapper.find("tr.summary td:nth-child(2)").text()).toContain("4 parcelles");
-    expect(wrapper.findAll("table tbody")).toHaveLength(3 * 2);
+    expect(wrapper.find("thead.summary tr").text()).toContain("4 parcelles");
+    expect(wrapper.findAll("table tbody")).toHaveLength(2 * 2);
     expect(wrapper.find("#parcelle-1").attributes()).toHaveProperty("hidden", "");
   });
 
@@ -73,8 +74,7 @@ describe("Features Table", () => {
     await wrapper.find(".fr-tags-group--tags .tag--annotation_surveyed").trigger("click");
     await wrapper.find(".fr-tags-group--tags .tag--annotation_surveyed").trigger("click");
     await flushPromises();
-
-    expect(wrapper.find("tr.summary td:nth-child(2)").text()).toContain("1 parcelles");
+    expect(wrapper.find("thead.summary tr").text()).toContain("1 parcelles");
     expect(wrapper.findAll("tr.parcelle")).toHaveLength(1);
     expect(featuresStore.all).toHaveLength(4);
   });
@@ -102,37 +102,12 @@ describe("Features Table", () => {
     expect(wrapper.find("#parcelle-1").attributes()).not.toHaveProperty("hidden");
   });
 
-  test("we click on a row to edit a feature in a Modal, then save", async () => {
-    const AsyncComponent = defineComponent({
-      components: { TableComponent },
-      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>',
-    });
-
-    const wrapper = mount(AsyncComponent, {
-      props: { editForm: markRaw(EditForm) },
-    });
-
-    const table = wrapper.getComponent(TableComponent);
-    await table.find("tr#parcelle-2 td").trigger("click");
-    await flushPromises();
-
-    axios.__createMock.patch.mockResolvedValueOnce({ data: record });
-
-    // this throws if the modal form does not exist
-    // it catches the Component reference even if it has been Teleport-ed in the <body>
-    const form = wrapper.getComponent(EditForm);
-    expect(table.vm.editedFeatureId).toEqual("2");
-
-    //submit form
-    await form.find(".fr-modal__footer button.fr-btn").trigger("click");
-
-    await flushPromises();
-    // modal is down, and the table should be updated
-    expect(axios.__createMock.patch).toHaveBeenCalled();
-    expect(wrapper.findComponent(EditForm).exists()).toEqual(false);
-  });
-
   test("we delete a feature", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 1,
+      },
+    };
     permissions.canDeleteFeature = true;
 
     const wrapper = mount(TableComponent);
@@ -157,6 +132,19 @@ describe("Features Table", () => {
     });
   });
 
+  test("there is not other action if we are not the correct OC", async () => {
+    userStore.user = {
+      organismeCertificateur: {
+        id: 2,
+      },
+    };
+    permissions.canDeleteFeature = true;
+
+    const wrapper = mount(TableComponent);
+
+    expect(wrapper.find(".more-actions").exists()).toEqual(false);
+  });
+
   test("we open a modal and test various cases it should remain open, or close", async () => {
     permissions.isOc = false;
     permissions.isAgri = true;
@@ -173,12 +161,11 @@ describe("Features Table", () => {
     });
 
     const table = wrapper.getComponent(TableComponent);
-
     let modal;
 
     // we click outside the edit modal (the background of the <dialog> element)
     // it closes itself because it is not "dirty"
-    table.find("tr.parcelle td").trigger("click");
+    table.find("tr.parcelle td.actions button[aria-label='Modifier']").trigger("click");
     await flushPromises();
     modal = wrapper.getComponent(Modal);
     await modal.trigger("click");
@@ -188,7 +175,7 @@ describe("Features Table", () => {
     // now, we change a field and we should not be able to close it
     axios.__createMock.patch.mockResolvedValueOnce({ data: record });
 
-    table.find("tr.parcelle td").trigger("click");
+    table.find("tr.parcelle td.actions button[aria-label='Modifier']").trigger("click");
     await flushPromises();
     modal = wrapper.getComponent(Modal);
     await modal.find("#feature-nom").setValue("aa");

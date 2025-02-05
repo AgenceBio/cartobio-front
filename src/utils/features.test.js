@@ -268,7 +268,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Gel fixe, friche, gel spécifique n’entrant pas en rotation",
+        label: "Gel fixe",
         key: "01.92",
         mainKey: "01.92",
         pivot: GROUPE_CULTURE,
@@ -276,7 +276,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Olives",
+        label: "Olive",
         key: "01.26.1",
         mainKey: "01.26.1",
         pivot: GROUPE_CULTURE,
@@ -284,7 +284,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Raisin de cuve",
+        label: "Raisin de cuve (vigne)",
         key: "01.21.12",
         mainKey: "01.21.12",
         pivot: GROUPE_CULTURE,
@@ -313,7 +313,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Gel fixe, friche, gel spécifique n’entrant pas en rotation",
+        label: "Gel fixe",
         key: "01.92-AB",
         mainKey: "01.92",
         pivot: GROUPE_CULTURE,
@@ -321,7 +321,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Olives",
+        label: "Olive",
         key: "01.26.1-AB",
         mainKey: "01.26.1",
         pivot: GROUPE_CULTURE,
@@ -329,7 +329,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Raisin de cuve",
+        label: "Raisin de cuve (vigne)",
         key: "01.21.12-AB",
         mainKey: "01.21.12",
         pivot: GROUPE_CULTURE,
@@ -337,7 +337,7 @@ describe("getFeatureGroups()", () => {
         surface: 7048.2314453125,
       },
       {
-        label: "Raisin de cuve",
+        label: "Raisin de cuve (vigne)",
         key: "01.21.12-C1",
         mainKey: "01.21.12",
         pivot: GROUPE_CULTURE,
@@ -359,7 +359,7 @@ describe("cultureLabel", () => {
       },
     };
 
-    expect(cultureLabel(feature.properties.cultures.at(0))).toEqual("Raisin de cuve");
+    expect(cultureLabel(feature.properties.cultures.at(0))).toEqual("Raisin de cuve (vigne)");
   });
 
   test("returns unknown CPF label", () => {
@@ -412,7 +412,7 @@ describe("featureName", () => {
       },
     };
 
-    expect(featureName(feature)).toEqual("ilot 1, parcelle 1");
+    expect(featureName(feature)).toEqual("îlot 1, parcelle 1");
     expect(featureName(feature, { ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual("1.1");
   });
 
@@ -426,7 +426,7 @@ describe("featureName", () => {
       },
     };
 
-    expect(featureName(feature)).toEqual("ilot 1, parcelle 1 (les muriers)");
+    expect(featureName(feature)).toEqual("îlot 1, parcelle 1 (les muriers)");
     expect(featureName(feature, { explicitName: false, ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual(
       "1.1",
     );
@@ -442,7 +442,7 @@ describe("featureName", () => {
       },
     };
 
-    expect(featureName(feature)).toEqual("ilot 1");
+    expect(featureName(feature)).toEqual("îlot 1");
     expect(featureName(feature, { ilotLabel: "", parcelleLabel: "", separator: "." })).toEqual("1");
   });
 

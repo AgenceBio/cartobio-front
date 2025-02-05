@@ -12,6 +12,7 @@
             :required="requiredName"
             :class="{ 'fr-input--error': nameErrors.size }"
             ref="autofocusedElement"
+            :disabled="readonly"
           />
           <div v-for="[id, result] in nameErrors" :key="id" class="fr-hint-text fr-error-text">
             {{ result.errorMessage }}.
@@ -36,11 +37,35 @@
               <p class="fr-quote__author">Notes de l'exploitant‧e</p>
             </figcaption>
           </figure>
+          <div class="fr-card fr-p-2w fr-mb-3w" v-if="feature.properties.CODE_CULTURE">
+            <div class="fr-mb-3w import-pac">
+              <span class="fr-label">Culture de l'import PAC</span>
+              <span class="fr-hint-text">réalisé le {{ jjmmyyyy(feature.properties.createdAt) }}</span>
+            </div>
+            <div class="code-culture">
+              {{ feature.properties.CODE_CULTURE }}
+              <template v-if="feature.properties.CODE_PRECISION"> - {{ feature.properties.CODE_PRECISION }}</template>
+              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
+                :
+                {{
+                  getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "").libelle
+                }}</template
+              >
+            </div>
+            <div class="fr-hint-text">
+              Code culture
+              <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
+              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
+                : culture</template
+              >
+            </div>
+          </div>
 
           <CultureSelector
             :feature-id="feature.properties.id"
             :cultures="patch.cultures"
             @change="($cultures) => (patch.cultures = $cultures)"
+            :disabled-input="readonly"
           />
         </AccordionSection>
       </AccordionGroup>
@@ -53,7 +78,7 @@
         >
           <ConversionLevelSelector
             :feature-id="feature.properties.id"
-            :readonly="!permissions.canChangeConversionLevel"
+            :readonly="!permissions.canChangeConversionLevel || readonly"
             v-model="patch.conversion_niveau"
           />
 
@@ -68,7 +93,7 @@
               name="engagement_date"
               id="engagement_date"
               :required="isEngagementDateRequired"
-              :disabled="!isAB"
+              :disabled="!isAB || readonly"
               min="1985-01-01"
               :max="maxDate"
             />
@@ -78,9 +103,10 @@
             v-if="permissions.canAddAnnotations"
             v-model="patch.annotations"
             :feature-id="feature.properties.id"
+            :readonly="readonly"
           />
 
-          <div class="fr-input-group">
+          <div v-if="!readonly" class="fr-input-group">
             <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
             <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
           </div>
@@ -92,7 +118,9 @@
 
     <template #footer>
       <div class="fr-input-group">
-        <button class="fr-btn" type="submit" form="single-feature-edit-form">Enregistrer</button>
+        <button class="fr-btn" type="submit" form="single-feature-edit-form">
+          {{ readonly ? "Fermer" : "Enregistrer" }}
+        </button>
       </div>
     </template>
   </Modal>
@@ -116,6 +144,8 @@ import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import CancelModal from "@/components/forms/CancelModal.vue";
 import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js";
+import { getCulturePAC } from "@agencebio/rosetta-cultures";
+import { jjmmyyyy } from "@/utils/dates";
 
 const props = defineProps({
   feature: {
@@ -127,6 +157,10 @@ const props = defineProps({
     default: false,
   },
   requiredName: {
+    type: Boolean,
+    default: false,
+  },
+  readonly: {
     type: Boolean,
     default: false,
   },
@@ -159,6 +193,10 @@ function requiresAction(properties) {
 }
 
 const validate = () => {
+  if (props.readonly) {
+    emit("close");
+    return;
+  }
   const set = featuresSet.byFeature(props.feature.id, true);
 
   if (set.size) {
@@ -169,7 +207,7 @@ const validate = () => {
 };
 
 function handleClose() {
-  if (featuresSet.isDirty) {
+  if (featuresSet.isDirty && !props.readonly) {
     showCancelModal.value = true;
   } else {
     emit("close");
@@ -179,6 +217,10 @@ function handleClose() {
 onBeforeUnmount(() => featuresSet.setCandidate([]));
 
 watch(patch, (properties) => {
+  if (props.readonly) {
+    return;
+  }
+
   featuresSet.setCandidate([
     {
       id: props.feature.id,
@@ -199,5 +241,13 @@ watch(patch, (properties) => {
 }
 .fr-quote blockquote p {
   font-weight: normal;
+}
+.import-pac {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.code-culture {
+  line-height: 1.2rem;
 }
 </style>

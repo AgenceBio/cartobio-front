@@ -1,24 +1,25 @@
 <template>
-  <header class="fr-mb-2w">
-    <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
+  <header class="fr-mb-2w header-class">
+    <div class="name-parcellaire">
+      <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
 
-    <div class="heading">
-      <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
-        {{ record.version_name }}
-      </h2>
+      <div class="heading">
+        <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
+          {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
+        </h2>
 
-      <button
-        v-if="!disableActions && permissions.canEditVersion"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
-        @click="showEditVersionModal = true"
-      >
-        Modifier la version
-      </button>
+        <button
+          v-if="!disableActions && permissions.canEditVersion"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
+          @click="showEditVersionModal = true"
+        >
+          Modifier la version
+        </button>
+        <p class="state fr-subtitle">
+          <ParcellaireState :record="record" />
+        </p>
+      </div>
     </div>
-
-    <p class="state fr-subtitle">
-      <ParcellaireState :record="record" />
-    </p>
 
     <div
       v-if="disableActions === false"
@@ -44,7 +45,7 @@
                     <li v-for="record in records" :key="record?.record_id">
                       <router-link
                         :to="`/exploitations/${operator.numeroBio}/${record.record_id}`"
-                        class="fr-nav__link"
+                        class="fr-nav__link white-space-break"
                         href="#"
                       >
                         {{ record.version_name }}
@@ -67,7 +68,7 @@
       </button>
 
       <button
-        v-if="hasFeatures"
+        v-if="hasFeatures && !readonly"
         class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2"
         @click="exportModal = true"
       >
@@ -115,6 +116,7 @@ import { useRecordStore } from "@/stores/record.js";
 import { onClickOutside, useOnline } from "@vueuse/core";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";
 import { usePermissions } from "@/stores/permissions.js";
+import { useUserStore } from "@/stores/user";
 
 const AsyncFeaturesExportModal = defineAsyncComponent(() => import("@/components/records/ExportModal.vue"));
 
@@ -133,6 +135,7 @@ const deleteModal = ref(false);
 const featuresStore = useFeaturesStore();
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
+const userStore = useUserStore();
 const permissions = usePermissions();
 const { record } = recordStore;
 const { operator } = operatorStore;
@@ -142,7 +145,9 @@ const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && 
 const versionMenu = ref(false);
 const versionMenuRef = ref(null);
 const showEditVersionModal = ref(false);
-
+const readonly = computed(
+  () => permissions.isOc && record.oc_id != null && record.oc_id !== userStore.user?.organismeCertificateur?.id,
+);
 onClickOutside(versionMenuRef, ({ target }) => {
   if (!target.classList.contains("show-versions")) {
     versionMenu.value = false;
@@ -153,14 +158,16 @@ onClickOutside(versionMenuRef, ({ target }) => {
 <style scoped>
 header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
 
   h1 .fr-btn {
     vertical-align: text-bottom;
   }
 
-  & > p.state {
+  p.state {
     margin: 0 0 0.5rem;
+    align-items: end;
+    display: flex;
   }
 
   .heading {
@@ -180,6 +187,8 @@ header {
   flex-direction: row;
   column-gap: 0.5rem;
   margin: 0;
+  align-items: flex-end;
+  justify-items: center;
 
   .fr-btn {
     margin: 0;
@@ -202,6 +211,11 @@ header {
     border-radius: 0.3125rem;
     margin: 0;
     width: auto;
+    grid-template-columns: auto;
+    grid-auto-flow: row;
+    background-color: #fff;
+    z-index: 1;
+    position: relative;
 
     li {
       position: relative;
@@ -213,6 +227,9 @@ header {
       top: 0;
       width: auto;
       white-space: nowrap;
+      max-height: 500px;
+      overflow: auto;
+      overflow-x: hidden;
     }
   }
 
@@ -224,5 +241,37 @@ header {
     width: 100%;
     @extend .fr-btn--tertiary-no-outline;
   }
+
+  .white-space-break {
+    white-space: break-spaces;
+    width: 35ch;
+  }
+}
+
+.name-parcellaire {
+  max-width: 60%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.version-name {
+  max-width: 90%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.readonly-badge {
+  padding: 0px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--background-default-grey-active);
+  margin-bottom: 0.25em;
+  font-weight: 400;
+  line-height: 23px;
+  margin-left: 1.2em;
 }
 </style>

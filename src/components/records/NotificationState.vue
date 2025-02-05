@@ -1,21 +1,22 @@
 <template>
-  <span :class="badgeClasses.class" :style="badgeClasses.style">
-    <span
-      v-if="stateInfo"
-      :class="['icon', 'fr-icon--sm', stateInfo != null ? stateInfo.icon : '']"
-      aria-hidden="true"
-    ></span>
-    <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
-    <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
-      stateInfo ? stateInfo.label : "-"
-    }}</span>
-  </span>
+  <div :class="{ 'margin-top': isEnAttente() }">
+    <span class="component" :style="getStyle()">
+      <span v-if="stateInfo" :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
+      <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
+      <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
+        stateInfo ? stateInfo.label : "-"
+      }}</span>
+    </span>
+    <div v-if="isEnAttente()" class="fr-hint-text oc-change text-center">En attente de validation OC</div>
+  </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 
 import { notificationsStateLevel } from "@/referentiels/ab.js";
+import { useUserStore } from "@/stores/user";
 
 const props = defineProps({
   operator: {
@@ -28,37 +29,58 @@ const props = defineProps({
   },
 });
 
-const stateInfo = computed(() => {
-  const array = props.operator.certificats ?? props.operator.notifications;
+const userStore = useUserStore();
+const { user, isOc } = storeToRefs(userStore);
+const displayedNotif = ref(null);
+const stateInfo = ref(null);
 
-  array.sort((a, b) => new Date(b.dateSignatureContrat) - new Date(a.dateSignatureContrat));
+onMounted(() => {
+  const array = props.operator.certificats ?? props.operator.notifications ?? [];
+
+  array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
 
   for (const notif of array) {
     const currentStatut = notif.etatCertification || notif.status;
 
     if (currentStatut != "BROUILLON") {
-      return notificationsStateLevel[currentStatut];
+      displayedNotif.value = notif;
+
+      break;
     }
   }
 
-  return notificationsStateLevel["BROUILLON"];
+  if (!displayedNotif.value) {
+    stateInfo.value = notificationsStateLevel["BROUILLON"];
+
+    return;
+  }
+  const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
+
+  if (
+    isOc.value &&
+    user.value.organismeCertificateur &&
+    displayedNotif.value.organismeCertificateurId !== user.value.organismeCertificateur.id
+  ) {
+    stateInfo.value = notificationsStateLevel["ARRETEE"];
+    return;
+  }
+  stateInfo.value = notificationsStateLevel[currentStatut];
 });
 
-const badgeClasses = computed(() => {
-  const baseClasses = ["component"];
-  let colorClasses;
-  if (stateInfo.value != null) {
-    colorClasses = {
-      backgroundColor: `${stateInfo.value.color} !important`,
-      color: `${stateInfo.value.textColor} !important`,
-    };
+function getStyle() {
+  if (!stateInfo.value) {
+    return {};
   }
 
   return {
-    class: [baseClasses],
-    style: colorClasses,
+    backgroundColor: `${stateInfo.value.color} !important`,
+    color: `${stateInfo.value.textColor} !important`,
   };
-});
+}
+
+function isEnAttente() {
+  return stateInfo.value?.label === notificationsStateLevel["NON ENGAGEE"].label;
+}
 </script>
 
 <style>
@@ -77,5 +99,13 @@ const badgeClasses = computed(() => {
 
 .lowercase {
   text-transform: lowercase;
+}
+
+.margin-top {
+  margin-top: 0.2rem;
+}
+
+.oc-change {
+  margin-left: 11px;
 }
 </style>

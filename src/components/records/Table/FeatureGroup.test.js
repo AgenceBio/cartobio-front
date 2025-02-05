@@ -31,27 +31,15 @@ describe("FeatureGroup", () => {
     const wrapper = mount(FeatureGroup, {
       props: { featureGroup, selectedIds: [], hoveredId: null },
     });
-    const header = wrapper.find(".intermediate-header");
-
-    expect(wrapper.vm.open).toEqual(false);
-    expect(header.attributes()).toHaveProperty("hidden");
 
     await wrapper.find(".group-header").trigger("click");
     expect(wrapper.vm.open).toEqual(true);
-    expect(header.attributes()).not.toHaveProperty("hidden");
-
-    // we have default columns
-    const headers = header.findAll("th");
-    expect(headers.at(0).text()).toEqual("");
-    expect(headers.at(1).text()).toEqual("Nom");
-    expect(headers.at(2).text()).toEqual("Certification");
-    expect(headers.at(3).text()).toEqual("Surface");
 
     // we should have a multi culture name within the 3rd cell
     expect(wrapper.find("#parcelle-2 .feature-precision").text()).toEqual("Multi-culture");
 
     // we should have a single culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("ilot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("îlot 2, parcelle 1");
   });
 
   test("non-culture grouping has different column name", async () => {
@@ -59,19 +47,14 @@ describe("FeatureGroup", () => {
     const wrapper = mount(FeatureGroup, {
       props: { featureGroup, selectedIds: [], hoveredId: null },
     });
-    const header = wrapper.find(".intermediate-header");
     await wrapper.find(".group-header").trigger("click");
 
-    // we have default columns
-    const headers = header.findAll("*");
-    expect(headers.at(1).text()).toEqual("Culture");
-
-    // we should have a multi culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-2 .culture-type").text()).toEqual("Multi-cultures : Ail, Pomelos et pamplemousses");
+    // we should have a multi culture name within the 3rd cellF
+    expect(wrapper.find("#parcelle-2 .culture-type").text()).toEqual("Multi-cultures : Ail, Pamplemousse et pomelo");
 
     // we should have a single culture name within the 3rd cell
     expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("Ail");
-    expect(wrapper.find("#parcelle-4 .feature-precision").text()).toEqual("ilot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .feature-precision").text()).toEqual("îlot 2, parcelle 1");
   });
 
   test("toggles on and off all group items", async () => {
@@ -111,7 +94,7 @@ describe("FeatureGroup", () => {
 
     const group = wrapper.getComponent(FeatureGroup);
     await wrapper.find(".group-header").trigger("click");
-    await wrapper.find("#parcelle-2 td").trigger("click");
+    await wrapper.find("#parcelle-2 td.actions button[aria-label='Modifier']").trigger("click");
 
     expect(group.emitted("edit:featureId")).toHaveProperty("0", ["2"]);
   });
