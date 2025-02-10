@@ -38,9 +38,10 @@ meta:
   <div class="fr-container--fluid fr-py-6w background-alt">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-12">
+          <h2 class="fr-h3 fr-mb-0">Comprendre son environnement</h2>
+        </div>
         <div class="fr-col-md-5">
-          <h2 class="fr-h3">Comprendre son environnement</h2>
-
           <ul class="list-marks">
             <li>Visualisez votre territoire grâce à <strong>nos données cartographiques</strong>.</li>
             <li>
@@ -51,8 +52,6 @@ meta:
         </div>
 
         <div class="fr-col-md-5 fr-col-offset-md-1">
-          <h2 class="fr-h3">Évaluer la qualité de vie</h2>
-
           <ul class="list-marks">
             <li>Regardez la part de <strong>parcelles bio</strong> autour de vous.</li>
             <li><strong>Observez l'évolution</strong> de l'agriculture biologique au fil des années.</li>
