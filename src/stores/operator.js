@@ -84,7 +84,9 @@ export const useOperatorStore = defineStore("operator", () => {
           : serverR,
       );
     }
-    operatorData.certificats = filterAndSortNotifications(operatorData.certificats);
+    if (operatorData.notifications && operatorData.notifications.length > 0) {
+      operatorData.notifications = filterAndSortNotifications(operatorData.notifications);
+    }
     operator.value = operatorData;
     records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA));
   }
