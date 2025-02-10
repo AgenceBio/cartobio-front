@@ -93,10 +93,8 @@ userStore.enablePersistance();
 
 app.config.errorHandler = (error) => {
   if (error?.response?.data?.code === "EXPIRED_CREDENTIALS" || error?.response?.data?.code === "INVALID_CREDENTIALS") {
-    const { path, params } = router.currentRoute.value;
-
     userStore.logout();
-    router.replace({ path, params });
+    router.replace({ path: "/login" });
 
     return;
   }
