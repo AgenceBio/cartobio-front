@@ -143,10 +143,8 @@ router.beforeEach(async (to) => {
       error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
       error?.response?.data?.code === "INVALID_CREDENTIALS"
     ) {
-      const { path, params } = router.currentRoute.value;
-
       userStore.logout();
-      return { path, params, replace: true };
+      return { path: "login", replace: true };
     }
 
     if (error?.response?.status === 404) {
