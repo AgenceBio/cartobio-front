@@ -39,8 +39,8 @@ export async function getOperatorNcviFeatures({ evv, numeroBio }) {
  * @param {string} input
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
-export async function searchOperators({ input, page, sort, order }) {
-  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, sort, order });
+export async function searchOperators({ input, page, sort, order, filter }) {
+  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, sort, order, filter });
 
   return data;
 }
@@ -210,4 +210,14 @@ export async function checkGeofoliaAccountStatus(numeroBio) {
 export async function getOperatorGeofoliaFeatures(numeroBio) {
   const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`);
   return geojson;
+}
+
+/**
+ * Retrieves all departements
+ *
+ * @returns {Promise<{any}>}
+ */
+export async function getDepartements() {
+  const { data: departements } = await apiClient.get(`/v2/departements`);
+  return departements;
 }

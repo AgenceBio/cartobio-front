@@ -21,11 +21,15 @@ import { useUserStore } from "@/stores/user";
 const props = defineProps({
   operator: {
     type: Object,
-    required: true,
+    required: false,
   },
   text: {
     type: Boolean,
     default: false,
+  },
+  stateInfoProps: {
+    type: Object,
+    required: false,
   },
 });
 
@@ -35,36 +39,40 @@ const displayedNotif = ref(null);
 const stateInfo = ref(null);
 
 onMounted(() => {
-  const array = props.operator.certificats ?? props.operator.notifications ?? [];
+  if (props.operator) {
+    const array = props.operator.certificats ?? props.operator.notifications ?? [];
 
-  array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
+    array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
 
-  for (const notif of array) {
-    const currentStatut = notif.etatCertification || notif.status;
+    for (const notif of array) {
+      const currentStatut = notif.etatCertification || notif.status;
 
-    if (currentStatut != "BROUILLON") {
-      displayedNotif.value = notif;
+      if (currentStatut != "BROUILLON") {
+        displayedNotif.value = notif;
 
-      break;
+        break;
+      }
     }
-  }
 
-  if (!displayedNotif.value) {
-    stateInfo.value = notificationsStateLevel["BROUILLON"];
+    if (!displayedNotif.value) {
+      stateInfo.value = notificationsStateLevel["BROUILLON"];
 
-    return;
-  }
-  const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
+      return;
+    }
+    const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
 
-  if (
-    isOc.value &&
-    user.value.organismeCertificateur &&
-    displayedNotif.value.organismeCertificateurId !== user.value.organismeCertificateur.id
-  ) {
-    stateInfo.value = notificationsStateLevel["ARRETEE"];
-    return;
+    if (
+      isOc.value &&
+      user.value.organismeCertificateur &&
+      displayedNotif.value.organismeCertificateurId !== user.value.organismeCertificateur.id
+    ) {
+      stateInfo.value = notificationsStateLevel["ARRETEE"];
+      return;
+    }
+    stateInfo.value = notificationsStateLevel[currentStatut];
+  } else if (props.stateInfoProps) {
+    stateInfo.value = props.stateInfoProps;
   }
-  stateInfo.value = notificationsStateLevel[currentStatut];
 });
 
 function getStyle() {
@@ -79,6 +87,7 @@ function getStyle() {
 }
 
 function isEnAttente() {
+  if(props.stateInfoProps) return false
   return stateInfo.value?.label === notificationsStateLevel["NON ENGAGEE"].label;
 }
 </script>
