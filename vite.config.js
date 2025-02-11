@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
         extensions: ["vue"],
         importMode: "async",
         extendRoute(route) {
-          if (route.name === "certification-exploitations") {
+          if (route.name === "certification-exploitations" || route.name === "exploitations") {
             route.props = (route) => ({ ...route.query });
           }
 
