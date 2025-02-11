@@ -20,15 +20,23 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  certification_state: String,
 });
 
-const stateId = computed(() =>
-  props.record.certification_state in certificationStatesLabels
-    ? props.record.certification_state
-    : CertificationState.UNKNOWN,
-);
+const stateId = computed(() => {
+  if (props.record) {
+    return props.record.certification_state in certificationStatesLabels
+      ? props.record.certification_state
+      : CertificationState.UNKNOWN;
+  } else if (props.certification_state) {
+    return props.certification_state in certificationStatesLabels
+      ? props.certification_state
+      : CertificationState.UNKNOWN;
+  }
+  return CertificationState.UNKNOWN;
+});
 const stateInfo = computed(() => certificationStatesLabels[stateId.value]);
-const dateLabel = computed(() => yearLabel(props.record));
+const dateLabel = computed(() => props.showDate ? yearLabel(props.record): null);
 </script>
 
 <style scoped>

@@ -11,19 +11,23 @@ export const LEVEL_MAYBE_AB = "AB?";
 export const certificationStatesLabels = {
   [undefined]: {
     label: "Non renseigné",
+    labelFilter: "Pas de parcellaire",
     color: "fr-badge--warning",
   },
   [CertificationState.OPERATOR_DRAFT]: {
     label: "Parcellaire importé",
     color: "fr-badge--info",
+    labelFilter: "En attente de contrôle",
   },
   [CertificationState.AUDITED]: {
-    label: "Audit terminé",
+    label: "Contrôle terminé",
     color: "fr-badge--new",
+    labelFilter: "A soumettre",
   },
   [CertificationState.PENDING_CERTIFICATION]: {
-    label: "Certification en cours",
+    label: "En attente de certification",
     color: "fr-badge--new",
+    labelFilter: "En attente de certification",
   },
   [CertificationState.CERTIFIED]: {
     label: "Certifié",
