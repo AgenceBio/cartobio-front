@@ -96,6 +96,14 @@ export const useOperatorStore = defineStore("operator", () => {
     records.value = null;
   }
 
+  /**
+   * @param {Boolean} pinned
+   * @return {Promise<void>}
+   */
+  function updatePinnedStatus(pinned) {
+    operator.value = { ...operator.value, epingle: pinned };
+  }
+
   watch(operator, () => {
     if (operator.value.departement) {
       setCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT, operator.value.departement);
@@ -130,6 +138,7 @@ export const useOperatorStore = defineStore("operator", () => {
     // store methods
     ready,
     $reset,
+    updatePinnedStatus,
     getOperator,
   };
 });
