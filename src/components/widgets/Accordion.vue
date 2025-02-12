@@ -8,8 +8,17 @@
         :aria-controls="elementId"
         type="button"
       >
-        <span>{{ title }}</span>
-        <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
+        <div style="display: flex; flex-direction: column; align-items: flex-start">
+          <span>{{ title }}</span>
+          <span v-if="optionsSelected" style="color: grey; font-size: 12px">{{
+            Array.isArray(optionsSelected)
+              ? optionsSelected.length > 0
+                ? optionsSelected.length + " sélections"
+                : null
+              : optionsSelected
+          }}</span>
+          <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
+        </div>
       </button>
     </h3>
 
@@ -39,6 +48,10 @@ const props = defineProps({
   title: {
     type: String,
     required: true,
+  },
+  optionsSelected: {
+    type: String,
+    required: false,
   },
 });
 
