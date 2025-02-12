@@ -88,6 +88,32 @@ export async function deleteRecord(recordId) {
 }
 
 /**
+ * Pin an operator
+ *
+ * @param {string} numeroBio
+ * @param {Partial<NormalizedRecord>} payload
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function pinOperator(numeroBio) {
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/pin`);
+
+  return data;
+}
+
+/**
+ * Unpin an operator
+ *
+ * @param {string} numeroBio
+ * @param {Partial<NormalizedRecord>} payload
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function unpinOperator(numeroBio) {
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/unpin`);
+
+  return data;
+}
+
+/**
  * Add a new plot without id to a feature collection
  *
  * @returns {Promise<NormalizedRecord>}
