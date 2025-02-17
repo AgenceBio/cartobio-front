@@ -42,17 +42,7 @@ onMounted(() => {
   if (props.operator) {
     const array = props.operator.certificats ?? props.operator.notifications ?? [];
 
-    array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
-
-    for (const notif of array) {
-      const currentStatut = notif.etatCertification || notif.status;
-
-      if (currentStatut != "BROUILLON") {
-        displayedNotif.value = notif;
-
-        break;
-      }
-    }
+    displayedNotif.value = array
 
     if (!displayedNotif.value) {
       stateInfo.value = notificationsStateLevel["BROUILLON"];

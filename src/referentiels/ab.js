@@ -12,7 +12,6 @@ export const certificationStatesLabels = {
   [undefined]: {
     label: "Non renseigné",
     labelFilter: "Pas de parcellaire",
-    color: "fr-badge--warning",
   },
   [CertificationState.OPERATOR_DRAFT]: {
     label: "Parcellaire importé",
@@ -28,10 +27,12 @@ export const certificationStatesLabels = {
     label: "En attente de certification",
     color: "fr-badge--new",
     labelFilter: "En attente de certification",
+    icon: "fr-icon-time-line",
   },
   [CertificationState.CERTIFIED]: {
     label: "Certifié",
     color: "fr-badge--success",
+    icon: "fr-icon-award-line",
   },
 };
 
@@ -284,5 +285,20 @@ export const notificationsStateLevel = {
     color: "#EEE4D9",
     textColor: "#6A6156",
     icon: "fr-icon-close-circle-line",
+  },
+};
+
+export const engagementList = {
+  ["ABCONV"]: {
+    label: "AB/en conversion",
+    tooltipText: "Présence sur l’exploitation de parcelles en conversion sans parcelles en conventionnel",
+  },
+  ["MIXTE"]: {
+    label: "Mixte",
+    tooltipText: "Présence sur l’exploitation de parcelle en conventionnel",
+  },
+  ["AB"]: {
+    label: "100%AB",
+    tooltipText: "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB",
   },
 };
