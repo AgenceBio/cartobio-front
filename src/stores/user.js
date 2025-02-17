@@ -87,7 +87,7 @@ export const useUserStore = defineStore("user", () => {
 
   const startPage = computed(() => {
     if (isOc.value) {
-      return "/certification/exploitations";
+      return "/certification/tableau-de-bord";
     } else if (isAgri.value) {
       return "/exploitations";
     }

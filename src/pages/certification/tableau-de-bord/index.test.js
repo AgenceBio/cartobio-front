@@ -20,7 +20,8 @@ describe("certification/tableau-de-bord", () => {
   it("should display a page with only a search bar if user has no pinned operators", async () => {
     axios.__createMock.get.mockResolvedValueOnce({
       data: {
-        operators: [],
+        pinnedOperators: [],
+        consultedOperators: [],
       },
     });
 
@@ -29,13 +30,16 @@ describe("certification/tableau-de-bord", () => {
     expect(wrapper.find(".content").text()).toContain("Chargement des données…");
 
     await flushPromises();
-    expect(wrapper.find(".operateurs-epingles").exists()).toEqual(false);
+    expect(wrapper.find(".operateurs-epingles").exists()).toEqual(true);
+    expect(wrapper.findAll(".operateurs-epingles > div")).toHaveLength(0);
+    expect(wrapper.find(".operateurs-consulte").exists()).toEqual(false);
   });
 
   it("should display 2 pinned operators", async () => {
     axios.__createMock.get.mockResolvedValueOnce({
       data: {
-        operators: records.slice(0, 2),
+        pinnedOperators: records.slice(0, 2),
+        consultedOperators: records.slice(0, 2),
       },
     });
 
@@ -45,5 +49,15 @@ describe("certification/tableau-de-bord", () => {
     expect(axios.__createMock.get).toHaveBeenCalled(1);
     expect(wrapper.findAll(".operateurs-epingles")).toHaveLength(1);
     expect(wrapper.findAll(".operateurs-epingles > div")).toHaveLength(2);
+
+    // changement d'onglet
+    expect(wrapper.findAll("label[for=derniers-operateurs]")).toHaveLength(1);
+    await wrapper.find("#derniers-operateurs").setValue("derniers-operateurs");
+    await flushPromises();
+
+    expect(wrapper.findAll(".operateurs-epingles")).toHaveLength(0);
+    expect(wrapper.findAll(".operateurs-consultes")).toHaveLength(1);
+    expect(wrapper.findAll(".operateurs-consultes > div")).toHaveLength(2);
+
   });
 });
