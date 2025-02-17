@@ -57,6 +57,18 @@ export async function getUserOperators(search, limit, offset) {
 }
 
 /**
+ * @param {number?} limit
+ * @param {number?} offset
+ * @return {Promise<AgenceBioNormalizedOperator[]>}
+ */
+export async function getUserOperatorsForDashboard() {
+  const { data } = await apiClient.get(`/v2/operators/dashboard`);
+
+  return data;
+}
+
+
+/**
  * @param {string} pacage
  * @returns {Promise<FeatureCollection>}
  */

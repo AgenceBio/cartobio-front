@@ -34,9 +34,9 @@
                 class="fr-btn fr-btn--secondary"
                 :class="{ 'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied }"
                 @click="ocClipboardExport"
-                data-content-piece="Export presse-papier"
+                data-content-piece="Export presse-papiers"
               >
-                Copier dans le presse-papier
+                Copier dans le presse-papiers
               </button>
             </div>
           </div>
@@ -115,7 +115,7 @@ function ocExport() {
 }
 
 function ocClipboardExport() {
-  statsPush(["trackEvent", "Export", `Export presse-papier (${props.operator.organismeCertificateur.nom})`]);
+  statsPush(["trackEvent", "Export", `Export presse-papiers (${props.operator.organismeCertificateur.nom})`]);
   exporter.value.toClipboard();
   copied.value = true;
 
