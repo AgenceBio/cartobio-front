@@ -16,7 +16,6 @@ const priorityOrder = [
   "ENGAGEE",
   "SUSPENDUE",
   "ENGAGEE FUTUR",
-  "NON ENGAGEE-CHT OC",
   "ARRETEE",
   "NON ENGAGEE",
 ];

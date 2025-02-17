@@ -1,15 +1,19 @@
 <template>
-  <div class="fr-card fr-card--download">
-    <div class="fr-card__body" style="order: 1 !important">
+  <div
+    class="fr-card fr-card--download"
+    :class="[operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link', 'operator-record']"
+    @mouseenter="handleMouseEnter(operator)"
+    @mouseleave="hideTooltip"
+  >
+    <div class="fr-card__body" @click="goToExploitations()">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <router-link
-            v-if="!operatorDisabled[operator.numeroBio]"
-            :to="`/exploitations/${operator.numeroBio}`"
-            class="fr-link"
-          >
+          <div v-if="!operatorDisabled[operator.numeroBio]" class="fr-link">
             {{ operator.nom }}
-          </router-link>
+          </div>
+          <div v-else class="nameoperator">
+            {{ `${operator.nom}` }}
+          </div>
         </h3>
         <p class="fr-card__desc">
           <span class="fr-hint-text">
@@ -17,24 +21,36 @@
             {{ operator.commune }}, {{ operator.codePostal }}
           </span>
         </p>
-        <div class="fr-card__start" style="display: flex; justify-content: space-between">
+        <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
             <NotificationState v-if="operator.certificats || operator.notifications" :operator="operator" />
+            <div v-if="operator.lastmixitestate">
+              <p class="custom-tag">{{ engagementList[operator.lastmixitestate].label }}</p>
+            </div>
           </div>
           <div>
-            <button
-              v-if="isEpingle"
-              class="ri-pushpin-fill"
-              style="color: #000091"
-              @click="unpin(operator.numeroBio)"
-            ></button>
-            <button v-else class="ri-pushpin-line" style="color: #000091" @click="pin(operator.numeroBio)"></button>
+            <template v-if="!operatorDisabled[operator.numeroBio]">
+              <button
+                v-if="isEpingle"
+                class="ri-pushpin-fill"
+                style="color: #000091"
+                @click="unpin(operator.numeroBio)"
+              ></button>
+              <button v-else class="ri-pushpin-line" style="color: #000091" @click="pin(operator.numeroBio)"></button>
+            </template>
             <span
               v-if="operatorDisabled[operator.numeroBio]"
               aria-hidden
               class="fr-ml-1w fr-icon-lock-fill fr-icon--sm"
             ></span>
-            <span v-else class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm" style="color: #000091"></span>
+            <span
+              v-else
+              class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm cursor-button"
+              @click.stop="goToExploitations()"
+            ></span>
+            <div v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
+              Le dossier n’est pas accessible
+            </div>
           </div>
         </div>
         <div class="fr-card__end">
@@ -44,20 +60,77 @@
         </div>
       </div>
     </div>
+    <div
+      class="fr-card__header"
+      :class="[
+        getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE' ? 'container' : 'container-unique',
+      ]"
+    >
+      <div class="row" v-if="getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE'">
+        <div class="top-bar-tooltip">
+          <div>
+            <span class="fr-icon-award-line fr-icon--sm lastcertified"></span>
+            <span class="lastcertifieddate">{{
+              operator.lastcertifieddate ? new Date(operator.lastcertifieddate).getFullYear() : "-"
+            }}</span>
+          </div>
 
-    <div class="fr-card__header container">
-      <div class="row">
-        <div>
-          <span
-            class="fr-icon-award-line fr-icon--sm"
-            style="background-color: #e5fbfd; border: 1px solid #4cb4bd; border-radius: 4px; padding: 4px"
-          ></span>
-          <span style="color: #006a6f; margin-left: 10px">-</span>
+          <div class="error-icon" v-if="operator.otherParcellaire">
+            <span>!</span>
+            <div class="tooltip" v-if="certificationState == 'CERTIFIED'">
+              <span> Une nouvelle version a été créée après la certification de {{ operator.version_name }} </span>
+            </div>
+            <div class="tooltip" v-if="certificationState == 'PENDING_CERTIFICATION'">
+              <span>
+                Une nouvelle version a été créée après la soumission de {{ operator.version_name }} par le contrôleur
+              </span>
+              <br />
+              <span>
+                Créee le <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
+                {{ jjmmyyyy(operator.created_at) }} par
+                <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
+                <div v-if="operator.metadata.source === 'API Parcellaire'">
+                  <span class="fr-icon-download-line fr-icon--sm" />
+                  Api Parcellaire
+                </div>
+                <div v-else-if="operator.metadata.source === 'telepac'">
+                  <span class="fr-icon-refresh-line fr-icon--sm" />
+                  Import Telépac {{ operator.metadata.campagne }}
+                </div>
+                <div v-else>
+                  <span class="fr-icon-user-line fr-icon--sm" />{{
+                    JSON.parse(operator.user).nom + " " + JSON.parse(operator.user).prenom
+                  }}
+                </div>
+              </span>
+            </div>
+            <div class="tooltip" v-if="certificationState == 'AUDITED'">
+              <span> Une nouvelle version a été créée après le contrôle de {{ operator.version_name }} </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="center" v-else>
+        <div v-if="getStatus(operator) === 'NON ENGAGEE'">
+          L’exploitation n’est pas encore gérée par {{ organismeOc || "votre OC" }}. Pour accéder au dossier sur
+          CartoBio, la notification doit d’abord être validée sur le portail de notification par un chargé de
+          certification.
+        </div>
+        <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator]">
+          L’exploitation n’est plus gérée par {{ organismeOc || "votre OC" }} et aucune version de parcellaire de cette
+          exploitation ne concerne votre organisme certificateur.
+        </div>
+        <div v-else-if="getStatus(operator) === 'ARRETEE'">
+          L’exploitation n’est plus gérée par {{ organismeOc || "votre OC" }}. Vous pouvez tout de même accéder aux
+          versions de parcellaire initiées par votre organisme certificateur.
         </div>
       </div>
 
-      <div class="row" v-if="!certificationState">
-        <button class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline">
+      <div class="row" v-if="!certificationState && !operatorDisabled[operator.numeroBio]">
+        <button
+          class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          @click="goToSpecificVersion"
+        >
           Créer un parcellaire
         </button>
       </div>
@@ -66,7 +139,7 @@
         class="row"
         v-if="auditDate && (certificationState == 'CERTIFIED' || certificationState === 'PENDING_CERTIFICATION')"
       >
-        <p class="fr-hint-text" style="margin-bottom: -20px">Contrôle réalisé</p>
+        <p class="fr-hint-tex controlerealise">Contrôle réalisé</p>
         <div class="certification-info">
           <div class="fr-icon-calendar-2-line fr-icon--sm"></div>
           <div class="fr-hint-text">{{ jjmmyyyy(auditDate) }}</div>
@@ -93,16 +166,20 @@
       </div>
 
       <div class="row" v-if="certificationState == 'AUDITED'">
-        <button class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline">
-          Soumettre [Nom de version]
-          <!-- TODO: Ici nom de version à retourner -->
+        <button
+          class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          @click="goToSpecificVersion"
+        >
+          Soumettre {{ operator.version_name }}
         </button>
       </div>
 
       <div class="row" v-if="certificationState == 'OPERATOR_DRAFT'">
-        <button class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline">
-          Contrôler [Nom de version]
-          <!-- TODO: Ici nom de version à retourner -->
+        <button
+          class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          @click="goToSpecificVersion"
+        >
+          Contrôler {{ operator.version_name }}
         </button>
       </div>
     </div>
@@ -111,10 +188,18 @@
 
 <script setup>
 import { computed, ref } from "vue";
-import { dateFormat, jjmmyyyy } from "@/utils/dates.js";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { jjmmyyyy } from "@/utils/dates.js";
 import ParcellaireState from "@/components/records/State.vue";
 import NotificationState from "@/components/records/NotificationState.vue";
+import { engagementList } from "@/referentiels/ab.js";
+import { useUserStore } from "@/stores/user.js";
 import { pinOperator, unpinOperator } from "@/cartobio-api";
+
+const userStore = useUserStore();
+
+const { user, isOc } = storeToRefs(userStore);
 
 const props = defineProps({
   operator: {
@@ -127,11 +212,31 @@ const props = defineProps({
   certificationState: String,
   certificationDateDebut: String,
   auditDate: String,
+  record_id: {
+    type: String,
+    required: true,
+  },
+  organismeOc: String,
 });
-
 const emit = defineEmits(["pin"]);
 
 const isEpingle = ref(props.operator.epingle);
+const tooltip = ref({
+  visible: false,
+  operatorId: null,
+});
+
+const router = useRouter();
+
+const goToExploitations = () => {
+  if (!props.operatorDisabled[props.operator.numeroBio]) {
+    return router.push(`/exploitations/${props.operator.numeroBio}`);
+  }
+};
+
+const goToSpecificVersion = () => {
+  return router.push(`/exploitations/${props.operator.numeroBio}/${props.record_id}`);
+};
 
 // tempo
 const clientNumber = computed(() => Math.floor(Math.random() * 10000));
@@ -147,6 +252,40 @@ function unpin(numeroBio) {
     isEpingle.value = false;
     emit("pin", false);
   });
+}
+
+function getStatus(operator) {
+  const array = operator.certificats ?? operator.notifications ?? [];
+
+  // array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
+
+  // for (const notif of array) {
+  //   const currentStatut = notif.etatCertification || notif.status;
+
+  //   if (currentStatut != "BROUILLON") {
+  //     if (
+  //       isOc.value &&
+  //       user.value.organismeCertificateur &&
+  //       notif.organismeCertificateurId !== user.value.organismeCertificateur.id
+  //     ) {
+  //       return "ARRETEE";
+  //     }
+  //     return currentStatut;
+  //   }
+  // }
+
+  return array.etatCertification;
+}
+// tooltip
+function handleMouseEnter(operator) {
+  if (props.operatorDisabled[operator.numeroBio]) {
+    tooltip.value.visible = true;
+    tooltip.value.operatorId = operator.id;
+  }
+}
+function hideTooltip() {
+  tooltip.value.visible = false;
+  tooltip.value.operatorId = null;
 }
 </script>
 
@@ -193,11 +332,174 @@ function unpin(numeroBio) {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  order: 1 !important;
 }
 
 .certification-info {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.error-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  background-color: #ff5655;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin-right: 20px;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffebeb;
+  color: #d32f2f;
+  padding: 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+}
+
+.error-icon:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.disabled-tooltip * {
+  color: grey;
+  text-decoration: none;
+}
+
+.disabled-tooltip .fr-link {
+  pointer-events: none;
+  text-decoration: none;
+  text-decoration-thickness: 0px;
+}
+
+.tooltip-text {
+  background-color: white;
+  color: black;
+  text-align: left;
+  padding: 6px 10px;
+  position: absolute;
+  z-index: 1;
+  border-top: 1px solid #dddddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-text::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 10.5px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #dddddd transparent;
+  border-top: 4px solid transparent;
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 12.5px;
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+  border-top: 4px solid transparent;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+}
+
+.fr-tooltip {
+  background-repeat: no-repeat;
+}
+
+.top-bar-tooltip {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cursor-button {
+  color: #000091;
+  cursor: pointer;
+}
+
+.lastcertified {
+  background-color: #e5fbfd;
+  border: 1px solid #4cb4bd;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.lastcertifieddate {
+  color: #006a6f;
+  margin-left: 10px;
+}
+
+.controlerealise {
+  margin-bottom: -20px;
+}
+
+.nameoperator {
+  font-size: 1rem;
+}
+
+.container-unique {
+  justify-content: center;
+  align-items: center;
+}
+
+.center {
+  display: inline-block;
+  padding: 50px;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.fr-card {
+  border-radius: 0px;
+}
+
+.custom-tag {
+  margin-left: 10px;
+
+  align-items: center;
+  padding: 2px 5px;
+  gap: 2px;
+
+  margin-top: 2%;
+
+  background: #ffffff;
+
+  border: 1px solid #37635f;
+  border-radius: 12px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+
+  text-align: center;
+
+  color: #37635f;
 }
 </style>
