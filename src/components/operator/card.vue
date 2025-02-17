@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-card fr-enlarge-link fr-card--download">
+  <div class="fr-card fr-card--download">
     <div class="fr-card__body" style="order: 1 !important">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
@@ -22,7 +22,13 @@
             <NotificationState v-if="operator.certificats || operator.notifications" :operator="operator" />
           </div>
           <div>
-            <span><i class="ri-pushpin-line" style="color: #000091"></i></span>
+            <button
+              v-if="isEpingle"
+              class="ri-pushpin-fill"
+              style="color: #000091"
+              @click="unpin(operator.numeroBio)"
+            ></button>
+            <button v-else class="ri-pushpin-line" style="color: #000091" @click="pin(operator.numeroBio)"></button>
             <span
               v-if="operatorDisabled[operator.numeroBio]"
               aria-hidden
@@ -104,10 +110,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { dateFormat, jjmmyyyy } from "@/utils/dates.js";
 import ParcellaireState from "@/components/records/State.vue";
 import NotificationState from "@/components/records/NotificationState.vue";
+import { pinOperator, unpinOperator } from "@/cartobio-api";
 
 const props = defineProps({
   operator: {
@@ -122,8 +129,25 @@ const props = defineProps({
   auditDate: String,
 });
 
+const emit = defineEmits(["pin"]);
+
+const isEpingle = ref(props.operator.epingle);
+
 // tempo
 const clientNumber = computed(() => Math.floor(Math.random() * 10000));
+function pin(numeroBio) {
+  pinOperator(numeroBio).then(() => {
+    isEpingle.value = true;
+    emit("pin", true);
+  });
+}
+
+function unpin(numeroBio) {
+  unpinOperator(numeroBio).then(() => {
+    isEpingle.value = false;
+    emit("pin", false);
+  });
+}
 </script>
 
 <style scoped>

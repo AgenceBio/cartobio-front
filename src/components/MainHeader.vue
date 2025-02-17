@@ -220,10 +220,10 @@
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
-              <a class="fr-nav__link" href="#" target="_self" aria-current="page">Tableau de bord</a>
+              <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Tableau de bord</router-link>
             </li>
             <li class="fr-nav__item">
-              <a class="fr-nav__link" href="#" target="_self">Liste des exploitations</a>
+              <router-link to="/certification/exploitations" class="fr-nav__link">Liste des exploitations</router-link>
             </li>
           </ul>
         </nav>
