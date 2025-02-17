@@ -104,6 +104,16 @@ export const useOperatorStore = defineStore("operator", () => {
     operator.value = { ...operator.value, epingle: pinned };
   }
 
+  /**
+   * @param {Boolean} pinned
+   * @return {Promise<void>}
+   */
+  function markAsConsulted() {
+    if (operator.value) {
+      apiClient.post((`/v2/operator/${operator.value.numeroBio}/consulte`))
+    }
+  }
+
   watch(operator, () => {
     if (operator.value.departement) {
       setCustomDimension(CUSTOM_DIMENSION_DEPARTEMENT, operator.value.departement);
@@ -140,5 +150,6 @@ export const useOperatorStore = defineStore("operator", () => {
     $reset,
     updatePinnedStatus,
     getOperator,
+    markAsConsulted
   };
 });

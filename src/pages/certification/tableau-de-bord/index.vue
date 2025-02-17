@@ -13,7 +13,7 @@ meta:
   </div>
   <div class="fr-container fr-py-5w background-white">
     <div class="fr-grid-row">
-      <div class="fr-col-11 fr-m-auto fr-mb-3w">
+      <div class="fr-col-10 fr-m-auto fr-mb-3w">
         <h2 class="fr-h3">Rechercher une exploitation</h2>
         <form
           @submit.prevent="search(userInput)"
@@ -36,13 +36,13 @@ meta:
           <button class="fr-btn" type="submit" title="Rechercher" :disabled="isLoading || !isOnline">Rechercher</button>
         </form>
       </div>
-      <div class="fr-col-11 fr-m-auto">
+      <div class="fr-col-11 fr-m-auto fr-pt-4w content">
+        <h2 class="fr-h2 text-align-center">Je prépare mes visites</h2>
+
         <div v-if="isLoading">
           <Spinner>Chargement des données…</Spinner>
         </div>
-        <template v-if="!isLoading && hasOperators">
-          <h2 class="fr-h2 text-align-center">Je prépare mes visites</h2>
-
+        <template v-else>
           <fieldset class="fr-segmented operateurs-segment fr-mb-4w">
             <div class="fr-segmented__elements">
               <div class="fr-segmented__element">
@@ -54,7 +54,10 @@ meta:
                   name="operateurs-segment"
                   v-model="vue"
                 />
-                <label class="ri-pushpin-line fr-label" for="operateurs-epingles"> Mes exploitations épingleées </label>
+                <label class="fr-label" for="operateurs-epingles">
+                  <span class="ri-pushpin-line fr-mr-1w" aria-hidden="true"></span>
+                  Mes exploitations épingleées
+                </label>
               </div>
               <div class="fr-segmented__element">
                 <input
@@ -64,7 +67,8 @@ meta:
                   name="operateurs-segment"
                   v-model="vue"
                 />
-                <label class="ri-time-line fr-label" for="derniers-operateurs">
+                <label class="fr-label" for="derniers-operateurs">
+                  <span class="ri-time-line fr-mr-1w" aria-hidden="true"></span>
                   Dernières exploitations consultées
                 </label>
               </div>
@@ -72,7 +76,7 @@ meta:
           </fieldset>
           <div v-if="vue === 'operateurs-epingles'" class="operateurs-epingles">
             <div
-              v-for="{ audit_date, certification_date_debut, certification_state, ...operator } in operators"
+              v-for="{ audit_date, certification_date_debut, certification_state, ...operator } in pinnedOperators"
               :key="operator.numeroBio"
               class="operator-record"
               @mouseenter="handleMouseEnter(operator)"
@@ -89,7 +93,25 @@ meta:
               />
             </div>
           </div>
-          <div v-else>TODO</div>
+          <div v-else class="operateurs-consultes">
+            <div
+              v-for="{ audit_date, certification_date_debut, certification_state, ...operator } in consultedOperators"
+              :key="operator.numeroBio"
+              class="operator-record"
+              @mouseenter="handleMouseEnter(operator)"
+              @mouseleave="hideTooltip"
+              style="margin-bottom: 10px"
+            >
+              <OperatorCard
+                :operator="operator"
+                :operatorDisabled="operatorDisabled"
+                :certificationState="certification_state"
+                :certificationDateDebut="certification_date_debut"
+                :auditDate="audit_date"
+                @pin="loadOperators()"
+              />
+            </div>
+          </div>
         </template>
       </div>
     </div>
@@ -97,7 +119,7 @@ meta:
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useOnline } from "@vueuse/core";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { filterAndSortNotifications } from "@/utils/helper-notification.js";
@@ -109,13 +131,12 @@ import OperatorCard from "@/components/operator/card.vue";
 const isInitialized = ref(false);
 const isLoading = ref(true);
 const isOnline = useOnline();
-const operators = ref([]);
+const pinnedOperators = ref([]);
+const consultedOperators = ref([]);
 const userInput = ref();
 const operatorDisabled = ref({});
 const operatorStore = useOperatorStore();
 const vue = ref("operateurs-epingles");
-
-const hasOperators = computed(() => Boolean(operators.value.length));
 
 const { user, isOc } = useUserStore();
 
@@ -139,8 +160,16 @@ async function loadOperators() {
   }
   const res = await getUserOperatorsForDashboard();
 
-  operators.value = res.operators;
-  operators.value.forEach((e) => {
+  pinnedOperators.value = res.pinnedOperators;
+  pinnedOperators.value.forEach((e) => {
+    if (e.notifications && e.notifications.length > 0) {
+      e.notifications = filterAndSortNotifications(e.notifications);
+    }
+
+    checkIfDisabled(e);
+  });
+  consultedOperators.value = res.consultedOperators;
+  consultedOperators.value.forEach((e) => {
     if (e.notifications && e.notifications.length > 0) {
       e.notifications = filterAndSortNotifications(e.notifications);
     }
@@ -247,7 +276,8 @@ span[aria-selected="true"] {
 .fr-card__title {
   margin-top: 10px;
 }
-.operateurs-epingles {
+.operateurs-epingles,
+.operateurs-consultes {
   display: grid;
   grid-template-columns: auto auto;
   gap: 1em;
@@ -258,5 +288,8 @@ span[aria-selected="true"] {
 .operateurs-segment {
   display: flex;
   justify-content: center;
+}
+.content {
+  border-top: solid 1px #cfcfcf;
 }
 </style>
