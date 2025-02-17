@@ -1,67 +1,105 @@
 <template>
-  <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline fr-btns-group--pagination">
-    <li>
-      <div class="fr-select-group fr-select-group--inline">
-        <select
-          class="fr-select"
-          id="search-results-page-selector"
-          name="page"
-          :value="currentPage"
-          @change="(event) => $emit('changePage', parseInt(event.target.value))"
+  <nav role="navigation" class="fr-pagination" aria-label="Pagination">
+    <ul class="fr-pagination__list">
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--first"
+          :disabled="currentPage === 1"
+          @click="$emit('changePage', 1)"
         >
-          <option value="" disabled hidden>Sélectionner un numéro de pagination</option>
-          <option :value="page" :key="page" v-for="page in maxPage">{{ page }}</option>
-        </select>
-        <label class="fr-label" for="search-results-page-selector"> sur {{ maxPage }} pages </label>
-      </div>
-    </li>
-    <li>
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line pagination-page-previous"
-        :disabled="maxPage < 2 || currentPage === 1"
-        @click="$emit('changePage', currentPage - 1)"
-      >
-        Page précédente
-      </button>
-    </li>
-    <li>
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line pagination-page-next"
-        :disabled="maxPage < 2 || currentPage === maxPage"
-        @click="$emit('changePage', currentPage + 1)"
-      >
-        Page suivante
-      </button>
-    </li>
-  </ul>
+          Première page
+        </button>
+      </li>
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
+          :disabled="currentPage === 1"
+          @click="$emit('changePage', currentPage - 1)"
+        >
+          Page précédente
+        </button>
+      </li>
+      <li v-for="page in visiblePages" :key="page">
+        <button
+          class="fr-pagination__link"
+          :class="{ 'fr-pagination__link--current': page === currentPage }"
+          @click="$emit('changePage', page)"
+        >
+          {{ page }}
+        </button>
+      </li>
+      <li v-if="currentPage < maxPage - 2">
+        <span class="fr-pagination__link fr-displayed-lg">…</span>
+      </li>
+      <li v-if="maxPage > 1">
+        <button class="fr-pagination__link fr-displayed-lg" @click="$emit('changePage', maxPage)">
+          {{ maxPage }}
+        </button>
+      </li>
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
+          :disabled="currentPage === maxPage"
+          @click="$emit('changePage', currentPage + 1)"
+        >
+          Page suivante
+        </button>
+      </li>
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--last"
+          :disabled="currentPage === maxPage"
+          @click="$emit('changePage', maxPage)"
+        >
+          Dernière page
+        </button>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script setup>
-defineProps(["currentPage", "maxPage"]);
-defineEmits("changePage");
+import { computed } from "vue";
+
+const props = defineProps({
+  currentPage: Number,
+  maxPage: Number,
+});
+
+defineEmits(["changePage"]);
+
+const visiblePages = computed(() => {
+  if (props.maxPage <= 5) {
+    return Array.from({ length: props.maxPage }, (_, i) => i + 1);
+  }
+
+  const pages = [1];
+  if (props.currentPage > 3) pages.push("…");
+  const start = Math.max(2, props.currentPage - 1);
+  const end = Math.min(props.maxPage - 1, props.currentPage + 1);
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
 </script>
 
 <style scoped>
-.fr-btns-group--pagination {
-  .fr-label,
-  .fr-select {
-    font-size: inherit; /* reset size so as they are consistent */
-  }
-
-  .fr-btn {
-    margin: 0;
-  }
+.fr-pagination__link {
+  margin: 0 4px;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
-.fr-select-group--inline {
-  display: flex;
-  align-items: center;
+.fr-pagination__link--current {
+  font-weight: bold;
+  text-decoration: underline;
+}
 
-  select {
-    background-color: transparent;
-    box-shadow: none;
-    text-align: right;
-    width: 6rem; /* up to 3 digits, so 999 pages */
-  }
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>

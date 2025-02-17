@@ -101,4 +101,8 @@ if (activeAccordionId) {
     flex: 1;
   }
 }
+
+.fr-accordion .fr-collapse--expanded {
+  overflow: visible;
+}
 </style>
