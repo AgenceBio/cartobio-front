@@ -23,21 +23,24 @@
         </p>
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
-            <NotificationState v-if="operator.certificats || operator.notifications" :operator="operator" />
+            <NotificationState v-if="operator.notifications" :operator="operator" />
             <div v-if="operator.lastmixitestate">
               <p class="custom-tag">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
           </div>
           <div>
-            <template v-if="!operatorDisabled[operator.numeroBio]">
-              <button
-                v-if="isEpingle"
-                class="ri-pushpin-fill"
-                style="color: #000091"
-                @click="unpin(operator.numeroBio)"
-              ></button>
-              <button v-else class="ri-pushpin-line" style="color: #000091" @click="pin(operator.numeroBio)"></button>
-            </template>
+            <button
+              v-if="isEpingle"
+              class="ri-pushpin-fill"
+              style="color: #000091"
+              @click.stop="unpin(operator.numeroBio)"
+            ></button>
+            <button
+              v-else-if="!operatorDisabled[operator.numeroBio]"
+              class="ri-pushpin-line"
+              style="color: #000091"
+              @click.stop="pin(operator.numeroBio)"
+            ></button>
             <span
               v-if="operatorDisabled[operator.numeroBio]"
               aria-hidden
@@ -255,26 +258,9 @@ function unpin(numeroBio) {
 }
 
 function getStatus(operator) {
-  const array = operator.certificats ?? operator.notifications ?? [];
+  const notif = operator.notifications ?? {};
 
-  // array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
-
-  // for (const notif of array) {
-  //   const currentStatut = notif.etatCertification || notif.status;
-
-  //   if (currentStatut != "BROUILLON") {
-  //     if (
-  //       isOc.value &&
-  //       user.value.organismeCertificateur &&
-  //       notif.organismeCertificateurId !== user.value.organismeCertificateur.id
-  //     ) {
-  //       return "ARRETEE";
-  //     }
-  //     return currentStatut;
-  //   }
-  // }
-
-  return array.etatCertification;
+  return notif.etatCertification;
 }
 // tooltip
 function handleMouseEnter(operator) {
