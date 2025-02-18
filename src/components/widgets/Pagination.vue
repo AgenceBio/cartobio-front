@@ -31,7 +31,7 @@
       <li v-if="currentPage < maxPage - 2">
         <span class="fr-pagination__link fr-displayed-lg">…</span>
       </li>
-      <li v-if="maxPage > 1">
+      <li v-if="maxPage > 2">
         <button class="fr-pagination__link fr-displayed-lg" @click="$emit('changePage', maxPage)">
           {{ maxPage }}
         </button>
@@ -85,6 +85,9 @@ const visiblePages = computed(() => {
 </script>
 
 <style scoped>
+ul {
+  justify-content: center;
+}
 .fr-pagination__link {
   margin: 0 4px;
   padding: 8px 12px;

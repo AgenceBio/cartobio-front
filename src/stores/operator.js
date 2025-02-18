@@ -3,7 +3,6 @@ import { computed, ref, watch } from "vue";
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js";
 import { apiClient } from "@/cartobio-api.js";
 import { useCartoBioStorage } from "@/stores/storage.js";
-import { filterAndSortNotifications } from "@/utils/helper-notification.js";
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
@@ -83,9 +82,6 @@ export const useOperatorStore = defineStore("operator", () => {
             serverR
           : serverR,
       );
-    }
-    if (operatorData.notifications && operatorData.notifications.length > 0) {
-      operatorData.notifications = filterAndSortNotifications(operatorData.notifications);
     }
     operator.value = operatorData;
     records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA));

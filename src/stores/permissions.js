@@ -44,7 +44,7 @@ export const usePermissions = defineStore("permissions", () => {
   const canDeleteParcellaire = canEditParcellaire;
 
   const canCreateVersion = computed(
-    () => (isOc.value || isAgri.value) && getStatus(operatorStore.operator) !== "ARRETEE",
+    () => (isOc.value || isAgri.value) && operatorStore.operator.notifications?.etatCertification !== "ARRETEE",
   );
   const canEditVersion = canEditParcellaire;
 
@@ -65,24 +65,6 @@ export const usePermissions = defineStore("permissions", () => {
   const canAddAnnotations = isOc;
   const canViewAnnotations = isOc;
   const canExportAnnotations = isOc;
-
-  function getStatus(operator) {
-    const array = operator.certificats ?? operator.notifications ?? [];
-
-    for (const notif of array) {
-      const currentStatut = notif.etatCertification || notif.status;
-      if (currentStatut != "BROUILLON") {
-        if (
-          isOc.value &&
-          userStore.user.organismeCertificateur &&
-          notif.organismeCertificateurId !== userStore.user.organismeCertificateur.id
-        ) {
-          return "ARRETEE";
-        }
-        return currentStatut;
-      }
-    }
-  }
 
   return {
     // convenience proxy

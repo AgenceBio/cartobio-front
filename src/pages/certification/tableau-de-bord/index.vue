@@ -76,7 +76,13 @@ meta:
           </fieldset>
           <div v-if="vue === 'operateurs-epingles'" class="operateurs-epingles">
             <div
-              v-for="{ audit_date, certification_date_debut, certification_state, ...operator } in pinnedOperators"
+              v-for="{
+                record_id,
+                audit_date,
+                certification_date_debut,
+                certification_state,
+                ...operator
+              } in pinnedOperators"
               :key="operator.numeroBio"
               class="operator-record"
               @mouseenter="handleMouseEnter(operator)"
@@ -89,6 +95,8 @@ meta:
                 :certificationState="certification_state"
                 :certificationDateDebut="certification_date_debut"
                 :auditDate="audit_date"
+                :record_id="record_id"
+                :organismeOc="user.organismeCertificateur.nom"
                 @pin="loadOperators()"
               />
             </div>
@@ -122,11 +130,10 @@ meta:
 import { onMounted, ref } from "vue";
 import { useOnline } from "@vueuse/core";
 import Spinner from "@/components/widgets/Spinner.vue";
-import { filterAndSortNotifications } from "@/utils/helper-notification.js";
 import { useUserStore } from "@/stores/user";
 import { getUserOperatorsForDashboard } from "@/cartobio-api";
 import { useOperatorStore } from "@/stores/operator";
-import OperatorCard from "@/components/operator/card.vue";
+import OperatorCard from "@/components/operator/Card.vue";
 
 const isInitialized = ref(false);
 const isLoading = ref(true);
@@ -138,7 +145,7 @@ const operatorDisabled = ref({});
 const operatorStore = useOperatorStore();
 const vue = ref("operateurs-epingles");
 
-const { user, isOc } = useUserStore();
+const { user } = useUserStore();
 
 const tooltip = ref({
   visible: false,
@@ -162,18 +169,10 @@ async function loadOperators() {
 
   pinnedOperators.value = res.pinnedOperators;
   pinnedOperators.value.forEach((e) => {
-    if (e.notifications && e.notifications.length > 0) {
-      e.notifications = filterAndSortNotifications(e.notifications);
-    }
-
     checkIfDisabled(e);
   });
   consultedOperators.value = res.consultedOperators;
   consultedOperators.value.forEach((e) => {
-    if (e.notifications && e.notifications.length > 0) {
-      e.notifications = filterAndSortNotifications(e.notifications);
-    }
-
     checkIfDisabled(e);
   });
   isLoading.value = false;
@@ -191,26 +190,9 @@ function hideTooltip() {
 }
 
 function getStatus(operator) {
-  const array = operator.certificats ?? operator.notifications ?? [];
+  const notif = operator.notifications ?? {};
 
-  array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
-
-  for (const notif of array) {
-    const currentStatut = notif.etatCertification || notif.status;
-
-    if (currentStatut != "BROUILLON") {
-      if (
-        isOc.value &&
-        user.value.organismeCertificateur &&
-        notif.organismeCertificateurId !== user.value.organismeCertificateur.id
-      ) {
-        return "ARRETEE";
-      }
-      return currentStatut;
-    }
-  }
-
-  return "BROUILLON";
+  return notif.etatCertification;
 }
 
 function checkIfDisabled(operator) {
