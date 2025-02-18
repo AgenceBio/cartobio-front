@@ -8,10 +8,28 @@ meta:
 </route>
 
 <template>
-  <div class="header">
-    <div class="fr-container fr-h3 fr-px-0 fr-py-5w fr-mb-0">Bienvenue {{ user.prenom }} {{ user.nom }}</div>
-  </div>
-  <div class="fr-container fr-py-5w background-white">
+  <section id="sous-header" class="header-exploitations">
+    <div class="fr-container fr-pb-7w">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <nav role="navigation" class="fr-breadcrumb fr-mb-0">
+            <div class="fr-collapse" id="breadcrumb-1">
+              <ol class="fr-breadcrumb__list">
+                <li>
+                  <a class="fr-breadcrumb__link" href="/">Accueil</a>
+                </li>
+                <li>
+                  <a class="fr-breadcrumb__link" aria-current="page">Tableau de bord</a>
+                </li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <h2 class="fr-mb-0">Bienvenue {{ user.prenom }} {{ user.nom }}</h2>
+      </div>
+    </div>
+  </section>
+  <section class="fr-container fr-py-5w background-white">
     <div class="fr-grid-row">
       <div class="fr-col-10 fr-m-auto fr-mb-3w">
         <h2 class="fr-h3">Rechercher une exploitation</h2>
@@ -123,7 +141,7 @@ meta:
         </template>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -226,14 +244,14 @@ function checkIfDisabled(operator) {
 </script>
 
 <style scoped>
-.header {
+.header-exploitations {
   background: #e3fdeb;
 }
 .background-white {
   background-color: white;
 }
 
-.header::after {
+.header-exploitations::after {
   content: "";
   position: absolute;
   left: 0;

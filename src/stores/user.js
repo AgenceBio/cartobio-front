@@ -95,6 +95,26 @@ export const useUserStore = defineStore("user", () => {
     return "/";
   });
 
+  const exploitationPage = computed(() => {
+    if (isOc.value) {
+      return "/certification/exploitations";
+    } else if (isAgri.value) {
+      return "/exploitations";
+    }
+
+    return "/";
+  });
+
+  const libelleExploitationPage = computed(() => {
+    if (isOc.value) {
+      return "Liste des exploitations";
+    } else if (isAgri.value) {
+      return "Mes exploitations";
+    }
+
+    return "";
+  });
+
   const documentationPage = computed(() => {
     if (isOc.value) return "https://docs-cartobio.agencebio.org/organisme-certification";
     else if (isAgri.value) return "https://docs-cartobio.agencebio.org/agriculteurs.trices";
@@ -148,6 +168,8 @@ export const useUserStore = defineStore("user", () => {
     isUnknown,
     roles,
     startPage,
+    exploitationPage,
+    libelleExploitationPage,
     documentationPage,
     user,
     // methods
