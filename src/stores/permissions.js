@@ -70,7 +70,6 @@ export const usePermissions = defineStore("permissions", () => {
     // convenience proxy
     isOc,
     isAgri,
-    startPage: computed(() => userStore.startPage),
     //
     canAddAnnotations,
     canExportAnnotations,
