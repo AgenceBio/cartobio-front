@@ -67,6 +67,16 @@ export async function getUserOperatorsForDashboard() {
   return data;
 }
 
+/**
+ * @param {number?} limit
+ * @param {number?} offset
+ * @return {Promise<AgenceBioNormalizedOperator[]>}
+ */
+export async function getDashboardSummary(departements, anneeReferenceControle) {
+  const { data } = await apiClient.post(`/v2/operators/dashboard-summary`, {departements, anneeReferenceControle});
+
+  return data;
+}
 
 /**
  * @param {string} pacage

@@ -55,6 +55,7 @@ meta:
         </form>
       </div>
       <div class="fr-col-11 fr-m-auto fr-pt-4w content">
+        <DashboardChargeDeCertification />
         <h2 class="fr-h2 text-align-center">Je prépare mes visites</h2>
 
         <div v-if="isLoading">
@@ -152,6 +153,7 @@ import { useUserStore } from "@/stores/user";
 import { getUserOperatorsForDashboard } from "@/cartobio-api";
 import { useOperatorStore } from "@/stores/operator";
 import OperatorCard from "@/components/operator/Card.vue";
+import DashboardChargeDeCertification from "@/components/dashboard/ChargeDeCertification.vue";
 
 const isInitialized = ref(false);
 const isLoading = ref(true);
@@ -171,8 +173,8 @@ const tooltip = ref({
 });
 
 onMounted(() => {
-  loadOperators();
   isLoading.value = true;
+  loadOperators();
 });
 
 function search(search) {
