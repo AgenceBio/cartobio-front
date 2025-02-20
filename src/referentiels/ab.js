@@ -13,6 +13,11 @@ export const certificationStatesLabels = {
     label: "Non renseigné",
     labelFilter: "Pas de parcellaire",
   },
+  ['NONE']: {
+    label: "Non renseigné",
+    labelFilter: "Pas de parcellaire",
+  },
+
   [CertificationState.OPERATOR_DRAFT]: {
     label: "Parcellaire importé",
     color: "fr-badge--info",
@@ -310,3 +315,9 @@ export const engagementList = {
     tooltipText: "Présence sur l’exploitation de parcelle en conventionnel",
   },
 };
+
+export const etatCertificationList = [
+  { key: "ALL", label: "Tous" },
+  { key: "CERTIFIED", label: "Certifié" },
+  { key: "NO_CERTIFIED", label: "Non certifié" },
+];

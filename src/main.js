@@ -24,6 +24,10 @@ const router = createRouter({
   routes,
   history: createWebHistory(),
   scrollBehavior(to, from, savedPosition) {
+    // Même page avec des paramètres différents
+    if (to.name === from.name && to.fullPath !== from.fullPath) {
+      return
+    }
     if (savedPosition) {
       return savedPosition;
     } else if (to.hash) {

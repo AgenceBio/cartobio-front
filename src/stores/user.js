@@ -141,6 +141,21 @@ export const useUserStore = defineStore("user", () => {
     );
   }
 
+  function saveDepartements(departements) {
+    window.localStorage.setItem("departements-tableau-de-bord", departements || []);
+  }
+
+  function getDepartements() {
+    const dep = window.localStorage.getItem("departements-tableau-de-bord") || ''
+    
+    if (!dep.length) {
+      return [];
+    }
+
+    console.log(dep, dep.split(','))
+    return dep.split(',')
+  }
+
   function $reset() {
     logout();
   }
@@ -177,5 +192,7 @@ export const useUserStore = defineStore("user", () => {
     login,
     logout,
     $reset,
+    saveDepartements,
+    getDepartements
   };
 });
