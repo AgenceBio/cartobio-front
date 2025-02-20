@@ -274,4 +274,18 @@ header {
   line-height: 23px;
   margin-left: 1.2em;
 }
+
+@media (max-width: 36em) {
+  .header-class {
+    flex-direction: column;
+  }
+
+  .name-parcellaire {
+    max-width: 100%;
+  }
+
+  .readonly-badge {
+    margin-left: 0;
+  }
+}
 </style>
