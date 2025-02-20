@@ -7,11 +7,9 @@ describe("NotificationState", () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
-          notifications: [
-            {
-              status: "BROUILLON",
-            },
-          ],
+          notifications: {
+            status: "BROUILLON",
+          },
         },
         text: true,
       },
@@ -29,37 +27,6 @@ describe("NotificationState", () => {
     const spanElement = wrapper.find("span");
     expect(spanElement.attributes("style")).toContain("background-color: rgb(211, 211, 211)");
     expect(spanElement.attributes("style")).toContain("color: rgb(128, 128, 128)");
-  });
-
-  it('does not render "BROUILLON" state IF another notifications exists', async () => {
-    const wrapper = mount(NotificationState, {
-      props: {
-        operator: {
-          notifications: [
-            {
-              status: "BROUILLON",
-            },
-            {
-              status: "ENGAGEE",
-            },
-          ],
-        },
-        text: true,
-      },
-    });
-    await flushPromises();
-
-    expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-success-line");
-    expect(
-      wrapper
-        .find("span")
-        .text()
-        .replace(/\u00A0/g, " "),
-    ).toContain("Engagée");
-
-    const spanElement = wrapper.find("span");
-    expect(spanElement.attributes("style")).toContain("background-color: rgb(158, 249, 190)");
-    expect(spanElement.attributes("style")).toContain("color: rgb(41, 114, 84)");
   });
 
   it('does not render text when "text" prop is false', async () => {
@@ -84,11 +51,9 @@ describe("NotificationState", () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
-          certificats: [
-            {
-              status: "ENGAGEE",
-            },
-          ],
+          certificats: {
+            status: "ENGAGEE",
+          },
         },
         text: true,
       },

@@ -21,9 +21,10 @@
       </li>
       <li v-for="page in visiblePages" :key="page">
         <button
-          class="fr-pagination__link"
-          :class="{ 'fr-pagination__link--current': page === currentPage }"
+          class="fr-pagination__link fr-pagination__link--"
+          :class="{ [`fr-pagination__link--${page}`]: true }"
           @click="$emit('changePage', page)"
+          :aria-current="currentPage == page"
         >
           {{ page }}
         </button>
@@ -87,18 +88,6 @@ const visiblePages = computed(() => {
 <style scoped>
 ul {
   justify-content: center;
-}
-.fr-pagination__link {
-  margin: 0 4px;
-  padding: 8px 12px;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.fr-pagination__link--current {
-  font-weight: bold;
-  text-decoration: underline;
 }
 
 button:disabled {
