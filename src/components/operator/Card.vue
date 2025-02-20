@@ -120,8 +120,8 @@
           certification.
         </div>
         <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator]">
-          L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }} et aucune version de parcellaire de cette
-          exploitation ne concerne votre organisme certificateur.
+          L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }} et aucune version de parcellaire de
+          cette exploitation ne concerne votre organisme certificateur.
         </div>
         <div v-else-if="getStatus(operator) === 'ARRETEE'">
           L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
@@ -172,7 +172,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio]">
+      <div class="row" v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio] && record_id">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -196,17 +196,11 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
 import { jjmmyyyy } from "@/utils/dates.js";
 import ParcellaireState from "@/components/records/State.vue";
 import NotificationState from "@/components/records/NotificationState.vue";
 import { engagementList } from "@/referentiels/ab.js";
-import { useUserStore } from "@/stores/user.js";
 import { pinOperator, unpinOperator } from "@/cartobio-api";
-
-const userStore = useUserStore();
-
-const { user, isOc } = storeToRefs(userStore);
 
 const props = defineProps({
   operator: {
@@ -219,10 +213,7 @@ const props = defineProps({
   certificationState: String,
   certificationDateDebut: String,
   auditDate: String,
-  record_id: {
-    type: String,
-    required: true,
-  },
+  record_id: String,
   organismeOc: Object,
 });
 const emit = defineEmits(["pin"]);
@@ -242,6 +233,9 @@ const goToExploitations = () => {
 };
 
 const goToSpecificVersion = () => {
+  if (!record_id) {
+    return;
+  }
   return router.push(`/exploitations/${props.operator.numeroBio}/${props.record_id}`);
 };
 

@@ -2,8 +2,12 @@
   <div class="filter fr-mb-2w">
     <button class="fr-btn" @click="departementShown = true">Départements</button>
     <div class="fr-menu" ref="departementSelect">
-      <div class="fr-menu__list">
-        <DateFilter v-if="departementShown" v-model="selectedDepartements" />
+      <div class="fr-menu__list" :class="{ 'fr-hidden': !departementShown }">
+        <DateFilter
+          v-if="userDepartements != undefined"
+          v-model="selectedDepartements"
+          :initial-value="userDepartements"
+        />
       </div>
     </div>
     <div class="flex">
@@ -37,41 +41,47 @@
     <Spinner>Chargement des données…</Spinner>
   </div>
   <div v-else class="callout-container">
-    <div class="fr-callout certifiees">
-      <span class="fr-h2 fr-callout__title">{{ summary.countCertifiees }}</span>
-      <div class="flex-center">
-        <p class="fr-callout__text">Exploitations certifiées</p>
+    <button class="fr-callout certifiees" @click="goToCertifiees">
+      <div class="callout-content">
+        <div>
+          <span class="fr-h2 fr-callout__title">{{ summary.countCertifiees }}</span>
+          <p class="fr-callout__text">Exploitations certifiées</p>
+        </div>
         <img src="@gouvfr/dsfr/artwork/pictograms/system/success.svg" role="illustration" alt="" height="48px" />
       </div>
-    </div>
-    <div class="fr-callout en-attentes">
-      <span class="fr-h2 fr-callout__title">{{ summary.countEnAttentes }}</span>
-      <div class="flex-center">
-        <p class="fr-callout__text">En attente de certification</p>
-        <img
-          src="@gouvfr/dsfr/artwork/pictograms/document/document-signature.svg"
-          role="illustration"
-          alt=""
-          height="48px"
-        />
+    </button>
+    <button class="fr-callout en-attentes" @click="goToEnAttentes">
+      <div class="callout-content">
+        <div>
+          <span class="fr-h2 fr-callout__title">{{ summary.countEnAttentes }}</span>
+          <p class="fr-callout__text">En attente de certification</p>
+        </div>
+        <img src="../../assets/dsfr/document/conclusion.svg" role="illustration" alt="" height="48px" />
       </div>
-    </div>
-    <div class="fr-callout non-auditees">
-      <span class="fr-h2 fr-callout__title">{{ summary.countNonAuditees }}</span>
-      <div class="flex-center">
-        <p class="fr-callout__text">Non auditées / contrôlées</p>
+    </button>
+    <button class="fr-callout non-auditees" @click="goToNonAuditees">
+      <div class="callout-content">
+        <div>
+          <span class="fr-h2 fr-callout__title">{{ summary.countNonAuditees }}</span>
+          <p class="fr-callout__text">Non auditées / contrôlées</p>
+        </div>
         <img src="@gouvfr/dsfr/artwork/pictograms/system/warning.svg" role="illustration" alt="" height="48px" />
       </div>
-    </div>
+    </button>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { getDashboardSummary } from "@/cartobio-api";
 import DateFilter from "../operator/DateFilter.vue";
 import { onClickOutside } from "@vueuse/core";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+
+const router = useRouter();
+const userStore = useUserStore();
 
 const isLoading = ref(true);
 const isSearching = ref(true);
@@ -79,6 +89,7 @@ const summary = ref({});
 const departementShown = ref(false);
 const selectedDepartements = ref([]);
 const departementSelect = ref(null);
+const userDepartements = ref(undefined);
 
 const lastTwoYears = computed(() => {
   const currentYear = new Date().getFullYear();
@@ -86,24 +97,32 @@ const lastTwoYears = computed(() => {
 });
 const annneeReference = ref(lastTwoYears.value[0]);
 
+onMounted(async () => {
+  userDepartements.value = await userStore.getDepartements();
+  console.log(userDepartements.value);
+});
+
 watch(
   [selectedDepartements, annneeReference],
   () => {
-    console.log("la ?", selectedDepartements.value, annneeReference.value);
     loadSummary();
   },
   { immediate: true },
 );
 async function loadSummary() {
   isSearching.value = true;
-  summary.value = await getDashboardSummary(
-    selectedDepartements.value.map((dep) => dep.code),
-    annneeReference.value,
-  );
+  const departementsToSave = selectedDepartements.value.map((dep) => dep.code);
+  summary.value = await getDashboardSummary(departementsToSave, annneeReference.value);
 
-  console.log(summary.value);
   isSearching.value = false;
   isLoading.value = false;
+  if (
+    departementsToSave.length != userDepartements.value ||
+    departementsToSave.some((s) => !userDepartements.value.include(s))
+  ) {
+    console.log(departementsToSave);
+    userStore.saveDepartements(departementsToSave);
+  }
 }
 
 onClickOutside(departementSelect, ({ target }) => {
@@ -113,8 +132,40 @@ onClickOutside(departementSelect, ({ target }) => {
 });
 
 const removeDepartment = (code) => {
-  console.log(code, selectedDepartements.value);
   selectedDepartements.value = selectedDepartements.value.filter((dep) => dep.code != code);
+};
+
+const goToCertifiees = () => {
+  return router.push({
+    path: "/certification/exploitations",
+    query: {
+      etatCertification: "CERTIFIED",
+      etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
+      departement: selectedDepartements.value.map((d) => d.code),
+    },
+  });
+};
+const goToEnAttentes = () => {
+  return router.push({
+    path: "/certification/exploitations",
+    query: {
+      etatCertification: "NO_CERTIFIED",
+      statutParcellaire: ["AUDITED", "PENDING_CERTIFICATION"],
+      etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
+      departement: selectedDepartements.value.map((d) => d.code),
+    },
+  });
+};
+const goToNonAuditees = () => {
+  return router.push({
+    path: "/certification/exploitations",
+    query: {
+      etatCertification: "NO_CERTIFIED",
+      statutParcellaire: ["OPERATOR_DRAFT", "NONE"],
+      etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
+      departement: selectedDepartements.value.map((d) => d.code),
+    },
+  });
 };
 </script>
 
@@ -134,9 +185,11 @@ const removeDepartment = (code) => {
   gap: 0.5rem;
 }
 
-.flex-center {
+.callout-content {
   display: flex;
-  align-items: center;
+  align-items: end;
+  justify-content: space-between;
+  text-align: left;
 }
 
 .departements-tag {
@@ -148,11 +201,14 @@ const removeDepartment = (code) => {
 .callout-container {
   display: flex;
   justify-content: space-between;
+  gap: 1.5em;
 }
-
+.callout-container .fr-callout {
+  flex: 1;
+}
 @media (min-width: 48em) {
   .callout-container .fr-callout {
-    padding: 1rem 2rem;
+    padding: 1rem 3rem 1rem 2rem;
   }
 }
 .callout-container .fr-callout__text {
@@ -167,7 +223,7 @@ const removeDepartment = (code) => {
   border-radius: 0 0 56px;
 }
 
-.fr-callout.certifiees > .fr-h2 {
+.fr-callout.certifiees .fr-h2 {
   color: #37635f;
 }
 
@@ -177,7 +233,7 @@ const removeDepartment = (code) => {
   background-color: #e5fbfd;
   border-radius: 0 0 56px;
 }
-.fr-callout.en-attentes > .fr-h2 {
+.fr-callout.en-attentes .fr-h2 {
   color: #006a6f;
 }
 .fr-callout.non-auditees {
@@ -187,7 +243,7 @@ const removeDepartment = (code) => {
   border-radius: 0 0 56px;
 }
 
-.fr-callout.non-auditees > .fr-h2 {
+.fr-callout.non-auditees .fr-h2 {
   color: #6e445a;
 }
 </style>
