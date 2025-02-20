@@ -287,5 +287,9 @@ header {
   .readonly-badge {
     margin-left: 0;
   }
+
+  header .heading {
+    flex-wrap: wrap;
+  }
 }
 </style>
