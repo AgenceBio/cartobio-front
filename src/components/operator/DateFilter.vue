@@ -119,3 +119,12 @@ const toggleRegion = (departements) => {
 
 const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 </script>
+
+<style scoped>
+.fr-fieldset.departement-checkbox {
+  margin: 0rem;
+  padding: 1rem;
+  max-height: 400px;
+  overflow: auto;
+}
+</style>
