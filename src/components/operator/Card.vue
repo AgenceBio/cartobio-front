@@ -9,10 +9,10 @@
       <div class="fr-card__content">
         <h3 class="fr-card__title">
           <div v-if="!operatorDisabled[operator.numeroBio]" class="fr-link">
-            {{ operator.nom }}
+            {{ operator.nom || operator.denomationCourante }}
           </div>
           <div v-else class="nameoperator">
-            {{ `${operator.nom}` }}
+            {{ `${operator.nom || operator.denomationCourante}` }}
           </div>
         </h3>
         <p class="fr-card__desc">
@@ -115,16 +115,16 @@
       </div>
       <div class="center" v-else>
         <div v-if="getStatus(operator) === 'NON ENGAGEE'">
-          L’exploitation n’est pas encore gérée par {{ organismeOc || "votre OC" }}. Pour accéder au dossier sur
+          L’exploitation n’est pas encore gérée par {{ organismeOc.nom || "votre OC" }}. Pour accéder au dossier sur
           CartoBio, la notification doit d’abord être validée sur le portail de notification par un chargé de
           certification.
         </div>
         <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator]">
-          L’exploitation n’est plus gérée par {{ organismeOc || "votre OC" }} et aucune version de parcellaire de cette
+          L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }} et aucune version de parcellaire de cette
           exploitation ne concerne votre organisme certificateur.
         </div>
         <div v-else-if="getStatus(operator) === 'ARRETEE'">
-          L’exploitation n’est plus gérée par {{ organismeOc || "votre OC" }}. Vous pouvez tout de même accéder aux
+          L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
           versions de parcellaire initiées par votre organisme certificateur.
         </div>
       </div>
@@ -132,7 +132,7 @@
       <div class="row" v-if="!certificationState && !operatorDisabled[operator.numeroBio]">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
-          @click="goToSpecificVersion"
+          @click="goToExploitations"
         >
           Créer un parcellaire
         </button>
@@ -140,7 +140,11 @@
 
       <div
         class="row"
-        v-if="auditDate && (certificationState == 'CERTIFIED' || certificationState === 'PENDING_CERTIFICATION')"
+        v-if="
+          auditDate &&
+          (certificationState == 'CERTIFIED' || certificationState === 'PENDING_CERTIFICATION') &&
+          !operatorDisabled[operator.numeroBio]
+        "
       >
         <p class="fr-hint-tex controlerealise">Contrôle réalisé</p>
         <div class="certification-info">
@@ -149,7 +153,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="certificationState">
+      <div class="row" v-if="certificationState && !operatorDisabled[operator.numeroBio]">
         <ParcellaireState
           :record="{
             certification_date_debut: certificationDateDebut,
@@ -168,7 +172,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="certificationState == 'AUDITED'">
+      <div class="row" v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio]">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -177,7 +181,7 @@
         </button>
       </div>
 
-      <div class="row" v-if="certificationState == 'OPERATOR_DRAFT'">
+      <div class="row" v-if="certificationState == 'OPERATOR_DRAFT' && !operatorDisabled[operator.numeroBio]">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -219,7 +223,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  organismeOc: String,
+  organismeOc: Object,
 });
 const emit = defineEmits(["pin"]);
 

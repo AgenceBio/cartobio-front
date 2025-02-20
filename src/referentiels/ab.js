@@ -239,56 +239,65 @@ export const certificationDateFin = {
 };
 
 export const notificationsStateLevel = {
-  ["BROUILLON"]: {
-    label: "Brouillon",
-    color: "#D3D3D3",
-    textColor: "#808080",
-    icon: "fr-icon-article-line",
+  ["ENGAGEE"]: {
+    label: "Engagée",
+    color: "#9EF9BE",
+    textColor: "#297254",
+    icon: "fr-icon-success-line",
+    displayFilter: true,
   },
-  ["ARRETEE"]: {
-    label: "Arrêtée",
-    color: "#FFE9E9",
-    textColor: "#CE0500",
-    icon: "fr-icon-error-fill",
+
+  ["ENGAGEE FUTUR"]: {
+    label: "Engagée future",
+    color: "#E3E3FD",
+    textColor: "#000091",
+    icon: "fr-icon-time-line",
+    displayFilter: true,
+  },
+
+  ["SUSPENDUE"]: {
+    label: "Suspendue",
+    color: "#FDDFDB",
+    textColor: "#A94645",
+    icon: "fr-icon-pause-circle-line",
+    displayFilter: true,
   },
   ["NON ENGAGEE"]: {
     label: "Non engagée",
     color: "#FBE769",
     textColor: "#66673D",
     icon: "fr-icon-stop-circle-line",
+    displayFilter: true,
   },
-  // NOTE : Pas sûr d'avoir cette enum
-  // ["NON ENGAGEE-CHT OC"]: {
-  //   label: "Certification en cours",
-  //   color: "fr-badge--new",
-  // },
-  ["ENGAGEE FUTUR"]: {
-    label: "Engagée future",
-    color: "#E3E3FD",
-    textColor: "#000091",
-    icon: "fr-icon-time-line",
-  },
-  ["SUSPENDUE"]: {
-    label: "Suspendue",
-    color: "#FDDFDB",
-    textColor: "#A94645",
-    icon: "fr-icon-pause-circle-line",
-  },
-  ["ENGAGEE"]: {
-    label: "Engagée",
-    color: "#9EF9BE",
-    textColor: "#297254",
-    icon: "fr-icon-success-line",
+  ["ARRETEE"]: {
+    label: "Arrêtée",
+    color: "#FFE9E9",
+    textColor: "#CE0500",
+    icon: "fr-icon-error-fill",
+    displayFilter: true,
   },
   ["RETIREE"]: {
     label: "Retirée",
     color: "#EEE4D9",
     textColor: "#6A6156",
     icon: "fr-icon-close-circle-line",
+    displayFilter: true,
+  },
+
+  ["BROUILLON"]: {
+    label: "Brouillon",
+    color: "#D3D3D3",
+    textColor: "#808080",
+    icon: "fr-icon-article-line",
+    displayFilter: false,
   },
 };
 
 export const engagementList = {
+  ["AB"]: {
+    label: "100%AB",
+    tooltipText: "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB",
+  },
   ["ABCONV"]: {
     label: "AB/en conversion",
     tooltipText: "Présence sur l’exploitation de parcelles en conversion sans parcelles en conventionnel",
@@ -296,9 +305,5 @@ export const engagementList = {
   ["MIXTE"]: {
     label: "Mixte",
     tooltipText: "Présence sur l’exploitation de parcelle en conventionnel",
-  },
-  ["AB"]: {
-    label: "100%AB",
-    tooltipText: "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB",
   },
 };
