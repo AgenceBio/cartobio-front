@@ -115,14 +115,20 @@ meta:
                 :certificationDateDebut="certification_date_debut"
                 :auditDate="audit_date"
                 :record_id="record_id"
-                :organismeOc="user.organismeCertificateur.nom"
+                :organismeOc="user.organismeCertificateur"
                 @pin="loadOperators()"
               />
             </div>
           </div>
           <div v-else class="operateurs-consultes">
             <div
-              v-for="{ audit_date, certification_date_debut, certification_state, ...operator } in consultedOperators"
+              v-for="{
+                record_id,
+                audit_date,
+                certification_date_debut,
+                certification_state,
+                ...operator
+              } in consultedOperators"
               :key="operator.numeroBio"
               class="operator-record"
               @mouseenter="handleMouseEnter(operator)"
@@ -135,6 +141,8 @@ meta:
                 :certificationState="certification_state"
                 :certificationDateDebut="certification_date_debut"
                 :auditDate="audit_date"
+                :record_id="record_id"
+                :organismeOc="user.organismeCertificateur"
                 @pin="loadOperators()"
               />
             </div>
@@ -154,6 +162,7 @@ import { getUserOperatorsForDashboard } from "@/cartobio-api";
 import { useOperatorStore } from "@/stores/operator";
 import OperatorCard from "@/components/operator/Card.vue";
 import DashboardChargeDeCertification from "@/components/dashboard/ChargeDeCertification.vue";
+import { useRouter } from "vue-router";
 
 const isInitialized = ref(false);
 const isLoading = ref(true);
@@ -164,6 +173,7 @@ const userInput = ref();
 const operatorDisabled = ref({});
 const operatorStore = useOperatorStore();
 const vue = ref("operateurs-epingles");
+const router = useRouter();
 
 const { user } = useUserStore();
 
@@ -178,7 +188,7 @@ onMounted(() => {
 });
 
 function search(search) {
-  console.log(search);
+  return router.push({ path: "/certification/exploitations", query: { search } });
 }
 
 async function loadOperators() {

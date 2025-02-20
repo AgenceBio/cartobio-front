@@ -59,6 +59,10 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
+  initialValue: {
+    type: [Array, String],
+    default: () => [],
+  },
 });
 
 // Départements filtres
@@ -71,6 +75,22 @@ const emit = defineEmits(["update:modelValue"]);
 
 onMounted(async () => {
   departements.value = await getDepartements();
+
+  if (props.initialValue.length > 0) {
+    const searchedDep = Array.isArray(props.initialValue) ? props.initialValue : [props.initialValue];
+
+    searchedDep.map((v) => {
+      const dep = Object.values(departements.value)
+        .flat()
+        .find((d) => d.code === v);
+
+      if (dep) {
+        selectedDepartements.value.push(dep);
+      }
+    });
+
+    emit("update:modelValue", selectedDepartements.value);
+  }
 });
 
 const departementsList = computed(() => {

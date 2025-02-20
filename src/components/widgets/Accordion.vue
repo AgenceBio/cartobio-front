@@ -50,7 +50,7 @@ const props = defineProps({
     required: true,
   },
   optionsSelected: {
-    type: String,
+    type: [String, Array],
     required: false,
   },
 });
