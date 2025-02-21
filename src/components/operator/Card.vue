@@ -2,10 +2,13 @@
   <div
     class="fr-card fr-card--download"
     :class="[operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link', 'operator-record']"
-    @mouseenter="handleMouseEnter(operator)"
-    @mouseleave="hideTooltip"
   >
-    <div class="fr-card__body" @click="goToExploitations()">
+    <div
+      class="fr-card__body"
+      @click="goToExploitations()"
+      @mouseenter="handleMouseEnter(operator)"
+      @mouseleave="hideTooltip"
+    >
       <div class="fr-card__content">
         <h3 class="fr-card__title">
           <div v-if="!operatorDisabled[operator.numeroBio]" class="fr-link">
@@ -129,7 +132,10 @@
         </div>
       </div>
 
-      <div class="row" v-if="!certificationState && !operatorDisabled[operator.numeroBio]">
+      <div
+        class="row"
+        v-if="!certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
+      >
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToExploitations"
@@ -153,7 +159,10 @@
         </div>
       </div>
 
-      <div class="row" v-if="certificationState && !operatorDisabled[operator.numeroBio]">
+      <div
+        class="row"
+        v-if="certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
+      >
         <ParcellaireState
           :record="{
             certification_date_debut: certificationDateDebut,
@@ -386,13 +395,14 @@ function hideTooltip() {
   z-index: 1;
   border-top: 1px solid #dddddd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   transform: translateX(-90%);
 }
 
 .tooltip-text::before {
   content: "";
   position: absolute;
   bottom: 100%;
-  left: 10.5px;
+  right: 3.5px;
   border-width: 6px;
   border-style: solid;
   border-color: transparent transparent #dddddd transparent;
@@ -403,7 +413,7 @@ function hideTooltip() {
   content: "";
   position: absolute;
   bottom: 100%;
-  left: 12.5px;
+  right: 5.5px;
   border-width: 4px;
   border-style: solid;
   border-color: transparent transparent white transparent;

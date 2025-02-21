@@ -152,7 +152,6 @@ export const useUserStore = defineStore("user", () => {
       return [];
     }
 
-    console.log(dep, dep.split(','))
     return dep.split(',')
   }
 
