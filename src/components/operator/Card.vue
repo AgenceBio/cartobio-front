@@ -129,7 +129,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="!certificationState && !operatorDisabled[operator.numeroBio]">
+      <div class="row" v-if="!certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToExploitations"
@@ -153,7 +153,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="certificationState && !operatorDisabled[operator.numeroBio]">
+      <div class="row" v-if="certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE' ">
         <ParcellaireState
           :record="{
             certification_date_debut: certificationDateDebut,
