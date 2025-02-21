@@ -70,27 +70,57 @@
       </div>
     </button>
   </div>
+  <div class="header-a-certifier">
+    <div class="titre-a-certifier">
+      <h3 class="fr-h3">Parcellaires à certifier</h3>
+      <span class="fr-text--md fr-display-md">({{ countToCertify }})</span>
+    </div>
+    <button class="fr-link fr-icon-arrow-right-line fr-link--icon-right" @click="goToACertifier">Voir tout</button>
+  </div>
+  <div class="a-certifier">
+    <div
+      v-for="{ record_id, audit_date, certification_date_debut, certification_state, ...operator } in operators"
+      :key="operator.numeroBio"
+      class="operator-record"
+    >
+      <OperatorCard
+        :operator="operator"
+        :operatorDisabled="{}"
+        :certificationState="certification_state"
+        :certificationDateDebut="certification_date_debut"
+        :auditDate="audit_date"
+        :record_id="record_id"
+        :organismeOc="user.organismeCertificateur"
+        @pin="loadOperators()"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
-import { getDashboardSummary } from "@/cartobio-api";
+import { getDashboardSummary, searchOperators } from "@/cartobio-api";
 import DepartementFilter from "../operator/DepartementFilter.vue";
 import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
+import OperatorCard from "@/components/operator/Card.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 
 const isLoading = ref(true);
+const isLoadingOperator = ref(true);
 const isSearching = ref(true);
 const summary = ref({});
 const departementShown = ref(false);
 const selectedDepartements = ref([]);
 const departementSelect = ref(null);
 const userDepartements = ref(undefined);
+const countToCertify = ref(0);
+const operators = ref([]);
+const user = useUserStore();
 
 const lastTwoYears = computed(() => {
   const currentYear = new Date().getFullYear();
@@ -99,9 +129,31 @@ const lastTwoYears = computed(() => {
 const annneeReference = ref(lastTwoYears.value[0]);
 
 onMounted(async () => {
+  loadOperators();
   userDepartements.value = await userStore.getDepartements();
-  console.log(userDepartements.value);
 });
+
+async function loadOperators() {
+  const res = await searchOperators({
+    input: "",
+    page: 1,
+    sort: "nom",
+    order: "asc",
+    filter: {
+      anneeReference: new Date().getFullYear(),
+      statutParcellaire: ["PENDING_CERTIFICATION"],
+      departement: selectedDepartements.value.map((m) => m.code),
+      engagement: [],
+      etatNotification: ["ENGAGEE", "ENGAGGEE FUTUR"],
+      pinned: false,
+      etatCertification: "ALL",
+    },
+  });
+
+  countToCertify.value = res.pagination.total;
+  operators.value = res.records.slice(0, 6);
+  isLoadingOperator.value = false;
+}
 
 watch(
   [selectedDepartements, annneeReference, userDepartements],
@@ -170,6 +222,17 @@ const goToNonAuditees = () => {
     query: {
       etatCertification: "NO_CERTIFIED",
       statutParcellaire: ["OPERATOR_DRAFT", "NONE"],
+      etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
+      departement: selectedDepartements.value.map((d) => d.code),
+    },
+  });
+};
+const goToACertifier = () => {
+  return router.push({
+    path: "/certification/exploitations",
+    query: {
+      etatCertification: "ALL",
+      statutParcellaire: ["PENDING_CERTIFICATION"],
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
     },
@@ -253,6 +316,19 @@ const goToNonAuditees = () => {
 
 .fr-callout.non-auditees .fr-h2 {
   color: #6e445a;
+}
+.header-a-certifier {
+  display: flex;
+  justify-content: space-between;
+}
+.titre-a-certifier {
+  display: flex;
+  gap: 0.3rem;
+}
+.a-certifier {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>
 
