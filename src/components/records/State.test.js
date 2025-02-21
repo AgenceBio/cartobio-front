@@ -17,7 +17,11 @@ describe("CertificationState", () => {
   it("renders a date suffix when provided", async () => {
     const wrapper = mount(State, {
       props: {
-        record: { certification_state: CertificationState.CERTIFIED, certification_date_debut: new Date("2023-01-01") },
+        record: {
+          certification_state: CertificationState.CERTIFIED,
+          certification_date_debut: new Date("2023-01-01"),
+          annee_reference_controle: 2023,
+        },
       },
     });
     expect(wrapper.text()).toContain("Certifié2023");

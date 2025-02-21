@@ -203,10 +203,7 @@ export function getAnnotationLabel({ code, metadata }) {
 }
 
 export function yearLabel(record) {
-  const date = record.certification_date_debut ?? record.audit_date ?? null;
-  if (!date) return "";
-
-  return new Date(date).toLocaleDateString("fr-FR", { year: "numeric" });
+  return record.annee_reference_controle ?? "";
 }
 
 export const certificationDateFin = {
