@@ -3,7 +3,7 @@
     <button class="fr-btn fr-btn--secondary" @click="departementShown = true">Départements</button>
     <div class="fr-menu" ref="departementSelect">
       <div class="fr-menu__list" :class="{ 'fr-hidden': !departementShown }">
-        <DateFilter
+        <DepartementFilter
           v-if="userDepartements != undefined"
           v-model="selectedDepartements"
           :initial-value="userDepartements"
@@ -76,7 +76,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { getDashboardSummary } from "@/cartobio-api";
-import DateFilter from "../operator/DateFilter.vue";
+import DepartementFilter from "../operator/DepartementFilter.vue";
 import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
