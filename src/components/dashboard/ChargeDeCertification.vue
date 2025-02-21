@@ -1,12 +1,13 @@
 <template>
   <div class="filter fr-mb-2w">
-    <button class="fr-btn" @click="departementShown = true">Départements</button>
+    <button class="fr-btn fr-btn--secondary" @click="departementShown = true">Départements</button>
     <div class="fr-menu" ref="departementSelect">
       <div class="fr-menu__list" :class="{ 'fr-hidden': !departementShown }">
         <DateFilter
           v-if="userDepartements != undefined"
           v-model="selectedDepartements"
           :initial-value="userDepartements"
+          @update:modelValue="persistDepartements()"
         />
       </div>
     </div>
@@ -103,7 +104,7 @@ onMounted(async () => {
 });
 
 watch(
-  [selectedDepartements, annneeReference],
+  [selectedDepartements, annneeReference, userDepartements],
   () => {
     loadSummary();
   },
@@ -111,16 +112,22 @@ watch(
 );
 async function loadSummary() {
   isSearching.value = true;
-  const departementsToSave = selectedDepartements.value.map((dep) => dep.code);
-  summary.value = await getDashboardSummary(departementsToSave, annneeReference.value);
+  summary.value = await getDashboardSummary(
+    selectedDepartements.value.map((dep) => dep.code),
+    annneeReference.value,
+  );
 
   isSearching.value = false;
   isLoading.value = false;
+}
+
+function persistDepartements() {
+  const departementsToSave = selectedDepartements.value.map((dep) => dep.code);
+
   if (
-    departementsToSave.length != userDepartements.value ||
+    (userDepartements.value != null && departementsToSave.length != userDepartements.value) ||
     departementsToSave.some((s) => !userDepartements.value.include(s))
   ) {
-    console.log(departementsToSave);
     userStore.saveDepartements(departementsToSave);
   }
 }
@@ -133,6 +140,7 @@ onClickOutside(departementSelect, ({ target }) => {
 
 const removeDepartment = (code) => {
   selectedDepartements.value = selectedDepartements.value.filter((dep) => dep.code != code);
+  userStore.saveDepartements(selectedDepartements.value.map((d) => d.code));
 };
 
 const goToCertifiees = () => {

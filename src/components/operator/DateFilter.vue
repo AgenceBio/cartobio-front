@@ -12,13 +12,13 @@
     <button class="fr-btn" type="submit" title="Rechercher" :disabled="isSearching" />
   </div>
   <fieldset
-    class="fr-fieldset departement-checkbox"
+    class="fr-fieldset departement-checkbox fr-mt-2v"
     id="checkboxes-small"
     aria-labelledby="checkboxes-small-legend checkboxes-small-messages"
   >
     <div v-for="(departements, region) in departementsList" :key="region">
-      <h6 class="margin-bottom-0">{{ region }}</h6>
-      <button @click="toggleRegion(departements)" class="fr-btn fr-btn--sm fr-btn--tertiary margin-top-0">
+      <h6 class="fr-mb-2v">{{ region }}</h6>
+      <button @click="toggleRegion(departements)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-mt-0 fr-mb-2w">
         Tout {{ region }}
       </button>
       <div v-for="element in departements" :key="element.code" class="fr-fieldset__element">
@@ -89,6 +89,7 @@ onMounted(async () => {
       }
     });
 
+    console.log(selectedDepartements.value, searchedDep);
     emit("update:modelValue", selectedDepartements.value);
   }
 });
@@ -143,7 +144,6 @@ const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, 
 <style scoped>
 .fr-fieldset.departement-checkbox {
   margin: 0rem;
-  padding: 1rem;
   max-height: 400px;
   overflow: auto;
 }
