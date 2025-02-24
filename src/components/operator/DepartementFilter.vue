@@ -52,8 +52,10 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { getDepartements } from "@/cartobio-api";
+import { useOnline } from "@vueuse/core";
 
 const isSearching = ref(false);
+const isOnline = useOnline();
 
 const props = defineProps({
   modelValue: {
@@ -68,7 +70,6 @@ const props = defineProps({
 });
 
 // Départements filtres
-
 
 const selectedDepartements = ref([...props.modelValue]);
 const userInputDepartement = ref("");
@@ -86,6 +87,7 @@ watch(
 
 
 onMounted(async () => {
+  if (!isOnline.value) return;
   departements.value = await getDepartements();
 
   if (props.initialValue.length > 0) {
