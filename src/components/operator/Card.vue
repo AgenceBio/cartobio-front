@@ -37,23 +37,27 @@
               class="ri-pushpin-fill"
               style="color: #000091"
               @click.stop="unpin(operator.numeroBio)"
+                aria-label="Désépingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
             <button
               v-else-if="!operatorDisabled[operator.numeroBio]"
               class="ri-pushpin-line"
               style="color: #000091"
               @click.stop="pin(operator.numeroBio)"
+                aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
             <span
               v-if="operatorDisabled[operator.numeroBio]"
               aria-hidden
               class="fr-ml-1w fr-icon-lock-fill fr-icon--sm"
+                aria-label="Dossier inaccessible"
             ></span>
-            <span
+            <button
               v-else
               class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm cursor-button"
               @click.stop="goToExploitations()"
-            ></span>
+                aria-label="Voir les détails de l'exploitation {{ operator.nom || operator.denomationCourante }}"
+            ></button>
             <div v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
               Le dossier n’est pas accessible
             </div>
@@ -152,8 +156,8 @@
           !operatorDisabled[operator.numeroBio]
         "
       >
-        <p class="fr-hint-tex controlerealise">Contrôle réalisé</p>
-        <div class="certification-info">
+        <p class="fr-hint-tex controlerealise" aria-live="polite">Contrôle réalisé</p>
+        <div class="certification-info" aria-live="polite">
           <div class="fr-icon-calendar-2-line fr-icon--sm"></div>
           <div class="fr-hint-text">{{ jjmmyyyy(auditDate) }}</div>
         </div>
