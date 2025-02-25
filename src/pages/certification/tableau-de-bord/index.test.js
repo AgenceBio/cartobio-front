@@ -58,6 +58,5 @@ describe("certification/tableau-de-bord", () => {
     expect(wrapper.findAll(".operateurs-epingles")).toHaveLength(0);
     expect(wrapper.findAll(".operateurs-consultes")).toHaveLength(1);
     expect(wrapper.findAll(".operateurs-consultes > div")).toHaveLength(2);
-
   });
 });
