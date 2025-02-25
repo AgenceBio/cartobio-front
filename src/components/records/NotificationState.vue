@@ -42,7 +42,7 @@ onMounted(() => {
   if (props.operator) {
     const array = props.operator.certificats ?? props.operator.notifications ?? [];
 
-    displayedNotif.value = array
+    displayedNotif.value = array;
 
     if (!displayedNotif.value) {
       stateInfo.value = notificationsStateLevel["BROUILLON"];
@@ -77,7 +77,7 @@ function getStyle() {
 }
 
 function isEnAttente() {
-  if(props.stateInfoProps) return false
+  if (props.stateInfoProps) return false;
   return stateInfo.value?.label === notificationsStateLevel["NON ENGAGEE"].label;
 }
 </script>

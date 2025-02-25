@@ -82,9 +82,8 @@ watch(
   (newValue) => {
     selectedDepartements.value = [...newValue];
   },
-  { deep: true }
+  { deep: true },
 );
-
 
 onMounted(async () => {
   if (!isOnline.value) return;

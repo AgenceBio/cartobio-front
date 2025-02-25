@@ -73,7 +73,7 @@ export async function getUserOperatorsForDashboard() {
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
 export async function getDashboardSummary(departements, anneeReferenceControle) {
-  const { data } = await apiClient.post(`/v2/operators/dashboard-summary`, {departements, anneeReferenceControle});
+  const { data } = await apiClient.post(`/v2/operators/dashboard-summary`, { departements, anneeReferenceControle });
 
   return data;
 }
@@ -277,6 +277,6 @@ export async function getDepartements() {
  * @returns {Promise<any>}
  */
 export async function getDataXLSX() {
-  const data = await apiClient.get('/v2/exportParcellaire');
-  return data
+  const data = await apiClient.get("/v2/exportParcellaire");
+  return data;
 }

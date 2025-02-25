@@ -13,7 +13,7 @@ export const certificationStatesLabels = {
     label: "Non renseigné",
     labelFilter: "Pas de parcellaire",
   },
-  ['NONE']: {
+  ["NONE"]: {
     label: "Non renseigné",
     labelFilter: "Pas de parcellaire",
   },
