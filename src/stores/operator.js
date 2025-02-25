@@ -106,7 +106,7 @@ export const useOperatorStore = defineStore("operator", () => {
    */
   function markAsConsulted() {
     if (operator.value) {
-      apiClient.post((`/v2/operator/${operator.value.numeroBio}/consulte`))
+      apiClient.post(`/v2/operator/${operator.value.numeroBio}/consulte`);
     }
   }
 
@@ -146,6 +146,6 @@ export const useOperatorStore = defineStore("operator", () => {
     $reset,
     updatePinnedStatus,
     getOperator,
-    markAsConsulted
+    markAsConsulted,
   };
 });

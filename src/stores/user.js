@@ -146,13 +146,13 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function getDepartements() {
-    const dep = window.localStorage.getItem("departements-tableau-de-bord") || ''
-    
+    const dep = window.localStorage.getItem("departements-tableau-de-bord") || "";
+
     if (!dep.length) {
       return [];
     }
 
-    return dep.split(',')
+    return dep.split(",");
   }
 
   function $reset() {
@@ -192,6 +192,6 @@ export const useUserStore = defineStore("user", () => {
     logout,
     $reset,
     saveDepartements,
-    getDepartements
+    getDepartements,
   };
 });

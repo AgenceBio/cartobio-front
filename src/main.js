@@ -26,7 +26,7 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     // Même page avec des paramètres différents
     if (to.name === from.name && to.fullPath !== from.fullPath) {
-      return
+      return;
     }
     if (savedPosition) {
       return savedPosition;

@@ -5,8 +5,8 @@ import axios from "axios";
 
 import { useUserStore } from "@/stores/user.js";
 
-import records from "../../__fixtures__/search-records.json" assert { type: "json" };
-import userFixture from "../../__fixtures__/user.json" assert { type: "json" };
+import records from "../../__fixtures__/search-records.json";
+import userFixture from "../../__fixtures__/user.json";
 
 import Page from "./index.vue";
 
@@ -58,6 +58,5 @@ describe("certification/tableau-de-bord", () => {
     expect(wrapper.findAll(".operateurs-epingles")).toHaveLength(0);
     expect(wrapper.findAll(".operateurs-consultes")).toHaveLength(1);
     expect(wrapper.findAll(".operateurs-consultes > div")).toHaveLength(2);
-
   });
 });
