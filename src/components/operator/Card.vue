@@ -64,7 +64,9 @@
           </div>
         </div>
         <div class="fr-card__end">
-          <div class="fr-hint-text">n° client {{ operator.notifications.numeroClient }}</div>
+          <div class="fr-hint-text" v-if="operator.notifications.numeroClient">
+            n° client {{ operator.notifications.numeroClient }}
+          </div>
           <div />
           <div class="fr-hint-text">n° Bio {{ operator.numeroBio }}</div>
         </div>
