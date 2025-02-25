@@ -98,7 +98,6 @@
               <span>
                 Créee le <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
                 {{ jjmmyyyy(operator.created_at) }} par
-                <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
                 <div v-if="operator.metadata.source === 'API Parcellaire'">
                   <span class="fr-icon-download-line fr-icon--sm" />
                   Api Parcellaire
