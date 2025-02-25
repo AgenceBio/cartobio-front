@@ -498,4 +498,11 @@ function hideTooltip() {
 
   color: #37635f;
 }
+
+.fr-enlarge-link:hover {
+  background-color: var(--background-alt-blue-france-hover) !important;
+}
+.fr-enlarge-link:active {
+  background-color: var(--light-background-action-low-blue-france) !important;
+}
 </style>
