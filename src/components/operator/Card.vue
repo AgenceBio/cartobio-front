@@ -64,7 +64,7 @@
           </div>
         </div>
         <div class="fr-card__end">
-          <div class="fr-hint-text">n° client {{ clientNumber }}</div>
+          <div class="fr-hint-text">n° client {{ operator.notifications.numeroClient }}</div>
           <div />
           <div class="fr-hint-text">n° Bio {{ operator.numeroBio }}</div>
         </div>
@@ -252,7 +252,6 @@ const goToSpecificVersion = () => {
 };
 
 // tempo
-const clientNumber = computed(() => Math.floor(Math.random() * 10000));
 function pin(numeroBio) {
   pinOperator(numeroBio).then(() => {
     isEpingle.value = true;
