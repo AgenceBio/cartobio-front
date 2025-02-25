@@ -37,26 +37,26 @@
               class="ri-pushpin-fill"
               style="color: #000091"
               @click.stop="unpin(operator.numeroBio)"
-                aria-label="Désépingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              aria-label="Désépingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
             <button
               v-else-if="!operatorDisabled[operator.numeroBio]"
               class="ri-pushpin-line"
               style="color: #000091"
               @click.stop="pin(operator.numeroBio)"
-                aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
             <span
               v-if="operatorDisabled[operator.numeroBio]"
               aria-hidden
               class="fr-ml-1w fr-icon-lock-fill fr-icon--sm"
-                aria-label="Dossier inaccessible"
+              aria-label="Dossier inaccessible"
             ></span>
             <button
               v-else
               class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm cursor-button"
               @click.stop="goToExploitations()"
-                aria-label="Voir les détails de l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              aria-label="Voir les détails de l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
             <div v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
               Le dossier n’est pas accessible
@@ -398,7 +398,7 @@ function hideTooltip() {
   z-index: 1;
   border-top: 1px solid #dddddd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-   transform: translateX(-90%);
+  transform: translateX(-90%);
 }
 
 .tooltip-text::before {
