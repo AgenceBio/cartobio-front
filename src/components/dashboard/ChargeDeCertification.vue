@@ -137,8 +137,6 @@ async function loadOperators() {
   const res = await searchOperators({
     input: "",
     page: 1,
-    sort: "nom",
-    order: "asc",
     filter: {
       anneeReference: new Date().getFullYear(),
       statutParcellaire: ["PENDING_CERTIFICATION"],

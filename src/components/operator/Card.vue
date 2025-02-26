@@ -208,7 +208,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { jjmmyyyy } from "@/utils/dates.js";
 import ParcellaireState from "@/components/records/State.vue";
@@ -247,7 +247,7 @@ const goToExploitations = () => {
 };
 
 const goToSpecificVersion = () => {
-  if (!record_id) {
+  if (!props.record_id) {
     return;
   }
   return router.push(`/exploitations/${props.operator.numeroBio}/${props.record_id}`);
