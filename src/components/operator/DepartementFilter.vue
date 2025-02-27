@@ -102,7 +102,6 @@ onMounted(async () => {
       }
     });
 
-    console.log(selectedDepartements.value, searchedDep);
     emit("update:modelValue", selectedDepartements.value);
   }
 });

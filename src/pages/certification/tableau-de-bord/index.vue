@@ -50,7 +50,7 @@ meta:
             id="search"
             :disabled="!isOnline"
           />
-          <button class="fr-btn" type="submit" title="Rechercher" :disabled="isLoading || !isOnline">Rechercher</button>
+          <button class="fr-btn" type="submit" title="Rechercher" :disabled="!isOnline">Rechercher</button>
         </form>
       </div>
       <div class="fr-col-11 fr-m-auto fr-pt-4w content">
@@ -62,23 +62,18 @@ meta:
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { useOnline } from "@vueuse/core";
 import { useUserStore } from "@/stores/user";
 import DashboardChargeDeCertification from "@/components/dashboard/ChargeDeCertification.vue";
 import DashboardAuditeur from "@/components/dashboard/Auditeur.vue";
 import { useRouter } from "vue-router";
 
-const isLoading = ref(true);
 const isOnline = useOnline();
 const userInput = ref();
 const router = useRouter();
 
 const { user, isOcAudit, isOcCertif } = useUserStore();
-
-onMounted(() => {
-  isLoading.value = true;
-});
 
 function search(search) {
   return router.push({ path: "/certification/exploitations", query: { search } });
