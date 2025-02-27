@@ -166,7 +166,12 @@
 
       <div
         class="row"
-        v-if="certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
+        v-if="
+          certificationState &&
+          !operatorDisabled[operator.numeroBio] &&
+          getStatus(operator) !== 'ARRETEE' &&
+          showCertificationBadge
+        "
       >
         <ParcellaireState
           :record="{
@@ -186,7 +191,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio] && record_id">
+      <div v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio] && record_id">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -195,7 +200,7 @@
         </button>
       </div>
 
-      <div class="row" v-if="certificationState == 'OPERATOR_DRAFT' && !operatorDisabled[operator.numeroBio]">
+      <div v-if="certificationState == 'OPERATOR_DRAFT' && !operatorDisabled[operator.numeroBio]">
         <button
           class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -223,6 +228,10 @@ const props = defineProps({
   },
   operatorDisabled: {
     required: true,
+  },
+  showCertificationBadge: {
+    type: Boolean,
+    default: true,
   },
   certificationState: String,
   certificationDateDebut: String,

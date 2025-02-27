@@ -75,16 +75,19 @@
       </div>
     </button>
   </div>
-  <div class="header-a-certifier">
+  <div class="header-a-certifier fr-mb-4v">
     <div class="titre-a-certifier">
-      <h3 class="fr-h3">Parcellaires à certifier</h3>
-      <span class="fr-text--lead">({{ countToCertify }})</span>
+      <h3 class="fr-h3 fr-mb-0">Parcellaire{{ operators.length > 1 ? "s" : "" }} à certifier</h3>
+      <span class="fr-text--lead fr-mb-0">({{ countToCertify }})</span>
     </div>
-    <button class="fr-link fr-icon-arrow-right-line fr-link--icon-right green-link" @click="goToACertifier">
+    <button
+      class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-arrow-right-line green-link"
+      @click="goToACertifier"
+    >
       Voir tout
     </button>
   </div>
-  <div class="a-certifier">
+  <div class="a-certifier" :class="{ unique: operators.length === 1 }">
     <div
       v-for="{ record_id, audit_date, certification_date_debut, certification_state, ...operator } in operators"
       :key="operator.numeroBio"
@@ -98,6 +101,7 @@
         :auditDate="audit_date"
         :record_id="record_id"
         :organismeOc="user.organismeCertificateur"
+        :show-certification-badge="false"
         @pin="loadOperators()"
       />
     </div>
@@ -136,7 +140,6 @@ const lastTwoYears = computed(() => {
 const annneeReference = ref(lastTwoYears.value[0]);
 
 onMounted(async () => {
-  loadOperators();
   userDepartements.value = await userStore.getDepartements();
 });
 
@@ -144,8 +147,9 @@ async function loadOperators() {
   const res = await searchOperators({
     input: "",
     page: 1,
+    limit: 10,
     filter: {
-      anneeReference: new Date().getFullYear(),
+      anneeReference: annneeReference.value,
       statutParcellaire: ["PENDING_CERTIFICATION"],
       departement: selectedDepartements.value.map((m) => m.code),
       engagement: [],
@@ -156,7 +160,7 @@ async function loadOperators() {
   });
 
   countToCertify.value = res.pagination.total;
-  operators.value = res.records.slice(0, 6);
+  operators.value = res.records;
   isLoadingOperator.value = false;
 }
 
@@ -164,6 +168,7 @@ watch(
   [selectedDepartements, annneeReference, userDepartements],
   () => {
     loadSummary();
+    loadOperators();
   },
   { immediate: true },
 );
@@ -207,6 +212,7 @@ const goToCertifiees = () => {
       etatCertification: "CERTIFIED",
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
+      anneeReference: annneeReference.value,
     },
   });
 };
@@ -218,6 +224,7 @@ const goToEnAttentes = () => {
       statutParcellaire: ["AUDITED", "PENDING_CERTIFICATION"],
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
+      anneeReference: annneeReference.value,
     },
   });
 };
@@ -335,6 +342,10 @@ const goToACertifier = () => {
   display: grid;
   grid-template-columns: auto auto;
   gap: 1em;
+}
+
+.a-certifier.unique {
+  grid-template-columns: auto;
 }
 .green-link {
   color: #18753c;
