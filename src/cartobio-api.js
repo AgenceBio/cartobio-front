@@ -39,8 +39,8 @@ export async function getOperatorNcviFeatures({ evv, numeroBio }) {
  * @param {string} input
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
-export async function searchOperators({ input, page, filter }) {
-  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, filter });
+export async function searchOperators({ input, page, filter, limit = 7 }) {
+  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, filter, limit });
 
   return data;
 }
