@@ -329,7 +329,7 @@ const goToACertifier = () => {
 .titre-a-certifier {
   display: flex;
   gap: 0.3rem;
-  align-items: baseline;
+  align-items: end;
 }
 .a-certifier {
   display: grid;
