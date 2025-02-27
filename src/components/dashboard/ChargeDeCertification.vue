@@ -1,6 +1,11 @@
 <template>
   <div class="filter fr-mb-2w">
-    <button class="fr-btn fr-btn--secondary" @click="departementShown = true">Départements</button>
+    <button
+      class="fr-btn fr-btn--secondary fr-icon fr-icon-edit-line fr-btn--icon-right"
+      @click="departementShown = true"
+    >
+      Départements
+    </button>
     <div class="fr-menu" ref="departementSelect">
       <div class="fr-menu__list" :class="{ 'fr-hidden': !departementShown }">
         <DepartementFilter
@@ -35,7 +40,7 @@
       class="fr-tag fr-tag--sm fr-tag--dismiss"
       @click="removeDepartment(value.code)"
     >
-      <span>{{ `${value.nom}(${value.code})` }}</span>
+      <span>{{ `${value.nom} (${value.code})` }}</span>
     </button>
   </div>
   <div v-if="isLoading">
@@ -73,9 +78,11 @@
   <div class="header-a-certifier">
     <div class="titre-a-certifier">
       <h3 class="fr-h3">Parcellaires à certifier</h3>
-      <span class="fr-text--md fr-display-md">({{ countToCertify }})</span>
+      <span class="fr-text--lead">({{ countToCertify }})</span>
     </div>
-    <button class="fr-link fr-icon-arrow-right-line fr-link--icon-right" @click="goToACertifier">Voir tout</button>
+    <button class="fr-link fr-icon-arrow-right-line fr-link--icon-right green-link" @click="goToACertifier">
+      Voir tout
+    </button>
   </div>
   <div class="a-certifier">
     <div
@@ -322,11 +329,15 @@ const goToACertifier = () => {
 .titre-a-certifier {
   display: flex;
   gap: 0.3rem;
+  align-items: end;
 }
 .a-certifier {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1em;
+}
+.green-link {
+  color: #18753c;
 }
 </style>
 
