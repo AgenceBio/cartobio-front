@@ -10,13 +10,17 @@
       >
         <div style="display: flex; flex-direction: column; align-items: flex-start">
           <span>{{ title }}</span>
-          <span v-if="optionsSelected" style="color: grey; font-size: 12px">{{
-            Array.isArray(optionsSelected)
-              ? optionsSelected.length > 0
-                ? optionsSelected.length + " sélections"
-                : null
-              : optionsSelected
-          }}</span>
+          <span
+            v-if="optionsSelected && (!Array.isArray(optionsSelected) || optionsSelected.length > 0)"
+            class="small-text"
+            >{{
+              Array.isArray(optionsSelected)
+                ? optionsSelected.length > 1
+                  ? optionsSelected.length + " sélections"
+                  : "1 sélection"
+                : optionsSelected
+            }}<template v-if="optionsSuffix"> | {{ optionsSuffix }}</template></span
+          >
           <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
         </div>
       </button>
@@ -51,6 +55,10 @@ const props = defineProps({
   },
   optionsSelected: {
     type: [String, Array],
+    required: false,
+  },
+  optionsSuffix: {
+    type: [String, Number],
     required: false,
   },
 });
@@ -104,5 +112,10 @@ if (activeAccordionId) {
 
 .fr-accordion .fr-collapse--expanded {
   overflow: visible;
+}
+
+.small-text {
+  color: grey;
+  font-size: 12px;
 }
 </style>

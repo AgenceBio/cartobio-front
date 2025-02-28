@@ -29,10 +29,18 @@ meta:
       </div>
     </div>
   </section>
-  <section class="fr-container fr-py-5w background-white">
+  <section class="fr-container fr-py-8w background-white">
     <div class="fr-grid-row">
-      <div class="fr-col-10 fr-m-auto fr-mb-3w">
-        <h3 class="fr-h3">Rechercher une exploitation</h3>
+      <div class="fr-col-10 fr-m-auto fr-mb-5w">
+        <div class="title-search fr-mb-4w">
+          <h3 class="fr-h3 fr-mb-0">Rechercher une exploitation</h3>
+          <button
+            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
+            @click="search('')"
+          >
+            Voir toutes les exploitations
+          </button>
+        </div>
         <form
           @submit.prevent="search(userInput)"
           class="fr-search-bar fr-search-bar--lg fr-mb-3w"
@@ -76,7 +84,11 @@ const router = useRouter();
 const { user, isOcAudit, isOcCertif } = useUserStore();
 
 function search(search) {
-  return router.push({ path: "/certification/exploitations", query: { search } });
+  if (search) {
+    return router.push({ path: "/certification/exploitations", query: { search } });
+  }
+
+  return router.push({ path: "/certification/exploitations" });
 }
 </script>
 
@@ -103,5 +115,13 @@ span[aria-selected="true"] {
 
 .content {
   border-top: solid 1px #cfcfcf;
+}
+
+.title-search {
+  display: flex;
+  justify-content: space-between;
+}
+.green-link {
+  color: #18753c;
 }
 </style>
