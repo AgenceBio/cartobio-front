@@ -77,7 +77,13 @@
           <th colspan="3" class="labels">
             <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl font-blue">
               {{ features.length }} parcelles
-              <span>({{ inHa(legalProjectionSurface(features)) }}&nbsp;ha) </span>
+              <span
+                >({{
+                  !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
+                    ? inHa(legalProjectionSurface(features)) + String.fromCharCode(160) + "ha"
+                    : "Surface non calculable"
+                }})
+              </span>
             </span>
           </th>
           <th class="labels-group-by" scope="col" colspan="3">

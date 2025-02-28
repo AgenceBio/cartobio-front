@@ -81,7 +81,6 @@ function handleToggle() {
   openingState.value = isClosed.value ? STATE.EXPANDING : STATE.CLOSED;
   activeAccordionId.value = isExpanding.value ? elementId.value : null;
 }
-
 watch(openingState, (newState) => {
   if (newState === STATE.EXPANDING) {
     nextTick(() => (openingState.value = STATE.OPEN));
@@ -110,8 +109,8 @@ if (activeAccordionId) {
   }
 }
 
-.fr-accordion .fr-collapse--expanded {
-  overflow: visible;
+.fr-collapsing {
+  overflow: hidden !important;
 }
 
 .small-text {

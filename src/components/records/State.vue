@@ -3,7 +3,7 @@
     :class="[computedClass, 'badge']"
     :aria-label="dateLabel ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label"
   >
-    <span :class="stateInfo.icon" />
+    <span :class="[stateInfo.icon, stateInfo.icon ? 'fr-icon--sm fr-mr-1v' : '']" />
     <span aria-hidden>{{ stateInfo.label }}</span>
     <span v-if="showDate && dateLabel" class="year" aria-hidden>{{ dateLabel }}</span>
   </span>

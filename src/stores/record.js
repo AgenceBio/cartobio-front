@@ -3,6 +3,7 @@ import { computed, reactive } from "vue";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import bbox from "@turf/bbox";
+import toast from "@/utils/toast.js";
 import { useOperatorStore } from "@/stores/operator.js";
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
@@ -131,34 +132,38 @@ export const useRecordStore = defineStore("record", () => {
       /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const recordSummary = operatorStore.records.find((record) => record.record_id === id);
     const record = await getRecord(id);
+    const isMulti = record.parcelles.features.find((e) => e.geometry.type === "MultiPolygon");
 
-    const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
-      version_name: `Copie de ${record.version_name}`,
-      parcelles: {
-        ...record.parcelles,
-        features: record.parcelles.features.map((p) => ({
-          ...p,
-          properties: {
-            ...p.properties,
-            cultures: p.properties.cultures.map((c) => ({
-              ...c,
-              id: c.id && uuidRegex.test(c.id) ? c.id : crypto.randomUUID(),
-            })),
-          },
-        })),
-      },
-      metadata: {
-        provenance: window.location.host,
-        source: "Copie de version existante",
-        copy_of: record.record_id,
-      },
-    });
-    operatorStore.records?.unshift({
-      ...newRecord,
-      parcelles: recordSummary.parcelles,
-      surface: recordSummary.surface,
-    });
-    return newRecord;
+    if (!isMulti) {
+      const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
+        version_name: `Copie de ${record.version_name}`,
+        parcelles: {
+          ...record.parcelles,
+          features: record.parcelles.features.map((p) => ({
+            ...p,
+            properties: {
+              ...p.properties,
+              cultures: p.properties.cultures.map((c) => ({
+                ...c,
+                id: c.id && uuidRegex.test(c.id) ? c.id : crypto.randomUUID(),
+              })),
+            },
+          })),
+        },
+        metadata: {
+          provenance: window.location.host,
+          source: "Copie de version existante",
+          copy_of: record.record_id,
+        },
+      });
+      operatorStore.records?.unshift({
+        ...newRecord,
+        parcelles: recordSummary.parcelles,
+        surface: recordSummary.surface,
+      });
+      return newRecord;
+    }
+    toast.error("La version n'a pas pu être dupliquée du fait d'une géometrie incorrecte");
   }
 
   /**

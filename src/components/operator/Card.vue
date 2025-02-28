@@ -26,7 +26,7 @@
         </p>
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
-            <NotificationState v-if="operator.notifications" :operator="operator" />
+            <NotificationState v-if="operator.notifications" :operator="operator" :card="true" />
             <div v-if="operator.lastmixitestate">
               <p class="custom-tag">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
@@ -90,16 +90,19 @@
           <div class="error-icon" v-if="operator.otherParcellaire">
             <span>!</span>
             <div class="tooltip" v-if="certificationState == 'CERTIFIED'">
-              <span> Une nouvelle version a été créée après la certification de {{ operator.version_name }} </span>
+              <span>
+                Une nouvelle version a été créée après la certification <br />de {{ operator.version_name }}
+              </span>
             </div>
             <div class="tooltip" v-if="certificationState == 'PENDING_CERTIFICATION'">
               <span>
-                Une nouvelle version a été créée après la soumission de {{ operator.version_name }} par le contrôleur
+                Une nouvelle version a été créée après la soumission <br />de {{ operator.version_name }} par le
+                contrôleur
               </span>
               <br />
               <span>
-                Créee le <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
-                {{ jjmmyyyy(operator.created_at) }} par
+                <span class="informations">Créee le</span> <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
+                {{ jjmmyyyy(operator.created_at) }} <span class="informations">Par</span>
                 <div v-if="operator.metadata.source === 'API Parcellaire'">
                   <span class="fr-icon-download-line fr-icon--sm" />
                   Api Parcellaire
@@ -116,7 +119,7 @@
               </span>
             </div>
             <div class="tooltip" v-if="certificationState == 'AUDITED'">
-              <span> Une nouvelle version a été créée après le contrôle de {{ operator.version_name }} </span>
+              <span> Une nouvelle version a été créée après le contrôle <br />de {{ operator.version_name }} </span>
             </div>
           </div>
         </div>
@@ -127,7 +130,7 @@
           CartoBio, la notification doit d’abord être validée sur le portail de notification par un chargé de
           certification.
         </div>
-        <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator]">
+        <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator.numeroBio]">
           L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }} et aucune version de parcellaire de
           cette exploitation ne concerne votre organisme certificateur.
         </div>
@@ -142,7 +145,7 @@
         v-if="!certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
       >
         <button
-          class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToExploitations"
         >
           Créer un parcellaire
@@ -193,7 +196,7 @@
 
       <div v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio] && record_id">
         <button
-          class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
         >
           Soumettre {{ operator.version_name }}
@@ -202,7 +205,7 @@
 
       <div v-if="certificationState == 'OPERATOR_DRAFT' && !operatorDisabled[operator.numeroBio]">
         <button
-          class="fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
         >
           Contrôler {{ operator.version_name }}
@@ -367,7 +370,7 @@ function hideTooltip() {
   position: absolute;
   bottom: 125%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-95%);
   background-color: #ffebeb;
   color: #d32f2f;
   padding: 8px;
@@ -405,6 +408,7 @@ function hideTooltip() {
   text-align: left;
   padding: 6px 10px;
   position: absolute;
+  font-size: 14px;
   z-index: 1;
   border-top: 1px solid #dddddd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -456,6 +460,7 @@ function hideTooltip() {
   border: 1px solid #4cb4bd;
   border-radius: 4px;
   padding: 4px;
+  color: #006a6f;
 }
 
 .lastcertifieddate {
@@ -485,6 +490,7 @@ function hideTooltip() {
 
 .fr-card {
   border-radius: 0px;
+  border: 1px;
 }
 
 .custom-tag {
@@ -515,5 +521,10 @@ function hideTooltip() {
 }
 .fr-enlarge-link:active {
   background-color: var(--light-background-action-low-blue-france) !important;
+}
+
+.informations {
+  font-weight: normal;
+  color: grey;
 }
 </style>

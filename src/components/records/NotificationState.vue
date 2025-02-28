@@ -1,13 +1,21 @@
 <template>
   <div :class="{ 'margin-top': isEnAttente() }">
-    <span class="component" :style="getStyle()">
-      <span v-if="stateInfo" :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
-      <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
-      <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
-        stateInfo ? stateInfo.label : "-"
-      }}</span>
-    </span>
-    <div v-if="isEnAttente()" class="fr-hint-text oc-change text-center">En attente de validation OC</div>
+    <div :class="{ 'badge-inline': props.card }">
+      <span class="component" :style="getStyle()">
+        <span v-if="stateInfo" :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
+        <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
+        <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
+          stateInfo ? stateInfo.label : "-"
+        }}</span>
+      </span>
+      <span v-if="isEnAttente() && props.card" class="fr-hint-text oc-change" :class="{ 'inline-text': props.card }">
+        En attente de validation OC
+      </span>
+    </div>
+
+    <div v-if="isEnAttente() && !props.card" class="fr-hint-text oc-change text-center">
+      En attente de validation OC
+    </div>
   </div>
 </template>
 
@@ -30,6 +38,10 @@ const props = defineProps({
   stateInfoProps: {
     type: Object,
     required: false,
+  },
+  card: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -106,5 +118,15 @@ function isEnAttente() {
 
 .oc-change {
   margin-left: 11px;
+}
+
+.badge-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-text {
+  margin-left: 8px;
 }
 </style>

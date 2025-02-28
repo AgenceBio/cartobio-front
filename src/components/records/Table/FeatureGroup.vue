@@ -21,13 +21,21 @@
       <th colspan="2" class="labels" scope="row" :data-group-id="featureGroup.key">
         {{ featureGroup.label }}
         <small class="group-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
-          {{ inHa(featureGroup.surface) }}&nbsp;ha
+          {{
+            !isNaN(parseFloat(inHa(featureGroup.surface)))
+              ? inHa(featureGroup.surface) + String.fromCharCode(160) + "ha"
+              : inHa(featureGroup.surface)
+          }}
         </small>
       </th>
 
       <td class="surface numeric labels-header">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{ inHa(featureGroup.surface) }}&nbsp;ha
+          {{
+            !isNaN(parseFloat(inHa(featureGroup.surface)))
+              ? inHa(featureGroup.surface) + String.fromCharCode(160) + "ha"
+              : inHa(featureGroup.surface)
+          }}
         </span>
       </td>
 
@@ -82,7 +90,11 @@
         <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
         <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
           <ConversionLevel :feature="feature" with-date /><br />
-          {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
+          {{
+            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+              ? inHa(legalProjectionSurface(feature)) + String.fromCharCode(160) + "ha"
+              : inHa(legalProjectionSurface(feature))
+          }}
         </small>
       </td>
       <td @click="pressZoom(feature.id)" v-else>
@@ -103,7 +115,11 @@
       </td>
       <td @click="pressZoom(feature.id)" class="numeric">
         <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{ inHa(legalProjectionSurface(feature)) }}&nbsp;ha
+          {{
+            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+              ? inHa(legalProjectionSurface(feature)) + String.fromCharCode(160) + "ha"
+              : inHa(legalProjectionSurface(feature))
+          }}
         </span>
       </td>
       <td class="actions">
