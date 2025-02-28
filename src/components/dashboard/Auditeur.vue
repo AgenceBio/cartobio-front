@@ -1,5 +1,5 @@
 <template>
-  <h2 class="fr-h2 text-align-center">Je prépare mes visites</h2>
+  <h2 class="fr-h2 text-align-center fr-mb-4w">Je prépare mes visites</h2>
   <div v-if="isLoading">
     <Spinner>Chargement des données…</Spinner>
   </div>

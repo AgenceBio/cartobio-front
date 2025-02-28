@@ -75,13 +75,13 @@
       </div>
     </button>
   </div>
-  <div class="header-a-certifier fr-mb-4v">
+  <div class="header-a-certifier fr-mt-4w fr-mb-3w">
     <div class="titre-a-certifier">
       <h3 class="fr-h3 fr-mb-0">Parcellaire{{ operators.length > 1 ? "s" : "" }} à certifier</h3>
       <span class="fr-text--lead fr-mb-0">({{ countToCertify }})</span>
     </div>
     <button
-      class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-arrow-right-line green-link"
+      class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
       @click="goToACertifier"
     >
       Voir tout
@@ -149,7 +149,7 @@ async function loadOperators() {
     page: 1,
     limit: 10,
     filter: {
-      anneeReference: annneeReference.value,
+      anneeReferenceStatut: annneeReference.value,
       statutParcellaire: ["PENDING_CERTIFICATION"],
       departement: selectedDepartements.value.map((m) => m.code),
       engagement: [],
@@ -212,7 +212,7 @@ const goToCertifiees = () => {
       etatCertification: "CERTIFIED",
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
-      anneeReference: annneeReference.value,
+      anneeReferenceCertification: annneeReference.value,
     },
   });
 };
@@ -224,7 +224,8 @@ const goToEnAttentes = () => {
       statutParcellaire: ["AUDITED", "PENDING_CERTIFICATION"],
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
-      anneeReference: annneeReference.value,
+      anneeReferenceCertification: annneeReference.value,
+      anneeReferenceStatut: annneeReference.value,
     },
   });
 };
@@ -236,6 +237,8 @@ const goToNonAuditees = () => {
       statutParcellaire: ["OPERATOR_DRAFT", "NONE"],
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
+      anneeReferenceCertification: annneeReference.value,
+      anneeReferenceStatut: annneeReference.value,
     },
   });
 };
@@ -247,6 +250,8 @@ const goToACertifier = () => {
       statutParcellaire: ["PENDING_CERTIFICATION"],
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
+      anneeReferenceCertification: annneeReference.value,
+      anneeReferenceStatut: annneeReference.value,
     },
   });
 };
@@ -291,7 +296,7 @@ const goToACertifier = () => {
 }
 @media (min-width: 48em) {
   .callout-container .fr-callout {
-    padding: 1rem 3rem 1rem 2rem;
+    padding: 1.5rem 3rem 1.5rem 2rem;
   }
 }
 .callout-container .fr-callout__text {
