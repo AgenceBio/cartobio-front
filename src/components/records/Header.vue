@@ -280,7 +280,7 @@ header {
 }
 
 .version-name {
-  max-width: 90%;
+  max-width: 25ch;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;

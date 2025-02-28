@@ -248,7 +248,7 @@ export const notificationsStateLevel = {
     label: "Engagée",
     color: "#9EF9BE",
     textColor: "#297254",
-    icon: "fr-icon-success-line",
+    icon: "fr-icon-check-line",
     displayFilter: true,
   },
 
@@ -256,7 +256,7 @@ export const notificationsStateLevel = {
     label: "Engagée future",
     color: "#E3E3FD",
     textColor: "#000091",
-    icon: "fr-icon-time-line",
+    icon: "fr-icon-calendar-line",
     displayFilter: true,
   },
 
@@ -300,21 +300,21 @@ export const notificationsStateLevel = {
 
 export const engagementList = {
   ["AB"]: {
-    label: "100%AB",
+    label: "100% AB",
     tooltipText: "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB",
   },
   ["ABCONV"]: {
     label: "AB/en conversion",
-    tooltipText: "Présence sur l’exploitation de parcelles en conversion sans parcelles en conventionnel",
+    tooltipText: "Présence sur l’exploitation de parcelles en conversion sans parcelle en conventionnel",
   },
   ["MIXTE"]: {
     label: "Mixte",
-    tooltipText: "Présence sur l’exploitation de parcelle en conventionnel",
+    tooltipText: "Présence sur l’exploitation de parcelles en conventionnel",
   },
 };
 
 export const etatCertificationList = [
-  { key: "ALL", label: "Tous" },
-  { key: "CERTIFIED", label: "Certifié" },
-  { key: "NO_CERTIFIED", label: "Non certifié" },
+  { key: "ALL", label: "Toutes" },
+  { key: "CERTIFIED", label: "Certifiées" },
+  { key: "NO_CERTIFIED", label: "Non certifiées" },
 ];
