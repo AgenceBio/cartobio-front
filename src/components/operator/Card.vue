@@ -147,7 +147,6 @@
         <button
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToExploitations"
-
         >
           Créer un parcellaire
         </button>
@@ -206,7 +205,7 @@
 
       <div v-if="certificationState == 'OPERATOR_DRAFT' && !operatorDisabled[operator.numeroBio]">
         <button
-          class=" fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
         >
           Contrôler {{ operator.version_name }}
@@ -461,7 +460,7 @@ function hideTooltip() {
   border: 1px solid #4cb4bd;
   border-radius: 4px;
   padding: 4px;
-  color : #006A6F
+  color: #006a6f;
 }
 
 .lastcertifieddate {
