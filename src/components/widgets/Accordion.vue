@@ -31,7 +31,7 @@
       :class="{ 'fr-collapse': true, 'fr-collapsing': isExpanding, 'fr-collapse--expanded': isOpen }"
       :id="elementId"
     >
-      <slot v-if="isOpen" name="default" />
+      <slot name="default" />
     </div>
   </section>
 </template>
@@ -78,18 +78,14 @@ const isOpen = computed(() => openingState.value === STATE.OPEN);
 const isExpanding = computed(() => openingState.value === STATE.EXPANDING);
 
 function handleToggle() {
-  if (isClosed.value) {
-    openingState.value = STATE.EXPANDING;
-    activeAccordionId.value = elementId.value;
-
-    setTimeout(() => {
-      openingState.value = STATE.OPEN;
-    }, 500);
-  } else {
-    openingState.value = STATE.CLOSED;
-    activeAccordionId.value = null;
-  }
+  openingState.value = isClosed.value ? STATE.EXPANDING : STATE.CLOSED;
+  activeAccordionId.value = isExpanding.value ? elementId.value : null;
 }
+watch(openingState, (newState) => {
+  if (newState === STATE.EXPANDING) {
+    nextTick(() => (openingState.value = STATE.OPEN));
+  }
+});
 
 if (activeAccordionId) {
   watch(activeAccordionId, (newId) => {
