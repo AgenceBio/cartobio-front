@@ -149,7 +149,7 @@ async function loadOperators() {
     page: 1,
     limit: 10,
     filter: {
-      anneeReferenceStatut: annneeReference.value,
+      anneeReferenceCertification: annneeReference.value,
       statutParcellaire: ["PENDING_CERTIFICATION"],
       departement: selectedDepartements.value.map((m) => m.code),
       engagement: [],
@@ -225,7 +225,6 @@ const goToEnAttentes = () => {
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
       anneeReferenceCertification: annneeReference.value,
-      anneeReferenceStatut: annneeReference.value,
     },
   });
 };
@@ -238,7 +237,6 @@ const goToNonAuditees = () => {
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
       anneeReferenceCertification: annneeReference.value,
-      anneeReferenceStatut: annneeReference.value,
     },
   });
 };
@@ -251,7 +249,6 @@ const goToACertifier = () => {
       etatNotification: ["ENGAGEE", "ENGAGEE FUTUR"],
       departement: selectedDepartements.value.map((d) => d.code),
       anneeReferenceCertification: annneeReference.value,
-      anneeReferenceStatut: annneeReference.value,
     },
   });
 };
