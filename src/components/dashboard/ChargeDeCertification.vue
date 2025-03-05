@@ -1,5 +1,5 @@
 <template>
-  <div class="filter fr-mb-2w">
+  <div class="filter fr-mb-2w charge-certification">
     <button
       class="fr-btn fr-btn--secondary fr-icon fr-icon-edit-line fr-btn--icon-right"
       @click="departementShown = true"
@@ -32,6 +32,7 @@
         </div>
       </div>
     </div>
+    <Spinner v-if="!isLoading && isSearching" />
   </div>
   <div v-if="selectedDepartements.length > 0" class="departements-tag fr-mb-2w">
     <button
@@ -50,7 +51,7 @@
     <button class="fr-callout certifiees" @click="goToCertifiees">
       <div class="callout-content">
         <div>
-          <span class="fr-h2 fr-callout__title">{{ summary.countCertifiees }}</span>
+          <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countCertifiees }}</span>
           <p class="fr-callout__text">Exploitations certifiées</p>
         </div>
         <img src="@gouvfr/dsfr/artwork/pictograms/system/success.svg" role="illustration" alt="" height="48px" />
@@ -59,7 +60,7 @@
     <button class="fr-callout en-attentes" @click="goToEnAttentes">
       <div class="callout-content">
         <div>
-          <span class="fr-h2 fr-callout__title">{{ summary.countEnAttentes }}</span>
+          <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countEnAttentes }}</span>
           <p class="fr-callout__text">En attente de certification</p>
         </div>
         <img src="../../assets/dsfr/document/conclusion.svg" role="illustration" alt="" height="48px" />
@@ -68,7 +69,7 @@
     <button class="fr-callout non-auditees" @click="goToNonAuditees">
       <div class="callout-content">
         <div>
-          <span class="fr-h2 fr-callout__title">{{ summary.countNonAuditees }}</span>
+          <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countNonAuditees }}</span>
           <p class="fr-callout__text">Non auditées / contrôlées</p>
         </div>
         <img src="@gouvfr/dsfr/artwork/pictograms/system/warning.svg" role="illustration" alt="" height="48px" />
@@ -360,5 +361,16 @@ const goToACertifier = () => {
   padding: 1rem;
   max-height: 400px;
   overflow: auto;
+}
+
+.charge-certification .spin {
+  height: 25px;
+  line-height: 25px;
+}
+.charge-certification .spin::before {
+  border: solid 4px var(--background-alt-grey-hover);
+  border-bottom-color: var(--background-action-high-blue-france);
+  height: 20px;
+  width: 20px;
 }
 </style>
