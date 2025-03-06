@@ -102,7 +102,7 @@ onMounted(async () => {
       }
     });
 
-    emit("update:modelValue", selectedDepartements.value);
+    emit("update:modelValue", [...selectedDepartements.value]);
   }
 });
 

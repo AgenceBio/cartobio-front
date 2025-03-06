@@ -80,6 +80,7 @@
     <div class="titre-a-certifier">
       <h3 class="fr-h3 fr-mb-0">Parcellaire{{ operators.length > 1 ? "s" : "" }} à certifier</h3>
       <span class="fr-text--lead fr-mb-0">({{ countToCertify }})</span>
+      <Spinner v-if="!isLoadingOperator && isSearching" />
     </div>
     <button
       class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
@@ -87,6 +88,9 @@
     >
       Voir tout
     </button>
+  </div>
+  <div v-if="isLoadingOperator">
+    <Spinner>Chargement des données…</Spinner>
   </div>
   <div class="a-certifier" :class="{ unique: operators.length === 1 }">
     <div
@@ -129,7 +133,7 @@ const summary = ref({});
 const departementShown = ref(false);
 const selectedDepartements = ref([]);
 const departementSelect = ref(null);
-const userDepartements = ref(undefined);
+const userDepartements = ref([]);
 const countToCertify = ref(0);
 const operators = ref([]);
 const user = useUserStore();
@@ -142,6 +146,10 @@ const annneeReference = ref(lastTwoYears.value[0]);
 
 onMounted(async () => {
   userDepartements.value = await userStore.getDepartements();
+  if (userDepartements.value.length === 0) {
+    loadSummary();
+    loadOperators();
+  }
 });
 
 async function loadOperators() {
@@ -150,7 +158,6 @@ async function loadOperators() {
     page: 1,
     limit: 10,
     filter: {
-      anneeReferenceCertification: annneeReference.value,
       statutParcellaire: ["PENDING_CERTIFICATION"],
       departement: selectedDepartements.value.map((m) => m.code),
       engagement: [],
@@ -165,14 +172,10 @@ async function loadOperators() {
   isLoadingOperator.value = false;
 }
 
-watch(
-  [selectedDepartements, annneeReference, userDepartements],
-  () => {
-    loadSummary();
-    loadOperators();
-  },
-  { immediate: true },
-);
+watch([selectedDepartements, annneeReference], () => {
+  loadSummary();
+  loadOperators();
+});
 async function loadSummary() {
   isSearching.value = true;
   summary.value = await getDashboardSummary(
@@ -335,6 +338,7 @@ const goToACertifier = () => {
 .header-a-certifier {
   display: flex;
   justify-content: space-between;
+  border-top: 1;
 }
 .titre-a-certifier {
   display: flex;
@@ -363,11 +367,17 @@ const goToACertifier = () => {
   overflow: auto;
 }
 
-.charge-certification .spin {
+.titre-a-certifier .spin {
+  margin-bottom: 10px;
+}
+
+.charge-certification .spin,
+.titre-a-certifier .spin {
   height: 25px;
   line-height: 25px;
 }
-.charge-certification .spin::before {
+.charge-certification .spin::before,
+.titre-a-certifier .spin::before {
   border: solid 4px var(--background-alt-grey-hover);
   border-bottom-color: var(--background-action-high-blue-france);
   height: 20px;
