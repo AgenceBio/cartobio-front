@@ -16,7 +16,7 @@ meta:
             <div class="fr-collapse" id="breadcrumb-1">
               <ol class="fr-breadcrumb__list">
                 <li>
-                  <a class="fr-breadcrumb__link" href="/">Accueil</a>
+                  <a class="fr-breadcrumb__link" :href="startPage">Accueil</a>
                 </li>
                 <li>
                   <a class="fr-breadcrumb__link" aria-current="page">Tableau de bord</a>
@@ -36,30 +36,12 @@ meta:
           <h3 class="fr-h3 fr-mb-0">Rechercher une exploitation</h3>
           <button
             class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
-            @click="search('')"
+            @click="seeAll()"
           >
             Voir toutes les exploitations
           </button>
         </div>
-        <form
-          @submit.prevent="search(userInput)"
-          class="fr-search-bar fr-search-bar--lg fr-mb-3w"
-          id="header-search"
-          role="search"
-        >
-          <label class="fr-label" for="search"> Recherche par nom d'exploitation, SIRET ou numéro bio </label>
-          <input
-            class="fr-input"
-            placeholder="Chercher par nom d'opérateur, SIRET ou numéro bio…"
-            minlength="1"
-            autocomplete="cartobio-operator"
-            v-model.trim="userInput"
-            autofocustype="search"
-            id="search"
-            :disabled="!isOnline"
-          />
-          <button class="fr-btn" type="submit" title="Rechercher" :disabled="!isOnline">Rechercher</button>
-        </form>
+        <AutoCompleteSearch />
       </div>
       <div class="fr-col-11 fr-m-auto fr-pt-4w content">
         <DashboardChargeDeCertification v-if="isOcCertif" />
@@ -70,24 +52,18 @@ meta:
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useOnline } from "@vueuse/core";
 import { useUserStore } from "@/stores/user";
 import DashboardChargeDeCertification from "@/components/dashboard/ChargeDeCertification.vue";
 import DashboardAuditeur from "@/components/dashboard/Auditeur.vue";
 import { useRouter } from "vue-router";
+import "@algolia/autocomplete-theme-classic";
+import AutoCompleteSearch from "@/components/operator/AutoCompleteSearch.vue";
 
-const isOnline = useOnline();
-const userInput = ref();
 const router = useRouter();
 
-const { user, isOcAudit, isOcCertif } = useUserStore();
+const { user, isOcAudit, isOcCertif, startPage } = useUserStore();
 
-function search(search) {
-  if (search) {
-    return router.push({ path: "/certification/exploitations", query: { search } });
-  }
-
+function seeAll() {
   return router.push({ path: "/certification/exploitations" });
 }
 </script>

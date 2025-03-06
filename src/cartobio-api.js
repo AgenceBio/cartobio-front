@@ -46,6 +46,16 @@ export async function searchOperators({ input, page, filter, limit = 7 }) {
 }
 
 /**
+ * @param {string} input
+ * @returns {Promise<any[]>}
+ */
+export async function getForAutocomplete(search) {
+  const { data } = await apiClient.get(`/v2/certification/autocomplete`, { params: { search } });
+
+  return data;
+}
+
+/**
  * @param {number?} limit
  * @param {number?} offset
  * @return {Promise<AgenceBioNormalizedOperator[]>}
