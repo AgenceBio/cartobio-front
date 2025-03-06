@@ -37,16 +37,21 @@ const query = ref();
 const autocompleteRef = ref(null);
 const data = ref(null);
 
-defineProps({
+const props = defineProps({
   buttonLabel: {
     type: String,
     required: false,
     default: "Rechercher",
   },
+  initialValue: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 onMounted(() => {
-  autocomplete({
+  const { setQuery } = autocomplete({
     container: autocompleteRef.value,
     placeholder: "Chercher par nom d'opérateur, SIRET ou numéro bio…",
     openOnFocus: true,
@@ -80,6 +85,10 @@ onMounted(() => {
     },
     renderer: { createElement: h, Fragment, render },
   });
+
+  if (props.initialValue) {
+    setQuery(props.initialValue);
+  }
 });
 
 function search(search) {
