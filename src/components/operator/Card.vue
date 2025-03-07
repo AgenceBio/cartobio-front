@@ -1,7 +1,7 @@
 <template>
   <div
     class="fr-card fr-card--download"
-    :class="[operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link', 'operator-record']"
+    :class="[operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link card-activate', 'operator-record']"
   >
     <div
       class="fr-card__body"
@@ -19,7 +19,7 @@
           </div>
         </h3>
         <p class="fr-card__desc">
-          <span class="fr-hint-text">
+          <span class="fr-hint-text fr-text--sm">
             <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
             {{ operator.commune }}, {{ operator.codePostal }}
           </span>
@@ -49,7 +49,7 @@
             <span
               v-if="operatorDisabled[operator.numeroBio]"
               aria-hidden
-              class="fr-ml-1w fr-icon-lock-fill fr-icon--sm"
+              class="fr-ml-1w fr-icon-lock-line fr-icon--sm"
               aria-label="Dossier inaccessible"
             ></span>
             <button
@@ -100,19 +100,20 @@
                 contrôleur
               </span>
               <br />
-              <span>
-                <span class="informations">Créee le</span> <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
-                {{ jjmmyyyy(operator.created_at) }} <span class="informations">Par</span>
-                <div v-if="operator.metadata.source === 'API Parcellaire'">
-                  <span class="fr-icon-download-line fr-icon--sm" />
+              <span class="informations-tooltip">
+                <span class="informations">Créee le</span> <span class="fr-icon-calendar-2-line fr-icon--sm informations-bold"></span>
+                <span class="informations-bold">{{ jjmmyyyy(operator.created_at) }} </span
+                ><span class="informations">Par</span>
+                <div v-if="operator.metadata.source === 'API Parcellaire'" class="informations-bold">
+                  <span class="fr-icon-download-line fr-icon--sm informations-bold" />
                   Api Parcellaire
                 </div>
-                <div v-else-if="operator.metadata.source === 'telepac'">
-                  <span class="fr-icon-refresh-line fr-icon--sm" />
+                <div v-else-if="operator.metadata.source === 'telepac'" class="informations-bold">
+                  <span class="fr-icon-refresh-line fr-icon--sm informations-bold" />
                   Import Telépac {{ operator.metadata.campagne }}
                 </div>
-                <div v-else>
-                  <span class="fr-icon-user-line fr-icon--sm" />{{
+                <div v-else class="informations-bold">
+                  <span class="fr-icon-user-line fr-icon--sm informations-bold" />{{
                     JSON.parse(operator.user).nom + " " + JSON.parse(operator.user).prenom
                   }}
                 </div>
@@ -160,8 +161,8 @@
           !operatorDisabled[operator.numeroBio]
         "
       >
-        <p class="fr-hint-tex controlerealise" aria-live="polite">Contrôle réalisé</p>
-        <div class="certification-info" aria-live="polite">
+        <p class="fr-hint-text fr-text--sm controlerealise" aria-live="polite">Contrôle réalisé</p>
+        <div class="certification-info fr-text--sm" aria-live="polite">
           <div class="fr-icon-calendar-2-line fr-icon--sm"></div>
           <div class="fr-hint-text">{{ jjmmyyyy(auditDate) }}</div>
         </div>
@@ -257,7 +258,6 @@ const goToExploitations = () => {
     return router.push(`/exploitations/${props.operator.numeroBio}`);
   }
 };
-
 const goToSpecificVersion = () => {
   if (!props.record_id) {
     return;
@@ -386,6 +386,11 @@ function hideTooltip() {
     visibility 0.3s ease;
 }
 
+.informations-tooltip {
+  display: flex;
+  gap: 3px;
+}
+
 .error-icon:hover .tooltip {
   opacity: 1;
   visibility: visible;
@@ -459,13 +464,15 @@ function hideTooltip() {
   background-color: #e5fbfd;
   border: 1px solid #4cb4bd;
   border-radius: 4px;
-  padding: 4px;
+  padding: 2px;
   color: #006a6f;
+  width: fit-content;
 }
 
 .lastcertifieddate {
   color: #006a6f;
   margin-left: 10px;
+  font-size: 14px;
 }
 
 .controlerealise {
@@ -490,7 +497,7 @@ function hideTooltip() {
 
 .fr-card {
   border-radius: 0px;
-  border: 1px;
+  border: 1px solid #DEE5FD;
 }
 
 .custom-tag {
@@ -527,4 +534,14 @@ function hideTooltip() {
   font-weight: normal;
   color: grey;
 }
+
+.informations-bold {
+  font-weight: bold;
+  color: grey;
+}
+
+.card-activate > .fr-card__header {
+  background-color: #F4F6FE
+}
+
 </style>
