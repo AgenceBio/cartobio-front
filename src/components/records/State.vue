@@ -74,7 +74,7 @@ const computedClass = computed(() => {
   font-size: 12px;
   line-height: 20px;
   text-transform: uppercase;
-  padding: 2px;
+  padding: 2px 3px;
   border: 1px solid #2f4077;
 
   color: #2f4077;
@@ -91,7 +91,7 @@ const computedClass = computed(() => {
   font-size: 12px;
   line-height: 20px;
   text-transform: uppercase;
-  padding: 2px;
+  padding: 2px 3px;
   border: 1px solid #a558a0;
   color: #a558a0;
 }
@@ -107,7 +107,7 @@ const computedClass = computed(() => {
   font-size: 12px;
   line-height: 20px;
   text-transform: uppercase;
-  padding: 2px;
+  padding: 2px 3px;
   border: 1px solid #a558a0;
 
   color: #a558a0;
@@ -126,7 +126,7 @@ const computedClass = computed(() => {
 
   text-transform: uppercase;
   border: 1px solid #006a6f;
-  padding: 2px;
+  padding: 2px 3px;
 
   color: #006a6f;
 }
@@ -139,9 +139,9 @@ const computedClass = computed(() => {
   line-height: 20px;
   text-align: center;
   border: 1px solid #666666;
-  padding: 2px;
+
   width: fit-content;
-  padding: 5px;
+  padding: 2px 3px;
 
   color: #666666;
 }

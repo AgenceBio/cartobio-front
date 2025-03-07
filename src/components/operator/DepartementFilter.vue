@@ -1,24 +1,21 @@
 <template>
   <div>
-    <div class="fr-search-bar fr-search-bar" id="header-search" role="search">
-      <label class="fr-label" for="search"> Recherche </label>
+     <div class="fr-input-wrap fr-icon-search-line">
       <input
         class="fr-input"
         placeholder="Rechercher"
         minlength="1"
         v-model.trim="userInputDepartement"
-        autofocustype="search"
-        id="search"
+        id="text-input-hint" name="text-input-hint"
       />
-      <button class="fr-btn" type="submit" title="Rechercher" :disabled="isSearching" />
-    </div>
+      </div>
     <fieldset
       class="fr-fieldset departement-checkbox fr-mt-2v"
       id="checkboxes-small"
       aria-labelledby="checkboxes-small-legend checkboxes-small-messages"
     >
       <div v-for="(departements, region) in departementsList" :key="region">
-        <h6 class="fr-mb-2v">{{ region }}</h6>
+        <div class="fr-mb-2v fr-text">{{ region }}</div>
         <button @click="toggleRegion(departements)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-mt-0 fr-mb-2w">
           Tout {{ region }}
         </button>
@@ -159,4 +156,5 @@ const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, 
   max-height: 400px;
   overflow: auto;
 }
+
 </style>
