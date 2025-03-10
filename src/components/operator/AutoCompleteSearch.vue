@@ -119,23 +119,25 @@ function getResult(query) {
         item({ item, html }) {
           return html`
             <div>
-              <a class="fr-link" href="/certification/exploitations?search=${item.numeroBio}">${item.nom}</a>
+              <a class="fr-link" href="/certification/exploitations?search=${item.numeroBio}"
+                >${hightlightText(query, item.nom, html)}</a
+              >
               <div class="flex gap-6">
                 <div class="fr-hint-text">Dénomination courante</div>
-                <div class="fr-text--xs fr-mb-0">${item.denominationCourante}</div>
+                <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.denominationCourante, html)}</div>
               </div>
               <div class="flex gap-24">
                 <div class="flex gap-6">
                   <div class="fr-hint-text">N° Bio</div>
-                  <div class="fr-text--xs fr-mb-0">${item.numeroBio}</div>
+                  <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.numeroBio, html)}</div>
                 </div>
                 <div class="flex gap-6">
                   <div class="fr-hint-text">N° Client</div>
-                  <div class="fr-text--xs fr-mb-0">${item.numeroClient}</div>
+                  <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.numeroClient, html)}</div>
                 </div>
                 <div class="flex gap-6">
                   <div class="fr-hint-text">Siret</div>
-                  <div class="fr-text--xs fr-mb-0">${item.siret}</div>
+                  <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.siret, html)}</div>
                 </div>
               </div>
             </div>
@@ -165,6 +167,30 @@ function getResult(query) {
       // ...
     },
   ];
+}
+
+function hightlightText(query, text, html) {
+  if (!text) {
+    return "";
+  }
+  text = `${text}`;
+  const normalizedQuery = query
+    .toLocaleLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const normalizedText = text
+    .toLocaleLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  let index;
+
+  if ((index = normalizedText.indexOf(normalizedQuery)) === -1) {
+    return text;
+  }
+  console.log(index, normalizedQuery, normalizedText);
+
+  return html`${text.slice(0, index)}<span class="highlight">${text.slice(index, index + query.length)}</span
+    >${text.slice(index + query.length)}`;
 }
 </script>
 
@@ -278,7 +304,7 @@ span[aria-selected="true"] {
   display: flex;
   padding-top: 2rem;
   border-top: #dddddd 1px solid;
-  margin-top: 20px;
+  margin: 1.25rem 1.8rem;
 }
 
 .aa-SourceHeader {
@@ -288,5 +314,23 @@ span[aria-selected="true"] {
 
 .aa-Item {
   padding: 0.5rem 1.8em 0.5rem 1.8em;
+}
+
+.highlight {
+  background-color: #feebd0;
+}
+
+[href] > .highlight {
+  background-image: var(--underline-img), var(--underline-img);
+  background-position:
+    var(--underline-x) 100%,
+    var(--underline-x) calc(100% - var(--underline-thickness));
+  background-repeat: no-repeat, no-repeat;
+  -webkit-transition: background-size 0s;
+  transition: background-size 0s;
+  background-size:
+    var(--underline-hover-width) calc(var(--underline-thickness) * 2),
+    var(--underline-idle-width) var(--underline-thickness);
+  background-color: #feebd0;
 }
 </style>
