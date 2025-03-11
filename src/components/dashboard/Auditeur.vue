@@ -17,7 +17,7 @@
           />
           <label class="fr-label" for="operateurs-epingles">
             <span class="ri-pushpin-line fr-mr-1w" aria-hidden="true"></span>
-            Mes exploitations épingleées
+            Mes exploitations épinglées
           </label>
         </div>
         <div class="fr-segmented__element">
@@ -54,6 +54,7 @@
           @pin="loadOperators()"
         />
       </div>
+      <div v-if="pinnedOperators.length === 0">Aucune exploitation épinglée</div>
     </div>
     <div v-else class="operateurs-consultes">
       <div
@@ -81,6 +82,7 @@
         />
       </div>
     </div>
+    <div v-if="consultedOperators.length === 0">Aucune exploitation consultée récemment</div>
   </template>
 </template>
 

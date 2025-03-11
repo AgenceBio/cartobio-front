@@ -38,7 +38,9 @@ const router = useRouter();
 const query = ref();
 const autocompleteRef = ref(null);
 const data = ref(null);
+const length = ref(0);
 
+const emit = defineEmits(["search"]);
 const props = defineProps({
   buttonLabel: {
     type: String,
@@ -79,7 +81,7 @@ onMounted(() => {
         data.value = null;
         return [];
       }
-      if (query.length === 3) {
+      if (query.length === 3 || data.value === null) {
         if (data.value) {
           return getResult(query);
         }
@@ -100,11 +102,13 @@ onMounted(() => {
   }
 });
 
-function search(search) {
+async function search(search) {
   if (search) {
+    emit("search", search);
     return router.push({ path: "/certification/exploitations", query: { search } });
   }
 
+  emit("search");
   return router.push({ path: "/certification/exploitations" });
 }
 
@@ -115,20 +119,24 @@ function getResult(query) {
     {
       sourceId: "operateurs-api",
       getItems() {
-        return new Fuse(data.value, {
+        const res = new Fuse(data.value, {
           keys: ["nom", "denominationCourante", "numeroBio", "siret"],
           minMatchCharLength: 2,
-          threshold: 0.4,
+          threshold: 0,
         })
           .search(query)
-          .map(({ item }) => ({ ...item }))
-          .slice(0, 5);
+          .map(({ item }) => ({ ...item }));
+
+        console.log(res);
+        length.value = res.length;
+
+        return res.slice(0, 5);
       },
       templates: {
         item({ item, html }) {
           return html`
             <div>
-              <a class="fr-link" href="/certification/exploitations?search=${item.numeroBio}"
+              <a class="fr-link" href="/certification/exploitations?search=${item.nom}"
                 >${hightlightText(query, item.nom, html)}</a
               >
               <div class="flex gap-6">
@@ -161,7 +169,7 @@ function getResult(query) {
         },
         header({ html }) {
           return html` <div class="fr-hint-text">
-            ${data.value.length === 0 ? "Aucun" : data.value.length} résultat${data.value.length > 1 ? "s" : ""}
+            ${length.value === 0 ? "Aucun" : length.value} résultat${length.value > 1 ? "s" : ""}
           </div>`;
         },
       },
@@ -169,7 +177,7 @@ function getResult(query) {
         return router.push({
           path: "/certification/exploitations",
           query: {
-            search: item.numeroBio,
+            search: item.nom,
           },
         });
       },
@@ -196,7 +204,6 @@ function hightlightText(query, text, html) {
   if ((index = normalizedText.indexOf(normalizedQuery)) === -1) {
     return text;
   }
-  console.log(index, normalizedQuery, normalizedText);
 
   return html`${text.slice(0, index)}<span class="highlight">${text.slice(index, index + query.length)}</span
     >${text.slice(index + query.length)}`;
@@ -264,9 +271,6 @@ span[aria-selected="true"] {
   outline-width: 2px;
   outline-color: #0a76f6;
   outline-style: solid;
-}
-
-.aa-PanelLayout {
 }
 
 .aa-Item:hover {

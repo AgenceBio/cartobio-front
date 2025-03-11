@@ -145,4 +145,12 @@ const computedClass = computed(() => {
 
   color: #666666;
 }
+
+.badge {
+  max-width: 90%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-right: 1ch;
+}
 </style>

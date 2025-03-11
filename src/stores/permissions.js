@@ -21,7 +21,9 @@ export const usePermissions = defineStore("permissions", () => {
       isOc.value &&
       (recordStore.record.oc_id === null || recordStore.record.oc_id === userStore.user?.organismeCertificateur?.id)
     ) {
-      return true;
+      if (recordStore.record.certification_state !== CertificationState.CERTIFIED || canCertify.value) {
+        return true;
+      }
     }
 
     if (isAgri.value) {
