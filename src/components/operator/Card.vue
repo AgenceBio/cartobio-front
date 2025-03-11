@@ -131,16 +131,16 @@
       </div>
       <div class="center" v-else>
         <div v-if="getStatus(operator) === 'NON ENGAGEE'">
-          L’exploitation n’est pas encore gérée par {{ organismeOc.nom || "votre OC" }}. Pour accéder au dossier sur
+          L’exploitation n’est pas encore gérée par {{ organismeOc?.nom || "votre OC" }}. Pour accéder au dossier sur
           CartoBio, la notification doit d’abord être validée sur le portail de notification par un chargé de
           certification.
         </div>
         <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator.numeroBio]">
-          L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }} et aucune version de parcellaire de
+          L’exploitation n’est plus gérée par {{ organismeOc?.nom || "votre OC" }} et aucune version de parcellaire de
           cette exploitation ne concerne votre organisme certificateur.
         </div>
         <div v-else-if="getStatus(operator) === 'ARRETEE'">
-          L’exploitation n’est plus gérée par {{ organismeOc.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
+          L’exploitation n’est plus gérée par {{ organismeOc?.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
           versions de parcellaire initiées par votre organisme certificateur.
         </div>
       </div>
