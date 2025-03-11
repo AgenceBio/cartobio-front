@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="flex">
-      <legend class="">Année de référence</legend>
+      <legend class="fr-hidden fr-unhidden-md">Année de référence</legend>
       <div v-for="(element, index) in lastTwoYears" :key="element">
         <div class="fr-radio-group">
           <input
@@ -47,34 +47,67 @@
   <div v-if="isLoading">
     <Spinner>Chargement des données…</Spinner>
   </div>
-  <div v-else class="callout-container">
-    <button class="fr-callout certifiees" @click="goToCertifiees">
+  <div v-else class="callout-container fr-mb-2w">
+    <button class="fr-callout certifiees fr-mb-0" @click="goToCertifiees">
       <div class="callout-content">
         <div>
+          <div class="fr-hidden-md flex">
+            <span class="fr-icon fr-icon-award-line fr-icon-sm"></span>
+            <p class="fr-callout__text">Exploitations certifiées</p>
+          </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countCertifiees }}</span>
-          <p class="fr-callout__text">Exploitations certifiées</p>
+          <p class="fr-callout__text fr-hidden fr-unhidden-md">Exploitations certifiées</p>
         </div>
-        <img src="@gouvfr/dsfr/artwork/pictograms/system/success.svg" role="illustration" alt="" height="48px" />
+        <img
+          src="@gouvfr/dsfr/artwork/pictograms/system/success.svg"
+          class="fr-hidden fr-unhidden-md"
+          role="illustration"
+          alt=""
+          height="48px"
+        />
       </div>
     </button>
-    <button class="fr-callout en-attentes" @click="goToEnAttentes">
+    <button class="fr-callout en-attentes fr-mb-0" @click="goToEnAttentes">
       <div class="callout-content">
         <div>
+          <div class="fr-hidden-md flex">
+            <span class="fr-icon fr-icon-refresh-line fr-icon-sm"></span>
+            <p class="fr-callout__text">En attente de certification</p>
+          </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countEnAttentes }}</span>
-          <p class="fr-callout__text">En attente de certification</p>
+          <p class="fr-callout__text fr-hidden fr-unhidden-md">En attente de certification</p>
         </div>
-        <img src="../../assets/dsfr/document/conclusion.svg" role="illustration" alt="" height="48px" />
+        <img
+          src="../../assets/dsfr/document/conclusion.svg"
+          class="fr-hidden fr-unhidden-md"
+          role="illustration"
+          alt=""
+          height="48px"
+        />
       </div>
     </button>
-    <button class="fr-callout non-auditees" @click="goToNonAuditees">
-      <div class="callout-content">
-        <div>
-          <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countNonAuditees }}</span>
-          <p class="fr-callout__text">Non auditées / contrôlées</p>
+    <div>
+      <button class="fr-callout non-auditees fr-mb-0" @click="goToNonAuditees">
+        <div class="callout-content">
+          <div>
+            <div class="fr-hidden-md flex">
+              <span class="fr-icon fr-icon-warning-line fr-icon-sm"></span>
+              <p class="fr-callout__text">Non auditées / contrôlées *</p>
+            </div>
+            <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countNonAuditees }}</span>
+            <p class="fr-callout__text fr-hidden fr-unhidden-md">Non auditées / contrôlées *</p>
+          </div>
+          <img
+            src="@gouvfr/dsfr/artwork/pictograms/system/warning.svg"
+            class="fr-hidden fr-unhidden-md"
+            role="illustration"
+            alt=""
+            height="48px"
+          />
         </div>
-        <img src="@gouvfr/dsfr/artwork/pictograms/system/warning.svg" role="illustration" alt="" height="48px" />
-      </div>
-    </button>
+      </button>
+      <div class="fr-hint-text fr-mt-1w align-right">* hors exploitations engagées en {{ annneeReference + 1 }}</div>
+    </div>
   </div>
   <div class="header-a-certifier fr-mt-4w fr-mb-3w">
     <div class="titre-a-certifier">
@@ -106,7 +139,6 @@
         :auditDate="audit_date"
         :record_id="record_id"
         :organismeOc="user.organismeCertificateur"
-        :show-certification-badge="false"
         @pin="loadOperators()"
       />
     </div>
@@ -291,6 +323,7 @@ const goToACertifier = () => {
   display: flex;
   justify-content: space-between;
   gap: 1.5em;
+  align-items: flex-start;
 }
 .callout-container .fr-callout {
   flex: 1;
@@ -314,6 +347,30 @@ const goToACertifier = () => {
 
 .fr-callout.certifiees .fr-h2 {
   color: #37635f;
+}
+
+.fr-callout .fr-icon {
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+}
+
+.fr-callout.certifiees .fr-icon {
+  color: #dffdf7;
+  background-color: #4f9d91;
+}
+
+.fr-callout.en-attentes .fr-icon {
+  color: #e5fbfd;
+  background-color: #419ca4;
+}
+
+.fr-callout.non-auditees .fr-icon {
+  color: #fef3fd;
+  background-color: #f767ef;
+}
+
+.callout-content .flex {
+  align-items: center;
 }
 
 .fr-callout.en-attentes {
@@ -356,6 +413,31 @@ const goToACertifier = () => {
 }
 .green-link {
   color: #18753c;
+}
+
+.align-right {
+  text-align: right;
+}
+
+@media (max-width: 48em) {
+  .filter {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .a-certifier {
+    grid-template-columns: auto;
+  }
+  .callout-container {
+    flex-wrap: wrap;
+  }
+  /* .callout-container {
+    flex-direction: column;
+  }
+  .callout-container > div,
+  .callout-container .fr-callout {
+    width: 100%;
+  } */
 }
 </style>
 

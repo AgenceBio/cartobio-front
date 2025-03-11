@@ -44,7 +44,7 @@ meta:
         <AutoCompleteSearch />
       </div>
       <div class="fr-col-11 fr-m-auto fr-pt-4w content">
-        <DashboardChargeDeCertification v-if="isOcCertif" />
+        <DashboardChargeDeCertification v-if="!isOcCertif" />
         <DashboardAuditeur v-else-if="isOcAudit" />
       </div>
     </div>
@@ -99,5 +99,12 @@ span[aria-selected="true"] {
 }
 .green-link {
   color: #18753c;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+@media (min-width: 48em) {
 }
 </style>
