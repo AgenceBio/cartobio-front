@@ -21,18 +21,18 @@
       </li>
       <li v-for="page in visiblePages" :key="page">
         <button
-          class="fr-pagination__link fr-pagination__link--"
-          :class="{ [`fr-pagination__link--${page}`]: true }"
+          class="fr-pagination__link"
+          :class="{ 'fr-pagination__link--active': currentPage == page }"
           @click="$emit('changePage', page)"
           :aria-current="currentPage == page"
         >
           {{ page }}
         </button>
       </li>
-      <li v-if="currentPage < maxPage - 2">
+      <li v-if="!isMobile && currentPage < maxPage - 2">
         <span class="fr-pagination__link fr-displayed-lg">…</span>
       </li>
-      <li v-if="maxPage > 2">
+      <li v-if="!isMobile && maxPage > 2 && !visiblePages.includes(maxPage)">
         <button class="fr-pagination__link fr-displayed-lg" @click="$emit('changePage', maxPage)">
           {{ maxPage }}
         </button>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   currentPage: Number,
@@ -69,19 +69,58 @@ const props = defineProps({
 
 defineEmits(["changePage"]);
 
-const visiblePages = computed(() => {
-  if (props.maxPage <= 5) {
-    return Array.from({ length: props.maxPage }, (_, i) => i + 1);
-  }
+const windowWidth = ref(window.innerWidth);
 
-  const pages = [1];
-  if (props.currentPage > 3) pages.push("…");
-  const start = Math.max(2, props.currentPage - 1);
-  const end = Math.min(props.maxPage - 1, props.currentPage + 1);
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateWindowWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWindowWidth);
+});
+
+const isMobile = computed(() => {
+  return windowWidth.value < 768;
+});
+
+const visiblePages = computed(() => {
+  if (!isMobile.value) {
+    if (props.maxPage <= 5) {
+      return Array.from({ length: props.maxPage }, (_, i) => i + 1);
+    }
+
+    const pages = [1];
+    if (props.currentPage > 3) pages.push("…");
+
+    const start = Math.max(2, props.currentPage - 1);
+    const end = Math.min(props.maxPage - 1, props.currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  } else {
+    if (props.maxPage <= 3) {
+      return Array.from({ length: props.maxPage }, (_, i) => i + 1);
+    }
+
+    if (props.currentPage === 1) {
+      return [1];
+    } else if (props.currentPage === 2) {
+      return [1, 2];
+    } else if (props.currentPage === props.maxPage) {
+      return [props.maxPage - 2, props.maxPage - 1, props.maxPage];
+    } else if (props.currentPage === props.maxPage - 1) {
+      return [props.currentPage - 1, props.currentPage, props.maxPage];
+    } else {
+      return [props.currentPage - 1, props.currentPage, props.currentPage + 1];
+    }
   }
-  return pages;
 });
 </script>
 
@@ -89,7 +128,6 @@ const visiblePages = computed(() => {
 ul {
   justify-content: center;
 }
-
 button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
