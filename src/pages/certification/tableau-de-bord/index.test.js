@@ -32,7 +32,7 @@ describe("certification/tableau-de-bord", () => {
     await flushPromises();
     expect(wrapper.find(".operateurs-epingles").exists()).toEqual(true);
     expect(wrapper.findAll(".operateurs-epingles > div")).toHaveLength(1);
-    expect(wrapper.find(".operateurs-epingles > div > p").text()).toContain('Aucune exploitation');
+    expect(wrapper.find(".operateurs-epingles > div > p").text()).toContain("Aucune exploitation");
     expect(wrapper.find(".operateurs-consulte").exists()).toEqual(false);
   });
 

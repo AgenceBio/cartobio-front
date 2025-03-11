@@ -242,33 +242,18 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore, ROLES } from "@/stores/user.js";
 import { storeToRefs } from "pinia";
 import { useOnline } from "@vueuse/core";
+import { useIsMobile } from "@/composables/useIsMobile";
 
 const userStore = useUserStore();
 const router = useRouter();
 const online = useOnline();
+const isMobile = useIsMobile();
 
-const windowWidth = ref(window.innerWidth);
-
-const updateWindowWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
-
-onMounted(() => {
-  window.addEventListener("resize", updateWindowWidth);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", updateWindowWidth);
-});
-
-const isMobile = computed(() => {
-  return windowWidth.value < 768;
-});
 const maintenance = ref(false);
 const checkStatus = async () => {
   try {
