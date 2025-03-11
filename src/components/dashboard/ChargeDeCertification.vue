@@ -171,7 +171,8 @@ const departementSelect = ref(null);
 const userDepartements = ref([]);
 const countToCertify = ref(0);
 const operators = ref([]);
-const user = useUserStore();
+
+const { user } = userStore;
 
 const lastTwoYears = computed(() => {
   const currentYear = new Date().getFullYear();
