@@ -22,7 +22,7 @@
       <li v-for="page in visiblePages" :key="page">
         <button
           class="fr-pagination__link"
-          :class="{ 'fr-pagination__link--active': currentPage == page }"
+          :class="{ [`fr-pagination__link--${page}`]: true }"
           @click="$emit('changePage', page)"
           :aria-current="currentPage == page"
         >
@@ -76,11 +76,11 @@ const updateWindowWidth = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('resize', updateWindowWidth);
+  window.addEventListener("resize", updateWindowWidth);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateWindowWidth);
+  window.removeEventListener("resize", updateWindowWidth);
 });
 
 const isMobile = computed(() => {

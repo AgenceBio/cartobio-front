@@ -224,10 +224,15 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { jjmmyyyy } from "@/utils/dates.js";
+import { storeToRefs } from "pinia";
+
 import ParcellaireState from "@/components/records/State.vue";
 import NotificationState from "@/components/records/NotificationState.vue";
 import { engagementList } from "@/referentiels/ab.js";
 import { pinOperator, unpinOperator } from "@/cartobio-api";
+import { useUserStore } from "@/stores/user.js";
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 const props = defineProps({
   operator: {
@@ -290,6 +295,12 @@ function unpin(numeroBio) {
 }
 
 function getStatus(operator) {
+  if (
+    user.value.organismeCertificateur &&
+    operator.organismeCertificateur.id !== user.value.organismeCertificateur.id
+  ) {
+    return "ARRETEE";
+  }
   const notif = operator.notifications ?? {};
 
   return notif.etatCertification;

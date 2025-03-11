@@ -18,9 +18,9 @@ describe("Pagination.vue", () => {
 
   it("emits changePage event with correct value when select option is changed", async () => {
     const wrapper = getWrapper(1);
-    const button3 = wrapper.find(".fr-pagination__link--3");
+    const button3 = wrapper.find(".fr-pagination__link--2");
     await button3.trigger("click");
-    expect(wrapper.emitted().changePage[0]).toEqual([3]);
+    expect(wrapper.emitted().changePage[0]).toEqual([2]);
   });
 
   it("emits changePage event with correct value when previous button is clicked", async () => {

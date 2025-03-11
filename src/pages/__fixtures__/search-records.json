@@ -12,6 +12,9 @@
     "certification_state": null,
     "notifications": {
       "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
     }
   },
   {
@@ -27,6 +30,9 @@
     "certification_state": null,
     "notifications": {
       "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
     }
   },
 
@@ -43,6 +49,9 @@
     "certification_state": "OPERATOR_DRAFT",
     "notifications": {
       "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
     }
   },
   {
@@ -58,6 +67,9 @@
     "certification_state": "CERTIFIED",
     "notifications": {
       "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
     }
   }
 ]
