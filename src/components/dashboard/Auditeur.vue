@@ -180,7 +180,6 @@ function checkIfDisabled(operator) {
       .getOperator(operator.numeroBio)
       .then((res) => {
         operatorDisabled.value[operator.numeroBio] = res.records.length === 0;
-
       })
       .catch(() => {
         operatorDisabled.value[operator.numeroBio] = true;
