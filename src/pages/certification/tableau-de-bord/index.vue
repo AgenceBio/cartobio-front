@@ -9,7 +9,7 @@ meta:
 
 <template>
   <section id="sous-header" class="header-exploitations">
-    <div class="fr-container fr-pb-7w">
+    <div :class="isMobile ? 'fr-container fr-pb-2w' : 'fr-container fr-pb-7w'">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <nav role="navigation" class="fr-breadcrumb fr-mb-0">
@@ -24,15 +24,15 @@ meta:
               </ol>
             </div>
           </nav>
+          <h2 class="fr-mb-0">Bienvenue {{ user.prenom }} {{ user.nom }}</h2>
         </div>
-        <h2 class="fr-mb-0">Bienvenue {{ user.prenom }} {{ user.nom }}</h2>
       </div>
     </div>
   </section>
-  <section class="fr-container fr-py-8w background-white">
+  <section :class="isMobile ? 'fr-container' : 'fr-container fr-py-9v white-background'">
     <div class="fr-grid-row">
-      <div class="fr-col-10 fr-m-auto fr-mb-5w">
-        <div class="title-search fr-mb-4w">
+      <div class="fr-m-auto" :class="isMobile ? 'fr-col-12 fr-mb-5v' : 'fr-col-10 fr-mb-5w'">
+        <div v-if="!isMobile" class="title-search fr-mb-4w">
           <h3 class="fr-h3 fr-mb-0">Rechercher une exploitation</h3>
           <button
             class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
@@ -41,10 +41,21 @@ meta:
             Voir toutes les exploitations
           </button>
         </div>
-        <AutoCompleteSearch />
+        <AutoCompleteSearch
+          :placeholder="isMobile ? 'Rechercher...' : null"
+          :class="{ 'mobile-autocomplete': isMobile }"
+        />
+        <div v-if="isMobile" class="title-search">
+          <button
+            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
+            @click="seeAll()"
+          >
+            Voir toutes les exploitations
+          </button>
+        </div>
       </div>
       <div class="fr-col-11 fr-m-auto fr-pt-4w content">
-        <DashboardChargeDeCertification v-if="!isOcCertif" />
+        <DashboardChargeDeCertification v-if="isOcCertif" />
         <DashboardAuditeur v-else-if="isOcAudit" />
       </div>
     </div>
@@ -52,6 +63,7 @@ meta:
 </template>
 
 <script setup>
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useUserStore } from "@/stores/user";
 import DashboardChargeDeCertification from "@/components/dashboard/ChargeDeCertification.vue";
 import DashboardAuditeur from "@/components/dashboard/Auditeur.vue";
@@ -61,6 +73,23 @@ import AutoCompleteSearch from "@/components/operator/AutoCompleteSearch.vue";
 
 const router = useRouter();
 
+const windowWidth = ref(window.innerWidth);
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", updateWindowWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateWindowWidth);
+});
+
+const isMobile = computed(() => {
+  return windowWidth.value < 768;
+});
 const { user, isOcAudit, isOcCertif, startPage } = useUserStore();
 
 function seeAll() {
@@ -72,8 +101,9 @@ function seeAll() {
 .header-exploitations {
   background: #e3fdeb;
 }
-.background-white {
+.white-background {
   background-color: white;
+  z-index: 10;
 }
 
 .header-exploitations::after {
@@ -105,6 +135,29 @@ span[aria-selected="true"] {
   flex-direction: column;
 }
 
-@media (min-width: 48em) {
+.mobile-autocomplete {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  background-color: white;
+}
+
+@media (max-width: 48em) {
+  .title-search {
+    justify-content: center;
+  }
+  .fr-collapse .fr-collapse--expanded::before {
+    content: none;
+  }
+
+  .header-exploitations::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #e3fdeb;
+    z-index: -1;
+  }
 }
 </style>

@@ -53,7 +53,7 @@
         <div>
           <div class="fr-hidden-md flex">
             <span class="fr-icon fr-icon-award-line fr-icon-sm"></span>
-            <p class="fr-callout__text">Exploitations certifiées</p>
+            <p class="fr-callout__text fr-text--xs fr-text--bold">Exploitations certifiées</p>
           </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countCertifiees }}</span>
           <p class="fr-callout__text fr-hidden fr-unhidden-md">Exploitations certifiées</p>
@@ -72,7 +72,7 @@
         <div>
           <div class="fr-hidden-md flex">
             <span class="fr-icon fr-icon-refresh-line fr-icon-sm"></span>
-            <p class="fr-callout__text">En attente de certification</p>
+            <p class="fr-callout__text fr-text--xs fr-text--bold">En attente de certification</p>
           </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countEnAttentes }}</span>
           <p class="fr-callout__text fr-hidden fr-unhidden-md">En attente de certification</p>
@@ -92,7 +92,7 @@
           <div>
             <div class="fr-hidden-md flex">
               <span class="fr-icon fr-icon-warning-line fr-icon-sm"></span>
-              <p class="fr-callout__text">Non auditées / contrôlées *</p>
+              <p class="fr-callout__text fr-text--xs fr-text--bold">Non auditées / contrôlées *</p>
             </div>
             <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countNonAuditees }}</span>
             <p class="fr-callout__text fr-hidden fr-unhidden-md">Non auditées / contrôlées *</p>
@@ -106,8 +106,11 @@
           />
         </div>
       </button>
-      <div class="fr-hint-text fr-mt-1w align-right">* hors exploitations engagées en {{ annneeReference + 1 }}</div>
+      <div class="fr-hint-text fr-mt-1w fr-hidden fr-unhidden-md">
+        * hors exploitations engagées en {{ annneeReference + 1 }}
+      </div>
     </div>
+    <div class="fr-hint-text fr-hidden-md fr-p-1w">* hors exploitations engagées en {{ annneeReference + 1 }}</div>
   </div>
   <div class="header-a-certifier fr-mt-4w fr-mb-3w">
     <div class="titre-a-certifier">
@@ -429,7 +432,11 @@ const goToACertifier = () => {
     grid-template-columns: auto;
   }
   .callout-container {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+  .fr-callout {
+    padding: 0.8rem;
   }
   /* .callout-container {
     flex-direction: column;

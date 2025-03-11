@@ -56,6 +56,11 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  route: {
+    type: String,
+    required: false,
+    default: "/certification/exploitations",
+  },
 });
 
 onMounted(() => {
@@ -86,7 +91,7 @@ onMounted(() => {
           return getResult(query);
         }
         data.value = [];
-        return getForAutocomplete(query).then((res) => {
+        return getForAutocomplete(query.slice(0, 3)).then((res) => {
           data.value = res;
           return getResult(query);
         });
@@ -94,10 +99,15 @@ onMounted(() => {
 
       return getResult(query);
     },
+    onReset() {
+      userInput.value = "";
+      search();
+    },
     renderer: { createElement: h, Fragment, render },
   });
 
   if (props.initialValue) {
+    userInput.value = props.initialValue;
     setQuery(props.initialValue);
   }
 });
@@ -105,11 +115,11 @@ onMounted(() => {
 async function search(search) {
   if (search) {
     emit("search", search);
-    return router.push({ path: "/certification/exploitations", query: { search } });
+    return router.push({ path: props.route, query: { search } });
   }
 
   emit("search");
-  return router.push({ path: "/certification/exploitations" });
+  return router.push({ path: props.route });
 }
 
 function getResult(query) {
@@ -127,7 +137,6 @@ function getResult(query) {
           .search(query)
           .map(({ item }) => ({ ...item }));
 
-        console.log(res);
         length.value = res.length;
 
         return res.slice(0, 5);
@@ -136,9 +145,7 @@ function getResult(query) {
         item({ item, html }) {
           return html`
             <div>
-              <a class="fr-link" href="/certification/exploitations?search=${item.nom}"
-                >${hightlightText(query, item.nom, html)}</a
-              >
+              <a class="fr-link" href="${props.route}?search=${item.nom}">${hightlightText(query, item.nom, html)}</a>
               <div class="flex gap-6">
                 <div class="fr-hint-text">Dénomination courante</div>
                 <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.denominationCourante, html)}</div>
@@ -162,7 +169,7 @@ function getResult(query) {
         },
         footer({ html }) {
           return html`
-            <a class="fr-btn fr-btn--secondary see-more-link" href="/certification/exploitations?search=${query}"
+            <a class="fr-btn fr-btn--secondary see-more-link" href="${props.route}?search=${query}"
               >Voir tous les résultats</a
             >
           `;
@@ -175,7 +182,7 @@ function getResult(query) {
       },
       onSelect: function ({ item }) {
         return router.push({
-          path: "/certification/exploitations",
+          path: props.route,
           query: {
             search: item.nom,
           },
