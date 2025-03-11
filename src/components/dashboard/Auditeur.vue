@@ -54,7 +54,7 @@
           @pin="loadOperators()"
         />
       </div>
-      <div v-if="pinnedOperators.length === 0">Aucune exploitation épinglée</div>
+      <div v-if="pinnedOperators.length === 0"><p>Aucune exploitation épinglée</p></div>
     </div>
     <div v-else class="operateurs-consultes">
       <div
@@ -82,7 +82,7 @@
         />
       </div>
     </div>
-    <div v-if="consultedOperators.length === 0">Aucune exploitation consultée récemment</div>
+    <div v-if="consultedOperators.length === 0"><p>Aucune exploitation consultée récemment</p></div>
   </template>
 </template>
 
@@ -206,5 +206,16 @@ function checkIfDisabled(operator) {
 }
 .content {
   border-top: solid 1px #cfcfcf;
+}
+
+@media (max-width: 48em) {
+  .fr-segmented__elements {
+    flex-direction: column;
+  }
+
+  .operateurs-epingles,
+  .operateurs-consultes {
+    grid-template-columns: auto;
+  }
 }
 </style>

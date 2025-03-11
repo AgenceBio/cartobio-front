@@ -337,4 +337,8 @@ const isOc = computed(() => userStore.isOc);
 .tool-username span::before {
   display: inline-block;
 }
+
+#mobile-menu .fr-nav__link {
+  justify-content: flex-start;
+}
 </style>
