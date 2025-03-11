@@ -63,33 +63,17 @@ meta:
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useUserStore } from "@/stores/user";
 import DashboardChargeDeCertification from "@/components/dashboard/ChargeDeCertification.vue";
 import DashboardAuditeur from "@/components/dashboard/Auditeur.vue";
 import { useRouter } from "vue-router";
 import "@algolia/autocomplete-theme-classic";
 import AutoCompleteSearch from "@/components/operator/AutoCompleteSearch.vue";
+import { useIsMobile } from "@/composables/useIsMobile";
 
 const router = useRouter();
+const isMobile = useIsMobile();
 
-const windowWidth = ref(window.innerWidth);
-
-const updateWindowWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
-
-onMounted(() => {
-  window.addEventListener("resize", updateWindowWidth);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", updateWindowWidth);
-});
-
-const isMobile = computed(() => {
-  return windowWidth.value < 768;
-});
 const { user, isOcAudit, isOcCertif, startPage } = useUserStore();
 
 function seeAll() {

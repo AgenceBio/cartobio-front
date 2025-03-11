@@ -60,7 +60,8 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { useIsMobile } from "@/composables/useIsMobile";
+import { computed } from "vue";
 
 const props = defineProps({
   currentPage: Number,
@@ -69,23 +70,7 @@ const props = defineProps({
 
 defineEmits(["changePage"]);
 
-const windowWidth = ref(window.innerWidth);
-
-const updateWindowWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
-
-onMounted(() => {
-  window.addEventListener("resize", updateWindowWidth);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", updateWindowWidth);
-});
-
-const isMobile = computed(() => {
-  return windowWidth.value < 768;
-});
+const isMobile = useIsMobile();
 
 const visiblePages = computed(() => {
   if (!isMobile.value) {
