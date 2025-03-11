@@ -1,14 +1,15 @@
 <template>
   <div>
-     <div class="fr-input-wrap fr-icon-search-line">
+    <div class="fr-input-wrap fr-icon-search-line">
       <input
         class="fr-input"
         placeholder="Rechercher"
         minlength="1"
         v-model.trim="userInputDepartement"
-        id="text-input-hint" name="text-input-hint"
+        id="text-input-hint"
+        name="text-input-hint"
       />
-      </div>
+    </div>
     <fieldset
       class="fr-fieldset departement-checkbox fr-mt-2v"
       id="checkboxes-small"
@@ -156,5 +157,4 @@ const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, 
   max-height: 400px;
   overflow: auto;
 }
-
 </style>

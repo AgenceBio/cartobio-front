@@ -127,6 +127,14 @@
                   {{ user.nom }}
                 </router-link>
               </li>
+              <li class="fr-nav__item" v-if="isMobile">
+                <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Tableau de bord</router-link>
+              </li>
+              <li class="fr-nav__item" v-if="isMobile">
+                <router-link to="/certification/exploitations" class="fr-nav__link"
+                  >Liste des exploitations</router-link
+                >
+              </li>
               <li class="fr-nav__item">
                 <a
                   :href="documentationPage"
@@ -137,6 +145,7 @@
                   Aide<lien-externe />
                 </a>
               </li>
+
               <li class="fr-nav__item">
                 <router-link to="/projet" class="fr-nav__link"> À propos de CartoBio </router-link>
               </li>
@@ -216,7 +225,7 @@
           </div>
         </div>
       </div>
-      <div class="fr-container" v-if="isOc">
+      <div class="fr-container" v-if="isOc && !isMobile">
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
@@ -233,7 +242,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore, ROLES } from "@/stores/user.js";
 import { storeToRefs } from "pinia";
@@ -243,6 +252,23 @@ const userStore = useUserStore();
 const router = useRouter();
 const online = useOnline();
 
+const windowWidth = ref(window.innerWidth);
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", updateWindowWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateWindowWidth);
+});
+
+const isMobile = computed(() => {
+  return windowWidth.value < 768;
+});
 const maintenance = ref(false);
 const checkStatus = async () => {
   try {

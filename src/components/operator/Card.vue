@@ -1,11 +1,14 @@
 <template>
   <div
     class="fr-card fr-card--download"
-    :class="[operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link card-activate', 'operator-record']"
+    :class="[
+      operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link card-activate',
+      'operator-record',
+    ]"
   >
     <div
       class="fr-card__body"
-      @click="goToExploitations()"
+      @click="goToExploitations(operator)"
       @mouseenter="handleMouseEnter(operator)"
       @mouseleave="hideTooltip"
     >
@@ -101,7 +104,8 @@
               </span>
               <br />
               <span class="informations-tooltip">
-                <span class="informations">Créee le</span> <span class="fr-icon-calendar-2-line fr-icon--sm informations-bold"></span>
+                <span class="informations">Créee le</span>
+                <span class="fr-icon-calendar-2-line fr-icon--sm informations-bold"></span>
                 <span class="informations-bold">{{ jjmmyyyy(operator.created_at) }} </span
                 ><span class="informations">Par</span>
                 <div v-if="operator.metadata.source === 'API Parcellaire'" class="informations-bold">
@@ -162,7 +166,7 @@
         "
       >
         <p class="fr-hint-text fr-text--sm controlerealise" aria-live="polite">Contrôle réalisé</p>
-        <div class="certification-info fr-text--sm" aria-live="polite">
+        <div class="certification-info fr-text--sm fr-mt-2v" aria-live="polite">
           <div class="fr-icon-calendar-2-line fr-icon--sm"></div>
           <div class="fr-hint-text">{{ jjmmyyyy(auditDate) }}</div>
         </div>
@@ -220,10 +224,15 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { jjmmyyyy } from "@/utils/dates.js";
+import { storeToRefs } from "pinia";
+
 import ParcellaireState from "@/components/records/State.vue";
 import NotificationState from "@/components/records/NotificationState.vue";
 import { engagementList } from "@/referentiels/ab.js";
 import { pinOperator, unpinOperator } from "@/cartobio-api";
+import { useUserStore } from "@/stores/user.js";
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 const props = defineProps({
   operator: {
@@ -253,9 +262,14 @@ const tooltip = ref({
 
 const router = useRouter();
 
-const goToExploitations = () => {
+const goToExploitations = (operator) => {
   if (!props.operatorDisabled[props.operator.numeroBio]) {
     return router.push(`/exploitations/${props.operator.numeroBio}`);
+  } else if (props.operatorDisabled[operator.numeroBio] && tooltip.value.visible === false) {
+    tooltip.value.visible = true;
+    tooltip.value.operatorId = operator.id;
+  } else if (tooltip.value.visible === true) {
+    hideTooltip();
   }
 };
 const goToSpecificVersion = () => {
@@ -281,6 +295,12 @@ function unpin(numeroBio) {
 }
 
 function getStatus(operator) {
+  if (
+    user.value.organismeCertificateur &&
+    operator.organismeCertificateur.id !== user.value.organismeCertificateur.id
+  ) {
+    return "ARRETEE";
+  }
   const notif = operator.notifications ?? {};
 
   return notif.etatCertification;
@@ -396,6 +416,29 @@ function hideTooltip() {
   visibility: visible;
 }
 
+.error-icon:focus .tooltip,
+.error-icon:active .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 600px) {
+  .tooltip {
+    bottom: auto;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-90%);
+    white-space: normal;
+    max-width: 200px;
+    text-align: center;
+    z-index: 9999;
+  }
+
+  .tooltip-text {
+    transform: translateX(-72%) !important;
+  }
+}
+
 .disabled-tooltip * {
   color: grey;
   text-decoration: none;
@@ -497,7 +540,7 @@ function hideTooltip() {
 
 .fr-card {
   border-radius: 0px;
-  border: 1px solid #DEE5FD;
+  border: 1px solid #dee5fd;
 }
 
 .custom-tag {
@@ -541,7 +584,6 @@ function hideTooltip() {
 }
 
 .card-activate > .fr-card__header {
-  background-color: #F4F6FE
+  background-color: #f4f6fe;
 }
-
 </style>

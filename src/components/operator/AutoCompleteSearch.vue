@@ -5,7 +5,9 @@
     id="header-search"
     role="search"
   >
-    <label class="fr-label" for="search"> Recherche par nom d'exploitation, SIRET ou numéro bio </label>
+    <label class="fr-label" for="search"
+      >{{ placeholder ? placeholder : " Recherche par nom d'exploitation, SIRET ou numéro bio" }}
+    </label>
     <div class="input" ref="autocompleteRef"></div>
 
     <button
@@ -48,12 +50,19 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  placeholder: {
+    type: String,
+    required: false,
+  },
 });
 
 onMounted(() => {
   const { setQuery } = autocomplete({
     container: autocompleteRef.value,
-    placeholder: "Chercher par nom d'opérateur, SIRET ou numéro bio…",
+    translations: {
+      detachedCancelButtonText: "Annuler",
+    },
+    placeholder: props.placeholder ? props.placeholder : "Chercher par nom d'opérateur, SIRET ou numéro bio…",
     openOnFocus: true,
     id: "search",
     classNames: {
