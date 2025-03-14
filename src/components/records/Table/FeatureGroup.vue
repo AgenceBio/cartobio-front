@@ -190,6 +190,7 @@ import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 import { useOnline } from "@vueuse/core";
 import { cultureLabel, featureName, inHa, legalProjectionSurface, getTimeAgo } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
+import { CertificationState } from "@agencebio/cartobio-types";
 
 const route = useRoute();
 const operatorStore = useOperatorStore();
@@ -224,8 +225,8 @@ const groupErrors = computed(() => {
 const readonly = computed(() => {
   return (
     permissions.isOc &&
-    recordStore.record.oc_id != null &&
-    recordStore.record.oc_id !== userStore.user?.organismeCertificateur?.id
+    ((recordStore.record.oc_id != null && recordStore.record.oc_id !== userStore.user?.organismeCertificateur?.id) ||
+      (recordStore.record.certification_state === CertificationState.CERTIFIED && !permissions.canCertify.value))
   );
 });
 

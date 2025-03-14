@@ -30,7 +30,7 @@
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
             <NotificationState v-if="operator.notifications" :operator="operator" :card="true" />
-            <div v-if="operator.lastmixitestate">
+            <div v-if="operator.lastmixitestate && getStatus(operator) !== 'ARRETEE'">
               <p class="custom-tag">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
           </div>
@@ -85,46 +85,45 @@
         <div class="top-bar-tooltip">
           <div>
             <span class="fr-icon-award-line fr-icon--sm lastcertified"></span>
-            <span class="lastcertifieddate">{{
-              operator.lastcertifieddate ? new Date(operator.lastcertifieddate).getFullYear() : "-"
-            }}</span>
+            <span class="lastcertifieddate">{{ operator.lastcertifieddate ?? "-" }}</span>
           </div>
-
           <div class="error-icon" v-if="operator.otherParcellaire">
             <span>!</span>
-            <div class="tooltip" v-if="certificationState == 'CERTIFIED'">
-              <span>
+            <div class="tooltip">
+              <span v-if="certificationState == 'CERTIFIED'">
                 Une nouvelle version a été créée après la certification <br />de {{ operator.version_name }}
               </span>
-            </div>
-            <div class="tooltip" v-if="certificationState == 'PENDING_CERTIFICATION'">
-              <span>
+              <span v-else-if="certificationState == 'PENDING_CERTIFICATION'">
                 Une nouvelle version a été créée après la soumission <br />de {{ operator.version_name }} par le
                 contrôleur
               </span>
-              <br />
+
+              <span v-else-if="certificationState == 'AUDITED'">
+                Une nouvelle version a été créée après le contrôle <br />de {{ operator.version_name }}
+              </span>
               <span class="informations-tooltip">
-                <span class="informations">Créee le</span>
                 <span class="fr-icon-calendar-2-line fr-icon--sm informations-bold"></span>
-                <span class="informations-bold">{{ jjmmyyyy(operator.created_at) }} </span
-                ><span class="informations">Par</span>
-                <div v-if="operator.metadata.source === 'API Parcellaire'" class="informations-bold">
+                <span class="informations-bold">Le {{ jjmmyyyy(operator.otherParcellaire[0].created_at) }} </span
+                ><span class="informations fr-ml-2w">Par</span>
+                <div
+                  v-if="operator.otherParcellaire[0].metadata.source === 'API Parcellaire'"
+                  class="informations-bold"
+                >
                   <span class="fr-icon-download-line fr-icon--sm informations-bold" />
                   Api Parcellaire
                 </div>
-                <div v-else-if="operator.metadata.source === 'telepac'" class="informations-bold">
+                <div v-else-if="operator.otherParcellaire[0].metadata.source === 'telepac'" class="informations-bold">
                   <span class="fr-icon-refresh-line fr-icon--sm informations-bold" />
-                  Import Telépac {{ operator.metadata.campagne }}
+                  Import Telépac {{ operator.otherParcellaire[0].metadata.campagne }}
                 </div>
                 <div v-else class="informations-bold">
                   <span class="fr-icon-user-line fr-icon--sm informations-bold" />{{
-                    JSON.parse(operator.user).nom + " " + JSON.parse(operator.user).prenom
+                    JSON.parse(operator.otherParcellaire[0].user).nom +
+                    " " +
+                    JSON.parse(operator.otherParcellaire[0].user).prenom
                   }}
                 </div>
               </span>
-            </div>
-            <div class="tooltip" v-if="certificationState == 'AUDITED'">
-              <span> Une nouvelle version a été créée après le contrôle <br />de {{ operator.version_name }} </span>
             </div>
           </div>
         </div>
@@ -161,6 +160,7 @@
         class="row"
         v-if="
           auditDate &&
+          getStatus(operator) !== 'ARRETEE' &&
           (certificationState == 'CERTIFIED' || certificationState === 'PENDING_CERTIFICATION') &&
           !operatorDisabled[operator.numeroBio]
         "
@@ -579,11 +579,17 @@ function hideTooltip() {
 }
 
 .informations-bold {
-  font-weight: bold;
-  color: grey;
+  font-weight: normal;
+  color: var(--text-title-grey);
 }
 
 .card-activate > .fr-card__header {
   background-color: #f4f6fe;
+}
+</style>
+
+<style>
+.badge {
+  max-width: 90%;
 }
 </style>

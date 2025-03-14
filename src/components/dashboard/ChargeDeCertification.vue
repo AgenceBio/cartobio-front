@@ -48,7 +48,7 @@
     <Spinner>Chargement des données…</Spinner>
   </div>
   <div v-else class="callout-container fr-mb-2w">
-    <button class="fr-callout certifiees fr-mb-0" @click="goToCertifiees">
+    <button class="fr-callout certifiees fr-mb-0 callout-children" @click="goToCertifiees">
       <div class="callout-content">
         <div>
           <div class="fr-hidden-md flex">
@@ -67,15 +67,15 @@
         />
       </div>
     </button>
-    <button class="fr-callout en-attentes fr-mb-0" @click="goToEnAttentes">
+    <button class="fr-callout en-attentes fr-mb-0 callout-children" @click="goToEnAttentes">
       <div class="callout-content">
         <div>
           <div class="fr-hidden-md flex">
             <span class="fr-icon fr-icon-refresh-line fr-icon-sm"></span>
-            <p class="fr-callout__text fr-text--xs fr-text--bold">En attente de certification</p>
+            <p class="fr-callout__text fr-text--xs fr-text--bold">Contrôlées, en cours de certification</p>
           </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countEnAttentes }}</span>
-          <p class="fr-callout__text fr-hidden fr-unhidden-md">En attente de certification</p>
+          <p class="fr-callout__text fr-hidden fr-unhidden-md">Contrôlées, en cours de certification</p>
         </div>
         <img
           src="../../assets/dsfr/document/conclusion.svg"
@@ -86,16 +86,16 @@
         />
       </div>
     </button>
-    <div>
-      <button class="fr-callout non-auditees fr-mb-0" @click="goToNonAuditees">
+    <div class="callout-children">
+      <button class="fr-callout non-auditees fr-mb-0 full-width" @click="goToNonAuditees">
         <div class="callout-content">
           <div>
             <div class="fr-hidden-md flex">
               <span class="fr-icon fr-icon-warning-line fr-icon-sm"></span>
-              <p class="fr-callout__text fr-text--xs fr-text--bold">Non auditées / contrôlées *</p>
+              <p class="fr-callout__text fr-text--xs fr-text--bold">Non contrôlées *</p>
             </div>
             <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countNonAuditees }}</span>
-            <p class="fr-callout__text fr-hidden fr-unhidden-md">Non auditées / contrôlées *</p>
+            <p class="fr-callout__text fr-hidden fr-unhidden-md">Non contrôlées *</p>
           </div>
           <img
             src="@gouvfr/dsfr/artwork/pictograms/system/warning.svg"
@@ -106,7 +106,7 @@
           />
         </div>
       </button>
-      <div class="fr-hint-text fr-mt-1w fr-hidden fr-unhidden-md">
+      <div class="fr-hint-text fr-mt-1w fr-hidden fr-unhidden-md align-right">
         * hors exploitations engagées en {{ annneeReference + 1 }}
       </div>
     </div>
@@ -329,17 +329,21 @@ const goToACertifier = () => {
   gap: 1.5em;
   align-items: flex-start;
 }
-.callout-container .fr-callout {
-  flex: 1;
+
+.full-width {
+  width: 100%;
 }
 @media (min-width: 48em) {
+  .callout-container .callout-children {
+    width: 33%;
+  }
   .callout-container .fr-callout {
     padding: 1.5rem 3rem 1.5rem 2rem;
   }
 }
 .callout-container .fr-callout__text {
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.4rem;
 }
 
 .fr-callout.certifiees {
@@ -408,7 +412,7 @@ const goToACertifier = () => {
 }
 .a-certifier {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 50% 50%;
   gap: 1em;
 }
 
@@ -434,7 +438,7 @@ const goToACertifier = () => {
   }
   .callout-container {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 50% 50%;
   }
   .fr-callout {
     padding: 0.8rem;

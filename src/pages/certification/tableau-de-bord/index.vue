@@ -16,9 +16,6 @@ meta:
             <div class="fr-collapse" id="breadcrumb-1">
               <ol class="fr-breadcrumb__list">
                 <li>
-                  <a class="fr-breadcrumb__link" :href="startPage">Accueil</a>
-                </li>
-                <li>
                   <a class="fr-breadcrumb__link" aria-current="page">Tableau de bord</a>
                 </li>
               </ol>
@@ -74,7 +71,7 @@ import { useIsMobile } from "@/composables/useIsMobile";
 const router = useRouter();
 const isMobile = useIsMobile();
 
-const { user, isOcAudit, isOcCertif, startPage } = useUserStore();
+const { user, isOcAudit, isOcCertif } = useUserStore();
 
 function seeAll() {
   return router.push({ path: "/certification/exploitations" });

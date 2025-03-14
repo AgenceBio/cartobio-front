@@ -147,7 +147,6 @@ const computedClass = computed(() => {
 }
 
 .badge {
-  max-width: 90%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

@@ -81,8 +81,8 @@
           @pin="loadOperators()"
         />
       </div>
+      <div v-if="consultedOperators.length === 0"><p>Aucune exploitation consultée récemment</p></div>
     </div>
-    <div v-if="consultedOperators.length === 0"><p>Aucune exploitation consultée récemment</p></div>
   </template>
 </template>
 
@@ -174,10 +174,7 @@ function checkIfDisabled(operator) {
       });
   }
 
-  if (
-    user.value.organismeCertificateur &&
-    operator.organismeCertificateur.id !== user.value.organismeCertificateur.id
-  ) {
+  if (user.organismeCertificateur && operator.organismeCertificateur.id !== user.organismeCertificateur.id) {
     operatorStore
       .getOperator(operator.numeroBio)
       .then((res) => {
@@ -194,7 +191,7 @@ function checkIfDisabled(operator) {
 .operateurs-epingles,
 .operateurs-consultes {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 50% 50%;
   gap: 1em;
 }
 .text-align-center {
