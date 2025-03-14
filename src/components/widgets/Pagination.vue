@@ -19,21 +19,30 @@
           Page précédente
         </button>
       </li>
-      <li v-for="page in visiblePages" :key="page">
-        <button
-          class="fr-pagination__link"
-          :class="{ [`fr-pagination__link--${page}`]: true }"
-          @click="$emit('changePage', page)"
-          :aria-current="currentPage == page"
-        >
-          {{ page }}
-        </button>
-      </li>
+      <template v-for="page in visiblePages" :key="page">
+        <li>
+          <button
+            class="fr-pagination__link"
+            :class="{ [`fr-pagination__link--${page}`]: true }"
+            @click="$emit('changePage', page)"
+            :aria-current="currentPage == page"
+          >
+            {{ page }}
+          </button>
+        </li>
+        <li v-if="!isMobile && currentPage > 3 && page === 1">
+          <span class="fr-pagination__link fr-displayed-lg">…</span>
+        </li>
+      </template>
       <li v-if="!isMobile && currentPage < maxPage - 2">
         <span class="fr-pagination__link fr-displayed-lg">…</span>
       </li>
       <li v-if="!isMobile && maxPage > 2 && !visiblePages.includes(maxPage)">
-        <button class="fr-pagination__link fr-displayed-lg" @click="$emit('changePage', maxPage)">
+        <button
+          class="fr-pagination__link fr-displayed-lg"
+          @click="$emit('changePage', maxPage)"
+          :aria-current="currentPage == maxPage"
+        >
           {{ maxPage }}
         </button>
       </li>
@@ -79,8 +88,6 @@ const visiblePages = computed(() => {
     }
 
     const pages = [1];
-    if (props.currentPage > 3) pages.push("…");
-
     const start = Math.max(2, props.currentPage - 1);
     const end = Math.min(props.maxPage - 1, props.currentPage + 1);
 

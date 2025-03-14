@@ -69,7 +69,7 @@ onMounted(() => {
     translations: {
       detachedCancelButtonText: "Annuler",
     },
-    placeholder: props.placeholder ? props.placeholder : "Chercher par nom d'opérateur, SIRET ou numéro bio…",
+    placeholder: props.placeholder ? props.placeholder : "Rechercher par nom, SIRET, n° Bio ou n° client",
     openOnFocus: true,
     id: "search",
     classNames: {
@@ -82,6 +82,7 @@ onMounted(() => {
     },
 
     getSources({ query }) {
+      userInput.value = query;
       if (query.length < 3) {
         data.value = null;
         return [];
@@ -130,15 +131,18 @@ function getResult(query) {
       sourceId: "operateurs-api",
       getItems() {
         const res = new Fuse(data.value, {
-          keys: ["nom", "denominationCourante", "numeroBio", "siret"],
+          keys: ["nom", "denominationCourante", "numeroBio", "siret", "numeroClient"],
           minMatchCharLength: 2,
           threshold: 0,
+          ignoreDiacritics: true,
+          ignoreLocation: true,
         })
           .search(query)
           .map(({ item }) => ({ ...item }));
 
         length.value = res.length;
 
+        console.log(res.slice(0, 5));
         return res.slice(0, 5);
       },
       templates: {
@@ -176,8 +180,11 @@ function getResult(query) {
         },
         header({ html }) {
           return html` <div class="fr-hint-text">
-            ${length.value === 0 ? "Aucun" : length.value} résultat${length.value > 1 ? "s" : ""}
+            ${length.value === 0 ? "Aucun" : length.value} suggestion${length.value > 1 ? "s" : ""}
           </div>`;
+        },
+        empty({ html }) {
+          return html`Aucuneesf sefkje`;
         },
       },
       onSelect: function ({ item }) {
