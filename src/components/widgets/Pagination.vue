@@ -38,7 +38,11 @@
         <span class="fr-pagination__link fr-displayed-lg">…</span>
       </li>
       <li v-if="!isMobile && maxPage > 2 && !visiblePages.includes(maxPage)">
-        <button class="fr-pagination__link fr-displayed-lg" @click="$emit('changePage', maxPage)">
+        <button
+          class="fr-pagination__link fr-displayed-lg"
+          @click="$emit('changePage', maxPage)"
+          :aria-current="currentPage == maxPage"
+        >
           {{ maxPage }}
         </button>
       </li>
