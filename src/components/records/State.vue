@@ -3,9 +3,9 @@
     :class="[computedClass, 'badge']"
     :aria-label="dateLabel ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label"
   >
-    <span :class="[stateInfo.icon, stateInfo.icon ? 'fr-icon--sm fr-mr-1v' : '']" />
-    <span aria-hidden>{{ stateInfo.label }}</span>
-    <span v-if="showDate && dateLabel" class="year" aria-hidden>{{ dateLabel }}</span>
+    <span :class="[stateInfo.icon, stateInfo.icon ? 'fr-icon--sm fr-mr-1v' : '']" aria-hidden="true" />
+    <p class="fr-mb-0">{{ stateInfo.label }}</p>
+    <p v-if="showDate && dateLabel" class="fr-mb-0 year">{{ dateLabel }}</p>
   </span>
 </template>
 
@@ -63,36 +63,20 @@ const computedClass = computed(() => {
 }
 
 .class-op {
-  width: auto;
   background: #e9edfe;
   border-radius: 4px;
   width: fit-content;
-
-  font-family: "Marianne";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 20px;
-  text-transform: uppercase;
   padding: 2px 3px;
-  border: 1px solid #2f4077;
-
+  border: 1px solid #bfccfb;
   color: #2f4077;
 }
 
 .class-audited {
   background: #fee7fc;
   border-radius: 4px;
-
-  font-family: "Marianne";
   width: fit-content;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 20px;
-  text-transform: uppercase;
   padding: 2px 3px;
-  border: 1px solid #a558a0;
+  border: 1px solid #fbaff5;
   color: #a558a0;
 }
 
@@ -100,16 +84,8 @@ const computedClass = computed(() => {
   background: #fef3fd;
   border-radius: 4px;
   width: fit-content;
-
-  font-family: "Marianne";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 20px;
-  text-transform: uppercase;
   padding: 2px 3px;
-  border: 1px solid #a558a0;
-
+  border: 1px solid #fbaff5;
   color: #a558a0;
 }
 
@@ -117,39 +93,39 @@ const computedClass = computed(() => {
   background: #e5fbfd;
   border-radius: 4px;
   width: fit-content;
-
-  font-family: "Marianne";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 20px;
-
-  text-transform: uppercase;
-  border: 1px solid #006a6f;
+  border: 1px solid #4cb4bd;
   padding: 2px 3px;
-
   color: #006a6f;
 }
 
-.class-pp {
-  font-family: "Marianne";
+.badge.class-pp > p {
   font-style: italic;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
   text-align: center;
-  border: 1px solid #666666;
-
+  border: 1px solid #e5e5e5;
   width: fit-content;
   padding: 2px 3px;
-
   color: #666666;
 }
 
 .badge {
-  overflow: hidden;
+  /* overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis;*/
   padding-right: 1ch;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  max-width: 100%;
+}
+.badge > p {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 </style>

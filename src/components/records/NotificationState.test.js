@@ -16,7 +16,6 @@ describe("NotificationState", () => {
     });
     await flushPromises();
 
-    expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-article-line");
     expect(
       wrapper
         .find("span")
@@ -25,8 +24,8 @@ describe("NotificationState", () => {
     ).toContain("Brouillon");
 
     const spanElement = wrapper.find("span");
-    expect(spanElement.attributes("style")).toContain("background-color: rgb(211, 211, 211)");
-    expect(spanElement.attributes("style")).toContain("color: rgb(128, 128, 128)");
+    expect(spanElement.attributes("style")).toContain("background-color: rgb(229, 229, 229)");
+    expect(spanElement.attributes("style")).toContain("color: rgb(102, 102, 102)");
   });
 
   it('does not render text when "text" prop is false', async () => {
@@ -69,7 +68,7 @@ describe("NotificationState", () => {
     ).toContain("Notification Engagée");
 
     const spanElement = wrapper.find("span");
-    expect(spanElement.attributes("style")).toContain("background-color: rgb(158, 249, 190)");
-    expect(spanElement.attributes("style")).toContain("color: rgb(41, 114, 84)");
+    expect(spanElement.attributes("style")).toContain("background-color: rgb(223, 253, 247)");
+    expect(spanElement.attributes("style")).toContain("color: rgb(55, 99, 95)");
   });
 });

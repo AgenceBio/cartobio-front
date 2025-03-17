@@ -16,7 +16,7 @@
             v-model="vue"
           />
           <label class="fr-label" for="operateurs-epingles">
-            <span class="ri-pushpin-line fr-mr-1w" aria-hidden="true"></span>
+            <span class="ri-pushpin-fill fr-mr-1w" aria-hidden="true"></span>
             Mes exploitations épinglées
           </label>
         </div>

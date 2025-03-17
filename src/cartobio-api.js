@@ -40,7 +40,7 @@ export async function getOperatorNcviFeatures({ evv, numeroBio }) {
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
 export async function searchOperators({ input, page, filter, limit = 7 }) {
-  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, filter, limit });
+  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, filter, limit }, { timeout: 60000 });
 
   return data;
 }
@@ -287,6 +287,6 @@ export async function getDepartements() {
  * @returns {Promise<any>}
  */
 export async function getDataXLSX() {
-  const data = await apiClient.get("/v2/exportParcellaire");
+  const data = await apiClient.get("/v2/exportParcellaire", { timeout: 600000 });
   return data;
 }

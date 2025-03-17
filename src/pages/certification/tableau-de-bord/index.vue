@@ -9,18 +9,9 @@ meta:
 
 <template>
   <section id="sous-header" class="header-exploitations">
-    <div :class="isMobile ? 'fr-container fr-pb-2w' : 'fr-container fr-pb-7w'">
-      <div class="fr-grid-row fr-grid-row--gutters">
+    <div :class="isMobile ? 'fr-container fr-pb-2w' : 'fr-container fr-pb-4w'">
+      <div class="fr-grid-row fr-grid-row--gutters fr-pt-5w">
         <div class="fr-col-12">
-          <nav role="navigation" class="fr-breadcrumb fr-mb-0">
-            <div class="fr-collapse" id="breadcrumb-1">
-              <ol class="fr-breadcrumb__list">
-                <li>
-                  <a class="fr-breadcrumb__link" aria-current="page">Tableau de bord</a>
-                </li>
-              </ol>
-            </div>
-          </nav>
           <h2 class="fr-mb-0">Bienvenue {{ user.prenom }} {{ user.nom }}</h2>
         </div>
       </div>
@@ -92,7 +83,7 @@ function seeAll() {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 50px;
+  height: 80px;
   background: #e3fdeb;
   z-index: -1;
 }

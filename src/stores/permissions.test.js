@@ -26,7 +26,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(true);
     expect(permissions.canDeleteParcellaire).toEqual(true);
     expect(permissions.canChangeCulture).toEqual(true);
-    expect(permissions.canAddParcelleNote).toEqual(true);
     expect(permissions.canChangeConversionLevel).toEqual(false);
     expect(permissions.canSaveAudit).toEqual(false);
     expect(permissions.canSendAudit).toEqual(false);
@@ -37,7 +36,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(false);
     expect(permissions.canDeleteParcellaire).toEqual(false);
     expect(permissions.canChangeCulture).toEqual(false);
-    expect(permissions.canAddParcelleNote).toEqual(true /* false */);
     expect(permissions.canSaveAudit).toEqual(false);
     expect(permissions.canSendAudit).toEqual(false);
     expect(permissions.canCertify).toEqual(false);
@@ -56,7 +54,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(false);
     expect(permissions.canDeleteParcellaire).toEqual(false);
     expect(permissions.canChangeCulture).toEqual(false);
-    expect(permissions.canAddParcelleNote).toEqual(false);
     expect(permissions.canChangeConversionLevel).toEqual(false);
 
     userStore.user = { organismeCertificateur: { id: 1 } };
@@ -66,7 +63,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(true);
     expect(permissions.canDeleteParcellaire).toEqual(true);
     expect(permissions.canChangeCulture).toEqual(true);
-    expect(permissions.canAddParcelleNote).toEqual(true);
     expect(permissions.canChangeConversionLevel).toEqual(true);
     expect(permissions.canSaveAudit).toEqual(false);
     expect(permissions.canSendAudit).toEqual(false);
@@ -77,7 +73,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(true);
     expect(permissions.canDeleteParcellaire).toEqual(true);
     expect(permissions.canChangeCulture).toEqual(true);
-    expect(permissions.canAddParcelleNote).toEqual(true);
     expect(permissions.canChangeConversionLevel).toEqual(true);
     expect(permissions.canSaveAudit).toEqual(false);
     expect(permissions.canSendAudit).toEqual(false);
@@ -98,7 +93,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(true);
     expect(permissions.canDeleteParcellaire).toEqual(true);
     expect(permissions.canChangeCulture).toEqual(true);
-    expect(permissions.canAddParcelleNote).toEqual(true);
     expect(permissions.canChangeConversionLevel).toEqual(true);
     expect(permissions.canSaveAudit).toEqual(true);
     expect(permissions.canSendAudit).toEqual(true);
@@ -109,7 +103,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(true);
     expect(permissions.canDeleteParcellaire).toEqual(true);
     expect(permissions.canChangeCulture).toEqual(true);
-    expect(permissions.canAddParcelleNote).toEqual(true);
     expect(permissions.canChangeConversionLevel).toEqual(true);
     expect(permissions.canSaveAudit).toEqual(true);
     expect(permissions.canSendAudit).toEqual(true);
@@ -130,7 +123,6 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(false);
     expect(permissions.canDeleteParcellaire).toEqual(false);
     expect(permissions.canChangeCulture).toEqual(false);
-    expect(permissions.canAddParcelleNote).toEqual(true /* false */);
     expect(permissions.canChangeConversionLevel).toEqual(false);
     expect(permissions.canSaveAudit).toEqual(false);
     expect(permissions.canSendAudit).toEqual(false);
@@ -141,6 +133,5 @@ describe("roles", () => {
     expect(permissions.canDeleteFeature).toEqual(false);
     expect(permissions.canDeleteParcellaire).toEqual(false);
     expect(permissions.canChangeCulture).toEqual(false);
-    expect(permissions.canAddParcelleNote).toEqual(true /* false */);
   });
 });

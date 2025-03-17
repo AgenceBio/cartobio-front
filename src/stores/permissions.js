@@ -56,10 +56,6 @@ export const usePermissions = defineStore("permissions", () => {
   const canChangeCulture = canEditParcellaire;
   const canChangeGeometry = canEditParcellaire;
 
-  const canAddParcelleNote = computed(() => {
-    return Boolean(recordStore.record.certification_state);
-  });
-
   const canChangeConversionLevel = computed(() => isOc.value && canEditParcellaire.value);
 
   const canSaveAudit = computed(() => Boolean(userStore.isOcAudit));
@@ -87,7 +83,6 @@ export const usePermissions = defineStore("permissions", () => {
     canEditVersion,
     canChangeCulture,
     canChangeGeometry,
-    canAddParcelleNote,
     canChangeConversionLevel,
     canSaveAudit,
     canSendAudit,
