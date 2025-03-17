@@ -246,54 +246,52 @@ export const certificationDateFin = {
 export const notificationsStateLevel = {
   ["ENGAGEE"]: {
     label: "Engagée",
-    color: "#9EF9BE",
-    textColor: "#297254",
-    icon: "fr-icon-check-line",
+    color: "#DFFDF7",
+    textColor: "#37635F",
+    icon: "fr-icon--sm fr-icon-check-line",
     displayFilter: true,
   },
 
   ["ENGAGEE FUTUR"]: {
     label: "Engagée future",
-    color: "#E3E3FD",
-    textColor: "#000091",
-    icon: "fr-icon-calendar-line",
+    color: "#F4F6FE",
+    textColor: "#2F4077",
+    icon: "ri-calendar-check-line",
     displayFilter: true,
   },
-
   ["SUSPENDUE"]: {
     label: "Suspendue",
-    color: "#FDDFDB",
+    color: "#FEE9E7",
     textColor: "#A94645",
-    icon: "fr-icon-pause-circle-line",
+    icon: "fr-icon--sm fr-icon-pause-circle-line",
     displayFilter: true,
   },
   ["NON ENGAGEE"]: {
     label: "Non engagée",
-    color: "#FBE769",
-    textColor: "#66673D",
-    icon: "fr-icon-stop-circle-line",
+    color: "#FEF5E8",
+    textColor: "#695240",
+    icon: "fr-icon--sm fr-icon-time-line",
     displayFilter: true,
   },
   ["ARRETEE"]: {
     label: "Arrêtée",
     color: "#FFE9E9",
     textColor: "#CE0500",
-    icon: "fr-icon-error-fill",
+    icon: "fr-icon--sm fr-icon-error-fill",
     displayFilter: true,
   },
   ["RETIREE"]: {
     label: "Retirée",
     color: "#EEE4D9",
     textColor: "#6A6156",
-    icon: "fr-icon-close-circle-line",
+    icon: "fr-icon--sm fr-icon-close-circle-line",
     displayFilter: true,
   },
 
   ["BROUILLON"]: {
     label: "Brouillon",
-    color: "#D3D3D3",
-    textColor: "#808080",
-    icon: "fr-icon-article-line",
+    color: "#E5E5E5",
+    textColor: "#666666",
     displayFilter: false,
   },
 };
@@ -317,4 +315,11 @@ export const etatCertificationList = [
   { key: "ALL", label: "Toutes" },
   { key: "CERTIFIED", label: "Certifiées" },
   { key: "NO_CERTIFIED", label: "Non certifiées" },
+];
+
+export const sortOperatorListKeys = [
+  { key: "nom-ASC", label: "Nom (A à Z)" },
+  { key: "nom-DESC", label: "Nom (Z à A)" },
+  { key: "date-audit-DESC", label: "Date d'audit plus récente à plus ancienne" },
+  { key: "date-audit-ASC", label: "Date d'audit plus ancienne à plus récente" },
 ];

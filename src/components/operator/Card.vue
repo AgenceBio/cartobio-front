@@ -1,10 +1,7 @@
 <template>
   <div
     class="fr-card fr-card--download"
-    :class="[
-      operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'fr-enlarge-link card-activate',
-      'operator-record',
-    ]"
+    :class="[operatorDisabled[operator.numeroBio] ? 'disabled-tooltip' : 'card-activate', 'operator-record']"
   >
     <div
       class="fr-card__body"
@@ -13,25 +10,11 @@
       @mouseleave="hideTooltip"
     >
       <div class="fr-card__content">
-        <h3 class="fr-card__title">
-          <div v-if="!operatorDisabled[operator.numeroBio]" class="fr-link">
-            {{ operator.nom || operator.denomationCourante }}
-          </div>
-          <div v-else class="nameoperator">
-            {{ `${operator.nom || operator.denomationCourante}` }}
-          </div>
-        </h3>
-        <p class="fr-card__desc">
-          <span class="fr-hint-text fr-text--sm">
-            <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
-            {{ operator.commune }}, {{ operator.codePostal }}
-          </span>
-        </p>
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
             <NotificationState v-if="operator.notifications" :operator="operator" :card="true" />
             <div v-if="operator.lastmixitestate && getStatus(operator) !== 'ARRETEE'">
-              <p class="custom-tag">{{ engagementList[operator.lastmixitestate].label }}</p>
+              <p class="custom-tag fr-m-0">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
           </div>
           <div>
@@ -66,20 +49,34 @@
             </div>
           </div>
         </div>
-        <div class="fr-card__end">
-          <div class="fr-hint-text" v-if="operator.notifications?.numeroClient">
-            n° client {{ operator.notifications.numeroClient }}
+        <h3 class="fr-card__title fr-mt-2w">
+          <div v-if="!operatorDisabled[operator.numeroBio]" class="fr-link">
+            {{ operator.nom || operator.denomationCourante }}
           </div>
-          <div />
-          <div class="fr-hint-text">n° Bio {{ operator.numeroBio }}</div>
+          <div v-else class="nameoperator">
+            {{ `${operator.nom || operator.denomationCourante}` }}
+          </div>
+        </h3>
+        <div class="fr-card__desc fr-mt-1v fr-mb-5v">
+          <span class="fr-hint-text fr-text--sm">
+            <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
+            {{ operator.commune }}, {{ operator.codePostal }}
+          </span>
+          <div class="num-client fr-mt-3w">
+            <div class="fr-hint-text" v-if="operator.notifications?.numeroClient">
+              n° client {{ operator.notifications.numeroClient ?? "-" }}
+            </div>
+            <div />
+            <div class="fr-hint-text">n° Bio {{ operator.numeroBio }}</div>
+          </div>
         </div>
       </div>
     </div>
     <div
-      class="fr-card__header"
-      :class="[
-        getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE' ? 'container' : 'container-unique',
-      ]"
+      class="fr-card__footer fr-m-0 fr-p-0"
+      :class="{
+        container: getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE',
+      }"
     >
       <div class="row" v-if="getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE'">
         <div class="top-bar-tooltip">
@@ -129,19 +126,19 @@
         </div>
       </div>
       <div class="center" v-else>
-        <div v-if="getStatus(operator) === 'NON ENGAGEE'">
+        <p v-if="getStatus(operator) === 'NON ENGAGEE'">
           L’exploitation n’est pas encore gérée par {{ organismeOc?.nom || "votre OC" }}. Pour accéder au dossier sur
           CartoBio, la notification doit d’abord être validée sur le portail de notification par un chargé de
           certification.
-        </div>
-        <div v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator.numeroBio]">
+        </p>
+        <p v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator.numeroBio]">
           L’exploitation n’est plus gérée par {{ organismeOc?.nom || "votre OC" }} et aucune version de parcellaire de
           cette exploitation ne concerne votre organisme certificateur.
-        </div>
-        <div v-else-if="getStatus(operator) === 'ARRETEE'">
+        </p>
+        <p v-else-if="getStatus(operator) === 'ARRETEE'">
           L’exploitation n’est plus gérée par {{ organismeOc?.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
           versions de parcellaire initiées par votre organisme certificateur.
-        </div>
+        </p>
       </div>
 
       <div
@@ -149,7 +146,7 @@
         v-if="!certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
       >
         <button
-          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline fr-pl-0"
           @click="goToExploitations"
         >
           Créer un parcellaire
@@ -165,10 +162,10 @@
           !operatorDisabled[operator.numeroBio]
         "
       >
-        <p class="fr-hint-text fr-text--sm controlerealise" aria-live="polite">Contrôle réalisé</p>
-        <div class="certification-info fr-text--sm fr-mt-2v" aria-live="polite">
+        <p class="fr-hint-text fr-text--sm fr-mb-0" aria-live="polite">Contrôle réalisé</p>
+        <div class="certification-info fr-text--sm fr-mb-0 fr-mt-1v" aria-live="polite">
           <div class="fr-icon-calendar-2-line fr-icon--sm"></div>
-          <div class="fr-hint-text">{{ jjmmyyyy(auditDate) }}</div>
+          <div class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(auditDate) }}</div>
         </div>
       </div>
 
@@ -189,17 +186,24 @@
           }"
           :show-date="false"
         />
-        <div v-if="certificationDateDebut" class="certification-info">
+        <div v-if="certificationDateDebut" class="certification-info fr-mt-1v">
           <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
-          <span class="fr-hint-text">{{ jjmmyyyy(certificationDateDebut) }}</span>
+          <span class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(certificationDateDebut) }}</span>
         </div>
-        <div v-else-if="certificationState != 'PENDING_CERTIFICATION'" class="certification-info">
+        <div v-else-if="certificationState != 'PENDING_CERTIFICATION'" class="certification-info fr-mt-1v">
           <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
-          <span class="fr-hint-text">{{ jjmmyyyy(operator.updated_at) }}</span>
+          <span class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(operator.updated_at) }}</span>
         </div>
       </div>
 
-      <div v-if="certificationState == 'AUDITED' && !operatorDisabled[operator.numeroBio] && record_id">
+      <div
+        v-if="
+          certificationState == 'AUDITED' &&
+          !operatorDisabled[operator.numeroBio] &&
+          record_id &&
+          operator.notifications?.etatCertification != 'ARRETEE'
+        "
+      >
         <button
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -208,7 +212,13 @@
         </button>
       </div>
 
-      <div v-if="certificationState == 'OPERATOR_DRAFT' && !operatorDisabled[operator.numeroBio]">
+      <div
+        v-if="
+          certificationState == 'OPERATOR_DRAFT' &&
+          !operatorDisabled[operator.numeroBio] &&
+          operator.notifications?.etatCertification != 'ARRETEE'
+        "
+      >
         <button
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
@@ -335,24 +345,15 @@ function hideTooltip() {
   grid-template-rows: 1fr 1fr 1fr;
 }
 .row {
-  display: inline-grid;
-  align-items: center;
-  width: 100%;
-  padding-left: 20px;
-  flex-wrap: wrap;
-}
-
-.fr-card__end {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start !important;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-self: center;
+  padding-left: 1.4rem;
 }
 
 .fr-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
   padding: 16px;
   background-color: #fff;
 }
@@ -361,7 +362,6 @@ function hideTooltip() {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  order: 1 !important;
 }
 
 .certification-info {
@@ -507,7 +507,7 @@ function hideTooltip() {
   background-color: #e5fbfd;
   border: 1px solid #4cb4bd;
   border-radius: 4px;
-  padding: 2px;
+  padding: 0 4px;
   color: #006a6f;
   width: fit-content;
 }
@@ -518,58 +518,55 @@ function hideTooltip() {
   font-size: 14px;
 }
 
-.controlerealise {
-  margin-bottom: -20px;
+.num-client {
+  display: flex;
+  gap: 1.2rem;
 }
 
 .nameoperator {
   font-size: 1rem;
 }
 
-.container-unique {
-  justify-content: center;
-  align-items: center;
-}
-
 .center {
-  display: inline-block;
-  padding: 50px;
+  display: flex;
+  padding: 20px;
+  height: 100%;
+}
+.center p {
   font-style: italic;
   font-size: 0.75rem;
+  align-self: center;
 }
 
-.fr-card {
+.fr-card:not(.disabled-tooltip) {
   border-radius: 0px;
-  border: 1px solid #dee5fd;
+  background-image: linear-gradient(0deg, #dee5fd, #dee5fd), linear-gradient(0deg, #dee5fd, #dee5fd),
+    linear-gradient(0deg, #dee5fd, #dee5fd), linear-gradient(0deg, #dee5fd, #dee5fd) !important;
 }
 
+.fr-tags-group {
+  gap: 10px;
+}
 .custom-tag {
-  margin-left: 10px;
-
   align-items: center;
   padding: 2px 5px;
   gap: 2px;
-
   margin-top: 2%;
-
   background: #ffffff;
-
   border: 1px solid #37635f;
   border-radius: 12px;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;
-
   text-align: center;
-
   color: #37635f;
 }
 
-.fr-enlarge-link:hover {
+.card-activate:hover {
   background-color: var(--background-alt-blue-france-hover) !important;
 }
-.fr-enlarge-link:active {
+.card-activate:active {
   background-color: var(--light-background-action-low-blue-france) !important;
 }
 
@@ -583,13 +580,32 @@ function hideTooltip() {
   color: var(--text-title-grey);
 }
 
-.card-activate > .fr-card__header {
+.fr-card > .fr-card__footer {
   background-color: #f4f6fe;
+}
+
+@media (min-width: 48em) {
+  .fr-card > .fr-card__footer {
+    width: 40%;
+    flex: 0 0 40%;
+    aspect-ratio: auto;
+  }
 }
 </style>
 
 <style>
-.badge {
-  max-width: 90%;
+.fr-card__footer .badge {
+  max-width: 80%;
+}
+@media (max-width: 78em) {
+  .fr-card__footer .badge {
+    max-width: 65%;
+  }
+}
+
+@media (max-width: 62em) {
+  .fr-card__footer .badge {
+    max-width: 50%;
+  }
 }
 </style>

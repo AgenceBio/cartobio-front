@@ -2,7 +2,7 @@
   <div :class="{ 'margin-top': isEnAttente() }">
     <div :class="{ 'badge-inline': props.card }">
       <span class="component" :style="getStyle()">
-        <span v-if="stateInfo" :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
+        <span v-if="stateInfo" :class="stateInfo.icon ? stateInfo.icon : ''" aria-hidden="true"></span>
         <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
         <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
           stateInfo ? stateInfo.label : "-"
@@ -102,6 +102,7 @@ function isEnAttente() {
   font-weight: 400;
   display: inline-flex;
   align-items: center;
+  gap: 4px;
 }
 
 .icon {

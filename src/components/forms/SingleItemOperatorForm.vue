@@ -57,7 +57,7 @@
         @change="($cultures) => (patch.cultures = $cultures)"
       />
 
-      <template v-if="!permissions.canChangeCulture">
+      <template v-else>
         <AccordionGroup>
           <AccordionSection title="Culture">
             <CultureSelector

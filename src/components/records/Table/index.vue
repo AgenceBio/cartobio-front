@@ -1,7 +1,10 @@
 <template>
   <ValidationErrors />
   <div class="fr-table table-data fr-table--bordered fr-table--no-caption fr-my-6v">
-    <ul class="fr-tags-group fr-tags-group--tags fr-my-6v" v-if="permissions.canViewAnnotations">
+    <ul
+      class="fr-tags-group fr-tags-group--tags fr-my-6v"
+      v-if="permissions.canViewAnnotations && tags && tags.length > 0"
+    >
       <li :key="id" v-for="{ active, id, count, label, required } in tags">
         <button
           class="fr-tag"

@@ -100,6 +100,12 @@ onMounted(() => {
 
       return getResult(query);
     },
+    templates: {
+      empty({ html }) {
+        console.log("la ?");
+        return html`Aucune suggestion voir tout les résultats`;
+      },
+    },
     onReset() {
       userInput.value = "";
       search();
@@ -142,14 +148,13 @@ function getResult(query) {
 
         length.value = res.length;
 
-        console.log(res.slice(0, 5));
         return res.slice(0, 5);
       },
       templates: {
         item({ item, html }) {
           return html`
             <div>
-              <a class="fr-link" href="${props.route}?search=${item.nom}">${hightlightText(query, item.nom, html)}</a>
+              <a class="fr-link" href="/exploitations/${item.numeroBio}">${hightlightText(query, item.nom, html)}</a>
               <div class="flex gap-6">
                 <div class="fr-hint-text">Dénomination courante</div>
                 <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.denominationCourante, html)}</div>
@@ -180,19 +185,16 @@ function getResult(query) {
         },
         header({ html }) {
           return html` <div class="fr-hint-text">
-            ${length.value === 0 ? "Aucun" : length.value} suggestion${length.value > 1 ? "s" : ""}
+            ${length.value === 0 ? "Aucune" : length.value} suggestion${length.value > 1 ? "s" : ""}
           </div>`;
         },
-        empty({ html }) {
-          return html`Aucuneesf sefkje`;
+        noResults({ html }) {
+          return html``;
         },
       },
       onSelect: function ({ item }) {
         return router.push({
-          path: props.route,
-          query: {
-            search: item.nom,
-          },
+          path: `/exploitations/${item.numeroBio}`,
         });
       },
       // ...
@@ -345,6 +347,10 @@ span[aria-selected="true"] {
 
 .highlight {
   background-color: #feebd0;
+}
+
+.aa-SourceNoResults {
+  padding: 0;
 }
 
 [href] > .highlight {

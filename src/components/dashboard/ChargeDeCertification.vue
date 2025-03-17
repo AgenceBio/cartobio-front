@@ -72,10 +72,10 @@
         <div>
           <div class="fr-hidden-md flex">
             <span class="fr-icon fr-icon-refresh-line fr-icon-sm"></span>
-            <p class="fr-callout__text fr-text--xs fr-text--bold">Contrôlées, en cours de certification</p>
+            <p class="fr-callout__text fr-text--xs fr-text--bold">Contrôlées non certifiées</p>
           </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countEnAttentes }}</span>
-          <p class="fr-callout__text fr-hidden fr-unhidden-md">Contrôlées, en cours de certification</p>
+          <p class="fr-callout__text fr-hidden fr-unhidden-md">Contrôlées non certifiées</p>
         </div>
         <img
           src="../../assets/dsfr/document/conclusion.svg"
