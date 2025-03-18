@@ -190,7 +190,6 @@ import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 import { useOnline } from "@vueuse/core";
 import { cultureLabel, featureName, inHa, legalProjectionSurface, getTimeAgo } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
-import { CertificationState } from "@agencebio/cartobio-types";
 
 const route = useRoute();
 const operatorStore = useOperatorStore();

@@ -350,7 +350,8 @@ function hideTooltip() {
   justify-content: flex-start;
   flex-wrap: wrap;
   align-self: center;
-  padding-left: 1.4rem;
+  padding: 0.1rem 1.4rem;
+  overflow-x: hidden;
 }
 
 .fr-card {
@@ -382,8 +383,6 @@ function hideTooltip() {
   font-size: 14px;
   font-weight: bold;
   color: white;
-  font-family: Arial, sans-serif;
-  margin-right: 20px;
 }
 
 .tooltip {
@@ -595,7 +594,7 @@ function hideTooltip() {
 
 <style>
 .fr-card__footer .badge {
-  max-width: 80%;
+  /* max-width: 80%; */
 }
 @media (max-width: 78em) {
   .fr-card__footer .badge {
