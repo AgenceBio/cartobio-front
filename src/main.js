@@ -176,6 +176,11 @@ router.beforeEach(async (to) => {
       return false;
     }
 
+    if (error.name === "OPERATOR_CHANGEMENT_OC") {
+      toast.error(error.message);
+
+      return false;
+    }
     throw error;
   }
 

@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { Fragment, h, onMounted, ref, render } from "vue";
+import { Fragment, h, onBeforeUnmount, onMounted, ref, render } from "vue";
 import { useOnline } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { getForAutocomplete } from "@/cartobio-api";
@@ -39,6 +39,7 @@ const query = ref();
 const autocompleteRef = ref(null);
 const data = ref(null);
 const length = ref(0);
+const autocompleteElement = ref(null);
 
 const emit = defineEmits(["search"]);
 const props = defineProps({
@@ -64,7 +65,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  const { setQuery } = autocomplete({
+  autocompleteElement.value = autocomplete({
     container: autocompleteRef.value,
     translations: {
       detachedCancelButtonText: "Annuler",
@@ -102,7 +103,6 @@ onMounted(() => {
     },
     templates: {
       empty({ html }) {
-        console.log("la ?");
         return html`Aucune suggestion voir tout les résultats`;
       },
     },
@@ -115,10 +115,12 @@ onMounted(() => {
 
   if (props.initialValue) {
     userInput.value = props.initialValue;
-    setQuery(props.initialValue);
+    autocompleteElement.value.setQuery(props.initialValue);
   }
 });
-
+onBeforeUnmount(() => {
+  autocompleteElement.value.setIsOpen(false);
+});
 async function search(search) {
   if (search) {
     emit("search", search);

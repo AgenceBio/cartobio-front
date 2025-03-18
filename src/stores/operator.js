@@ -75,7 +75,16 @@ export const useOperatorStore = defineStore("operator", () => {
     if (!navigator.onLine && storage.operators[numeroBio]) {
       ({ operator: operatorData, records: recordsData } = storage.operators[numeroBio]);
     } else {
-      ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio));
+      try {
+        ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio));
+      } catch (_e) {
+        const e = new Error(
+          "Le dossier n'est plus accessible pour votre organisme certificateur, veuillez vérifier sur le portail de notification",
+        );
+        e.name = "OPERATOR_CHANGEMENT_OC";
+        throw e;
+      }
+
       recordsData = recordsData.map((serverR) =>
         storage.syncQueues[serverR.record_id]
           ? storage.operators[numeroBio]?.records.find((storageR) => storageR.record_id === serverR.record_id) ||

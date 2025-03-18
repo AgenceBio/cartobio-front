@@ -8,14 +8,16 @@
           stateInfo ? stateInfo.label : "-"
         }}</span>
       </span>
-      <span v-if="isEnAttente() && props.card" class="fr-hint-text oc-change" :class="{ 'inline-text': props.card }">
+      <span v-if="isEnAttente() && props.card" class="fr-hint-text oc-change inline-text">
         En attente de validation OC
       </span>
+      <span v-if="isChangementOc && props.card" class="fr-hint-text oc-change inline-text">Changement d'OC</span>
     </div>
 
     <div v-if="isEnAttente() && !props.card" class="fr-hint-text oc-change text-center">
       En attente de validation OC
     </div>
+    <div v-if="isChangementOc && !props.card" class="fr-hint-text oc-change text-center">Changement d'OC</div>
   </div>
 </template>
 
@@ -47,27 +49,27 @@ const props = defineProps({
 
 const userStore = useUserStore();
 const { user, isOc } = storeToRefs(userStore);
+const isChangementOc = ref(false);
 const displayedNotif = ref(null);
 const stateInfo = ref(null);
 
 onMounted(() => {
   if (props.operator) {
-    const array = props.operator.certificats ?? props.operator.notifications ?? [];
-
-    displayedNotif.value = array;
+    displayedNotif.value = props.operator.notifications;
 
     if (!displayedNotif.value) {
       stateInfo.value = notificationsStateLevel["BROUILLON"];
 
       return;
     }
-    const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
+    const currentStatut = displayedNotif.value.etatCertification;
 
     if (
       isOc.value &&
       user.value.organismeCertificateur &&
       displayedNotif.value.organismeCertificateurId !== user.value.organismeCertificateur.id
     ) {
+      isChangementOc.value = true;
       stateInfo.value = notificationsStateLevel["ARRETEE"];
       return;
     }
