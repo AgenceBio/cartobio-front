@@ -3,8 +3,8 @@
     :class="[computedClass, 'badge']"
     :aria-label="dateLabel ? `${stateInfo.label} en ${dateLabel}` : stateInfo.label"
   >
-    <span :class="[stateInfo.icon, stateInfo.icon ? 'fr-icon--sm fr-mr-1v' : '']" aria-hidden="true" />
-    <p class="fr-mb-0">{{ stateInfo.label }}</p>
+    <span v-if="stateInfo.icon" :class="[stateInfo.icon, 'fr-icon--sm']" aria-hidden="true" />
+    <p class="fr-mb-0" :class="{ 'padding-left': !stateInfo.icon }">{{ stateInfo.label }}</p>
     <p v-if="showDate && dateLabel" class="fr-mb-0 year">{{ dateLabel }}</p>
   </span>
 </template>
@@ -109,9 +109,6 @@ const computedClass = computed(() => {
 }
 
 .badge {
-  /* overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;*/
   padding-right: 1ch;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -120,6 +117,9 @@ const computedClass = computed(() => {
   align-items: center;
   max-width: 100%;
 }
+.badge > .padding-left {
+  padding-left: 1ch;
+}
 .badge > p {
   font-weight: 600;
   font-size: 12px;
@@ -127,5 +127,6 @@ const computedClass = computed(() => {
   text-transform: uppercase;
   text-overflow: ellipsis;
   overflow: hidden;
+  padding: 2px 0;
 }
 </style>

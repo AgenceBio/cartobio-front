@@ -8,7 +8,7 @@ describe("NotificationState", () => {
       props: {
         operator: {
           notifications: {
-            status: "BROUILLON",
+            etatCertification: "BROUILLON",
           },
         },
         text: true,
@@ -50,8 +50,8 @@ describe("NotificationState", () => {
     const wrapper = mount(NotificationState, {
       props: {
         operator: {
-          certificats: {
-            status: "ENGAGEE",
+          notifications: {
+            etatCertification: "ENGAGEE",
           },
         },
         text: true,

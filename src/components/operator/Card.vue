@@ -241,6 +241,7 @@ import NotificationState from "@/components/records/NotificationState.vue";
 import { engagementList } from "@/referentiels/ab.js";
 import { pinOperator, unpinOperator } from "@/cartobio-api";
 import { useUserStore } from "@/stores/user.js";
+
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
@@ -372,7 +373,8 @@ function hideTooltip() {
 }
 
 .error-icon {
-  position: relative;
+  position: absolute;
+  right: 1.4rem;
   width: 24px;
   height: 24px;
   background-color: #ff5655;
@@ -413,6 +415,7 @@ function hideTooltip() {
 .error-icon:hover .tooltip {
   opacity: 1;
   visibility: visible;
+  overflow: visible !important;
 }
 
 .error-icon:focus .tooltip,
@@ -593,9 +596,6 @@ function hideTooltip() {
 </style>
 
 <style>
-.fr-card__footer .badge {
-  /* max-width: 80%; */
-}
 @media (max-width: 78em) {
   .fr-card__footer .badge {
     max-width: 65%;
