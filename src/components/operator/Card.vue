@@ -12,7 +12,7 @@
       <div class="fr-card__content">
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
-            <NotificationState v-if="operator.notifications" :operator="operator" :card="true" />
+            <NotificationState v-if="operator.notifications" :operator="operator" />
             <div v-if="operator.lastmixitestate && getStatus(operator) !== 'ARRETEE'">
               <p class="custom-tag fr-m-0">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
