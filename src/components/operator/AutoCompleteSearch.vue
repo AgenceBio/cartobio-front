@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { Fragment, h, onBeforeUnmount, onMounted, ref, render } from "vue";
+import { computed, Fragment, h, onBeforeUnmount, onMounted, ref, render, watch } from "vue";
 import { useOnline } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { getForAutocomplete } from "@/cartobio-api";
@@ -32,16 +32,6 @@ import { autocomplete } from "@algolia/autocomplete-js";
 import "@algolia/autocomplete-theme-classic";
 import Fuse from "fuse.js";
 
-const isOnline = useOnline();
-const userInput = ref();
-const router = useRouter();
-const query = ref();
-const autocompleteRef = ref(null);
-const data = ref(null);
-const length = ref(0);
-const autocompleteElement = ref(null);
-
-const emit = defineEmits(["search"]);
 const props = defineProps({
   buttonLabel: {
     type: String,
@@ -64,6 +54,17 @@ const props = defineProps({
   },
 });
 
+const isOnline = useOnline();
+const userInput = ref();
+const router = useRouter();
+const query = ref();
+const autocompleteRef = ref(null);
+const data = ref(null);
+const length = ref(0);
+const autocompleteElement = ref(null);
+const emit = defineEmits(["search"]);
+const getValue = computed(() => props.initialValue);
+
 onMounted(() => {
   autocompleteElement.value = autocomplete({
     container: autocompleteRef.value,
@@ -80,6 +81,9 @@ onMounted(() => {
     // helps react to query and isOpen changes
     onStateChange({ state }) {
       query.value = state.query;
+    },
+    onSubmit() {
+      search(userInput.value);
     },
 
     getSources({ query }) {
@@ -121,6 +125,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   autocompleteElement.value.setIsOpen(false);
 });
+
+watch([getValue], () => {
+  if (autocompleteElement.value && userInput.value !== getValue.value) {
+    userInput.value = getValue.value;
+    autocompleteElement.value.setQuery(getValue.value);
+  }
+});
+
 async function search(search) {
   if (search) {
     emit("search", search);
