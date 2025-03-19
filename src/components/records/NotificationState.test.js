@@ -8,7 +8,7 @@ describe("NotificationState", () => {
       props: {
         operator: {
           notifications: {
-            etatCertification: "BROUILLON",
+            status: "BROUILLON",
           },
         },
         text: true,
@@ -34,7 +34,7 @@ describe("NotificationState", () => {
         operator: {
           notifications: [
             {
-              etatCertification: "BROUILLON",
+              status: "BROUILLON",
             },
           ],
         },
@@ -60,12 +60,8 @@ describe("NotificationState", () => {
     await flushPromises();
 
     expect(wrapper.find(".fr-icon--sm").classes()).toContain("fr-icon-check-line");
-    expect(
-      wrapper
-        .find("span")
-        .text()
-        .replace(/\u00A0/g, " "),
-    ).toContain("Notification Engagée");
+    expect(wrapper.findAll(".component > span")[1].text()).toContain("Notification");
+    expect(wrapper.findAll(".component >span")[2].text()).toContain("Engagée");
 
     const spanElement = wrapper.find("span");
     expect(spanElement.attributes("style")).toContain("background-color: rgb(223, 253, 247)");

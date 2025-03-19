@@ -1,23 +1,22 @@
 <template>
   <div :class="{ 'margin-top': isEnAttente() }">
-    <div :class="{ 'badge-inline': props.card }">
+    <div :class="{ 'badge-inline': props.inline }">
       <span class="component" :style="getStyle()">
         <span v-if="stateInfo" :class="stateInfo.icon ? stateInfo.icon : ''" aria-hidden="true"></span>
-        <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
+        <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification</span>
         <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
           stateInfo ? stateInfo.label : "-"
         }}</span>
       </span>
-      <span v-if="isEnAttente() && props.card" class="fr-hint-text oc-change inline-text">
+      <span v-if="isEnAttente() && props.inline" class="fr-hint-text oc-change inline-text">
         En attente de validation OC
       </span>
-      <span v-if="isChangementOc && props.card" class="fr-hint-text oc-change inline-text">Changement d'OC</span>
+      <span v-if="isChangementOc && props.inline" class="fr-hint-text oc-change inline-text">Changement d'OC</span>
     </div>
-
-    <div v-if="isEnAttente() && !props.card" class="fr-hint-text oc-change text-center">
+    <div v-if="isEnAttente() && !props.inline" class="fr-hint-text oc-change text-center">
       En attente de validation OC
     </div>
-    <div v-if="isChangementOc && !props.card" class="fr-hint-text oc-change text-center">Changement d'OC</div>
+    <div v-if="isChangementOc && !props.inline" class="fr-hint-text oc-change text-center">Changement d'OC</div>
   </div>
 </template>
 
@@ -41,7 +40,7 @@ const props = defineProps({
     type: Object,
     required: false,
   },
-  card: {
+  inline: {
     type: Boolean,
     default: false,
   },
@@ -56,13 +55,12 @@ const stateInfo = ref(null);
 onMounted(() => {
   if (props.operator) {
     displayedNotif.value = props.operator.notifications;
-
     if (!displayedNotif.value) {
       stateInfo.value = notificationsStateLevel["BROUILLON"];
 
       return;
     }
-    const currentStatut = displayedNotif.value.etatCertification;
+    const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
 
     if (
       isOc.value &&

@@ -12,8 +12,12 @@
       <div class="fr-card__content">
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
-            <NotificationState v-if="operator.notifications" :operator="operator" :card="true" />
-            <div v-if="operator.lastmixitestate && getStatus(operator) !== 'ARRETEE'">
+            <NotificationState v-if="operator.notifications" :operator="operator" :inline="true" />
+            <div
+              v-if="
+                operator.lastmixitestate && getStatus(operator) !== 'ARRETEE' && getStatus(operator) !== 'NON ENGAGEE'
+              "
+            >
               <p class="custom-tag fr-m-0">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
           </div>
@@ -584,6 +588,10 @@ function hideTooltip() {
 
 .fr-card > .fr-card__footer {
   background-color: #f4f6fe;
+}
+
+.fr-card.disabled-tooltip > .fr-card__footer {
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 @media (min-width: 48em) {
