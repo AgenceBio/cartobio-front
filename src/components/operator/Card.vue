@@ -17,7 +17,7 @@
               <p class="custom-tag fr-m-0">{{ engagementList[operator.lastmixitestate].label }}</p>
             </div>
           </div>
-          <div>
+          <div class="actions-button">
             <button
               v-if="isEpingle"
               class="ri-pushpin-fill"
@@ -87,17 +87,17 @@
           <div class="error-icon" v-if="operator.otherParcellaire">
             <span>!</span>
             <div class="tooltip">
-              <span v-if="certificationState == 'CERTIFIED'">
+              <p v-if="certificationState == 'CERTIFIED'" class="fr-text--sm">
                 Une nouvelle version a été créée après la certification <br />de {{ operator.version_name }}
-              </span>
-              <span v-else-if="certificationState == 'PENDING_CERTIFICATION'">
+              </p>
+              <p v-else-if="certificationState == 'PENDING_CERTIFICATION'" class="fr-text--sm">
                 Une nouvelle version a été créée après la soumission <br />de {{ operator.version_name }} par le
                 contrôleur
-              </span>
+              </p>
 
-              <span v-else-if="certificationState == 'AUDITED'">
+              <p v-else-if="certificationState == 'AUDITED'" class="fr-text--sm">
                 Une nouvelle version a été créée après le contrôle <br />de {{ operator.version_name }}
-              </span>
+              </p>
               <span class="informations-tooltip">
                 <span class="fr-icon-calendar-2-line fr-icon--sm informations-bold"></span>
                 <span class="informations-bold">Le {{ jjmmyyyy(operator.otherParcellaire[0].created_at) }} </span
