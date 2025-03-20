@@ -8,7 +8,7 @@ describe("NotificationState", () => {
       props: {
         operator: {
           notifications: {
-            etatCertification: "BROUILLON",
+            status: "BROUILLON",
           },
         },
         text: true,
@@ -34,7 +34,7 @@ describe("NotificationState", () => {
         operator: {
           notifications: [
             {
-              etatCertification: "BROUILLON",
+              status: "BROUILLON",
             },
           ],
         },
