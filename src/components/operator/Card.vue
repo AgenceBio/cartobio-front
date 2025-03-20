@@ -12,7 +12,7 @@
       <div class="fr-card__content">
         <div class="fr-card__start top-bar-tooltip">
           <div class="fr-tags-group">
-            <NotificationState v-if="operator.notifications" :operator="operator" :card="true" />
+            <NotificationState v-if="operator.notifications" :operator="operator" :inline="true" />
             <div
               v-if="
                 operator.lastmixitestate && getStatus(operator) !== 'ARRETEE' && getStatus(operator) !== 'NON ENGAGEE'
