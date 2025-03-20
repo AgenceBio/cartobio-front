@@ -65,7 +65,7 @@
             :feature-id="feature.properties.id"
             :cultures="patch.cultures"
             @change="($cultures) => (patch.cultures = $cultures)"
-            :disabled-input="readonly"
+            :disabled-input="readonly || !permissions.canChangeCulture"
           />
         </AccordionSection>
       </AccordionGroup>
@@ -93,7 +93,7 @@
               name="engagement_date"
               id="engagement_date"
               :required="isEngagementDateRequired"
-              :disabled="!isAB || readonly"
+              :disabled="!isAB || readonly || !permissions.canChangeConversionLevel"
               min="1985-01-01"
               :max="maxDate"
             />
@@ -103,12 +103,18 @@
             v-if="permissions.canAddAnnotations"
             v-model="patch.annotations"
             :feature-id="feature.properties.id"
-            :readonly="readonly"
+            :readonly="readonly || !permissions.canEditParcellaire"
           />
 
-          <div v-if="!readonly" class="fr-input-group">
+          <div class="fr-input-group">
             <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
-            <textarea class="fr-input" id="auditeur_notes" name="auditeur_notes" v-model="patch.auditeur_notes" />
+            <textarea
+              :disabled="readonly || !permissions.canEditParcellaire"
+              class="fr-input"
+              id="auditeur_notes"
+              name="auditeur_notes"
+              v-model="patch.auditeur_notes"
+            />
           </div>
         </AccordionSection>
       </AccordionGroup>

@@ -70,7 +70,7 @@ describe("MainHeader", () => {
 
     expect(wrapper.find(".tool-username a").classes("fr-icon-medal-fill")).toEqual(true);
     expect(wrapper.find('.fr-nav[role="navigation"]').text()).toEqual("Nom Aide À propos de CartoBio  Déconnexion");
-    expect(wrapper.find('.fr-nav[role="navigation"] a').attributes("href")).toEqual("/certification/exploitations");
+    expect(wrapper.find('.fr-nav[role="navigation"] a').attributes("href")).toEqual("/certification/tableau-de-bord");
     expect(wrapper.find('.fr-nav[role="navigation"] a[target="_blank"]').attributes("href")).toEqual(
       "https://docs-cartobio.agencebio.org/organisme-certification",
     );

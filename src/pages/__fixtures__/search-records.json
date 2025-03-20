@@ -9,7 +9,13 @@
     "audit_date": null,
     "certification_date_debut": null,
     "certification_date_fin": null,
-    "certification_state": null
+    "certification_state": null,
+    "notifications": {
+      "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
+    }
   },
   {
     "commune": "Crest",
@@ -21,7 +27,13 @@
     "audit_date": null,
     "certification_date_debut": null,
     "certification_date_fin": null,
-    "certification_state": null
+    "certification_state": null,
+    "notifications": {
+      "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
+    }
   },
 
   {
@@ -34,7 +46,13 @@
     "audit_date": null,
     "certification_date_debut": null,
     "certification_date_fin": null,
-    "certification_state": "OPERATOR_DRAFT"
+    "certification_state": "OPERATOR_DRAFT",
+    "notifications": {
+      "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
+    }
   },
   {
     "commune": "Die",
@@ -46,6 +64,12 @@
     "audit_date": "2024-01-01",
     "certification_date_debut": "2024-01-01",
     "certification_date_fin": "2024-03-31",
-    "certification_state": "CERTIFIED"
+    "certification_state": "CERTIFIED",
+    "notifications": {
+      "numeroClient": "1JS1"
+    },
+    "organismeCertificateur": {
+      "id": 999
+    }
   }
 ]

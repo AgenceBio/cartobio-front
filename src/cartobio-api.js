@@ -39,8 +39,18 @@ export async function getOperatorNcviFeatures({ evv, numeroBio }) {
  * @param {string} input
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
-export async function searchOperators({ input, page, sort, order }) {
-  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, sort, order });
+export async function searchOperators({ input, page, filter, limit = 7 }) {
+  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, filter, limit }, { timeout: 60000 });
+
+  return data;
+}
+
+/**
+ * @param {string} input
+ * @returns {Promise<any[]>}
+ */
+export async function getForAutocomplete(search) {
+  const { data } = await apiClient.get(`/v2/certification/autocomplete`, { params: { search } });
 
   return data;
 }
@@ -50,8 +60,30 @@ export async function searchOperators({ input, page, sort, order }) {
  * @param {number?} offset
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
-export async function getUserOperators(limit, offset) {
-  const { data } = await apiClient.get(`/v2/operators`, { params: { limit, offset } });
+export async function getUserOperators(search, limit, offset) {
+  const { data } = await apiClient.get(`/v2/operators`, { params: { limit, offset, search } });
+
+  return data;
+}
+
+/**
+ * @param {number?} limit
+ * @param {number?} offset
+ * @return {Promise<AgenceBioNormalizedOperator[]>}
+ */
+export async function getUserOperatorsForDashboard() {
+  const { data } = await apiClient.get(`/v2/operators/dashboard`);
+
+  return data;
+}
+
+/**
+ * @param {number?} limit
+ * @param {number?} offset
+ * @return {Promise<AgenceBioNormalizedOperator[]>}
+ */
+export async function getDashboardSummary(departements, anneeReferenceControle) {
+  const { data } = await apiClient.post(`/v2/operators/dashboard-summary`, { departements, anneeReferenceControle });
 
   return data;
 }
@@ -85,6 +117,32 @@ export async function createOperatorRecord(numeroBio, payload) {
  */
 export async function deleteRecord(recordId) {
   await apiClient.delete(`/v2/audits/${recordId}`);
+}
+
+/**
+ * Pin an operator
+ *
+ * @param {string} numeroBio
+ * @param {Partial<NormalizedRecord>} payload
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function pinOperator(numeroBio) {
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/pin`);
+
+  return data;
+}
+
+/**
+ * Unpin an operator
+ *
+ * @param {string} numeroBio
+ * @param {Partial<NormalizedRecord>} payload
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function unpinOperator(numeroBio) {
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/unpin`);
+
+  return data;
 }
 
 /**
@@ -210,4 +268,25 @@ export async function checkGeofoliaAccountStatus(numeroBio) {
 export async function getOperatorGeofoliaFeatures(numeroBio) {
   const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`);
   return geojson;
+}
+
+/**
+ * Retrieves all departements
+ *
+ * @returns {Promise<{any}>}
+ */
+export async function getDepartements() {
+  const { data: departements } = await apiClient.get(`/v2/departements`);
+  return departements;
+}
+
+/**
+ * Retrieves data for a XLSX export
+ *
+ * @param {string}
+ * @returns {Promise<any>}
+ */
+export async function getDataXLSX() {
+  const data = await apiClient.get("/v2/exportParcellaire", { timeout: 600000 });
+  return data;
 }

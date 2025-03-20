@@ -1,67 +1,127 @@
 <template>
-  <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline fr-btns-group--pagination">
-    <li>
-      <div class="fr-select-group fr-select-group--inline">
-        <select
-          class="fr-select"
-          id="search-results-page-selector"
-          name="page"
-          :value="currentPage"
-          @change="(event) => $emit('changePage', parseInt(event.target.value))"
+  <nav role="navigation" class="fr-pagination" aria-label="Pagination">
+    <ul class="fr-pagination__list">
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--first"
+          :disabled="currentPage === 1"
+          @click="$emit('changePage', 1)"
         >
-          <option value="" disabled hidden>Sélectionner un numéro de pagination</option>
-          <option :value="page" :key="page" v-for="page in maxPage">{{ page }}</option>
-        </select>
-        <label class="fr-label" for="search-results-page-selector"> sur {{ maxPage }} pages </label>
-      </div>
-    </li>
-    <li>
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line pagination-page-previous"
-        :disabled="maxPage < 2 || currentPage === 1"
-        @click="$emit('changePage', currentPage - 1)"
-      >
-        Page précédente
-      </button>
-    </li>
-    <li>
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line pagination-page-next"
-        :disabled="maxPage < 2 || currentPage === maxPage"
-        @click="$emit('changePage', currentPage + 1)"
-      >
-        Page suivante
-      </button>
-    </li>
-  </ul>
+          Première page
+        </button>
+      </li>
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
+          :disabled="currentPage === 1"
+          @click="$emit('changePage', currentPage - 1)"
+        >
+          Page précédente
+        </button>
+      </li>
+      <template v-for="page in visiblePages" :key="page">
+        <li>
+          <button
+            class="fr-pagination__link"
+            :class="{ [`fr-pagination__link--${page}`]: true }"
+            @click="$emit('changePage', page)"
+            :aria-current="currentPage == page"
+          >
+            {{ page }}
+          </button>
+        </li>
+        <li v-if="!isMobile && currentPage > 3 && page === 1">
+          <span class="fr-pagination__link fr-displayed-lg">…</span>
+        </li>
+      </template>
+      <li v-if="!isMobile && currentPage < maxPage - 2">
+        <span class="fr-pagination__link fr-displayed-lg">…</span>
+      </li>
+      <li v-if="!isMobile && maxPage > 2 && !visiblePages.includes(maxPage)">
+        <button
+          class="fr-pagination__link fr-displayed-lg"
+          @click="$emit('changePage', maxPage)"
+          :aria-current="currentPage == maxPage"
+        >
+          {{ maxPage }}
+        </button>
+      </li>
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
+          :disabled="currentPage === maxPage"
+          @click="$emit('changePage', currentPage + 1)"
+        >
+          Page suivante
+        </button>
+      </li>
+      <li>
+        <button
+          class="fr-pagination__link fr-pagination__link--last"
+          :disabled="currentPage === maxPage"
+          @click="$emit('changePage', maxPage)"
+        >
+          Dernière page
+        </button>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script setup>
-defineProps(["currentPage", "maxPage"]);
-defineEmits("changePage");
+import { useIsMobile } from "@/composables/useIsMobile";
+import { computed } from "vue";
+
+const props = defineProps({
+  currentPage: Number,
+  maxPage: Number,
+});
+
+defineEmits(["changePage"]);
+
+const isMobile = useIsMobile();
+
+const visiblePages = computed(() => {
+  if (!isMobile.value) {
+    if (props.maxPage <= 5) {
+      return Array.from({ length: props.maxPage }, (_, i) => i + 1);
+    }
+
+    const pages = [1];
+    const start = Math.max(2, props.currentPage - 1);
+    const end = Math.min(props.maxPage - 1, props.currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  } else {
+    if (props.maxPage <= 3) {
+      return Array.from({ length: props.maxPage }, (_, i) => i + 1);
+    }
+
+    if (props.currentPage === 1) {
+      return [1];
+    } else if (props.currentPage === 2) {
+      return [1, 2];
+    } else if (props.currentPage === props.maxPage) {
+      return [props.maxPage - 2, props.maxPage - 1, props.maxPage];
+    } else if (props.currentPage === props.maxPage - 1) {
+      return [props.currentPage - 1, props.currentPage, props.maxPage];
+    } else {
+      return [props.currentPage - 1, props.currentPage, props.currentPage + 1];
+    }
+  }
+});
 </script>
 
 <style scoped>
-.fr-btns-group--pagination {
-  .fr-label,
-  .fr-select {
-    font-size: inherit; /* reset size so as they are consistent */
-  }
-
-  .fr-btn {
-    margin: 0;
-  }
+ul {
+  justify-content: center;
 }
-
-.fr-select-group--inline {
-  display: flex;
-  align-items: center;
-
-  select {
-    background-color: transparent;
-    box-shadow: none;
-    text-align: right;
-    width: 6rem; /* up to 3 digits, so 999 pages */
-  }
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>

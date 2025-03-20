@@ -1,8 +1,23 @@
 <template>
   <header class="fr-mb-2w header-class">
     <div class="name-parcellaire">
-      <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
-
+      <div class="flex-center">
+        <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
+        <template v-if="permissions.isOc">
+          <button
+            v-if="operatorStore.operator.epingle"
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-fill"
+            @click="unpin(operatorStore.operator.numeroBio)"
+            aria-label="Désepingler"
+          ></button>
+          <button
+            v-else
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-line"
+            @click="pin(operatorStore.operator.numeroBio)"
+            aria-label="Epingler"
+          ></button>
+        </template>
+      </div>
       <div class="heading">
         <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
           {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
@@ -117,6 +132,7 @@ import { onClickOutside, useOnline } from "@vueuse/core";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { useUserStore } from "@/stores/user";
+import { pinOperator, unpinOperator } from "@/cartobio-api";
 
 const AsyncFeaturesExportModal = defineAsyncComponent(() => import("@/components/records/ExportModal.vue"));
 
@@ -153,6 +169,14 @@ onClickOutside(versionMenuRef, ({ target }) => {
     versionMenu.value = false;
   }
 });
+
+function pin(numeroBio) {
+  pinOperator(numeroBio).then(() => operatorStore.updatePinnedStatus(true));
+}
+
+function unpin(numeroBio) {
+  unpinOperator(numeroBio).then(() => operatorStore.updatePinnedStatus(false));
+}
 </script>
 
 <style scoped>
@@ -256,7 +280,7 @@ header {
 }
 
 .version-name {
-  max-width: 90%;
+  max-width: 25ch;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -291,5 +315,9 @@ header {
   header .heading {
     flex-wrap: wrap;
   }
+}
+.flex-center {
+  display: flex;
+  align-items: center;
 }
 </style>

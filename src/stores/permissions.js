@@ -21,7 +21,9 @@ export const usePermissions = defineStore("permissions", () => {
       isOc.value &&
       (recordStore.record.oc_id === null || recordStore.record.oc_id === userStore.user?.organismeCertificateur?.id)
     ) {
-      return true;
+      if (recordStore.record.certification_state !== CertificationState.CERTIFIED || canCertify.value) {
+        return true;
+      }
     }
 
     if (isAgri.value) {
@@ -44,16 +46,15 @@ export const usePermissions = defineStore("permissions", () => {
   const canDeleteParcellaire = canEditParcellaire;
 
   const canCreateVersion = computed(
-    () => (isOc.value || isAgri.value) && getStatus(operatorStore.operator) !== "ARRETEE",
+    () =>
+      (isOc.value || isAgri.value) &&
+      operatorStore.operator.notifications?.etatCertification !== "ARRETEE" &&
+      operatorStore.operator.notifications?.etatCertification !== "RETIREE",
   );
   const canEditVersion = canEditParcellaire;
 
   const canChangeCulture = canEditParcellaire;
   const canChangeGeometry = canEditParcellaire;
-
-  const canAddParcelleNote = computed(() => {
-    return Boolean(recordStore.record.certification_state);
-  });
 
   const canChangeConversionLevel = computed(() => isOc.value && canEditParcellaire.value);
 
@@ -66,29 +67,10 @@ export const usePermissions = defineStore("permissions", () => {
   const canViewAnnotations = isOc;
   const canExportAnnotations = isOc;
 
-  function getStatus(operator) {
-    const array = operator.certificats ?? operator.notifications ?? [];
-
-    for (const notif of array) {
-      const currentStatut = notif.etatCertification || notif.status;
-      if (currentStatut != "BROUILLON") {
-        if (
-          isOc.value &&
-          userStore.user.organismeCertificateur &&
-          notif.organismeCertificateurId !== userStore.user.organismeCertificateur.id
-        ) {
-          return "ARRETEE";
-        }
-        return currentStatut;
-      }
-    }
-  }
-
   return {
     // convenience proxy
     isOc,
     isAgri,
-    startPage: computed(() => userStore.startPage),
     //
     canAddAnnotations,
     canExportAnnotations,
@@ -101,7 +83,6 @@ export const usePermissions = defineStore("permissions", () => {
     canEditVersion,
     canChangeCulture,
     canChangeGeometry,
-    canAddParcelleNote,
     canChangeConversionLevel,
     canSaveAudit,
     canSendAudit,

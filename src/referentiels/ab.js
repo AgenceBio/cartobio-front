@@ -11,23 +11,33 @@ export const LEVEL_MAYBE_AB = "AB?";
 export const certificationStatesLabels = {
   [undefined]: {
     label: "Non renseigné",
-    color: "fr-badge--warning",
+    labelFilter: "Pas de parcellaire",
   },
+  ["NONE"]: {
+    label: "Non renseigné",
+    labelFilter: "Pas de parcellaire",
+  },
+
   [CertificationState.OPERATOR_DRAFT]: {
     label: "Parcellaire importé",
     color: "fr-badge--info",
+    labelFilter: "En attente de contrôle",
   },
   [CertificationState.AUDITED]: {
-    label: "Audit terminé",
+    label: "Contrôle terminé",
     color: "fr-badge--new",
+    labelFilter: "A soumettre",
   },
   [CertificationState.PENDING_CERTIFICATION]: {
-    label: "Certification en cours",
+    label: "En attente de certification",
     color: "fr-badge--new",
+    labelFilter: "En attente de certification",
+    icon: "fr-icon-time-line",
   },
   [CertificationState.CERTIFIED]: {
     label: "Certifié",
     color: "fr-badge--success",
+    icon: "fr-icon-award-line",
   },
 };
 
@@ -234,51 +244,82 @@ export const certificationDateFin = {
 };
 
 export const notificationsStateLevel = {
-  ["BROUILLON"]: {
-    label: "Brouillon",
-    color: "#D3D3D3",
-    textColor: "#808080",
-    icon: "fr-icon-article-line",
+  ["ENGAGEE"]: {
+    label: "Engagée",
+    color: "#DFFDF7",
+    textColor: "#37635F",
+    icon: "fr-icon--sm fr-icon-check-line",
+    displayFilter: true,
+  },
+
+  ["ENGAGEE FUTUR"]: {
+    label: "Engagée future",
+    color: "#F4F6FE",
+    textColor: "#2F4077",
+    icon: "ri-calendar-check-line",
+    displayFilter: true,
+  },
+  ["SUSPENDUE"]: {
+    label: "Suspendue",
+    color: "#FEE9E7",
+    textColor: "#A94645",
+    icon: "fr-icon--sm fr-icon-pause-circle-line",
+    displayFilter: true,
+  },
+  ["NON ENGAGEE"]: {
+    label: "Non engagée",
+    color: "#FEF5E8",
+    textColor: "#695240",
+    icon: "fr-icon--sm fr-icon-time-line",
+    displayFilter: true,
   },
   ["ARRETEE"]: {
     label: "Arrêtée",
     color: "#FFE9E9",
     textColor: "#CE0500",
-    icon: "fr-icon-error-fill",
-  },
-  ["NON ENGAGEE"]: {
-    label: "Non engagée",
-    color: "#FBE769",
-    textColor: "#66673D",
-    icon: "fr-icon-stop-circle-line",
-  },
-  // NOTE : Pas sûr d'avoir cette enum
-  // ["NON ENGAGEE-CHT OC"]: {
-  //   label: "Certification en cours",
-  //   color: "fr-badge--new",
-  // },
-  ["ENGAGEE FUTUR"]: {
-    label: "Engagée future",
-    color: "#E3E3FD",
-    textColor: "#000091",
-    icon: "fr-icon-time-line",
-  },
-  ["SUSPENDUE"]: {
-    label: "Suspendue",
-    color: "#FDDFDB",
-    textColor: "#A94645",
-    icon: "fr-icon-pause-circle-line",
-  },
-  ["ENGAGEE"]: {
-    label: "Engagée",
-    color: "#9EF9BE",
-    textColor: "#297254",
-    icon: "fr-icon-success-line",
+    icon: "fr-icon--sm fr-icon-error-fill",
+    displayFilter: true,
   },
   ["RETIREE"]: {
     label: "Retirée",
     color: "#EEE4D9",
     textColor: "#6A6156",
-    icon: "fr-icon-close-circle-line",
+    icon: "fr-icon--sm fr-icon-close-circle-line",
+    displayFilter: true,
+  },
+
+  ["BROUILLON"]: {
+    label: "Brouillon",
+    color: "#E5E5E5",
+    textColor: "#666666",
+    displayFilter: false,
   },
 };
+
+export const engagementList = {
+  ["AB"]: {
+    label: "100% AB",
+    tooltipText: "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB",
+  },
+  ["ABCONV"]: {
+    label: "AB/en conversion",
+    tooltipText: "Présence sur l’exploitation de parcelles en conversion sans parcelle en conventionnel",
+  },
+  ["MIXTE"]: {
+    label: "Mixte",
+    tooltipText: "Présence sur l’exploitation de parcelles en conventionnel",
+  },
+};
+
+export const etatCertificationList = [
+  { key: "ALL", label: "Toutes" },
+  { key: "CERTIFIED", label: "Certifiées" },
+  { key: "NO_CERTIFIED", label: "Non certifiées" },
+];
+
+export const sortOperatorListKeys = [
+  { key: "nom-ASC", label: "Nom (A à Z)" },
+  { key: "nom-DESC", label: "Nom (Z à A)" },
+  { key: "date-audit-DESC", label: "Date d'audit plus récente à plus ancienne" },
+  { key: "date-audit-ASC", label: "Date d'audit plus ancienne à plus récente" },
+];

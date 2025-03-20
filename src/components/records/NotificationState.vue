@@ -1,13 +1,22 @@
 <template>
   <div :class="{ 'margin-top': isEnAttente() }">
-    <span class="component" :style="getStyle()">
-      <span v-if="stateInfo" :class="['icon', 'fr-icon--sm', stateInfo.icon]" aria-hidden="true"></span>
-      <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification&nbsp;</span>
-      <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
-        stateInfo ? stateInfo.label : "-"
-      }}</span>
-    </span>
-    <div v-if="isEnAttente()" class="fr-hint-text oc-change text-center">En attente de validation OC</div>
+    <div :class="{ 'badge-inline': props.inline }">
+      <span class="component" :style="getStyle()">
+        <span v-if="stateInfo" :class="stateInfo.icon ? stateInfo.icon : ''" aria-hidden="true"></span>
+        <span v-if="text && stateInfo && stateInfo.label !== 'Brouillon'">Notification</span>
+        <span :class="{ lowercase: text && stateInfo && stateInfo.label !== 'Brouillon' }">{{
+          stateInfo ? stateInfo.label : "-"
+        }}</span>
+      </span>
+      <span v-if="isEnAttente() && props.inline" class="fr-hint-text oc-change inline-text">
+        En attente de validation OC
+      </span>
+      <span v-if="isChangementOc && props.inline" class="fr-hint-text oc-change inline-text">Changement d'OC</span>
+    </div>
+    <div v-if="isEnAttente() && !props.inline" class="fr-hint-text oc-change text-center">
+      En attente de validation OC
+    </div>
+    <div v-if="isChangementOc && !props.inline" class="fr-hint-text oc-change text-center">Changement d'OC</div>
   </div>
 </template>
 
@@ -21,9 +30,17 @@ import { useUserStore } from "@/stores/user";
 const props = defineProps({
   operator: {
     type: Object,
-    required: true,
+    required: false,
   },
   text: {
+    type: Boolean,
+    default: false,
+  },
+  stateInfoProps: {
+    type: Object,
+    required: false,
+  },
+  inline: {
     type: Boolean,
     default: false,
   },
@@ -31,40 +48,33 @@ const props = defineProps({
 
 const userStore = useUserStore();
 const { user, isOc } = storeToRefs(userStore);
+const isChangementOc = ref(false);
 const displayedNotif = ref(null);
 const stateInfo = ref(null);
 
 onMounted(() => {
-  const array = props.operator.certificats ?? props.operator.notifications ?? [];
+  if (props.operator) {
+    displayedNotif.value = props.operator.notifications;
+    if (!displayedNotif.value) {
+      stateInfo.value = notificationsStateLevel["BROUILLON"];
 
-  array.sort((a, b) => new Date(b.dateDemarrage) - new Date(a.dateDemarrage));
-
-  for (const notif of array) {
-    const currentStatut = notif.etatCertification || notif.status;
-
-    if (currentStatut != "BROUILLON") {
-      displayedNotif.value = notif;
-
-      break;
+      return;
     }
-  }
+    const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
 
-  if (!displayedNotif.value) {
-    stateInfo.value = notificationsStateLevel["BROUILLON"];
-
-    return;
+    if (
+      isOc.value &&
+      user.value.organismeCertificateur &&
+      displayedNotif.value.organismeCertificateurId !== user.value.organismeCertificateur.id
+    ) {
+      isChangementOc.value = true;
+      stateInfo.value = notificationsStateLevel["ARRETEE"];
+      return;
+    }
+    stateInfo.value = notificationsStateLevel[currentStatut];
+  } else if (props.stateInfoProps) {
+    stateInfo.value = props.stateInfoProps;
   }
-  const currentStatut = displayedNotif.value.etatCertification || displayedNotif.value.status;
-
-  if (
-    isOc.value &&
-    user.value.organismeCertificateur &&
-    displayedNotif.value.organismeCertificateurId !== user.value.organismeCertificateur.id
-  ) {
-    stateInfo.value = notificationsStateLevel["ARRETEE"];
-    return;
-  }
-  stateInfo.value = notificationsStateLevel[currentStatut];
 });
 
 function getStyle() {
@@ -79,6 +89,7 @@ function getStyle() {
 }
 
 function isEnAttente() {
+  if (props.stateInfoProps) return false;
   return stateInfo.value?.label === notificationsStateLevel["NON ENGAGEE"].label;
 }
 </script>
@@ -91,6 +102,7 @@ function isEnAttente() {
   font-weight: 400;
   display: inline-flex;
   align-items: center;
+  gap: 4px;
 }
 
 .icon {
@@ -107,5 +119,15 @@ function isEnAttente() {
 
 .oc-change {
   margin-left: 11px;
+}
+
+.badge-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-text {
+  margin-left: 8px;
 }
 </style>

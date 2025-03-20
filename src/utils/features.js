@@ -82,6 +82,17 @@ export function legalProjectionSurface(feature) {
     return intersect(feature, bboxPolygon(bounds));
   }) || ["metropole"])[0];
 
+  // Si on a un cas avec des multipolygones, on prends le premier pour le calcul
+  if (Array.isArray(feature.geometry.coordinates) && feature.geometry.coordinates.length > 0) {
+    if (
+      Array.isArray(feature.geometry.coordinates[0]) &&
+      Array.isArray(feature.geometry.coordinates[0][0]) &&
+      Array.isArray(feature.geometry.coordinates[0][0][0])
+    ) {
+      return "NC";
+    }
+  }
+
   const projection = LegalProjections[area];
   const coordinates = reproject(feature, proj4.WGS84, projection).geometry.coordinates;
   const outer = coordinates[0];
@@ -510,10 +521,12 @@ export function cultureLabels(cultures, options) {
  * @returns {String}
  */
 export function inHa(value) {
-  return parseFloat(value / 10000).toLocaleString("fr-FR", {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-  });
+  if (!isNaN(value))
+    return parseFloat(value / 10000).toLocaleString("fr-FR", {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+    });
+  return "NC";
 }
 
 export function bounds(featureCollection, defaults = bounds.DEFAULT_BOUNDS) {

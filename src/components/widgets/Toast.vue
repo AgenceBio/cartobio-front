@@ -8,7 +8,7 @@
       class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w fr-btn--icon-right fr-icon-close-line"
       @click="closeToast"
     >
-      Fermer
+      <p>Fermer</p>
     </button>
   </div>
 </template>

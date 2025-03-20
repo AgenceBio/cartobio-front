@@ -1,221 +1,244 @@
 <template>
-  <div class="fr-skiplinks">
-    <nav role="navigation" aria-label="Accès rapide" class="fr-container">
-      <ul class="fr-skiplinks__list">
-        <li>
-          <a class="fr-link" href="#content">Contenu</a>
-        </li>
-        <li v-for="(href, text) of $route.meta.skipLinks" :key="href">
-          <a class="fr-link" :href>{{ text }}</a>
-        </li>
-        <li>
-          <a class="fr-link" href="#header-navigation">Menu</a>
-        </li>
-        <li>
-          <a class="fr-link" href="#footer">Pied de page</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <header role="banner" class="fr-header">
-    <div class="fr-header__body">
-      <div class="fr-container">
-        <div class="fr-header__body-row">
-          <div class="fr-header__brand fr-enlarge-link">
-            <div class="fr-header__brand-top">
-              <div class="fr-header__logo">
-                <p class="fr-logo">République<br role="presentation" />française</p>
+  <div>
+    <div class="fr-skiplinks">
+      <nav role="navigation" aria-label="Accès rapide" class="fr-container">
+        <ul class="fr-skiplinks__list">
+          <li>
+            <a class="fr-link" href="#content">Contenu</a>
+          </li>
+          <li v-for="(href, text) of $route.meta.skipLinks" :key="href">
+            <a class="fr-link" :href>{{ text }}</a>
+          </li>
+          <li>
+            <a class="fr-link" href="#header-navigation">Menu</a>
+          </li>
+          <li>
+            <a class="fr-link" href="#footer">Pied de page</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <header role="banner" class="fr-header">
+      <div class="fr-header__body">
+        <div class="fr-container">
+          <div class="fr-header__body-row">
+            <div class="fr-header__brand fr-enlarge-link">
+              <div class="fr-header__brand-top">
+                <div class="fr-header__logo">
+                  <p class="fr-logo">République<br role="presentation" />française</p>
+                </div>
+
+                <div class="fr-header__operator">
+                  <img
+                    src="@/assets/logo-agence-bio.svg"
+                    class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
+                    alt="L'Agence Bio"
+                  />
+
+                  <router-link :to="startPage" rel="home" class="fr-hidden-lg">
+                    <p class="fr-header__service-title">CartoBio</p>
+                  </router-link>
+                </div>
+
+                <div class="fr-header__navbar">
+                  <button
+                    title="Menu"
+                    class="fr-btn--menu fr-btn"
+                    id="mobile-menu-button"
+                    :data-fr-opened="menuIsOpen"
+                    aria-controls="mobile-menu"
+                    aria-haspopup="menu"
+                    @click="menuIsOpen = !menuIsOpen"
+                  >
+                    Menu
+                  </button>
+                </div>
               </div>
 
-              <div class="fr-header__operator">
-                <img
-                  src="@/assets/logo-agence-bio.svg"
-                  class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
-                  alt="L'Agence Bio"
-                />
-
-                <router-link :to="startPage" rel="home" class="fr-hidden-lg">
+              <div class="fr-header__service">
+                <router-link :to="startPage" rel="home">
                   <p class="fr-header__service-title">CartoBio</p>
                 </router-link>
-              </div>
 
-              <div class="fr-header__navbar">
-                <button
-                  title="Menu"
-                  class="fr-btn--menu fr-btn"
-                  id="mobile-menu-button"
-                  :data-fr-opened="menuIsOpen"
-                  aria-controls="mobile-menu"
-                  aria-haspopup="menu"
-                  @click="menuIsOpen = !menuIsOpen"
+                <p class="fr-header__service-tagline">Parcellaire cultivé en Agriculture Biologique</p>
+              </div>
+            </div>
+
+            <div class="fr-header__tools">
+              <div class="fr-header__tools-links">
+                <ul class="fr-btns-group" id="header-navigation">
+                  <li>
+                    <router-link to="/projet" class="fr-btn"> À propos </router-link>
+                  </li>
+                  <li>
+                    <a
+                      :href="documentationPage"
+                      target="_blank"
+                      class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill"
+                    >
+                      Aide<lien-externe />
+                    </a>
+                  </li>
+                  <li class="tool-username" aria-hidden="true" v-if="isLogged">
+                    <router-link :to="startPage" :class="['fr-btn', 'fr-mr-1w', roleIcon]">
+                      {{ user.nom }}
+                    </router-link>
+                  </li>
+                  <li class="tool-logout" v-if="isLogged">
+                    <router-link to="/logout" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" aria-role="button">
+                      Déconnexion
+                    </router-link>
+                  </li>
+                  <li v-else>
+                    <router-link
+                      to="/login"
+                      class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
+                      aria-role="button"
+                    >
+                      Connexion
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="fr-header__menu fr-modal fr-hidden-lg"
+        id="mobile-menu"
+        :class="{ 'fr-modal--opened': menuIsOpen }"
+        aria-labelledby="mobile-menu-button"
+      >
+        <div class="fr-container">
+          <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
+            Fermer
+          </button>
+          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+            <ul class="fr-nav__list">
+              <li class="fr-nav__item" v-if="isLogged">
+                <router-link
+                  :to="startPage"
+                  class="fr-nav__link fr-btn--icon-left"
+                  :class="roleIcon"
+                  aria-current="false"
                 >
-                  Menu
-                </button>
-              </div>
-            </div>
+                  {{ user.nom }}
+                </router-link>
+              </li>
+              <li class="fr-nav__item" v-if="isMobile">
+                <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Tableau de bord</router-link>
+              </li>
+              <li class="fr-nav__item" v-if="isMobile">
+                <router-link to="/certification/exploitations" class="fr-nav__link"
+                  >Liste des exploitations</router-link
+                >
+              </li>
+              <li class="fr-nav__item">
+                <a
+                  :href="documentationPage"
+                  target="_blank"
+                  rel="noopener"
+                  class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill"
+                >
+                  Aide<lien-externe />
+                </a>
+              </li>
 
-            <div class="fr-header__service">
-              <router-link :to="startPage" rel="home">
-                <p class="fr-header__service-title">CartoBio</p>
-              </router-link>
+              <li class="fr-nav__item">
+                <router-link to="/projet" class="fr-nav__link"> À propos de CartoBio </router-link>
+              </li>
+              <li class="fr-nav__item fr-hidden-lg">
+                <router-link
+                  v-if="isLogged"
+                  to="/logout"
+                  class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line"
+                >
+                  Déconnexion
+                </router-link>
+                <router-link
+                  v-else
+                  to="/login"
+                  aria-role="button"
+                  class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill"
+                >
+                  Connexion
+                </router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
 
-              <p class="fr-header__service-tagline">Parcellaire cultivé en Agriculture Biologique</p>
-            </div>
-          </div>
+      <div class="fr-header__menu" v-if="!isLogged">
+        <div class="fr-container">
+          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+            <ul class="fr-nav__list">
+              <li class="fr-nav__item">
+                <router-link to="/" class="fr-nav__link"> Grand public </router-link>
+              </li>
+              <li class="fr-nav__item">
+                <router-link to="/pro" class="fr-nav__link"> Agriculteur·ice </router-link>
+              </li>
+              <li class="fr-nav__item">
+                <router-link to="/stats" class="fr-nav__link"> Les chiffres </router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
 
-          <div class="fr-header__tools">
-            <div class="fr-header__tools-links">
-              <ul class="fr-btns-group" id="header-navigation">
-                <li>
-                  <router-link to="/projet" class="fr-btn"> À propos </router-link>
-                </li>
-                <li>
-                  <a
-                    :href="documentationPage"
-                    target="_blank"
-                    class="fr-btn fr-btn--icon-left fr-icon-questionnaire-fill"
-                  >
-                    Aide<lien-externe />
-                  </a>
-                </li>
-                <li class="tool-username" aria-hidden="true" v-if="isLogged">
-                  <router-link :to="startPage" :class="['fr-btn', 'fr-mr-1w', roleIcon]">
-                    {{ user.nom }}
-                  </router-link>
-                </li>
-                <li class="tool-logout" v-if="isLogged">
-                  <router-link to="/logout" class="fr-btn fr-icon--sm fr-icon-logout-box-r-line" aria-role="button">
-                    Déconnexion
-                  </router-link>
-                </li>
-                <li v-else>
-                  <router-link
-                    to="/login"
-                    class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
-                    aria-role="button"
-                  >
-                    Connexion
-                  </router-link>
-                </li>
-              </ul>
-            </div>
+      <div class="fr-notice fr-notice--info" v-if="!online">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p class="fr-notice__title">
+              <b>Vous êtes actuellement hors ligne.</b> Seules les exploitations dont le parcellaire a été téléchargé en
+              amont sont visibles. Certaines fonctionnalités sont indisponibles.
+            </p>
           </div>
         </div>
       </div>
-    </div>
 
-    <div
-      class="fr-header__menu fr-modal fr-hidden-lg"
-      id="mobile-menu"
-      :class="{ 'fr-modal--opened': menuIsOpen }"
-      aria-labelledby="mobile-menu-button"
-    >
-      <div class="fr-container">
-        <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
-          Fermer
-        </button>
-        <nav class="fr-nav" role="navigation" aria-label="Menu principal">
-          <ul class="fr-nav__list">
-            <li class="fr-nav__item" v-if="isLogged">
-              <router-link
-                :to="startPage"
-                class="fr-nav__link fr-btn--icon-left"
-                :class="roleIcon"
-                aria-current="false"
-              >
-                {{ user.nom }}
-              </router-link>
-            </li>
-            <li class="fr-nav__item">
-              <a
-                :href="documentationPage"
-                target="_blank"
-                rel="noopener"
-                class="fr-nav__link fr-btn--icon-left fr-icon-questionnaire-fill"
-              >
-                Aide<lien-externe />
+      <div class="fr-notice fr-notice--info" v-if="isStaging">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p class="fr-notice__title">
+              <mark>Vous êtes sur un environnement de test</mark>.
+
+              <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
+                Cliquez ici pour accéder à l'environnement avec données réelles.
               </a>
-            </li>
-            <li class="fr-nav__item">
-              <router-link to="/projet" class="fr-nav__link"> À propos de CartoBio </router-link>
-            </li>
-            <li class="fr-nav__item fr-hidden-lg">
-              <router-link
-                v-if="isLogged"
-                to="/logout"
-                class="fr-nav__link fr-btn--icon-left fr-icon-logout-box-r-line"
-              >
-                Déconnexion
-              </router-link>
-              <router-link
-                v-else
-                to="/login"
-                aria-role="button"
-                class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill"
-              >
-                Connexion
-              </router-link>
-            </li>
-          </ul>
-        </nav>
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="fr-header__menu" v-if="!isLogged">
-      <div class="fr-container">
-        <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+      <div class="fr-notice fr-notice--info" v-if="maintenance">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p class="fr-notice__title">
+              CartoBio rencontre actuellement des problèmes techniques.
+              <a href="https://docs-cartobio.agencebio.org/statut" rel="noreferrer noopener" target="_blank">
+                Visitez la page de statut pour en savoir plus.<lien-externe />
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="fr-container" v-if="isOc && !isMobile">
+        <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
-              <router-link to="/" class="fr-nav__link"> Grand public </router-link>
+              <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Tableau de bord</router-link>
             </li>
             <li class="fr-nav__item">
-              <router-link to="/pro" class="fr-nav__link"> Agriculteur·ice </router-link>
-            </li>
-            <li class="fr-nav__item">
-              <router-link to="/stats" class="fr-nav__link"> Les chiffres </router-link>
+              <router-link to="/certification/exploitations" class="fr-nav__link">Liste des exploitations</router-link>
             </li>
           </ul>
         </nav>
       </div>
-    </div>
-
-    <div class="fr-notice fr-notice--info" v-if="!online">
-      <div class="fr-container">
-        <div class="fr-notice__body">
-          <p class="fr-notice__title">
-            <b>Vous êtes actuellement hors ligne.</b> Seules les exploitations dont le parcellaire a été téléchargé en
-            amont sont visibles. Certaines fonctionnalités sont indisponibles.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="fr-notice fr-notice--info" v-if="isStaging">
-      <div class="fr-container">
-        <div class="fr-notice__body">
-          <p class="fr-notice__title">
-            <mark>Vous êtes sur un environnement de test</mark>.
-
-            <a href="https://cartobio.agencebio.org" rel="noreferrer noopener">
-              Cliquez ici pour accéder à l'environnement avec données réelles.
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="fr-notice fr-notice--info" v-if="maintenance">
-      <div class="fr-container">
-        <div class="fr-notice__body">
-          <p class="fr-notice__title">
-            CartoBio rencontre actuellement des problèmes techniques.
-            <a href="https://docs-cartobio.agencebio.org/statut" rel="noreferrer noopener" target="_blank">
-              Visitez la page de statut pour en savoir plus.<lien-externe />
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </header>
+    </header>
+  </div>
 </template>
 
 <script setup>
@@ -224,10 +247,12 @@ import { useRouter } from "vue-router";
 import { useUserStore, ROLES } from "@/stores/user.js";
 import { storeToRefs } from "pinia";
 import { useOnline } from "@vueuse/core";
+import { useIsMobile } from "@/composables/useIsMobile";
 
 const userStore = useUserStore();
 const router = useRouter();
 const online = useOnline();
+const isMobile = useIsMobile();
 
 const maintenance = ref(false);
 const checkStatus = async () => {
@@ -264,6 +289,8 @@ const roleIcon = computed(() => {
 });
 
 const menuIsOpen = ref(false);
+
+const isOc = computed(() => userStore.isOc);
 </script>
 
 <style scoped>
@@ -294,5 +321,9 @@ const menuIsOpen = ref(false);
 }
 .tool-username span::before {
   display: inline-block;
+}
+
+#mobile-menu .fr-nav__link {
+  justify-content: flex-start;
 }
 </style>

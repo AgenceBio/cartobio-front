@@ -87,12 +87,32 @@ export const useUserStore = defineStore("user", () => {
 
   const startPage = computed(() => {
     if (isOc.value) {
+      return "/certification/tableau-de-bord";
+    } else if (isAgri.value) {
+      return "/exploitations";
+    }
+
+    return "/";
+  });
+
+  const exploitationPage = computed(() => {
+    if (isOc.value) {
       return "/certification/exploitations";
     } else if (isAgri.value) {
       return "/exploitations";
     }
 
     return "/";
+  });
+
+  const libelleExploitationPage = computed(() => {
+    if (isOc.value) {
+      return "Liste des exploitations";
+    } else if (isAgri.value) {
+      return "Mes exploitations";
+    }
+
+    return "";
   });
 
   const documentationPage = computed(() => {
@@ -119,6 +139,20 @@ export const useUserStore = defineStore("user", () => {
       },
       { flush: "sync" },
     );
+  }
+
+  function saveDepartements(departements) {
+    window.localStorage.setItem("departements-tableau-de-bord", departements || []);
+  }
+
+  function getDepartements() {
+    const dep = window.localStorage.getItem("departements-tableau-de-bord") || "";
+
+    if (!dep.length) {
+      return [];
+    }
+
+    return dep.split(",");
   }
 
   function $reset() {
@@ -148,6 +182,8 @@ export const useUserStore = defineStore("user", () => {
     isUnknown,
     roles,
     startPage,
+    exploitationPage,
+    libelleExploitationPage,
     documentationPage,
     user,
     // methods
@@ -155,5 +191,7 @@ export const useUserStore = defineStore("user", () => {
     login,
     logout,
     $reset,
+    saveDepartements,
+    getDepartements,
   };
 });

@@ -3,7 +3,6 @@ import { computed, ref, watch } from "vue";
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js";
 import { apiClient } from "@/cartobio-api.js";
 import { useCartoBioStorage } from "@/stores/storage.js";
-import { filterAndSortNotifications } from "@/utils/helper-notification.js";
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
@@ -76,7 +75,16 @@ export const useOperatorStore = defineStore("operator", () => {
     if (!navigator.onLine && storage.operators[numeroBio]) {
       ({ operator: operatorData, records: recordsData } = storage.operators[numeroBio]);
     } else {
-      ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio));
+      try {
+        ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio));
+      } catch (_e) {
+        const e = new Error(
+          "Le dossier n'est plus accessible pour votre organisme certificateur, veuillez vérifier sur le portail de notification",
+        );
+        e.name = "OPERATOR_CHANGEMENT_OC";
+        throw e;
+      }
+
       recordsData = recordsData.map((serverR) =>
         storage.syncQueues[serverR.record_id]
           ? storage.operators[numeroBio]?.records.find((storageR) => storageR.record_id === serverR.record_id) ||
@@ -84,7 +92,6 @@ export const useOperatorStore = defineStore("operator", () => {
           : serverR,
       );
     }
-    operatorData.certificats = filterAndSortNotifications(operatorData.certificats);
     operator.value = operatorData;
     records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA));
   }
@@ -92,6 +99,24 @@ export const useOperatorStore = defineStore("operator", () => {
   function $reset() {
     operator.value = { ...initialState };
     records.value = null;
+  }
+
+  /**
+   * @param {Boolean} pinned
+   * @return {Promise<void>}
+   */
+  function updatePinnedStatus(pinned) {
+    operator.value = { ...operator.value, epingle: pinned };
+  }
+
+  /**
+   * @param {Boolean} pinned
+   * @return {Promise<void>}
+   */
+  function markAsConsulted() {
+    if (operator.value) {
+      apiClient.post(`/v2/operator/${operator.value.numeroBio}/consulte`);
+    }
   }
 
   watch(operator, () => {
@@ -128,6 +153,8 @@ export const useOperatorStore = defineStore("operator", () => {
     // store methods
     ready,
     $reset,
+    updatePinnedStatus,
     getOperator,
+    markAsConsulted,
   };
 });

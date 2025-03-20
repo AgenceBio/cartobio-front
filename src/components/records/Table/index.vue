@@ -1,7 +1,10 @@
 <template>
   <ValidationErrors />
   <div class="fr-table table-data fr-table--bordered fr-table--no-caption fr-my-6v">
-    <ul class="fr-tags-group fr-tags-group--tags fr-my-6v" v-if="permissions.canViewAnnotations">
+    <ul
+      class="fr-tags-group fr-tags-group--tags fr-my-6v"
+      v-if="permissions.canViewAnnotations && tags && tags.length > 0"
+    >
       <li :key="id" v-for="{ active, id, count, label, required } in tags">
         <button
           class="fr-tag"
@@ -77,7 +80,13 @@
           <th colspan="3" class="labels">
             <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl font-blue">
               {{ features.length }} parcelles
-              <span>({{ inHa(legalProjectionSurface(features)) }}&nbsp;ha) </span>
+              <span
+                >({{
+                  !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
+                    ? inHa(legalProjectionSurface(features)) + String.fromCharCode(160) + "ha"
+                    : "Surface non calculable"
+                }})
+              </span>
             </span>
           </th>
           <th class="labels-group-by" scope="col" colspan="3">

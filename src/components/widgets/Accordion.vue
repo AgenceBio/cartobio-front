@@ -8,8 +8,21 @@
         :aria-controls="elementId"
         type="button"
       >
-        <span>{{ title }}</span>
-        <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
+        <div style="display: flex; flex-direction: column; align-items: flex-start">
+          <span>{{ title }}</span>
+          <span
+            v-if="optionsSelected && (!Array.isArray(optionsSelected) || optionsSelected.length > 0)"
+            class="small-text"
+            >{{
+              Array.isArray(optionsSelected)
+                ? optionsSelected.length > 1
+                  ? optionsSelected.length + " sélections"
+                  : "1 sélection"
+                : optionsSelected
+            }}<template v-if="optionsSuffix"> | {{ optionsSuffix }}</template></span
+          >
+          <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
+        </div>
       </button>
     </h3>
 
@@ -40,6 +53,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  optionsSelected: {
+    type: [String, Array],
+    required: false,
+  },
+  optionsSuffix: {
+    type: [String, Number],
+    required: false,
+  },
 });
 
 const STATE = {
@@ -60,7 +81,6 @@ function handleToggle() {
   openingState.value = isClosed.value ? STATE.EXPANDING : STATE.CLOSED;
   activeAccordionId.value = isExpanding.value ? elementId.value : null;
 }
-
 watch(openingState, (newState) => {
   if (newState === STATE.EXPANDING) {
     nextTick(() => (openingState.value = STATE.OPEN));
@@ -87,5 +107,14 @@ if (activeAccordionId) {
   span:first-child {
     flex: 1;
   }
+}
+
+.fr-collapsing {
+  overflow: hidden !important;
+}
+
+.small-text {
+  color: grey;
+  font-size: 12px;
 }
 </style>

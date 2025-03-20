@@ -14,7 +14,6 @@
       <div class="fr-input-wrap">
         <input
           type="text"
-          autocomplete="cartobio-variete"
           class="fr-input"
           :id="`variete-${culture.id}`"
           :value="culture.variete"
