@@ -168,23 +168,23 @@ function getResult(query) {
         item({ item, html }) {
           return html`
             <div>
-              <a class="fr-link" href="/exploitations/${item.numeroBio}">${hightlightText(query, item.nom, html)}</a>
+              <p class="fr-link underline">${hightlightText(query, item.nom, html)}</p>
               <div class="flex gap-6">
                 <div class="fr-hint-text">Dénomination courante</div>
-                <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.denominationCourante, html)}</div>
+                <p class="fr-text--xs fr-mb-0">${hightlightText(query, item.denominationCourante, html)}</p>
               </div>
               <div class="flex gap-24">
                 <div class="flex gap-6">
                   <div class="fr-hint-text">N° Bio</div>
-                  <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.numeroBio, html)}</div>
+                  <p class="fr-text--xs fr-mb-0">${hightlightText(query, item.numeroBio, html)}</p>
                 </div>
                 <div class="flex gap-6">
                   <div class="fr-hint-text">N° Client</div>
-                  <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.numeroClient, html)}</div>
+                  <p class="fr-text--xs fr-mb-0">${hightlightText(query, item.numeroClient, html)}</p>
                 </div>
                 <div class="flex gap-6">
                   <div class="fr-hint-text">Siret</div>
-                  <div class="fr-text--xs fr-mb-0">${hightlightText(query, item.siret, html)}</div>
+                  <p class="fr-text--xs fr-mb-0">${hightlightText(query, item.siret, html)}</p>
                 </div>
               </div>
             </div>
@@ -367,7 +367,8 @@ span[aria-selected="true"] {
   padding: 0;
 }
 
-[href] > .highlight {
+.underline,
+.underline .highlight {
   background-image: var(--underline-img), var(--underline-img);
   background-position:
     var(--underline-x) 100%,
@@ -378,6 +379,9 @@ span[aria-selected="true"] {
   background-size:
     var(--underline-hover-width) calc(var(--underline-thickness) * 2),
     var(--underline-idle-width) var(--underline-thickness);
+}
+
+.underline .highlight {
   background-color: #feebd0;
 }
 </style>
