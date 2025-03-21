@@ -79,9 +79,9 @@ async function handleSubmit() {
   } catch (error) {
     const { status, data } = error?.response ?? {};
     if (status === 401 || status === 404) {
-      inputError.value = data.error;
-    } else if (data?.error) {
-      errors.value = [data.error];
+      inputError.value = data.message ?? data.error;
+    } else if (data?.message) {
+      errors.value = [data.message];
     } else {
       errors.value = ["Le service de ProDouanes est injoignable. Veuillez réessayer plus tard."];
     }

@@ -14,23 +14,23 @@ export const usePermissions = defineStore("permissions", () => {
   const isOc = computed(() => userStore.isOc);
   const isAgri = computed(() => userStore.isAgri);
 
-  // Tests
-
-  const canEditParcellaire = computed(() => {
-    if (
-      isOc.value &&
-      (recordStore.record.oc_id === null || recordStore.record.oc_id === userStore.user?.organismeCertificateur?.id)
-    ) {
-      if (recordStore.record.certification_state !== CertificationState.CERTIFIED || canCertify.value) {
+  function canEditRecord(record) {
+    if (isOc.value && (record.oc_id === null || record.oc_id === userStore.user?.organismeCertificateur?.id)) {
+      if (record.certification_state !== CertificationState.CERTIFIED || canCertify.value) {
         return true;
       }
     }
 
     if (isAgri.value) {
-      return recordStore.record.certification_state === CertificationState.OPERATOR_DRAFT;
+      return record.certification_state === CertificationState.OPERATOR_DRAFT;
     }
 
     return false;
+  }
+
+  // Tests
+  const canEditParcellaire = computed(() => {
+    return canEditRecord(recordStore.record);
   });
 
   function $reset() {
@@ -78,6 +78,7 @@ export const usePermissions = defineStore("permissions", () => {
     canAddParcelle,
     canDeleteFeature,
     canDeleteParcellaire,
+    canEditRecord,
     canEditParcellaire,
     canCreateVersion,
     canEditVersion,
