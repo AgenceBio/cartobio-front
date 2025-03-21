@@ -296,7 +296,6 @@ header {
   margin-bottom: 0.25em;
   font-weight: 400;
   line-height: 23px;
-  margin-left: 1.2em;
 }
 
 @media (max-width: 36em) {
