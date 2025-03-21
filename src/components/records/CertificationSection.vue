@@ -8,11 +8,13 @@ import { useRecordStore } from "@/stores/record.js";
 import CertificationModal from "@/components/forms/CertificationForm.vue";
 import SaveAuditModal from "@/components/forms/SaveAuditForm.vue";
 import { CertificationState } from "@agencebio/cartobio-types";
+import { useUserStore } from "@/stores/user";
 
 const recordStore = useRecordStore();
 const operatorStore = useOperatorStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
+const { isOcAudit } = useUserStore();
 const { record } = recordStore;
 const { operator } = operatorStore;
 
@@ -63,11 +65,26 @@ function handleCertify({ patch }) {
     v-if="permissions.isAgri && record.certification_state !== CertificationState.OPERATOR_DRAFT"
     class="fr-alert fr-alert--info fr-alert--sm fr-mb-2w"
   >
-    <p class="fr-text--sm">Votre parcellaire est en cours de certification, vous ne pouvez pas modifier les données.</p>
+    <p v-if="record.certification_state === CertificationState.CERTIFIED" class="fr-text--sm">
+      Votre parcellaire a été certifié, vous ne pouvez plus modifier les données.
+    </p>
+    <p v-else class="fr-text--sm">
+      Votre parcellaire est en cours de certification, vous ne pouvez plus modifier les données.
+    </p>
   </div>
 
   <!-- OC -->
-
+  <div
+    v-if="
+      permissions.isOc &&
+      isOcAudit &&
+      !permissions.canEditParcellaire &&
+      record.certification_state === CertificationState.CERTIFIED
+    "
+    class="fr-alert fr-alert--info fr-alert--sm fr-mb-2w"
+  >
+    <p class="fr-text--sm">Le parcellaire a été certifié, vous ne pouvez plus modifier les données.</p>
+  </div>
   <div class="fr-callout fr-callout--blue-ecume fr-mb-2w" v-if="permissions.isOc && record.audit_notes">
     <h3 class="fr-callout__title">Notes finales de l'audit</h3>
 
