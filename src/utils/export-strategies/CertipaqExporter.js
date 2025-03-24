@@ -14,9 +14,10 @@ import {
 const { aoa_to_sheet, sheet_add_aoa } = utils;
 const { decode_range: R } = utils;
 
+
 function getSheet() {
   const { featureCollection, operator, permissions } = this;
-  const notification = operator.notifications?.find(({ status }) => status === "ACTIVE") ?? {};
+  const notification = operator.notifications?.status === "ACTIVE" ?? {};
 
   // First sheet
   // First sheet: customer informations (via `customer`)

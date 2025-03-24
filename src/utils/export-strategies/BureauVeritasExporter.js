@@ -22,7 +22,7 @@ const { aoa_to_sheet, book_append_sheet, book_new, sheet_add_aoa } = utils;
  */
 function getSheet() {
   const { featureCollection, operator } = this;
-  const notification = operator.notifications?.find(({ status }) => status === "ACTIVE") ?? {};
+  const notification = operator.notifications?.status === "ACTIVE" ?? {};
 
   // First sheet
   // First sheet: customer informations (via `customer`)

@@ -7,6 +7,7 @@ import { cultureLabel, featureName, sortByAccessor } from "@/utils/features.js";
  * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
  * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
  */
+import toast from "@/utils/toast.js";
 
 const { sheet_to_csv, sheet_to_json, json_to_sheet } = utils;
 
@@ -75,7 +76,12 @@ export default class BaseExporter {
   }
 
   async toClipboard() {
-    const data = this.toCSV();
+    let data;
+    try {
+      data = this.toCSV();
+    } catch (e) {
+      toast.error("Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.");
+    }
     return navigator.clipboard.writeText(data);
   }
 }
