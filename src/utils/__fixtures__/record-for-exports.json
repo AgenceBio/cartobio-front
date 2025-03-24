@@ -6,18 +6,16 @@
     "id": 1,
     "numeroBio": 1,
     "nom": "test",
-    "notifications": [
-      {
-        "id": 1,
-        "numeroClient": "27B/6",
-        "organismeCertificateur": {
-          "id": 999,
-          "nom": "CartobiOC",
-          "numeroControleEu": "FR-BIO-999"
-        },
-        "status": "ACTIVE"
-      }
-    ]
+    "notifications": {
+      "id": 1,
+      "numeroClient": "27B/6",
+      "organismeCertificateur": {
+        "id": 999,
+        "nom": "CartobiOC",
+        "numeroControleEu": "FR-BIO-999"
+      },
+      "status": "ACTIVE"
+    }
   },
   "parcelles": {
     "type": "FeatureCollection",
