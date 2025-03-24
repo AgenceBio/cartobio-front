@@ -16,8 +16,8 @@ const { decode_range: R } = utils;
 
 function getSheet() {
   const { featureCollection, operator, permissions } = this;
-  const notification = operator.notifications?.find(({ status }) => status === "ACTIVE") ?? {};
-
+  let notification = {};
+  if (operator.notifications.status === "ACTIVE") notification = operator.notifications;
   // First sheet
   // First sheet: customer informations (via `customer`)
   const sheet = aoa_to_sheet(
