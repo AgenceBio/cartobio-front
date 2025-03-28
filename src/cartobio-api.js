@@ -297,7 +297,7 @@ export async function getDataXLSX() {
  * @param {string}
  * @returns {Promise<any>}
  */
-export async function getPDFData(numeroBio,record_id) {
+export async function getPDFData(numeroBio, record_id) {
   const data = await apiClient.get(`/v2/pdf/images/${numeroBio}/${record_id}`, { timeout: 600000 });
   return data;
 }
