@@ -53,6 +53,23 @@
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>
         </li>
+        <li>
+          <button
+            class="fr-btn fr-btn--secondary"
+            :class="{ 'fr-icon-file-line': !isPdfLoading }"
+            @click="exportAttestationPdf"
+            data-content-piece="Export PDF"
+            :disabled="isPdfLoading"
+          >
+            <div v-if="isPdfLoading">
+              <span class="spin"></span>
+              Téléchargement...
+            </div>
+            <span v-else>
+              Attestation de production&nbsp;<small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
+            </span>
+          </button>
+        </li>
       </ul>
     </template>
   </component>
@@ -65,6 +82,7 @@ import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
+import { getPDFData } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {
@@ -94,6 +112,7 @@ const exporter = computed(function () {
   });
 });
 const copied = ref(false);
+const isPdfLoading = ref(false);
 const autofocusedElement = ref();
 useFocus(autofocusedElement, { initialValue: true });
 
@@ -126,4 +145,57 @@ function ocClipboardExport() {
     copied.value = false;
   }, 2000);
 }
+
+async function exportAttestationPdf() {
+  // Prevent multiple simultaneous downloads
+  if (isPdfLoading.value) return;
+
+  try {
+    isPdfLoading.value = true;
+    const response = await getPDFData(props.record.numerobio, props.record.record_id);
+
+    const linkSource = `data:application/pdf;base64,${response.data}`;
+    const a = document.createElement("a");
+    a.href = linkSource;
+    a.download = `cartobio_attestation_certification_${props.record.numerobio}_${props.record.annee_reference_controle}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(linkSource);
+  } catch (error) {
+    console.error("Erreur lors du téléchargement du PDF:", error);
+  } finally {
+    isPdfLoading.value = false;
+  }
+}
 </script>
+
+<style scoped>
+@keyframes spinner {
+  0% {
+    transform: translate3d(-50%, -50%, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) rotate(360deg);
+  }
+}
+.spin {
+  display: inline-block;
+  position: relative;
+}
+.spin::before {
+  animation: 0.7s linear infinite spinner;
+  animation-play-state: inherit;
+  border: solid 2px var(--background-alt-grey-hover);
+  border-bottom-color: var(--background-action-high-blue-france);
+  border-radius: 50%;
+  content: "";
+  height: 20px;
+  width: 20px;
+  top: -5px;
+  left: -10px;
+  position: absolute;
+  transform: translate3d(-50%, -50%, 0);
+  will-change: transform;
+}
+</style>
