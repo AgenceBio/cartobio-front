@@ -290,3 +290,14 @@ export async function getDataXLSX() {
   const data = await apiClient.get("/v2/exportParcellaire", { timeout: 600000 });
   return data;
 }
+
+/**
+ * Retrieves pdf for a export
+ *
+ * @param {string}
+ * @returns {Promise<any>}
+ */
+export async function getPDFData(numeroBio,record_id) {
+  const data = await apiClient.get(`/v2/pdf/images/${numeroBio}/${record_id}`, { timeout: 600000 });
+  return data;
+}
