@@ -19,10 +19,12 @@
         </template>
       </div>
       <div class="heading">
-        <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
-          {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
-        </h2>
-
+        <div class="version-name fr-mb-1v">
+          <h2 class="fr-h4 fr-my-0">
+            {{ record.version_name }}
+          </h2>
+          <p v-if="readonly" class="readonly-badge">Lecture seule</p>
+        </div>
         <button
           v-if="!disableActions && permissions.canEditVersion"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
@@ -280,10 +282,16 @@ header {
 }
 
 .version-name {
-  max-width: 25ch;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
+  display: flex;
+  gap: 1ch;
+  align-items: end;
+}
+
+.version-name h2 {
+  max-width: 25ch;
 }
 
 .readonly-badge {
@@ -293,9 +301,10 @@ header {
   display: inline-flex;
   align-items: center;
   background-color: var(--background-default-grey-active);
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   font-weight: 400;
   line-height: 23px;
+  white-space: nowrap;
 }
 
 @media (max-width: 36em) {
