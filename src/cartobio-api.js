@@ -292,12 +292,13 @@ export async function getDataXLSX() {
 }
 
 /**
- * Retrieves pdf for a export
+ * Retrieves PDF for an export
  *
- * @param {string}
- * @returns {Promise<any>}
+ * @param {string} numeroBio - Le numéro bio
+ * @param {string} record_id - Le record-id de l'exploitation
+ * @returns {Promise<string>} -Base64 du fichier pdf
  */
 export async function getPDFData(numeroBio, record_id) {
-  const data = await apiClient.get(`/v2/pdf/images/${numeroBio}/${record_id}`, { timeout: 600000 });
+  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}`, { timeout: 600000 });
   return data;
 }
