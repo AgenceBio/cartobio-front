@@ -50,6 +50,22 @@
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>
         </li>
+        <li>
+          <button
+            class="fr-btn fr-btn--secondary"
+            :class="{ 'fr-icon-file-line': !isPdfLoading }"
+            @click="exportAttestationPdf"
+            data-content-piece="Export PDF"
+            :disabled="isPdfLoading"
+          >
+            <div v-if="isPdfLoading">
+              <Spinner class="spin">Téléchargement...</Spinner>
+            </div>
+            <span v-else>
+              Attestation de production&nbsp;<small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
+            </span>
+          </button>
+        </li>
       </ul>
     </template>
   </component>
@@ -60,8 +76,10 @@ import { computed, ref, toRaw } from "vue";
 import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
+import Spinner from "@/components/widgets/Spinner.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
+import { getPDFData } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {
@@ -91,6 +109,7 @@ const exporter = computed(function () {
   });
 });
 const copied = ref(false);
+const isPdfLoading = ref(false);
 const autofocusedElement = ref();
 useFocus(autofocusedElement, { initialValue: true });
 
@@ -122,5 +141,28 @@ function ocClipboardExport() {
   setTimeout(() => {
     copied.value = false;
   }, 2000);
+}
+
+async function exportAttestationPdf() {
+  // Prevent multiple simultaneous downloads
+  if (isPdfLoading.value) return;
+
+  try {
+    isPdfLoading.value = true;
+    const response = await getPDFData(props.record.numerobio, props.record.record_id);
+
+    const linkSource = `data:application/pdf;base64,${response.data}`;
+    const a = document.createElement("a");
+    a.href = linkSource;
+    a.download = `cartobio_attestation_certification_${props.record.numerobio}_${props.record.annee_reference_controle}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(linkSource);
+  } catch (error) {
+    console.error("Erreur lors du téléchargement du PDF:", error);
+  } finally {
+    isPdfLoading.value = false;
+  }
 }
 </script>
