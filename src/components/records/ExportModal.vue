@@ -59,8 +59,7 @@
             :disabled="isPdfLoading"
           >
             <div v-if="isPdfLoading">
-              <span class="spin"></span>
-              Téléchargement...
+              <Spinner class="spin">Téléchargement...</Spinner>
             </div>
             <span v-else>
               Attestation de production&nbsp;<small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
@@ -77,6 +76,7 @@ import { computed, ref, toRaw } from "vue";
 import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
+import Spinner from "@/components/widgets/Spinner.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
 import { getPDFData } from "@/cartobio-api.js";
@@ -166,33 +166,3 @@ async function exportAttestationPdf() {
   }
 }
 </script>
-
-<style scoped>
-@keyframes spinner {
-  0% {
-    transform: translate3d(-50%, -50%, 0) rotate(0deg);
-  }
-  100% {
-    transform: translate3d(-50%, -50%, 0) rotate(360deg);
-  }
-}
-.spin {
-  display: inline-block;
-  position: relative;
-}
-.spin::before {
-  animation: 0.7s linear infinite spinner;
-  animation-play-state: inherit;
-  border: solid 2px var(--background-alt-grey-hover);
-  border-bottom-color: var(--background-action-high-blue-france);
-  border-radius: 50%;
-  content: "";
-  height: 20px;
-  width: 20px;
-  top: -5px;
-  left: -10px;
-  position: absolute;
-  transform: translate3d(-50%, -50%, 0);
-  will-change: transform;
-}
-</style>
