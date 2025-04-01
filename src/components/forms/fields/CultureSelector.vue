@@ -1,5 +1,11 @@
 <template>
-  <fieldset class="culture-group fr-card fr-mb-1w fr-p-2w" v-for="culture in uuidedCultures" :key="culture.id">
+  <fieldset
+    class="culture-group fr-card fr-mb-1w fr-p-2w"
+    v-for="culture in uuidedCultures"
+    :key="culture.id"
+    ref="fieldsetCultureGroup"
+    tabindex="-1"
+  >
     <AsyncCultureTypeSelector
       :disabled-input="disabledInput"
       :feature-id="featureId"
@@ -61,6 +67,7 @@
       class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line fr-btn--icon-left"
       :disabled="!canBeDeleted"
       @click="removeCulture(culture.id)"
+      aria-label="Supprimer la culture"
     >
       Supprimer
     </button>
@@ -77,9 +84,11 @@
 </template>
 
 <script setup>
-import { computed, defineAsyncComponent } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
+import { useFocus } from "@vueuse/core";
 
 const AsyncCultureTypeSelector = defineAsyncComponent(() => import("./CultureTypeSelector.vue"));
+const fieldsetCultureGroup = ref();
 
 const props = defineProps({
   cultures: {
@@ -122,6 +131,16 @@ function appendEmptyCulture() {
 
   emit("change", appendedCultures);
 }
+
+watch(
+  fieldsetCultureGroup,
+  () => {
+    const { focused } = useFocus(fieldsetCultureGroup.value[fieldsetCultureGroup.value.length - 1]);
+
+    focused.value = true;
+  },
+  { deep: true },
+);
 
 function removeCulture(cultureId) {
   const updatedCultures = uuidedCultures.value.filter(({ id }) => id !== cultureId);

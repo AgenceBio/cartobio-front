@@ -47,7 +47,7 @@ describe("SingleItemCertificationBodyForm", () => {
     });
 
     const table = wrapper.getComponent(TableComponent);
-    await table.find("tr#parcelle-2 td.actions button[aria-label='Modifier']").trigger("click");
+    await table.find("tr#parcelle-2 td.actions button:first-child").trigger("click");
     await flushPromises();
   });
 

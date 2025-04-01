@@ -36,42 +36,37 @@
               @click.stop="pin(operator.numeroBio)"
               aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
-            <span
-              v-if="operatorDisabled[operator.numeroBio]"
-              aria-hidden
-              class="fr-ml-1w fr-icon-lock-line fr-icon--sm"
-              aria-label="Dossier inaccessible"
-            ></span>
+            <template v-if="operatorDisabled[operator.numeroBio]">
+              <p class="fr-sr-only">Dossier inaccessible</p>
+              <span class="fr-ml-1w fr-icon-lock-line fr-icon--sm" aria-hidden="true"></span>
+            </template>
             <button
               v-else
               class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm cursor-button"
               @click.stop="goToExploitations()"
               aria-label="Voir les détails de l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
-            <div v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
+            <p v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
               Le dossier n’est pas accessible
-            </div>
+            </p>
           </div>
         </div>
-        <h3 class="fr-card__title fr-mt-2w">
-          <div v-if="!operatorDisabled[operator.numeroBio]" class="fr-link">
-            {{ operator.nom || operator.denomationCourante }}
-          </div>
-          <div v-else class="nameoperator">
-            {{ `${operator.nom || operator.denomationCourante}` }}
-          </div>
+        <h3
+          class="fr-card__title fr-mt-2w name-operator"
+          :class="{ 'link-name-operator': !operatorDisabled[operator.numeroBio] }"
+        >
+          {{ operator.nom || operator.denomationCourante }}
         </h3>
         <div class="fr-card__desc fr-mt-1v fr-mb-5v">
-          <span class="fr-hint-text fr-text--sm">
+          <p class="fr-hint-text fr-text--sm">
             <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
             {{ operator.commune }}, {{ operator.codePostal }}
-          </span>
+          </p>
           <div class="num-client fr-mt-3w">
-            <div class="fr-hint-text" v-if="operator.notifications?.numeroClient">
+            <p class="fr-hint-text" v-if="operator.notifications?.numeroClient">
               n° client {{ operator.notifications.numeroClient ?? "-" }}
-            </div>
-            <div />
-            <div class="fr-hint-text">n° Bio {{ operator.numeroBio }}</div>
+            </p>
+            <p class="fr-hint-text fr-mt-0">n° Bio {{ operator.numeroBio }}</p>
           </div>
         </div>
       </div>
@@ -84,11 +79,12 @@
     >
       <div class="row" v-if="getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE'">
         <div class="top-bar-tooltip">
-          <div>
-            <span class="fr-icon-award-line fr-icon--sm lastcertified"></span>
-            <span class="lastcertifieddate">{{ operator.lastcertifieddate ?? "-" }}</span>
+          <div class="lastcertifed-container">
+            <span class="fr-icon-award-line fr-icon--sm lastcertified" aria-hidden="true"></span>
+            <p class="lastcertifieddate fr-mb-0 fr-text--sm">{{ operator.lastcertifieddate ?? "-" }}</p>
           </div>
           <div class="error-icon" v-if="operator.otherParcellaire">
+            <p class="fr-sr-only">Informations sur la dernière version de parcellaire</p>
             <span>!</span>
             <div class="tooltip">
               <p v-if="certificationState == 'CERTIFIED'" class="fr-text--sm">
@@ -103,27 +99,31 @@
                 Une nouvelle version a été créée après le contrôle <br />de {{ operator.version_name }}
               </p>
               <span class="informations-tooltip">
-                <span class="fr-icon-calendar-2-line fr-icon--sm informations-bold"></span>
-                <span class="informations-bold">Le {{ jjmmyyyy(operator.otherParcellaire[0].created_at) }} </span
-                ><span class="informations fr-ml-2w">Par</span>
-                <div
-                  v-if="operator.otherParcellaire[0].metadata.source === 'API Parcellaire'"
-                  class="informations-bold"
-                >
-                  <span class="fr-icon-download-line fr-icon--sm informations-bold" />
-                  Api Parcellaire
-                </div>
-                <div v-else-if="operator.otherParcellaire[0].metadata.source === 'telepac'" class="informations-bold">
-                  <span class="fr-icon-refresh-line fr-icon--sm informations-bold" />
-                  Import Telépac {{ operator.otherParcellaire[0].metadata.campagne }}
-                </div>
-                <div v-else class="informations-bold">
-                  <span class="fr-icon-user-line fr-icon--sm informations-bold" />{{
-                    JSON.parse(operator.otherParcellaire[0].user).nom +
-                    " " +
-                    JSON.parse(operator.otherParcellaire[0].user).prenom
-                  }}
-                </div>
+                <span class="fr-icon-calendar-2-line fr-icon--sm text-black" aria-hidden="true"></span>
+                <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
+                  Le {{ jjmmyyyy(operator.otherParcellaire[0].created_at) }}
+                </p>
+                <p class="fr-ml-2w fr-mb-0 fr-text--sm fr-text--regular text-gray">Par</p>
+                <template v-if="operator.otherParcellaire[0].metadata.source === 'API Parcellaire'">
+                  <span class="fr-icon-download-line fr-icon--sm text-black" aria-hidden="true"></span>
+                  <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">Api Parcellaire</p>
+                </template>
+                <template v-else-if="operator.otherParcellaire[0].metadata.source === 'telepac'">
+                  <span class="fr-icon-refresh-line fr-icon--sm text-black" aria-hidden="true"></span>
+                  <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
+                    Import Telépac {{ operator.otherParcellaire[0].metadata.campagne }}
+                  </p>
+                </template>
+                <template v-else>
+                  <span class="fr-icon-user-line fr-icon--sm text-black" aria-hidden="true"></span>
+                  <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
+                    {{
+                      JSON.parse(operator.otherParcellaire[0].user).nom +
+                      " " +
+                      JSON.parse(operator.otherParcellaire[0].user).prenom
+                    }}
+                  </p>
+                </template>
               </span>
             </div>
           </div>
@@ -168,8 +168,8 @@
       >
         <p class="fr-hint-text fr-text--sm fr-mb-0" aria-live="polite">Contrôle réalisé</p>
         <div class="certification-info fr-text--sm fr-mb-0 fr-mt-1v" aria-live="polite">
-          <div class="fr-icon-calendar-2-line fr-icon--sm"></div>
-          <div class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(auditDate) }}</div>
+          <span class="fr-icon-calendar-2-line fr-icon--sm" aria-hidden="true"></span>
+          <p class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(auditDate) }}</p>
         </div>
       </div>
 
@@ -191,12 +191,12 @@
           :show-date="false"
         />
         <div v-if="certificationDateDebut" class="certification-info fr-mt-1v">
-          <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
-          <span class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(certificationDateDebut) }}</span>
+          <span class="fr-icon-calendar-2-line fr-icon--sm" aria-hidden="true"></span>
+          <p class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(certificationDateDebut) }}</p>
         </div>
         <div v-else-if="certificationState != 'PENDING_CERTIFICATION'" class="certification-info fr-mt-1v">
-          <span class="fr-icon-calendar-2-line fr-icon--sm"></span>
-          <span class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(operator.updated_at) }}</span>
+          <span class="fr-icon-calendar-2-line fr-icon--sm" aria-hidden="true"></span>
+          <p class="fr-hint-text fr-text--sm fr-mb-0">{{ jjmmyyyy(operator.updated_at) }}</p>
         </div>
       </div>
 
@@ -211,6 +211,7 @@
         <button
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
+          :aria-label="`Consulter la version ${operator.version_name}`"
         >
           Soumettre {{ operator.version_name }}
         </button>
@@ -226,6 +227,7 @@
         <button
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
           @click="goToSpecificVersion"
+          :aria-label="`Consulter la version ${operator.version_name}`"
         >
           Contrôler {{ operator.version_name }}
         </button>
@@ -401,8 +403,6 @@ function hideTooltip() {
   padding: 8px;
   border-radius: 5px;
   white-space: nowrap;
-  font-size: 14px;
-  font-weight: bold;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
   opacity: 0;
   visibility: hidden;
@@ -520,19 +520,25 @@ function hideTooltip() {
 
 .lastcertifieddate {
   color: #006a6f;
-  margin-left: 10px;
-  font-size: 14px;
 }
-
+.lastcertifed-container {
+  display: flex;
+  gap: 10px;
+}
 .num-client {
   display: flex;
   gap: 1.2rem;
 }
 
-.nameoperator {
+.name-operator {
   font-size: 1rem;
+  line-height: 1.5rem;
+  padding: 0;
 }
 
+.link-name-operator {
+  color: var(--text-action-high-blue-france);
+}
 .center {
   display: flex;
   padding: 20px;
@@ -575,15 +581,12 @@ function hideTooltip() {
 .card-activate:active {
   background-color: var(--light-background-action-low-blue-france) !important;
 }
-
-.informations {
-  font-weight: normal;
-  color: grey;
+.text-black {
+  color: var(--text-title-grey);
 }
 
-.informations-bold {
-  font-weight: normal;
-  color: var(--text-title-grey);
+.text-gray {
+  color: gray;
 }
 
 .fr-card > .fr-card__footer {

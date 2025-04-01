@@ -1,14 +1,21 @@
 <template>
-  <dialog aria-labelledby="modal-title" role="dialog" id="global-modal" class="fr-modal fr-modal--opened" open>
+  <dialog
+    aria-labelledby="modal-title"
+    role="dialog"
+    id="global-modal"
+    class="fr-modal fr-modal--opened"
+    open
+    aria-modal="true"
+  >
     <div class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
         <div ref="target" class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-modal__body">
             <div class="fr-modal__header">
-              <h2 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
-                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" />
+              <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
+                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
                 <slot name="title" />
-              </h2>
+              </h1>
 
               <button
                 class="fr-btn--close fr-btn"

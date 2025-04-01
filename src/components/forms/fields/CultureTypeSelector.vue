@@ -202,6 +202,9 @@ onBeforeUnmount(() => {
 .aa-Item:hover {
   background-color: #ececfe;
 }
+.aa-Item[aria-selected="true"] {
+  outline: 2px solid var(--border-active-blue-france);
+}
 
 .aa-InputWrapperPrefix {
   display: none;

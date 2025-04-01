@@ -34,14 +34,22 @@ meta:
 
       <li>
         Formulaire de contact&nbsp;:
-        <a href="https://www.agencebio.org/pied-de-page/contact/" target="_blank" rel="noopener"
+        <a
+          href="https://www.agencebio.org/pied-de-page/contact/"
+          target="_blank"
+          rel="noopener"
+          title="Accéder a la page contact de l'Agence Bio"
           >https://www.agencebio.org/pied-de-page/contact/<lien-externe
         /></a>
       </li>
       <li>Adresse&nbsp;: <span>Agence Bio, 12, rue Henri Rol Tanguy, 93100 MONTREUIL</span></li>
       <li>
         Twitter :
-        <a href="https://twitter.com/agence_bio" target="_blank" rel="noopener noreferrer"
+        <a
+          href="https://twitter.com/agence_bio"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Accéder a la page twitter de l'Agence Bio"
           >@agence_bio<lien-externe
         /></a>
       </li>

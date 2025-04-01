@@ -72,41 +72,41 @@ const redo = () => {
         <button
           class="fr-btn fr-btn--tertiary"
           :class="currentMode === 'modif' ? 'selected-button' : ''"
+          :aria-pressed="currentMode === 'modif'"
           type="button"
-          title="Modifier"
-          aria-label="Modifier"
+          title="Modifier les coutours de la parcelle"
           @click="selectModif()"
           :disabled="disable"
         >
           <span class="ri-shape-line" aria-hidden="true" style="font-size: 1.2em"></span>
-          <span v-if="windowWidth > 780" class="button-text">Modifier</span>
+          <p v-if="windowWidth > 780" class="button-text">Modifier</p>
         </button>
         <button
           class="fr-btn fr-btn--tertiary"
           :class="currentMode == 'divid' ? 'selected-button' : ''"
+          :aria-pressed="currentMode === 'divid'"
           type="button"
-          title="Diviser"
-          aria-label="Diviser"
+          title="Diviser la parcelle"
           @click="selectDivid()"
           :disabled="disable"
         >
           <span class="ri-scissors-cut-line" aria-hidden="true" style="font-size: 1.2em"></span>
-          <span v-if="windowWidth > 780" class="button-text">Diviser</span>
+          <p v-if="windowWidth > 780" class="button-text">Diviser</p>
         </button>
 
         <button
           class="fr-btn fr-btn--tertiary"
           type="button"
           :class="currentMode === 'cutBorder' ? 'selected-button' : ''"
+          :aria-pressed="currentMode === 'cutBorder'"
           title="Découper les bordures"
-          aria-label="Découper les bordures"
           @click="selectCutBorders()"
           :disabled="disable"
         >
           <span class="fr-icon-crop-line" aria-hidden="true"></span>
-          <span v-if="windowWidth > 780" class="button-text">{{
-            windowWidth > 1280 ? "Découper les bordures" : "Bordure"
-          }}</span>
+          <p v-if="windowWidth > 780" class="button-text">
+            {{ windowWidth > 1280 ? "Découper les bordures" : "Bordure" }}
+          </p>
         </button>
         <div class="separator"></div>
       </div>
@@ -114,28 +114,34 @@ const redo = () => {
       <div class="right-buttons">
         <button
           type="button"
-          title="Mesurer"
+          title="Mesurer des longueurs"
           :class="mesureActive ? 'selected-button' : ''"
+          :aria-pressed="mesureActive"
           @click="selectMesure()"
-          aria-label="Mesurer"
           :disabled="disable"
         >
           <span class="ri-ruler-line" aria-hidden="true" style="font-size: 1.5em"></span>
         </button>
         <div class="separator"></div>
-        <button
-          type="button"
-          title="Supprimer"
-          aria-label="Supprimer"
-          :disabled="!canDelete || disable"
-          @click="supprimer()"
-        >
+        <button type="button" title="Supprimer la parcelle" :disabled="!canDelete || disable" @click="supprimer()">
           <span class="fr-icon-delete-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
-        <button type="button" title="Annuler" aria-label="Annuler" :disabled="!canUndo || disable" @click="undo()">
+        <button
+          type="button"
+          title="Annuler la dernière action"
+          aria-label="Annuler"
+          :disabled="!canUndo || disable"
+          @click="undo()"
+        >
           <span class="fr-icon-arrow-go-back-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
-        <button type="button" title="Rétablir" aria-label="Rétablir" :disabled="!canRedo || disable" @click="redo()">
+        <button
+          type="button"
+          title="Rétablir la dernière action"
+          aria-label="Rétablir"
+          :disabled="!canRedo || disable"
+          @click="redo()"
+        >
           <span class="fr-icon-arrow-go-forward-line" aria-hidden="true" style="font-size: 1.2em"></span>
         </button>
       </div>

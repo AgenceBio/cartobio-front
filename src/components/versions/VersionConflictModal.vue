@@ -43,7 +43,13 @@ async function merge() {
           <button class="fr-btn" @click="duplicate">Créer une nouvelle version</button>
         </li>
         <li>
-          <button class="fr-btn fr-btn--tertiary" @click="merge">Appliquer les changements</button>
+          <button
+            class="fr-btn fr-btn--tertiary"
+            @click="merge"
+            aria-label="Appliquer les changements sur la version existante"
+          >
+            Appliquer les changements
+          </button>
         </li>
       </ul>
     </template>

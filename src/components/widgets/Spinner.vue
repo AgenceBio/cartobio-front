@@ -1,5 +1,5 @@
 <template>
-  <p class="spin" aria-label="Chargement en cours…">
+  <p class="spin" aria-label="Chargement en cours…" role="progressbar">
     <slot name="default" />
   </p>
 </template>

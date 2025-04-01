@@ -68,7 +68,14 @@ const importRPG = async () => {
           {{ erreur }}
         </p>
       </div>
-      <button class="fr-btn" :disabled="loading" @click="importRPG">Importer</button>
+      <button
+        class="fr-btn"
+        :disabled="loading"
+        @click="importRPG"
+        aria-label="Importer un Registre parcellaire graphique (RPG)"
+      >
+        Importer
+      </button>
     </form>
   </div>
 </template>

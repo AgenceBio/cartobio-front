@@ -58,13 +58,29 @@
     </div>
 
     <div class="fr-fieldset__element">
-      <button v-if="feature && canDelete" class="fr-btn fr-btn--secondary fr-icon-delete-line" @click="emit('delete')">
+      <button
+        v-if="feature && canDelete"
+        class="fr-btn fr-btn--secondary fr-icon-delete-line"
+        @click="emit('delete')"
+        aria-label="Supprimer la parcelle"
+      >
         Supprimer
       </button>
-      <button v-else-if="isFetchingGeometry" class="fr-btn fr-btn--secondary fr-icon-time-fill" disabled>
+      <button
+        v-else-if="isFetchingGeometry"
+        class="fr-btn fr-btn--secondary fr-icon-time-fill"
+        disabled
+        aria-label="Recherche de parcelle en cours"
+      >
         Recherche en cours
       </button>
-      <button v-else class="fr-btn fr-icon-search-line" @click="searchReference" :disabled="commune === ''">
+      <button
+        v-else
+        class="fr-btn fr-icon-search-line"
+        @click="searchReference"
+        :disabled="commune === ''"
+        aria-label="Rechercher une parcelle"
+      >
         Rechercher
       </button>
     </div>

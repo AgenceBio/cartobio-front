@@ -17,7 +17,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="mass-edit-form">Enregistrer</button>
+          <button class="fr-btn" form="mass-edit-form" aria-label="Enregistrer les cultures">Enregistrer</button>
         </li>
       </ul>
     </template>

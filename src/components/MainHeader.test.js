@@ -21,7 +21,7 @@ describe("MainHeader", () => {
     const wrapper = mount(MainHeader);
     const result = wrapper.findAll(".fr-skiplinks .fr-link").map((w) => w.attributes("href"));
 
-    expect(result).toEqual(["#content", "#header-navigation", "#footer"]);
+    expect(result).toEqual(["#header", "#content", "#header-navigation", "#footer"]);
   });
 
   test("as a guest", () => {
