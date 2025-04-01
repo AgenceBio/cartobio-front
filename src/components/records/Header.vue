@@ -304,6 +304,7 @@ header {
   margin-bottom: 0.5em;
   font-weight: 400;
   line-height: 23px;
+  white-space: nowrap;
 }
 
 @media (max-width: 36em) {
