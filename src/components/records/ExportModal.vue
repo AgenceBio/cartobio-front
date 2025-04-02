@@ -50,7 +50,7 @@
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>
         </li>
-        <li>
+        <li v-if="record.certification_state === 'CERTIFIED'">
           <button
             class="fr-btn fr-btn--secondary"
             :class="{ 'fr-icon-file-line': !isPdfLoading }"
@@ -95,6 +95,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+console.log(props.record)
 
 const permissions = usePermissions();
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id);
