@@ -94,7 +94,7 @@ describe("FeatureGroup", () => {
 
     const group = wrapper.getComponent(FeatureGroup);
     await wrapper.find(".group-header").trigger("click");
-    await wrapper.find("#parcelle-2 td.actions button[aria-label='Modifier']").trigger("click");
+    await wrapper.find("#parcelle-2 td.actions button:first-child").trigger("click");
 
     expect(group.emitted("edit:featureId")).toHaveProperty("0", ["2"]);
   });

@@ -96,7 +96,10 @@ function save() {
       <div v-if="dateConflict" class="fr-alert fr-alert--error fr-mb-2w">
         <p class="fr-text--sm">
           La version
-          <router-link :to="`/exploitations/${operatorStore.operator.numeroBio}/${dateConflict.record_id}`">
+          <router-link
+            :to="`/exploitations/${operatorStore.operator.numeroBio}/${dateConflict.record_id}`"
+            :title="`Consulter la version ${dateConflict.version_name}`"
+          >
             {{ dateConflict.version_name }}
           </router-link>
           possède déjà la même date d'audit.
@@ -152,12 +155,19 @@ function save() {
             class="fr-btn"
             form="version-edit-form"
             :disabled="dateConflict || datesCertificationConflict"
+            aria-label="Enregister le parcellaire"
           >
             Enregistrer
           </button>
         </li>
         <li>
-          <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>
+          <button
+            class="fr-btn fr-btn--tertiary"
+            @click="$emit('close')"
+            aria-label="Annuler les modifications en cours"
+          >
+            Annuler
+          </button>
         </li>
       </ul>
     </template>

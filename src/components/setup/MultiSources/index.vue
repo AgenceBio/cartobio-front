@@ -14,6 +14,7 @@
           type="button"
           :aria-selected="sourceId === featureSource"
           @click="featureSource = sourceId"
+          :aria-label="`Créer un parcellaire via la source '${source.label}'`"
         >
           {{ source.label }}
         </button>

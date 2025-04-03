@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex">
+  <div style="display: flex" role="status">
     <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center">{{ message }}</div>
     <button v-if="actionLabel" @click="actionCb" class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w">
       {{ actionLabel }}
@@ -7,6 +7,7 @@
     <button
       class="fr-btn fr-btn--tertiary-no-outline fr-ml-3w fr-btn--icon-right fr-icon-close-line"
       @click="closeToast"
+      aria-label="Fermer la fenêtre de statut"
     >
       <p>Fermer</p>
     </button>

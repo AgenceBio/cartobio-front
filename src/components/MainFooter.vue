@@ -3,28 +3,32 @@
     <div class="fr-container">
       <div class="fr-footer__body">
         <div class="fr-footer__brand fr-enlarge-link">
-          <a href="https://agencebio.org" title="Accéder au site de l'Agence Bio" tabindex="-1">
+          <a href="https://agencebio.org" title="Accéder au site de l'Agence Bio - République française" tabindex="-1">
             <p class="fr-logo" title="République française">
               République<br />
               française
             </p>
           </a>
 
-          <a class="fr-footer__brand-link fr-ml-3w" href="https://agencebio.org">
+          <a
+            class="fr-footer__brand-link fr-ml-3w"
+            href="https://agencebio.org"
+            title="Accéder au site de l'Agence Bio"
+          >
             <img
               src="../assets/logo-agence-bio.svg"
               class="fr-footer__logo fr-responsive-img logo"
-              alt="L'Agence Bio"
+              alt="Logo de l'Agence Bio"
             />
           </a>
         </div>
 
         <div class="fr-footer__content">
           <div class="fr-footer__content-desc">
+            <h2 class="fr-icon-leaf-fill fr-icon--sm fr-icon--left fr-mb-0 fr-text--md">
+              Aidez-nous à améliorer ce service !
+            </h2>
             <p>
-              <strong class="fr-icon-leaf-fill fr-icon--sm fr-icon--left fr-mb-2v"
-                >Aidez-nous à améliorer ce service !</strong
-              ><br />
               Si vous rencontrez un problème, vous n'arrivez pas à finaliser une action ou vous avez un commentaire sur
               cette page, envoyez-nous un message à l'adresse suivante :
             </p>
@@ -39,7 +43,11 @@
           </div>
           <ul class="fr-footer__content-list">
             <li class="fr-footer__content-item">
-              <a class="fr-footer__content-link" target="_blank" href="https://agencebio.org"
+              <a
+                class="fr-footer__content-link"
+                target="_blank"
+                href="https://agencebio.org"
+                title="Accéder au site de l'Agence Bio"
                 >agencebio.org<lien-externe
               /></a>
             </li>
@@ -48,6 +56,7 @@
                 class="fr-footer__content-link"
                 target="_blank"
                 href="https://www.data.gouv.fr/fr/dataset/616d6531c2951bbe8bd97771/"
+                title="Accéder au site de donnée du gouvernement français"
                 >data.gouv.fr<lien-externe
               /></a>
             </li>
@@ -61,18 +70,31 @@
           </li>
           <li class="fr-footer__bottom-item fr-footer__bottom-link">
             Code source :
-            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-front"
+            <a
+              target="_blank"
+              class="fr-footer__bottom-link"
+              href="https://github.com/AgenceBio/cartobio-front"
+              title="Accéder au code source de l'interface Cartobio"
               >interface<lien-externe
             /></a>
             {{ versions.front }}
             et
-            <a target="_blank" class="fr-footer__bottom-link" href="https://github.com/AgenceBio/cartobio-api"
+            <a
+              target="_blank"
+              class="fr-footer__bottom-link"
+              href="https://github.com/AgenceBio/cartobio-api"
+              title="Accéder au code source de l'API Cartobio"
               ><abbr title="Application Programmable Interface" lang="en">API</abbr><lien-externe
             /></a>
             {{ versions.api }}
           </li>
           <li class="fr-footer__bottom-item">
-            <router-link class="fr-footer__bottom-link" to="/accessibilite">Accessibilité: non conforme</router-link>
+            <router-link
+              class="fr-footer__bottom-link"
+              to="/accessibilite"
+              title="Accessibilité: non conforme, accéder aux détails"
+              >Accessibilité: partiellement conforme</router-link
+            >
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/mentions-legales">Mentions légales</router-link>
@@ -81,7 +103,10 @@
         <div class="fr-footer__bottom-copy">
           <p>
             Sauf mention contraire, tous les contenus de ce site sont sous
-            <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank"
+            <a
+              href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+              target="_blank"
+              title="Accéder aux informations sur la license etalab-2.0"
               >licence etalab-2.0<lien-externe
             /></a>
           </p>
