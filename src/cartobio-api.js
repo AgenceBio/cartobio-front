@@ -299,6 +299,6 @@ export async function getDataXLSX() {
  * @returns {Promise<string>} -Base64 du fichier pdf
  */
 export async function getPDFData(numeroBio, record_id) {
-  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}`, { timeout: 600000 });
+  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}`, { timeout: 600000 });
   return data;
 }
