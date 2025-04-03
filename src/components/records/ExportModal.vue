@@ -59,13 +59,16 @@
             :class="{ 'fr-icon-file-line': !isPdfLoading }"
             @click="exportAttestationPdf"
             data-content-piece="Export PDF"
-            :disabled="isPdfLoading"
+            :disabled="isPdfLoading || pdfError"
           >
             <div v-if="isPdfLoading">
               <Spinner class="spin">Téléchargement...</Spinner>
             </div>
             <span v-else>
-              Attestation de production&nbsp;<small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
+              <div class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</div>
+              <div v-else>
+                Attestation de production&nbsp;<small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
+              </div>
             </span>
           </button>
         </li>
@@ -99,8 +102,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.record)
-
 const permissions = usePermissions();
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id);
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`);
@@ -115,6 +116,7 @@ const exporter = computed(function () {
 });
 const copied = ref(false);
 const isPdfLoading = ref(false);
+const pdfError = ref(false);
 const autofocusedElement = ref();
 useFocus(autofocusedElement, { initialValue: true });
 
@@ -149,13 +151,11 @@ function ocClipboardExport() {
 }
 
 async function exportAttestationPdf() {
-  // Prevent multiple simultaneous downloads
   if (isPdfLoading.value) return;
 
   try {
     isPdfLoading.value = true;
     const response = await getPDFData(props.record.numerobio, props.record.record_id);
-
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
@@ -165,7 +165,8 @@ async function exportAttestationPdf() {
     document.body.removeChild(a);
     URL.revokeObjectURL(linkSource);
   } catch (error) {
-    console.error("Erreur lors du téléchargement du PDF:", error);
+    pdfError.value = true;
+    throw new Error("Erreur lors du téléchargement du PDF: Réesayez plus tard");
   } finally {
     isPdfLoading.value = false;
   }
