@@ -59,7 +59,10 @@
             :disabled="isPdfLoading || pdfError"
           >
             <div v-if="isPdfLoading">
-              <Spinner class="spin">Téléchargement...</Spinner>
+              <Spinner
+                :hint="'Cette opération peut prendre quelques minutes...'"
+                ><div>Téléchargement...</div>
+              </Spinner>
             </div>
             <span v-else>
               <div class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</div>
@@ -156,7 +159,7 @@ async function exportAttestationPdf() {
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
-    a.download = `cartobio_attestation_certification_${props.record.numerobio}_${props.record.annee_reference_controle}.pdf`;
+    a.download = `cartobio_attestation_certification_${props.record.annee_reference_controle}_${props.record.numerobio}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
