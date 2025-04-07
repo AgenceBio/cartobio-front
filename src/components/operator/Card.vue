@@ -98,32 +98,35 @@
               <p v-else-if="certificationState == 'AUDITED'" class="fr-text--sm">
                 Une nouvelle version a été créée après le contrôle <br />de {{ operator.version_name }}
               </p>
-              <span class="informations-tooltip">
-                <span class="fr-icon-calendar-2-line fr-icon--sm text-black" aria-hidden="true"></span>
-                <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
-                  Le {{ jjmmyyyy(operator.otherParcellaire[0].created_at) }}
-                </p>
-                <p class="fr-ml-2w fr-mb-0 fr-text--sm fr-text--regular text-gray">Par</p>
-                <template v-if="operator.otherParcellaire[0].metadata.source === 'API Parcellaire'">
-                  <span class="fr-icon-download-line fr-icon--sm text-black" aria-hidden="true"></span>
-                  <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">Api Parcellaire</p>
-                </template>
-                <template v-else-if="operator.otherParcellaire[0].metadata.source === 'telepac'">
-                  <span class="fr-icon-refresh-line fr-icon--sm text-black" aria-hidden="true"></span>
+              <span class="informations-tooltip-container">
+                <span class="informations-tooltip">
+                  <span class="fr-icon-calendar-2-line fr-icon--sm text-black" aria-hidden="true"></span>
                   <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
-                    Import Telépac {{ operator.otherParcellaire[0].metadata.campagne }}
-                  </p>
-                </template>
-                <template v-else>
-                  <span class="fr-icon-user-line fr-icon--sm text-black" aria-hidden="true"></span>
-                  <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
-                    {{
-                      JSON.parse(operator.otherParcellaire[0].user).nom +
-                      " " +
-                      JSON.parse(operator.otherParcellaire[0].user).prenom
-                    }}
-                  </p>
-                </template>
+                    Le {{ jjmmyyyy(operator.otherParcellaire[0].created_at) }}
+                  </p> </span
+                ><span class="informations-tooltip">
+                  <p class="fr-mb-0 fr-text--sm fr-text--regular text-gray">Par</p>
+                  <template v-if="operator.otherParcellaire[0].metadata.source === 'API Parcellaire'">
+                    <span class="fr-icon-download-line fr-icon--sm text-black" aria-hidden="true"></span>
+                    <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">Api Parcellaire</p>
+                  </template>
+                  <template v-else-if="operator.otherParcellaire[0].metadata.source === 'telepac'">
+                    <span class="fr-icon-refresh-line fr-icon--sm text-black" aria-hidden="true"></span>
+                    <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
+                      Import Telépac {{ operator.otherParcellaire[0].metadata.campagne }}
+                    </p>
+                  </template>
+                  <template v-else>
+                    <span class="fr-icon-user-line fr-icon--sm text-black" aria-hidden="true"></span>
+                    <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
+                      {{
+                        JSON.parse(operator.otherParcellaire[0].user).nom +
+                        " " +
+                        JSON.parse(operator.otherParcellaire[0].user).prenom
+                      }}
+                    </p>
+                  </template>
+                </span>
               </span>
             </div>
           </div>
@@ -409,6 +412,12 @@ function hideTooltip() {
   transition:
     opacity 0.3s ease,
     visibility 0.3s ease;
+  z-index: 9999;
+}
+
+.informations-tooltip-container {
+  display: flex;
+  gap: 1.5rem;
 }
 
 .informations-tooltip {
@@ -428,20 +437,23 @@ function hideTooltip() {
   visibility: visible;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 48em) {
   .tooltip {
     bottom: auto;
     top: 125%;
     left: 50%;
     transform: translateX(-90%);
     white-space: normal;
-    max-width: 200px;
-    text-align: center;
-    z-index: 9999;
+    width: 200px;
   }
 
   .tooltip-text {
     transform: translateX(-72%) !important;
+  }
+
+  .informations-tooltip-container {
+    flex-direction: column;
+    gap: 0;
   }
 }
 

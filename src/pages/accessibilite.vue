@@ -14,7 +14,7 @@ meta:
       <span>L'Agence Bio</span> s’engage à rendre ses sites internet accessibles conformément à l’article 47 de la loi
       n° 2005-102 du 11 février 2005.
     </p>
-    <p>À cette fin, ...</p>
+    <p>À cette fin, des travaux d'amélioration continue sont en cours.</p>
     <p>La présente déclaration d’accessibilité s’applique au site <strong>CartoBio</strong>.</p>
     <h2>État de conformité</h2>
     <p>

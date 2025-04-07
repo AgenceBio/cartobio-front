@@ -92,8 +92,8 @@
             <router-link
               class="fr-footer__bottom-link"
               to="/accessibilite"
-              title="Accessibilité: non conforme, accéder aux détails"
-              >Accessibilité: partiellement conforme</router-link
+              title="Accessibilité :  partiellement conforme, accéder aux détails"
+              >Accessibilité : partiellement conforme</router-link
             >
           </li>
           <li class="fr-footer__bottom-item">
