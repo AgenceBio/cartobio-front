@@ -245,7 +245,7 @@ function persistDepartements() {
 
   if (
     (userDepartements.value != null && departementsToSave.length != userDepartements.value) ||
-    departementsToSave.some((s) => !userDepartements.value.include(s))
+    departementsToSave.some((s) => !userDepartements.value || !userDepartements.value.include(s))
   ) {
     userStore.saveDepartements(departementsToSave);
   }
