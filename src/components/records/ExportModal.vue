@@ -5,7 +5,7 @@
     icon="fr-icon-road-map-line"
     data-track-content
     data-content-name="Modale d'export"
-    :lockClose="!isPdfLoading"
+    :lockClose="isPdfLoading"
   >
     <template #title>Export de parcellaire</template>
 

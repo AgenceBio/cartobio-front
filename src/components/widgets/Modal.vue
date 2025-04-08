@@ -21,8 +21,8 @@
                 class="fr-btn--close fr-btn"
                 title="Fermer la fenêtre modale"
                 aria-controls="global-modal"
-                @click="lockClose && emit('close')"
-                :disabled="!lockClose"
+                @click="emit('close')"
+                :disabled="lockClose"
                 v-if="!noCloseButton"
               >
                 Fermer
@@ -61,7 +61,7 @@ const props = defineProps({
 const target = ref(null);
 
 const cancelKeyStroke = onKeyStroke("Escape", () => {
-  if (props.lockClose) {
+  if (!props.lockClose) {
     emit("close");
   }
 });
@@ -69,7 +69,7 @@ const cancelClickOutside = onClickOutside(target, (event) => {
   const range = document.createRange();
   range.selectNode(target.value);
   const isOutside = range.intersectsNode(event.target);
-  if (isOutside && props.lockClose) {
+  if (isOutside && !props.lockClose) {
     emit("close");
   }
 });
