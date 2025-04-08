@@ -62,8 +62,7 @@
             :disabled="isPdfLoading || pdfError"
           >
             <div v-if="isPdfLoading">
-              <Spinner
-                :hint="'Cette opération peut prendre quelques minutes...'"
+              <Spinner :hint="'Cette opération peut prendre quelques minutes...'"
                 ><div>Téléchargement...</div>
               </Spinner>
             </div>
