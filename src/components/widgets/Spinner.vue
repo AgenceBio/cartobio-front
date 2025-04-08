@@ -43,7 +43,6 @@
   flex-direction: column;
   align-items: center;
 }
-
 </style>
 
 <script setup>
@@ -53,5 +52,4 @@ const props = defineProps({
     required: false,
   },
 });
-
 </script>
