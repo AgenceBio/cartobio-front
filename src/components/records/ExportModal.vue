@@ -63,8 +63,7 @@
             :disabled="isPdfLoading || pdfError"
           >
             <div v-if="isPdfLoading">
-              <Spinner
-                :hint="'Cette opération peut prendre quelques minutes, merci de rester sur la page du parcellaire'"
+              <Spinner :hint="'Cela peut prendre quelques minutes, merci de rester sur la page du parcellaire'"
                 ><div>Téléchargement...</div>
               </Spinner>
             </div>
@@ -163,7 +162,7 @@ async function exportAttestationPdf() {
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
-    a.download = `cartobio_attestation_certification_${props.record.annee_reference_controle}_${props.record.numerobio}.pdf`;
+    a.download = `cartobio_attestation_${props.record.annee_reference_controle}_${props.record.numerobio}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
