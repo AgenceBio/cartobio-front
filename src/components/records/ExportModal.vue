@@ -5,6 +5,7 @@
     icon="fr-icon-road-map-line"
     data-track-content
     data-content-name="Modale d'export"
+    :lockClose="!isPdfLoading"
   >
     <template #title>Export de parcellaire</template>
 
@@ -62,7 +63,8 @@
             :disabled="isPdfLoading || pdfError"
           >
             <div v-if="isPdfLoading">
-              <Spinner :hint="'Cette opération peut prendre quelques minutes...'"
+              <Spinner
+                :hint="'Cette opération peut prendre quelques minutes, merci de rester sur la page du parcellaire'"
                 ><div>Téléchargement...</div>
               </Spinner>
             </div>
