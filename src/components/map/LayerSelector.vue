@@ -5,8 +5,9 @@
         class="menu-toggle"
         :class="{ 'menu-toggle--satellite': fond === 'satellite', 'menu-toggle--plan': fond === 'plan' }"
         @click="showMenu = !showMenu"
+        aria-label="Afficher le menu des calques"
       >
-        <span class="fr-icon--sm fr-mb-1v"> Calques </span>
+        <span class="fr-icon--sm fr-mb-1v" aria-hidden="true"> Calques </span>
       </button>
 
       <dialog aria-labelledby="map-layers-title" role="dialog" class="menu" :open="showMenu">
@@ -15,6 +16,7 @@
         <button
           class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
           @click="showMenu = false"
+          aria-label="Fermer le menu des calques"
         >
           Fermer
         </button>
@@ -25,6 +27,7 @@
           :class="{ active: fond === 'plan' }"
           @click="$emit('update:fond', 'plan')"
           aria-label="Choisir le fond plan"
+          :aria-pressed="fond === 'plan'"
         >
           <img src="@/assets/map/plan.jpg" alt="" />
           <span>Plan</span>
@@ -34,6 +37,7 @@
           :class="{ active: fond === 'satellite' }"
           @click="$emit('update:fond', 'satellite')"
           aria-label="Choisir le fond satellite"
+          :aria-pressed="fond === 'satellite'"
         >
           <img src="@/assets/map/satellite.jpg" alt="" />
           <span>Satellite</span>
@@ -47,6 +51,7 @@
           :class="{ active: classification }"
           @click="$emit('update:classification', !classification)"
           :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`"
+          :aria-pressed="classification"
         >
           <img src="@/assets/map/classification.jpg" alt="" />
           <span>
@@ -66,6 +71,7 @@
           :class="{ active: cadastre }"
           @click="$emit('update:cadastre', !cadastre)"
           :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`"
+          :aria-pressed="cadastre"
         >
           <img src="@/assets/map/cadastre.jpg" alt="" />
           <span>Cadastre</span>

@@ -76,6 +76,7 @@ watch(show, (value) => {
         @click.stop.prevent="show = !show"
         class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
         :disabled="props.disabled"
+        :aria-expanded="show"
       >
         Choix des actions
       </button>

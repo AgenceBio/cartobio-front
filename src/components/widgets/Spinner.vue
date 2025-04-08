@@ -1,6 +1,6 @@
 <template>
   <div class="spinner-container">
-    <p class="spin" aria-label="Chargement en cours…">
+    <p class="spin" aria-label="Chargement en cours…" role="progressbar">
       <slot name="default" />
     </p>
     <p v-if="hint" class="fr-hint-text fr-text--xs">{{ hint }}</p>

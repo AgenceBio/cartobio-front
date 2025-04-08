@@ -11,10 +11,19 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" @click="handleDelete" ref="autofocusedElement">Supprimer</button>
+          <button
+            class="fr-btn"
+            @click="handleDelete"
+            ref="autofocusedElement"
+            aria-label="Supprimer l'accès hors-ligne du parcellaire"
+          >
+            Supprimer
+          </button>
         </li>
         <li>
-          <button class="fr-btn fr-btn--secondary" @click="$emit('close')">Annuler</button>
+          <button class="fr-btn fr-btn--secondary" @click="$emit('close')" aria-label="Fermer la modale">
+            Annuler
+          </button>
         </li>
       </ul>
     </template>

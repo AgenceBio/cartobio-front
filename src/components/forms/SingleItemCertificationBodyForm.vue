@@ -124,7 +124,12 @@
 
     <template #footer>
       <div class="fr-input-group">
-        <button class="fr-btn" type="submit" form="single-feature-edit-form">
+        <button
+          class="fr-btn"
+          type="submit"
+          form="single-feature-edit-form"
+          :aria-label="readonly ? 'Ne plus afficher les details du parcellaire' : 'Enregistrer le parcellaire'"
+        >
           {{ readonly ? "Fermer" : "Enregistrer" }}
         </button>
       </div>

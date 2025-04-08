@@ -111,7 +111,9 @@
 
     <template #footer>
       <div class="fr-input-group">
-        <button class="fr-btn" type="submit" form="single-feature-edit-form">Enregistrer</button>
+        <button class="fr-btn" type="submit" form="single-feature-edit-form" aria-label="Enregister le parcellaire">
+          Enregistrer
+        </button>
       </div>
     </template>
   </Modal>

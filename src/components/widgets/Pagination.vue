@@ -26,6 +26,7 @@
             :class="{ [`fr-pagination__link--${page}`]: true }"
             @click="$emit('changePage', page)"
             :aria-current="currentPage == page"
+            :aria-label="`Aller à la page ${page}`"
           >
             {{ page }}
           </button>
@@ -42,6 +43,7 @@
           class="fr-pagination__link fr-displayed-lg"
           @click="$emit('changePage', maxPage)"
           :aria-current="currentPage == maxPage"
+          aria-label="Aller à la dernière page"
         >
           {{ maxPage }}
         </button>

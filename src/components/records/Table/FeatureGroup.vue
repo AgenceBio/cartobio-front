@@ -40,10 +40,12 @@
       </td>
 
       <td class="actions">
+        <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
         <span
           v-if="groupErrors"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-warning-fill fr-icon--warning"
           :title="`${groupErrors} parcelles à amender`"
+          aria-hidden="true"
         />
       </td>
     </tr>
@@ -128,14 +130,14 @@
           type="button"
           class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
           @click="toggleEditForm(feature.id)"
-          aria-label="Modifier"
+          aria-label="Modifier les informations de la parcelle"
         />
         <button
           v-else
           type="button"
           class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line ri-xl"
           @click="toggleViewForm(feature.id)"
-          aria-label="Modifier"
+          aria-label="Voir les informations de la parcelle"
         />
         <ActionDropdown with-icons v-if="!readonly">
           <li v-if="permissions.canChangeGeometry && isOnline" class="more-actions">

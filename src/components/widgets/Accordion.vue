@@ -7,6 +7,7 @@
         @click="handleToggle"
         :aria-controls="elementId"
         type="button"
+        aria-label="Modifier les éléments sélectionnés"
       >
         <div style="display: flex; flex-direction: column; align-items: flex-start">
           <span>{{ title }}</span>

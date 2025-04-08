@@ -8,25 +8,28 @@
             v-if="operatorStore.operator.epingle"
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-fill"
             @click="unpin(operatorStore.operator.numeroBio)"
-            aria-label="Désepingler"
+            aria-label="Désepingler le parcellaire"
           ></button>
           <button
             v-else
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-line"
             @click="pin(operatorStore.operator.numeroBio)"
-            aria-label="Epingler"
+            aria-label="Epingler le parcellaire"
           ></button>
         </template>
       </div>
       <div class="heading">
-        <h2 class="fr-h4 fr-my-0 fr-mb-1v version-name">
-          {{ record.version_name }}<span v-if="readonly" class="readonly-badge">Lecture seule</span>
-        </h2>
-
+        <div class="version-name fr-mb-1v">
+          <h2 class="fr-h4 fr-my-0">
+            {{ record.version_name }}
+          </h2>
+          <p v-if="readonly" class="readonly-badge">Lecture seule</p>
+        </div>
         <button
           v-if="!disableActions && permissions.canEditVersion"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
           @click="showEditVersionModal = true"
+          aria-label="Modifier la version du parcellaire"
         >
           Modifier la version
         </button>
@@ -40,44 +43,50 @@
       v-if="disableActions === false"
       class="actions fr-btns-group fr-btns-group--sm fr-btns-group--inline-sm fr-btns-group--icon-left"
     >
-      <nav role="navigation" class="fr-translate fr-nav">
-        <div class="fr-nav-item">
-          <button
-            class="fr-btn fr-btn--icon-left fr-btn--tertiary-no-outline fr-icon-git-pull-request-fill show-versions"
-            @click.stop.prevent="versionMenu = !versionMenu"
-            :disabled="!isOnline"
-          >
-            Autres versions <span class="fr-icon-arrow-down-s-line" />
-          </button>
-          <div v-if="versionMenu" class="fr-menu fr-translate__menu" ref="versionMenuRef">
-            <ul class="fr-menu__list">
-              <li v-for="{ year, records } in operatorStore.recordsByYear" :key="year">
-                <a class="fr-nav__link" @click.stop.prevent="versionMenu = year" href="#">
-                  Audit {{ year }} <span class="fr-icon-arrow-right-s-line" />
-                </a>
-                <div class="fr-menu fr-translate__menu">
-                  <ul v-if="versionMenu === year" class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
-                    <li v-for="record in records" :key="record?.record_id">
-                      <router-link
-                        :to="`/exploitations/${operator.numeroBio}/${record.record_id}`"
-                        class="fr-nav__link white-space-break"
-                        href="#"
-                      >
-                        {{ record.version_name }}
-                      </router-link>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <button
+        class="fr-btn fr-btn--icon-left fr-btn--tertiary-no-outline fr-icon-git-pull-request-fill show-versions"
+        @click.stop.prevent="versionMenu = !versionMenu"
+        :disabled="!isOnline"
+        :aria-expanded="!!versionMenu"
+        aria-label="Afficher la liste des autres versions de parcellaire"
+      >
+        Autres versions <span class="fr-icon-arrow-down-s-line" />
+      </button>
+      <div v-if="versionMenu" class="fr-menu fr-translate__menu" ref="versionMenuRef">
+        <ul class="fr-menu__list">
+          <li v-for="{ year, records } in operatorStore.recordsByYear" :key="year">
+            <button
+              class="fr-nav__link no-underline-img"
+              @click.stop.prevent="versionMenu = year"
+              href="#"
+              :aria-label="`Afficher les parcellaires audités en ${year}`"
+              :aria-expanded="versionMenu === year"
+            >
+              Audit {{ year }} <span class="fr-icon-arrow-right-s-line" />
+            </button>
+            <div class="fr-menu fr-translate__menu no-underline-img">
+              <ul v-if="versionMenu === year" class="fr-menu__list fr-btns-group fr-btns-group--icon-left">
+                <li v-for="record in records" :key="record?.record_id">
+                  <router-link
+                    :to="`/exploitations/${operator.numeroBio}/${record.record_id}`"
+                    class="fr-nav__link white-space-break"
+                    href="#"
+                    :aria-label="`Consulter la version ${record.version_name}`"
+                  >
+                    {{ record.version_name }}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
 
       <button
         v-if="canDisplayHistory"
         class="history-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line"
         @click="historyModal = true"
+        aria-label="Afficher l'historique des modifications"
       >
         Historique
       </button>
@@ -86,6 +95,7 @@
         v-if="hasFeatures && !readonly"
         class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-table-2"
         @click="exportModal = true"
+        aria-label="Afficher la liste de moyen d'exporter le parcellaire"
       >
         Exporter
       </button>
@@ -94,6 +104,7 @@
         v-if="!disableActions && permissions.canEditVersion"
         class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden-sm"
         @click="showEditVersionModal = true"
+        aria-label="Modifier la version du parcellaire"
       >
         Modifier la version
       </button>
@@ -280,10 +291,16 @@ header {
 }
 
 .version-name {
-  max-width: 25ch;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
+  display: flex;
+  gap: 1ch;
+  align-items: end;
+}
+
+.version-name h2 {
+  max-width: 25ch;
 }
 
 .readonly-badge {
@@ -293,9 +310,10 @@ header {
   display: inline-flex;
   align-items: center;
   background-color: var(--background-default-grey-active);
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   font-weight: 400;
   line-height: 23px;
+  white-space: nowrap;
 }
 
 @media (max-width: 36em) {
@@ -318,5 +336,9 @@ header {
 .flex-center {
   display: flex;
   align-items: center;
+}
+
+.no-underline-img {
+  --underline-img: none;
 }
 </style>

@@ -22,6 +22,7 @@
                 @click="ocExport"
                 data-content-piece="Export OC"
                 ref="autofocusedElement"
+                :aria-label="`Exporter le parcellaire au format ${exporter.label} (.${exporter.extension})`"
               >
                 {{ exporter.label }}&nbsp;<small
                   >(<code :aria-label="exporter.label">.{{ exporter.extension }}</code
@@ -35,6 +36,7 @@
                 :class="{ 'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied }"
                 @click="ocClipboardExport"
                 data-content-piece="Export presse-papiers"
+                aria-label="Copier le parcellaire dans le presse-papiers"
               >
                 Copier dans le presse-papiers
               </button>
@@ -46,6 +48,7 @@
             class="fr-btn fr-icon-france-line fr-btn--secondary"
             @click="geojsonExport"
             data-content-piece="Export GeoJson"
+            aria-label="Expoter au format GeoJSON (.geojson)"
           >
             GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>

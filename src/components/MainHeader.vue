@@ -4,6 +4,9 @@
       <nav role="navigation" aria-label="Accès rapide" class="fr-container">
         <ul class="fr-skiplinks__list">
           <li>
+            <a class="fr-link" href="#header">En-tête</a>
+          </li>
+          <li>
             <a class="fr-link" href="#content">Contenu</a>
           </li>
           <li v-for="(href, text) of $route.meta.skipLinks" :key="href">
@@ -18,7 +21,7 @@
         </ul>
       </nav>
     </div>
-    <header role="banner" class="fr-header">
+    <header role="banner" class="fr-header" id="header">
       <div class="fr-header__body">
         <div class="fr-container">
           <div class="fr-header__body-row">
@@ -32,7 +35,7 @@
                   <img
                     src="@/assets/logo-agence-bio.svg"
                     class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
-                    alt="L'Agence Bio"
+                    alt="Logo de l'Agence Bio"
                   />
 
                   <router-link :to="startPage" rel="home" class="fr-hidden-lg">
@@ -42,7 +45,7 @@
 
                 <div class="fr-header__navbar">
                   <button
-                    title="Menu"
+                    title="Ouvrir le menu"
                     class="fr-btn--menu fr-btn"
                     id="mobile-menu-button"
                     :data-fr-opened="menuIsOpen"
@@ -66,7 +69,7 @@
 
             <div class="fr-header__tools">
               <div class="fr-header__tools-links">
-                <ul class="fr-btns-group" id="header-navigation">
+                <ul class="fr-btns-group" id="header-navigation" role="navigation">
                   <li>
                     <router-link to="/projet" class="fr-btn"> À propos </router-link>
                   </li>
@@ -112,7 +115,12 @@
         aria-labelledby="mobile-menu-button"
       >
         <div class="fr-container">
-          <button class="fr-btn--close fr-btn" aria-controls="mobile-menu" title="Fermer" @click="menuIsOpen = false">
+          <button
+            class="fr-btn--close fr-btn"
+            aria-controls="mobile-menu"
+            title="Fermer le menu"
+            @click="menuIsOpen = false"
+          >
             Fermer
           </button>
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">

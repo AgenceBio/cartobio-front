@@ -1,10 +1,5 @@
 <template>
-  <form
-    @submit.prevent="search(userInput)"
-    class="fr-search-bar fr-search-bar--lg fr-mb-3w"
-    id="header-search"
-    role="search"
-  >
+  <form @submit.prevent="search(userInput)" class="fr-search-bar fr-search-bar--lg fr-mb-3w" id="search" role="search">
     <label class="fr-label" for="search"
       >{{ placeholder ? placeholder : " Recherche par nom d'exploitation, SIRET ou numéro bio" }}
     </label>
@@ -305,6 +300,9 @@ span[aria-selected="true"] {
 
 .aa-Item:hover {
   background-color: #ececfe;
+}
+.aa-Item[aria-selected="true"] {
+  outline: 2px solid var(--border-active-blue-france);
 }
 
 .aa-InputWrapperPrefix {

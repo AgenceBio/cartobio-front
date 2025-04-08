@@ -85,7 +85,7 @@ async function createEmptyVersion() {
               target="_blank"
               rel="noopener"
             >
-              Voir l'aide <span class="fr-icon-arrow-right-line fr-icon--sm" aria-hidden></span><lien-externe />
+              Voir l'aide <span class="fr-icon-arrow-right-line fr-icon--sm" aria-hidden="true"></span><lien-externe />
             </a>
           </p>
         </div>

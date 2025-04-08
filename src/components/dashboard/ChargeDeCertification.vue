@@ -1,6 +1,7 @@
 <template>
   <div class="filter fr-mb-2w charge-certification">
     <button
+      title="Afficher la liste des départements"
       class="fr-btn fr-btn--secondary fr-icon fr-icon-edit-line fr-btn--icon-right"
       @click="departementShown = true"
     >
@@ -40,19 +41,24 @@
       :key="value.code"
       class="fr-tag fr-tag--sm fr-tag--dismiss"
       @click="removeDepartment(value.code)"
+      :aria-label="`Supprimer '${value.nom}' des filtres de recherche`"
     >
-      <span>{{ `${value.nom} (${value.code})` }}</span>
+      {{ `${value.nom} (${value.code})` }}
     </button>
   </div>
   <div v-if="isLoading">
     <Spinner>Chargement des données…</Spinner>
   </div>
-  <div v-else class="callout-container fr-mb-2w">
-    <button class="fr-callout certifiees fr-mb-0 callout-children" @click="goToCertifiees">
+  <div v-else class="callout-container fr-mb-3w">
+    <button
+      class="fr-callout certifiees fr-mb-0 callout-children"
+      @click="goToCertifiees"
+      aria-label="Accéder à la liste des opérateurs certifiés"
+    >
       <div class="callout-content">
         <div>
           <div class="fr-hidden-md flex">
-            <span class="fr-icon fr-icon-award-line fr-icon-sm"></span>
+            <span class="fr-icon fr-icon-award-line fr-icon--sm" aria-hidden="true"></span>
             <p class="fr-callout__text fr-text--xs fr-text--bold">Exploitations certifiées</p>
           </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countCertifiees }}</span>
@@ -67,11 +73,15 @@
         />
       </div>
     </button>
-    <button class="fr-callout en-attentes fr-mb-0 callout-children" @click="goToEnAttentes">
+    <button
+      class="fr-callout en-attentes fr-mb-0 callout-children"
+      @click="goToEnAttentes"
+      aria-label="Accéder à la liste des opérateurs contrôlés mais non certifiés"
+    >
       <div class="callout-content">
         <div>
           <div class="fr-hidden-md flex">
-            <span class="fr-icon fr-icon-refresh-line fr-icon-sm"></span>
+            <span class="fr-icon fr-icon-refresh-line fr-icon--sm" aria-hidden="true"></span>
             <p class="fr-callout__text fr-text--xs fr-text--bold">Contrôlées non certifiées</p>
           </div>
           <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countEnAttentes }}</span>
@@ -87,11 +97,15 @@
       </div>
     </button>
     <div class="callout-children">
-      <button class="fr-callout non-auditees fr-mb-0 full-width" @click="goToNonAuditees">
+      <button
+        class="fr-callout non-auditees fr-mb-0 full-width"
+        @click="goToNonAuditees"
+        aria-label="Accéder à la liste des opérateurs non audités"
+      >
         <div class="callout-content">
           <div>
             <div class="fr-hidden-md flex">
-              <span class="fr-icon fr-icon-warning-line fr-icon-sm"></span>
+              <span class="fr-icon fr-icon-warning-line fr-icon--sm" aria-hidden="true"></span>
               <p class="fr-callout__text fr-text--xs fr-text--bold">Non contrôlées *</p>
             </div>
             <span class="fr-h2 fr-callout__title">{{ isSearching ? "-" : summary.countNonAuditees }}</span>
@@ -106,21 +120,24 @@
           />
         </div>
       </button>
-      <div class="fr-hint-text fr-mt-1w fr-hidden fr-unhidden-md align-right">
+      <p class="fr-hint-text fr-mt-1w fr-hidden fr-unhidden-md align-right">
         * hors exploitations engagées en {{ annneeReference + 1 }}
-      </div>
+      </p>
     </div>
-    <div class="fr-hint-text fr-hidden-md fr-p-1w">* hors exploitations engagées en {{ annneeReference + 1 }}</div>
+    <p class="fr-hint-text fr-hidden-md fr-p-1w fr-mb-0 mobile-hint">
+      * hors exploitations engagées en {{ annneeReference + 1 }}
+    </p>
   </div>
-  <div class="header-a-certifier fr-mt-4w fr-mb-3w">
+  <div class="header-a-certifier fr-pt-4w fr-mb-3w">
     <div class="titre-a-certifier">
       <h3 class="fr-h3 fr-mb-0">Parcellaire{{ operators.length > 1 ? "s" : "" }} à certifier</h3>
-      <span class="fr-text--lead fr-mb-0">({{ countToCertify }})</span>
+      <p class="fr-text--lead fr-mb-0">({{ countToCertify }})</p>
       <Spinner v-if="!isLoadingOperator && isSearching" />
     </div>
     <button
       class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
       @click="goToACertifier"
+      aria-label="Accéder à la liste des opérateurs à certifier"
     >
       Voir tout
     </button>
@@ -358,7 +375,7 @@ const goToACertifier = () => {
 }
 
 .fr-callout .fr-icon {
-  padding: 0.2rem 0.3rem;
+  padding: 0 0.2rem;
   border-radius: 4px;
 }
 
@@ -403,7 +420,7 @@ const goToACertifier = () => {
 .header-a-certifier {
   display: flex;
   justify-content: space-between;
-  border-top: 1;
+  border-top: solid 1px #cfcfcf;
 }
 .titre-a-certifier {
   display: flex;
@@ -425,6 +442,10 @@ const goToACertifier = () => {
 
 .align-right {
   text-align: right;
+}
+
+.mobile-hint {
+  align-self: end;
 }
 
 @media (max-width: 48em) {
@@ -450,6 +471,15 @@ const goToACertifier = () => {
   .callout-container .fr-callout {
     width: 100%;
   } */
+
+  .header-a-certifier {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .header-a-certifier > .titre-a-certifier,
+  .header-a-certifier > .fr-btn {
+    align-self: center;
+  }
 }
 </style>
 

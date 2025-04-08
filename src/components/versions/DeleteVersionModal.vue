@@ -41,10 +41,17 @@ async function saveDelete() {
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
         <li>
-          <button class="fr-btn fr-icon-delete-bin-line" @click="saveDelete" ref="autofocusedElement">Supprimer</button>
+          <button
+            class="fr-btn fr-icon-delete-bin-line"
+            @click="saveDelete"
+            ref="autofocusedElement"
+            aria-label="Supprimer la version"
+          >
+            Supprimer
+          </button>
         </li>
         <li>
-          <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>
+          <button class="fr-btn fr-btn--tertiary" @click="$emit('close')" aria-label="Fermer la modale">Annuler</button>
         </li>
       </ul>
     </template>

@@ -22,7 +22,8 @@
     </ul>
 
     <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-    <div class="fr-search-bar" id="header-search" role="search">
+    <div class="fr-search-bar" id="search" role="search">
+      <p class="fr-sr-only">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
       <input
         class="fr-input"
@@ -102,7 +103,7 @@
           </th>
         </tr>
         <tr class="background-white header-tab">
-          <th scope="col" aria-hidden class="selection">
+          <th scope="col" aria-hidden="true" class="selection">
             <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
               <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
               <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
