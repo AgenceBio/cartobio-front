@@ -44,51 +44,51 @@
           </div>
         </div>
 
-          <div class="">
-            <button
-              class="fr-btn fr-icon-france-line fr-btn--secondary"
-              @click="geojsonExport"
-              data-content-piece="Export GeoJson"
-              aria-label="Exporter au format GeoJSON (.geojson)"
-            >
-              GeoJSON
-              <small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
-            </button>
-          </div>
-
-          <div class="" v-if="record.certification_state === 'CERTIFIED'">
-            <button
-              class="fr-btn fr-btn--secondary"
-              :class="{ 'fr-icon-file-line': !isPdfLoading }"
-              @click="exportAttestationPdf"
-              data-content-piece="Export PDF"
-              :disabled="pdfError || isPdfLoading"
-              aria-label="Télécharger l'attestation de production au format PDF"
-            >
-              <div v-if="isPdfLoading">
-                <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
-                  <div>Téléchargement...</div>
-                </Spinner>
-              </div>
-              <span v-else>
-                <div class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</div>
-                <div v-else>
-                  Attestation de production
-                  <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
-                </div>
-              </span>
-            </button>
-
-            <button
-              v-if="isPdfLoading"
-              @click="exportAttestationPdf"
-              class="fr-btn fr-p-0w fr-btn--tertiary-no-outline fr-btn--sm"
-              aria-label="Annuler le téléchargement de l'attestation"
-            >
-              Annuler le téléchargement
-            </button>
-          </div>
+        <div class="">
+          <button
+            class="fr-btn fr-icon-france-line fr-btn--secondary"
+            @click="geojsonExport"
+            data-content-piece="Export GeoJson"
+            aria-label="Exporter au format GeoJSON (.geojson)"
+          >
+            GeoJSON
+            <small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
+          </button>
         </div>
+
+        <div class="" v-if="record.certification_state === 'CERTIFIED'">
+          <button
+            class="fr-btn fr-btn--secondary"
+            :class="{ 'fr-icon-file-line': !isPdfLoading }"
+            @click="exportAttestationPdf"
+            data-content-piece="Export PDF"
+            :disabled="pdfError || isPdfLoading"
+            aria-label="Télécharger l'attestation de production au format PDF"
+          >
+            <div v-if="isPdfLoading">
+              <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
+                <div>Téléchargement...</div>
+              </Spinner>
+            </div>
+            <span v-else>
+              <div class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</div>
+              <div v-else>
+                Attestation de production
+                <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
+              </div>
+            </span>
+          </button>
+
+          <button
+            v-if="isPdfLoading"
+            @click="exportAttestationPdf"
+            class="fr-btn fr-p-0w fr-btn--tertiary-no-outline fr-btn--sm"
+            aria-label="Annuler le téléchargement de l'attestation"
+          >
+            Annuler le téléchargement
+          </button>
+        </div>
+      </div>
     </template>
   </component>
 </template>
