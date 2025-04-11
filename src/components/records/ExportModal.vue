@@ -21,6 +21,7 @@
               class="fr-btn fr-icon-table-line fr-btn--secondary"
               data-content-piece="Export OC"
               ref="autofocusedElement"
+              @click="ocExport"
               :aria-label="`Exporter le parcellaire au format ${exporter.label} (.${exporter.extension})`"
             >
               {{ exporter.label }}
@@ -119,7 +120,7 @@ const props = defineProps({
 });
 
 const permissions = usePermissions();
-const controller = new AbortController();
+let controller = new AbortController();
 
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id);
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`);
@@ -171,7 +172,10 @@ function ocClipboardExport() {
 async function exportAttestationPdf() {
   if (isPdfLoading.value) {
     controller.abort();
+    return;
   }
+
+  controller = new AbortController();
 
   try {
     isPdfLoading.value = true;
