@@ -26,7 +26,7 @@ meta:
         >référentiel général d’amélioration de l’accessibilité (<abbr
           title="Référentiel général d’amélioration de l’accessibilité"
           >RGAA</abbr
-        >) version 4.1</a
+        >) version 4.1<lien-externe /></a
       >, en raison des non-conformités énumérées dans la section « Résultats des tests ».
     </p>
     <h2>Résultats des tests</h2>
@@ -94,7 +94,7 @@ meta:
         <ul>
           <li>
             Les cartes interactives permettant de gérer (ajouter, modifier) les parcelles des exploitations sont
-            développées avec <a href="https://www.openstreetmap.org/" target="_blank">Openstreetmap</a>
+            développées avec <a href="https://www.openstreetmap.org/" target="_blank">Openstreetmap<lien-externe /></a>
           </li>
           <li>L’information de la page « Les chiffres » est gérée via un module développé par Tableau public</li>
         </ul>
@@ -131,31 +131,27 @@ meta:
       >
       <AccordionSection title="Pages du site ayant fait l’objet de la vérification de conformité"
         ><ul>
-          <li><a href="/" target="_blank">Accueil</a></li>
-          <li><a href="/mentions-legales" target="_blank">Mentions légales</a></li>
-          <li><a href="/accessibilite" target="_blank">Accessibilité</a></li>
-          <li><a href="/sitemap" target="_blank">Plan du site</a></li>
-          <li><a href="/login" target="_blank">Authentification</a></li>
-          <li><a href="/exploitations" target="_blank">Les chiffres</a></li>
-          <li><a href="/exploitations/67602" target="_blank">Sélectionner mon exploitation</a></li>
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/mentions-legales">Mentions légales</a></li>
+          <li><a href="/accessibilite">Accessibilité</a></li>
+          <li><a href="/sitemap">Plan du site</a></li>
+          <li><a href="/login">Authentification</a></li>
+          <li><a href="/exploitations">Les chiffres</a></li>
+          <li><a href="/exploitations/67602">Sélectionner mon exploitation</a></li>
           <li>
-            <a href="/exploitations/67602" target="_blank"
-              >Exploitations (Oui) - Choisir votre mode de création de parcellaire</a
-            >
+            <a href="/exploitations/67602">Exploitations (Oui) - Choisir votre mode de création de parcellaire</a>
           </li>
-          <li><a href="/exploitations/67382" target="_blank">Exploitations (Test)</a></li>
+          <li><a href="/exploitations/67382">Exploitations (Test)</a></li>
           <li>
-            <a href="/exploitations/67382/1bfa66c3-f789-445d-9e2b-770a3ba26d5d" target="_blank"
+            <a href="/exploitations/67382/1bfa66c3-f789-445d-9e2b-770a3ba26d5d"
               >Exploitations (Test) - Version créée le 29/01/2025</a
             >
           </li>
           <li>
-            <a href="/exploitations/67382/1bfa66c3-f789-445d-9e2b-770a3ba26d5d/ajout-parcelle" target="_blank"
-              >Ajout d’une parcelle</a
-            >
+            <a href="/exploitations/67382/1bfa66c3-f789-445d-9e2b-770a3ba26d5d/ajout-parcelle">Ajout d’une parcelle</a>
           </li>
           <li>
-            <a href="/exploitations/67382/1bfa66c3-f789-445d-9e2b-770a3ba26d5d/modifier/112723366049015" target="_blank"
+            <a href="/exploitations/67382/1bfa66c3-f789-445d-9e2b-770a3ba26d5d/modifier/112723366049015"
               >Modification de parcelle</a
             >
           </li>
