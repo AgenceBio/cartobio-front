@@ -4,13 +4,13 @@
   <RouterView v-slot="{ Component, route }">
     <Suspense>
       <template #default>
-        <main id="content">
+        <main id="content" role="main" tabindex="-1">
           <component :is="Component" :key="route.meta.usePathKey ? route.path : undefined" />
         </main>
       </template>
 
       <template #fallback>
-        <main class="fr-container fr-py-9v" id="content">
+        <main class="fr-container fr-py-9v" id="content" role="main" tabindex="-1">
           <div class="fr-grid-row">
             <div class="fr-col-12">
               <Spinner class="fr-h5">Chargement des données …</Spinner>

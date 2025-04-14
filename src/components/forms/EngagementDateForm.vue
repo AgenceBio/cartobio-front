@@ -27,7 +27,9 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="mass-edit-form">Enregistrer</button>
+          <button class="fr-btn" form="mass-edit-form" aria-label="Enregistrer la date d'engagement">
+            Enregistrer
+          </button>
         </li>
       </ul>
     </template>

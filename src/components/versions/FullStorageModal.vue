@@ -23,7 +23,7 @@ useFocus(autofocusedElement, { initialValue: true });
           >
         </li>
         <li>
-          <button class="fr-btn fr-btn--tertiary" @click="$emit('close')">Annuler</button>
+          <button class="fr-btn fr-btn--tertiary" @click="$emit('close')" aria-label="Fermer la modale">Annuler</button>
         </li>
       </ul>
     </template>

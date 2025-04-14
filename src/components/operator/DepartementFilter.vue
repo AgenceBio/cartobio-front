@@ -17,7 +17,11 @@
     >
       <div v-for="(departements, region) in departementsList" :key="region">
         <div class="fr-mb-2v fr-text">{{ region }}</div>
-        <button @click="toggleRegion(departements)" class="fr-btn fr-btn--sm fr-btn--tertiary fr-mt-0 fr-mb-2w">
+        <button
+          @click="toggleRegion(departements)"
+          class="fr-btn fr-btn--sm fr-btn--tertiary fr-mt-0 fr-mb-2w"
+          :aria-label="`Sélectionner / Désélectionner la région ${region}`"
+        >
           Tout {{ region }}
         </button>
         <div v-for="element in departements" :key="element.code" class="fr-fieldset__element">

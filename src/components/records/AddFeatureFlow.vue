@@ -36,7 +36,12 @@
         </span>
 
         <div v-if="canAddReference" class="fr-input-group">
-          <button class="fr-btn fr-btn--secondary fr-btn--sm" type="button" @click="addReference">
+          <button
+            class="fr-btn fr-btn--secondary fr-btn--sm"
+            type="button"
+            @click="addReference"
+            aria-label="Ajouter une parcelle par référence cadastrale"
+          >
             Ajouter une référence
           </button>
         </div>
@@ -62,6 +67,11 @@
           type="submit"
           :disabled="(flowSource === 'cadastre' && !feature) || multipolygon"
           @click="nextButton"
+          :aria-label="
+            flowSource === 'cadastre'
+              ? 'Valider l\'ajout par référence cadastrale'
+              : 'Aller à l\'outil de dessin de parcelle'
+          "
         >
           Continuer
         </button>

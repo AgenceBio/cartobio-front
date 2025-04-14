@@ -15,6 +15,7 @@ meta:
           <ul>
             <li><router-link to="/">Accueil (grand public)</router-link></li>
             <li><router-link to="/pro">Accueil (professionnels)</router-link></li>
+            <li><router-link to="/stats">Accueil (les chiffres)</router-link></li>
             <li>
               <router-link to="/login" aria-label="Se connecter au service CartoBio">Connexion</router-link> ou
               <router-link to="/logout" aria-label="Se déconnecter du service CartoBio">déconnexion</router-link>

@@ -17,6 +17,7 @@
           :aria-pressed="isSelected(annotationId)"
           @click="toggleAnnotation(annotationId)"
           :disabled="readonly"
+          :aria-label="`${isSelected(annotationId) ? 'Supprimer' : 'Ajouter'} l'annotation de type '${annotation.label}'`"
         >
           {{ annotation.label }}
         </button>
@@ -26,6 +27,7 @@
           class="fr-tag fr-tag--link fr-tag--icon-left fr-icon-add-line"
           type="button"
           @click="isUserExpanded = true"
+          aria-label="Afficher plus d'annotations"
         >
           Afficher plus
         </button>

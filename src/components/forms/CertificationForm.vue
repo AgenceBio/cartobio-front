@@ -54,7 +54,7 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="sendoff-form">Certifier</button>
+          <button class="fr-btn" form="sendoff-form" aria-label="Certifier le parcellaire">Certifier</button>
         </li>
       </ul>
     </template>

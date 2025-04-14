@@ -165,7 +165,7 @@ describe("Features Table", () => {
 
     // we click outside the edit modal (the background of the <dialog> element)
     // it closes itself because it is not "dirty"
-    table.find("tr.parcelle td.actions button[aria-label='Modifier']").trigger("click");
+    table.find("tr.parcelle td.actions button:first-child").trigger("click");
     await flushPromises();
     modal = wrapper.getComponent(Modal);
     await modal.trigger("click");
@@ -175,7 +175,7 @@ describe("Features Table", () => {
     // now, we change a field and we should not be able to close it
     axios.__createMock.patch.mockResolvedValueOnce({ data: record });
 
-    table.find("tr.parcelle td.actions button[aria-label='Modifier']").trigger("click");
+    table.find("tr.parcelle td.actions button:first-child").trigger("click");
     await flushPromises();
     modal = wrapper.getComponent(Modal);
     await modal.find("#feature-nom").setValue("aa");

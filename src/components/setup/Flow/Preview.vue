@@ -107,7 +107,7 @@
                     : 'https://docs-cartobio.agencebio.org/organisme-certification/pas-a-pas/gestion-des-versions-de-parcellaire/importer-une-nouvelle-version'
                 "
                 >Accéder à la FAQ</a
-              >
+              ><lien-externe />
             </small>
           </div>
           <button

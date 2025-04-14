@@ -13,7 +13,10 @@
     <div v-if="dateConflict" class="fr-alert fr-alert--error fr-mb-2w">
       <p class="fr-text--sm">
         L'audit de la version
-        <router-link :to="`/exploitations/${operator.numeroBio}/${dateConflict.record_id}`">
+        <router-link
+          :to="`/exploitations/${operator.numeroBio}/${dateConflict.record_id}`"
+          :title="`Consulter la version ${dateConflict.version_name}`"
+        >
           {{ dateConflict.version_name }}
         </router-link>
         a déjà été terminé aujourd'hui.
@@ -59,7 +62,14 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
-          <button class="fr-btn" form="sendoff-form" :disabled="dateConflict">Terminer</button>
+          <button
+            class="fr-btn"
+            form="sendoff-form"
+            :disabled="dateConflict"
+            aria-label="Terminer l'audit du parcellaire"
+          >
+            Terminer
+          </button>
         </li>
       </ul>
     </template>
