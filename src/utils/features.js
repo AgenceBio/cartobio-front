@@ -615,7 +615,6 @@ async function fetchCadastreGeometry(q, baseFeature) {
   if (!geometry) {
     throw new FeatureWithoutGeometryError(q);
   }
-
   return {
     geometry,
     feature: feature(
