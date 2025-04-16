@@ -126,6 +126,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             required: true,
             errorMessage: "Il manque un type de culture",
             select(f) {
+              if (!f.properties.isCertified && f.id === 1) return false;
               if (!Array.isArray(f.properties.cultures) || f.properties.cultures.length === 0) {
                 return true;
               }
@@ -142,6 +143,8 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             required: true,
             errorMessage: "La culture est à préciser",
             select(f) {
+              if (!f.properties.isCertified && f.id === 1) return false;
+
               if (!Array.isArray(f.properties.cultures) || f.properties.cultures.length === 0) {
                 return false;
               }
@@ -164,6 +167,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             required: permissions.isOc,
             errorMessage: "Il manque un niveau de conversion",
             select(f) {
+              if (!f.properties.isCertified && f.id === 1) return false;
               return !f.properties.conversion_niveau || f.properties.conversion_niveau === LEVEL_UNKNOWN;
             },
           },
@@ -176,6 +180,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             required: permissions.isOc,
             errorMessage: "Le niveau de conversion en agriculture biologique a besoin d'être précisé",
             select(f) {
+              if (!f.properties.isCertified && f.id === 1) return false;
               return f.properties.conversion_niveau === LEVEL_MAYBE_AB;
             },
           },
