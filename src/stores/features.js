@@ -227,7 +227,7 @@ export const useFeaturesStore = defineStore("features", () => {
       const matchingFeature = source.find(({ id }) => feature.id === id);
 
       if (matchingFeature) {
-        source.filter(({ id }) => feature.id === id);
+        source = source.filter(({ id }) => feature.id !== id);
         return {
           ...feature,
           properties: JSON.parse(
