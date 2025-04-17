@@ -106,7 +106,7 @@ export async function pacageLookup(pacage) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function createOperatorRecord(numeroBio, payload) {
-  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload);
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload, { timeout: 600000 });
 
   return data;
 }
