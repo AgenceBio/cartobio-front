@@ -136,7 +136,7 @@ meta:
           <li><a href="/accessibilite">Accessibilité</a></li>
           <li><a href="/sitemap">Plan du site</a></li>
           <li><a href="/login">Authentification</a></li>
-          <li><a href="/exploitations">Les chiffres</a></li>
+          <li><a href="/stats">Les chiffres</a></li>
           <li><a href="/exploitations/67602">Sélectionner mon exploitation</a></li>
           <li>
             <a href="/exploitations/67602">Exploitations (Oui) - Choisir votre mode de création de parcellaire</a>
@@ -190,16 +190,6 @@ meta:
         /></a>
       </li>
       <li>Adresse&nbsp;: <span>Agence Bio, 12, rue Henri Rol Tanguy, 93100 MONTREUIL</span></li>
-      <li>
-        Twitter&nbsp;:
-        <a
-          href="https://twitter.com/agence_bio"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Accéder a la page twitter de l'Agence Bio"
-          >@agence_bio<lien-externe
-        /></a>
-      </li>
     </ul>
     <h2>Voie de recours</h2>
     <p>
