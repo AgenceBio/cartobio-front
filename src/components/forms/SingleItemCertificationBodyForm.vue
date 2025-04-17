@@ -62,7 +62,7 @@
           </div>
 
           <CultureSelector
-            :feature-id="feature.properties.id"
+            :feature-id="feature.properties.id || feature.id"
             :cultures="patch.cultures"
             @change="($cultures) => (patch.cultures = $cultures)"
             :disabled-input="readonly || !permissions.canChangeCulture"
@@ -77,7 +77,7 @@
           :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
         >
           <ConversionLevelSelector
-            :feature-id="feature.properties.id"
+            :feature-id="feature.properties.id || feature.id"
             :readonly="!permissions.canChangeConversionLevel || readonly"
             v-model="patch.conversion_niveau"
           />
@@ -227,21 +227,26 @@ function handleClose() {
 
 onBeforeUnmount(() => featuresSet.setCandidate([]));
 
-watch(patch, (properties) => {
-  if (props.readonly) {
-    return;
-  }
+watch(
+  patch,
+  (properties) => {
+    if (props.readonly) {
+      return;
+    }
 
-  featuresSet.setCandidate([
-    {
-      id: props.feature.id,
-      properties: {
-        ...props.feature.properties,
-        ...properties,
+    featuresSet.setCandidate([
+      {
+        id: props.feature.id,
+        geometry: props.feature.geometry,
+        properties: {
+          ...props.feature.properties,
+          ...properties,
+        },
       },
-    },
-  ]);
-});
+    ]);
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>

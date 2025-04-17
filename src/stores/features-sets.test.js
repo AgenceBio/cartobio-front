@@ -272,9 +272,7 @@ describe("watch/annotations", () => {
     ]);
 
     const id = [RuleSet.ANNOTATED, ANNOTATIONS.SURVEYED].join("_");
-
     featuresSets.toggle(id);
-
     expect(featuresSets.isToggled(id)).toEqual(true);
     expect(featuresSets.hits).toHaveLength(1);
 
