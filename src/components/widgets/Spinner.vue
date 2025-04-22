@@ -1,7 +1,10 @@
 <template>
-  <p class="spin" aria-label="Chargement en cours…" role="progressbar">
-    <slot name="default" />
-  </p>
+  <div class="spinner-container">
+    <p class="spin" aria-label="Chargement en cours…">
+      <slot name="default" />
+    </p>
+    <p v-if="hint" class="fr-hint-text fr-text--xs">{{ hint }}</p>
+  </div>
 </template>
 
 <style scoped>
@@ -35,4 +38,18 @@
   transform: translate3d(-50%, -50%, 0);
   will-change: transform;
 }
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 </style>
+
+<script setup>
+const props = defineProps({
+  hint: {
+    type: String,
+    required: false,
+  },
+});
+</script>

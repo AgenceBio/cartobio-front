@@ -5,6 +5,7 @@
     icon="fr-icon-road-map-line"
     data-track-content
     data-content-name="Modale d'export"
+    :lockClose="isPdfLoading"
   >
     <template #title>Export de parcellaire</template>
 
@@ -13,47 +14,89 @@
     <p>Choisissez un format qui vous semble adapté à votre usage.</p>
 
     <template #footer>
-      <ul class="fr-btns-group fr-btns-group--icon-left">
-        <li>
-          <div class="fr-grid-row">
-            <div class="fr-col" v-if="exporter.toFileData">
-              <button
-                class="fr-btn fr-icon-table-line fr-btn--secondary"
-                @click="ocExport"
-                data-content-piece="Export OC"
-                ref="autofocusedElement"
-                :aria-label="`Exporter le parcellaire au format ${exporter.label} (.${exporter.extension})`"
-              >
-                {{ exporter.label }}&nbsp;<small
-                  >(<code :aria-label="exporter.label">.{{ exporter.extension }}</code
-                  >)</small
-                >
-              </button>
-            </div>
-            <div class="fr-col" v-if="exporter.toClipboard">
-              <button
-                class="fr-btn fr-btn--secondary"
-                :class="{ 'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied }"
-                @click="ocClipboardExport"
-                data-content-piece="Export presse-papiers"
-                aria-label="Copier le parcellaire dans le presse-papiers"
-              >
-                Copier dans le presse-papiers
-              </button>
-            </div>
+      <div class="fr-btns-group fr-btns-group--icon-left" role="group" aria-label="Actions d'export">
+        <div class="fr-grid-row">
+          <div class="fr-col" v-if="exporter.toFileData">
+            <button
+              class="fr-btn fr-icon-table-line fr-btn--secondary"
+              data-content-piece="Export OC"
+              ref="autofocusedElement"
+              @click="ocExport"
+              :aria-label="`Exporter le parcellaire au format ${exporter.label} (.${exporter.extension})`"
+            >
+              {{ exporter.label }}
+              <small>
+                (<code :aria-label="exporter.label">.{{ exporter.extension }}</code
+                >)
+              </small>
+            </button>
           </div>
-        </li>
-        <li>
+
+          <div class="fr-col" v-if="exporter.toClipboard">
+            <button
+              class="fr-btn fr-btn--secondary"
+              :class="{ 'fr-icon-check-line': copied, 'fr-icon-clipboard-line': !copied }"
+              @click="ocClipboardExport"
+              data-content-piece="Export presse-papiers"
+              aria-label="Copier le parcellaire dans le presse-papiers"
+            >
+              Copier dans le presse-papiers
+            </button>
+          </div>
+        </div>
+
+        <div class="">
           <button
             class="fr-btn fr-icon-france-line fr-btn--secondary"
             @click="geojsonExport"
             data-content-piece="Export GeoJson"
-            aria-label="Expoter au format GeoJSON (.geojson)"
+            aria-label="Exporter au format GeoJSON (.geojson)"
           >
-            GeoJSON&nbsp;<small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
+            GeoJSON
+            <small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
           </button>
-        </li>
-      </ul>
+        </div>
+
+        <div class="" v-if="record.certification_state === 'CERTIFIED'">
+          <button
+            class="fr-btn fr-btn--secondary button-disabled"
+            :class="{ 'fr-icon-file-line': !isPdfLoading }"
+            @click="exportAttestationPdf"
+            data-content-piece="Export PDF"
+            :disabled="pdfError || isPdfLoading || hasError.length > 0"
+            aria-label="Télécharger l'attestation de production au format PDF"
+          >
+            <div v-if="isPdfLoading">
+              <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
+                <div>Téléchargement...</div>
+              </Spinner>
+            </div>
+            <span v-else>
+              <div class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</div>
+              <div v-else>
+                Attestation de production
+                <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
+              </div>
+            </span>
+          </button>
+
+          <div v-if="hasError.length > 0" class="fr-alert fr-alert--warning">
+            <p>
+              Génération de l'attestation de production non disponible car des informations obligatoires sont
+              manquantes.
+            </p>
+          </div>
+
+          <button
+            v-if="isPdfLoading"
+            @click="exportAttestationPdf"
+            class="fr-btn fr-p-0w fr-btn--tertiary-no-outline fr-btn--sm"
+            aria-label="Annuler le téléchargement de l'attestation"
+          >
+            Annuler le téléchargement
+          </button>
+        </div>
+      </div>
     </template>
   </component>
 </template>
@@ -63,8 +106,10 @@ import { computed, ref, toRaw } from "vue";
 import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
+import Spinner from "@/components/widgets/Spinner.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
+import { getPDFData } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {
@@ -79,9 +124,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  hasError: {
+    type: Object,
+    required: false,
+  },
 });
 
 const permissions = usePermissions();
+let controller = new AbortController();
+
 const organismeCertificateurId = computed(() => props.operator.organismeCertificateur.id);
 const filenameBase = computed(() => `parcellaire-operateur-${props.operator.numeroBio}`);
 const exporter = computed(function () {
@@ -94,6 +145,8 @@ const exporter = computed(function () {
   });
 });
 const copied = ref(false);
+const isPdfLoading = ref(false);
+const pdfError = ref(false);
 const autofocusedElement = ref();
 useFocus(autofocusedElement, { initialValue: true });
 
@@ -125,5 +178,36 @@ function ocClipboardExport() {
   setTimeout(() => {
     copied.value = false;
   }, 2000);
+}
+
+async function exportAttestationPdf() {
+  if (isPdfLoading.value) {
+    controller.abort();
+    return;
+  }
+
+  controller = new AbortController();
+
+  try {
+    isPdfLoading.value = true;
+    const response = await getPDFData(props.record.numerobio, props.record.record_id, { signal: controller.signal });
+    const linkSource = `data:application/pdf;base64,${response.data}`;
+    const a = document.createElement("a");
+    a.href = linkSource;
+    a.download = `cartobio_attestation_${props.record.annee_reference_controle}_${props.record.numerobio}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(linkSource);
+  } catch (error) {
+    if (error.code === "ERR_CANCELED") {
+      isPdfLoading.value = false;
+      return;
+    }
+    pdfError.value = true;
+    throw new Error("Erreur lors du téléchargement du PDF: Réessayez plus tard");
+  } finally {
+    isPdfLoading.value = false;
+  }
 }
 </script>
