@@ -59,11 +59,11 @@
 
         <div class="" v-if="record.certification_state === 'CERTIFIED'">
           <button
-            class="fr-btn fr-btn--secondary"
+            class="fr-btn fr-btn--secondary button-disabled"
             :class="{ 'fr-icon-file-line': !isPdfLoading }"
             @click="exportAttestationPdf"
             data-content-piece="Export PDF"
-            :disabled="pdfError || isPdfLoading"
+            :disabled="pdfError || isPdfLoading || hasError.length > 0"
             aria-label="Télécharger l'attestation de production au format PDF"
           >
             <div v-if="isPdfLoading">
@@ -79,6 +79,13 @@
               </div>
             </span>
           </button>
+
+          <div v-if="hasError.length > 0" class="fr-alert fr-alert--warning">
+            <p>
+              Génération de l'attestation de production non disponible car des informations obligatoires sont
+              manquantes.
+            </p>
+          </div>
 
           <button
             v-if="isPdfLoading"
@@ -116,6 +123,10 @@ const props = defineProps({
   record: {
     type: Object,
     required: true,
+  },
+  hasError: {
+    type: Object,
+    required: false,
   },
 });
 
