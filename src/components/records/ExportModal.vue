@@ -68,7 +68,7 @@
           >
             <div v-if="isPdfLoading">
               <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
-                <span>Téléchargement...</span>
+                Téléchargement...
               </Spinner>
             </div>
             <span v-else>
