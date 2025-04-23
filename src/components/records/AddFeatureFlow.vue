@@ -202,6 +202,7 @@ watch(cadastreParcelles, () => {
         id,
         cadastre: [references[0]],
         cultures: [{ CPF: "", id: crypto.randomUUID() }],
+        isCertified: recordStore.record.certification_state === "CERTIFIED",
         COMMUNE_LABEL: communes[0],
       },
     };

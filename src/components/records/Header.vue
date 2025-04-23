@@ -122,7 +122,7 @@
       :collection="collection"
       :record="record"
       @close="exportModal = false"
-      :hasError="tags"
+      :hasError="tags.filter((e) => e.errorMessage != undefined)"
     />
     <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
     <EditVersionModal v-if="showEditVersionModal" @close="showEditVersionModal = false" />

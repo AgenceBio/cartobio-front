@@ -46,7 +46,7 @@
 </style>
 
 <script setup>
-const props = defineProps({
+defineProps({
   hint: {
     type: String,
     required: false,

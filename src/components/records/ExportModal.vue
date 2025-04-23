@@ -68,15 +68,15 @@
           >
             <div v-if="isPdfLoading">
               <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
-                <div>Téléchargement...</div>
+                <span>Téléchargement...</span>
               </Spinner>
             </div>
             <span v-else>
-              <div class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</div>
-              <div v-else>
+              <p class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</p>
+              <p v-else>
                 Attestation de production
                 <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
-              </div>
+              </p>
             </span>
           </button>
 
@@ -190,7 +190,7 @@ async function exportAttestationPdf() {
 
   try {
     isPdfLoading.value = true;
-    const response = await getPDFData(props.record.numerobio, props.record.record_id, { signal: controller.signal });
+    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal);
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
