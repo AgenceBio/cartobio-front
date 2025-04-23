@@ -12,7 +12,10 @@
         <div class="fr-mb-10v" v-for="({ commune, key }, index) in cadastreParcelles" :key="key">
           <div class="fr-input-group fr-mb-3v">
             <label for="form-commune" class="fr-label">Commune</label>
-            <CommuneSelect v-model="cadastreParcelles[index].commune" />
+            <CommuneSelect
+              v-model="cadastreParcelles[index].commune"
+              @feature="(n) => (cadastreParcelles[index].communeName = n.properties.city)"
+            />
           </div>
 
           <div class="fr-input-group">
@@ -180,6 +183,7 @@ function updateReference(index, { reference, feature: cadastreFeature }) {
 watch(cadastreParcelles, () => {
   const features = cadastreParcelles.map((p) => p.feature).filter((feature) => feature !== null);
   const references = cadastreParcelles.filter((p) => p.feature !== null).map((p) => p.reference);
+  const communes = cadastreParcelles.filter((p) => p.communeName !== null).map((p) => p.communeName);
 
   // if no cadastre references, reset feature
   if (features.length === 0) {
@@ -199,6 +203,7 @@ watch(cadastreParcelles, () => {
         cadastre: [references[0]],
         cultures: [{ CPF: "", id: crypto.randomUUID() }],
         isCertified: recordStore.record.certification_state === "CERTIFIED",
+        COMMUNE_LABEL: communes[0],
       },
     };
 
@@ -216,6 +221,7 @@ watch(cadastreParcelles, () => {
   combinedFeature.id = id;
   combinedFeature.properties.cadastre = references;
   combinedFeature.properties.cultures = [{ CPF: "", id: crypto.randomUUID() }];
+  combinedFeature.properties.COMMUNE_LABEL = communes[0];
 
   feature.value = combinedFeature;
 });
