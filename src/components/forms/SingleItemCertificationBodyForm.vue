@@ -245,8 +245,9 @@ watch(
       },
     ]);
   },
-  { immediate: true },
+  { immediate: props.feature.properties.isCertified ?? false },
 );
+
 </script>
 
 <style scoped>
