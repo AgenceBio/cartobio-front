@@ -106,7 +106,7 @@ export async function pacageLookup(pacage) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function createOperatorRecord(numeroBio, payload) {
-  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload);
+  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload, { timeout: 600000 });
 
   return data;
 }
@@ -288,5 +288,21 @@ export async function getDepartements() {
  */
 export async function getDataXLSX() {
   const data = await apiClient.get("/v2/exportParcellaire", { timeout: 600000 });
+  return data;
+}
+
+/**
+ * Retrieves PDF for an export
+ *
+ * @param {string} numeroBio - Le numéro bio
+ * @param {string} record_id - Le record-id de l'exploitation
+ * @param {object} signal - Signal de la requete Axios
+ * @returns {Promise<string>} -Base64 du fichier pdf
+ */
+export async function getPDFData(numeroBio, record_id, signal) {
+  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}`, {
+    timeout: 600000,
+    signal,
+  });
   return data;
 }

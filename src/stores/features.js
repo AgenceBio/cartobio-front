@@ -223,10 +223,11 @@ export const useFeaturesStore = defineStore("features", () => {
    * @returns {CartoBioFeature[]}
    */
   function mergeFeatures(target, source) {
-    return target.map((feature) => {
+    let res = target.map((feature) => {
       const matchingFeature = source.find(({ id }) => feature.id === id);
 
       if (matchingFeature) {
+        source = source.filter(({ id }) => feature.id !== id);
         return {
           ...feature,
           properties: JSON.parse(
@@ -240,6 +241,11 @@ export const useFeaturesStore = defineStore("features", () => {
 
       return feature;
     });
+
+    if (source.length > 0) {
+      res = res.concat(source);
+    }
+    return res;
   }
 
   /**

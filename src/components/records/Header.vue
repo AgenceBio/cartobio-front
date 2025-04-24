@@ -122,6 +122,7 @@
       :collection="collection"
       :record="record"
       @close="exportModal = false"
+      :hasError="tags.filter((e) => e.errorMessage != undefined)"
     />
     <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
     <EditVersionModal v-if="showEditVersionModal" @close="showEditVersionModal = false" />
@@ -138,6 +139,7 @@ import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.v
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useOperatorStore } from "@/stores/operator.js";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { useRecordStore } from "@/stores/record.js";
 import { onClickOutside, useOnline } from "@vueuse/core";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";
@@ -166,7 +168,9 @@ const userStore = useUserStore();
 const permissions = usePermissions();
 const { record } = recordStore;
 const { operator } = operatorStore;
+const featuresSets = useFeaturesSetsStore();
 const { collection, hasFeatures } = storeToRefs(featuresStore);
+const { tags } = storeToRefs(featuresSets);
 const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && record.audit_history.length);
 
 const versionMenu = ref(false);
