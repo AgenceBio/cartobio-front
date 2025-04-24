@@ -247,7 +247,6 @@ watch(
   },
   { immediate: props.feature.properties.isCertified ?? false },
 );
-
 </script>
 
 <style scoped>
