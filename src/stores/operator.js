@@ -32,6 +32,8 @@ export const useOperatorStore = defineStore("operator", () => {
    */
   const records = ref(null);
 
+  const imported = ref(null);
+
   /**
    * @type {ComputedRef<NormalizedRecordSummary[]>}
    */
@@ -71,12 +73,12 @@ export const useOperatorStore = defineStore("operator", () => {
    * @return {Promise<void>}
    */
   async function ready(numeroBio) {
-    let operatorData, recordsData;
+    let operatorData, recordsData, importData;
     if (!navigator.onLine && storage.operators[numeroBio]) {
-      ({ operator: operatorData, records: recordsData } = storage.operators[numeroBio]);
+      ({ operator: operatorData, records: recordsData, import: importData } = storage.operators[numeroBio]);
     } else {
       try {
-        ({ operator: operatorData, records: recordsData } = await getOperator(numeroBio));
+        ({ operator: operatorData, records: recordsData, import: importData } = await getOperator(numeroBio));
       } catch (_e) {
         const e = new Error(
           "Le dossier n'est plus accessible pour votre organisme certificateur, veuillez vérifier sur le portail de notification",
@@ -94,6 +96,7 @@ export const useOperatorStore = defineStore("operator", () => {
     }
     operator.value = operatorData;
     records.value = recordsData.sort((recordA, recordB) => date(recordB) - date(recordA));
+    imported.value = importData;
   }
 
   function $reset() {
@@ -128,26 +131,28 @@ export const useOperatorStore = defineStore("operator", () => {
   });
 
   async function getOperator(numeroBio, store = false) {
-    const [{ data: operatorData }, { data: recordsData }] = await Promise.all([
+    const [{ data: operatorData }, { data: recordsData }, { data: importData }] = await Promise.all([
       apiClient.get(`/v2/operator/${numeroBio}`),
       apiClient.get(`/v2/operator/${numeroBio}/records`),
+      apiClient.get(`/v2/operator/${numeroBio}/importData`),
     ]);
 
     // Update storage if requested or if already present
     if (store || storage.operators[numeroBio]) {
       storage.operatorsStorage = {
         ...storage.operatorsStorage,
-        [numeroBio]: { operator: operatorData, records: recordsData },
+        [numeroBio]: { operator: operatorData, records: recordsData, import: importData.data },
       };
     }
 
-    return { operator: operatorData, records: recordsData };
+    return { operator: operatorData, records: recordsData, import: importData.data };
   }
 
   return {
     // ref
     operator,
     records,
+    imported,
     // computed
     recordsByYear,
     // store methods
