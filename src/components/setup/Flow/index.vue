@@ -14,7 +14,7 @@
         <span class="fr-text--bold">Étape suivante&nbsp;:</span> {{ nextStep.title }}
       </p>
     </div>
-    <div lass="fr-stepper" v-else>
+    <div class="fr-stepper" v-else>
       <h2 class="fr-stepper__title">
         {{ currentStep.title }}
       </h2>
@@ -82,7 +82,7 @@ import { computed, markRaw, provide, readonly, ref, shallowRef, unref } from "vu
 import PreviewStep from "@/components/setup/Flow/Preview.vue";
 
 import { useRecordStore } from "@/stores/record.js";
-import { createOperatorRecord } from "@/cartobio-api.js";
+import { createOperatorRecord, hideNotif } from "@/cartobio-api.js";
 import { useRouter } from "vue-router";
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env;
@@ -112,15 +112,20 @@ const props = defineProps({
   },
 });
 
-provide("operator", props.operator);
 const currentFlowId = ref(props.flowId);
 const featureCollection = shallowRef(null);
 const metadata = shallowRef(null);
 const record = shallowRef(null);
 const warnings = ref([]);
+const versionName = ref(null);
 const isLoading = ref(false);
 
 const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
+
+// Provide
+provide("operator", props.operator);
+provide("importPac", props.operator);
+provide("isOnCartobio", isOnCartobio);
 
 const allSteps = readonly([
   { key: "intro", title: "Bienvenue sur CartoBio", condition: () => true, withStepper: false },
@@ -180,7 +185,7 @@ function handleFlowSelection(flowId) {
   currentFlowId.value = flowId;
 }
 
-function handleUpload({ geojson, metadata: data, source, warnings: warns }) {
+function handleUpload({ geojson, metadata: data, source, warnings: warns, versionName: vn }) {
   featureCollection.value = geojson;
   warnings.value = warns;
   metadata.value = {
@@ -189,13 +194,13 @@ function handleUpload({ geojson, metadata: data, source, warnings: warns }) {
     source,
     warnings: warns,
   };
+  versionName.value = vn;
 
   emit("upload", { geojson, metadata: unref(metadata), warnings: warns });
 }
 
 async function handlePreviewConfirmation(importPrevious, recordId) {
   const { numeroBio } = props.operator;
-
   isLoading.value = true;
   try {
     record.value = await createOperatorRecord(numeroBio, {
@@ -203,7 +208,9 @@ async function handlePreviewConfirmation(importPrevious, recordId) {
       metadata: metadata.value,
       importPrevious,
       recordId,
+      ...(versionName.value !== null && { version_name: versionName.value })
     });
+    if (versionName.value !== null) await hideNotif(numeroBio);
   } catch (_e) {
     isLoading.value = false;
     return;

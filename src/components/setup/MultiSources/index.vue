@@ -53,12 +53,13 @@ const sourcesTabs = computed(() =>
   Object.fromEntries(props.sources.map((sourceId) => [sourceId, featureSources[sourceId]])),
 );
 
-function handleSelection({ geojson, warnings = [], metadata = {} }) {
+function handleSelection({ geojson, warnings = [], metadata = {}, versionName = null }) {
   emit("submit", {
     geojson: toRaw(geojson),
     warnings: toRaw(warnings),
     metadata: unref(metadata),
     source: featureSource.value,
+    versionName: versionName
   });
 }
 </script>
