@@ -308,5 +308,5 @@ export async function getPDFData(numeroBio, record_id, signal) {
 }
 
 export async function hideNotif(numeroBio) {
-  await apiClient.patch(`/v2/operator/${numeroBio}/importPac`)
+  await apiClient.patch(`/v2/operator/${numeroBio}/importPac`);
 }
