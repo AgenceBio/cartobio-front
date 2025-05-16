@@ -47,7 +47,7 @@ async function merge() {
             <div v-if="isNewVersionLoading">
               <Spinner :hint="'Cela peut prendre quelques secondes...'"> Création en cours... </Spinner>
             </div>
-            <span> <p>Créer une nouvelle version</p> </span>
+            <p>Créer une nouvelle version</p>
           </button>
         </li>
         <li>
