@@ -286,8 +286,8 @@ export async function getDepartements() {
  * @param {string}
  * @returns {Promise<any>}
  */
-export async function getDataXLSX() {
-  const data = await apiClient.get("/v2/exportParcellaire", { timeout: 600000 });
+export async function getDataXLSX(payload) {
+  const data = await apiClient.post("/v2/exportParcellaire", { payload }, { timeout: 600000 });
   return data;
 }
 
