@@ -1,6 +1,7 @@
 <script setup>
 import Modal from "@/components/widgets/Modal.vue";
 import { useCartoBioStorage } from "@/stores/storage.js";
+import { useRecordStore } from "@/stores/record.js";
 import { ref } from "vue";
 
 const emit = defineEmits(["close"]);
@@ -12,6 +13,8 @@ const props = defineProps({
 });
 
 const storage = useCartoBioStorage();
+const newRecord = await useRecordStore().getRecord(props.recordId, true);
+
 const isNewVersionLoading = ref(false);
 
 async function duplicate() {
@@ -56,7 +59,7 @@ async function merge() {
             class="fr-btn fr-btn--tertiary"
             @click="merge"
             aria-label="Appliquer les changements sur la version existante"
-            :disabled="storage.records[recordId].certification_state === 'CERTIFIED'"
+            :disabled="newRecord.certification_state === 'CERTIFIED'"
           >
             Appliquer les changements
           </button>
