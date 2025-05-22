@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const storage = useCartoBioStorage();
-const newRecord = await useRecordStore().getRecord(props.recordId, true);
+const newRecord = await useRecordStore().getRecord(props.recordId);
 
 const isNewVersionLoading = ref(false);
 
