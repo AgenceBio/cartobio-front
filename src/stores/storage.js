@@ -401,10 +401,10 @@ export const useCartoBioStorage = defineStore("storage", () => {
     conflicts.value.delete(recordId);
   }
 
-async function cancelConflict(recordId) {
-  delete syncQueues.value[recordId];
-  conflicts.value.delete(recordId);
-}
+  async function cancelConflict(recordId) {
+    delete syncQueues.value[recordId];
+    conflicts.value.delete(recordId);
+  }
 
   const syncing = ref(false);
   async function sync() {
