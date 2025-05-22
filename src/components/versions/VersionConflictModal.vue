@@ -1,6 +1,7 @@
 <script setup>
 import Modal from "@/components/widgets/Modal.vue";
 import { useCartoBioStorage } from "@/stores/storage.js";
+import { ref } from "vue";
 
 const emit = defineEmits(["close"]);
 const props = defineProps({
