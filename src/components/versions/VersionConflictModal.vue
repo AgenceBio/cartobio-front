@@ -71,6 +71,7 @@ async function cancel() {
             @click="merge"
             aria-label="Appliquer les changements sur la version existante"
             v-if="newRecord.certification_state !== 'CERTIFIED'"
+            :disabled="isNewVersionLoading"
           >
             Appliquer vos changements
           </button>
@@ -79,6 +80,7 @@ async function cancel() {
             @click="cancel"
             aria-label="Appliquer les changements sur la version existante"
             v-else
+            :disabled="isNewVersionLoading"
           >
             Annuler vos changements
           </button>
