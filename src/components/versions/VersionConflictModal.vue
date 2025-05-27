@@ -44,10 +44,10 @@ async function cancel() {
     </p>
     <p>
       Version : <b>{{ storage.records[recordId].version_name }}</b> de l’exploitation
-      <b>{{ storage.operators[storage.records[recordId].numerobio].nom }}</b
+      <b>{{ storage.operators[storage.records[recordId].numerobio].operator.nom }}</b
       ><br />
     </p>
-    <p v-if="!newRecord.certification_state === 'CERTIFIED'">
+    <p v-if="newRecord.certification_state !== 'CERTIFIED'">
       Souhaitez-vous tout de même appliquer les changements faits hors-ligne sur cette version ?
     </p>
     <p v-else>
@@ -70,7 +70,7 @@ async function cancel() {
             class="fr-btn fr-btn--tertiary"
             @click="merge"
             aria-label="Appliquer les changements sur la version existante"
-            v-if="!newRecord.certification_state === 'CERTIFIED'"
+            v-if="newRecord.certification_state !== 'CERTIFIED'"
           >
             Appliquer vos changements
           </button>
