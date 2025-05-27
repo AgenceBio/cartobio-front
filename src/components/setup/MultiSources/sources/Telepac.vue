@@ -3,16 +3,16 @@
     <h3 class="fr-sr-only">Import Telepac</h3>
     <div v-if="!isOnCartobio && operatorStore.imported">
       <div class="fr-callout fr-icon-notification-3-line">
-        <h3 class="fr-callout__title">
-          Créer une nouvelle version à partir du parcellaire déclaré à la PAC
-        </h3>
+        <h3 class="fr-callout__title">Parcellaire déclaré à la PAC transmis à Cartobio</h3>
         <p class="fr-callout__text">
+          A date du : {{ VUE_APP_DATEIMPORT }}
+          <br />
           N° Pacage : {{ operatorStore.imported.pacage }}
           <br />
-          {{ operatorStore.imported.nb_parcelles }} parcelle{{
-            operatorStore.imported.nb_parcelles > 1 ? "s" : ""
+          {{ operatorStore.imported.nb_parcelles }} parcelle{{ operatorStore.imported.nb_parcelles > 1 ? "s" : "" }} ({{
+            (operatorStore.imported.size / 1000).toFixed(2)
           }}
-          ({{ (operatorStore.imported.size / 1000).toFixed(2) }} ha)
+          ha)
         </p>
         <button class="fr-btn" @click="importPAC()">Importer et créer une nouvelle version</button>
       </div>
@@ -21,9 +21,9 @@
         <h3 class="fr-alert__title">D'où vient ce parcellaire ?</h3>
 
         <p>
-          Ce parcellaire correspond à votre dernière déclaration PAC. Il a été transmis de Télépac à CartoBio, avec votre
-          accord, afin de faciliter la transmission des données entre les deux outils. Il reste à votre disposition et
-          vous pouvez l'utiliser pour créer une nouvelle version.
+          Ce parcellaire correspond à votre dernière déclaration PAC. Il a été transmis de Télépac à CartoBio, avec
+          votre accord, afin de faciliter la transmission des données entre les deux outils. Il reste à votre
+          disposition et vous pouvez l'utiliser pour créer une nouvelle version.
         </p>
       </div>
       <hr class="fr-my-3w" />
@@ -62,6 +62,7 @@
 import { ref, inject } from "vue";
 import { convertTelepacFileToGeoJSON } from "@/cartobio-api.js";
 import { useTélépac } from "@/referentiels/pac.js";
+const { VUE_APP_DATEIMPORT } = import.meta.env;
 import { useOperatorStore } from "@/stores/operator.js";
 
 const operatorStore = useOperatorStore();
