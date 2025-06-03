@@ -24,14 +24,14 @@
           <div class="actions-button">
             <button
               v-if="isEpingle"
-              class="ri-pushpin-fill"
+              class="fr-m-1w ri-pushpin-fill"
               style="color: #000091"
               @click.stop="unpin(operator.numeroBio)"
               aria-label="Désépingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
             ></button>
             <button
               v-else-if="!operatorDisabled[operator.numeroBio]"
-              class="ri-pushpin-line"
+              class="fr-m-1w ri-pushpin-line"
               style="color: #000091"
               @click.stop="pin(operator.numeroBio)"
               aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
@@ -76,6 +76,9 @@
       :class="{
         container: getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE',
       }"
+      @click="goToExploitations(operator)"
+      @mouseenter="handleMouseEnter(operator)"
+      @mouseleave="hideTooltip"
     >
       <div class="row" v-if="getStatus(operator) !== 'NON ENGAGEE' && getStatus(operator) !== 'ARRETEE'">
         <div class="top-bar-tooltip">
@@ -153,8 +156,8 @@
         v-if="!certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
       >
         <button
-          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline fr-pl-0"
-          @click="goToExploitations"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline fr-pl-0 button-footer"
+          @click.stop="goToExploitations"
         >
           Créer un parcellaire
         </button>
@@ -212,8 +215,8 @@
         "
       >
         <button
-          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
-          @click="goToSpecificVersion"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline button-footer"
+          @click.stop="goToSpecificVersion"
           :aria-label="`Consulter la version ${operator.version_name}`"
         >
           Soumettre {{ operator.version_name }}
@@ -228,8 +231,8 @@
         "
       >
         <button
-          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline"
-          @click="goToSpecificVersion"
+          class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline button-footer"
+          @click.stop="goToSpecificVersion"
           :aria-label="`Consulter la version ${operator.version_name}`"
         >
           Contrôler {{ operator.version_name }}
@@ -588,10 +591,14 @@ function hideTooltip() {
 }
 
 .card-activate:hover {
-  background-color: var(--background-alt-blue-france-hover) !important;
+  background-color: var(--blue-ecume-925-125) !important;
+  cursor: pointer;
 }
 .card-activate:active {
-  background-color: var(--light-background-action-low-blue-france) !important;
+  background-color: var(--blue-ecume-925-125) !important;
+}
+.card-activate:hover .fr-card__footer {
+  background-color: var(--blue-ecume-975-75) !important;
 }
 .text-black {
   color: var(--text-title-grey);
@@ -615,6 +622,14 @@ function hideTooltip() {
     flex: 0 0 40%;
     aspect-ratio: auto;
   }
+}
+
+.actions-button > button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.button-footer:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
 }
 </style>
 
