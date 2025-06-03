@@ -1,10 +1,22 @@
 <script setup>
 import { useCartoBioStorage } from "@/stores/storage.js";
 import VersionConflictModal from "@/components/versions/VersionConflictModal.vue";
-import { ref } from "vue";
+import { ref, onUnmounted, watch } from "vue";
 
 const storage = useCartoBioStorage();
 const modalRecordId = ref(null);
+const selectedNumeroBio = ref(null);
+
+onUnmounted(async () => {
+  await router.push(`/exploitations/${selectedNumeroBio.value}`);
+  toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
+});
+
+watch(modalRecordId, async (newId, oldId) => {
+  if (newId && storage.records[newId]) {
+    selectedNumeroBio.value = storage.records[newId].numerobio;
+  }
+});
 </script>
 
 <template>
