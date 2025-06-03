@@ -5,6 +5,7 @@ import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
 import { legalProjectionSurface } from "@/utils/features.js";
 import { AxiosError } from "axios";
 import toast from "@/utils/toast.js";
+import { CertificationState } from "@agencebio/cartobio-types";
 
 /**
  * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
@@ -372,7 +373,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
       const newRecord = await createOperatorRecord(record.numerobio, {
         version_name: `${record.version_name} (copie hors-ligne)`,
         parcelles: record.parcelles,
-        certification_state: record.certification_state,
+        certification_state: CertificationState.OPERATOR_DRAFT,
         certification_date_debut: record.certification_date_debut,
         certification_date_fin: record.certification_date_fin,
         metadata: {
@@ -380,7 +381,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
           source: "Copie lors de la résolution de conflits",
           copy_of: record.record_id,
         },
-        audit_date: record.audit_date,
+        audit_date: null,
         audit_notes: record.audit_notes,
         audit_demandes: record.audit_demandes,
         audit_history: record.audit_history,
