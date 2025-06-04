@@ -8,7 +8,7 @@
 
     <div class="fr-alert fr-alert--warning fr-mb-3w" v-for="(warning, i) in warnings" :key="i">
       <p v-if="warning instanceof FeatureNotFoundError">
-        La référence cadastrale <ReferenceCadastrale class="fr-text--bold" :reference="warning.id" /> est introuvable
+        La référence cadastrale <ReferenceCadastrale class="fr-text--bold" :reference="warning.id" />est introuvable
         dans le parcellaire informatisé.
       </p>
       <p v-else>{{ warning }}</p>
@@ -77,8 +77,11 @@
           </fieldset>
           <fieldset class="fr-fieldset version-select">
             <div class="fr-fieldset__element">
-              <label class="fr-label" for="select-version">Sélectionner la version</label>
-              <select
+              <!-- <label class="fr-label" for="select-version">Sélectionner la version</label> -->
+              <button class="fr-btn" @click.prevent="openModalVersion = true" :disabled="importPrevious != 'oui'">
+                Sélectionner la version
+              </button>
+              <!-- <select
                 class="fr-select"
                 name="select-version"
                 id="select-version"
@@ -88,9 +91,16 @@
                 <option :value="record.record_id" :key="record.record_id" v-for="record in sortedRecords">
                   {{ getShortVersionName(record.version_name) }}
                 </option>
-              </select>
+              </select> -->
             </div>
           </fieldset>
+          <div v-if="selectedRecord != null && importPrevious == 'oui'">
+            <p>
+              <strong>Version selectionnée :</strong> {{ getShortVersionName(selectedRecord.version_name) }} -
+              {{ selectedRecord.audit_date ? "Audité le:" + dateFormat(selectedRecord.audit_date) : "Non audité" }} -
+              {{ selectedRecord.parcelles }} parcelles ({{ inHa(selectedRecord.surface) }} ha) - <State style="display:inline-flex !important" :record="selectedRecord" :show-date="false" />
+            </p>
+          </div>
           <div v-show="showDetails && operatorStore.records?.length" class="more-infos-text">
             <small>
               Vous pouvez récupérer les informations renseignées dans une version de votre choix : dates et niveaux de
@@ -124,6 +134,45 @@
       </div>
     </form>
   </section>
+  <Modal v-if="openModalVersion" @close="openModalVersion = false" :large="true">
+    <template #title>Selection de la version du parcellaire</template>
+    <div class="fr-table table-data fr-table--bordered version-table fr-table--no-caption">
+      <table aria-hidden="true" aria-describedby="versions-summary-global">
+        <colgroup>
+          <col class="blank-column" />
+          <col class="version-name" />
+          <col class="audit-date" />
+          <col class="surface" />
+          <col class="parcelles" />
+          <col class="statut" />
+        </colgroup>
+        <thead>
+          <tr class="column-headers">
+            <th></th>
+            <th>Nom de version</th>
+            <th>Date d'audit</th>
+            <th>Surface</th>
+            <th>Parcelles</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="record in sortedRecords" :key="record.id">
+            <td>
+              <input type="radio" id="radio-inline" name="radio-inline" v-model="selectedRecord" :value="record" />
+            </td>
+            <td>{{ record.version_name }}</td>
+            <td>{{ record.audit_date ? dateFormat(record.audit_date) : "non audité" }}</td>
+            <td>{{ inHa(record.surface) }} ha</td>
+            <td class="small-column">{{ record.parcelles }}</td>
+            <td>
+              <State :record="record" :show-date="false" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Modal>
 </template>
 
 <script setup>
@@ -140,6 +189,9 @@ import GeojsonLayer from "@/components/map/GeojsonLayer.vue";
 import { usePermissions } from "@/stores/permissions";
 import { CertificationState } from "@agencebio/cartobio-types";
 import Spinner from "@/components/widgets/Spinner.vue";
+import Modal from "@/components/widgets/Modal.vue";
+import State from "@/components/records/State.vue";
+import { dateFormat } from "@/utils/dates.js";
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env;
 
@@ -163,6 +215,7 @@ const props = defineProps({
 
 const operatorStore = useOperatorStore();
 const permissions = usePermissions();
+const openModalVersion = ref(false);
 
 const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
 const sortedRecords = computed(
@@ -194,7 +247,7 @@ const sortedRecords = computed(
     }) || [],
 );
 
-const selectedRecord = ref(sortedRecords.value?.length ? sortedRecords.value[0].record_id : null);
+const selectedRecord = ref(sortedRecords.value?.length ? sortedRecords.value[0] : null);
 
 const importPrevious = ref("oui");
 const showDetails = ref(false);
@@ -205,7 +258,7 @@ const mapBounds = computed(() => bounds(props.featureCollection));
 const submitForm = () => {
   const importPrev = importPrevious.value === "oui";
 
-  emit("submit", importPrev, importPrev ? selectedRecord.value : null);
+  emit("submit", importPrev, importPrev ? selectedRecord.value.record_id : null);
 };
 
 const getShortVersionName = (name) => {
