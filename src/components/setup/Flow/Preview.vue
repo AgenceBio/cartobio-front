@@ -77,28 +77,17 @@
           </fieldset>
           <fieldset class="fr-fieldset version-select">
             <div class="fr-fieldset__element">
-              <!-- <label class="fr-label" for="select-version">Sélectionner la version</label> -->
               <button class="fr-btn" @click.prevent="openModalVersion = true" :disabled="importPrevious != 'oui'">
                 Sélectionner la version
               </button>
-              <!-- <select
-                class="fr-select"
-                name="select-version"
-                id="select-version"
-                v-model="selectedRecord"
-                :disabled="importPrevious != 'oui'"
-              >
-                <option :value="record.record_id" :key="record.record_id" v-for="record in sortedRecords">
-                  {{ getShortVersionName(record.version_name) }}
-                </option>
-              </select> -->
             </div>
           </fieldset>
           <div v-if="selectedRecord != null && importPrevious == 'oui'">
             <p>
               <strong>Version selectionnée :</strong> {{ getShortVersionName(selectedRecord.version_name) }} -
               {{ selectedRecord.audit_date ? "Audité le:" + dateFormat(selectedRecord.audit_date) : "Non audité" }} -
-              {{ selectedRecord.parcelles }} parcelles ({{ inHa(selectedRecord.surface) }} ha) - <State style="display:inline-flex !important" :record="selectedRecord" :show-date="false" />
+              {{ selectedRecord.parcelles }} parcelles ({{ inHa(selectedRecord.surface) }} ha) -
+              <State style="display: inline-flex !important" :record="selectedRecord" :show-date="false" />
             </p>
           </div>
           <div v-show="showDetails && operatorStore.records?.length" class="more-infos-text">
@@ -172,6 +161,7 @@
         </tbody>
       </table>
     </div>
+    <template #footer> <button class="fr-btn" @click.prevent="openModalVersion = false">Valider</button></template>
   </Modal>
 </template>
 
