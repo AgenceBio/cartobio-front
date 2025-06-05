@@ -4,6 +4,7 @@ import VersionConflictModal from "@/components/versions/VersionConflictModal.vue
 import { useRouter } from "vue-router";
 import { ref, onUnmounted, watch } from "vue";
 import toast from "@/utils/toast.js";
+import { hhmm } from "@/utils/dates";
 
 const router = useRouter();
 
@@ -12,7 +13,13 @@ const modalRecordId = ref(null);
 const selectedNumeroBio = ref(null);
 
 onUnmounted(async () => {
-  await router.push(`/exploitations/${selectedNumeroBio.value}`);
+  const targetRoute = `/exploitations/${selectedNumeroBio.value}`;
+
+  if (router.asPath === targetRoute) {
+    router.reload();
+  } else {
+    await router.push(targetRoute);
+  }
   toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
 });
 
