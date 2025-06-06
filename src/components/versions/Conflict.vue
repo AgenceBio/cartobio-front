@@ -12,13 +12,13 @@ const storage = useCartoBioStorage();
 const modalRecordId = ref(null);
 const selectedNumeroBio = ref(null);
 
-onUnmounted(async () => {
+onUnmounted(() => {
   const targetRoute = `/exploitations/${selectedNumeroBio.value}`;
 
   if (router.asPath === targetRoute) {
     router.reload();
   } else {
-    await router.push(targetRoute);
+    router.push(targetRoute);
   }
   toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
 });
