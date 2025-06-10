@@ -9,7 +9,7 @@
   >
     <div class="fr-container fr-container--fluid" :class="!large ? 'fr-container-md ' : 'fr-container-lg'">
       <div class="fr-grid-row fr-grid-row--center">
-        <div ref="target" class="fr-col-12 fr-col-md-8 " :class="!large ? 'fr-col-lg-6': null">
+        <div ref="target" class="fr-col-12 fr-col-md-8" :class="!large ? 'fr-col-lg-6' : null">
           <div class="fr-modal__body">
             <div class="fr-modal__header">
               <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
