@@ -79,14 +79,19 @@ const choices = computed(() => {
 
   if (!requirePrecision.value || !feature.value.properties.CODE_CULTURE || showMore.value) return selectableCpf;
 
-  const selectableFromPac = fromCodePacAll(feature.value.properties.CODE_CULTURE,feature.value.properties.CODE_PRECISION || undefined)
+  const selectableFromPac = fromCodePacAll(
+    feature.value.properties.CODE_CULTURE,
+    feature.value.properties.CODE_PRECISION || undefined,
+  )
     .filter((c) => c.is_selectable)
     .sort((a, b) => a.libelle_code_cpf.localeCompare(b.libelle_code_cpf));
 
   return selectableFromPac.length ? selectableFromPac : selectableCpf;
 });
 
-const requirePrecision = computed(() => (props.modelValue  && !fromCodeCpf(props.modelValue)?.is_selectable) || props.modelValue === undefined);
+const requirePrecision = computed(
+  () => (props.modelValue && !fromCodeCpf(props.modelValue)?.is_selectable) || props.modelValue === undefined,
+);
 
 onMounted(() => {
   if (!props.disabledInput) {
