@@ -13,13 +13,8 @@ const modalRecordId = ref(null);
 const selectedNumeroBio = ref(null);
 
 onUnmounted(() => {
-  const targetRoute = `/exploitations/${selectedNumeroBio.value}`;
-
-  if (router.asPath === targetRoute) {
-    router.reload();
-  } else {
-    router.push(targetRoute);
-  }
+  const targetRoute = `/exploitations/${selectedNumeroBio.value}/${modalRecordId.value}`;
+  router.push(targetRoute);
   toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
 });
 
