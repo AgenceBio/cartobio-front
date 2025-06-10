@@ -59,7 +59,7 @@ function handleSelection({ geojson, warnings = [], metadata = {}, versionName = 
     warnings: toRaw(warnings),
     metadata: unref(metadata),
     source: featureSource.value,
-    versionName: versionName
+    versionName: versionName,
   });
 }
 </script>

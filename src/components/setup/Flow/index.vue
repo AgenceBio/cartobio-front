@@ -208,7 +208,7 @@ async function handlePreviewConfirmation(importPrevious, recordId) {
       metadata: metadata.value,
       importPrevious,
       recordId,
-      ...(versionName.value !== null && { version_name: versionName.value })
+      ...(versionName.value !== null && { version_name: versionName.value }),
     });
     if (versionName.value !== null) await hideNotif(numeroBio);
   } catch (_e) {
