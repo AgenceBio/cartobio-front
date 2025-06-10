@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="fr-sr-only">Import Telepac</h3>
-    <div v-if="!isOnCartobio && operatorStore.imported">
+    <div v-if="isOnCartobio && operatorStore.imported">
       <div class="fr-callout fr-icon-notification-3-line">
         <h3 class="fr-callout__title">Parcellaire déclaré à la PAC transmis à Cartobio</h3>
         <p class="fr-callout__text">
