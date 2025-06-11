@@ -77,16 +77,20 @@
           </fieldset>
           <fieldset class="fr-fieldset version-select">
             <div class="fr-fieldset__element">
-              <button class="fr-btn" @click.prevent="openModalVersion = true" :disabled="importPrevious != 'oui'">
+              <button
+                class="fr-btn fr-btn--secondary"
+                @click.prevent="openModalVersion = true"
+                :disabled="importPrevious != 'oui'"
+              >
                 Sélectionner la version
               </button>
             </div>
           </fieldset>
           <div v-if="selectedRecord != null && importPrevious == 'oui'">
             <p>
-              <strong>Version selectionnée :</strong> {{ getShortVersionName(selectedRecord.version_name) }} -
-              {{ selectedRecord.audit_date ? "Audité le:" + dateFormat(selectedRecord.audit_date) : "Non audité" }} -
-              {{ selectedRecord.parcelles }} parcelles ({{ inHa(selectedRecord.surface) }} ha) -
+              <strong>Version sélectionnée :</strong> {{ getShortVersionName(selectedRecord.version_name) }} -
+              {{ selectedRecord.audit_date ? "Controlée le " + dateFormat(selectedRecord.audit_date) : "Non audité" }} -
+              {{ selectedRecord.parcelles }} parcelles ({{ inHa(selectedRecord.surface) }} ha)
               <State style="display: inline-flex !important" :record="selectedRecord" :show-date="false" />
             </p>
           </div>
@@ -124,7 +128,7 @@
     </form>
   </section>
   <Modal v-if="openModalVersion" @close="openModalVersion = false" :large="true">
-    <template #title>Selection de la version du parcellaire</template>
+    <template #title>Sélection de la version du parcellaire</template>
     <div class="fr-table table-data fr-table--bordered version-table fr-table--no-caption">
       <table aria-hidden="true" aria-describedby="versions-summary-global">
         <colgroup>
@@ -146,7 +150,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="record in sortedRecords" :key="record.id">
+          <tr v-for="record in sortedRecords" :key="record.id" @click="selectedRecord = record">
             <td>
               <input type="radio" id="radio-inline" name="radio-inline" v-model="selectedRecord" :value="record" />
             </td>
@@ -354,5 +358,30 @@ const getShortVersionName = (name) => {
     height: 1rem;
     display: block;
   }
+}
+
+col.blank-column {
+  width: 3rem;
+}
+
+col.version-name {
+  width: 17rem;
+  min-width: 11ch;
+}
+
+col.audit-date {
+  width: 10rem;
+}
+
+col.surface {
+  width: 10rem;
+}
+
+col.parcelles {
+  width: 6rem;
+}
+
+col.statut {
+  width: 5rem;
 }
 </style>
