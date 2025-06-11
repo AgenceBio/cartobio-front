@@ -10,7 +10,7 @@
           N° Pacage : {{ operatorStore.imported.pacage }}
           <br />
           {{ operatorStore.imported.nb_parcelles }} parcelle{{ operatorStore.imported.nb_parcelles > 1 ? "s" : "" }} ({{
-            (operatorStore.imported.size / 1000).toFixed(2)
+            (operatorStore.imported.size / 10000).toFixed(2)
           }}
           ha)
         </p>
