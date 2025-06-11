@@ -19,9 +19,9 @@ const isNewVersionLoading = ref(false);
 
 async function duplicate() {
   isNewVersionLoading.value = true;
-  await storage.resolveConflict(props.recordId, true);
+  const newRi =  await storage.resolveConflict(props.recordId, true);
   isNewVersionLoading.value = false;
-  emit("close");
+  emit("close",newRi);
 }
 
 async function merge() {

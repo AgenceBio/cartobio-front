@@ -11,9 +11,10 @@ const router = useRouter();
 const storage = useCartoBioStorage();
 const modalRecordId = ref(null);
 const selectedNumeroBio = ref(null);
+const newRI = ref(null);
 
 onUnmounted(() => {
-  const targetRoute = `/exploitations/${selectedNumeroBio.value}/${modalRecordId.value}`;
+  const targetRoute = `/exploitations/${selectedNumeroBio.value}/${newRI.value}`;
   router.push(targetRoute);
   toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
 });
@@ -83,7 +84,16 @@ watch(modalRecordId, async (newId) => {
   </div>
 
   <Teleport to="body">
-    <VersionConflictModal v-if="modalRecordId" :record-id="modalRecordId" @close="modalRecordId = null" />
+    <VersionConflictModal
+      v-if="modalRecordId"
+      :record-id="modalRecordId"
+      @close="
+        (n) => {
+          modalRecordId = null;
+          newRI = n;
+        }
+      "
+    />
   </Teleport>
 </template>
 
