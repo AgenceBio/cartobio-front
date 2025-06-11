@@ -384,4 +384,8 @@ col.parcelles {
 col.statut {
   width: 5rem;
 }
+
+tr:hover {
+  background-color: var(--background-alt-blue-france-hover) !important;
+}
 </style>
