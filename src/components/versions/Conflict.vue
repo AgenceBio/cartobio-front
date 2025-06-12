@@ -14,7 +14,6 @@ const selectedNumeroBio = ref(null);
 const newRI = ref(null);
 
 onUnmounted(() => {
-  console.log(newRI.value);
   const targetRoute = `/exploitations/${selectedNumeroBio.value}/${newRI.value !== null ? newRI.value : modalRecordId.value}`;
   router.push(targetRoute);
   toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
@@ -90,8 +89,8 @@ watch(modalRecordId, async (newId) => {
       :record-id="modalRecordId"
       @close="
         (n) => {
-          modalRecordId = null;
-          newRI = n;
+          modalRecordId.value = null;
+          newRI.value = n;
         }
       "
     />

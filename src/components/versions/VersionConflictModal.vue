@@ -26,7 +26,7 @@ async function duplicate() {
 
 async function merge() {
   await storage.resolveConflict(props.recordId, false);
-  emit("close");
+  emit("close", props.recordId);
 }
 
 async function cancel() {
