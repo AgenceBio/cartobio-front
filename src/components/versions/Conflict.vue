@@ -21,6 +21,11 @@ watch(modalRecordId, async (newId) => {
     selectedNumeroBio.value = storage.records[newId].numerobio;
   }
 });
+
+function getRedirectRi(n) {
+  modalRecordId.value = null;
+  newRI.value = n;
+}
 </script>
 
 <template>
@@ -81,16 +86,7 @@ watch(modalRecordId, async (newId) => {
   </div>
 
   <Teleport to="body">
-    <VersionConflictModal
-      v-if="modalRecordId"
-      :record-id="modalRecordId"
-      @close="
-        (n) => {
-          modalRecordId.value = null;
-          newRI.value = n;
-        }
-      "
-    />
+    <VersionConflictModal v-if="modalRecordId" :record-id="modalRecordId" @close="getRedirectRi" />
   </Teleport>
 </template>
 
