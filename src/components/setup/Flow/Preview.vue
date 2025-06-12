@@ -382,7 +382,7 @@ blank-column {
 }
 
 .statut {
-  max-width: 15rem;
+  max-width: 10rem;
 }
 
 tr:hover {
