@@ -151,14 +151,14 @@
         </thead>
         <tbody>
           <tr v-for="record in sortedRecords" :key="record.id" @click="selectedRecord = record">
-            <td>
+            <td class="blank-column">
               <input type="radio" id="radio-inline" name="radio-inline" v-model="selectedRecord" :value="record" />
             </td>
-            <td>{{ record.version_name }}</td>
-            <td>{{ record.audit_date ? dateFormat(record.audit_date) : "non audité" }}</td>
-            <td>{{ inHa(record.surface) }} ha</td>
-            <td class="small-column">{{ record.parcelles }}</td>
-            <td>
+            <td class="version-name">{{ record.version_name }}</td>
+            <td class="audit-date">{{ record.audit_date ? dateFormat(record.audit_date) : "Non audité" }}</td>
+            <td class="surface">{{ inHa(record.surface) }} ha</td>
+            <td class="parcelles">{{ record.parcelles }}</td>
+            <td class="statut">
               <State :record="record" :show-date="false" />
             </td>
           </tr>
@@ -360,29 +360,29 @@ const getShortVersionName = (name) => {
   }
 }
 
-col.blank-column {
-  width: 3rem;
+blank-column {
+  max-width: 1rem;
 }
 
-col.version-name {
+.version-name {
   width: 17rem;
   min-width: 11ch;
 }
 
-col.audit-date {
+.audit-date {
   width: 10rem;
 }
 
-col.surface {
-  width: 10rem;
+.surface {
+  width: 15rem;
 }
 
-col.parcelles {
+.parcelles {
   width: 6rem;
 }
 
-col.statut {
-  width: 5rem;
+.statut {
+  max-width: 15rem;
 }
 
 tr:hover {
