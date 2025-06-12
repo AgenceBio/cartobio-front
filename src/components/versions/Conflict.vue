@@ -3,8 +3,6 @@ import { useCartoBioStorage } from "@/stores/storage.js";
 import VersionConflictModal from "@/components/versions/VersionConflictModal.vue";
 import { useRouter } from "vue-router";
 import { ref, onUnmounted, watch } from "vue";
-import toast from "@/utils/toast.js";
-import { hhmm } from "@/utils/dates";
 
 const router = useRouter();
 
@@ -14,9 +12,8 @@ const selectedNumeroBio = ref(null);
 const newRI = ref(null);
 
 onUnmounted(() => {
-  const targetRoute = `/exploitations/${selectedNumeroBio.value}/${newRI.value !== null ? newRI.value : modalRecordId.value}`;
+  const targetRoute = `/exploitations/${selectedNumeroBio.value}/${newRI.value}`;
   router.push(targetRoute);
-  toast.success(`Version créée aujourd'hui à ${hhmm(new Date())}`);
 });
 
 watch(modalRecordId, async (newId) => {
