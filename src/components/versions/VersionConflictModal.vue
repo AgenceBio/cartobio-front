@@ -21,7 +21,7 @@ async function duplicate() {
   isNewVersionLoading.value = true;
   const newRi = await storage.resolveConflict(props.recordId, true);
   isNewVersionLoading.value = false;
-  console.log("newRi", newRi)
+  console.log("newRi", newRi);
   emit("close", newRi);
 }
 
