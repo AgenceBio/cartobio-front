@@ -24,6 +24,7 @@ watch(modalRecordId, async (newId) => {
 
 function getRedirectRi(n) {
   modalRecordId.value = null;
+  console.log("getRedirectRi", n);
   newRI.value = n;
 }
 </script>
