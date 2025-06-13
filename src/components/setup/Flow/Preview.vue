@@ -97,8 +97,8 @@
           <div v-show="showDetails && operatorStore.records?.length" class="more-infos-text">
             <small>
               Vous pouvez récupérer les informations renseignées dans une version de votre choix : dates et niveaux de
-              conversion, parcelles ajoutées manuellement, variété (si la culture est identique), notes de certification
-              et noms de parcelles modifiés.
+              conversion, parcelles ajoutées manuellement, variété (si la culture est identique) et noms de parcelles
+              modifiés.
               <span class="carriage-return"></span>
               Pour plus d’information :
               <a
