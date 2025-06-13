@@ -23,6 +23,7 @@ async function duplicate() {
   isNewVersionLoading.value = true;
   const ri = await storage.resolveConflict(props.recordId, true);
   isNewVersionLoading.value = false;
+  console.log(ri)
   if (storage.conflicts.size) emit("close");
   else {
     const targetRoute = `/exploitations/${ri.numeroBio}/${ri.recordId}`;
