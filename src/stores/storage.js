@@ -368,7 +368,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
    */
   async function resolveConflict(recordId, duplicate = true) {
     const record = recordsStorage.value[recordId];
-    let newRI = null;
+    let newR = null;
     if (duplicate) {
       const newRecord = await createOperatorRecord(record.numerobio, {
         version_name: `${record.version_name} (copie hors-ligne)`,
@@ -390,7 +390,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
       syncQueues.value[newRecord.record_id] = syncQueues.value[recordId];
       syncQueues.value[newRecord.record_id].ifUnmodifiedSince = new Date();
       delete syncQueues.value[recordId];
-      newRI = newRecord.record_id;
+      newR = newRecord;
     } else {
       // we remove operations on deleted features
       const { useRecordStore } = await import("@/stores/record.js");
@@ -401,7 +401,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
       syncQueues.value[recordId].ifUnmodifiedSince = new Date();
     }
     conflicts.value.delete(recordId);
-    return newRI;
+    return newR !== null ? newR : record;
   }
 
   async function cancelConflict(recordId) {

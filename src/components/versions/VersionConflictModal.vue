@@ -3,6 +3,7 @@ import Modal from "@/components/widgets/Modal.vue";
 import { useCartoBioStorage } from "@/stores/storage.js";
 import { useRecordStore } from "@/stores/record.js";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const emit = defineEmits(["close"]);
 const props = defineProps({
@@ -14,20 +15,29 @@ const props = defineProps({
 
 const storage = useCartoBioStorage();
 const newRecord = await useRecordStore().getRecord(props.recordId);
+const router = useRouter();
 
 const isNewVersionLoading = ref(false);
 
 async function duplicate() {
   isNewVersionLoading.value = true;
-  const newRi = await storage.resolveConflict(props.recordId, true);
+  const ri = await storage.resolveConflict(props.recordId, true);
   isNewVersionLoading.value = false;
-  console.log("duplicate", newRi);
-  emit("close", newRi);
+  if (storage.conflicts.size) emit("close");
+  else {
+    const targetRoute = `/exploitations/${ri.numeroBio}/${ri.recordId}`;
+    router.push(targetRoute);
+    emit("close");
+  }
 }
-
 async function merge() {
-  await storage.resolveConflict(props.recordId, false);
-  emit("close", props.recordId);
+  const ri = await storage.resolveConflict(props.recordId, false);
+  if (storage.conflicts.size) emit("close");
+  else {
+    const targetRoute = `/exploitations/${ri.numeroBio}/${ri.recordId}`;
+    router.push(targetRoute);
+    emit("close");
+  }
 }
 
 async function cancel() {

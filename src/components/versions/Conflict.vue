@@ -1,32 +1,10 @@
 <script setup>
 import { useCartoBioStorage } from "@/stores/storage.js";
 import VersionConflictModal from "@/components/versions/VersionConflictModal.vue";
-import { useRouter } from "vue-router";
-import { ref, onUnmounted, watch } from "vue";
-
-const router = useRouter();
+import { ref } from "vue";
 
 const storage = useCartoBioStorage();
 const modalRecordId = ref(null);
-const selectedNumeroBio = ref(null);
-const newRI = ref(null);
-
-onUnmounted(() => {
-  const targetRoute = `/exploitations/${selectedNumeroBio.value}/${newRI.value}`;
-  router.push(targetRoute);
-});
-
-watch(modalRecordId, async (newId) => {
-  if (newId && storage.records[newId]) {
-    selectedNumeroBio.value = storage.records[newId].numerobio;
-  }
-});
-
-function getRedirectRi(n) {
-  modalRecordId.value = null;
-  console.log("getRedirectRi", n);
-  newRI.value = n;
-}
 </script>
 
 <template>
@@ -62,6 +40,7 @@ function getRedirectRi(n) {
             {{ storage.records[dateConflict].version_name }}
           </router-link>
         </span>
+
         ne peut être synchronisée à la même date d'audit que
         <span class="fr-text--bold">
           <router-link
@@ -87,7 +66,7 @@ function getRedirectRi(n) {
   </div>
 
   <Teleport to="body">
-    <VersionConflictModal v-if="modalRecordId" :record-id="modalRecordId" @close="getRedirectRi" />
+    <VersionConflictModal v-if="modalRecordId" :record-id="modalRecordId" @close="modalRecordId = null" />
   </Teleport>
 </template>
 
