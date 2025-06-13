@@ -23,10 +23,9 @@ async function duplicate() {
   isNewVersionLoading.value = true;
   const ri = await storage.resolveConflict(props.recordId, true);
   isNewVersionLoading.value = false;
-  console.log(ri);
   if (storage.conflicts.size) emit("close");
   else {
-    const targetRoute = `/exploitations/${ri.numeroBio}/${ri.recordId}`;
+    const targetRoute = `/exploitations/${ri.numerobio}/${ri.record_id}`;
     router.push(targetRoute);
     emit("close");
   }
@@ -35,7 +34,7 @@ async function merge() {
   const ri = await storage.resolveConflict(props.recordId, false);
   if (storage.conflicts.size) emit("close");
   else {
-    const targetRoute = `/exploitations/${ri.numeroBio}/${ri.recordId}`;
+    const targetRoute = `/exploitations/${ri.numerobio}/${ri.record_id}`;
     router.push(targetRoute);
     emit("close");
   }
