@@ -21,23 +21,25 @@ const isNewVersionLoading = ref(false);
 
 async function duplicate() {
   isNewVersionLoading.value = true;
-  const ri = await storage.resolveConflict(props.recordId, true);
+  const operator = await storage.resolveConflict(props.recordId, true);
   isNewVersionLoading.value = false;
-  if (storage.conflicts.size) emit("close");
-  else {
-    const targetRoute = `/exploitations/${ri.numerobio}/${ri.record_id}`;
-    router.push(targetRoute);
+  if (storage.conflicts.size) {
     emit("close");
+    return;
   }
+  const targetRoute = `/exploitations/${operator.numerobio}/${operator.record_id}`;
+  router.push(targetRoute);
+  emit("close");
 }
 async function merge() {
-  const ri = await storage.resolveConflict(props.recordId, false);
-  if (storage.conflicts.size) emit("close");
-  else {
-    const targetRoute = `/exploitations/${ri.numerobio}/${ri.record_id}`;
-    router.push(targetRoute);
+  const operator = await storage.resolveConflict(props.recordId, false);
+  if (storage.conflicts.size) {
     emit("close");
+    return;
   }
+  const targetRoute = `/exploitations/${operator.numerobio}/${operator.record_id}`;
+  router.push(targetRoute);
+  emit("close");
 }
 
 async function cancel() {
@@ -89,7 +91,7 @@ async function cancel() {
           <button
             class="fr-btn fr-btn--tertiary"
             @click="cancel"
-            aria-label="Appliquer les changements sur la version existante"
+            aria-label="Annuler les changements "
             v-else
             :disabled="isNewVersionLoading"
           >
