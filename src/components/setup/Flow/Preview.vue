@@ -8,7 +8,7 @@
 
     <div class="fr-alert fr-alert--warning fr-mb-3w" v-for="(warning, i) in warnings" :key="i">
       <p v-if="warning instanceof FeatureNotFoundError">
-        La référence cadastrale <ReferenceCadastrale class="fr-text--bold" :reference="warning.id" />est introuvable
+        La référence cadastrale <ReferenceCadastrale class="fr-text--bold" :reference="warning.id" /> est introuvable
         dans le parcellaire informatisé.
       </p>
       <p v-else>{{ warning }}</p>
