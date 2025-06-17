@@ -7,9 +7,9 @@
     open
     aria-modal="true"
   >
-    <div class="fr-container fr-container--fluid fr-container-md">
+    <div class="fr-container fr-container--fluid" :class="!large ? 'fr-container-md ' : 'fr-container-lg'">
       <div class="fr-grid-row fr-grid-row--center">
-        <div ref="target" class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div ref="target" class="fr-col-12 fr-col-md-8" :class="!large ? 'fr-col-lg-6' : null">
           <div class="fr-modal__body">
             <div class="fr-modal__header">
               <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
@@ -53,6 +53,10 @@ const props = defineProps({
   icon: String,
   noCloseButton: Boolean,
   lockClose: {
+    type: Boolean,
+    default: false,
+  },
+  large: {
     type: Boolean,
     default: false,
   },

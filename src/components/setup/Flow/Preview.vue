@@ -77,25 +77,28 @@
           </fieldset>
           <fieldset class="fr-fieldset version-select">
             <div class="fr-fieldset__element">
-              <label class="fr-label" for="select-version">Sélectionner la version</label>
-              <select
-                class="fr-select"
-                name="select-version"
-                id="select-version"
-                v-model="selectedRecord"
+              <button
+                class="fr-btn fr-btn--secondary"
+                @click.prevent="openModalVersion = true"
                 :disabled="importPrevious != 'oui'"
               >
-                <option :value="record.record_id" :key="record.record_id" v-for="record in sortedRecords">
-                  {{ getShortVersionName(record.version_name) }}
-                </option>
-              </select>
+                Sélectionner la version
+              </button>
             </div>
           </fieldset>
+          <div v-if="selectedRecord != null && importPrevious == 'oui'">
+            <p>
+              <strong>Version sélectionnée :</strong> {{ getShortVersionName(selectedRecord.version_name) }} -
+              {{ selectedRecord.audit_date ? "Controlée le " + dateFormat(selectedRecord.audit_date) : "Non audité" }} -
+              {{ selectedRecord.parcelles }} parcelles ({{ inHa(selectedRecord.surface) }} ha)
+              <State style="display: inline-flex !important" :record="selectedRecord" :show-date="false" />
+            </p>
+          </div>
           <div v-show="showDetails && operatorStore.records?.length" class="more-infos-text">
             <small>
               Vous pouvez récupérer les informations renseignées dans une version de votre choix : dates et niveaux de
-              conversion, parcelles ajoutées manuellement, variété (si la culture est identique), notes de certification
-              et noms de parcelles modifiés.
+              conversion, parcelles ajoutées manuellement, variété (si la culture est identique) et noms de parcelles
+              modifiés.
               <span class="carriage-return"></span>
               Pour plus d’information :
               <a
@@ -124,6 +127,46 @@
       </div>
     </form>
   </section>
+  <Modal v-if="openModalVersion" @close="openModalVersion = false" :large="true">
+    <template #title>Sélection de la version du parcellaire</template>
+    <div class="fr-table table-data fr-table--bordered version-table fr-table--no-caption">
+      <table aria-hidden="true" aria-describedby="versions-summary-global">
+        <colgroup>
+          <col class="blank-column" />
+          <col class="version-name" />
+          <col class="audit-date" />
+          <col class="surface" />
+          <col class="parcelles" />
+          <col class="statut" />
+        </colgroup>
+        <thead>
+          <tr class="column-headers">
+            <th></th>
+            <th>Nom de version</th>
+            <th>Date d'audit</th>
+            <th>Surface</th>
+            <th>Parcelles</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="record in sortedRecords" :key="record.id" @click="selectedRecord = record">
+            <td class="blank-column">
+              <input type="radio" id="radio-inline" name="radio-inline" v-model="selectedRecord" :value="record" />
+            </td>
+            <td class="version-name">{{ record.version_name }}</td>
+            <td class="audit-date">{{ record.audit_date ? dateFormat(record.audit_date) : "Non audité" }}</td>
+            <td class="surface">{{ inHa(record.surface) }} ha</td>
+            <td class="parcelles">{{ record.parcelles }}</td>
+            <td class="statut">
+              <State :record="record" :show-date="false" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <template #footer> <button class="fr-btn" @click.prevent="openModalVersion = false">Valider</button></template>
+  </Modal>
 </template>
 
 <script setup>
@@ -140,6 +183,9 @@ import GeojsonLayer from "@/components/map/GeojsonLayer.vue";
 import { usePermissions } from "@/stores/permissions";
 import { CertificationState } from "@agencebio/cartobio-types";
 import Spinner from "@/components/widgets/Spinner.vue";
+import Modal from "@/components/widgets/Modal.vue";
+import State from "@/components/records/State.vue";
+import { dateFormat } from "@/utils/dates.js";
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env;
 
@@ -163,6 +209,7 @@ const props = defineProps({
 
 const operatorStore = useOperatorStore();
 const permissions = usePermissions();
+const openModalVersion = ref(false);
 
 const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
 const sortedRecords = computed(
@@ -194,7 +241,7 @@ const sortedRecords = computed(
     }) || [],
 );
 
-const selectedRecord = ref(sortedRecords.value?.length ? sortedRecords.value[0].record_id : null);
+const selectedRecord = ref(sortedRecords.value?.length ? sortedRecords.value[0] : null);
 
 const importPrevious = ref("oui");
 const showDetails = ref(false);
@@ -205,7 +252,7 @@ const mapBounds = computed(() => bounds(props.featureCollection));
 const submitForm = () => {
   const importPrev = importPrevious.value === "oui";
 
-  emit("submit", importPrev, importPrev ? selectedRecord.value : null);
+  emit("submit", importPrev, importPrev ? selectedRecord.value.record_id : null);
 };
 
 const getShortVersionName = (name) => {
@@ -311,5 +358,34 @@ const getShortVersionName = (name) => {
     height: 1rem;
     display: block;
   }
+}
+
+blank-column {
+  max-width: 1rem;
+}
+
+.version-name {
+  width: 17rem;
+  min-width: 11ch;
+}
+
+.audit-date {
+  width: 10rem;
+}
+
+.surface {
+  width: 15rem;
+}
+
+.parcelles {
+  width: 6rem;
+}
+
+.statut {
+  max-width: 10rem;
+}
+
+tr:hover {
+  background-color: var(--background-alt-blue-france-hover) !important;
 }
 </style>
