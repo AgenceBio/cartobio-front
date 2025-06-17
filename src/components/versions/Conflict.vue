@@ -40,6 +40,7 @@ const modalRecordId = ref(null);
             {{ storage.records[dateConflict].version_name }}
           </router-link>
         </span>
+
         ne peut être synchronisée à la même date d'audit que
         <span class="fr-text--bold">
           <router-link
