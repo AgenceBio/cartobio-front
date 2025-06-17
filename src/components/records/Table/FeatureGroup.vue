@@ -128,14 +128,14 @@
         <button
           v-if="!readonly"
           type="button"
-          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
+          class="fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
           @click="toggleEditForm(feature.id)"
           aria-label="Modifier les informations de la parcelle"
         />
         <button
           v-else
           type="button"
-          class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl fr-btn fr-btn--tertiary-no-outline ri-eye-line ri-xl"
+          class="fr-btn fr-btn--tertiary-no-outline ri-eye-line ri-xl"
           @click="toggleViewForm(feature.id)"
           aria-label="Voir les informations de la parcelle"
         />
