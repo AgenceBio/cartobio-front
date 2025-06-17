@@ -306,3 +306,7 @@ export async function getPDFData(numeroBio, record_id, signal) {
   });
   return data;
 }
+
+export async function hideNotif(numeroBio) {
+  await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
+}

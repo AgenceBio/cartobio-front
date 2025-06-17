@@ -1,6 +1,34 @@
 <template>
   <div>
     <h3 class="fr-sr-only">Import Telepac</h3>
+    <div v-if="isOnCartobio && operatorStore.imported">
+      <div class="fr-callout fr-icon-notification-3-line">
+        <h3 class="fr-callout__title fr-h5">Parcellaire déclaré à la PAC transmis à Cartobio</h3>
+        <p class="fr-callout__text">
+          A date du : {{ VUE_APP_DATEIMPORT }}
+          <br />
+          N° Pacage : {{ operatorStore.imported.pacage }}
+          <br />
+          {{ operatorStore.imported.nb_parcelles }} parcelle{{ operatorStore.imported.nb_parcelles > 1 ? "s" : "" }} ({{
+            (operatorStore.imported.size / 10000).toFixed(2).replace(".", ",")
+          }}
+          ha)
+        </p>
+        <button class="fr-btn" @click="importPAC()">Importer et créer une nouvelle version</button>
+      </div>
+
+      <div class="fr-alert fr-alert--info">
+        <h3 class="fr-alert__title">D'où vient ce parcellaire ?</h3>
+
+        <p>
+          Ce parcellaire correspond à votre dernière déclaration PAC. Il a été transmis de Télépac à CartoBio, avec
+          votre accord, afin de faciliter la transmission des données entre les deux outils. Il reste à votre
+          disposition et vous pouvez l'utiliser pour créer une nouvelle version.
+        </p>
+      </div>
+      <hr class="fr-my-3w" />
+    </div>
+    <h3 class="fr-h5">Importer manuellement un fichier</h3>
 
     <div class="fr-upload-group fr-mb-5w">
       <input type="file" ref="fileInput" accept=".zip,.xml" @change="handleFileUpload" hidden />
@@ -31,9 +59,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import { convertTelepacFileToGeoJSON } from "@/cartobio-api.js";
 import { useTélépac } from "@/referentiels/pac.js";
+const { VUE_APP_DATEIMPORT } = import.meta.env;
+import { useOperatorStore } from "@/stores/operator.js";
+
+const operatorStore = useOperatorStore();
+const isOnCartobio = inject("isOnCartobio");
 
 const emit = defineEmits(["upload:start", "upload:complete"]);
 
@@ -41,6 +74,14 @@ const { campagne: currentCampagne } = useTélépac();
 const fileInput = ref(null);
 const source = "telepac";
 const erreur = ref("");
+
+async function importPAC() {
+  const metadata = operatorStore.imported.record.metadata;
+  const geojson = operatorStore.imported.record.parcelles;
+  const w = [];
+  const versionName = operatorStore.imported.record.version_name;
+  emit("upload:complete", { geojson, source, w, metadata, versionName });
+}
 
 async function handleFileUpload() {
   const warnings = [];
