@@ -252,7 +252,7 @@ const mapBounds = computed(() => bounds(props.featureCollection));
 const submitForm = () => {
   const importPrev = importPrevious.value === "oui";
 
-  emit("submit", importPrev, importPrev ? selectedRecord.value.record_id : null);
+  emit("submit", importPrev, importPrev && selectedRecord.value !== null ? selectedRecord.value.record_id : null);
 };
 
 const getShortVersionName = (name) => {
