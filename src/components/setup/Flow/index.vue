@@ -190,7 +190,7 @@ function handleUpload({ geojson, metadata: data, source, warnings: warns, versio
   warnings.value = warns;
   metadata.value = {
     ...data,
-    provenance: window.location.host,
+    provenance: data.provenance ?? window.location.host,
     source,
     warnings: warns,
   };
