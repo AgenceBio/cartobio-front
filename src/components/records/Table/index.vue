@@ -110,7 +110,7 @@
             </div>
           </th>
           <th class="open"></th>
-          <th scope="col" class="labels">{{ userGroupingChoice === "CULTURE" ? "Parcelle" : "Culture" }}</th>
+          <th scope="col" class="labels">{{ humanize(userGroupingChoice) }}</th>
           <th scope="col" class="certification">
             <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">Certification</span>
           </th>
@@ -306,6 +306,10 @@ function closeModal() {
   hoveredFeatureId.value = null;
 }
 
+function humanize(string) {
+  return string.replace(/_/g, " ").toLowerCase();
+}
+
 watch(zoomFeature, (newValue) => {
   if (newValue) {
     emit("zoom:featureId", newValue);
@@ -331,6 +335,9 @@ watch(zoomFeature, (newValue) => {
 
 .labels {
   min-width: 40%;
+}
+.labels::first-letter {
+  text-transform: capitalize;
 }
 .accordion {
   width: 2.5rem;
