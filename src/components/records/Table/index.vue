@@ -57,7 +57,7 @@
         <col class="surface" />
         <col class="actions" />
       </colgroup>
-      <thead class="summary summary__mass-actions" :class="{ 'mobile-table': isMobile }">
+      <thead class="summary summary__mass-actions">
         <tr v-if="selectedFeatureIds.length > 0">
           <td class="selection" colspan="2">
             <div class="fr-checkbox-group single-checkbox">
@@ -214,7 +214,6 @@ import { statsPush } from "@/stats.js";
 import { useOnline } from "@vueuse/core";
 import { featureName, getFeatureGroups, groupingChoices, inHa, legalProjectionSurface } from "@/utils/features.js";
 import ValidationErrors from "@/components/records/Table/ValidationErrors.vue";
-import { useIsMobile } from "@/composables/useIsMobile";
 
 const filterInput = ref(null);
 
@@ -239,7 +238,6 @@ const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
-const isMobile = useIsMobile();
 
 const { operator } = storeToRefs(operatorStore);
 const { record } = storeToRefs(recordStore);
@@ -412,9 +410,6 @@ watch(zoomFeature, (newValue) => {
   background-color: var(--background-action-high-blue-france);
   position: sticky;
   top: 0;
-}
-
-.fr-table .summary.summary__mass-actions.mobile-table {
   z-index: var(--z-index-dropdown);
 }
 
