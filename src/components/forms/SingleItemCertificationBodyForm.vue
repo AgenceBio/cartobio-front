@@ -27,16 +27,16 @@
         </ul>
       </div>
 
+      <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
+        <blockquote>
+          <p>{{ feature.properties.commentaires }}</p>
+        </blockquote>
+        <figcaption>
+          <p class="fr-quote__author">Notes de l'exploitant‧e</p>
+        </figcaption>
+      </figure>
       <AccordionGroup :constraint-toggle="!open">
-        <AccordionSection title="Culture" :open="open" :requires-action="requiresAction(['commentaires', 'cultures'])">
-          <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
-            <blockquote>
-              <p>{{ feature.properties.commentaires }}</p>
-            </blockquote>
-            <figcaption>
-              <p class="fr-quote__author">Notes de l'exploitant‧e</p>
-            </figcaption>
-          </figure>
+        <AccordionSection title="Culture" :open="open" :requires-action="requiresAction(['cultures'])">
           <div class="fr-card fr-p-2w fr-mb-3w" v-if="feature.properties.CODE_CULTURE">
             <div class="fr-mb-3w import-pac">
               <span class="fr-label">Culture de l'import PAC</span>
