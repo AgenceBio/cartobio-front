@@ -12,6 +12,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  iconClass: {
+    type: String,
+    default: "fr-icon-more-fill",
+  },
+  iconStyle: {
+    type: String,
+    default: "",
+  },
   disabled: {
     type: Boolean,
     default: false,
@@ -74,12 +82,13 @@ watch(show, (value) => {
       <button
         type="button"
         @click.stop.prevent="show = !show"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
+        class="fr-btn fr-btn--tertiary-no-outline show-actions"
+        :class="props.iconClass"
+        :style="props.iconStyle"
         :disabled="props.disabled"
         :aria-expanded="show"
-      >
-        Choix des actions
-      </button>
+        aria-label="Choix des actions"
+      ></button>
     </slot>
     <dialog class="menu-container" :open="show" tabindex="-1">
       <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">

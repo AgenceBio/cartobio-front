@@ -255,7 +255,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
-    label: "type de culture",
+    label: "culture",
     labelNoGroup: "Absence de culture",
     labelUnknown: "Culture inconnue",
     /** @param {GeoJSONFeature} */

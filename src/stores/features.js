@@ -141,6 +141,10 @@ export const useFeaturesStore = defineStore("features", () => {
     selectedIds.value = selectedIds.value.filter((id) => ids.map(String).includes(String(id)) === false);
   }
 
+    function unselectAll() {
+      selectedIds.value = [];
+    }
+
   function bindMaplibreFeatureState(map, source) {
     watch(hoveredId, (id, previousId) => {
       if (id) {
@@ -328,6 +332,7 @@ export const useFeaturesStore = defineStore("features", () => {
     commitCandidate,
     toggleAllSelected,
     toggleSingleSelected,
+    unselectAll,
     unselect,
     updateSingleFeature,
     updateFeatureCollectionProperties,

@@ -1,28 +1,9 @@
 <template>
   <ValidationErrors />
-  <div class="fr-table table-data fr-table--bordered fr-table--no-caption fr-my-6v">
-    <ul
-      class="fr-tags-group fr-tags-group--tags fr-my-6v"
-      v-if="permissions.canViewAnnotations && tags && tags.length > 0"
-    >
-      <li :key="id" v-for="{ active, id, count, label, required } in tags">
-        <button
-          class="fr-tag"
-          :class="{
-            'fr-tag--dismiss': active,
-            [`tag--${id}`]: true,
-            'fr-icon-warning-fill fr-tag--icon-left': required,
-          }"
-          :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`"
-          @click="handleFilterClick(id)"
-        >
-          {{ label }} ({{ count }})
-        </button>
-      </li>
-    </ul>
 
-    <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-    <div class="fr-search-bar" id="search" role="search">
+  <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
+  <div class="fr-grid-row fr-grid-row--middle fr-mt-7v fr-mb-5v">
+    <div class="fr-search-bar fr-col-12 fr-col-md-6" id="search" role="search">
       <p class="fr-sr-only">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
       <input
@@ -35,122 +16,89 @@
       />
       <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
     </div>
-    <table
-      @mouseout="hoveredFeatureId = editedFeatureId"
-      aria-describedby="operator-features-summary-global"
-      id="parcellaire-table"
-    >
-      <caption>
-        Parcelles agricoles
-        {{
-          record.version_name
-        }}
-        de l'opérateur
-        {{
-          operator.nom
-        }}
-      </caption>
-      <colgroup>
-        <col class="selection" />
-        <col class="accordion" />
-        <col class="labels" />
-        <col class="surface" />
-        <col class="actions" />
-      </colgroup>
-      <thead class="summary summary__mass-actions">
-        <tr v-if="selectedFeatureIds.length > 0">
-          <td class="selection" colspan="2">
-            <div class="fr-checkbox-group single-checkbox">
-              <input type="checkbox" id="radio-mass-edit" checked @click="selectedFeatureIds = []" />
-              <label class="fr-label" for="radio-mass-edit" aria-label="Désélectionner toutes les parcelles" />
-            </div>
-          </td>
-          <td colspan="4">
-            <div>
-              {{ selectedFeatureIds.length }} parcelles sélectionnées
-              <MassActionsSelector
-                v-if="massActions.length"
-                :actions="massActions"
-                label="Modifier"
-                @submit="handleFeatureCollectionSubmit"
-              />
-            </div>
-          </td>
-        </tr>
-        <tr class="background-white">
-          <th colspan="3" class="labels">
-            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl font-blue">
-              {{ features.length }} parcelles
-              <span
-                >({{
-                  !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
-                    ? inHa(legalProjectionSurface(features)) + String.fromCharCode(160) + "ha"
-                    : "Surface non calculable"
-                }})
-              </span>
-            </span>
-          </th>
-          <th class="labels-group-by" scope="col" colspan="3">
-            <div class="seamless-select">
-              <label for="plots-group-by">Regrouper par </label>
-              <b class="font-blue">{{ groupingChoiceLabel }}</b>
-              <select id="plots-group-by" v-model="userGroupingChoice">
-                <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">
-                  &nbsp;&nbsp;{{ label }}
-                </option>
-              </select>
-            </div>
-          </th>
-        </tr>
-        <tr class="background-white header-tab">
-          <th scope="col" aria-hidden="true" class="selection">
-            <div class="fr-checkbox-group single-checkbox" v-if="hasFeatures">
-              <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
-              <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
-            </div>
-          </th>
-          <th class="open"></th>
-          <th scope="col" class="labels">{{ userGroupingChoice === "CULTURE" ? "Parcelle" : "Culture" }}</th>
-          <th scope="col" class="certification">
-            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">Certification</span>
-          </th>
-          <th scope="col" class="surface">
-            <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">Surface</span>
-          </th>
-          <th scope="col" class="actions">Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-      <tbody v-if="!hasFeatures">
-        <tr>
-          <td colspan="7">Votre parcellaire est vide.</td>
-        </tr>
-      </tbody>
-      <FeatureGroup
-        v-for="featureGroup in featureGroups"
-        :featureGroup="featureGroup"
-        :key="featureGroup.key"
-        @edit:featureId="(featuredId) => (editedFeatureId = featuredId)"
-        @view:featureId="(featuredId) => (viewedFeatureId = featuredId)"
-        @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
-        @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
-      />
-    </table>
-
-    <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
-      Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}. Actuellement,
-      {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
-    </p>
-    <p id="operator-features-summary-global" class="fr-sr-only" v-else>Ce parcellaire ne contient aucune parcelle.</p>
-
-    <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
-      <router-link
-        :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`"
-        class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line"
-        >Ajouter une parcelle</router-link
-      >
-    </p>
+    <div class="seamless-select fr-col-12 fr-col-md-6 fr-grid-row">
+      <label for="plots-group-by">Regrouper par </label>
+      <b class="font-blue">{{ groupingChoiceLabel }}</b>
+      <select id="plots-group-by" v-model="userGroupingChoice">
+        <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
+      </select>
+    </div>
   </div>
+  <div class="fr-grid-row fr-grid-row--midle liste-filtre">
+    <p class="fr-text--bold fr-mb-0 fr-grid-row fr-grid-row--middle">Filtrer</p>
+    <button
+      :key="id"
+      v-for="{ active, id, count, label, required } in tags"
+      class="fr-tag"
+      :class="{
+        'fr-tag--dismiss': active,
+        [`tag--${id}`]: true,
+        'fr-icon-warning-fill fr-tag--icon-left': required,
+      }"
+      :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`"
+      @click="handleFilterClick(id)"
+    >
+      {{ label }} ({{ count }})
+    </button>
+  </div>
+
+  <div v-if="selectedFeatureIds.length > 0" class="fr-grid-row selection-multiple">
+    <div class="fr-grid-row gap-10">
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line"
+        aria-label="Désélectionner toutes les parcelles"
+        @click="unselectAll"
+      ></button>
+      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">{{ selectedFeatureIds.length }} parcelles sélectionnées</p>
+      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
+        <span
+          >{{
+            !isNaN(parseFloat(inHa(legalProjectionSurface(selectedFeatures))))
+              ? inHa(legalProjectionSurface(selectedFeatures)) + String.fromCharCode(160) + "ha"
+              : ""
+          }}
+        </span>
+      </p>
+    </div>
+    <MassActionsSelector
+      v-if="massActions.length"
+      :actions="massActions"
+      label="Modifier"
+      @submit="handleFeatureCollectionSubmit"
+    />
+  </div>
+  <div class="fr-grid-row total-parcelles">
+    <p>{{ features.length }} parcelles</p>
+    <div class="fr-checkbox-group" v-if="hasFeatures">
+      <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
+      <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
+    </div>
+  </div>
+
+  <p v-if="!hasFeatures">Votre parcellaire est vide.</p>
+  <FeatureGroup
+    v-for="featureGroup in featureGroups"
+    :featureGroup="featureGroup"
+    :key="featureGroup.key"
+    @edit:featureId="(featuredId) => (editedFeatureId = featuredId)"
+    @view:featureId="(featuredId) => (viewedFeatureId = featuredId)"
+    @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
+    @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
+  />
+
+  <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
+    Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}. Actuellement,
+    {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
+  </p>
+  <p id="operator-features-summary-global" class="fr-sr-only" v-else>Ce parcellaire ne contient aucune parcelle.</p>
+
+  <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
+    <router-link
+      :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`"
+      class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line"
+      >Ajouter une parcelle</router-link
+    >
+  </p>
 
   <Teleport to="body">
     <Component
@@ -243,8 +191,8 @@ const { operator } = storeToRefs(operatorStore);
 const { record } = storeToRefs(recordStore);
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures, hoveredId: hoveredFeatureId } = storeToRefs(featuresStore);
-const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore);
-const { getFeatureById, toggleAllSelected } = featuresStore;
+const { selectedIds: selectedFeatureIds, allSelected, selectedFeatures } = storeToRefs(featuresStore);
+const { getFeatureById, toggleAllSelected, unselectAll } = featuresStore;
 
 const editedFeatureId = ref(null);
 const zoomFeatureId = ref(null);
@@ -325,24 +273,15 @@ watch(zoomFeature, (newValue) => {
 </style>
 
 <style scoped>
-.selection {
-  min-width: 2.5rem;
-}
-
-.labels {
-  min-width: 40%;
-}
-.accordion {
-  width: 2.5rem;
-}
-
 .seamless-select {
+  gap: 5px;
   position: relative;
   padding-right: 1rem;
   font-weight: normal;
   background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
   background-position: right center;
   background-repeat: no-repeat;
+  justify-content: flex-end;
 
   & label {
     display: inline;
@@ -361,75 +300,6 @@ watch(zoomFeature, (newValue) => {
   }
 }
 
-.fr-table table {
-  width: 100%;
-  max-width: 100%;
-
-  & th:empty,
-  & td:empty {
-    padding: 0;
-    font-size: 0;
-    line-height: 0;
-    white-space: nowrap;
-  }
-
-  th:has(span.fr-hidden.fr-unhidden-sm),
-  td:has(span.fr-hidden.fr-unhidden-sm) {
-    @media (max-width: 579px) {
-      padding: 0;
-    }
-  }
-}
-
-.fr-table thead {
-  background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
-}
-
-.fr-table .summary {
-  color: var(--text-title-blue-france);
-  background-size:
-    100% 2px,
-    100% 2px;
-  background-repeat: no-repeat;
-  background-color: var(--background-alt-blue-france);
-  background-position: top, bottom;
-  background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)),
-    linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
-}
-
-.fr-table thead,
-.fr-table .summary {
-  td,
-  th {
-    padding-left: 0.6rem;
-  }
-}
-
-.fr-table .summary.summary__mass-actions {
-  color: var(--text-inverted-blue-france);
-  background-color: var(--background-action-high-blue-france);
-  position: sticky;
-  top: 0;
-  z-index: var(--z-index-dropdown);
-}
-
-.fr-table .summary.summary__mass-actions .fr-checkbox-group input[type="checkbox"]:checked + label::before {
-  box-shadow: inset 0 0 0 1px var(--text-inverted-blue-france);
-}
-
-.fr-table .summary.summary__mass-actions td:nth-child(2) div {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.fr-table td.numeric,
-.fr-table th.numeric {
-  font-variant-numeric: tabular-nums;
-  text-align: right !important;
-}
-
 .fr-tags-group--tags {
   gap: 0.75rem;
 
@@ -443,18 +313,6 @@ watch(zoomFeature, (newValue) => {
   }
 }
 
-.labels-group-by {
-  text-align: end;
-}
-
-.background-white {
-  background-color: white;
-
-  & th {
-    border-bottom: 0.5px #d3d3d3 solid;
-  }
-}
-
 .font-blue {
   color: #000091;
 }
@@ -463,18 +321,28 @@ watch(zoomFeature, (newValue) => {
   font-size: 16px;
   margin-left: 10%;
 }
-.actions {
-  width: 20%;
-}
-
-.fr-search-bar {
-  margin-bottom: 20px;
-}
-.header-tab {
-  color: black;
-}
 
 .labels-group-by {
   color: black;
+}
+
+.liste-filtre {
+  gap: 20px;
+}
+
+.selection-multiple {
+  justify-content: space-between;
+  background-color: #fafafe;
+  color: #666666;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.total-parcelles {
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 10x;
 }
 </style>

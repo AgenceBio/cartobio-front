@@ -2,7 +2,7 @@
   <ActionDropdown>
     <template #trigger="{ toggle }">
       <button
-        class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-down-s-line menu-button"
+        class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
         @click.stop.prevent="toggle"
       >
         {{ label }}
@@ -67,8 +67,6 @@ function handleSubmit({ ids, patch }) {
 
 <style scoped>
 .menu-button {
-  border: 1px solid #fff;
-  background-color: #fff;
   margin-bottom: 0;
   box-shadow: none;
 }

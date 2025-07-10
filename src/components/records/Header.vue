@@ -1,8 +1,10 @@
 <template>
-  <header class="fr-mb-2w header-class">
-    <div class="name-parcellaire">
-      <div class="flex-center">
-        <h1 class="fr-text--md operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</h1>
+  <header class="fr-mb-2w">
+    <div class="fr-grid-row fr-grid-row--middle header">
+      <div class="fr-grid-row">
+        <h2 class="fr-h4 fr-my-0">
+          {{ record.version_name }}
+        </h2>
         <template v-if="permissions.isOc">
           <button
             v-if="operatorStore.operator.epingle"
@@ -17,28 +19,43 @@
             aria-label="Epingler le parcellaire"
           ></button>
         </template>
+
+        <p v-if="readonly" class="readonly-badge">Lecture seule</p>
       </div>
-      <div class="heading">
-        <div class="version-name fr-mb-1v">
-          <h2 class="fr-h4 fr-my-0">
-            {{ record.version_name }}
-          </h2>
-          <p v-if="readonly" class="readonly-badge">Lecture seule</p>
-        </div>
-        <button
+      <div class="fr-grid-row">
+        <ActionDropdown v-if="hasFeatures && !readonly" with-icons icon-class="fr-icon-download-line fr-btn--sm">
+          <AsyncFeaturesExportActions
+            :operator="operator"
+            :collection="collection"
+            :record="record"
+            @close="exportModal = false"
+            :hasError="tags.filter((e) => e.errorMessage != undefined)"
+          />
+        </ActionDropdown>
+        <ActionDropdown
           v-if="!disableActions && permissions.canEditVersion"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden fr-unhidden-sm"
-          @click="showEditVersionModal = true"
-          aria-label="Modifier la version du parcellaire"
+          with-icons
+          icon-class="ri-more-2-line fr-btn--sm"
+          icon-style="font-size: 1.2em"
         >
-          Modifier la version
-        </button>
-        <p class="state fr-subtitle">
-          <ParcellaireState :record="record" />
-        </p>
+          <li>
+            <button
+              v-if="!disableActions && permissions.canEditVersion"
+              class="fr-btn fr-icon-edit-line fr-btn--tertiary-no-outline"
+              @click="showEditVersionModal = true"
+              aria-label="Modifier la version du parcellaire"
+            >
+              Modifier la version
+            </button>
+          </li>
+        </ActionDropdown>
       </div>
     </div>
 
+    <p class="state fr-subtitle">
+      <ParcellaireState :record="record" />
+    </p>
+    <!-- 
     <div
       v-if="disableActions === false"
       class="actions fr-btns-group fr-btns-group--sm fr-btns-group--inline-sm fr-btns-group--icon-left"
@@ -108,7 +125,7 @@
       >
         Modifier la version
       </button>
-    </div>
+    </div> -->
   </header>
 
   <Teleport to="body">
@@ -146,8 +163,9 @@ import EditVersionModal from "@/components/forms/EditVersionForm.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { useUserStore } from "@/stores/user";
 import { pinOperator, unpinOperator } from "@/cartobio-api";
+import ActionDropdown from "../widgets/ActionDropdown.vue";
 
-const AsyncFeaturesExportModal = defineAsyncComponent(() => import("@/components/records/ExportModal.vue"));
+const AsyncFeaturesExportActions = defineAsyncComponent(() => import("@/components/records/ExportActions.vue"));
 
 defineProps({
   disableActions: {
@@ -195,154 +213,7 @@ function unpin(numeroBio) {
 </script>
 
 <style scoped>
-header {
-  display: flex;
+.header {
   justify-content: space-between;
-
-  h1 .fr-btn {
-    vertical-align: text-bottom;
-  }
-
-  p.state {
-    margin: 0 0 0.5rem;
-    align-items: end;
-    display: flex;
-  }
-
-  .heading {
-    display: flex;
-    align-items: end;
-    gap: 1rem;
-  }
-
-  .operator-name {
-    margin: 0;
-  }
-}
-
-.actions {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  column-gap: 0.5rem;
-  margin: 0;
-  align-items: flex-end;
-  justify-items: center;
-
-  .fr-btn {
-    margin: 0;
-    flex-grow: 0;
-    width: auto;
-  }
-}
-
-/** Version menu */
-
-.fr-menu {
-  position: absolute;
-  top: 100%;
-  left: 0.5rem;
-  width: 9rem;
-  padding: 0;
-  margin: 0;
-
-  .fr-menu__list {
-    border-radius: 0.3125rem;
-    margin: 0;
-    width: auto;
-    grid-template-columns: auto;
-    grid-auto-flow: row;
-    background-color: #fff;
-    z-index: 1;
-    position: relative;
-
-    li {
-      position: relative;
-    }
-
-    .fr-menu {
-      position: absolute;
-      left: 100%;
-      top: 0;
-      width: auto;
-      white-space: nowrap;
-      max-height: 500px;
-      overflow: auto;
-      overflow-x: hidden;
-    }
-  }
-
-  .fr-btn {
-    font-weight: 700;
-    justify-content: flex-start;
-    margin: 0;
-    padding: 0.75rem !important;
-    width: 100%;
-    @extend .fr-btn--tertiary-no-outline;
-  }
-
-  .white-space-break {
-    white-space: break-spaces;
-    width: 35ch;
-  }
-}
-
-.name-parcellaire {
-  max-width: 60%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-}
-
-.version-name {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  display: flex;
-  gap: 1ch;
-  align-items: end;
-}
-
-.version-name h2 {
-  max-width: 25ch;
-}
-
-.readonly-badge {
-  padding: 0px 8px;
-  border-radius: 9999px;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--background-default-grey-active);
-  margin-bottom: 0.5em;
-  font-weight: 400;
-  line-height: 23px;
-  white-space: nowrap;
-}
-
-@media (max-width: 36em) {
-  .header-class {
-    flex-direction: column;
-  }
-
-  .name-parcellaire {
-    max-width: 100%;
-  }
-
-  .readonly-badge {
-    margin-left: 0;
-  }
-
-  header .heading {
-    flex-wrap: wrap;
-  }
-}
-.flex-center {
-  display: flex;
-  align-items: center;
-}
-
-.no-underline-img {
-  --underline-img: none;
 }
 </style>

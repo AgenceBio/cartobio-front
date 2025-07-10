@@ -60,6 +60,7 @@ export const conversionLevels = [
     label: "Conventionnel",
     shortLabel: "Conventionnel",
     is_selectable: true,
+    icon: "fr-icon-leaf-line"
   },
   {
     value: LEVEL_MAYBE_AB,
@@ -71,24 +72,28 @@ export const conversionLevels = [
     label: "C1 — Première année de conversion",
     shortLabel: "C1",
     is_selectable: true,
+    icon: "fr-icon-plant-line"
   },
   {
     value: LEVEL_C2,
     label: "C2 — Deuxième année de conversion",
     shortLabel: "C2",
     is_selectable: true,
+    icon: "fr-icon-umbrella-line"
   },
   {
     value: LEVEL_C3,
     label: "C3 — Troisième année de conversion",
     shortLabel: "C3",
     is_selectable: true,
+    icon: "fr-icon-seedling-line"
   },
   {
     value: LEVEL_AB,
     label: "AB — Agriculture biologique",
     shortLabel: "AB",
     is_selectable: true,
+    icon: "fr-icon-recycle-line"
   },
 ];
 
