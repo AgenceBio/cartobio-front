@@ -1,70 +1,92 @@
 <template>
-  <tbody class="feature-group">
-    <tr @click.stop="open = !open" @keydown.enter="open = !open" class="clickable group-header" tabindex="0">
-      <td class="selection">
-        <div class="fr-checkbox-group single-checkbox">
-          <input type="checkbox" :id="'radio-' + featureGroup.key" :checked="allSelected" @click="toggleFeatureGroup" />
-          <label
-            class="fr-label"
-            :for="'radio-' + featureGroup.key"
-            :aria-label="
-              allSelected
-                ? `Désélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
-                : `Sélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
-            "
-          />
-        </div>
-      </td>
-      <td class="accordion">
-        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
-      </td>
-      <th colspan="2" class="labels" scope="row" :data-group-id="featureGroup.key">
-        {{ featureGroup.label }}
-        <small class="group-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
-          {{
-            !isNaN(parseFloat(inHa(featureGroup.surface)))
-              ? inHa(featureGroup.surface) + String.fromCharCode(160) + "ha"
-              : inHa(featureGroup.surface)
-          }}
-        </small>
-      </th>
-
-      <td class="surface numeric labels-header">
-        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{
-            !isNaN(parseFloat(inHa(featureGroup.surface)))
-              ? inHa(featureGroup.surface) + String.fromCharCode(160) + "ha"
-              : inHa(featureGroup.surface)
-          }}
-        </span>
-      </td>
-
-      <td class="actions">
-        <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
+  <div
+    class="fr-grid-row fr-mb-2v fr-px-4v fr-py-4v groupe-parcelles"
+    @click.stop="open = !open"
+    @keydown.enter="open = !open"
+  >
+    <div class="fr-grid-row groupe-titre fr-mb-0">
+      <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
+      <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v">
         <span
-          v-if="groupErrors"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon-warning-fill fr-icon--warning"
+          class="fr-icon fr-icon--sm fr-icon-warning-line fr-py-0"
           :title="`${groupErrors} parcelles à amender`"
           aria-hidden="true"
         />
-      </td>
-    </tr>
-    <tr
-      class="parcelle clickable"
-      :class="{
-        'parcelle--is-new': feature.id === Number(route.query?.new),
-        'background-selected': selectedIds.includes(feature.id),
-        'background-white': !selectedIds.includes(feature.id),
-      }"
-      :id="'parcelle-' + feature.id"
-      :hidden="!open"
-      v-for="feature in featureGroup.features"
-      :key="feature.id"
-      @mouseover="hoveredId = feature.id"
-      :aria-current="feature.id === hoveredId ? 'location' : null"
-    >
-      <th scope="row">
-        <div class="fr-checkbox-group single-checkbox">
+        {{ groupErrors }}
+      </span>
+      <h3 class="fr-text--lg fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
+        <span v-if="isGroupedByCulture" :class="getCultureIcon(featureGroup.key)" class="fr-mr-1v"></span>
+        {{ featureGroup.label }}
+      </h3>
+    </div>
+    <div class="fr-grid-row gap-10 actions-parcelles">
+      <span class="">
+        {{
+          !isNaN(parseFloat(inHa(featureGroup.surface)))
+            ? inHa(featureGroup.surface) + " ha"
+            : inHa(featureGroup.surface)
+        }}
+      </span>
+      <div class="fr-checkbox-group">
+        <input type="checkbox" :id="'radio-' + featureGroup.key" :checked="allSelected" @click="toggleFeatureGroup" />
+        <label
+          class="fr-label"
+          :for="'radio-' + featureGroup.key"
+          :aria-label="
+            allSelected
+              ? `Désélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
+              : `Sélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
+          "
+        />
+      </div>
+      <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
+    </div>
+  </div>
+  <div
+    class="parcelle-carte fr-mb-2v fr-p-4v fr-mx-4v"
+    :class="{
+      'parcelle--is-new': feature.id === Number(route.query?.new),
+      'background-selected': selectedIds.includes(feature.id),
+    }"
+    :id="'parcelle-' + feature.id"
+    :hidden="!open"
+    v-for="feature in featureGroup.features"
+    :key="feature.id"
+    @mouseover="hoveredId = feature.id"
+    :aria-current="feature.id === hoveredId ? 'location' : null"
+  >
+    <div @click="pressZoom(feature.id)" class="parcelle-titre fr-mb-6v">
+      <h4 class="fr-text--lg fr-mb-0">{{ featureName(feature) }}</h4>
+      <div class="parcelle-actions">
+        <template v-if="isGroupedByCulture">
+          <small v-if="feature.properties.cultures.length > 1">Multi-culture</small>
+          <button
+            v-else-if="
+              (permissions.canChangeCulture && feature.properties.cultures.length === 0) || !feature.properties.cultures
+            "
+            class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
+            @click="openCulturesModal(feature.id)"
+          >
+            Saisir la culture
+          </button>
+        </template>
+        <template v-else>
+          <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
+            Multi-cultures<span class="fr-sr-only"> : </span>
+            <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+              <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
+            </small>
+          </p>
+          <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
+        </template>
+        <p class="fr-mb-0">
+          {{
+            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+              ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
+              : inHa(legalProjectionSurface(feature))
+          }}
+        </p>
+        <div class="fr-checkbox-group">
           <input
             type="checkbox"
             :id="'radio-' + feature.id"
@@ -84,63 +106,45 @@
             "
           />
         </div>
-      </th>
-      <td></td>
-      <td @click="pressZoom(feature.id)" v-if="isGroupedByCulture">
-        <span class="culture-name">{{ featureName(feature) }}</span>
-        <small class="font-blue">{{ getTimeAgo(feature) }}</small>
-        <small class="feature-precision" v-if="feature.properties.cultures.length > 1">Multi-culture</small>
-        <small class="feature-precision fr-hidden-sm fr-hidden-md fr-hidden-lg fr-hidden-xl">
-          <ConversionLevel :feature="feature" with-date /><br />
-          {{
-            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
-              ? inHa(legalProjectionSurface(feature)) + String.fromCharCode(160) + "ha"
-              : inHa(legalProjectionSurface(feature))
-          }}
-        </small>
-      </td>
-      <td @click="pressZoom(feature.id)" v-else>
-        <span class="culture-type" v-if="feature.properties.cultures.length > 1">
-          Multi-cultures<span class="fr-sr-only"> : </span>
-          <small class="feature-precision" v-for="(culture, i) in feature.properties.cultures" :key="i">
-            <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
-          </small>
+      </div>
+    </div>
+    <div @click="pressZoom(feature.id)" class="fr-grid-row fr-grid-row--middle parcelle-titre">
+      <div @click="openNiveauConversionModal(feature.id)" :class="{ clickable: permissions.canChangeConversionLevel }">
+        <ConversionLevel :feature="feature" with-date />
+      </div>
+      <div class="fr-grid-row fr-grid-row--middle gap-10">
+        <p class="fr-sr-only"></p>
+        <span
+          v-if="feature.properties.commentaires || feature.properties.auditeur_notes"
+          aria-hidden="true"
+          class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire"
+        >
+          1
         </span>
-        <span class="culture-name" v-else>{{ cultureLabel(feature.properties.cultures[0]) }}</span>
-        <small class="feature-precision">{{ featureName(feature) }}</small>
-        <small class="font-blue">{{ getTimeAgo(feature) }}</small>
-      </td>
-      <td @click="pressZoom(feature.id)">
-        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          <ConversionLevel :feature="feature" with-date />
-        </span>
-      </td>
-      <td @click="pressZoom(feature.id)" class="numeric">
-        <span class="fr-hidden fr-unhidden-sm fr-unhidden-md fr-unhidden-lg fr-unhidden-xl">
-          {{
-            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
-              ? inHa(legalProjectionSurface(feature)) + String.fromCharCode(160) + "ha"
-              : inHa(legalProjectionSurface(feature))
-          }}
-        </span>
-      </td>
-      <td class="actions">
-        <button
-          v-if="!readonly"
-          type="button"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
-          @click="toggleEditForm(feature.id)"
-          aria-label="Modifier les informations de la parcelle"
-        />
-        <button
-          v-else
-          type="button"
-          class="fr-btn fr-btn--tertiary-no-outline ri-eye-line ri-xl"
-          @click="toggleViewForm(feature.id)"
-          aria-label="Voir les informations de la parcelle"
-        />
-        <ActionDropdown with-icons v-if="!readonly">
-          <li v-if="permissions.canChangeGeometry && isOnline" class="more-actions">
+        <p class="fr-mb-0 fr-text--sm text-grey">
+          {{ getTimeAgo(feature) }}
+        </p>
+        <ActionDropdown with-icons>
+          <li v-if="!readonly">
+            <button
+              type="button"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line fr-text--sm"
+              @click="toggleEditForm(feature.id)"
+            >
+              Modifier les informations de la parcelle
+            </button>
+          </li>
+          <li v-else>
+            <button
+              type="button"
+              class="fr-btn fr-btn--tertiary-no-outline fr-text--sm"
+              @click="toggleViewForm(feature.id)"
+            >
+              <span class="ri-eye-line ri-xl fr-mr-2v" aria-hidden="true"></span>
+              Voir les informations de la parcelle
+            </button>
+          </li>
+          <li v-if="permissions.canChangeGeometry && isOnline && !readonly" class="more-actions">
             <router-link
               :to="`/exploitations/${operatorStore.operator.numeroBio}/${recordStore.record.record_id}/modifier/${feature.id}`"
               type="button"
@@ -165,16 +169,14 @@
             </button>
           </li>
         </ActionDropdown>
-
-        <p :id="`operator-features-summary-${featureGroup.key}`" class="fr-sr-only">
-          Liste de {{ featureGroup.features.length }} parcelles cultivées en
-          {{ featureGroup.label.toLocaleLowerCase() }}. La première colonne contient le nom de la parcelle ; la seconde,
-          son statut de certification et éventuelle date de début de conversion ; la troisième, sa surface en hectares ;
-          la quatrième et dernière colonne, des boutons d'action.
-        </p>
-      </td>
-    </tr>
-  </tbody>
+      </div>
+    </div>
+  </div>
+  <p :id="`operator-features-summary-${featureGroup.key}`" class="fr-sr-only">
+    Liste de {{ featureGroup.features.length }} parcelles cultivées en {{ featureGroup.label.toLocaleLowerCase() }}. La
+    première colonne contient le nom de la parcelle ; la seconde, son statut de certification et éventuelle date de
+    début de conversion ; la troisième, sa surface en hectares ; la quatrième et dernière colonne, des boutons d'action.
+  </p>
 </template>
 
 <script setup>
@@ -190,7 +192,14 @@ import { usePermissions } from "@/stores/permissions.js";
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 import { useOnline } from "@vueuse/core";
-import { cultureLabel, featureName, inHa, legalProjectionSurface, getTimeAgo } from "@/utils/features.js";
+import {
+  cultureLabel,
+  featureName,
+  inHa,
+  legalProjectionSurface,
+  getTimeAgo,
+  getCultureIcon,
+} from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
 
 const route = useRoute();
@@ -209,13 +218,22 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit:featureId", "view:featureId", "delete:featureId", "zoom:featureId"]);
+const emit = defineEmits([
+  "edit:featureId",
+  "edit-niveau-conversion:featureId",
+  "edit-cultures:featureId",
+  "view:featureId",
+  "delete:featureId",
+  "zoom:featureId",
+]);
 
 const { selectedIds, hoveredId } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id));
-const open = ref(featureIds.value.includes(String(route.query?.new)));
+const open = ref(
+  featureIds.value.includes(String(route.query?.new)) || featureIds.value.some((id) => selectedIds.value.includes(id)),
+);
 const allSelected = computed(() => featureIds.value.every((id) => selectedIds.value.includes(id)));
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === "CULTURE");
 
@@ -265,6 +283,18 @@ function toggleFeatureGroup() {
   }
 }
 
+function openNiveauConversionModal(id) {
+  if (permissions.canChangeConversionLevel) {
+    emit("edit-niveau-conversion:featureId", id);
+  }
+}
+
+function openCulturesModal(id) {
+  if (permissions.canChangeConversionLevel) {
+    emit("edit-cultures:featureId", id);
+  }
+}
+
 watch(selectedIds, (selectedIds, prevSelectedIds) => {
   const newItems = featureIds.value.filter((id) => {
     return selectedIds.includes(id) && !prevSelectedIds.includes(id);
@@ -277,156 +307,87 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 </script>
 
 <style scoped>
-.labels {
-  min-width: 100%;
-}
-
-.actions {
-  --hover: transparent;
-  --active: transparent;
-
-  padding-left: 0;
-  padding-right: 0; /* to text align buttons/texts in this column, and because actions are already padded */
-  position: block;
-  display: flex;
-  text-align: left;
-  align-items: center;
-  top: 50%;
-  white-space: nowrap;
-}
-
-.fr-icon--warning {
+.erreurs {
+  align-self: center;
   color: var(--text-default-error);
-}
-
-.fr-icon-geometry::before {
-  mask-image: url(@/assets/icon-geometry.svg);
-}
-
-tr.group-header td,
-tr.group-header th,
-tr.intermediate-header th,
-tr.parcelle td,
-tr.parcelle th {
-  padding: 0.6rem;
-
-  &:has(span.fr-hidden.fr-unhidden-sm) {
-    @media (max-width: 579px) {
-      padding: 0;
-    }
-  }
-
-  & > .group-precision {
-    display: block;
-    color: var(--text-mention-grey);
-  }
-}
-
-td.numeric,
-th.numeric {
-  font-variant-numeric: tabular-nums;
-  text-align: right !important;
-}
-
-tr.group-header td.actions {
-  padding: 0;
-}
-
-td:has(table) {
-  padding: 0;
-  background-color: #fff;
-}
-
-.group-table {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  display: table;
-  overflow: visible;
-
-  & .selection {
-    min-width: 2.5rem;
-  }
-}
-
-.group-table tr.intermediate-header {
-  background-size: 100% 2px;
-  background-repeat: no-repeat;
-  background-image: linear-gradient(0deg, var(--border-plain-grey), var(--border-plain-grey));
-}
-
-.fr-table tr.intermediate-header th {
-  background-color: var(--background-default-grey);
-  color: var(--text-mention-grey);
-  border-bottom: 1px solid;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-
-.group-table tr.parcelle {
-  background-color: var(--background-alt-blue-france);
-}
-.group-table tr.parcelle:nth-child(2n) {
-  background-color: var(--background-default-grey);
-}
-.group-table tr.parcelle:last-child {
-  /* same as .fr-table--bordered tbody tr */
-  background-size: 100% 2px;
-  background-image: linear-gradient(180deg, var(--grey-625-425), var(--grey-625-425));
-}
-
-.group-table tr.parcelle span > .feature-precision {
-  display: block;
-}
-
-.group-table tr.parcelle td > .feature-precision {
-  color: var(--text-mention-grey);
-}
-
-.group-table tr.parcelle--is-new,
-.group-table tr.parcelle--is-new:nth-child(2n) {
-  background-color: var(--green-tilleul-verveine-975-75);
+  border: 1px solid var(--text-default-error);
+  background-color: var(--red-marianne-925-125);
+  border-radius: 4px;
 }
 
 .fr-icon[aria-checked="true"]::before {
   transform: rotate(180deg);
 }
 
-table tr[aria-current="location"] {
-  background-color: var(--background-alt-blue-france-hover) !important;
+.groupe-parcelles {
+  background-color: var(--blue-france-925-125);
+  gap: 12px;
+  justify-content: space-between;
 
-  button,
-  :deep(button) {
-    /* same pattern as in [numeroBio]/index.vue */
-    --hover-tint: var(--background-alt-blue-france-active);
+  .groupe-titre {
+    gap: 7px;
+  }
+  .groupe-titre > h3 {
+    height: 40px;
+  }
+  .actions-parcelles {
+    align-content: center;
   }
 }
 
-.font-blue {
-  color: #000091;
+.gap-10 {
+  gap: 10px;
 }
 
-.culture-name {
-  display: block;
-  max-width: 20ch;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
+.parcelle-carte {
+  border: 1px solid #ececfe;
+  &.parcelle--is-new {
+    background-color: var(--green-tilleul-verveine-975-75);
+  }
+  &.background-selected,
+  &:hover {
+    background-color: var(--background-alt-blue-france);
+  }
+  .parcelle-titre {
+    display: flex;
+    justify-content: space-between;
+    .parcelle-actions {
+      display: flex;
+      gap: 25px;
+    }
+  }
+  :deep(.show-actions) {
+    --hover-tint: var(--background-alt-blue-france-hover);
+    --active-tint: var(--background-alt-blue-france-active);
+  }
 }
 
-.feature-precision {
-  display: block;
-  max-width: 20ch;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
+.text-grey {
+  color: var(--grey-625-425);
 }
 
-.background-selected {
-  background-color: var(--background-alt-blue-france-hover) !important;
+.badge-commentaire {
+  background-color: var(--grey-950-150);
+  padding: 4px 10px;
+  border-radius: 16px;
 }
 
-.background-white {
-  background-color: white !important;
+.clickable {
+  cursor: pointer;
+}
+
+.red {
+  color: var(--text-default-error);
+  background-color: var(--red-marianne-925-125);
+  border: 1px solid var(--text-default-error);
+  box-shadow: none;
+}
+
+.radius {
+  border-radius: 16px;
+}
+
+.red:hover {
+  background-color: var(--red-marianne-925-125-active);
 }
 </style>

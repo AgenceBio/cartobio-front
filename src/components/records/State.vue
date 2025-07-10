@@ -67,8 +67,7 @@ const computedClass = computed(() => {
   border-radius: 4px;
   width: fit-content;
   padding: 2px 3px;
-  border: 1px solid #bfccfb;
-  color: #2f4077;
+  color: var(--blue-ecume-sun-247-moon-675);
 }
 
 .class-audited {
@@ -76,7 +75,6 @@ const computedClass = computed(() => {
   border-radius: 4px;
   width: fit-content;
   padding: 2px 3px;
-  border: 1px solid #fbaff5;
   color: #a558a0;
 }
 
@@ -85,7 +83,6 @@ const computedClass = computed(() => {
   border-radius: 4px;
   width: fit-content;
   padding: 2px 3px;
-  border: 1px solid #fbaff5;
   color: #a558a0;
 }
 
@@ -93,7 +90,6 @@ const computedClass = computed(() => {
   background: #e5fbfd;
   border-radius: 4px;
   width: fit-content;
-  border: 1px solid #4cb4bd;
   padding: 2px 3px;
   color: #006a6f;
 }
@@ -102,7 +98,6 @@ const computedClass = computed(() => {
   font-style: italic;
   font-weight: 400;
   text-align: center;
-  border: 1px solid #e5e5e5;
   width: fit-content;
   padding: 2px 3px;
   color: #666666;
@@ -127,6 +122,5 @@ const computedClass = computed(() => {
   text-transform: uppercase;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding: 2px 0;
 }
 </style>

@@ -46,6 +46,7 @@ useHead({ title, titleTemplate: "%s — CartoBio" });
 @import "@gouvfr/dsfr/dsfr.css";
 @import "@gouvfr/dsfr/utility/icons/icons.css";
 @import "@/styles/variables.css";
+@import "@/styles/icons.css";
 @import "remixicon/fonts/remixicon.css";
 
 a[aria-disabled] {

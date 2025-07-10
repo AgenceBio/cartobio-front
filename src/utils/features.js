@@ -210,7 +210,7 @@ export function sortByAccessor(propertyAccessor, order = SORT.ASCENDING) {
   };
 }
 
-const NO_GROUP = "__nogroup__";
+export const NO_GROUP = "__nogroup__";
 export const PACNotationOptions = {
   ilotLabel: "",
   parcelleLabel: "",
@@ -255,7 +255,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
-    label: "type de culture",
+    label: "culture",
     labelNoGroup: "Absence de culture",
     labelUnknown: "Culture inconnue",
     /** @param {GeoJSONFeature} */
@@ -680,21 +680,66 @@ export function getTimeAgo(feature) {
   const diffInMonths = Math.floor(diffInDays / 30);
 
   if (diffInMinutes < 1) {
-    return "Modifié à l'instant";
+    return "À l'instant";
   } else if (diffInMinutes < 60) {
-    return `Modifié il y a ${diffInMinutes} min`;
+    return `Il y a ${diffInMinutes} min`;
   } else if (diffInHours < 24) {
-    return `Modifié il y a ${diffInHours} h`;
+    return `Il y a ${diffInHours} h`;
   } else if (diffInDays < 30) {
-    return `Modifié il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
+    return `Il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
   } else if (diffInMonths < 12) {
-    return `Modifié il y a ${diffInMonths} mois`;
+    return `Il y a ${diffInMonths} mois`;
   } else {
     const formattedDate = date.toLocaleDateString("fr-FR", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-    return `Modifié le ${formattedDate}`;
+    return `Le ${formattedDate}`;
   }
+}
+
+/***
+ * @param {String} key
+ * @returns {String}
+ */
+export function getCultureIcon(key) {
+  if (key === NO_GROUP) {
+    return "fr-icon-edit-line fr-icon--sm";
+  }
+
+  const groupeCulture = fromCodeCpf(key)?.groupe;
+
+  if (!groupeCulture) {
+    return "fr-icon-culture-autres-surfaces";
+  }
+
+  const res = groupeCulture
+    .toLocaleLowerCase()
+    .replace(" ", "-")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (
+    [
+      "autres-surfaces",
+      "fruits",
+      "grandes-cultures",
+      "legumes",
+      "plantes-aromatiques",
+      "vignes",
+      "surfaces-fourrageres",
+    ].includes(res)
+  ) {
+    return (
+      "fr-icon-culture-" +
+      groupeCulture
+        .toLocaleLowerCase()
+        .replace(" ", "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    );
+  }
+
+  return "fr-icon-culture-autres-surfaces";
 }

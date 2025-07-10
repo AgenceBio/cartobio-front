@@ -1,0 +1,309 @@
+<template>
+  <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
+  <div class="fr-grid-row fr-grid-row--middle fr-mt-7v fr-mb-5v">
+    <div class="fr-search-bar fr-col-12 fr-col-md-6" id="search" role="search">
+      <p class="fr-sr-only">Recherche soumis automatiquement lors de la saisie</p>
+      <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
+      <input
+        class="fr-input"
+        placeholder="Rechercher une parcelle"
+        type="search"
+        id="search-784-input"
+        name="search-784-input"
+        v-model="filterInput"
+      />
+      <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
+    </div>
+    <div class="seamless-select fr-col-12 fr-col-md-6 fr-grid-row">
+      <label for="plots-group-by">Regrouper par </label>
+      <b class="font-blue">{{ groupingChoiceLabel }}</b>
+      <select id="plots-group-by" v-model="userGroupingChoice">
+        <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="fr-grid-row fr-grid-row--midle liste-filtre fr-mb-3v">
+    <p class="fr-text--bold fr-mb-0 fr-grid-row fr-grid-row--middle">Filtrer</p>
+    <button
+      :key="id"
+      v-for="{ active, id, count, label, required } in tags"
+      class="fr-tag red"
+      :class="{
+        'fr-tag--dismiss': active,
+        'fr-icon-filter-line fr-tag--icon-left': required,
+      }"
+      :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`"
+      @click="handleFilterClick(id)"
+    >
+      {{ label }} ({{ count }})
+    </button>
+  </div>
+
+  <div v-if="selectedFeatureIds.length > 0" class="fr-grid-row selection-multiple fr-mt-4v fr-mb-2v">
+    <div class="fr-grid-row gap-10">
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line"
+        aria-label="Désélectionner toutes les parcelles"
+        @click="unselectAll"
+      ></button>
+      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">{{ selectedFeatureIds.length }} parcelles sélectionnées</p>
+      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
+        <span
+          >{{
+            !isNaN(parseFloat(inHa(legalProjectionSurface(selectedFeatures))))
+              ? inHa(legalProjectionSurface(selectedFeatures)) + " ha"
+              : ""
+          }}
+        </span>
+      </p>
+    </div>
+    <div id="mass-edit">
+      <MassActionsSelector
+        v-if="massActions.length"
+        :actions="massActions"
+        label="Modifier"
+        @submit="handleFeatureCollectionSubmit"
+      />
+    </div>
+  </div>
+  <div class="fr-grid-row total-parcelles">
+    <p>{{ features.length }} parcelles</p>
+    <div class="fr-checkbox-group" v-if="hasFeatures">
+      <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
+      <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
+    </div>
+  </div>
+
+  <p v-if="!hasFeatures">Votre parcellaire est vide.</p>
+  <FeatureGroup
+    v-for="featureGroup in featureGroups"
+    :featureGroup="featureGroup"
+    :key="featureGroup.key"
+    @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
+    @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
+    @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
+    @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
+    @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
+    @editCultures:featureId="(featuredId) => emit('edit-cultures:featureId', featuredId)"
+  />
+
+  <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
+    Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}. Actuellement,
+    {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
+  </p>
+  <p id="operator-features-summary-global" class="fr-sr-only" v-else>Ce parcellaire ne contient aucune parcelle.</p>
+
+  <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
+    <router-link
+      :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`"
+      class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line"
+      >Ajouter une parcelle</router-link
+    >
+  </p>
+  <Teleport to="body">
+    <DeleteFeatureModal
+      v-if="maybeDeletedFeatureId"
+      @close="maybeDeletedFeatureId = false"
+      :feature-id="maybeDeletedFeatureId"
+      @submit="handleSingleFeatureDeletion"
+    />
+  </Teleport>
+
+  <p>
+    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill"> retour en haut de page </a>
+  </p>
+</template>
+<script setup>
+import { computed, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
+
+import { useFeaturesStore } from "@/stores/features.js";
+import { useFeaturesSetsStore } from "@/stores/features-sets.js";
+import { useOperatorStore } from "@/stores/operator.js";
+import { usePermissions } from "@/stores/permissions.js";
+import { useRecordStore } from "@/stores/record.js";
+
+import MassActionsSelector from "@/components/records/Table/MassActionsSelector.vue";
+import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
+import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
+
+import toast from "@/utils/toast.js";
+import { statsPush } from "@/stats.js";
+import { useOnline } from "@vueuse/core";
+import { featureName, getFeatureGroups, groupingChoices, inHa, legalProjectionSurface } from "@/utils/features.js";
+
+const filterInput = ref(null);
+
+const props = defineProps({
+  editForm: {
+    type: Object,
+  },
+  viewForm: {
+    type: Object,
+  },
+  massActions: {
+    type: Array,
+    default: () => [],
+  },
+  groupKey: {
+    type: String,
+    default: "CULTURE",
+  },
+});
+
+const emit = defineEmits([
+  "edit:featureId",
+  "view:featureId",
+  "zoom:featureId",
+  "edit-niveau-conversion:featureId",
+  "edit-cultures:featureId",
+]);
+
+const isOnline = useOnline();
+const operatorStore = useOperatorStore();
+const recordStore = useRecordStore();
+const featuresStore = useFeaturesStore();
+const featuresSets = useFeaturesSetsStore();
+const permissions = usePermissions();
+
+const { operator } = storeToRefs(operatorStore);
+const { record } = storeToRefs(recordStore);
+const { hits: features, tags } = storeToRefs(featuresSets);
+const { hasFeatures } = storeToRefs(featuresStore);
+const { selectedIds: selectedFeatureIds, allSelected, selectedFeatures } = storeToRefs(featuresStore);
+const { getFeatureById, toggleAllSelected, unselectAll } = featuresStore;
+
+const editedFeatureId = ref(null);
+const zoomFeatureId = ref(null);
+const zoomFeature = computed(() => (zoomFeatureId.value ? getFeatureById(zoomFeatureId.value) : null));
+const maybeDeletedFeatureId = ref(null);
+
+const userGroupingChoice = ref(props.groupKey);
+const featureGroups = computed(() =>
+  getFeatureGroups({ features: features.value }, userGroupingChoice.value, filterInput.value),
+);
+const groupingChoiceLabel = computed(() => groupingChoices[userGroupingChoice.value].label);
+
+async function handleSingleFeatureDeletion({ id, reason }) {
+  statsPush(["trackEvent", "Parcelles", "Suppression individuelle (sauvegarde)"]);
+
+  maybeDeletedFeatureId.value = null;
+
+  const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
+  await featuresStore.deleteSingleFeature({ id, reason });
+  toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
+}
+
+async function handleFeatureCollectionSubmit({ ids, patch }) {
+  statsPush(["trackEvent", "Parcelles", "Modification multiple (sauvegarde)"]);
+  editedFeatureId.value = null;
+
+  const featureCollection = {
+    type: "FeatureCollection",
+    features: ids.map((id) => ({
+      id,
+      properties: { ...patch },
+    })),
+  };
+  await featuresStore.updateFeatureCollectionProperties(featureCollection);
+  toast.success("Parcelles modifiées.");
+}
+
+function handleFilterClick(id) {
+  featuresSets.toggle(id);
+
+  if (featuresSets.isToggled(id)) {
+    statsPush(["trackEvent", "Filtre parcelles", id]);
+  }
+}
+
+watch(zoomFeature, (newValue) => {
+  if (newValue) {
+    emit("zoom:featureId", newValue);
+  }
+});
+</script>
+
+<style>
+.single-checkbox input[type="checkbox"] + label::before {
+  left: auto !important;
+  top: auto !important;
+  margin: 0 !important;
+}
+.single-checkbox input[type="checkbox"] + label {
+  margin: 0 !important;
+}
+</style>
+
+<style scoped>
+.seamless-select {
+  gap: 5px;
+  position: relative;
+  padding-right: 1rem;
+  font-weight: normal;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
+  background-position: right center;
+  background-repeat: no-repeat;
+  justify-content: flex-end;
+
+  & label {
+    display: inline;
+  }
+
+  /* super hacky way to hide a select behind
+   our custom div and still be able to interact with it
+   (there is no way to open select fields programmatically) */
+  & select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}
+
+.red {
+  color: var(--text-default-error);
+  background-color: var(--red-marianne-925-125);
+  border: 1px solid var(--red-marianne-925-125);
+}
+.red:hover {
+  background-color: var(--red-marianne-925-125-active);
+}
+.red.fr-tag--dismiss {
+  border: 1px solid var(--text-default-error);
+}
+.font-blue {
+  color: #000091;
+}
+
+.font-little {
+  font-size: 16px;
+  margin-left: 10%;
+}
+
+.labels-group-by {
+  color: black;
+}
+
+.liste-filtre {
+  gap: 20px;
+}
+
+.selection-multiple {
+  justify-content: space-between;
+  background-color: #fafafe;
+  color: #666666;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.total-parcelles {
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 10x;
+}
+</style>

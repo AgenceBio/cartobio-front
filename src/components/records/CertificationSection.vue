@@ -1,55 +1,23 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { isCertificationImmutable } from "@/referentiels/ab.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
-import { useOperatorStore } from "@/stores/operator.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { useRecordStore } from "@/stores/record.js";
-import CertificationModal from "@/components/forms/CertificationForm.vue";
-import SaveAuditModal from "@/components/forms/SaveAuditForm.vue";
 import { CertificationState } from "@agencebio/cartobio-types";
 import { useUserStore } from "@/stores/user";
 
 const recordStore = useRecordStore();
-const operatorStore = useOperatorStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
 const { isOcAudit } = useUserStore();
 const { record } = recordStore;
-const { operator } = operatorStore;
 
 const displayCallout = computed(() => record.audit_demandes && isCertificationImmutable(record.certification_state));
-const showSaveAuditModal = ref(false);
-const showCertificationModal = ref(false);
 
 const canEndAudit = computed(
   () => permissions.canEditParcellaire && permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets,
 );
-
-function handleSaveAudit({ patch }) {
-  recordStore.updateInfo({
-    ...patch,
-    certification_state: CertificationState.AUDITED,
-    audit_date: new Date().toISOString().split("T")[0],
-  });
-
-  showSaveAuditModal.value = false;
-}
-
-function handleSendAudit() {
-  recordStore.updateInfo({
-    certification_state: CertificationState.PENDING_CERTIFICATION,
-  });
-}
-
-function handleCertify({ patch }) {
-  recordStore.updateInfo({
-    ...patch,
-    certification_state: CertificationState.CERTIFIED,
-  });
-
-  showCertificationModal.value = false;
-}
 </script>
 
 <template>
@@ -97,8 +65,7 @@ function handleCertify({ patch }) {
   >
     <h3 class="fr-callout__title">Parcellaire complet <span aria-hidden="true">🎉</span></h3>
 
-    <button v-if="permissions.canSaveAudit" class="fr-btn" @click="showSaveAuditModal = true">Terminer l'audit</button>
-    <span v-else>L'auditeur doit maintenant terminer l'audit.</span>
+    <span v-if="!permissions.canSaveAudit">L'auditeur doit maintenant terminer l'audit.</span>
   </div>
 
   <div
@@ -107,10 +74,7 @@ function handleCertify({ patch }) {
   >
     <h3 class="fr-callout__title">Audit terminé</h3>
 
-    <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">
-      Soumettre pour certification
-    </button>
-    <span v-else>L'auditeur doit maintenant soumettre l'audit pour certification.</span>
+    <span v-if="!permissions.canSendAudit">L'auditeur doit maintenant soumettre l'audit pour certification.</span>
   </div>
 
   <div
@@ -119,22 +83,8 @@ function handleCertify({ patch }) {
   >
     <h3 class="fr-callout__title">Certification en cours</h3>
 
-    <button v-if="permissions.canCertify" class="fr-btn" @click="showCertificationModal = true">
-      Certifier le parcellaire
-    </button>
-    <span v-else>Le chargé de certification doit maintenant certifier le parcellaire.</span>
+    <span v-if="!permissions.canCertify">Le chargé de certification doit maintenant certifier le parcellaire.</span>
   </div>
-
-  <Teleport to="body">
-    <SaveAuditModal v-if="showSaveAuditModal" @close="showSaveAuditModal = false" @submit="handleSaveAudit" />
-    <CertificationModal
-      :operator="operator"
-      :record="record"
-      v-if="showCertificationModal"
-      @close="showCertificationModal = false"
-      @submit="handleCertify"
-    />
-  </Teleport>
 </template>
 
 <style scoped></style>
