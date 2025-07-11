@@ -272,7 +272,7 @@ const getShortVersionName = (name) => {
 };
 </script>
 
-<style>
+<style scoped>
 .map {
   background: #ccc;
   height: 390px;
