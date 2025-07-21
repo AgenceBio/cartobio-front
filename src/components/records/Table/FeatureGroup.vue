@@ -56,7 +56,14 @@
     :aria-current="feature.id === hoveredId ? 'location' : null"
   >
     <div @click="pressZoom(feature.id)" class="parcelle-titre fr-mb-6v">
-      <h4 class="fr-text--lg fr-mb-0">{{ featureName(feature) }}</h4>
+      <h4
+        class="fr-text--lg fr-mb-0"
+        :class="{
+          'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--lg fr-icon--left controlee': feature.properties.controlee,
+        }"
+      >
+        {{ featureName(feature) }}
+      </h4>
       <div class="parcelle-actions">
         <template v-if="isGroupedByCulture">
           <small v-if="feature.properties.cultures.length > 1">Multi-culture</small>
@@ -389,5 +396,10 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 
 .red:hover {
   background-color: var(--red-marianne-925-125-active);
+}
+
+.controlee:before {
+  margin-right: 5px;
+  color: var(--success-425-625-active);
 }
 </style>

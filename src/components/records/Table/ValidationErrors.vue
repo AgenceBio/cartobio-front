@@ -46,7 +46,6 @@
         </p>
         <h4 class="fr-text--md fr-mb-0">Cette version du parcellaire n'est pas la plus récente.</h4>
       </div>
-      <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-close-line">Ne plus afficher le message</button>
     </div>
   </div>
 </template>

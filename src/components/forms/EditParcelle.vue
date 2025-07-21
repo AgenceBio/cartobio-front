@@ -163,6 +163,18 @@
         </button>
       </div>
     </form>
+    <div class="fr-toggle fr-mt-4v">
+      <input
+        type="checkbox"
+        class="fr-toggle__input"
+        id="toggle"
+        aria-describedby="toggle-messages toggle-hint"
+        v-model="estControlee"
+        @change="tagParcelle(featureId)"
+      />
+      <label class="fr-toggle__label" for="toggle">Marquer comme contrôlée</label>
+      <div class="fr-messages-group" id="toggle-messages" aria-live="polite"></div>
+    </div>
     <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')" />
   </div>
 </template>
@@ -182,9 +194,14 @@ import CancelModal from "@/components/forms/CancelModal.vue";
 import { featureDetails, featureName, inHa, legalProjectionSurface } from "@/utils/features.js";
 import { getCulturePAC } from "@agencebio/rosetta-cultures";
 import { jjmmyyyy } from "@/utils/dates";
+import { tagParcelleControlee, tagParcelleNonControlee } from "@/cartobio-api";
 
 const props = defineProps({
   feature: {
+    type: Object,
+    required: true,
+  },
+  record: {
     type: Object,
     required: true,
   },
@@ -197,11 +214,12 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits(["submit", "close"]);
+const emit = defineEmits(["submit", "close", "controlee", "non-controlee"]);
 const permissions = usePermissions();
 const featuresSet = useFeaturesSetsStore();
 const showCancelModal = ref(false);
 const autofocusedElement = ref();
+const estControlee = ref(props.feature.properties.controlee);
 const isAB = computed(() => isABLevel(patch.value.conversion_niveau));
 const maxDate = computed(() => toDateInputString(new Date()));
 
@@ -223,6 +241,7 @@ const patch = ref({
 
 const featureId = computed(() => props.feature.id);
 watch(featureId, () => {
+  estControlee.value = props.feature.properties.validee;
   patch.value = {
     NOM: props.feature.properties.NOM || "",
     cultures: props.feature.properties.cultures,
@@ -256,6 +275,21 @@ function handleClose() {
   } else {
     emit("close");
   }
+}
+
+function tagParcelle(id) {
+  if (estControlee.value) {
+    tagParcelleControlee(props.record.record_id, id).then(() => {
+      estControlee.value = true;
+      emit("controlee", id);
+    });
+
+    return;
+  }
+  tagParcelleNonControlee(props.record.record_id, id).then(() => {
+    estControlee.value = false;
+    emit("non-controlee", id);
+  });
 }
 
 onBeforeUnmount(() => featuresSet.setCandidate([]));

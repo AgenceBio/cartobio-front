@@ -146,6 +146,34 @@ export async function unpinOperator(numeroBio) {
 }
 
 /**
+ * Marque une parcelle comme controlee
+ *
+ * @param {string} recordId
+ * @param {number} id
+ * @param {Partial<NormalizedRecord>} payload
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function tagParcelleControlee(recordId, id) {
+  const { data } = await apiClient.post(`/v2/audits/${recordId}/${id}/controlee`);
+
+  return data;
+}
+
+/**
+ * Marque une parcelle comme non controlee
+ *
+ * @param {string} recordId
+ * @param {number} id
+ * @param {Partial<NormalizedRecord>} payload
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function tagParcelleNonControlee(recordId, id) {
+  const { data } = await apiClient.post(`/v2/audits/${recordId}/${id}/non-controlee`);
+
+  return data;
+}
+
+/**
  * Add a new plot without id to a feature collection
  *
  * @returns {Promise<NormalizedRecord>}
