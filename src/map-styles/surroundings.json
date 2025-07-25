@@ -1,4 +1,5 @@
 {
+  "version": 8,
   "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
   "sources": {
     "rpg-anon": {
