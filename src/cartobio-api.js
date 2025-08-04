@@ -310,3 +310,9 @@ export async function getPDFData(numeroBio, record_id, signal) {
 export async function hideNotif(numeroBio) {
   await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
 }
+
+export async function addParcelleVerif(geojson, recordId) {
+  const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload : geojson });
+  console.log(data);
+  return data;
+}

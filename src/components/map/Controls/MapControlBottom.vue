@@ -119,7 +119,6 @@ const changeMode = () => {
 const clearInteractions = () => {
   map?.value?.getInteractions().pop();
 };
-
 </script>
 
 <style scoped>
@@ -208,5 +207,9 @@ const clearInteractions = () => {
 i[class^="ri"],
 i[class*=" ri"] {
   font-size: 1.2em;
+}
+
+.button-group > div {
+  border-radius: 6px;
 }
 </style>

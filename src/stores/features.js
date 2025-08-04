@@ -21,6 +21,7 @@ export const useFeaturesStore = defineStore("features", () => {
   const activeId = ref(null);
   const hoveredId = ref(null);
   const recordId = ref(null);
+  const selectedModifIds = ref([]);
 
   /**
    * @type {reactive<CartoBioFeatureCollection>}
@@ -128,6 +129,13 @@ export const useFeaturesStore = defineStore("features", () => {
   }
 
   /**
+   * @param {String[]} featureIds
+   */
+  function setSelectedModifiedFeature(featureIds) {
+    selectedModifIds.value = featureIds.map(String);
+  }
+
+  /**
    * @param  {...String} ids
    */
   function select(...ids) {
@@ -194,14 +202,14 @@ export const useFeaturesStore = defineStore("features", () => {
     map.on("mousemove", layer, ({ features }) => {
       if (features.length) {
         hoveredId.value = features[0].id;
-        map.getCanvas().style.cursor = "pointer";
+        map.value.getCanvas().style.cursor = "pointer";
       }
     });
 
     map.on("mouseleave", layer, () => {
       if (hoveredId.value) {
         hoveredId.value = null;
-        map.getCanvas().style.cursor = "";
+        map.value.getCanvas().style.cursor = "";
       }
     });
 
@@ -211,6 +219,75 @@ export const useFeaturesStore = defineStore("features", () => {
 
       if (features.length) {
         toggleSingleSelected(features[0].id);
+      }
+    });
+  }
+
+  function bindFeatureState(map, layerId) {
+    const layer = map.value
+      .getLayers()
+      .getArray()
+      .find((l) => l.get("name") === layerId);
+    const source = layer?.getSource();
+    if (!source) return;
+
+    watch(hoveredId, (id, previousId) => {
+      if (previousId) {
+        const feature = source.getFeatureById(previousId);
+        if (feature) feature.set("hover", false);
+      }
+      if (id) {
+        const feature = source.getFeatureById(id);
+        if (feature) feature.set("hover", true);
+      }
+      layer.changed();
+    });
+
+    watch(
+      () => selectedIds,
+      (ids) => {
+        collection.value.features.forEach((feature) => {
+          const f = source.getFeatureById(feature.id);
+          if (f) f.set("selected", ids.value.includes(feature.id));
+        });
+        layer.changed();
+      },
+      { deep: true },
+    );
+
+    watch(activeId, (id, previousId) => {
+      if (previousId) {
+        const feature = source.getFeatureById(previousId);
+        if (feature) feature.set("selected", false);
+      }
+      if (id) {
+        const feature = source.getFeatureById(id);
+        if (feature) feature.set("selected", true);
+      }
+      layer.changed();
+    });
+  }
+
+  function bindFeatureInteraction(map, layerId) {
+    const layer = map.value
+      .getLayers()
+      .getArray()
+      .find((l) => l.get("name") === layerId);
+    const source = layer?.getSource();
+
+    if (!source) return;
+
+    map.value.on("pointermove", (e) => {
+      if (e.dragging) return;
+      const feature = map.value.forEachFeatureAtPixel(e.pixel, (f, layerCandidate) => {
+        return layerCandidate === layer ? f : null;
+      });
+      if (feature) {
+        hoveredId.value = feature.getId();
+        map.value.getTargetElement().style.cursor = "pointer";
+      } else {
+        hoveredId.value = null;
+        map.value.getTargetElement().style.cursor = "";
       }
     });
   }
@@ -307,6 +384,7 @@ export const useFeaturesStore = defineStore("features", () => {
     activeId,
     hoveredId,
     selectedIds,
+    selectedModifIds,
     // computed
     activeFeature,
     all,
@@ -321,6 +399,8 @@ export const useFeaturesStore = defineStore("features", () => {
     $reset,
     bindMaplibreFeatureState,
     bindMaplibreInteractions,
+    bindFeatureState,
+    bindFeatureInteraction,
     getFeatureById,
     select,
     setAll,
@@ -333,5 +413,6 @@ export const useFeaturesStore = defineStore("features", () => {
     updateFeatureCollectionProperties,
     deleteSingleFeature,
     updateMatchingFeatures,
+    setSelectedModifiedFeature,
   };
 });

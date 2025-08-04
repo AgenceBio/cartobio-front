@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
 import { Map, View } from "ol";
+import { useGeographic } from "ol/proj";
 
 /**
  * * Refs
@@ -27,6 +28,7 @@ defineExpose({
  * * Functions
  */
 const initMap = (): void => {
+  useGeographic();
   map.value = new Map({
     controls: [],
     view: new View({

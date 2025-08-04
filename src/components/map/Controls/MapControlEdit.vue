@@ -3,7 +3,7 @@
     <div class="toolbar-top">
       <button
         class="fr-btn"
-        :class="[currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Éditer"
         @click="handleAction('edit')"
       >
@@ -12,67 +12,72 @@
 
       <button
         class="fr-btn"
-        :class="[currentMode === 'draw' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'draw' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Dessiner"
         @click="handleAction('draw')"
       >
         <i class="ri-pen-nib-line"></i>
       </button>
 
-      <button
-        class="fr-btn"
-        :class="[currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        data-tooltip="Couper"
-        @click="handleAction('divide')"
-      >
-        <i class="ri-scissors-cut-line"></i>
-      </button>
+      <hr />
 
       <button
         class="fr-btn"
-        :class="[currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="decouper"
         @click="handleAction('decouper')"
+        :disabled="countSelected != 1"
       >
         <i class="ri-crop-line"></i>
       </button>
 
       <button
         class="fr-btn"
-        :class="[currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        data-tooltip="Couper"
+        @click="handleAction('divide')"
+        :disabled="countSelected != 1"
+      >
+        <i class="ri-scissors-cut-line"></i>
+      </button>
+
+      <button
+        class="fr-btn"
+        :class="[mapPrefs.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Fusionner"
         @click="handleAction('fusionner')"
+        :disabled="countSelected < 2"
       >
         <i class="ri-merge-cells-horizontal"></i>
       </button>
 
-      <div class="toolbar-separator"></div>
-
       <button
         class="fr-btn"
-        :class="[currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Supprimer"
         @click="handleAction('delete')"
+        :disabled="countSelected < 1"
       >
         <i class="ri-delete-bin-line"></i>
       </button>
     </div>
-
     <div class="toolbar-bottom">
       <button
         class="fr-btn"
-        :class="[currentMode === 'undo' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'undo' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Annuler"
         @click="handleAction('undo')"
+        :disabled="true"
       >
         <i class="ri-arrow-go-back-line"></i>
       </button>
 
       <button
         class="fr-btn"
-        :class="[currentMode === 'redo' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'redo' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Refaire"
         @click="handleAction('redo')"
+        :disabled="true"
       >
         <i class="ri-arrow-go-forward-line"></i>
       </button>
@@ -81,34 +86,32 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, ref, watch, defineProps } from "vue";
+import { ref, watch } from "vue";
+import { storeToRefs } from "pinia";
+
+import { useFeaturesStore } from "@/stores/features";
+import { usePreferences } from "@/stores/preferences.js";
 
 /**
- * * Props
+ * * Stores
  */
-const props = defineProps<{
-  mode: string;
-}>();
+const store = useFeaturesStore();
+const preferences = usePreferences();
+const { map: mapPrefs } = storeToRefs(preferences);
 
 /**
  * * Refs
  */
-const currentMode = ref<string>(props.mode);
-
-/**
- * * Emits
- */
-const emit = defineEmits<{
-  (e: "action", mode: string): void;
-}>();
+const countSelected = ref<number>(store.selectedModifIds.length | 0);
 
 /**
  * * Watchers
  */
+
 watch(
-  () => props.mode,
+  () => store.selectedModifIds,
   (newValue) => {
-    currentMode.value = newValue;
+    countSelected.value = newValue.length;
   },
 );
 
@@ -116,19 +119,15 @@ watch(
  * * Fonction
  */
 const handleAction = (mode: string) => {
-  if (currentMode.value === mode) {
-    currentMode.value = "neutral";
-    emit("action", currentMode.value);
+  if (mapPrefs.value.currentMode === mode) {
+    mapPrefs.value.currentMode = "edit";
     return;
   }
-
-  currentMode.value = mode;
-  emit("action", mode);
+  mapPrefs.value.currentMode = mode;
 };
 </script>
 
 <style>
-
 .toolbar {
   position: absolute;
   top: 25%;
@@ -159,5 +158,9 @@ const handleAction = (mode: string) => {
 button[class^="ri"],
 button[class*=" ri"] {
   font-size: 1.2em;
+}
+
+hr {
+  padding: 1px;
 }
 </style>

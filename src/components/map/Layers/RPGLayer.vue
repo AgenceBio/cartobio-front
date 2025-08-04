@@ -103,11 +103,11 @@ function styleFunction(feature: FeatureLike, resolution: number): Style | null {
 onMounted(() => {
   rpgLayer = new VectorTileLayer({
     declutter: true,
-    zIndex: 2,
+    zIndex: 1,
     source: new VectorTileSource({
       format: new MVT(),
       url: "https://cartobio.agencebio.org/tiles/rpg-2023/{z}/{x}/{y}.pbf",
-      crossOrigin: "Anonymousq",
+      crossOrigin: "Anonymous",
       maxZoom: 16,
     }),
     style: styleFunction,
