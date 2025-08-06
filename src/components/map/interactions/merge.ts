@@ -88,6 +88,6 @@ export function clearMergeLayer(map: Map): void {
     .find((layer) => layer.get("name") == "layer-merge");
   if (layerMerge) {
     map.removeLayer(layerMerge);
-    fusionLayer.value = null;
+    fusionLayer = null;
   }
 }

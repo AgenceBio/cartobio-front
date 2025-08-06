@@ -1,43 +1,74 @@
 <!-- eslint-disable vue/valid-template-root -->
 <template>
-  <div>
-    <Component
-      :is="editForm"
-      v-if="showDetailsModal"
-      :feature="feature"
-      @close="showDetailsModal = false"
-      icon="fr-icon-add-line"
-      data-content-name="Modale de confirmation d'ajout"
-      required-name
-    >
-      <template #title>Créer ma parcelle</template>
-    </Component>
+  <Component
+    :is="editForm"
+    v-if="showDetailsModal"
+    :feature="feature"
+    @close="showDetailsModal = false"
+    icon="fr-icon-add-line"
+    data-content-name="Modale de confirmation d'ajout"
+    required-name
+  >
+    <template #title>Créer ma parcelle</template>
+  </Component>
+  <div
+    v-if="mergeFeature || mapPrefs.currentMode === 'delete' || mapPrefs.currentMode === 'fusionner'"
+    class="pop-in-top"
+  >
+    <p v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
+    <p v-if="numberSelectedFeature && mapPrefs.currentMode === 'delete'">
+      Vous avez sélectionné {{ numberSelectedFeature }} parcelles à supprimer
+    </p>
 
-    <div
-      v-if="mergeFeature || mapPrefs.currentMode === 'delete' || mapPrefs.currentMode === 'merge'"
-      class="pop-in-top"
-    >
-      <span v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</span>
-      <span v-if="numberSelectedFeature && mapPrefs.currentMode === 'delete'">
-        Vous avez sélectionné {{ numberSelectedFeature }} parcelles à supprimer
-      </span>
+    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer()">
+      Valider {{ mergeFeature ? "et compléter" : "la suppression" }}
+    </button>
+    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler()"></button>
+  </div>
 
-      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer()">
-        Valider {{ mergeFeature ? "et compléter" : "la suppression" }}
-      </button>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler()"></button>
+  <div v-else-if="invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
+    <p>Votre parcelle a été rogner pour respecter les règles</p>
+    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection()">
+      Valider
+    </button>
+    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+  </div>
+  <div v-if="errorDrawing && !invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
+    <p>Votre parcelle est invalide. Veuillez recommencer !</p>
+    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+  </div>
+  <div v-else-if="mapPrefs.currentMode === 'decouper'" class="pop-in-top">
+    <div class="column">
+      <div class="fr-checkbox-group">
+        <input type="checkbox" id="bordure-complete" @click="toggleAllBorder()" />
+        <label class="fr-label" for="bordure-complete" aria-label="Appliquer la bordure sur toute la parcelle"
+          >Bordure complète</label
+        >
+      </div>
+      <div class="fr-checkbox-group">
+        <input type="checkbox" id="inverser-selection" @click="invertSelection()" />
+        <label class="fr-label" for="inverser-selection" aria-label="Inverser le sens de la bordure"
+          >Inverser la séléction</label
+        >
+      </div>
     </div>
-
-    <div v-if="invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
-      <span> Votre parcelle a été rogner pour respecter les règles</span>
-      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection()">
-        Valider
-      </button>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+    <div class="column">
+      <div class="fr-checkbox-group">
+        <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
+          >Distance (m)</label
+        >
+        <input
+          type="number"
+          id="largeur-bordure"
+          step="0.01"
+          class="fr-input fr-mt-0"
+          v-model="distance"
+          @change="setDistance()"
+        />
+      </div>
     </div>
-    <div v-if="errorDrawing && !invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
-      <span> Votre parcelle est invalide. Veuillez recommencer !</span>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+    <div class="column">
+      <button class="fr-btn" :disabled="!hasBordure" @click="validateBordure">Découper</button>
     </div>
   </div>
 </template>
@@ -71,6 +102,7 @@ import { modifyInteraction } from "../interactions/modify";
 import { addParcelleVerif } from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
+import { borderInteraction, cleanup, invertSelection, setDistance, toggleAllBorder } from "../interactions/border";
 
 /*
  * * Interface
@@ -119,8 +151,8 @@ const map = inject<Ref<OlMap>>("map");
  * * Refs
  */
 
-const vectorSource = ref<VectorSource>(null);
-const vectorLayer = ref<VectorLayer<VectorSource>>(null);
+const vectorSource = ref<VectorSource>();
+const vectorLayer = ref<VectorLayer<VectorSource>>();
 const interactions = ref<Interactions>({
   select: null,
   modify: null,
@@ -138,6 +170,9 @@ const correctedGeometry = ref<any>(null);
 const invalidDrawing = ref<boolean>(false);
 const errorDrawing = ref<boolean>(false);
 
+// Refs découpe bordure
+const hasBordure = ref<boolean>(false);
+const distance = ref<number>(5);
 /*
  * * Computed
  */
@@ -177,6 +212,7 @@ const previewLayer = new VectorLayer({
   source: previewSource,
   style: previewStyle,
 });
+const previewBorderSource = new VectorSource();
 
 /*
  * * Components
@@ -189,19 +225,23 @@ const editForm = CertificationBodyEditForm;
  */
 
 const initDraw = async (): Promise<void> => {
-  drawInteraction(
-    map.value,
-    vectorLayer.value,
-    vectorSource.value,
-    updateFeatureStoreCollection,
-    showDetailsModal,
-    feature,
-  );
+  if (map && vectorLayer.value && vectorSource.value) {
+    drawInteraction(
+      map.value,
+      vectorLayer.value,
+      vectorSource.value,
+      updateFeatureStoreCollection,
+      showDetailsModal,
+      feature,
+    );
+  }
 };
 
 const initModify = (): void => {
   const store = useFeaturesStore();
-  modifyInteraction(map.value, vectorLayer.value, store);
+  if (map && vectorLayer.value) {
+    modifyInteraction(map.value, vectorLayer.value, store);
+  }
 };
 
 const deleteSelected = (): void => {
@@ -225,9 +265,9 @@ const deleteSelected = (): void => {
   });
 
   store.selectedModifIds.forEach((id) => {
-    const feature = vectorSource.value.getFeatureById(id);
+    const feature = vectorSource.value?.getFeatureById(id);
     if (feature) {
-      const clonedGeometry = feature.getGeometry().clone();
+      const clonedGeometry = feature.getGeometry()?.clone();
       const highlightFeature = new Feature({
         geometry: clonedGeometry,
         originalId: id,
@@ -237,20 +277,32 @@ const deleteSelected = (): void => {
     }
   });
 
-  map.value.addLayer(highlightLayer);
+  map?.value.addLayer(highlightLayer);
 };
 
 const initDivide = (): void => {
-  divideInteraction(map.value, vectorLayer.value, store);
+  const targetFeature = getTargetFeature();
+
+  if (map && vectorLayer.value && targetFeature) {
+    divideInteraction(map.value, vectorLayer.value, targetFeature);
+  }
 };
 
-const initCut = (): void => {
-  // TODO : Reprendre fonctionnement existant de cut Border et réadpater pour la bonne utilisation de celle-ci avec OpenLayers
+const initBorder = (): void => {
+  const targetFeature = getTargetFeature();
+
+  if (map && vectorLayer.value && targetFeature) {
+    borderInteraction(map.value, targetFeature, hasBordure, distance, previewBorderSource);
+  }
 };
 
 const mergeFeatures = (): void => {
   const store = useFeaturesStore();
   const geojsonFormat = new GeoJSON();
+
+  if (!map || !vectorSource.value) {
+    return;
+  }
 
   const resultMerge = mergeInteractions(vectorSource.value, map.value, store.selectedModifIds);
   if (resultMerge) {
@@ -283,6 +335,9 @@ const confirmer = (): void => {
 };
 
 const annuler = (): void => {
+  if (!map) {
+    return;
+  }
   if (mergeFeature.value) {
     mergeFeature.value = null;
     clearMergeLayer(map.value);
@@ -301,6 +356,29 @@ const cancelDraw = (): void => {
 
 const confirmCorrection = (): void => {
   feature.value = correctedGeometry.value;
+};
+
+const validateBordure = (): void => {
+  previewBorderSource.getFeatures().forEach((f) => {
+    vectorLayer.value?.getSource()?.addFeature(f.clone());
+  });
+  const targetFeature = getTargetFeature();
+
+  if (targetFeature) {
+    const toBeRemoved = vectorLayer.value
+      ?.getSource()
+      ?.getFeatures()
+      .find((f) => f.getId() === targetFeature.getId());
+    if (toBeRemoved) {
+      vectorLayer.value?.getSource()?.removeFeature(toBeRemoved);
+    }
+  }
+  console.log(
+    targetFeature,
+    previewBorderSource.getFeatures().length,
+    vectorLayer.value?.getSource()?.getFeatures().length,
+  );
+  cleanup();
 };
 
 /*
@@ -350,6 +428,10 @@ const getFeatureStyle = (feature: Feature): Style[] => {
 };
 
 const clearDeleteLayer = (): void => {
+  if (!map) {
+    return;
+  }
+
   const layerDelete = map.value
     .getLayers()
     .getArray()
@@ -365,6 +447,9 @@ const updateFeatureStoreCollection = (): void => {
 };
 
 const clearInteractions = (): void => {
+  if (!map) {
+    return;
+  }
   const interactions = map.value.getInteractions();
 
   const toRemove: Interaction[] = [];
@@ -386,10 +471,30 @@ const clearInteractions = (): void => {
 };
 
 const clearPreviewSource = (): void => {
-  const features = previewLayer.getSource().getFeatures();
+  const features = previewLayer.getSource()?.getFeatures();
+  if (!features) {
+    return;
+  }
+
   features.forEach((feat) => {
-    previewLayer.getSource().removeFeature(feat);
+    previewLayer.getSource()?.removeFeature(feat);
   });
+};
+
+const getTargetFeature = (): Feature | null => {
+  const features = new GeoJSON().readFeatures(store.collection, {});
+
+  if (store.selectedModifIds && store.selectedModifIds[0]) {
+    const selectedFeature = features.find(
+      (feature) => feature.getId() === store.selectedModifIds[0] || feature.get("id") === store.selectedModifIds[0],
+    );
+
+    if (selectedFeature) {
+      return selectedFeature;
+    }
+  }
+
+  return null;
 };
 
 /*
@@ -404,7 +509,9 @@ watch(
       case "divide":
         break;
       case "fusionner":
-        clearMergeLayer(map.value);
+        if (map) {
+          clearMergeLayer(map.value);
+        }
         break;
       case "delete":
         clearDeleteLayer();
@@ -431,7 +538,7 @@ watch(
         break;
       case "decouper":
         clearInteractions();
-        initCut();
+        initBorder();
         break;
       case "fusionner":
         clearInteractions();
@@ -577,7 +684,13 @@ onUnmounted(() => {
   border-radius: 10px;
 }
 
-.pop-in-top > span {
+.pop-in-top > p {
   align-content: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 </style>

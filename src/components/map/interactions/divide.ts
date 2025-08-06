@@ -1,5 +1,4 @@
 import { RegularShape } from "ol/style";
-import { Ref } from "vue";
 import Map from "ol/Map";
 import Overlay from "ol/Overlay";
 import Draw from "ol/interaction/Draw";
@@ -11,30 +10,25 @@ import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Stroke from "ol/style/Stroke";
 import Fill from "ol/style/Fill";
-import Circle from "ol/style/Circle";
 import Feature from "ol/Feature";
 import { LineString, Point, Polygon, MultiPolygon, MultiPoint, MultiLineString, LinearRing } from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
 import * as jsts from "jsts/dist/jsts.min";
-import * as olSphere from "ol/sphere";
 import { click } from "ol/events/condition";
 
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
+import { Interaction } from "ol/interaction";
 
 let snapInteraction: Snap | null = null;
 let modifyInteraction: Modify | null = null;
 let selectInteraction: Select | null = null;
 let currentOverlays: Overlay[] = [];
-let highlightedFeatures: Feature[] = [];
 let previewLayer: VectorLayer<VectorSource> | null = null;
 let drawingLineSource: VectorSource | null = null;
 let drawingLineLayer: VectorLayer<VectorSource> | null = null;
 let clickCount = 0;
-let targetPolygon: Feature | null = null;
 
-export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSource>, featureStore: any): void {
-  const selectedFeatureId = featureStore.selectedModifIds[0];
-
+export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSource>, targetFeature: Feature): void {
   const lineStyle = new Style({
     stroke: new Stroke({ color: [0, 0, 255, 0.8], width: 3 }),
     image: new RegularShape({
@@ -76,13 +70,12 @@ export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
   });
 
   clickCount = 0;
-  targetPolygon = null;
 
   map.addLayer(previewLayer);
   map.addLayer(drawingLineLayer);
   map.addInteraction(draw);
 
-  snapInteraction = new Snap({ source: vectorLayer.getSource() });
+  snapInteraction = new Snap({ source: vectorLayer.getSource() ?? undefined });
   map.addInteraction(snapInteraction);
 
   modifyInteraction = new Modify({
@@ -97,11 +90,11 @@ export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
   });
 
   const handleMapClick = (evt: any) => {
-    if (!targetPolygon) return;
+    if (!targetFeature) return;
 
     const coordinate = evt.coordinate;
 
-    const isInsidePolygon = targetPolygon.getGeometry().intersectsCoordinate(coordinate);
+    const isInsidePolygon = targetFeature.getGeometry()?.intersectsCoordinate(coordinate);
 
     if (!isInsidePolygon) {
       clickCount++;
@@ -116,15 +109,8 @@ export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
   draw.on("drawstart", (e) => {
     cleanupPreview(map, previewSource);
 
-    const firstCoordinate = e.feature.getGeometry().getFirstCoordinate();
-    targetPolygon = getTargetFeature(
-      new Feature({ geometry: new Point(firstCoordinate) }),
-      featureStore,
-      selectedFeatureId,
-    );
-
-    e.feature.getGeometry().on("change", (evt) => {
-      updatePreview(evt.target, previewSource, featureStore, selectedFeatureId, map);
+    e.feature.getGeometry()?.on("change", (evt) => {
+      updatePreview(evt.target, previewSource, targetFeature, map);
     });
   });
 
@@ -133,17 +119,17 @@ export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
 
     map.removeInteraction(draw);
 
-    map.addInteraction(selectInteraction);
-    map.addInteraction(modifyInteraction);
+    map.addInteraction(selectInteraction as Interaction);
+    map.addInteraction(modifyInteraction as Interaction);
 
     if (snapInteraction) {
       map.addInteraction(snapInteraction);
     }
 
-    modifyInteraction.on("modifyend", () => {
-      const lineFeature = drawingLineSource.getFeatures()[0];
+    modifyInteraction?.on("modifyend", () => {
+      const lineFeature = drawingLineSource?.getFeatures()[0];
       if (lineFeature) {
-        updatePreview(lineFeature.getGeometry(), previewSource, featureStore, selectedFeatureId, map);
+        updatePreview(lineFeature.getGeometry(), previewSource, targetFeature, map);
       }
     });
 
@@ -156,31 +142,17 @@ export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
   });
 }
 
-function updatePreview(
-  lineGeom: LineString,
-  previewSource: VectorSource,
-  featureStore: any,
-  selectedFeatureId: string | undefined,
-  map: Map,
-): void {
+function updatePreview(lineGeom: LineString, previewSource: VectorSource, targetFeature: Feature, map: Map): void {
   previewSource.clear();
   currentOverlays.forEach((overlay) => {
     map.removeOverlay(overlay);
   });
   currentOverlays = [];
 
-  highlightedFeatures.forEach((feature) => {
-    feature.setStyle(null);
-  });
-  highlightedFeatures = [];
-
   const parser = new jsts.io.OL3Parser();
   parser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
 
-  const lineFeature = new Feature({ geometry: lineGeom });
   const lineJsts = parser.read(lineGeom);
-
-  const targetFeature = getTargetFeature(lineFeature, featureStore, selectedFeatureId);
 
   if (!targetFeature) {
     return;
@@ -247,8 +219,10 @@ function updatePreview(
     const parcelle2Geometry = new GeoJSON().writeFeatureObject(newPolygons[1], {});
     const parcelle2Area = calculateArea(parcelle2Geometry);
 
-    const extent = affectedOriginalFeature.getGeometry().getExtent();
-
+    const extent = affectedOriginalFeature.getGeometry()?.getExtent();
+    if (!extent) {
+      return;
+    }
     const [minX, , maxX, maxY] = extent;
     const centerX = (minX + maxX) / 2;
     const positionning = [centerX, maxY];
@@ -347,11 +321,7 @@ function showPreviewControls(map: Map, vectorLayer: VectorLayer<VectorSource>, p
 
   validateBtn.addEventListener("click", () => {
     previewSource.getFeatures().forEach((f) => {
-      vectorLayer.getSource().addFeature(f.clone());
-    });
-
-    highlightedFeatures.forEach((f) => {
-      vectorLayer.getSource().removeFeature(f);
+      vectorLayer.getSource()?.addFeature(f.clone());
     });
 
     cleanup(map);
@@ -366,7 +336,6 @@ function showPreviewControls(map: Map, vectorLayer: VectorLayer<VectorSource>, p
 
 function cleanup(map: Map): void {
   clickCount = 0;
-  targetPolygon = null;
 
   if (modifyInteraction) {
     map.removeInteraction(modifyInteraction);
@@ -397,21 +366,6 @@ function cleanup(map: Map): void {
   }
 }
 
-
-function getTargetFeature(lineGeom: Feature, featureStore: any, selectedFeatureId?: any): Feature | null {
-  const features = new GeoJSON().readFeatures(featureStore.collection, {});
-
-  if (selectedFeatureId) {
-    const selectedFeature = features.find(
-      (feature) => feature.getId() === selectedFeatureId || feature.get("id") === selectedFeatureId,
-    );
-
-    if (selectedFeature) {
-      return selectedFeature;
-    }
-  }
-}
-
 /*
  * * Utils
  */
@@ -435,11 +389,6 @@ export function cleanupPreview(map: Map, previewSource: VectorSource): void {
   currentOverlays = [];
 
   previewSource.clear();
-
-  highlightedFeatures.forEach((feature) => {
-    feature.setStyle(null);
-  });
-  highlightedFeatures = [];
 }
 
 const calculateArea = (feature: any): string => {

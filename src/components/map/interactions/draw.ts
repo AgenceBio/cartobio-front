@@ -1,8 +1,7 @@
-import { featureCollection } from "@turf/helpers";
 import { Draw } from "ol/interaction";
 import { Style, Fill, Stroke, RegularShape } from "ol/style";
 import { Feature } from "ol";
-import { LineString, MultiPoint } from "ol/geom";
+import { MultiPoint } from "ol/geom";
 import { GeoJSON } from "ol/format";
 import Tooltip from "ol-ext/overlay/Tooltip";
 import type { Map as OlMap } from "ol";
@@ -173,8 +172,8 @@ export const drawInteraction = (
     const mapContainer = map.getTargetElement();
     if (mapContainer) mapContainer.appendChild(tooltipElement);
 
-    const geometry = currentDrawing.getGeometry();
-    geometry.on("change", () => {
+    const geometry = currentDrawing?.getGeometry();
+    geometry?.on("change", () => {
       const area = calculateArea(new GeoJSON().writeFeatureObject(currentDrawing, {}));
       if (tooltipElement) tooltipElement.innerHTML = createTooltipContent(area);
     });
