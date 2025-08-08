@@ -1,6 +1,5 @@
 import Map from "ol/Map";
 import Overlay from "ol/Overlay";
-import Snap from "ol/interaction/Snap";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
@@ -54,8 +53,8 @@ let distance: Ref<number>;
 let hasBorder: Ref<boolean>;
 let isDragging = false;
 
-let handleMapClick: (e: event) => void;
-let handlePointerMove: () => void;
+let handleMapClick: (e: any) => void;
+let handlePointerMove: (e: any) => void;
 
 function borderInteraction(
   _map: Map,
@@ -481,7 +480,7 @@ export function cleanupPreview(previewSource: VectorSource | null): void {
   previewSource?.clear();
 }
 
-function calculateArea(feature: any): string {
+function calculateArea(feature: Feature): string {
   return inHa(legalProjectionSurface(feature));
 }
 
@@ -627,6 +626,7 @@ function movePoint(event: any) {
   }
   previewStartPointSource.clear();
   previewEndPointSource.clear();
+
   drawPoints();
 
   const coordinates = geometry?.getCoordinates()[0];

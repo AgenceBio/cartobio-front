@@ -61,27 +61,6 @@
         <i class="ri-delete-bin-line"></i>
       </button>
     </div>
-    <div class="toolbar-bottom">
-      <button
-        class="fr-btn"
-        :class="[mapPrefs.currentMode === 'undo' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        data-tooltip="Annuler"
-        @click="handleAction('undo')"
-        :disabled="true"
-      >
-        <i class="ri-arrow-go-back-line"></i>
-      </button>
-
-      <button
-        class="fr-btn"
-        :class="[mapPrefs.currentMode === 'redo' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        data-tooltip="Refaire"
-        @click="handleAction('redo')"
-        :disabled="true"
-      >
-        <i class="ri-arrow-go-forward-line"></i>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -127,7 +106,7 @@ const handleAction = (mode: string) => {
 };
 </script>
 
-<style>
+<style scoped>
 .toolbar {
   position: absolute;
   top: 25%;
@@ -144,19 +123,8 @@ const handleAction = (mode: string) => {
   border-radius: 4px;
 }
 
-.toolbar-bottom {
-  margin-top: 10px;
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-button[class^="ri"],
-button[class*=" ri"] {
+:deep(button[class^="ri"]),
+:deep(button[class*=" ri"]) {
   font-size: 1.2em;
 }
 

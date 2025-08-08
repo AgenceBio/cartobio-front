@@ -71,6 +71,16 @@
       <button class="fr-btn" :disabled="!hasBordure" @click="validateBordure">Découper</button>
     </div>
   </div>
+  <Teleport v-if="isDraw" to=".toolbar">
+    <div class="toolbar-bottom">
+      <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo()" :disabled="!hasUndo">
+        <i class="ri-arrow-go-back-line"></i>
+      </button>
+      <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo()" :disabled="!hasRedo">
+        <i class="ri-arrow-go-forward-line"></i>
+      </button>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -146,7 +156,9 @@ const { map: mapPrefs } = storeToRefs(preferences);
  */
 
 const map = inject<Ref<OlMap>>("map");
-
+if (!map) {
+  throw new Error("Pas de map disponible");
+}
 /*
  * * Refs
  */
@@ -165,6 +177,8 @@ const showDetailsModal = ref(false);
 const feature = ref<Feature | null>(null);
 const mergeFeature = ref<Feature | null>(null);
 const correctedGeometry = ref<any>(null);
+const hasUndo = ref(false);
+const hasRedo = ref(false);
 
 // Refs draw interaction
 const invalidDrawing = ref<boolean>(false);
@@ -373,11 +387,6 @@ const validateBordure = (): void => {
       vectorLayer.value?.getSource()?.removeFeature(toBeRemoved);
     }
   }
-  console.log(
-    targetFeature,
-    previewBorderSource.getFeatures().length,
-    vectorLayer.value?.getSource()?.getFeatures().length,
-  );
   cleanup();
 };
 
@@ -497,6 +506,10 @@ const getTargetFeature = (): Feature | null => {
   return null;
 };
 
+const updateHasUndoRedo = () => {
+  hasUndo.value = !!interactions.value.undoRedo?.hasUndo();
+  hasRedo.value = !!interactions.value.undoRedo?.hasRedo();
+};
 /*
  * * Watchers
  */
@@ -543,12 +556,6 @@ watch(
       case "fusionner":
         clearInteractions();
         mergeFeatures();
-        break;
-      case "undo":
-        undo();
-        break;
-      case "redo":
-        redo();
         break;
       case "neutral":
         clearInteractions();
@@ -660,9 +667,13 @@ onMounted(() => {
     featureStore.bindFeatureInteraction(map, "plan-features-layer");
   }
 
-  const undoRedo = new UndoRedo({ source: vectorSource.value });
+  const undoRedo = new UndoRedo({ layers: [vectorLayer.value] });
   map.value.addInteraction(undoRedo);
   interactions.value.undoRedo = undoRedo;
+
+  interactions.value.undoRedo.on("stack:add", updateHasUndoRedo);
+  interactions.value.undoRedo.on("stack:remove", updateHasUndoRedo);
+  interactions.value.undoRedo.on("stack:clear", updateHasUndoRedo);
 });
 
 onUnmounted(() => {
@@ -692,5 +703,16 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+}
+
+.toolbar-bottom {
+  margin-top: 10px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border-radius: 4px;
 }
 </style>
