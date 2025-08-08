@@ -39,7 +39,7 @@ let previewStartPointLayer: VectorLayer<VectorSource> | null = null;
 let previewEndPointSource: VectorSource | null = null;
 let previewEndPointLayer: VectorLayer<VectorSource> | null = null;
 let previewBorderSource: VectorSource | null = null;
-let previewResSource: VectorSource | null = null;
+let resSource: VectorSource | null = null;
 let previewBorderLayer: VectorLayer<VectorSource> | null = null;
 let closestPoint: Coordinate | undefined | null;
 let closestSegmentIndex = -1;
@@ -61,12 +61,12 @@ function borderInteraction(
   _targetFeature: Feature,
   _hasBorder: Ref<boolean>,
   _distance: Ref<number>,
-  _previewBorderSource: VectorSource,
+  _resSource: VectorSource,
 ): void {
   map = _map;
   hasBorder = _hasBorder;
   distance = _distance;
-  previewResSource = _previewBorderSource;
+  resSource = _resSource;
   targetFeature = _targetFeature;
   if (!targetFeature) return;
 
@@ -341,9 +341,9 @@ function drawBorder() {
     text = nom;
   }
 
-  previewResSource?.clear();
-  previewResSource?.addFeature(featureWithoutBordure);
-  previewResSource?.addFeature(res);
+  resSource?.clear();
+  resSource?.addFeature(featureWithoutBordure);
+  resSource?.addFeature(res);
 
   const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
   const parcelle1Area = calculateArea(parcelle1Geometry);
@@ -386,7 +386,6 @@ function drawBorder() {
   tooltipOverlay.setPosition(positionning);
 
   hasBorder.value = true;
-  previewBorderSource?.addFeature(res);
 }
 
 function getSplittingLine(projectionDistance: number, geometry: Geometry, buffer: Geometry) {
@@ -541,6 +540,7 @@ function cleanup(): void {
   startSegmentIndex = -1;
   endSegmentIndex = -1;
   hasBorder.value = false;
+  resSource?.clear();
 
   if (dragStart) {
     map.removeInteraction(dragStart);

@@ -37,6 +37,10 @@
     <p>Votre parcelle est invalide. Veuillez recommencer !</p>
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
   </div>
+  <div v-else-if="mapPrefs.currentMode === 'divide'" class="pop-in-top">
+    <button class="fr-btn" :disabled="!hasDivision" @click="validateBordure">Valider la découpe</button>
+    <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="validateBordure">Annuler</button>
+  </div>
   <div v-else-if="mapPrefs.currentMode === 'decouper'" class="pop-in-top">
     <div class="column">
       <div class="fr-checkbox-group">
@@ -105,14 +109,20 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 // Interactions
 import { mergeInteractions, clearMergeLayer } from "../interactions/merge";
 import { drawInteraction } from "../interactions/draw";
-import { divideInteraction } from "../interactions/divide";
+import { divideInteraction, cleanup as cleanupDivision } from "../interactions/divide";
 import { modifyInteraction } from "../interactions/modify";
 
 // Utils Geom
 import { addParcelleVerif } from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
-import { borderInteraction, cleanup, invertSelection, setDistance, toggleAllBorder } from "../interactions/border";
+import {
+  borderInteraction,
+  cleanup as cleanupBordure,
+  invertSelection,
+  setDistance,
+  toggleAllBorder,
+} from "../interactions/border";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { divideNewParcelle } from "@/cartobio-api.js";
 
@@ -186,6 +196,9 @@ const hasRedo = ref(false);
 const invalidDrawing = ref<boolean>(false);
 const errorDrawing = ref<boolean>(false);
 
+// Refs division
+const hasDivision = ref<boolean>(false);
+
 // Refs découpe bordure
 const hasBordure = ref<boolean>(false);
 const distance = ref<number>(5);
@@ -228,7 +241,7 @@ const previewLayer = new VectorLayer({
   source: previewSource,
   style: previewStyle,
 });
-const previewBorderSource = new VectorSource();
+const resSource = new VectorSource();
 
 /*
  * * Components
@@ -292,7 +305,7 @@ const initDivide = (): void => {
   const targetFeature = getTargetFeature();
 
   if (map && vectorLayer.value && targetFeature) {
-    divideInteraction(map.value, vectorLayer.value, targetFeature);
+    divideInteraction(map.value, vectorLayer.value, targetFeature, resSource, hasDivision);
   }
 };
 
@@ -300,7 +313,7 @@ const initBorder = (): void => {
   const targetFeature = getTargetFeature();
 
   if (map && vectorLayer.value && targetFeature) {
-    borderInteraction(map.value, targetFeature, hasBordure, distance, previewBorderSource);
+    borderInteraction(map.value, targetFeature, hasBordure, distance, resSource);
   }
 };
 
@@ -370,7 +383,7 @@ const validateBordure = async () => {
   const selectdId = store.selectedModifIds[0];
   const geoJson = new GeoJSON();
 
-  for (const modifiedFeature of previewBorderSource.getFeatures()) {
+  for (const modifiedFeature of resSource.getFeatures()) {
     modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
   }
   const result = await divideNewParcelle(props.recordId, selectdId, modifiedFeatures);
@@ -393,7 +406,11 @@ const validateBordure = async () => {
     }
   }
   mapPrefs.value.currentMode = "edit";
-  cleanup();
+  if (hasBordure.value) {
+    cleanupBordure();
+  } else if (hasDivision) {
+    cleanupDivision();
+  }
 };
 
 /*
@@ -687,7 +704,8 @@ onUnmounted(() => {
 .pop-in-top {
   position: absolute;
   top: 7%;
-  left: 30%;
+  left: 50%;
+  transform: translateX(-50%);
   background: white;
   z-index: 1000;
   padding: 5px;

@@ -18,6 +18,7 @@ import { click } from "ol/events/condition";
 
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { Interaction } from "ol/interaction";
+import { Ref } from "vue";
 
 let snapInteraction: Snap | null = null;
 let modifyInteraction: Modify | null = null;
@@ -27,8 +28,20 @@ let previewLayer: VectorLayer<VectorSource> | null = null;
 let drawingLineSource: VectorSource | null = null;
 let drawingLineLayer: VectorLayer<VectorSource> | null = null;
 let clickCount = 0;
+let resSource: VectorSource;
+let hasDivision: Ref<boolean>;
+let map: Map;
 
-export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSource>, targetFeature: Feature): void {
+function divideInteraction(
+  _map: Map,
+  vectorLayer: VectorLayer<VectorSource>,
+  targetFeature: Feature,
+  _resultLayer: VectorSource,
+  _hasDivision: Ref<boolean>,
+): void {
+  map = _map;
+  resSource = _resultLayer;
+  hasDivision = _hasDivision;
   const lineStyle = new Style({
     stroke: new Stroke({ color: [0, 0, 255, 0.8], width: 3 }),
     image: new RegularShape({
@@ -132,13 +145,11 @@ export function divideInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
         updatePreview(lineFeature.getGeometry(), previewSource, targetFeature, map);
       }
     });
-
-    showPreviewControls(map, vectorLayer, previewSource);
   });
 
   draw.on("drawabort", () => {
     map.un("click", handleMapClick);
-    cleanup(map);
+    cleanup();
   });
 }
 
@@ -154,57 +165,54 @@ function updatePreview(lineGeom: LineString, previewSource: VectorSource, target
 
   const lineJsts = parser.read(lineGeom);
 
-  if (!targetFeature) {
+  if (!targetFeature || !(targetFeature.getGeometry() instanceof Polygon)) {
     return;
   }
 
   const newPolygons: Feature<Polygon>[] = [];
-  let affectedOriginalFeature: Feature | null = null;
+  const polyJsts = parser.read(targetFeature.getGeometry());
 
-  if (targetFeature.getGeometry() instanceof Polygon) {
-    const polyJsts = parser.read(targetFeature.getGeometry());
+  if (lineJsts.intersects(polyJsts)) {
+    try {
+      const union = polyJsts.getExteriorRing().union(lineJsts);
+      const polygonizer = new jsts.operation.polygonize.Polygonizer();
+      polygonizer.add(union);
+      const polys = polygonizer.getPolygons();
 
-    if (lineJsts.intersects(polyJsts)) {
-      affectedOriginalFeature = targetFeature;
+      if (polys.array.length === 2) {
+        const parcelle1Style = new Style({
+          stroke: new Stroke({ color: [0, 123, 255, 0.8], width: 2 }),
+          fill: new Fill({ color: [0, 123, 255, 0.3] }),
+          zIndex: 4,
+        });
 
-      try {
-        const union = polyJsts.getExteriorRing().union(lineJsts);
-        const polygonizer = new jsts.operation.polygonize.Polygonizer();
-        polygonizer.add(union);
-        const polys = polygonizer.getPolygons();
+        const parcelle2Style = new Style({
+          stroke: new Stroke({ color: [40, 167, 69, 0.8], width: 2 }),
+          fill: new Fill({ color: [40, 167, 69, 0.3] }),
+          zIndex: 4,
+        });
 
-        if (polys.array.length === 2) {
-          const parcelle1Style = new Style({
-            stroke: new Stroke({ color: [0, 123, 255, 0.8], width: 2 }),
-            fill: new Fill({ color: [0, 123, 255, 0.3] }),
-            zIndex: 4,
+        resSource.clear();
+        polys.array.forEach((geom, index) => {
+          const newFeature = new Feature({
+            ...targetFeature.getProperties(),
+            geometry: new Polygon(parser.write(geom).getCoordinates()),
           });
-
-          const parcelle2Style = new Style({
-            stroke: new Stroke({ color: [40, 167, 69, 0.8], width: 2 }),
-            fill: new Fill({ color: [40, 167, 69, 0.3] }),
-            zIndex: 4,
-          });
-
-          polys.array.forEach((geom, index) => {
-            const newFeature = new Feature({
-              geometry: new Polygon(parser.write(geom).getCoordinates()),
-            });
-
-            newFeature.setStyle(index === 0 ? parcelle1Style : parcelle2Style);
-            newPolygons.push(newFeature);
-          });
-        }
-      } catch (error) {
-        console.warn("Erreur lors du découpage:", error);
+          resSource.addFeature(newFeature);
+          newFeature.setStyle(index === 0 ? parcelle1Style : parcelle2Style);
+          newPolygons.push(newFeature);
+        });
+        hasDivision.value = true;
       }
+    } catch (error) {
+      console.warn("Erreur lors du découpage:", error);
     }
   }
 
-  if (affectedOriginalFeature && newPolygons.length === 2) {
-    const numeroI = affectedOriginalFeature.get("NUMERO_I") || "";
-    const numeroP = affectedOriginalFeature.get("NUMERO_P") || "";
-    const nom = affectedOriginalFeature.get("NOM") || "";
+  if (newPolygons.length === 2) {
+    const numeroI = targetFeature.get("NUMERO_I") || "";
+    const numeroP = targetFeature.get("NUMERO_P") || "";
+    const nom = targetFeature.get("NOM") || "";
 
     let text = "";
     if (numeroI.toString() !== "") {
@@ -219,7 +227,7 @@ function updatePreview(lineGeom: LineString, previewSource: VectorSource, target
     const parcelle2Geometry = new GeoJSON().writeFeatureObject(newPolygons[1], {});
     const parcelle2Area = calculateArea(parcelle2Geometry);
 
-    const extent = affectedOriginalFeature.getGeometry()?.getExtent();
+    const extent = targetFeature.getGeometry()?.getExtent();
     if (!extent) {
       return;
     }
@@ -276,66 +284,10 @@ function createTooltipOverlay(map: Map): Overlay {
   return overlay;
 }
 
-function showPreviewControls(map: Map, vectorLayer: VectorLayer<VectorSource>, previewSource: VectorSource): void {
-  const controlsDiv = document.createElement("div");
-  controlsDiv.className = "divide-preview-controls";
-  controlsDiv.style.cssText = `
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%, -50%);
-    z-index: 1000;
-    background: white;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  `;
-
-  const validateBtn = document.createElement("button");
-  validateBtn.textContent = "Valider la découpe";
-  validateBtn.className = "fr-btn btn-validate";
-  validateBtn.style.cssText = `
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    margin-right: 10px;
-    border-radius: 3px;
-    cursor: pointer;
-  `;
-
-  const cancelBtn = document.createElement("button");
-  cancelBtn.textContent = "Annuler";
-  cancelBtn.className = "fr-btn btn-cancel";
-  cancelBtn.style.cssText = `
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 3px;
-    cursor: pointer;
-  `;
-
-  controlsDiv.appendChild(validateBtn);
-  controlsDiv.appendChild(cancelBtn);
-
-  map.getTargetElement().appendChild(controlsDiv);
-
-  validateBtn.addEventListener("click", () => {
-    previewSource.getFeatures().forEach((f) => {
-      vectorLayer.getSource()?.addFeature(f.clone());
-    });
-
-    cleanup(map);
-    controlsDiv.remove();
-  });
-
-  cancelBtn.addEventListener("click", () => {
-    cleanup(map);
-    controlsDiv.remove();
-  });
-}
-
-function cleanup(map: Map): void {
+function cleanup(): void {
   clickCount = 0;
+  hasDivision.value = false;
+  resSource.clear();
 
   if (modifyInteraction) {
     map.removeInteraction(modifyInteraction);
@@ -370,13 +322,7 @@ function cleanup(map: Map): void {
  * * Utils
  */
 
-export function updateOverlay(
-  overlay: Overlay,
-  pos: number[],
-  value: number | string,
-  unit: string,
-  bold = false,
-): void {
+function updateOverlay(overlay: Overlay, pos: number[], value: number | string, unit: string, bold = false): void {
   overlay.setPosition(pos);
   const content = bold ? `<b>${value} ${unit}</b>` : `${value} ${unit}`;
   overlay.getElement().innerHTML = content;
@@ -391,6 +337,8 @@ export function cleanupPreview(map: Map, previewSource: VectorSource): void {
   previewSource.clear();
 }
 
-const calculateArea = (feature: any): string => {
+function calculateArea(feature: any): string {
   return inHa(legalProjectionSurface(feature));
-};
+}
+
+export { cleanup, divideInteraction, updateOverlay };
