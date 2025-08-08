@@ -321,10 +321,12 @@ function drawBorder() {
   );
 
   const res = new Feature({
+    ...targetFeature.getProperties(),
     geometry: bordure,
   });
 
   const featureWithoutBordure = new Feature({
+    ...targetFeature.getProperties(),
     geometry: withoutBordure,
   });
 
@@ -339,10 +341,12 @@ function drawBorder() {
     text = nom;
   }
 
-  const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
-  const parcelle1Area = calculateArea(parcelle1Geometry);
   previewResSource?.clear();
   previewResSource?.addFeature(featureWithoutBordure);
+  previewResSource?.addFeature(res);
+
+  const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
+  const parcelle1Area = calculateArea(parcelle1Geometry);
 
   const parcelle2Geometry = new GeoJSON().writeFeatureObject(res, {});
   const parcelle2Area = calculateArea(parcelle2Geometry);
@@ -554,7 +558,7 @@ function cleanup(): void {
   if (previewClosestPointLayer) {
     cleanupPreview(previewClosestPointLayer.getSource());
     map.removeLayer(previewClosestPointLayer);
-    previewStartPointLayer = null;
+    previewClosestPointLayer = null;
   }
 
   if (previewStartPointLayer) {
@@ -606,7 +610,7 @@ function toggleAllBorder() {
 }
 
 function setDistance() {
-  if (!isNaN(distance.value) && startBorderPoint && endBorderPoint) {
+  if ((!isNaN(distance.value) && startBorderPoint && endBorderPoint) || allBorder) {
     drawBorder();
   }
 }

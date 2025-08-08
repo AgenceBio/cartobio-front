@@ -22,6 +22,7 @@ export function modifyInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
     style: [styleDrawing, stylePointDrawing],
   });
   select.on("select", (e) => {
+    console.log(e.target.getFeatures().getArray());
     const selectedIds = e.target
       .getFeatures()
       .getArray()

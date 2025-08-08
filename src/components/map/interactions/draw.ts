@@ -110,9 +110,8 @@ const updateTooltipPosition = (
 
 export const drawInteraction = (
   map: OlMap,
-  vectorLayer: VectorLayer<any>,
-  vectorSource: VectorSource<any>,
-  updateFeatureStoreCollection: () => void,
+  vectorLayer: VectorLayer<VectorSource>,
+  vectorSource: VectorSource,
   showDetailsModal: Ref<boolean>,
   featureRef: Ref<Feature | null>,
 ): void => {

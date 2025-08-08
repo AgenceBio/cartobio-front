@@ -113,6 +113,8 @@ import { addParcelleVerif } from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
 import { borderInteraction, cleanup, invertSelection, setDistance, toggleAllBorder } from "../interactions/border";
+import { CartoBioFeature } from "@agencebio/cartobio-types";
+import { divideNewParcelle } from "@/cartobio-api.js";
 
 /*
  * * Interface
@@ -240,19 +242,11 @@ const editForm = CertificationBodyEditForm;
 
 const initDraw = async (): Promise<void> => {
   if (map && vectorLayer.value && vectorSource.value) {
-    drawInteraction(
-      map.value,
-      vectorLayer.value,
-      vectorSource.value,
-      updateFeatureStoreCollection,
-      showDetailsModal,
-      feature,
-    );
+    drawInteraction(map.value, vectorLayer.value, vectorSource.value, showDetailsModal, feature);
   }
 };
 
 const initModify = (): void => {
-  const store = useFeaturesStore();
   if (map && vectorLayer.value) {
     modifyInteraction(map.value, vectorLayer.value, store);
   }
@@ -311,7 +305,6 @@ const initBorder = (): void => {
 };
 
 const mergeFeatures = (): void => {
-  const store = useFeaturesStore();
   const geojsonFormat = new GeoJSON();
 
   if (!map || !vectorSource.value) {
@@ -372,21 +365,34 @@ const confirmCorrection = (): void => {
   feature.value = correctedGeometry.value;
 };
 
-const validateBordure = (): void => {
-  previewBorderSource.getFeatures().forEach((f) => {
-    vectorLayer.value?.getSource()?.addFeature(f.clone());
-  });
-  const targetFeature = getTargetFeature();
+const validateBordure = async () => {
+  const modifiedFeatures: CartoBioFeature[] = [];
+  const selectdId = store.selectedModifIds[0];
+  const geoJson = new GeoJSON();
 
-  if (targetFeature) {
-    const toBeRemoved = vectorLayer.value
-      ?.getSource()
-      ?.getFeatures()
-      .find((f) => f.getId() === targetFeature.getId());
-    if (toBeRemoved) {
-      vectorLayer.value?.getSource()?.removeFeature(toBeRemoved);
+  for (const modifiedFeature of previewBorderSource.getFeatures()) {
+    modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
+  }
+  const result = await divideNewParcelle(props.recordId, selectdId, modifiedFeatures);
+
+  if (result) {
+    store.setSelectedModifiedFeature([]);
+    const newFeatures = result.parcelles.features.filter(
+      (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+    );
+    store.setAll(result.parcelles.features);
+
+    const feature = vectorLayer.value?.getSource()?.getFeatureById(selectdId);
+
+    if (feature) {
+      vectorLayer.value?.getSource()?.removeFeature(feature);
+    }
+
+    for (const newFeature of newFeatures) {
+      vectorLayer.value?.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
     }
   }
+  mapPrefs.value.currentMode = "edit";
   cleanup();
 };
 
@@ -448,11 +454,6 @@ const clearDeleteLayer = (): void => {
   if (layerDelete) {
     map.value.removeLayer(layerDelete);
   }
-};
-
-const updateFeatureStoreCollection = (): void => {
-  // TODO : Après un envoi quelquconque au serveur réactualiser la vue en temps réél
-  console.log("TODO");
 };
 
 const clearInteractions = (): void => {
@@ -517,6 +518,7 @@ const updateHasUndoRedo = () => {
 watch(
   () => mapPrefs.value.currentMode,
   (newMode, oldValue) => {
+    interactions.value.undoRedo.clear();
     if (!props.interactive) return;
     switch (oldValue) {
       case "divide":
@@ -639,8 +641,7 @@ onMounted(() => {
     mapPrefs.value.currentMode = "neutral";
   }
 
-  const featureStore = useFeaturesStore();
-  const features = new GeoJSON().readFeatures(featureStore.collection, {});
+  const features = new GeoJSON().readFeatures(store.collection, {});
 
   vectorSource.value = new VectorSource({
     features,
@@ -663,8 +664,8 @@ onMounted(() => {
   }
 
   if (props.interactive) {
-    featureStore.bindFeatureState(map, "plan-features-layer");
-    featureStore.bindFeatureInteraction(map, "plan-features-layer");
+    store.bindFeatureState(map, "plan-features-layer");
+    store.bindFeatureInteraction(map, "plan-features-layer");
   }
 
   const undoRedo = new UndoRedo({ layers: [vectorLayer.value] });
