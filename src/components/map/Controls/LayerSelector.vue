@@ -1,5 +1,5 @@
 <template>
-  <div class="container maplibregl-ctrl" ref="layersMenuRef">
+  <div class="container olgl-ctrl" ref="layersMenuRef">
     <button
       class="menu-toggle"
       :class="{ 'menu-toggle--satellite': fond === 'satellite', 'menu-toggle--plan': fond === 'plan' }"
@@ -79,7 +79,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeUnmount, ref } from "vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useTélépac } from "@/referentiels/pac.js";

@@ -125,7 +125,7 @@ import {
   setDistance,
   toggleAllBorder,
 } from "../interactions/border";
-import { CartoBioFeature } from "@agencebio/cartobio-types";
+import { CartoBioFeature, CartoBioFeatureCollection } from "@agencebio/cartobio-types";
 import { divideNewParcelle } from "@/cartobio-api.js";
 
 /*
@@ -137,6 +137,7 @@ interface Props {
   interactive?: boolean;
   recordId: string;
   isDraw: boolean;
+  data?: CartoBioFeatureCollection;
 }
 
 interface Interactions {
@@ -410,7 +411,7 @@ const validateBordure = async () => {
   mapPrefs.value.currentMode = "edit";
   if (hasBordure.value) {
     cleanupBordure();
-  } else if (hasDivision) {
+  } else if (hasDivision.value) {
     cleanupDivision();
   }
 };
@@ -659,7 +660,7 @@ onMounted(() => {
     mapPrefs.value.currentMode = "neutral";
   }
 
-  const features = new GeoJSON().readFeatures(store.collection, {});
+  const features = new GeoJSON().readFeatures(props.data ?? store.collection, {});
 
   vectorSource.value = new VectorSource({
     features,

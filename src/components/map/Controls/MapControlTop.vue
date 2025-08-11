@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, defineProps, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 /**
  * * Props
@@ -38,7 +38,11 @@ const isConsult = ref<boolean>(props.isConsult);
 /**
  * * Emits
  */
-const emit = defineEmits(["addParcelle", "compare", "openDetail"]);
+const emit = defineEmits<{
+  (e: "addParcelle"): void;
+  (e: "compare"): void;
+  (e: "openDetail"): void;
+}>();
 
 /**
  * * Watchers

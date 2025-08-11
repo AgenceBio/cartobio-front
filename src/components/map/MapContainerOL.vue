@@ -60,7 +60,7 @@ onUpdated(() => {
 @import "ol/ol.css";
 </style>
 
-<style lang="postcss" scoped>
+<style scoped>
 .openlayers-container {
   z-index: 0;
 }

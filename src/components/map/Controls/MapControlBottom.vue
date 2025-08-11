@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, defineEmits, watch, Ref } from "vue";
+import { inject, ref, watch, Ref } from "vue";
 import type { Map as OlMap } from "ol";
 
 /**
