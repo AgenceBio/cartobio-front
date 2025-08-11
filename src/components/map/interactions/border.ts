@@ -25,6 +25,7 @@ import proj4 from "proj4";
 import * as jsts from "jsts/dist/jsts.min";
 import { Ref } from "vue";
 import { Translate } from "ol/interaction";
+import { MapBrowserEvent } from "ol/MapBrowserEvent";
 
 let map: Map;
 let dragStart: Translate | null = null;
@@ -53,8 +54,8 @@ let distance: Ref<number>;
 let hasBorder: Ref<boolean>;
 let isDragging = false;
 
-let handleMapClick: (e: any) => void;
-let handlePointerMove: (e: any) => void;
+let handleMapClick: () => void;
+let handlePointerMove: (e: MapBrowserEvent) => void;
 
 function borderInteraction(
   _map: Map,
@@ -124,7 +125,7 @@ function borderInteraction(
   map.addLayer(previewEndPointLayer);
   map.addLayer(previewBorderLayer);
 
-  handlePointerMove = (event: any) => {
+  handlePointerMove = (event: MapBrowserEvent) => {
     movePoint(event);
   };
 
@@ -620,7 +621,7 @@ function getBorderLayer() {
   return previewBorderLayer;
 }
 
-function movePoint(event: any) {
+function movePoint(event: PointerEvent) {
   if (!previewStartPointSource || !previewEndPointSource) return null;
 
   const coordinate = event.coordinate;

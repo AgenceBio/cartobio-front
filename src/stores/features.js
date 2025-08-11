@@ -149,80 +149,6 @@ export const useFeaturesStore = defineStore("features", () => {
     selectedIds.value = selectedIds.value.filter((id) => ids.map(String).includes(String(id)) === false);
   }
 
-  function bindMaplibreFeatureState(map, source) {
-    watch(hoveredId, (id, previousId) => {
-      if (id) {
-        map.setFeatureState({ source, id }, { hover: true });
-      }
-
-      if (previousId) {
-        map.setFeatureState({ source, id: previousId }, { hover: false });
-      }
-    });
-
-    watch(
-      () => selectedIds,
-      (currentIds) => {
-        currentIds.value.forEach((id) => {
-          map.setFeatureState({ source, id }, { selected: true });
-        });
-
-        collection.value.features.forEach(({ id }) => {
-          const { selected } = map.getFeatureState({ id, source });
-          if (selected && !currentIds.value.includes(id)) {
-            map.setFeatureState({ source, id }, { selected: false });
-          }
-        });
-      },
-      { deep: true },
-    );
-
-    watch(activeId, (id, previousId) => {
-      if (id) {
-        map.setFeatureState({ source, id }, { selected: true });
-      }
-
-      if (previousId) {
-        map.setFeatureState({ source, id: previousId }, { selected: false });
-      }
-    });
-
-    map.on("styledata", () => {
-      if (map.getSource(source) === undefined) {
-        return;
-      }
-
-      selectedIds.value.forEach((id) => {
-        map.setFeatureState({ source, id }, { selected: true });
-      });
-    });
-  }
-
-  function bindMaplibreInteractions(map, layer) {
-    map.on("mousemove", layer, ({ features }) => {
-      if (features.length) {
-        hoveredId.value = features[0].id;
-        map.value.getCanvas().style.cursor = "pointer";
-      }
-    });
-
-    map.on("mouseleave", layer, () => {
-      if (hoveredId.value) {
-        hoveredId.value = null;
-        map.value.getCanvas().style.cursor = "";
-      }
-    });
-
-    map.on("click", layer, ({ lngLat }) => {
-      const point = map.project(lngLat);
-      const features = map.queryRenderedFeatures(point, { layers: [layer] });
-
-      if (features.length) {
-        toggleSingleSelected(features[0].id);
-      }
-    });
-  }
-
   function bindFeatureState(map, layerId) {
     const layer = map.value
       .getLayers()
@@ -397,8 +323,6 @@ export const useFeaturesStore = defineStore("features", () => {
     selectedFeatures,
     // methods
     $reset,
-    bindMaplibreFeatureState,
-    bindMaplibreInteractions,
     bindFeatureState,
     bindFeatureInteraction,
     getFeatureById,

@@ -23,7 +23,6 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: {
-            "maplibre-gl": ["maplibre-gl"],
             xlsx: ["xlsx"],
             "rosetta-cultures": ["@agencebio/rosetta-cultures"],
             "cartobio-types": ["@agencebio/cartobio-types"],

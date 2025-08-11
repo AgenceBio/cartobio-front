@@ -144,7 +144,7 @@ interface Interactions {
   select: Select | null;
   modify: typeof ModifyFeature | null;
   draw: Draw | null;
-  split: any | null;
+  split: unknown | null;
   undoRedo: typeof UndoRedo | null;
 }
 
@@ -191,7 +191,7 @@ const interactions = ref<Interactions>({
 const showDetailsModal = ref(false);
 const feature = ref<Feature | null>(null);
 const mergeFeature = ref<Feature | null>(null);
-const correctedGeometry = ref<any>(null);
+const correctedGeometry = ref<Feature | null>(null);
 const hasUndo = ref(false);
 const hasRedo = ref(false);
 
@@ -420,7 +420,7 @@ const validateBordure = async () => {
  * * Fonctions : Utils
  */
 
-const calculateArea = (feature: any): string => {
+const calculateArea = (feature: Feature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 

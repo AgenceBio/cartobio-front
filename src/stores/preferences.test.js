@@ -13,6 +13,7 @@ describe("preferences/map", () => {
       background: "plan",
       cadastre: false,
       rpg: false,
+      currentMode: "neutral"
     });
   });
 

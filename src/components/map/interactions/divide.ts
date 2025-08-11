@@ -19,6 +19,8 @@ import { click } from "ol/events/condition";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { Interaction } from "ol/interaction";
 import { Ref } from "vue";
+import { MapBrowserEvent } from "ol/MapBrowserEvent";
+import { DrawEvent } from "ol/DrawEvent";
 
 let snapInteraction: Snap | null = null;
 let modifyInteraction: Modify | null = null;
@@ -102,7 +104,7 @@ function divideInteraction(
     style: modifyStyle,
   });
 
-  const handleMapClick = (evt: any) => {
+  const handleMapClick = (evt: MapBrowserEvent) => {
     if (!targetFeature) return;
 
     const coordinate = evt.coordinate;
@@ -119,15 +121,15 @@ function divideInteraction(
 
   map.on("click", handleMapClick);
 
-  draw.on("drawstart", (e) => {
+  draw.on("drawstart", (e: DrawEvent) => {
     cleanupPreview(map, previewSource);
 
-    e.feature.getGeometry()?.on("change", (evt) => {
+    e.feature.getGeometry()?.on("change", (evt: DrawEvent) => {
       updatePreview(evt.target, previewSource, targetFeature, map);
     });
   });
 
-  draw.on("drawend", (e) => {
+  draw.on("drawend", () => {
     map.un("click", handleMapClick);
 
     map.removeInteraction(draw);
@@ -337,7 +339,7 @@ export function cleanupPreview(map: Map, previewSource: VectorSource): void {
   previewSource.clear();
 }
 
-function calculateArea(feature: any): string {
+function calculateArea(feature: Feature): string {
   return inHa(legalProjectionSurface(feature));
 }
 

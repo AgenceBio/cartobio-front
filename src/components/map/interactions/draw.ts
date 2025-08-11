@@ -132,7 +132,7 @@ export const drawInteraction = (
       const coordPoint = e.coordinate;
       let canDraw = true;
 
-      vectorSource.getFeatures().forEach((feature) => {
+      vectorSource.getFeatures().forEach((feature: Feature) => {
         if (feature.getGeometry().intersectsCoordinate(coordPoint)) {
           canDraw = false;
         }

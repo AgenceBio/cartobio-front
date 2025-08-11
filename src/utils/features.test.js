@@ -6,7 +6,6 @@ import {
   bounds,
   createGroupingKeys,
   cultureLabel,
-  diff,
   featureName,
   FeatureNotFoundError,
   getFeatureGroups,
@@ -95,32 +94,6 @@ const overlappingFeatureCollection = {
     },
   ],
 };
-
-describe("diff", () => {
-  test("feature remains untouched", () => {
-    expect(diff(feature, disjointCollection)).toEqual(feature);
-  });
-
-  test("feature does not contain overlapping area", () => {
-    expect(diff(feature, overlappingFeatureCollection)).toEqual({
-      ...feature,
-      geometry: {
-        coordinates: [
-          [
-            [2.825121146516608, 44.260111501833876],
-            [2.868473399543859, 44.260111501833876],
-            [2.868473399543859, 44.27746261051493],
-            [2.901018077685336, 44.27746261051493],
-            [2.901018077685336, 44.30042614674991],
-            [2.825121146516608, 44.30042614674991],
-            [2.825121146516608, 44.260111501833876],
-          ],
-        ],
-        type: "Polygon",
-      },
-    });
-  });
-});
 
 describe("createGroupingKeys", () => {
   test("group on single items", () => {

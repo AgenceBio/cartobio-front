@@ -4,13 +4,11 @@ import bboxPolygon from "@turf/bbox-polygon";
 import { reproject } from "reproject";
 import proj4 from "proj4";
 import { polygonArea } from "geometric";
-import union from "@turf/union";
 import axios from "axios";
 import { feature, featureCollection } from "@turf/helpers";
 import { parseReference } from "@/utils/cadastre.js";
 import bbox from "@turf/bbox";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
-import difference from "@turf/difference";
 import { conversionLevels } from "@/referentiels/ab.js";
 import { toDateInputString } from "@/utils/dates.js";
 
@@ -538,7 +536,6 @@ export function bounds(featureCollection, defaults = bounds.DEFAULT_BOUNDS) {
   }
 
   // if the input is out of bounds (eg: absent geometry), bbox returns [Infinite, Infinite, -Infinite, -Infinite]
-  // but mostly, MapLibre fails if the bounds are not withing the Web Mercator bounds
   const result = bbox(featureCollection);
   return Math.abs(result.at(0)) > 90 ? defaults : result;
 }
@@ -547,43 +544,6 @@ bounds.DEFAULT_BOUNDS = [
   [-9.86, 41.15],
   [10.38, 51.56],
 ];
-
-/**
- * Returns a geometry, without any content part of a feature collection
- *
- * @param {Feature} feature
- * @param {FeatureCollection} featureCollection
- * @returns {Feature}
- */
-export function diff(feature, featureCollection) {
-  return featureCollection.features.reduce((reducedFeature, target) => {
-    if (reducedFeature === null) {
-      return null;
-    }
-
-    if (!intersect(reducedFeature, target)) {
-      return reducedFeature;
-    }
-
-    return difference(reducedFeature, target);
-  }, feature);
-}
-
-/**
- * Merge all features into one single feature (union)
- *
- * @param {Array<Feature>} features
- * @returns {Feature}
- */
-export function merge(features) {
-  return features.reduce((mergedFeature, feature) => {
-    if (mergedFeature === null) {
-      return feature;
-    }
-
-    return union(mergedFeature, feature);
-  }, null);
-}
 
 /**
  * Fetch a single geometry for a given cadastral reference
