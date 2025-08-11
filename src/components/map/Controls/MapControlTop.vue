@@ -6,7 +6,7 @@
       </button>
     </div>
 
-    <div class="mode-choice" v-if="isDraw">
+    <div class="mode-choice" v-if="isConsult">
       <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')">
         <i class="ri-arrow-left-right-line"></i> Comparer
       </button>
@@ -27,30 +27,26 @@ import { defineEmits, defineProps, ref, watch } from "vue";
  * * Props
  */
 const props = defineProps<{
-  isDraw: boolean;
+  isConsult: boolean;
 }>();
 
 /**
  * * Refs
  */
-const isDraw = ref<boolean>(props.isDraw);
+const isConsult = ref<boolean>(props.isConsult);
 
 /**
  * * Emits
  */
-const emit = defineEmits<{
-  (e: "addParcelle"): void;
-  (e: "compare"): void;
-  (e: "openDetail"): void;
-}>();
+const emit = defineEmits(["addParcelle", "compare", "openDetail"]);
 
 /**
  * * Watchers
  */
 watch(
-  () => props.isDraw,
+  () => props.isConsult,
   (newValue) => {
-    isDraw.value = newValue;
+    isConsult.value = newValue;
   },
 );
 </script>

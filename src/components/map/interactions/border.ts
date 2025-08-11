@@ -385,6 +385,7 @@ function drawBorder() {
   tooltipOverlay.getElement().innerHTML = tooltipContent;
   tooltipOverlay.setPosition(positionning);
 
+  previewBorderSource?.addFeature(res);
   hasBorder.value = true;
 }
 

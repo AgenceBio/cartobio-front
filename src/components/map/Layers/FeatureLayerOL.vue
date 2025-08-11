@@ -11,80 +11,82 @@
   >
     <template #title>Créer ma parcelle</template>
   </Component>
-  <div
-    v-if="mergeFeature || mapPrefs.currentMode === 'delete' || mapPrefs.currentMode === 'fusionner'"
-    class="pop-in-top"
-  >
-    <p v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
-    <p v-if="numberSelectedFeature && mapPrefs.currentMode === 'delete'">
-      Vous avez sélectionné {{ numberSelectedFeature }} parcelles à supprimer
-    </p>
+  <template v-if="isDraw">
+    <div
+      v-if="mergeFeature || mapPrefs.currentMode === 'delete' || mapPrefs.currentMode === 'fusionner'"
+      class="pop-in-top"
+    >
+      <p v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
+      <p v-if="numberSelectedFeature && mapPrefs.currentMode === 'delete'">
+        Vous avez sélectionné {{ numberSelectedFeature }} parcelles à supprimer
+      </p>
 
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer()">
-      Valider {{ mergeFeature ? "et compléter" : "la suppression" }}
-    </button>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler()"></button>
-  </div>
+      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer()">
+        Valider {{ mergeFeature ? "et compléter" : "la suppression" }}
+      </button>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler()"></button>
+    </div>
 
-  <div v-else-if="invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
-    <p>Votre parcelle a été rogner pour respecter les règles</p>
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection()">
-      Valider
-    </button>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
-  </div>
-  <div v-if="errorDrawing && !invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
-    <p>Votre parcelle est invalide. Veuillez recommencer !</p>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
-  </div>
-  <div v-else-if="mapPrefs.currentMode === 'divide'" class="pop-in-top">
-    <button class="fr-btn" :disabled="!hasDivision" @click="validateBordure">Valider la découpe</button>
-    <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="validateBordure">Annuler</button>
-  </div>
-  <div v-else-if="mapPrefs.currentMode === 'decouper'" class="pop-in-top">
-    <div class="column">
-      <div class="fr-checkbox-group">
-        <input type="checkbox" id="bordure-complete" @click="toggleAllBorder()" />
-        <label class="fr-label" for="bordure-complete" aria-label="Appliquer la bordure sur toute la parcelle"
-          >Bordure complète</label
-        >
-      </div>
-      <div class="fr-checkbox-group">
-        <input type="checkbox" id="inverser-selection" @click="invertSelection()" />
-        <label class="fr-label" for="inverser-selection" aria-label="Inverser le sens de la bordure"
-          >Inverser la séléction</label
-        >
-      </div>
-    </div>
-    <div class="column">
-      <div class="fr-checkbox-group">
-        <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
-          >Distance (m)</label
-        >
-        <input
-          type="number"
-          id="largeur-bordure"
-          step="0.01"
-          class="fr-input fr-mt-0"
-          v-model="distance"
-          @change="setDistance()"
-        />
-      </div>
-    </div>
-    <div class="column">
-      <button class="fr-btn" :disabled="!hasBordure" @click="validateBordure">Découper</button>
-    </div>
-  </div>
-  <Teleport v-if="isDraw" to=".toolbar">
-    <div class="toolbar-bottom">
-      <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo()" :disabled="!hasUndo">
-        <i class="ri-arrow-go-back-line"></i>
+    <div v-else-if="invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
+      <p>Votre parcelle a été rogner pour respecter les règles</p>
+      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection()">
+        Valider
       </button>
-      <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo()" :disabled="!hasRedo">
-        <i class="ri-arrow-go-forward-line"></i>
-      </button>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
     </div>
-  </Teleport>
+    <div v-if="errorDrawing && !invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
+      <p>Votre parcelle est invalide. Veuillez recommencer !</p>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+    </div>
+    <div v-else-if="mapPrefs.currentMode === 'divide'" class="pop-in-top">
+      <button class="fr-btn" :disabled="!hasDivision" @click="validateBordure">Valider la découpe</button>
+      <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="validateBordure">Annuler</button>
+    </div>
+    <div v-else-if="mapPrefs.currentMode === 'decouper'" class="pop-in-top">
+      <div class="column">
+        <div class="fr-checkbox-group">
+          <input type="checkbox" id="bordure-complete" @click="toggleAllBorder()" />
+          <label class="fr-label" for="bordure-complete" aria-label="Appliquer la bordure sur toute la parcelle"
+            >Bordure complète</label
+          >
+        </div>
+        <div class="fr-checkbox-group">
+          <input type="checkbox" id="inverser-selection" @click="invertSelection()" />
+          <label class="fr-label" for="inverser-selection" aria-label="Inverser le sens de la bordure"
+            >Inverser la séléction</label
+          >
+        </div>
+      </div>
+      <div class="column">
+        <div class="fr-checkbox-group">
+          <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
+            >Distance (m)</label
+          >
+          <input
+            type="number"
+            id="largeur-bordure"
+            step="0.01"
+            class="fr-input fr-mt-0"
+            v-model="distance"
+            @change="setDistance()"
+          />
+        </div>
+      </div>
+      <div class="column">
+        <button class="fr-btn" :disabled="!hasBordure" @click="validateBordure">Découper</button>
+      </div>
+    </div>
+    <Teleport to=".toolbar">
+      <div class="toolbar-bottom">
+        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo()" :disabled="!hasUndo">
+          <i class="ri-arrow-go-back-line"></i>
+        </button>
+        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo()" :disabled="!hasRedo">
+          <i class="ri-arrow-go-forward-line"></i>
+        </button>
+      </div>
+    </Teleport>
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -654,7 +656,6 @@ watch(
 onMounted(() => {
   clearInteractions();
   if (!props.isDraw) {
-    clearInteractions();
     mapPrefs.value.currentMode = "neutral";
   }
 
