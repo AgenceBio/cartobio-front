@@ -150,7 +150,7 @@ export async function unpinOperator(numeroBio) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function submitNewParcelle({ recordId }, feature) {
+export async function submitNewParcelle(recordId , feature) {
   const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
     feature,
   });
@@ -163,7 +163,7 @@ export async function submitNewParcelle({ recordId }, feature) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function divideNewParcelle(recordId, featureId, features) {
+export async function updateFeatureGeometry(recordId, featureId, features) {
   const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles/${featureId}`, {
     features,
   });

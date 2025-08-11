@@ -8,7 +8,6 @@ import type { Map as OlMap } from "ol";
 import type VectorLayer from "ol/layer/Vector";
 import type VectorSource from "ol/source/Vector";
 import { Ref } from "vue";
-import Snap from "ol/interaction/Snap";
 import { MapBrowserEvent } from "ol";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
@@ -120,10 +119,6 @@ export const drawInteraction = (
   let currentDrawing: Feature | null = null;
   const snapFeatureRef = { current: null as Feature | null };
 
-  const snapInteraction = new Snap({
-    source: vectorLayer.getSource(),
-  });
-
   const drawPoly = new Draw({
     type: "Polygon",
     style: [styleDrawing, stylePointDrawing],
@@ -146,7 +141,6 @@ export const drawInteraction = (
   });
 
   map.addInteraction(drawPoly);
-  map.addInteraction(snapInteraction);
 
   const tooltip = new Tooltip({
     className: "draw-tooltip",
@@ -160,6 +154,7 @@ export const drawInteraction = (
   map.addOverlay(tooltip);
 
   drawPoly.on("drawstart", (e: MapBrowserEvent) => {
+    console.log("draw start");
     currentDrawing = e.feature;
 
     tooltipElement = document.createElement("div");

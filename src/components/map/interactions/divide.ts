@@ -22,7 +22,6 @@ import { Ref } from "vue";
 import { MapBrowserEvent } from "ol/MapBrowserEvent";
 import { DrawEvent } from "ol/DrawEvent";
 
-let snapInteraction: Snap | null = null;
 let modifyInteraction: Modify | null = null;
 let selectInteraction: Select | null = null;
 let currentOverlays: Overlay[] = [];
@@ -90,9 +89,6 @@ function divideInteraction(
   map.addLayer(drawingLineLayer);
   map.addInteraction(draw);
 
-  snapInteraction = new Snap({ source: vectorLayer.getSource() ?? undefined });
-  map.addInteraction(snapInteraction);
-
   modifyInteraction = new Modify({
     source: drawingLineSource,
     style: modifyStyle,
@@ -136,10 +132,6 @@ function divideInteraction(
 
     map.addInteraction(selectInteraction as Interaction);
     map.addInteraction(modifyInteraction as Interaction);
-
-    if (snapInteraction) {
-      map.addInteraction(snapInteraction);
-    }
 
     modifyInteraction?.on("modifyend", () => {
       const lineFeature = drawingLineSource?.getFeatures()[0];
@@ -298,10 +290,6 @@ function cleanup(): void {
   if (selectInteraction) {
     map.removeInteraction(selectInteraction);
     selectInteraction = null;
-  }
-  if (snapInteraction) {
-    map.removeInteraction(snapInteraction);
-    snapInteraction = null;
   }
 
   if (previewLayer) {

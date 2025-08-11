@@ -4,37 +4,47 @@ import Feature from "ol/Feature";
 import { MultiPoint, Polygon } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import { click, platformModifierKeyOnly } from "ol/events/condition";
+import { click } from "ol/events/condition";
 import Select from "ol/interaction/Select";
-import ModifyFeature from "ol-ext/interaction/ModifyFeature";
 import Style from "ol/style/Style";
 import Fill from "ol/style/Fill";
 import Stroke from "ol/style/Stroke";
 import RegularShape from "ol/style/RegularShape";
+import { Modify } from "ol/interaction";
+import Tooltip from "ol-ext/overlay/Tooltip";
+import { legalProjectionSurface, inHa } from "@/utils/features.js";
+import { GeoJSON } from "ol/format";
+import { MapBrowserEvent } from "ol";
+import { Text } from "ol/style";
+import { CartoBioFeature } from "@agencebio/cartobio-types";
 
-export function modifyInteraction(map: Map, vectorLayer: VectorLayer<VectorSource>, featureStore: any): void {
-  const selectedFeatures = new Collection<Feature<any>>();
-  const styleDrawing = getPolygonStyle();
-  const stylePointDrawing = getPointStyle();
-  const select = createSelectInteraction(vectorLayer, selectedFeatures, featureStore);
-  const modify = new ModifyFeature({
-    features: selectedFeatures,
-    style: [styleDrawing, stylePointDrawing],
-  });
+let isModifying = false;
+let select = null;
+
+function modifyInteraction(map: Map, vectorLayer: VectorLayer<VectorSource>, featureStore: any): void {
+  const selectedFeatures = new Collection<Feature>();
+  select = createSelectInteraction(vectorLayer, selectedFeatures, featureStore);
+
+  let modify: Modify | null = null;
+
   select.on("select", (e) => {
-    console.log(e.target.getFeatures().getArray());
+    if (isModifying) return;
+    e.deselected.forEach((feature) => {
+      feature.setStyle();
+    });
+
     const selectedIds = e.target
       .getFeatures()
       .getArray()
       .map((feature: Feature) => feature.getId())
-      .filter((id): id is string | number => id !== undefined);
+      .filter((id: string | number | undefined): id is string | number => id !== undefined);
 
     featureStore.setSelectedModifiedFeature(selectedIds);
 
     const source = vectorLayer.getSource();
     const alreadySelectedIds = featureStore.selectedModifIds ?? [];
 
-    const featuresToRemove = [];
+    const featuresToRemove: Feature[] = [];
     selectedFeatures.forEach((feature) => {
       const featureId = feature.getId();
       if (!selectedIds.includes(featureId)) {
@@ -46,39 +56,91 @@ export function modifyInteraction(map: Map, vectorLayer: VectorLayer<VectorSourc
       selectedFeatures.remove(feature);
     });
 
-    alreadySelectedIds.forEach((id) => {
+    alreadySelectedIds.forEach((id: number) => {
       const feature = source?.getFeatureById(id);
 
       if (feature) {
         selectedFeatures.push(feature);
 
         if (alreadySelectedIds.length >= 2) {
-          feature.setStyle(null);
           feature.setStyle([getPolygonMultipleStyle()]);
         } else {
-          feature.setStyle(null);
           feature.setStyle([getPolygonStyle(), getPointStyle()]);
         }
       }
     });
 
-    if (selectedIds.length >= 2) {
-      modify.setActive(false);
+    if (selectedIds.length === 1) {
+      modify = new Modify({
+        features: selectedFeatures,
+        style: [
+          getPolygonStyle(),
+          new Style({
+            image: new RegularShape({
+              fill: new Fill({ color: "white" }),
+              points: 4,
+              radius: 7,
+            }),
+          }),
+        ],
+      });
+      map.addInteraction(modify);
+      let tooltipElement: HTMLElement | null = null;
+      const tooltip = new Tooltip({
+        className: "draw-tooltip",
+        closeBox: false,
+        positioning: "bottom-left",
+        offset: [10, -10],
+      });
+
+      modify.on("modifystart", () => {
+        isModifying = true;
+        const selectedFeature = selectedFeatures.getArray()[0];
+
+        map.addOverlay(tooltip);
+
+        tooltipElement = document.createElement("div");
+        tooltipElement.innerHTML = createTooltipContent();
+        tooltipElement.style.position = "absolute";
+        tooltipElement.style.pointerEvents = "none";
+        tooltipElement.style.zIndex = "1000";
+
+        const mapContainer = map.getTargetElement();
+        if (mapContainer) mapContainer.appendChild(tooltipElement);
+
+        const geometry = selectedFeature.getGeometry();
+        geometry?.on("change", () => {
+          const area = calculateArea(new GeoJSON().writeFeatureObject(selectedFeature, {}) as CartoBioFeature);
+          if (tooltipElement) tooltipElement.innerHTML = createTooltipContent(area);
+        });
+      });
+
+      modify.on("modifyend", () => {
+        if (tooltipElement) {
+          tooltipElement.remove();
+          tooltipElement = null;
+        }
+
+        map.removeOverlay(tooltip);
+      });
+
+      map.on("pointermove", (e: MapBrowserEvent) => {
+        const selectedFeature = selectedFeatures.getArray()[0];
+
+        updateTooltipPosition(e, tooltipElement, selectedFeature, map);
+      });
     } else {
-      modify.setActive(true);
+      if (modify) {
+        map.removeInteraction(modify);
+        modify = null;
+      }
     }
 
     e.deselected.forEach((feature) => {
-      feature.setStyle(null);
+      feature.setStyle();
     });
   });
 
-  modify.on("modifyend", (e) => {
-    // todo : faire la vérification de chevauchement + si valide envoie serveur
-    console.log(e);
-  });
-
-  map.addInteraction(modify);
   map.addInteraction(select);
 }
 
@@ -119,7 +181,7 @@ function createSelectInteraction(
   const source = layer.getSource();
   const alreadySelectedIds = featureStore.selectedModifIds ?? [];
 
-  alreadySelectedIds.forEach((id) => {
+  alreadySelectedIds.forEach((id: number) => {
     const feature = source?.getFeatureById(id);
     if (feature && !selectedFeatures.getArray().includes(feature)) {
       selectedFeatures.push(feature);
@@ -134,18 +196,59 @@ function createSelectInteraction(
 
   const selectInteraction = new Select({
     layers: [layer],
-    condition: click,
-    toggleCondition: platformModifierKeyOnly,
-    addCondition: platformModifierKeyOnly,
-    removeCondition: platformModifierKeyOnly,
+    condition: (e) => !isModifying && click(e),
+    // toggleCondition: (e) => {
+    //   console.log("togggle", isModifying, platformModifierKeyOnly(e));
+    //   return isModifying && platformModifierKeyOnly(e);
+    // },
+    // addCondition: (e) => {
+    //   console.log("addCondition", isModifying, platformModifierKeyOnly(e));
+    //   return isModifying && platformModifierKeyOnly(e);
+    // },
+    // removeCondition: (e) => {
+    //   console.log("removeCondition", isModifying, platformModifierKeyOnly(e));
+    //   return isModifying && platformModifierKeyOnly(e);
+    // },
     multi: true,
-  });
-
-  selectInteraction.on("select", (e) => {
-    e.deselected.forEach((feature) => {
-      feature.setStyle(null);
-    });
   });
 
   return selectInteraction;
 }
+
+function setIsModifying(val: boolean) {
+  isModifying = val;
+}
+
+function createTooltipContent(area?: string) {
+  return `
+<div style="
+  background: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-family: 'Marianne', sans-serif;
+  white-space: nowrap;
+">
+ ${area ? `<div style="font-weight: bold;display: flex; align-items: center; gap: 8px;"> <i class="ri-custom-size"></i>${area} ha</div>` : ""}
+</div>
+`;
+}
+
+function updateTooltipPosition(
+  e: MapBrowserEvent,
+  tooltipElement: HTMLElement | null,
+  selectedFeature: Feature,
+  map: Map,
+) {
+  if (tooltipElement && selectedFeature) {
+    const pixel = map.getPixelFromCoordinate(e.coordinate);
+    tooltipElement.style.left = `${pixel[0] + 10}px`;
+    tooltipElement.style.top = `${pixel[1] - 10}px`;
+  }
+}
+
+function calculateArea(feature: CartoBioFeature): string {
+  return inHa(legalProjectionSurface(feature));
+}
+
+export { modifyInteraction, setIsModifying };

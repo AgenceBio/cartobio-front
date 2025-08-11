@@ -21,37 +21,45 @@
         Vous avez sélectionné {{ numberSelectedFeature }} parcelles à supprimer
       </p>
 
-      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer()">
+      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">
         Valider {{ mergeFeature ? "et compléter" : "la suppression" }}
       </button>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler()"></button>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler"></button>
     </div>
 
     <div v-else-if="invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
       <p>Votre parcelle a été rogner pour respecter les règles</p>
-      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection()">
+      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection">
         Valider
       </button>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
     </div>
     <div v-if="errorDrawing && !invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
       <p>Votre parcelle est invalide. Veuillez recommencer !</p>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw()"></button>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
+    </div>
+    <div v-if="errorDrawing && !invalidDrawing && mapPrefs.currentMode === 'draw'" class="pop-in-top">
+      <p>Votre parcelle est invalide. Veuillez recommencer !</p>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
+    </div>
+    <div v-else-if="mapPrefs.currentMode === 'edit' && store.selectedModifIds.length === 1" class="pop-in-top">
+      <button class="fr-btn" :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
+      <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
     <div v-else-if="mapPrefs.currentMode === 'divide'" class="pop-in-top">
-      <button class="fr-btn" :disabled="!hasDivision" @click="validateBordure">Valider la découpe</button>
-      <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="validateBordure">Annuler</button>
+      <button class="fr-btn" :disabled="!hasDivision" @click="validateDivision">Valider la découpe</button>
+      <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="validateDivision">Annuler</button>
     </div>
     <div v-else-if="mapPrefs.currentMode === 'decouper'" class="pop-in-top">
       <div class="column">
         <div class="fr-checkbox-group">
-          <input type="checkbox" id="bordure-complete" @click="toggleAllBorder()" />
+          <input type="checkbox" id="bordure-complete" @click="toggleAllBorder" />
           <label class="fr-label" for="bordure-complete" aria-label="Appliquer la bordure sur toute la parcelle"
             >Bordure complète</label
           >
         </div>
         <div class="fr-checkbox-group">
-          <input type="checkbox" id="inverser-selection" @click="invertSelection()" />
+          <input type="checkbox" id="inverser-selection" @click="invertSelection" />
           <label class="fr-label" for="inverser-selection" aria-label="Inverser le sens de la bordure"
             >Inverser la séléction</label
           >
@@ -68,20 +76,20 @@
             step="0.01"
             class="fr-input fr-mt-0"
             v-model="distance"
-            @change="setDistance()"
+            @change="setDistance"
           />
         </div>
       </div>
       <div class="column">
-        <button class="fr-btn" :disabled="!hasBordure" @click="validateBordure">Découper</button>
+        <button class="fr-btn" :disabled="!hasBordure" @click="validateDivision">Découper</button>
       </div>
     </div>
     <Teleport to=".toolbar">
       <div class="toolbar-bottom">
-        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo()" :disabled="!hasUndo">
+        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo" :disabled="!hasUndo">
           <i class="ri-arrow-go-back-line"></i>
         </button>
-        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo()" :disabled="!hasRedo">
+        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo" :disabled="!hasRedo">
           <i class="ri-arrow-go-forward-line"></i>
         </button>
       </div>
@@ -112,7 +120,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { mergeInteractions, clearMergeLayer } from "../interactions/merge";
 import { drawInteraction } from "../interactions/draw";
 import { divideInteraction, cleanup as cleanupDivision } from "../interactions/divide";
-import { modifyInteraction } from "../interactions/modify";
+import { modifyInteraction, setIsModifying } from "../interactions/modify";
 
 // Utils Geom
 import { addParcelleVerif } from "@/cartobio-api.js";
@@ -126,7 +134,7 @@ import {
   toggleAllBorder,
 } from "../interactions/border";
 import { CartoBioFeature, CartoBioFeatureCollection } from "@agencebio/cartobio-types";
-import { divideNewParcelle } from "@/cartobio-api.js";
+import { updateFeatureGeometry } from "@/cartobio-api.js";
 
 /*
  * * Interface
@@ -349,6 +357,20 @@ const redo = (): void => {
   }
 };
 
+const undoAll = (): void => {
+  if (interactions.value.undoRedo) {
+    let hasUndo = interactions.value.undoRedo.hasUndo();
+    while (hasUndo > 0) {
+      interactions.value.undoRedo.undo();
+      hasUndo = interactions.value.undoRedo.hasUndo();
+    }
+  }
+};
+
+const resetEdit = () => {
+  undoAll();
+  setIsModifying(false);
+};
 /*
  * * Fonctions : Data
  */
@@ -381,7 +403,7 @@ const confirmCorrection = (): void => {
   feature.value = correctedGeometry.value;
 };
 
-const validateBordure = async () => {
+const validateDivision = async () => {
   const modifiedFeatures: CartoBioFeature[] = [];
   const selectdId = store.selectedModifIds[0];
   const geoJson = new GeoJSON();
@@ -389,7 +411,7 @@ const validateBordure = async () => {
   for (const modifiedFeature of resSource.getFeatures()) {
     modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
   }
-  const result = await divideNewParcelle(props.recordId, selectdId, modifiedFeatures);
+  const result = await updateFeatureGeometry(props.recordId, selectdId, modifiedFeatures);
 
   if (result) {
     store.setSelectedModifiedFeature([]);
@@ -414,6 +436,29 @@ const validateBordure = async () => {
   } else if (hasDivision.value) {
     cleanupDivision();
   }
+};
+
+const saveModifiedFeature = async () => {
+  let modifiedFeature: CartoBioFeature | null = null;
+  const selectdId = store.selectedModifIds[0];
+  const geoJson = new GeoJSON();
+  const feature = vectorSource.value?.getFeatureById(selectdId);
+
+  if (!feature) return;
+
+  modifiedFeature = geoJson.writeFeatureObject(feature.clone()) as CartoBioFeature;
+
+  if (!modifiedFeature) return;
+
+  const result = await updateFeatureGeometry(props.recordId, selectdId, [modifiedFeature]);
+
+  if (result) {
+    store.setSelectedModifiedFeature([]);
+    store.setAll(result.parcelles.features);
+  }
+  setIsModifying(false);
+  mapPrefs.value.currentMode = "edit";
+  interactions.value.undoRedo.clear();
 };
 
 /*
@@ -494,7 +539,6 @@ const clearInteractions = (): void => {
       toRemove.push(interaction);
     }
   });
-
   toRemove.forEach((interaction) => {
     map.value.removeInteraction(interaction);
   });
