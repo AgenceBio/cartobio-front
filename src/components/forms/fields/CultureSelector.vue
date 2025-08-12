@@ -307,7 +307,7 @@ watch(
 
 function removeCulture(cultureId) {
   const updatedCultures = uuidedCultures.value.filter(({ id }) => id !== cultureId);
-  if (updateCultures.length === 1 && isMulticultureModalOpen.value === true) isMulticultureModalOpen.value = false;
+  if (updatedCultures.length === 1 && isMulticultureModalOpen.value === true) isMulticultureModalOpen.value = false;
   emit("change", updatedCultures);
 }
 
