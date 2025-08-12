@@ -114,7 +114,7 @@ import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
-import { legalProjectionSurface, inHa } from "@/utils/features.js";
+import { DeletionReasonsCode, legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Interactions
 import { mergeInteractions, clearMergeLayer } from "../interactions/merge";
@@ -123,7 +123,13 @@ import { divideInteraction, cleanup as cleanupDivision } from "../interactions/d
 import { modifyInteraction, setIsModifying } from "../interactions/modify";
 
 // Utils Geom
-import { addParcelleVerif } from "@/cartobio-api.js";
+import {
+  addParcelleVerif,
+  deleteParcelle,
+  createFeaturesFromOther,
+  updateFeature,
+  submitNewParcelle,
+} from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
 import {
@@ -134,7 +140,6 @@ import {
   toggleAllBorder,
 } from "../interactions/border";
 import { CartoBioFeature, CartoBioFeatureCollection } from "@agencebio/cartobio-types";
-import { updateFeatureGeometry } from "@/cartobio-api.js";
 
 /*
  * * Interface
@@ -198,7 +203,7 @@ const interactions = ref<Interactions>({
 
 const showDetailsModal = ref(false);
 const feature = ref<Feature | null>(null);
-const mergeFeature = ref<Feature | null>(null);
+const mergeFeature = ref<CartoBioFeature | null>(null);
 const correctedGeometry = ref<Feature | null>(null);
 const hasUndo = ref(false);
 const hasRedo = ref(false);
@@ -337,7 +342,7 @@ const mergeFeatures = (): void => {
 
   const resultMerge = mergeInteractions(vectorSource.value, map.value, store.selectedModifIds);
   if (resultMerge) {
-    mergeFeature.value = geojsonFormat.writeFeatureObject(resultMerge, {});
+    mergeFeature.value = geojsonFormat.writeFeatureObject(resultMerge) as CartoBioFeature;
   } else {
     console.warn("Afficher message d'erreur");
     clearMergeLayer(map.value);
@@ -375,8 +380,58 @@ const resetEdit = () => {
  * * Fonctions : Data
  */
 
-const confirmer = (): void => {
-  console.log("TODO");
+const confirmer = async (): Promise<void> => {
+  if (numberSelectedFeature.value > 0 && mapPrefs.value.currentMode === "delete") {
+    let result = null;
+    for (const featureId of store.selectedModifIds) {
+      result = await deleteParcelle(props.recordId, featureId, {
+        reason: { code: DeletionReasonsCode.OTHER, details: "Test" },
+      });
+
+      const feature = vectorLayer.value?.getSource()?.getFeatureById(featureId);
+
+      if (feature) {
+        vectorLayer.value?.getSource()?.removeFeature(feature);
+      }
+    }
+
+    if (result) {
+      store.setAll(result.parcelles.features);
+    }
+
+    store.setSelectedModifiedFeature([]);
+    mapPrefs.value.currentMode = "edit";
+
+    return;
+  }
+
+  if (mergeFeature.value && mapPrefs.value.currentMode === "fusionner") {
+    const result = await createFeaturesFromOther(props.recordId, [mergeFeature.value], store.selectedModifIds);
+
+    if (result) {
+      const selectdIds = store.selectedModifIds;
+      const geoJson = new GeoJSON();
+
+      store.setSelectedModifiedFeature([]);
+      const newFeatures = result.parcelles.features.filter(
+        (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+      );
+      store.setAll(result.parcelles.features);
+
+      for (const selectdId of selectdIds) {
+        const feature = vectorLayer.value?.getSource()?.getFeatureById(selectdId);
+
+        if (feature) {
+          vectorLayer.value?.getSource()?.removeFeature(feature);
+        }
+      }
+
+      for (const newFeature of newFeatures) {
+        vectorLayer.value?.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
+      }
+    }
+    mapPrefs.value.currentMode = "edit";
+  }
 };
 
 const annuler = (): void => {
@@ -387,7 +442,8 @@ const annuler = (): void => {
     mergeFeature.value = null;
     clearMergeLayer(map.value);
   }
-  store.selectedModifIds = [];
+
+  store.setSelectedModifiedFeature([]);
   mapPrefs.value.currentMode = "edit";
   clearDeleteLayer();
 };
@@ -411,7 +467,7 @@ const validateDivision = async () => {
   for (const modifiedFeature of resSource.getFeatures()) {
     modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
   }
-  const result = await updateFeatureGeometry(props.recordId, selectdId, modifiedFeatures);
+  const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
     store.setSelectedModifiedFeature([]);
@@ -450,7 +506,7 @@ const saveModifiedFeature = async () => {
 
   if (!modifiedFeature) return;
 
-  const result = await updateFeatureGeometry(props.recordId, selectdId, [modifiedFeature]);
+  const result = await updateFeature(props.recordId, modifiedFeature, selectdId);
 
   if (result) {
     store.setSelectedModifiedFeature([]);
@@ -465,12 +521,12 @@ const saveModifiedFeature = async () => {
  * * Fonctions : Utils
  */
 
-const calculateArea = (feature: Feature): string => {
+const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 
 const getFeatureStyle = (feature: Feature): Style[] => {
-  const size = calculateArea(new GeoJSON().writeFeatureObject(feature, {}));
+  const size = calculateArea(new GeoJSON().writeFeatureObject(feature));
   const numeroI = feature.get("NUMERO_I") || "";
   const numeroP = feature.get("NUMERO_P") || "";
   const nom = feature.get("NOM") || "";
@@ -665,32 +721,41 @@ watch(
       const previewFeature = format.readFeature(newFeature);
       previewFeature.setStyle(previewStyle);
       previewSource.addFeature(previewFeature);
-    } else {
-      errorDrawing.value = true;
-      if (data.correction) {
-        correctedGeometry.value = data.correction.corrected_input || data.correction.input_minus_existing;
 
-        if (correctedGeometry.value && correctedGeometry.value.type != "MultiPolygon") {
-          invalidDrawing.value = true;
-          const correctedFeature = format.readFeature(correctedGeometry.value);
+      const result = await submitNewParcelle(props.recordId, newFeature);
 
-          previewSource.addFeature(correctedFeature);
+      if (result) {
+        store.setAll(result.parcelles.features);
+      }
 
-          const extent = correctedFeature.getGeometry().getExtent();
-          if (extent && !isNaN(extent[0])) {
-            map.value.getView().fit(extent, { padding: [50, 50, 50, 50] });
-          }
-          return;
+      return;
+    }
+
+    errorDrawing.value = true;
+    if (data.correction) {
+      correctedGeometry.value = data.correction.corrected_input || data.correction.input_minus_existing;
+
+      if (correctedGeometry.value && correctedGeometry.value.type != "MultiPolygon") {
+        invalidDrawing.value = true;
+        const correctedFeature = format.readFeature(correctedGeometry.value);
+
+        previewSource.addFeature(correctedFeature);
+
+        const extent = correctedFeature.getGeometry().getExtent();
+        if (extent && !isNaN(extent[0])) {
+          map.value.getView().fit(extent, { padding: [50, 50, 50, 50] });
         }
-        const previewFeature = format.readFeature(correctedGeometry);
-        previewFeature.setStyle(errorStyle);
-        previewSource.addFeature(previewFeature);
         return;
       }
-      const previewFeature = format.readFeature(newFeature);
+      const previewFeature = format.readFeature(correctedGeometry);
       previewFeature.setStyle(errorStyle);
       previewSource.addFeature(previewFeature);
+      return;
     }
+
+    const previewFeature = format.readFeature(newFeature);
+    previewFeature.setStyle(errorStyle);
+    previewSource.addFeature(previewFeature);
   },
 );
 

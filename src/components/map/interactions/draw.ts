@@ -4,12 +4,14 @@ import { Feature } from "ol";
 import { MultiPoint } from "ol/geom";
 import { GeoJSON } from "ol/format";
 import Tooltip from "ol-ext/overlay/Tooltip";
-import type { Map as OlMap } from "ol";
+import type { Map } from "ol";
 import type VectorLayer from "ol/layer/Vector";
 import type VectorSource from "ol/source/Vector";
 import { Ref } from "vue";
 import { MapBrowserEvent } from "ol";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
+import { DrawEvent } from "ol/interaction/Draw";
+import { CartoBioFeature } from "@agencebio/cartobio-types";
 
 const createStyles = () => {
   const fillColor = "rgba(74, 140, 190, 0.3)";
@@ -61,9 +63,9 @@ const createTooltipContent = (area?: string) => `
 const handleTracing = (
   e: any,
   currentDrawing: Feature | null,
-  map: OlMap,
-  vectorLayer: VectorLayer<any>,
-  vectorSource: VectorSource<any>,
+  map: Map,
+  vectorLayer: VectorLayer<VectorSource>,
+  vectorSource: VectorSource,
   snapStyle: Style,
   snapFeatureRef: { current: Feature | null },
 ) => {
@@ -98,7 +100,7 @@ const updateTooltipPosition = (
   e: any,
   tooltipElement: HTMLElement | null,
   currentDrawing: Feature | null,
-  map: OlMap,
+  map: Map,
 ) => {
   if (tooltipElement && currentDrawing) {
     const pixel = map.getPixelFromCoordinate(e.coordinate);
@@ -108,7 +110,7 @@ const updateTooltipPosition = (
 };
 
 export const drawInteraction = (
-  map: OlMap,
+  map: Map,
   vectorLayer: VectorLayer<VectorSource>,
   vectorSource: VectorSource,
   showDetailsModal: Ref<boolean>,
@@ -153,7 +155,7 @@ export const drawInteraction = (
 
   map.addOverlay(tooltip);
 
-  drawPoly.on("drawstart", (e: MapBrowserEvent) => {
+  drawPoly.on("drawstart", (e: DrawEvent) => {
     console.log("draw start");
     currentDrawing = e.feature;
 
@@ -166,14 +168,16 @@ export const drawInteraction = (
     const mapContainer = map.getTargetElement();
     if (mapContainer) mapContainer.appendChild(tooltipElement);
 
-    const geometry = currentDrawing?.getGeometry();
+    const geometry = currentDrawing.getGeometry();
     geometry?.on("change", () => {
+      if (!currentDrawing) return;
+
       const area = calculateArea(new GeoJSON().writeFeatureObject(currentDrawing, {}));
       if (tooltipElement) tooltipElement.innerHTML = createTooltipContent(area);
     });
   });
 
-  drawPoly.on("drawend", (e: MapBrowserEvent) => {
+  drawPoly.on("drawend", (e: DrawEvent) => {
     const feature = e.feature;
 
     if (snapFeatureRef.current) {
@@ -205,6 +209,6 @@ export const drawInteraction = (
  * * Utils fonctions
  */
 
-const calculateArea = (feature: any): string => {
+const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };

@@ -46,8 +46,10 @@ export function mergeInteractions(
     return null;
   }
 
-  const olFeature: Feature<Geometry> = geojsonFormat.readFeature(merged);
+  const olFeature: Feature<Geometry> = geojsonFormat.readFeature(merged) as Feature<Geometry>;
+  const firstFeatureSelected = vectorSource.getFeatureById(selectedIds[0]);
 
+  olFeature.setProperties({ ...firstFeatureSelected.getProperties(), geometry: olFeature.getGeometry() });
   const previewStyle = new Style({
     stroke: new Stroke({
       color: "rgba(139, 248, 231, 1)",

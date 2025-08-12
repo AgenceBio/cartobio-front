@@ -163,10 +163,33 @@ export async function submitNewParcelle(recordId , feature) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function updateFeatureGeometry(recordId, featureId, features) {
-  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles/${featureId}`, {
+export async function updateFeature(recordId,  feature, featureId) {
+  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${featureId}`, feature);
+
+  return data;
+}
+
+/**
+ * Add a new plot without id to a feature collection
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function createFeaturesFromOther(recordId,  features, from) {
+  const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles`, {
     features,
+    from
   });
+
+  return data;
+}
+
+/**
+ * Add a new plot without id to a feature collection
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function deleteParcelle(recordId, featureId, reason) {
+  const { data } = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${featureId}`, { data: reason });
 
   return data;
 }
@@ -313,6 +336,5 @@ export async function hideNotif(numeroBio) {
 
 export async function addParcelleVerif(geojson, recordId) {
   const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload : geojson });
-  console.log(data);
   return data;
 }

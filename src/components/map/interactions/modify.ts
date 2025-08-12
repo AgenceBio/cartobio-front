@@ -15,7 +15,6 @@ import Tooltip from "ol-ext/overlay/Tooltip";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { GeoJSON } from "ol/format";
 import { MapBrowserEvent } from "ol";
-import { Text } from "ol/style";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 
 let isModifying = false;
