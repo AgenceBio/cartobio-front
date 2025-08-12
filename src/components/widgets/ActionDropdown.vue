@@ -24,6 +24,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  smallList: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 onUpdated(() => {
@@ -92,7 +96,14 @@ watch(show, (value) => {
     </slot>
     <dialog class="menu-container" :open="show" tabindex="-1">
       <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
-        <ul class="fr-menu__list fr-btns-group" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
+        <ul
+          class="fr-menu__list"
+          :class="{
+            'fr-btns-group--icon-left': props.withIcons,
+            'fr-btns-group--sm': props.smallList,
+            'fr-btns-group': !props.smallList,
+          }"
+        >
           <slot />
         </ul>
       </div>

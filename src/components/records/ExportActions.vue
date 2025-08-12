@@ -1,20 +1,17 @@
 <template>
-  <li v-if="exporter.toFileData">
+  <li>
     <button
-      class="fr-btn fr-icon-table-line fr-btn--tertiary-no-outline"
-      data-content-piece="Export OC"
-      ref="autofocusedElement"
-      @click="ocExport"
-      :aria-label="`Exporter le parcellaire au format ${exporter.label} (.${exporter.extension})`"
+      class="fr-btn fr-icon-france-line fr-btn--tertiary-no-outline"
+      @click="geojsonExport"
+      data-content-piece="Export GeoJson"
+      aria-label="Exporter au format GeoJSON (.geojson)"
     >
-      {{ exporter.label }}
-      <small>
-        (<code :aria-label="exporter.label">.{{ exporter.extension }}</code
-        >)
-      </small>
+      Télécharger au format .geojson
     </button>
   </li>
-
+  <li class="break">
+    <hr />
+  </li>
   <li v-if="exporter.toClipboard">
     <button
       class="fr-btn fr-btn--tertiary-no-outline"
@@ -26,17 +23,23 @@
       Copier dans le presse-papiers
     </button>
   </li>
+  <li class="break">
+    <hr />
+  </li>
 
-  <li>
+  <li v-if="exporter.toFileData">
     <button
-      class="fr-btn fr-icon-france-line fr-btn--tertiary-no-outline"
-      @click="geojsonExport"
-      data-content-piece="Export GeoJson"
-      aria-label="Exporter au format GeoJSON (.geojson)"
+      class="fr-btn fr-icon-table-line fr-btn--tertiary-no-outline"
+      data-content-piece="Export OC"
+      ref="autofocusedElement"
+      @click="ocExport"
+      :aria-label="`Exporter le parcellaire au format ${exporter.label} (.${exporter.extension})`"
     >
-      GeoJSON
-      <small>(<code aria-label="Extension de fichier .geojson">.geojson</code>)</small>
+      Télécharger au format .{{ exporter.extension }}
     </button>
+  </li>
+  <li class="break">
+    <hr />
   </li>
 
   <li v-if="record.certification_state === 'CERTIFIED'">
@@ -55,10 +58,10 @@
       </div>
       <span v-else>
         <p class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</p>
-        <p v-else>
-          Attestation de production
+        <span v-else>
+          Télécharger l'attestation de production
           <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
-        </p>
+        </span>
       </span>
     </button>
 
@@ -186,3 +189,15 @@ async function exportAttestationPdf() {
   }
 }
 </script>
+
+<style scoped>
+.break {
+  width: 100%;
+  clear: both;
+  padding: 0px 10px;
+}
+hr {
+  margin-bottom: 0px !important;
+  padding-bottom: 1px !important;
+}
+</style>

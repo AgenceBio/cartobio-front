@@ -68,7 +68,49 @@
             </div>
 
             <div class="fr-header__tools">
-              <div class="fr-header__tools-links">
+              <div class="fr-header__tools-links" v-if="isOnExploitationsPage && isLogged">
+                <div class="dropdown-menu-container">
+                  <button
+                    class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-menu-2-fill"
+                    @click="dropdownIsOpen = !dropdownIsOpen"
+                    :aria-expanded="dropdownIsOpen"
+                    aria-haspopup="true"
+                  >
+                    Menu
+                  </button>
+                  <div class="dropdown-menu" v-if="dropdownIsOpen" @click="dropdownIsOpen = false">
+                    <ul class="dropdown-menu__list">
+                      <li v-if="isOc">
+                        <router-link to="/certification/tableau-de-bord" class="dropdown-menu__link">
+                          Tableau de bord
+                        </router-link>
+                      </li>
+                      <li>
+                        <router-link to="/certification/exploitations" class="dropdown-menu__link">
+                          {{ exploitationsMenuLabel }}
+                        </router-link>
+                      </li>
+                      <li>
+                        <a
+                          :href="documentationPage"
+                          target="_blank"
+                          rel="noopener"
+                          class="dropdown-menu__link"
+                        >
+                          Aide
+                        </a>
+                      </li>
+                      <li>
+                        <router-link to="/logout" class="dropdown-menu__link">
+                          Déconnexion
+                        </router-link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fr-header__tools-links" v-else>
                 <ul class="fr-btns-group" id="header-navigation" role="navigation">
                   <li>
                     <router-link to="/projet" class="fr-btn"> À propos </router-link>
@@ -135,10 +177,18 @@
                   {{ user.nom }}
                 </router-link>
               </li>
-              <li class="fr-nav__item" v-if="isMobile">
+              <li class="fr-nav__item" v-if="isOnExploitationsPage && isLogged">
                 <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Tableau de bord</router-link>
               </li>
-              <li class="fr-nav__item" v-if="isMobile">
+              <li class="fr-nav__item" v-if="isOnExploitationsPage && isLogged">
+                <router-link to="/certification/exploitations" class="fr-nav__link">
+                  {{ exploitationsMenuLabel }}
+                </router-link>
+              </li>
+              <li class="fr-nav__item" v-if="isMobile && !isOnExploitationsPage">
+                <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Tableau de bord</router-link>
+              </li>
+              <li class="fr-nav__item" v-if="isMobile && !isOnExploitationsPage">
                 <router-link to="/certification/exploitations" class="fr-nav__link"
                   >Liste des exploitations</router-link
                 >
@@ -233,7 +283,8 @@
           </div>
         </div>
       </div>
-      <div class="fr-container" v-if="isOc && !isMobile">
+      <!-- Bandeau de navigation masqué sur la page /exploitations/ -->
+      <div class="fr-container" v-if="isOc && !isMobile && !isOnExploitationsPage">
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
@@ -251,7 +302,7 @@
 
 <script setup>
 import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useUserStore, ROLES } from "@/stores/user.js";
 import { storeToRefs } from "pinia";
 import { useOnline } from "@vueuse/core";
@@ -259,6 +310,7 @@ import { useIsMobile } from "@/composables/useIsMobile";
 
 const userStore = useUserStore();
 const router = useRouter();
+const route = useRoute();
 const online = useOnline();
 const isMobile = useIsMobile();
 
@@ -297,8 +349,17 @@ const roleIcon = computed(() => {
 });
 
 const menuIsOpen = ref(false);
+const dropdownIsOpen = ref(false);
 
 const isOc = computed(() => userStore.isOc);
+
+const isOnExploitationsPage = computed(() => {
+  return route.path.includes('/exploitations/');
+});
+
+const exploitationsMenuLabel = computed(() => {
+  return isOc.value ? "Liste des exploitations" : "Mes exploitations";
+});
 </script>
 
 <style scoped>
@@ -333,5 +394,48 @@ const isOc = computed(() => userStore.isOc);
 
 #mobile-menu .fr-nav__link {
   justify-content: flex-start;
+}
+
+.dropdown-menu-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.dropdown-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.dropdown-menu__list li {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-menu__list li:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu__link {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.dropdown-menu__link:hover {
+  background-color: #f5f5f5;
+  text-decoration: none;
 }
 </style>

@@ -22,6 +22,11 @@
                 : optionsSelected
             }}<template v-if="optionsSuffix"> | {{ optionsSuffix }}</template></span
           >
+          <span v-if="optionsCulture" class="fr-hint-text">
+            <span :class="optionsCulture.icon ? optionsCulture.icon : ''" aria-hidden="true">{{
+              optionsCulture.name
+            }}</span>
+          </span>
           <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
         </div>
       </button>
@@ -61,6 +66,10 @@ const props = defineProps({
   optionsSuffix: {
     type: [String, Number],
     required: false,
+  },
+  optionsCulture: {
+    required: false,
+    type: Object,
   },
 });
 

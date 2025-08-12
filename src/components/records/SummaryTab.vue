@@ -5,6 +5,11 @@
   </div>
   <hr class="fr-mt-6v" />
 
+  <div class="fr-px-4v">
+    <NotesSection />
+  </div>
+  <hr class="fr-mt-6v" />
+
   <div class="fr-grid-row fr-grid-row--middle space-between fr-px-4v">
     <h3 class="fr-text--lg fr-mb-0">Parcelles par niveau de conversion</h3>
     <div class="fr-grid-row fr-grid-row--middle infos-parcelles">
@@ -45,6 +50,7 @@
 import { computed } from "vue";
 import CertificationSection from "@/components/records/CertificationSection.vue";
 import ValidationErrors from "./Table/ValidationErrors.vue";
+import NotesSection from "@/components/records/NotesSection.vue";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, inHa, legalProjectionSurface } from "@/utils/features";
 import { getConversionLevel } from "@/referentiels/ab";
 import { useFeaturesStore } from "@/stores/features";

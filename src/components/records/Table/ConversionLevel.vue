@@ -4,7 +4,7 @@
   </p>
   <span v-else-if="conversionLevel.value === LEVEL_MAYBE_AB" class="badge badge-a-modifier">
     <template v-if="isOc">
-      <span class="fr-icon" :class="getCultureIcon(culture)"></span>
+      <span v-if="!noIcon" class="fr-icon" :class="getCultureIcon(culture)"></span>
       <p class="fr-mb-0">À préciser</p>
     </template>
     <template v-else>
@@ -13,8 +13,13 @@
     </template>
   </span>
   <p v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
-    <span class="fr-icon" :class="conversionLevel.icon"></span>
+    <span v-if="!noIcon" class="fr-icon" :class="conversionLevel.icon"></span>
+    <div v-if="!labelSelector">
     {{ conversionLevel.shortLabel }}
+    </div>
+    <div v-else>
+      {{conversionLevel.labelSelector}}
+    </div>
     <time
       class="fr-mb-0"
       :datetime="conversionDate"
@@ -37,22 +42,42 @@ import { getCultureIcon } from "@/utils/features";
 const props = defineProps({
   feature: {
     type: Object,
-    required: true,
+    required: false,
   },
   withDate: {
+    type: Boolean,
+    default: false,
+  },
+  level: {
+    type: Object,
+    required: false,
+  },
+  noIcon: {
+    type: Boolean,
+    default: false,
+  },
+  labelSelector: {
     type: Boolean,
     default: false,
   },
 });
 const { isOc } = storeToRefs(usePermissions());
 
-const conversionLevel = computed(() => getConversionLevel(props.feature.properties.conversion_niveau));
+const conversionLevel = computed(() => {
+  return props.level ? props.level : getConversionLevel(props.feature.properties.conversion_niveau);
+});
 const conversionDate = computed(
-  () => props.feature.properties.engagement_date && new Date(props.feature.properties.engagement_date).toISOString(),
+  () =>
+    props.withDate &&
+    props.feature.properties.engagement_date &&
+    new Date(props.feature.properties.engagement_date).toISOString(),
 );
-const isAB = computed(() => isABLevel(props.feature.properties.conversion_niveau));
+const isAB = computed(() => props.feature && isABLevel(props.feature.properties.conversion_niveau));
 const culture = computed(() =>
-  props.feature.properties && props.feature.properties.culture && props.feature.properties.culture.length > 0
+  props.feature &&
+  props.feature.properties &&
+  props.feature.properties.culture &&
+  props.feature.properties.culture.length > 0
     ? props.feature.properties.culture[0].CPF
     : null,
 );

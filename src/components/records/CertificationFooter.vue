@@ -7,6 +7,8 @@ import { useRecordStore } from "@/stores/record.js";
 import CertificationModal from "@/components/forms/CertificationForm.vue";
 import SaveAuditModal from "@/components/forms/SaveAuditForm.vue";
 import { CertificationState } from "@agencebio/cartobio-types";
+import { jjmmyyyy } from "@/utils/dates";
+import { getTimeAgo } from "@/utils/record";
 
 const recordStore = useRecordStore();
 const operatorStore = useOperatorStore();
@@ -17,6 +19,7 @@ const { operator } = operatorStore;
 
 const showSaveAuditModal = ref(false);
 const showCertificationModal = ref(false);
+const saveAuditAndSubmit = ref(false);
 
 const canEndAudit = computed(
   () => permissions.canEditParcellaire && permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets,
@@ -25,10 +28,12 @@ const canEndAudit = computed(
 function handleSaveAudit({ patch }) {
   recordStore.updateInfo({
     ...patch,
-    certification_state: CertificationState.AUDITED,
+    certification_state: saveAuditAndSubmit.value
+      ? CertificationState.PENDING_CERTIFICATION
+      : CertificationState.AUDITED,
     audit_date: new Date().toISOString().split("T")[0],
   });
-
+  saveAuditAndSubmit.value = false;
   showSaveAuditModal.value = false;
 }
 
@@ -49,25 +54,72 @@ function handleCertify({ patch }) {
 </script>
 
 <template>
-  <div class="fr-grid-row fr-p-8v justify-end banner">
-    <template v-if="canEndAudit && record.certification_state === CertificationState.OPERATOR_DRAFT">
-      <button v-if="permissions.canSaveAudit" class="fr-btn" @click="showSaveAuditModal = true">
-        Terminer l'audit
-      </button>
-    </template>
-    <template v-else-if="canEndAudit && record.certification_state === CertificationState.AUDITED">
-      <button v-if="permissions.canSendAudit" class="fr-btn" @click="handleSendAudit">
-        Soumettre pour certification
-      </button>
-    </template>
-    <template v-else-if="canEndAudit && record.certification_state === CertificationState.PENDING_CERTIFICATION">
-      <button v-if="permissions.canCertify" class="fr-btn" @click="showCertificationModal = true">
-        Certifier le parcellaire
-      </button>
-    </template>
+  <div class="fr-grid-row fr-py-8v banner" style="display: flex; justify-content: space-between; align-items: center">
+    <p style="margin: 0; text-align: left" class="fr-hint-text">Enregistré {{ getTimeAgo(record) }}</p>
+
+    <div>
+      <template v-if="record.certification_state === CertificationState.OPERATOR_DRAFT">
+        <button
+          v-if="permissions.canSaveAudit && permissions.isOc"
+          :disabled="canEndAudit"
+          class="fr-btn fr-ml-1v fr-btn--icon-right"
+          @click="
+            () => {
+              showSaveAuditModal = true;
+              saveAuditAndSubmit = true;
+            }
+          "
+        >
+          Terminer et soumettre <i class="ri-send-plane-line fr-ml-2v"></i>
+        </button>
+        <button
+          v-if="permissions.canSaveAudit"
+          :disabled="canEndAudit"
+          class="fr-btn fr-btn--secondary fr-ml-1v fr-icon-check-line fr-btn--icon-right"
+          @click="
+            () => {
+              showSaveAuditModal = true;
+              saveAuditAndSubmit = false;
+            }
+          "
+        >
+          Terminer
+        </button>
+      </template>
+      <template v-else-if="record.certification_state === CertificationState.AUDITED">
+        <button
+          v-if="permissions.canSendAudit"
+          :disabled="canEndAudit"
+          class="fr-btn fr-icon-check-line fr-btn--icon-right"
+          @click="handleSendAudit"
+        >
+          Soumettre pour certification
+        </button>
+      </template>
+      <template v-else-if="record.certification_state === CertificationState.PENDING_CERTIFICATION">
+        <button
+          v-if="permissions.canCertify"
+          :disabled="canEndAudit"
+          class="fr-btn fr-icon-check-line fr-btn--icon-right"
+          @click="showCertificationModal = true"
+        >
+          Certifier le parcellaire
+        </button>
+      </template>
+    </div>
   </div>
+
   <Teleport to="body">
-    <SaveAuditModal v-if="showSaveAuditModal" @close="showSaveAuditModal = false" @submit="handleSaveAudit" />
+    <SaveAuditModal
+      v-if="showSaveAuditModal"
+      @close="
+        () => {
+          showSaveAuditModal = false;
+          saveAuditAndSubmit = false;
+        }
+      "
+      @submit="handleSaveAudit"
+    />
     <CertificationModal
       :operator="operator"
       :record="record"
@@ -84,10 +136,8 @@ function handleCertify({ patch }) {
 }
 
 .banner {
-  position: absolute;
   width: 100%;
   background-color: white;
   border-top: 1px solid var(--grey-900-175);
-  transform: translateY(-100%); /** TMP: en attendant le vrai layout */
 }
 </style>

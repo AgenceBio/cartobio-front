@@ -1,31 +1,42 @@
 <template>
-  <div class="fr-input-group" :class="{ 'fr-input-group--error': hasErrors }">
-    <label class="fr-label" :for="`cpf-${culture.id}-input`">Type de culture</label>
+  <div class="fr-input-group" :class="{ 'fr-input-group--error': hasErrors, 'fr-input-group': !needTitle }">
+    <label v-if="needTitle" class="fr-label" :for="`cpf-${culture.id}-input`">Culture</label>
 
     <div v-if="requirePrecision && fromCodeCpf(modelValue)" class="fr-hint-text">
       Culture «&nbsp;{{ fromCodeCpf(modelValue).libelle_code_cpf }}&nbsp;» à préciser
     </div>
 
     <input
-      v-if="disabledInput && fromCodeCpf(culture.CPF)"
+      v-if="disabledInput && (fromCodeCpf(culture.CPF) || disabledAutoComplete)"
       type="text"
       :disabled="disabledInput"
       class="fr-input"
-      :value="fromCodeCpf(culture.CPF).libelle_code_cpf"
+      :value="fromCodeCpf(culture.CPF)?.libelle_code_cpf || ''"
     />
-
     <div v-else ref="autocompleteRef"></div>
 
     <div v-for="[id, result] in errors" :key="id" class="fr-hint-text fr-error-text">{{ result.errorMessage }}.</div>
 
-    <div v-if="!hasErrors && !query" class="fr-hint-text">
+    <div v-if="!hasErrors && !query && needTitle" class="fr-hint-text">
       Saisissez le nom d'une culture pour la sélectionner parmi une liste.
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef } from "vue";
+import {
+  computed,
+  Fragment,
+  h,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  onUpdated,
+  ref,
+  render,
+  shallowRef,
+  watch,
+} from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 
 import { autocomplete } from "@algolia/autocomplete-js";
@@ -53,6 +64,14 @@ const props = defineProps({
     required: true,
   },
   disabledInput: {
+    type: Boolean,
+    default: false,
+  },
+  needTitle: {
+    type: Boolean,
+    default: true,
+  },
+  disabledAutoComplete: {
     type: Boolean,
     default: false,
   },
@@ -95,6 +114,83 @@ const requirePrecision = computed(
 
 onMounted(() => {
   if (!props.disabledInput) {
+    autocompleteProps.value = autocomplete({
+      container: autocompleteRef.value,
+      placeholder: props.placeholder,
+      openOnFocus: true,
+      id: `cpf-${props.culture.id}`,
+      classNames: {
+        form: "fr-input",
+      },
+
+      // helps react to query and isOpen changes
+      onStateChange({ state }) {
+        query.value = state.query;
+      },
+
+      getSources() {
+        return [
+          {
+            sourceId: "cultures",
+            getItems({ query }) {
+              let items;
+
+              if (query.length > 1) {
+                items = new Fuse(choices.value, {
+                  keys: ["libelle_code_cpf"],
+                  minMatchCharLength: 2,
+                  threshold: 0.4,
+                })
+                  .search(query)
+                  .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
+              } else {
+                items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
+              }
+
+              if (requirePrecision.value && !showMore.value) {
+                items.push({
+                  libelle: "Voir toutes les cultures",
+                  code: "showMore",
+                });
+              }
+
+              return items;
+            },
+            templates: {
+              item({ item, html }) {
+                if (item.code === "showMore") {
+                  return html`<span class="fr-link">Voir toutes les cultures</span>`;
+                }
+
+                return item.libelle;
+              },
+            },
+            onSelect: function (event) {
+              if (event.item.code === "showMore") {
+                showMore.value = true;
+                event.setQuery("");
+                event.setIsOpen(true);
+                return nextTick(() => {
+                  event.refresh();
+                });
+              }
+
+              event.setQuery(event.item.libelle);
+              emit("update:modelValue", event.item.code);
+            },
+          },
+        ];
+      },
+
+      renderer: { createElement: h, Fragment, render },
+    });
+
+    autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
+  }
+});
+
+onUpdated(() => {
+  if (!props.disabledInput && autocompleteProps.value == null) {
     autocompleteProps.value = autocomplete({
       container: autocompleteRef.value,
       placeholder: props.placeholder,

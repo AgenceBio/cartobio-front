@@ -1,6 +1,6 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-  <div class="fr-grid-row fr-grid-row--middle fr-mt-7v fr-mb-5v">
+  <div class="fr-grid-row fr-grid-row--middle fr-mt-7v fr-mb-5v fr-mr-2w">
     <div class="fr-search-bar fr-col-12 fr-col-md-6" id="search" role="search">
       <p class="fr-sr-only">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
@@ -23,7 +23,6 @@
     </div>
   </div>
   <div class="fr-grid-row fr-grid-row--midle liste-filtre fr-mb-3v">
-    <p class="fr-text--bold fr-mb-0 fr-grid-row fr-grid-row--middle">Filtrer</p>
     <button
       :key="id"
       v-for="{ active, id, count, label, required } in tags"
@@ -68,7 +67,7 @@
   </div>
   <div class="fr-grid-row total-parcelles">
     <p>{{ features.length }} parcelles</p>
-    <div class="fr-checkbox-group" v-if="hasFeatures">
+    <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
       <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
       <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
     </div>
@@ -76,6 +75,7 @@
 
   <p v-if="!hasFeatures">Votre parcellaire est vide.</p>
   <FeatureGroup
+    :isTab="isTab"
     v-for="featureGroup in featureGroups"
     :featureGroup="featureGroup"
     :key="featureGroup.key"
@@ -148,6 +148,10 @@ const props = defineProps({
   groupKey: {
     type: String,
     default: "CULTURE",
+  },
+  isTab: {
+    type: Boolean,
+    default: false,
   },
 });
 

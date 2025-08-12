@@ -221,7 +221,7 @@ export const PACNotationOptions = {
  */
 export const groupingChoices = {
   [GROUPE_COMMUNE]: {
-    label: "commune",
+    label: "Commune",
     labelNoGroup: "Commune inconnue",
     labelEtranger: "Parcelles à l'étranger",
     datapoint: (d) => d.properties.COMMUNE || NO_GROUP,
@@ -240,7 +240,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ILOT]: {
-    label: "îlot PAC",
+    label: "Îlot PAC",
     labelNoGroup: "Non précisé ou hors-PAC",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => ("NUMERO_I" in d.properties ? d.properties.NUMERO_I : NO_GROUP),
@@ -255,7 +255,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
-    label: "culture",
+    label: "Culture",
     labelNoGroup: "Absence de culture",
     labelUnknown: "Culture inconnue",
     /** @param {GeoJSONFeature} */
@@ -270,7 +270,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_NIVEAU_CONVERSION]: {
-    label: "niveau de conversion",
+    label: "Niveau de conversion",
     labelNoGroup: "Niveau de conversion inconnu",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.conversion_niveau || NO_GROUP,
@@ -281,7 +281,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
-    label: "année de début de conversion",
+    label: "Année de début de conversion",
     labelNoGroup: "Absence de date de début de conversion",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => (d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP),
@@ -433,10 +433,32 @@ export function getFeatureById(features, id) {
  */
 export function featureName(
   feature,
-  { explicitName = true, ilotLabel = "îlot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {},
+  {
+    explicitName = true,
+    ilotLabel = "îlot ",
+    parcelleLabel = "parcelle ",
+    separator = ", ",
+    placeholder = "-",
+    hint = false,
+    nameOnly = false,
+  } = {},
 ) {
   const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10);
   const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10);
+
+  if (nameOnly) {
+    return feature.properties.NOM ?? null;
+  }
+
+  if (hint) {
+    const ilot = Number.isNaN(NUMERO_I) ? "" : NUMERO_I;
+    const parcelle = Number.isNaN(NUMERO_P) ? "" : NUMERO_P;
+    const base = ilot && parcelle ? `${ilot}.${parcelle}` : ilot || parcelle || "";
+    if (base) {
+      return feature.properties.NOM ? `${base} (${feature.properties.NOM})` : base;
+    }
+    return feature.properties.NOM ?? placeholder;
+  }
 
   if (feature.properties.NOM || !Number.isNaN(NUMERO_I) || !Number.isNaN(NUMERO_P)) {
     const name = [
