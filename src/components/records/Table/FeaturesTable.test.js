@@ -145,10 +145,8 @@ describe("Features Table", () => {
     const wrapper = mount(TableComponent);
 
     await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-3 .show-actions").trigger("click");
-    await wrapper.find("#parcelle-3 .menu-container .fr-icon-delete-line").trigger("click");
+    await wrapper.find("#parcelle-3  .fr-icon-delete-line").trigger("click");
 
-    // we trigger the deletion
     axios.__createMock.delete.mockResolvedValueOnce({ data: record });
 
     const modal = wrapper.getComponent(DeleteFeatureModal);
@@ -217,8 +215,7 @@ describe("Features Table", () => {
 
     // // we click outside the delete modal
     await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-3 .show-actions").trigger("click");
-    await wrapper.find(".fr-icon-delete-line").trigger("click");
+    await wrapper.find("#parcelle-3  .fr-icon-delete-line").trigger("click");
     modal = wrapper.getComponent(DeleteFeatureModal);
     await modal.trigger("click");
     await flushPromises();
@@ -226,8 +223,7 @@ describe("Features Table", () => {
 
     // we click inside, so the modal should still exist
     await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-3 .show-actions").trigger("click");
-    await wrapper.find(".fr-icon-delete-line").trigger("click");
+    await wrapper.find("#parcelle-3 .fr-icon-delete-line").trigger("click");
     await flushPromises();
     modal = wrapper.getComponent(Modal);
     await modal.find("#modal-title").trigger("click");

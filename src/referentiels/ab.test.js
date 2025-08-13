@@ -31,7 +31,8 @@ describe("getConversionLevel", () => {
       icon: "fr-icon-culture-legumes",
       value: LEVEL_AB,
       shortLabel: "AB",
-      label: "AB — Agriculture biologique",
+      labelSelector: "BIO",
+      label: "BIO",
       is_selectable: true,
     });
   });

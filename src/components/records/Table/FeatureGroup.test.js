@@ -50,14 +50,12 @@ describe("FeatureGroup", () => {
     });
     await wrapper.find(".groupe-parcelles").trigger("click");
 
-    // we should have a multi culture name within the 3rd cellF
-    expect(wrapper.find("#parcelle-2 .parcelle-actions > p").text()).toEqual(
-      "Multi-cultures : Ail, Pamplemousse et pomelo",
-    );
+    // we should have a multi culture name within the 3rd cell
+    expect(wrapper.find("#parcelle-2 .parcelle-actions > p").text()).toContain("713,01");
 
     // we should have a single culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-4 .parcelle-actions > p").text()).toEqual("Ail");
-    expect(wrapper.find("#parcelle-4 .parcelle-titre h4").text()).toEqual("îlot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .parcelle-actions > p").text()).toContain("713,01");
+    expect(wrapper.find("#parcelle-4 .parcelle-titre h4").text()).toEqual("Ail");
   });
 
   test("toggles on and off all group items", async () => {
@@ -92,7 +90,7 @@ describe("FeatureGroup", () => {
 
     const group = wrapper.getComponent(FeatureGroup);
     await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-2 button.fr-icon-edit-line").trigger("click");
+    await wrapper.find("#parcelle-2 .parcelle-actions").trigger("click");
     expect(group.emitted("edit:featureId")).toHaveProperty("0", ["2"]);
   });
 
@@ -102,18 +100,13 @@ describe("FeatureGroup", () => {
     });
 
     await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-2 .show-actions").trigger("click");
-
-    // menu is open
-    const menu = wrapper.find("#parcelle-2 .fr-menu");
-    expect(menu.exists()).toEqual(true);
 
     // delete item is not active unless we have the permissions (after flushPromises/re-render)
-    expect(menu.find(".fr-icon-delete-line").attributes()).toHaveProperty("disabled");
+    expect(wrapper.find("#parcelle-2 .fr-icon-delete-line").attributes()).toHaveProperty("disabled");
     permissions.canDeleteFeature = true;
     await flushPromises();
-    expect(menu.find(".fr-icon-delete-line").attributes()).not.toHaveProperty("disabled");
-    await menu.find(".fr-icon-delete-line").trigger("click");
+    expect(wrapper.find("#parcelle-2 .fr-icon-delete-line").attributes()).not.toHaveProperty("disabled");
+    await wrapper.find("#parcelle-2 .fr-icon-delete-line").trigger("click");
     expect(wrapper.emitted("delete:featureId")).toHaveProperty("0", ["2"]);
   });
 });

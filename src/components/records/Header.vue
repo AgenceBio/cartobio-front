@@ -4,7 +4,7 @@
       <div class="fr-grid-row">
         <p class="fr-sr-only operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</p>
         <div class="seamless-select fr-grid-row">
-          <b class="font-blue">{{ record.version_name }}</b>
+          <b class="version-name">{{ record.version_name }}</b>
 
           <select class="version-name" name="select-version" id="select-version" v-model="selectedRecord">
             <option
