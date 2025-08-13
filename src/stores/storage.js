@@ -499,8 +499,6 @@ export const useCartoBioStorage = defineStore("storage", () => {
     { deep: true },
   );
 
-
-
   return {
     // storage ref
     operatorsStorage,

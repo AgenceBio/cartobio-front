@@ -24,18 +24,7 @@
 </template>
 
 <script setup>
-import {
-  computed,
-  Fragment,
-  h,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  onUpdated,
-  ref,
-  render,
-  shallowRef,
-} from "vue";
+import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, render, shallowRef } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 
 import { autocomplete } from "@algolia/autocomplete-js";

@@ -91,19 +91,12 @@
                         </router-link>
                       </li>
                       <li>
-                        <a
-                          :href="documentationPage"
-                          target="_blank"
-                          rel="noopener"
-                          class="dropdown-menu__link"
-                        >
+                        <a :href="documentationPage" target="_blank" rel="noopener" class="dropdown-menu__link">
                           Aide
                         </a>
                       </li>
                       <li>
-                        <router-link to="/logout" class="dropdown-menu__link">
-                          Déconnexion
-                        </router-link>
+                        <router-link to="/logout" class="dropdown-menu__link"> Déconnexion </router-link>
                       </li>
                     </ul>
                   </div>
@@ -354,7 +347,7 @@ const dropdownIsOpen = ref(false);
 const isOc = computed(() => userStore.isOc);
 
 const isOnExploitationsPage = computed(() => {
-  return route.path.includes('/exploitations/');
+  return route.path.includes("/exploitations/");
 });
 
 const exploitationsMenuLabel = computed(() => {
