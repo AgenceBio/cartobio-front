@@ -19,8 +19,6 @@
       <label class="fr-label" :for="'conversion-' + niveau.value">
         {{ niveau.label }}
       </label>
-      <!-- <div style="border-left: 1px solid #000; height: 100px"></div>
-      <ConversionLevel :level="niveau" :noIcon="true" /> -->
 
       <div class="end-conversion">
         <ConversionLevel :level="niveau" :noIcon="true" :labelSelector="true" />
@@ -78,7 +76,7 @@ const hasErrors = computed(() => errors.value.size > 0);
   min-width: 100px;
 }
 
-.end-conversion > p {
+.end-conversion > div {
   width: fit-content;
   justify-content: center;
   margin-left: auto;
