@@ -98,15 +98,6 @@
                 Saisir la culture
               </button>
             </template>
-            <!-- <template v-else>
-              <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-                Multi-cultures<span class="fr-sr-only"> : </span>
-                <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-                  <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
-                </small>
-              </p>
-              <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
-            </template> -->
             <p class="fr-mb-0">
               {{
                 !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
@@ -176,8 +167,6 @@
           :hidden="!open"
           v-for="feature in featureGroup.features"
           :key="feature.id"
-          @mouseover="hoveredId = feature.id"
-          :aria-current="feature.id === hoveredId ? 'location' : null"
           @click="(event) => clickOn(feature.id, event)"
           style="width: 100%"
         >
@@ -381,13 +370,6 @@ function toggleEditForm(featureId) {
   return emit("edit:featureId", featureId);
 }
 
-function toggleViewForm(featureId) {
-  if (!readonly.value) {
-    return;
-  }
-  return emit("view:featureId", featureId);
-}
-
 function toggleDeleteForm(featureId) {
   if (readonly.value) {
     return;
@@ -400,7 +382,6 @@ function pressZoom(featureId) {
 }
 
 function toggleFeatureGroup() {
-  // we uncheck them
   if (allSelected.value) {
     featuresStore.unselect(...featureIds.value);
   } else {

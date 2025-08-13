@@ -492,9 +492,8 @@ watch(
   display: flex;
   position: sticky;
   bottom: 0;
-  z-index: 1;
-  background-color: white;
   width: 100%;
   border-top: 1px solid var(--grey-900-175);
+  background-color: #f5f5fe;
 }
 </style>

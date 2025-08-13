@@ -109,6 +109,7 @@ if (activeAccordionId) {
 <style scoped>
 .fr-collapse--expanded {
   --collapse-max-height: none;
+  overflow: hidden;
 }
 
 .fr-accordion__btn {

@@ -7,7 +7,6 @@ import { useRecordStore } from "@/stores/record.js";
 import CertificationModal from "@/components/forms/CertificationForm.vue";
 import SaveAuditModal from "@/components/forms/SaveAuditForm.vue";
 import { CertificationState } from "@agencebio/cartobio-types";
-import { jjmmyyyy } from "@/utils/dates";
 import { getTimeAgo } from "@/utils/record";
 
 const recordStore = useRecordStore();
@@ -61,7 +60,7 @@ function handleCertify({ patch }) {
       <template v-if="record.certification_state === CertificationState.OPERATOR_DRAFT">
         <button
           v-if="permissions.canSaveAudit && permissions.isOc"
-          :disabled="canEndAudit"
+          :disabled="!canEndAudit"
           class="fr-btn fr-ml-1v fr-btn--icon-right"
           @click="
             () => {
@@ -74,7 +73,7 @@ function handleCertify({ patch }) {
         </button>
         <button
           v-if="permissions.canSaveAudit"
-          :disabled="canEndAudit"
+          :disabled="!canEndAudit"
           class="fr-btn fr-btn--secondary fr-ml-1v fr-icon-check-line fr-btn--icon-right"
           @click="
             () => {
@@ -89,7 +88,7 @@ function handleCertify({ patch }) {
       <template v-else-if="record.certification_state === CertificationState.AUDITED">
         <button
           v-if="permissions.canSendAudit"
-          :disabled="canEndAudit"
+          :disabled="!canEndAudit"
           class="fr-btn fr-icon-check-line fr-btn--icon-right"
           @click="handleSendAudit"
         >
@@ -99,7 +98,7 @@ function handleCertify({ patch }) {
       <template v-else-if="record.certification_state === CertificationState.PENDING_CERTIFICATION">
         <button
           v-if="permissions.canCertify"
-          :disabled="canEndAudit"
+          :disabled="!canEndAudit"
           class="fr-btn fr-icon-check-line fr-btn--icon-right"
           @click="showCertificationModal = true"
         >

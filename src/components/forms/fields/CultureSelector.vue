@@ -1,12 +1,7 @@
 <template>
   <div>
     <div v-if="!disabledInput">
-      <fieldset
-        class="culture-group fr-mb-1w fr-p-2w"
-        :key="uuidedCultures[0].id"
-        ref="fieldsetCultureGroup"
-        tabindex="-1"
-      >
+      <fieldset class="culture-group fr-mb-1w fr-p-2w" :key="uuidedCultures[0].id" tabindex="-1">
         <AsyncCultureTypeSelector
           :disabled-input="disabledInput"
           :feature-id="featureId"
@@ -74,12 +69,7 @@
       </fieldset>
     </div>
     <div v-else>
-      <fieldset
-        class="culture-group fr-mb-1w fr-p-2w"
-        :key="uuidedCultures[0].id"
-        ref="fieldsetCultureGroup"
-        tabindex="-1"
-      >
+      <fieldset class="culture-group fr-mb-1w fr-p-2w" :key="uuidedCultures[0].id" tabindex="-1">
         <p class="fr-h5">Culture</p>
         <p>
           <span :class="getCultureIcon(uuidedCultures[0].CPF)"> </span>
@@ -196,13 +186,11 @@
 
 <script setup>
 import { computed, defineAsyncComponent, ref, watch } from "vue";
-import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { getCultureIcon } from "@/utils/features.js";
 
 const AsyncCultureTypeSelector = defineAsyncComponent(() => import("./CultureTypeSelector.vue"));
-const fieldsetCultureGroup = ref();
 const isMulticultureModalOpen = ref(false);
 
 const isMulticulture = ref(false);
@@ -264,15 +252,6 @@ watch(
   { deep: true },
 );
 
-watch(
-  fieldsetCultureGroup,
-  () => {
-    const { focused } = useFocus(fieldsetCultureGroup.value[fieldsetCultureGroup.value.length - 1]);
-    focused.value = true;
-  },
-  { deep: true },
-);
-
 watch(isMulticulture, (val) => {
   if (val) {
     if (uuidedCultures.value.length === 1) {
@@ -294,16 +273,6 @@ function appendEmptyCulture() {
 
   emit("change", appendedCultures);
 }
-
-watch(
-  fieldsetCultureGroup,
-  () => {
-    const { focused } = useFocus(fieldsetCultureGroup.value[fieldsetCultureGroup.value.length - 1]);
-
-    focused.value = true;
-  },
-  { deep: true },
-);
 
 function removeCulture(cultureId) {
   const updatedCultures = uuidedCultures.value.filter(({ id }) => id !== cultureId);
