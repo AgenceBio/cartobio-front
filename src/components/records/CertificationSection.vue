@@ -13,20 +13,12 @@ const permissions = usePermissions();
 const { isOcAudit } = useUserStore();
 const { record } = recordStore;
 
-const displayCallout = computed(() => record.audit_demandes && isCertificationImmutable(record.certification_state));
-
 const canEndAudit = computed(
   () => permissions.canEditParcellaire && permissions.isOc && recordStore.hasFeatures && !featuresSets.hasRequiredSets,
 );
 </script>
 
 <template>
-  <!-- //   <div class="demandes fr-callout fr-callout--blue-ecume fr-mb-2w" v-if="displayCallout">
-//     <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
-
-//     <div>{{ record.audit_demandes }}</div>
-//   </div> -->
-
   <!-- Agri -->
 
   <div
@@ -53,11 +45,6 @@ const canEndAudit = computed(
   >
     <p class="fr-text--sm">Le parcellaire a été certifié", vous ne pouvez plus modifier les données.</p>
   </div>
-  <!-- <div class="fr-callout fr-callout--blue-ecume fr-mb-2w" v-if="permissions.isOc && record.audit_notes">
-    <h3 class="fr-callout__title">Notes finales de l'audit</h3>
-
-    <div>{{ record.audit_notes }}</div>
-  </div> -->
 
   <div
     class="fr-callout fr-callout--blue-ecume fr-mb-2w"

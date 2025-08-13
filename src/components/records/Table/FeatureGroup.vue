@@ -241,6 +241,8 @@
             </div>
           </td>
           <td style="width: 20%; text-align: right">
+            <span v-if="isRota(feature)" :class="isRota(feature)"><i class="ri-exchange-funds-line"></i>ROTATION</span>
+
             <p class="fr-mb-0 fr-text--sm text-grey">
               {{ getTimeAgo(feature) }}
             </p>
@@ -293,15 +295,12 @@
 import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
-import { useOperatorStore } from "@/stores/operator.js";
 import { useRecordStore } from "@/stores/record.js";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
 
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
-import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
-import { useOnline } from "@vueuse/core";
 import {
   cultureLabel,
   featureName,
@@ -313,13 +312,11 @@ import {
 import { useUserStore } from "@/stores/user";
 
 const route = useRoute();
-const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
 const userStore = useUserStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
-const isOnline = useOnline();
 
 const props = defineProps({
   featureGroup: {

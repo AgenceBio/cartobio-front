@@ -12,13 +12,13 @@
       <small> à préciser par l'OC</small>
     </template>
   </span>
-  <p v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
+  <div v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
     <span v-if="!noIcon" class="fr-icon" :class="conversionLevel.icon"></span>
     <div v-if="!labelSelector">
-    {{ conversionLevel.shortLabel }}
+      {{ conversionLevel.shortLabel }}
     </div>
     <div v-else>
-      {{conversionLevel.labelSelector}}
+      {{ conversionLevel.labelSelector }}
     </div>
     <time
       class="fr-mb-0"
@@ -28,7 +28,7 @@
     >
       {{ dateFormat(conversionDate) }}
     </time>
-  </p>
+  </div>
 </template>
 
 <script setup>

@@ -35,7 +35,6 @@ import {
   ref,
   render,
   shallowRef,
-  watch,
 } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 

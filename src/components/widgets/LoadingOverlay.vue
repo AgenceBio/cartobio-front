@@ -24,7 +24,7 @@
 <script setup>
 import { defineProps } from "vue";
 
-const props = defineProps({
+defineProps({
   width: Number,
   height: Number,
   color: String,
