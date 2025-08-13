@@ -20,21 +20,26 @@
         >
           <div class="fr-modal__body">
             <div class="fr-modal__header">
-              <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
-                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
-                <slot name="title" />
-              </h1>
+              <template v-if="!slots.header">
+                <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
+                  <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
+                  <slot name="title" />
+                </h1>
 
-              <button
-                class="fr-btn--close fr-btn"
-                title="Fermer la fenêtre modale"
-                aria-controls="global-modal"
-                @click="emit('close')"
-                :disabled="lockClose"
-                v-if="!noCloseButton"
-              >
-                Fermer
-              </button>
+                <button
+                  class="fr-btn--close fr-btn"
+                  title="Fermer la fenêtre modale"
+                  aria-controls="global-modal"
+                  @click="emit('close')"
+                  :disabled="lockClose"
+                  v-if="!noCloseButton"
+                >
+                  Fermer
+                </button>
+              </template>
+              <template v-else>
+                <slot name="header" />
+              </template>
             </div>
             <div class="fr-modal__content">
               <slot name="default" v-bind="$attrs" />
@@ -49,10 +54,12 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, useSlots } from "vue";
 import { useHead } from "@unhead/vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useContentTracking } from "@/stats.js";
+
+const slots = useSlots();
 
 useContentTracking();
 

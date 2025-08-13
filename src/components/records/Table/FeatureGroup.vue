@@ -261,7 +261,7 @@
               type="button"
               @click.prevent="toggleDeleteForm(feature.id)"
               :disabled="!permissions.canDeleteFeature"
-              class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-text--sm"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
             >
               Supprimer la parcelle
             </button>
@@ -422,16 +422,16 @@ function openCulturesModal(id) {
 
 function isRota(feature) {
   let max = 0;
-  if (feature.properties.historique_cultures) {
-    feature.properties.historique_cultures.forEach((e) => {
-      const tempo = feature.properties.historique_cultures.filter(
+  if (feature.properties.historique) {
+    feature.properties.historique.forEach((e) => {
+      const tempo = feature.properties.historique.filter(
         (y) =>
           (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
-          e.cultures === y.cultures,
+          e.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
       ).length;
       if (!(tempo + 1 <= max)) max = tempo + 1;
     });
-    return max >= 3 ? "rouge" : max > 1 ? jaune : null;
+    return max >= 3 ? "rouge" : max > 1 ? "jaune" : null;
   } else return null;
 }
 
@@ -548,11 +548,17 @@ function clickOn(id, event) {
   background: rgba(255, 233, 230, 1);
   border-radius: 4px;
   color: rgba(179, 64, 0, 1);
+  font-size: 12px;
+  font-weight: bold;
+  padding: 0px 6px;
 }
 
 .jaune {
   color: rgba(113, 96, 67, 1);
   background: rgba(254, 236, 194, 1);
   border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 0px 6px;
 }
 </style>

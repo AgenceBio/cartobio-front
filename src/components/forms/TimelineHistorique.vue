@@ -1,30 +1,37 @@
 <template>
-  <div class="history-tl-container">
-    <ul class="tl">
-      <li v-for="(item, index) in historique" :key="index" class="tl-item">
-        <div class="tl-point"></div>
-        <div class="tl-content">
-          <div class="timestamp">
-            {{ item.annee_controle }}
+  <div>
+    <span v-if="isRotaErrors" class="badge-rota fr-ml-2w">
+      <i class="ri-exchange-funds-line fr-mr-1w"></i> ROTATION À CONTRÔLER
+    </span>
+
+    <div class="history-tl-container">
+      <ul class="tl">
+        <li v-for="(item, index) in historique" :key="index" class="tl-item">
+          <div class="tl-point"></div>
+          <div class="tl-content">
+            <div class="timestamp">
+              {{ item.annee_controle }}
+            </div>
+            <div class="item-detail">
+              <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" />
+              <i v-if="getHistoriqueRota(index)" class="ri-exchange-funds-line"></i>
+
+              <span>{{
+                item.cultures.length > 1 ? "Multiculture" : fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf
+              }}</span>
+            </div>
           </div>
-          <div class="item-detail">
-            <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" />
-            <span>{{
-              item.cultures.length > 1 ? "Multiculture" : fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf
-            }}</span>
-            <span v-if="getHistoriqueRota(index)" class="badge">Rotation</span>
-          </div>
-        </div>
-      </li>
-    </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { computed, defineProps } from "vue";
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
-import { LEVEL_MAYBE_AB, LEVEL_UNKNOWN, getConversionLevel, isABLevel } from "@/referentiels/ab.js";
+import { getConversionLevel } from "@/referentiels/ab.js";
 
 const props = defineProps<{
   historique: {
@@ -56,6 +63,23 @@ const getHistoriqueRota = (index: number) => {
   if (count === 3) return "red";
   return null;
 };
+
+const isRotaErrors = computed(() => {
+  let max = 0;
+  if (props.historique) {
+    props.historique.forEach((e) => {
+      console.log(e);
+      const tempo = props.historique.filter(
+        (y) =>
+          (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
+          e.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
+      ).length;
+
+      if (!(tempo + 1 <= max)) max = tempo + 1;
+    });
+    return max >= 3 ? "rouge" : max > 1 ? "jaune" : null;
+  } else return null;
+});
 </script>
 
 <style scoped>
@@ -116,12 +140,12 @@ const getHistoriqueRota = (index: number) => {
   gap: 0.5rem;
 }
 
-/* .badge {
+.badge-rota {
   background: #ffc107;
   color: #000;
   padding: 0.2rem 0.5rem;
   border-radius: 0.3rem;
   font-size: 0.75rem;
   font-weight: bold;
-} */
+}
 </style>

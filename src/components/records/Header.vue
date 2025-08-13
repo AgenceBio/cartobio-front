@@ -3,17 +3,20 @@
     <div class="fr-grid-row fr-grid-row--middle header">
       <div class="fr-grid-row">
         <p class="fr-sr-only operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</p>
-        <select class="fr-select version-name" name="select-version" id="select-version" v-model="selectedRecord">
-          <option
-            :value="record.record_id"
-            :key="record.record_id"
-            v-for="record in sortedRecords"
-            @click="redirectToRecord(record)"
-          >
-            {{ record.version_name }}
-          </option>
-        </select>
+        <div class="seamless-select fr-grid-row">
+          <b class="font-blue">{{ record.version_name }}</b>
 
+          <select class="version-name" name="select-version" id="select-version" v-model="selectedRecord">
+            <option
+              :value="record.record_id"
+              :key="record.record_id"
+              v-for="record in sortedRecords"
+              @click="redirectToRecord(record)"
+            >
+              {{ record.version_name }}
+            </option>
+          </select>
+        </div>
         <p v-if="readonly" class="readonly-badge">Lecture seule</p>
       </div>
       <div class="fr-grid-row">
@@ -237,5 +240,36 @@ const selectedRecord = ref(record.record_id);
 hr {
   margin-bottom: 0px !important;
   padding-bottom: 1px !important;
+}
+
+.seamless-select {
+  gap: 5px;
+  position: relative;
+  padding-right: 1rem;
+  font-weight: normal;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
+  background-position: right center;
+  background-repeat: no-repeat;
+  justify-content: flex-end;
+  color: black;
+
+  & label {
+    display: inline;
+  }
+
+  /* super hacky way to hide a select behind
+   our custom div and still be able to interact with it
+   (there is no way to open select fields programmatically) */
+  & select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}
+.font-blue {
+  color: black;
 }
 </style>
