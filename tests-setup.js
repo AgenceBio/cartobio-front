@@ -55,7 +55,6 @@ vi.mock("axios", async (importActual) => {
   };
 });
 
-
 const ResizeObserverMock = vi.fn(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
@@ -63,7 +62,7 @@ const ResizeObserverMock = vi.fn(() => ({
 }));
 
 // Stub the global ResizeObserver
-vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+vi.stubGlobal("ResizeObserver", ResizeObserverMock);
 
 vi.stubGlobal("localStorage", {
   getItem: vi.fn(),

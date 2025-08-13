@@ -150,7 +150,7 @@ export async function unpinOperator(numeroBio) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function submitNewParcelle(recordId , feature) {
+export async function submitNewParcelle(recordId, feature) {
   const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
     feature,
   });
@@ -163,7 +163,7 @@ export async function submitNewParcelle(recordId , feature) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function updateFeature(recordId,  feature, featureId) {
+export async function updateFeature(recordId, feature, featureId) {
   const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${featureId}`, feature);
 
   return data;
@@ -174,10 +174,10 @@ export async function updateFeature(recordId,  feature, featureId) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function createFeaturesFromOther(recordId,  features, from) {
+export async function createFeaturesFromOther(recordId, features, from) {
   const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles`, {
     features,
-    from
+    from,
   });
 
   return data;
@@ -335,6 +335,6 @@ export async function hideNotif(numeroBio) {
 }
 
 export async function addParcelleVerif(geojson, recordId) {
-  const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload : geojson });
+  const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload: geojson });
   return data;
 }
