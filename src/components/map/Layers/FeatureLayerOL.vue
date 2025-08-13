@@ -101,7 +101,7 @@
 import { ref, watch, onMounted, onUnmounted, inject, Ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 
-import { Map as OlMap } from "ol";
+import { Map, MapBrowserEvent, Overlay } from "ol";
 import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -111,10 +111,13 @@ import ModifyFeature from "ol-ext/interaction/ModifyFeature";
 import { Select, Draw, Interaction } from "ol/interaction";
 import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
+import Tooltip from "ol-ext/overlay/Tooltip";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
-import { DeletionReasonsCode, legalProjectionSurface, inHa } from "@/utils/features.js";
+import { DeletionReasonsCode, legalProjectionSurface, inHa, getCultureIcon, featureName } from "@/utils/features.js";
+import { getConversionLevel, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab";
+import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 
 // Interactions
 import { mergeInteractions, clearMergeLayer } from "../interactions/merge";
@@ -140,6 +143,7 @@ import {
   toggleAllBorder,
 } from "../interactions/border";
 import { CartoBioFeature, CartoBioFeatureCollection } from "@agencebio/cartobio-types";
+import ZIndexContext from "ol/render/canvas/ZIndexContext";
 
 /*
  * * Interface
@@ -183,7 +187,7 @@ const { map: mapPrefs } = storeToRefs(preferences);
  * * Injects
  */
 
-const map = inject<Ref<OlMap>>("map");
+const map = inject<Ref<Map>>("map");
 if (!map) {
   throw new Error("Pas de map disponible");
 }
@@ -321,7 +325,7 @@ const initDivide = (): void => {
   const targetFeature = getTargetFeature();
 
   if (map && vectorLayer.value && targetFeature) {
-    divideInteraction(map.value, vectorLayer.value, targetFeature, resSource, hasDivision);
+    divideInteraction(map.value, targetFeature, resSource, hasDivision);
   }
 };
 
@@ -631,6 +635,98 @@ const updateHasUndoRedo = () => {
   hasUndo.value = !!interactions.value.undoRedo?.hasUndo();
   hasRedo.value = !!interactions.value.undoRedo?.hasRedo();
 };
+
+const createCultureOverlay = (feature: Feature) => {
+  const cultures: { CPF: "string" }[] = feature.get("cultures") || [];
+  const conversionLevel = getConversionLevel(feature.get("conversion_niveau"));
+  const conversionClassCss =
+    conversionLevel.value === LEVEL_UNKNOWN || conversionLevel.value === LEVEL_MAYBE_AB
+      ? "badge-a-modifier"
+      : "badge-" + conversionLevel.value;
+  const icon = getCultureIcon(cultures[0]?.CPF);
+
+  return `
+<div class="openlayers-culture-overlay">
+  <div class="badge-container">
+      <div class="badge ${conversionClassCss}">
+      <i class="fr-icon ${icon}"></i>${conversionLevel.value === LEVEL_MAYBE_AB ? "A préciser" : conversionLevel.shortLabel}</div>
+    </div>
+  </div>
+</div>
+`;
+};
+
+const createParcelleTooltip = (feature: Feature) => {
+  const cartobioFeature = new GeoJSON().writeFeatureObject(feature) as CartoBioFeature;
+  const name = featureName(cartobioFeature);
+  const area = calculateArea(cartobioFeature);
+  const codePostale = feature.get("COMMUNE");
+  const ville = feature.get("COMMUNE_LABEL");
+  const cultures: { CPF: "string" }[] = feature.get("cultures") || [];
+  const icon = getCultureIcon(cultures[0]?.CPF);
+  const libelleCulture = fromCodeCpf(cultures[0]?.CPF);
+
+  console.log(feature.get("cultures"));
+  return `
+<div class="openlayers-parcelle-tooltip fr-px-2w fr-py-3w">
+  <div class="space-between fr-mb-2w">
+    <b>${name}</b>
+    <p class="fr-mb-0 fr-hint-text fr-text--md">${area} ha</p>
+  </div>
+  <div class="align-center gap-3">
+    <span class="fr-icon-map-pin-2-line fr-icon--sm fr-hint-text" aria-hidden="true"></span>
+    <p class="fr-mb-0 fr-hint-text fr-text--md">${codePostale} ${ville}</p>
+  </div>
+  ${
+    cultures.length > 0
+      ? `
+  <div class="align-center gap-1">
+    <span class="${icon} fr-hint-text fr-mr-0" aria-hidden="true"></span>
+    <p class="fr-mb-0 fr-hint-text fr-text--md">${libelleCulture.libelle_code_cpf}</p>
+  </div>
+  `
+      : ""
+  }
+</div>
+`;
+};
+
+const getOverlays = (features: Feature[], zoom: number | undefined) => {
+  if (!zoom) return;
+  for (const feature of features) {
+    let overlay = map.value.getOverlayById(feature.getId() ?? -1);
+
+    //Zoom trop bas on affiche aucun overlay
+    if (zoom < 14) {
+      if (overlay) {
+        map.value.removeOverlay(overlay);
+      }
+      continue;
+    }
+    //Uniquement les parcelle a préciser
+    if (zoom < 16) {
+      const conversionLevel = getConversionLevel(feature.get("conversion_niveau"));
+
+      if (conversionLevel.value !== LEVEL_UNKNOWN && conversionLevel.value !== LEVEL_MAYBE_AB) {
+        if (overlay) {
+          map.value.removeOverlay(overlay);
+        }
+
+        continue;
+      }
+    }
+    if (!overlay) {
+      const element = document.createElement("div");
+      element.innerHTML = createCultureOverlay(feature);
+
+      overlay = new Overlay({ element, id: feature.getId() });
+
+      map.value.addOverlay(overlay);
+      overlay.setPosition(feature.getGeometry()?.getInteriorPoint().getCoordinates());
+    }
+  }
+};
+
 /*
  * * Watchers
  */
@@ -803,6 +899,43 @@ onMounted(() => {
   interactions.value.undoRedo.on("stack:add", updateHasUndoRedo);
   interactions.value.undoRedo.on("stack:remove", updateHasUndoRedo);
   interactions.value.undoRedo.on("stack:clear", updateHasUndoRedo);
+  getOverlays(features, map.value.getView().getZoom());
+
+  map.value.getView().on("change:resolution", () => {
+    const zoom = map.value.getView().getZoom();
+
+    getOverlays(features, zoom);
+  });
+
+  const tooltip = new Tooltip({
+    className: "openlayers-culture-overlay",
+    closeBox: false,
+    positioning: "bottom-center",
+    offset: [0, -15],
+    getHTML: createParcelleTooltip,
+  });
+  let currentFeature: Feature | null = null;
+  map.value.on("pointermove", function (evt: MapBrowserEvent) {
+    const feature = map.value.forEachFeatureAtPixel(evt.pixel, function (feature) {
+      return feature;
+    }) as Feature;
+    if (feature) {
+      if (feature !== currentFeature) {
+        tooltip.setFeature(feature);
+        map.value.addOverlay(tooltip);
+      }
+    } else if (currentFeature) {
+      map.value.removeOverlay(tooltip);
+    }
+    currentFeature = feature;
+  });
+
+  map.value.getTargetElement().addEventListener("pointerleave", function () {
+    if (currentFeature) {
+      map.value.removeOverlay(tooltip);
+      currentFeature = null;
+    }
+  });
 });
 
 onUnmounted(() => {
@@ -844,5 +977,95 @@ onUnmounted(() => {
   gap: 2px;
   padding: 10px;
   border-radius: 4px;
+}
+
+:deep(.ol-overlaycontainer) {
+  z-index: 1;
+}
+</style>
+
+<style>
+.openlayers-culture-overlay .badge-container {
+  background-color: white;
+  padding: 4px;
+  border-radius: 21px;
+  transform: translate(-52%, -177%);
+}
+.openlayers-culture-overlay .badge-container::after {
+  content: "";
+  position: absolute;
+  top: 99%;
+  right: 50%;
+  transform: translateX(50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+  border-bottom: 4px solid transparent;
+}
+.openlayers-culture-overlay .badge {
+  padding: 4px 12px;
+  display: flex;
+  gap: 5px;
+  border-radius: 16px;
+  border: 1px solid;
+  align-items: center;
+}
+
+.openlayers-culture-overlay .badge-a-modifier {
+  color: var(--text-default-error);
+  background-color: var(--red-marianne-925-125);
+  border: 1px solid var(--red-marianne-925-125);
+}
+.openlayers-culture-overlay .badge-CONV {
+  color: var(--green-tilleul-verveine-sun-418-moon-817);
+  background-color: var(--green-tilleul-verveine-925-125);
+  border: 1px solid var(--green-tilleul-verveine-850-200);
+}
+.openlayers-culture-overlay .badge-C1 {
+  color: var(--green-bourgeon-sun-425-moon-759);
+  background-color: var(--green-bourgeon-975-75);
+  border: 1px solid var(--green-bourgeon-850-200);
+}
+.openlayers-culture-overlay .badge-C2 {
+  color: var(--green-bourgeon-sun-425-moon-759);
+  background-color: var(--green-bourgeon-950-100);
+  border: 1px solid var(--green-bourgeon-850-200);
+}
+.openlayers-culture-overlay .badge-C3 {
+  color: var(--green-bourgeon-sun-425-moon-759);
+  background-color: var(--green-bourgeon-925-125);
+  border: 1px solid var(--green-bourgeon-850-200);
+}
+.openlayers-culture-overlay .badge-AB {
+  color: white;
+  background-color: var(--green-bourgeon-sun-425-moon-759);
+  border: 1px solid var(--green-bourgeon-sun-425-moon-759);
+}
+
+.openlayers-parcelle-tooltip {
+  background-color: white;
+  z-index: 150;
+}
+.openlayers-parcelle-tooltip div {
+  display: flex;
+}
+
+.openlayers-parcelle-tooltip .space-between {
+  justify-content: space-between;
+  display: flex;
+  gap: 30px;
+}
+.openlayers-parcelle-tooltip .align-center {
+  align-items: center;
+}
+.openlayers-parcelle-tooltip .gap-3 {
+  gap: 10px;
+}
+.openlayers-parcelle-tooltip .gap-1 {
+  gap: 3px;
+}
+/** Pour afficher la tooltip par dessus les overlays */
+.ol-overlaycontainer {
+  z-index: 1 !important;
 }
 </style>

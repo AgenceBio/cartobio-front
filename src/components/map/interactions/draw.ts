@@ -42,7 +42,10 @@ const createStyles = () => {
   return { styleDrawing, stylePointDrawing, snapStyle };
 };
 
-const createTooltipContent = (area?: string) => `
+const createTooltipContent = (feature: Feature) => {
+  const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
+
+  return `
   <div style="
     background: white;
     padding: 8px 12px;
@@ -56,9 +59,10 @@ const createTooltipContent = (area?: string) => `
     <span class="fr-icon--sm fr-icon-map-pin-2-line" aria-hidden="true"></span>
     Double clic pour finaliser le tracé
     </div>
-   ${area ? `<div style="font-weight: bold;display: flex; align-items: center; gap: 8px;"> <i class="ri-custom-size"></i>${area} ha</div>` : ""}
+    <div style="font-weight: bold;display: flex; align-items: center; gap: 8px;"> <i class="ri-custom-size"></i>${area} ha</div>
   </div>
 `;
+};
 
 const handleTracing = (
   e: any,
@@ -93,19 +97,6 @@ const handleTracing = (
       snapFeatureRef.current.setStyle(snapStyle);
       vectorSource.addFeature(snapFeatureRef.current);
     }
-  }
-};
-
-const updateTooltipPosition = (
-  e: any,
-  tooltipElement: HTMLElement | null,
-  currentDrawing: Feature | null,
-  map: Map,
-) => {
-  if (tooltipElement && currentDrawing) {
-    const pixel = map.getPixelFromCoordinate(e.coordinate);
-    tooltipElement.style.left = `${pixel[0] + 10}px`;
-    tooltipElement.style.top = `${pixel[1] - 10}px`;
   }
 };
 
@@ -149,32 +140,13 @@ export const drawInteraction = (
     closeBox: false,
     positioning: "bottom-left",
     offset: [10, -10],
+    getHTML: createTooltipContent,
   });
 
-  let tooltipElement: HTMLElement | null = null;
-
-  map.addOverlay(tooltip);
-
   drawPoly.on("drawstart", (e: DrawEvent) => {
-    console.log("draw start");
+    tooltip.setFeature(e.feature);
+    map.addOverlay(tooltip);
     currentDrawing = e.feature;
-
-    tooltipElement = document.createElement("div");
-    tooltipElement.innerHTML = createTooltipContent();
-    tooltipElement.style.position = "absolute";
-    tooltipElement.style.pointerEvents = "none";
-    tooltipElement.style.zIndex = "1000";
-
-    const mapContainer = map.getTargetElement();
-    if (mapContainer) mapContainer.appendChild(tooltipElement);
-
-    const geometry = currentDrawing.getGeometry();
-    geometry?.on("change", () => {
-      if (!currentDrawing) return;
-
-      const area = calculateArea(new GeoJSON().writeFeatureObject(currentDrawing, {}));
-      if (tooltipElement) tooltipElement.innerHTML = createTooltipContent(area);
-    });
   });
 
   drawPoly.on("drawend", (e: DrawEvent) => {
@@ -187,11 +159,6 @@ export const drawInteraction = (
 
     currentDrawing = null;
 
-    if (tooltipElement) {
-      tooltipElement.remove();
-      tooltipElement = null;
-    }
-
     map.removeOverlay(tooltip);
     const geojsonFormat = new GeoJSON();
     const geojsonFeature = geojsonFormat.writeFeatureObject(feature);
@@ -201,7 +168,6 @@ export const drawInteraction = (
 
   map.on("pointermove", (e: MapBrowserEvent) => {
     handleTracing(e, currentDrawing, map, vectorLayer, vectorSource, snapStyle, snapFeatureRef);
-    updateTooltipPosition(e, tooltipElement, currentDrawing, map);
   });
 };
 

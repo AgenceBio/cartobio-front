@@ -34,7 +34,6 @@ let map: Map;
 
 function divideInteraction(
   _map: Map,
-  vectorLayer: VectorLayer<VectorSource>,
   targetFeature: Feature,
   _resultLayer: VectorSource,
   _hasDivision: Ref<boolean>,

@@ -84,49 +84,22 @@ function modifyInteraction(map: Map, vectorLayer: VectorLayer<VectorSource>, fea
         ],
       });
       map.addInteraction(modify);
-      let tooltipElement: HTMLElement | null = null;
       const tooltip = new Tooltip({
         className: "draw-tooltip",
         closeBox: false,
         positioning: "bottom-left",
         offset: [10, -10],
+        getHTML: createTooltipContent,
       });
+      tooltip.setFeature(selectedFeatures.getArray()[0]);
 
       modify.on("modifystart", () => {
         isModifying = true;
-        const selectedFeature = selectedFeatures.getArray()[0];
-
         map.addOverlay(tooltip);
-
-        tooltipElement = document.createElement("div");
-        tooltipElement.innerHTML = createTooltipContent();
-        tooltipElement.style.position = "absolute";
-        tooltipElement.style.pointerEvents = "none";
-        tooltipElement.style.zIndex = "1000";
-
-        const mapContainer = map.getTargetElement();
-        if (mapContainer) mapContainer.appendChild(tooltipElement);
-
-        const geometry = selectedFeature.getGeometry();
-        geometry?.on("change", () => {
-          const area = calculateArea(new GeoJSON().writeFeatureObject(selectedFeature, {}) as CartoBioFeature);
-          if (tooltipElement) tooltipElement.innerHTML = createTooltipContent(area);
-        });
       });
 
       modify.on("modifyend", () => {
-        if (tooltipElement) {
-          tooltipElement.remove();
-          tooltipElement = null;
-        }
-
         map.removeOverlay(tooltip);
-      });
-
-      map.on("pointermove", (e: MapBrowserEvent) => {
-        const selectedFeature = selectedFeatures.getArray()[0];
-
-        updateTooltipPosition(e, tooltipElement, selectedFeature, map);
       });
     } else {
       if (modify) {
@@ -218,7 +191,8 @@ function setIsModifying(val: boolean) {
   isModifying = val;
 }
 
-function createTooltipContent(area?: string) {
+function createTooltipContent(feature: Feature) {
+  const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
   return `
 <div style="
   background: white;
@@ -231,19 +205,6 @@ function createTooltipContent(area?: string) {
  ${area ? `<div style="font-weight: bold;display: flex; align-items: center; gap: 8px;"> <i class="ri-custom-size"></i>${area} ha</div>` : ""}
 </div>
 `;
-}
-
-function updateTooltipPosition(
-  e: MapBrowserEvent,
-  tooltipElement: HTMLElement | null,
-  selectedFeature: Feature,
-  map: Map,
-) {
-  if (tooltipElement && selectedFeature) {
-    const pixel = map.getPixelFromCoordinate(e.coordinate);
-    tooltipElement.style.left = `${pixel[0] + 10}px`;
-    tooltipElement.style.top = `${pixel[1] - 10}px`;
-  }
 }
 
 function calculateArea(feature: CartoBioFeature): string {
