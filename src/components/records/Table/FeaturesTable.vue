@@ -197,7 +197,7 @@ async function handleSingleFeatureDeletion({ id, reason }) {
 
   const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
   await featuresStore.deleteSingleFeature({ id, reason });
-  if (isOnline) {
+  if (isOnline && loading) {
     loading.value = true;
   } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 }
@@ -214,7 +214,7 @@ async function handleFeatureCollectionSubmit({ ids, patch }) {
     })),
   };
   await featuresStore.updateFeatureCollectionProperties(featureCollection);
-  if (isOnline) {
+  if (isOnline && loading) {
     loading.value = true;
   } else toast.success("Parcelles modifiées.");
 }
@@ -314,6 +314,6 @@ watch(zoomFeature, (newValue) => {
 .total-parcelles {
   justify-content: flex-end;
   gap: 10px;
-  padding: 0 10x;
+  padding: 0 10px;
 }
 </style>
