@@ -6,6 +6,7 @@
         :feature-id="feature.properties.id || feature.id"
         :readonly="!permissions.canChangeConversionLevel"
         v-model="patch.conversion_niveau"
+        modal
       />
 
       <div class="fr-input-group" v-if="isAB">

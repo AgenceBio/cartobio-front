@@ -78,7 +78,7 @@
     :isTab="isTab"
     v-for="featureGroup in featureGroups"
     :featureGroup="featureGroup"
-    :key="featureGroup.key"
+    :key="featureGroup.key + (isTab ? '-modal' : '')"
     @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
     @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
     @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
@@ -114,7 +114,7 @@
   </p>
 </template>
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, inject } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features.js";
@@ -163,7 +163,9 @@ const emit = defineEmits([
   "edit-cultures:featureId",
 ]);
 
+const loading = inject("loading");
 const isOnline = useOnline();
+
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
@@ -195,7 +197,9 @@ async function handleSingleFeatureDeletion({ id, reason }) {
 
   const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
   await featuresStore.deleteSingleFeature({ id, reason });
-  toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
+  if (isOnline) {
+    loading.value = true;
+  } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 }
 
 async function handleFeatureCollectionSubmit({ ids, patch }) {
@@ -210,7 +214,9 @@ async function handleFeatureCollectionSubmit({ ids, patch }) {
     })),
   };
   await featuresStore.updateFeatureCollectionProperties(featureCollection);
-  toast.success("Parcelles modifiées.");
+  if (isOnline) {
+    loading.value = true;
+  } else toast.success("Parcelles modifiées.");
 }
 
 function handleFilterClick(id) {

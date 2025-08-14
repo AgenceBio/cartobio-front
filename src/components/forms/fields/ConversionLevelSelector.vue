@@ -9,14 +9,14 @@
     >
       <input
         type="radio"
-        :id="'conversion-' + niveau.value"
+        :id="'conversion-' + niveau.value + (modal ? '-modal' : '')"
         :value="niveau.value"
         :disabled="readonly"
         :checked="niveau.value === modelValue"
         @change="emit('update:modelValue', niveau.value)"
         name="conversion_niveau"
       />
-      <label class="fr-label" :for="'conversion-' + niveau.value">
+      <label class="fr-label" :for="'conversion-' + niveau.value + (modal ? '-modal' : '')">
         {{ niveau.label }}
       </label>
 
@@ -44,6 +44,10 @@ const props = defineProps({
     required: true,
   },
   readonly: {
+    type: Boolean,
+    default: false,
+  },
+  modal: {
     type: Boolean,
     default: false,
   },

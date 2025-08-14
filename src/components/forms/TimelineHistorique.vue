@@ -39,7 +39,7 @@ const props = defineProps<{
     conversion_niveau: string;
     annee_controle: number;
     correspondance_geometrie: string;
-  }[];
+  }[] | null;
 }>();
 
 const getHistoriqueRota = (index: number) => {

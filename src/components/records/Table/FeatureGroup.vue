@@ -43,7 +43,7 @@
         <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
       </div>
     </div>
-    <div v-if="!isTab">
+    <template v-if="!isTab">
       <div
         class="parcelle-carte fr-mb-2v fr-p-4v fr-mx-4v"
         :class="{
@@ -127,9 +127,9 @@
             </div>
           </div>
         </div>
-        <div @click="pressZoom(feature.id)" class="fr-grid-row fr-grid-row--middle parcelle-titre">
+        <div class="fr-grid-row fr-grid-row--middle parcelle-titre">
           <div
-            @click="openNiveauConversionModal(feature.id)"
+            @click.stop.prevent="openNiveauConversionModal(feature.id)"
             :class="{ clickable: permissions.canChangeConversionLevel }"
           >
             <ConversionLevel :feature="feature" with-date />
@@ -158,96 +158,84 @@
           </div>
         </div>
       </div>
-    </div>
-    <div v-else style="min-width: 100%">
-      <table style="min-width: 100%">
-        <tr
-          class="fr-mb-2v fr-p-4v fr-mx-4v"
-          :id="'parcelle-' + feature.id"
-          :hidden="!open"
-          v-for="feature in featureGroup.features"
-          :key="feature.id"
-          @click="(event) => clickOn(feature.id, event)"
-          style="width: 100%"
-        >
-          <td style="width: 20%">
-            <div v-if="isGroupedByCulture">
-              <h4
-                class="fr-text--lg fr-mb-0"
-                :class="{
-                  'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--lg fr-icon--left controlee':
-                    feature.properties.controlee,
-                }"
-              >
-                {{ featureName(feature, { explicitName: false }) }}
-              </h4>
-              <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true })">
-                {{ featureName(feature, { nameOnly: true }) }}
-              </p>
-            </div>
-            <div v-else>
-              <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-                Multi-cultures<span class="fr-sr-only"> : </span>
-                <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-                  <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
-                </small>
-              </p>
-              <h4 v-else class="fr-text--lg fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</h4>
+    </template>
+    <template v-else>
+      <div
+        class="fr-mb-2v fr-p-4v fr-mx-4v parcelle-ligne"
+        :class="{ 'fr-grid-row': open }"
+        :id="'parcelle-' + feature.id + (isTab ? '-modal' : '')"
+        :hidden="!open"
+        v-for="feature in featureGroup.features"
+        :key="feature.id"
+        @click="(event) => clickOn(feature.id, event)"
+      >
+        <div class="fr-col-2">
+          <h4
+            class="fr-text--lg fr-mb-0"
+            :class="{
+              'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--lg fr-icon--left controlee': feature.properties.controlee,
+            }"
+          >
+            {{ featureName(feature, { explicitName: false }) }}
+          </h4>
+          <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true })">
+            {{ featureName(feature, { nameOnly: true }) }}
+          </p>
+        </div>
 
-              <p class="fr-hint-text">{{ featureName(feature, { hint: true }) }}</p>
-            </div>
-          </td>
-          <td style="width: 10%">{{ feature.properties.cultures[0].variete }}</td>
-          <td style="width: 20%">
-            <template v-if="isGroupedByCulture">
-              <small v-if="feature.properties.cultures.length > 1">Multi-culture</small>
-              <button
-                v-else-if="
-                  (permissions.canChangeCulture && feature.properties.cultures.length === 0) ||
-                  !feature.properties.cultures
-                "
-                class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
-                @click="openCulturesModal(feature.id)"
-              >
-                Saisir la culture
-              </button>
-            </template>
-            <template v-else>
-              <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-                Multi-cultures<span class="fr-sr-only"> : </span>
-                <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-                  <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
-                </small>
-              </p>
-              <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
-            </template>
-          </td>
-          <td style="width: 10%">
-            <p class="fr-mb-0">
-              {{
-                !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
-                  ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
-                  : inHa(legalProjectionSurface(feature))
-              }}
-            </p>
-          </td>
-          <td style="width: 20%">
-            <div
-              style="width: fit-content"
-              @click="openNiveauConversionModal(feature.id)"
-              :class="{ clickable: permissions.canChangeConversionLevel }"
+        <div class="fr-col-2">
+          {{ feature.properties.cultures[0].variete ? feature.properties.cultures[0].variete : "-" }}
+        </div>
+        <div class="fr-col-2">
+          <template v-if="isGroupedByCulture">
+            <small v-if="feature.properties.cultures.length > 1">Multi-culture</small>
+            <button
+              v-else-if="
+                (permissions.canChangeCulture && feature.properties.cultures.length === 0) ||
+                !feature.properties.cultures
+              "
+              class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
+              @click="openCulturesModal(feature.id)"
             >
-              <ConversionLevel :feature="feature" with-date />
-            </div>
-          </td>
-          <td style="width: 20%; text-align: right">
-            <span v-if="isRota(feature)" :class="isRota(feature)"><i class="ri-exchange-funds-line"></i>ROTATION</span>
-
-            <p class="fr-mb-0 fr-text--sm text-grey">
-              {{ getTimeAgo(feature) }}
+              Saisir la culture
+            </button>
+          </template>
+          <template v-else>
+            <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
+              Multi-cultures<span class="fr-sr-only"> : </span>
+              <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+                <span v-if="i" class="fr-sr-only">, </span>{{ cultureLabel(culture) }}
+              </small>
             </p>
-          </td>
-          <td style="width: 20%; text-align: right">
+            <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
+          </template>
+        </div>
+        <div class="fr-col-2">
+          <span>
+            {{
+              !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+                ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
+                : inHa(legalProjectionSurface(feature))
+            }}
+          </span>
+        </div>
+        <div class="fr-col-2">
+          <div
+            style="width: fit-content"
+            @click="openNiveauConversionModal(feature.id)"
+            :class="{ clickable: permissions.canChangeConversionLevel }"
+          >
+            <ConversionLevel :feature="feature" with-date />
+          </div>
+        </div>
+        <div class="fr-col-2 fr-grid-row last-row">
+          <div class="fr-p-2v">
+            <span v-if="isRota(feature)" :class="isRota(feature)"><i class="ri-exchange-funds-line"></i>ROTATION</span>
+            <span class="fr-text--sm text-grey">
+              {{ getTimeAgo(feature) }}
+            </span>
+          </div>
+          <div class="fr-p-1v">
             <button
               type="button"
               @click.prevent="toggleDeleteForm(feature.id)"
@@ -256,32 +244,30 @@
             >
               Supprimer la parcelle
             </button>
-          </td>
-          <td style="width: 20%; text-align: right; vertical-align: middle">
-            <div>
-              <input
-                type="checkbox"
-                :id="'radio-' + feature.id"
-                :checked="selectedIds.includes(feature.id)"
-                @click="
-                  toggleSingleSelected(feature.id);
-                  selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-                "
-              />
-              <label
-                class="fr-label"
-                :for="'radio-' + feature.id"
-                :aria-label="
-                  selectedIds.includes(feature.id)
-                    ? `Désélectionner ${featureName(feature)}`
-                    : `Sélectionner ${featureName(feature)}`
-                "
-              />
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
+          </div>
+          <div class="fr-p-2v">
+            <input
+              type="checkbox"
+              :id="'radio-' + feature.id"
+              :checked="selectedIds.includes(feature.id)"
+              @click="
+                toggleSingleSelected(feature.id);
+                selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+              "
+            />
+            <label
+              class="fr-label"
+              :for="'radio-' + feature.id"
+              :aria-label="
+                selectedIds.includes(feature.id)
+                  ? `Désélectionner ${featureName(feature)}`
+                  : `Sélectionner ${featureName(feature)}`
+              "
+            />
+          </div>
+        </div>
+      </div>
+    </template>
     <p :id="`operator-features-summary-${featureGroup.key}`" class="fr-sr-only">
       Liste de {{ featureGroup.features.length }} parcelles cultivées en {{ featureGroup.label.toLocaleLowerCase() }}.
       La première colonne contient le nom de la parcelle ; la seconde, son statut de certification et éventuelle date de
@@ -538,5 +524,19 @@ function clickOn(id, event) {
   font-size: 12px;
   font-weight: bold;
   padding: 0px 6px;
+}
+
+.parcelle-ligne {
+  border: 1px solid #ececfe;
+  position: relative;
+  align-items: center;
+}
+
+.last-row > div {
+  margin-right: 0px;
+  margin-left: auto;
+  position: relative;
+  height: fit-content;
+  align-items: center;
 }
 </style>

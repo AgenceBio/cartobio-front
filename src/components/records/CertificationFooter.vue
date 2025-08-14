@@ -1,14 +1,16 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onUnmounted, watch } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { useOperatorStore } from "@/stores/operator.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { useRecordStore } from "@/stores/record.js";
+import { useCartoBioStorage } from "@/stores/storage.js";
 import CertificationModal from "@/components/forms/CertificationForm.vue";
 import SaveAuditModal from "@/components/forms/SaveAuditForm.vue";
 import { CertificationState } from "@agencebio/cartobio-types";
 import { getTimeAgo } from "@/utils/record";
 
+const storage = useCartoBioStorage();
 const recordStore = useRecordStore();
 const operatorStore = useOperatorStore();
 const featuresSets = useFeaturesSetsStore();
@@ -50,11 +52,34 @@ function handleCertify({ patch }) {
 
   showCertificationModal.value = false;
 }
+
+const timeAgo = ref(getTimeAgo(record));
+
+const interval = setInterval(() => {
+  timeAgo.value = getTimeAgo(record);
+}, 60000);
+
+const isQueueEmpty = computed(() => {
+  return Object.keys(storage.syncQueues).length > 0 ? false : true;
+});
+
+watch(
+  () => isQueueEmpty.value,
+  (newValue) => {
+    if (newValue && isOnline) {
+      timeAgo.value = getTimeAgo(record);
+    }
+  },
+);
+
+onUnmounted(() => {
+  clearInterval(interval);
+});
 </script>
 
 <template>
   <div class="fr-grid-row fr-py-8v banner" style="display: flex; justify-content: space-between; align-items: center">
-    <p style="margin: 0; text-align: left" class="fr-hint-text">Enregistré {{ getTimeAgo(record) }}</p>
+    <p style="margin: 0; text-align: left" class="fr-hint-text">Enregistré {{ timeAgo }}</p>
 
     <div>
       <template v-if="record.certification_state === CertificationState.OPERATOR_DRAFT">
