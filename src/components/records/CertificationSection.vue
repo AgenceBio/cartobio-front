@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from "vue";
-import { isCertificationImmutable } from "@/referentiels/ab.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { useRecordStore } from "@/stores/record.js";
