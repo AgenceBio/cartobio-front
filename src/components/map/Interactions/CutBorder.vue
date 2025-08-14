@@ -1,37 +1,128 @@
-import Map from "ol/Map";
-import Overlay from "ol/Overlay";
+<template>
+  <div class="pop-in-top">
+    <div class="column">
+      <div class="fr-checkbox-group">
+        <input type="checkbox" id="bordure-complete" @click="toggleAllBorder" />
+        <label class="fr-label" for="bordure-complete" aria-label="Appliquer la bordure sur toute la parcelle"
+          >Bordure complète</label
+        >
+      </div>
+      <div class="fr-checkbox-group">
+        <input type="checkbox" id="inverser-selection" @click="invertSelection" />
+        <label class="fr-label" for="inverser-selection" aria-label="Inverser le sens de la bordure"
+          >Inverser la séléction</label
+        >
+      </div>
+    </div>
+    <div class="column">
+      <div class="fr-checkbox-group">
+        <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
+          >Distance (m)</label
+        >
+        <input
+          type="number"
+          id="largeur-bordure"
+          step="0.01"
+          class="fr-input fr-mt-0"
+          v-model="distance"
+          @change="setDistance"
+        />
+      </div>
+    </div>
+    <div class="column">
+      <button class="fr-btn" :disabled="!hasBordure" @click="validateDivision">Découper</button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, createApp } from "vue";
+import { storeToRefs } from "pinia";
+
+import { Map, MapBrowserEvent, Overlay } from "ol";
+import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import Style from "ol/style/Style";
-import Stroke from "ol/style/Stroke";
-import Fill from "ol/style/Fill";
-import Feature from "ol/Feature";
+import GeoJSON from "ol/format/GeoJSON";
+import { Style, Fill, Stroke } from "ol/style";
+import { Translate } from "ol/interaction";
+
+import { useFeaturesStore } from "@/stores/features.js";
+import { usePreferences } from "@/stores/preferences.js";
+import { legalProjectionSurface, inHa } from "@/utils/features.js";
+
+// Utils Geom
+import { createFeaturesFromOther } from "@/cartobio-api.js";
+
+import { CartoBioFeature } from "@agencebio/cartobio-types";
+import { Coordinate } from "ol/coordinate";
+import CircleStyle from "ol/style/Circle";
+import proj4 from "proj4";
 import {
+  Geometry,
+  GeometryCollection,
+  LinearRing,
   LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
   Point,
   Polygon,
-  MultiPolygon,
-  MultiPoint,
-  MultiLineString,
-  LinearRing,
-  GeometryCollection,
-  Geometry,
 } from "ol/geom";
-import GeoJSON from "ol/format/GeoJSON";
-import { legalProjectionSurface, inHa } from "@/utils/features.js";
-import CircleStyle from "ol/style/Circle";
-import { Coordinate } from "ol/coordinate";
-import proj4 from "proj4";
 import * as jsts from "jsts/dist/jsts.min";
-import { Ref } from "vue";
-import { Translate } from "ol/interaction";
-import { MapBrowserEvent } from "ol/MapBrowserEvent";
+import DivisionOverlay from "../Overlays/DivisionOverlay.vue";
 
-let map: Map;
+/*
+ * * Interface
+ */
+
+interface Props {
+  map: Map;
+  vectorSource: VectorSource;
+  vectorLayer: VectorLayer<VectorSource>;
+  recordId: string;
+}
+
+/*
+ * * Props
+ */
+
+const props = defineProps<Props>();
+
+/*
+ * * Stores
+ */
+
+const preferences = usePreferences();
+const store = useFeaturesStore();
+
+const { map: mapPrefs } = storeToRefs(preferences);
+
+/*
+ * * Refs
+ */
+
+// Refs découpe bordure
+const hasBordure = ref<boolean>(false);
+const distance = ref<number>(5);
+/*
+ * * Computed
+ */
+
+/*
+ * * Constantes
+ */
+
+const resSource = new VectorSource();
+
+/*
+ * * Fonctions :  interactions
+ */
+
 let dragStart: Translate | null = null;
 let dragEnd: Translate | null = null;
 let changeBorder: Translate | null = null;
-let currentOverlays: Overlay[] = [];
+let currentOverlay: Overlay | null = null;
 let targetFeature: Feature | null = null;
 let previewClosestPointSource: VectorSource | null = null;
 let previewClosestPointLayer: VectorLayer<VectorSource> | null = null;
@@ -40,7 +131,6 @@ let previewStartPointLayer: VectorLayer<VectorSource> | null = null;
 let previewEndPointSource: VectorSource | null = null;
 let previewEndPointLayer: VectorLayer<VectorSource> | null = null;
 let previewBorderSource: VectorSource | null = null;
-let resSource: VectorSource | null = null;
 let previewBorderLayer: VectorLayer<VectorSource> | null = null;
 let closestPoint: Coordinate | undefined | null;
 let closestSegmentIndex = -1;
@@ -50,28 +140,15 @@ let startSegmentIndex = -1;
 let endSegmentIndex = -1;
 let isInverted = false;
 let allBorder = false;
-let distance: Ref<number>;
-let hasBorder: Ref<boolean>;
 let isDragging = false;
 
 let handleMapClick: () => void;
 let handlePointerMove: (e: MapBrowserEvent) => void;
 
-function borderInteraction(
-  _map: Map,
-  _targetFeature: Feature,
-  _hasBorder: Ref<boolean>,
-  _distance: Ref<number>,
-  _resSource: VectorSource,
-): void {
-  map = _map;
-  hasBorder = _hasBorder;
-  distance = _distance;
-  resSource = _resSource;
-  targetFeature = _targetFeature;
+const borderInteraction = (): void => {
   if (!targetFeature) return;
 
-  previewClosestPointSource = new VectorSource({ projection: map.getView().getProjection() });
+  previewClosestPointSource = new VectorSource();
   previewClosestPointLayer = new VectorLayer({
     source: previewClosestPointSource,
     style: new Style({
@@ -84,7 +161,7 @@ function borderInteraction(
     zIndex: 6,
   });
 
-  previewStartPointSource = new VectorSource({ projection: map.getView().getProjection() });
+  previewStartPointSource = new VectorSource();
   previewStartPointLayer = new VectorLayer({
     source: previewStartPointSource,
     style: new Style({
@@ -97,7 +174,7 @@ function borderInteraction(
     zIndex: 9,
   });
 
-  previewEndPointSource = new VectorSource({ projection: map.getView().getProjection() });
+  previewEndPointSource = new VectorSource();
   previewEndPointLayer = new VectorLayer({
     source: previewEndPointSource,
     style: new Style({
@@ -110,7 +187,7 @@ function borderInteraction(
     zIndex: 10,
   });
 
-  previewBorderSource = new VectorSource({ projection: map.getView().getProjection() });
+  previewBorderSource = new VectorSource();
   previewBorderLayer = new VectorLayer({
     source: previewBorderSource,
     style: new Style({
@@ -120,16 +197,16 @@ function borderInteraction(
     zIndex: 8,
   });
 
-  map.addLayer(previewClosestPointLayer);
-  map.addLayer(previewStartPointLayer);
-  map.addLayer(previewEndPointLayer);
-  map.addLayer(previewBorderLayer);
+  props.map.addLayer(previewClosestPointLayer);
+  props.map.addLayer(previewStartPointLayer);
+  props.map.addLayer(previewEndPointLayer);
+  props.map.addLayer(previewBorderLayer);
 
   handlePointerMove = (event: MapBrowserEvent) => {
     movePoint(event);
   };
 
-  map.on("pointermove", handlePointerMove);
+  props.map.on("pointermove", handlePointerMove);
 
   handleMapClick = () => {
     if (!closestPoint) return;
@@ -138,8 +215,8 @@ function borderInteraction(
       startBorderPoint = closestPoint;
       startSegmentIndex = closestSegmentIndex;
     } else if (!endBorderPoint) {
-      map.un("pointermove", handlePointerMove);
-      map.un("click", handleMapClick);
+      props.map.un("pointermove", handlePointerMove);
+      props.map.un("click", handleMapClick);
       endBorderPoint = closestPoint;
       endSegmentIndex = closestSegmentIndex;
       closestPoint = null;
@@ -160,13 +237,13 @@ function borderInteraction(
     }
   };
 
-  map.on("click", handleMapClick);
-}
+  props.map.on("click", handleMapClick);
+};
 
-function dragPoint(
+const dragPoint = (
   layer: VectorLayer<VectorSource>,
   setValue: (value: { point: Coordinate; segment: number }) => void,
-) {
+) => {
   const translate = new Translate({
     layers: [layer],
     hitTolerance: 10,
@@ -174,7 +251,7 @@ function dragPoint(
 
   translate.on("translating", function (event) {
     isDragging = true;
-    const coordinate = movePoint(event);
+    const coordinate = movePoint(event as unknown as MapBrowserEvent);
     if (coordinate) {
       setValue(coordinate);
     }
@@ -185,9 +262,9 @@ function dragPoint(
     isDragging = false;
   });
 
-  map.addInteraction(translate);
+  props.map.addInteraction(translate);
   return translate;
-}
+};
 
 function changeBorderSize() {
   if (!previewBorderLayer) return null;
@@ -213,10 +290,10 @@ function changeBorderSize() {
     isDragging = false;
   });
 
-  map.addInteraction(translate);
+  props.map.addInteraction(translate);
   return translate;
 }
-function drawPoints() {
+const drawPoints = () => {
   if (!previewClosestPointSource || !previewStartPointSource || !previewEndPointSource) return;
   previewClosestPointSource.clear();
   if (closestPoint && !isDragging) {
@@ -258,17 +335,13 @@ function drawPoints() {
     }
     drawBorder();
   }
-}
+};
 
-function drawBorder() {
+const drawBorder = () => {
   if (!changeBorder) {
     changeBorder = changeBorderSize();
   }
 
-  currentOverlays.forEach((overlay) => {
-    map.removeOverlay(overlay);
-  });
-  currentOverlays = [];
   previewBorderSource?.clear();
   if (!targetFeature) return;
   const polygonIn3857 = targetFeature.getGeometry()?.clone();
@@ -347,50 +420,18 @@ function drawBorder() {
   resSource?.addFeature(res);
 
   const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
-  const parcelle1Area = calculateArea(parcelle1Geometry);
+  const parcelle1Area = calculateArea(parcelle1Geometry as CartoBioFeature);
 
   const parcelle2Geometry = new GeoJSON().writeFeatureObject(res, {});
-  const parcelle2Area = calculateArea(parcelle2Geometry);
+  const parcelle2Area = calculateArea(parcelle2Geometry as CartoBioFeature);
 
-  const extent = targetFeature.getGeometry()?.getExtent();
-  if (!extent) {
-    return;
-  }
-  const [minX, , maxX, maxY] = extent;
-  const centerX = (minX + maxX) / 2;
-  const positionning = [centerX, maxY];
-
-  const tooltipOverlay = createTooltipOverlay(map);
-  const tooltipContent = `
-        <div style="
-          background: white;
-          padding: 8px 12px;
-          font-size: 14px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          font-family: 'Marianne', sans-serif;
-          white-space: nowrap;
-          border-radius: 4px;
-        ">
-          <div style="font-weight: bold; margin-bottom: 4px;">Découpe de la parcelle : ${text}</div>
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span style="width: 12px; height: 12px; background-color: rgba(0, 123, 255, 0.6); border-radius: 2px;"></span>
-             1: ${parcelle1Area} ha
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 12px; height: 12px; background-color: rgba(40, 167, 69, 0.6); border-radius: 2px;"></span>
-             2: ${parcelle2Area} ha
-          </div>
-        </div>
-      `;
-
-  tooltipOverlay.getElement().innerHTML = tooltipContent;
-  tooltipOverlay.setPosition(positionning);
+  createTooltipOverlay(props.map, `Découpe de la parcelle : ${text}`, parcelle1Area, parcelle2Area);
 
   previewBorderSource?.addFeature(res);
-  hasBorder.value = true;
-}
+  hasBordure.value = true;
+};
 
-function getSplittingLine(projectionDistance: number, geometry: Geometry, buffer: Geometry) {
+const getSplittingLine = (projectionDistance: number, geometry: Geometry, buffer: Geometry) => {
   const polygon = geometry.getCoordinates()[0];
   if (startSegmentIndex == -1 || endSegmentIndex == -1 || !startBorderPoint || !endBorderPoint || !targetFeature)
     return null;
@@ -458,170 +499,118 @@ function getSplittingLine(projectionDistance: number, geometry: Geometry, buffer
   const lineCoordinates = [extendedStartPoint, startPoint, pointA, ...points, pointB, endPoint, extendedEndPoint];
 
   return new LineString(lineCoordinates);
-}
+};
 
 /*
  * * Utils
  */
 
-export function updateOverlay(
-  overlay: Overlay,
-  pos: number[],
-  value: number | string,
-  unit: string,
-  bold = false,
-): void {
-  overlay.setPosition(pos);
-  const content = bold ? `<b>${value} ${unit}</b>` : `${value} ${unit}`;
-  overlay.getElement().innerHTML = content;
-}
-
-export function cleanupPreview(previewSource: VectorSource | null): void {
-  currentOverlays.forEach((overlay) => {
-    map.removeOverlay(overlay);
-  });
-  currentOverlays = [];
-
-  previewSource?.clear();
-}
-
-function calculateArea(feature: Feature): string {
+const calculateArea = (feature: CartoBioFeature): number => {
   return inHa(legalProjectionSurface(feature));
-}
+};
 
-function calculateSlope(startPoint: Coordinate, endPoint: Coordinate) {
+const calculateSlope = (startPoint: Coordinate, endPoint: Coordinate) => {
   const slope = (endPoint[1] - startPoint[1]) / (endPoint[0] - startPoint[0]);
 
   return -1 / slope;
-}
+};
 
-function calculateDestinationPoint(startPoint: Coordinate, distance: number, slope: number) {
+const calculateDestinationPoint = (startPoint: Coordinate, distance: number, slope: number) => {
   const x = startPoint[0] + distance / Math.sqrt(1 + slope * slope);
   const y = startPoint[1] + slope * (x - startPoint[0]);
   return [x, y];
-}
+};
 
-function calculateMidpoint(pointA: number[], pointB: number[]) {
+const calculateMidpoint = (pointA: number[], pointB: number[]) => {
   return [(pointA[0] + pointB[0]) / 2, (pointA[1] + pointB[1]) / 2];
-}
+};
 
-function isPointInPolygon(point: Coordinate, geom: Geometry) {
+const isPointInPolygon = (point: Coordinate, geom: Geometry) => {
   return geom.intersectsCoordinate(point);
-}
+};
 
-function squaredDistance(point1: Coordinate, point2: Coordinate) {
+const squaredDistance = (point1: Coordinate, point2: Coordinate) => {
   const p1 = proj4("EPSG:4326", "EPSG:3857", point1);
   const p2 = proj4("EPSG:4326", "EPSG:3857", point2);
   const dx = p1[0] - p2[0];
   const dy = p1[1] - p2[1];
   return dx * dx + dy * dy;
-}
+};
 
-function createTooltipOverlay(map: Map): Overlay {
-  const div = document.createElement("div");
-  div.className = "ol-tooltip ol-tooltip-static";
-  div.style.display = "block";
+const createTooltipOverlay = (map: Map, libelle: string, area1: number, area2: number): void => {
+  if (!targetFeature) return;
+  const extent = targetFeature.getGeometry()?.getExtent();
+
+  if (!extent) {
+    return;
+  }
+  const [minX, , maxX, maxY] = extent;
+  const centerX = (minX + maxX) / 2;
+  const positionning = [centerX, maxY];
+
+  const element = document.createElement("div");
+
+  const app = createApp(DivisionOverlay, {
+    libelle,
+    area1,
+    area2,
+  });
+
+  app.mount(element);
 
   const overlay = new Overlay({
-    element: div,
+    element,
     offset: [0, -15],
     positioning: "bottom-center",
   });
 
+  if (currentOverlay) {
+    map.removeOverlay(overlay);
+  }
   map.addOverlay(overlay);
-  currentOverlays.push(overlay);
+  currentOverlay = overlay;
 
-  return overlay;
-}
+  overlay.setPosition(positionning);
+};
 
-function cleanup(): void {
-  closestPoint = null;
-  closestSegmentIndex = -1;
-  startBorderPoint = null;
-  endBorderPoint = null;
-  startSegmentIndex = -1;
-  endSegmentIndex = -1;
-  hasBorder.value = false;
-  resSource?.clear();
-
-  if (dragStart) {
-    map.removeInteraction(dragStart);
-    dragStart = null;
-  }
-  if (dragEnd) {
-    map.removeInteraction(dragEnd);
-    dragEnd = null;
-  }
-  if (changeBorder) {
-    map.removeInteraction(changeBorder);
-    changeBorder = null;
-  }
-
-  if (previewClosestPointLayer) {
-    cleanupPreview(previewClosestPointLayer.getSource());
-    map.removeLayer(previewClosestPointLayer);
-    previewClosestPointLayer = null;
-  }
-
-  if (previewStartPointLayer) {
-    cleanupPreview(previewStartPointLayer.getSource());
-    map.removeLayer(previewStartPointLayer);
-    previewStartPointLayer = null;
-  }
-  if (previewEndPointLayer) {
-    cleanupPreview(previewEndPointLayer.getSource());
-    map.removeLayer(previewEndPointLayer);
-    previewEndPointLayer = null;
-  }
-  if (previewBorderLayer) {
-    cleanupPreview(previewBorderLayer.getSource());
-    map.removeLayer(previewBorderLayer);
-    previewBorderLayer = null;
-  }
-}
-
-function invertSelection() {
+const invertSelection = () => {
   isInverted = !isInverted;
   if (startBorderPoint && endBorderPoint) {
     drawBorder();
   }
-}
+};
 
-function toggleAllBorder() {
+const toggleAllBorder = () => {
   allBorder = !allBorder;
-  hasBorder.value = allBorder;
+  hasBordure.value = allBorder;
   previewClosestPointSource?.clear();
   previewStartPointSource?.clear();
   previewEndPointSource?.clear();
   if (allBorder) {
-    map.un("pointermove", handlePointerMove);
-    map.un("click", handleMapClick);
+    props.map.un("pointermove", handlePointerMove);
+    props.map.un("click", handleMapClick);
     drawBorder();
   } else {
     previewBorderSource?.clear();
-    currentOverlays.forEach((overlay) => {
-      map.removeOverlay(overlay);
-    });
-    currentOverlays = [];
+    if (currentOverlay) {
+      props.map.removeOverlay(currentOverlay);
+      currentOverlay = null;
+    }
     if (!endBorderPoint) {
-      map.on("pointermove", handlePointerMove);
-      map.on("click", handleMapClick);
+      props.map.on("pointermove", handlePointerMove);
+      props.map.on("click", handleMapClick);
     }
     drawPoints();
   }
-}
+};
 
-function setDistance() {
+const setDistance = () => {
   if ((!isNaN(distance.value) && startBorderPoint && endBorderPoint) || allBorder) {
     drawBorder();
   }
-}
+};
 
-function getBorderLayer() {
-  return previewBorderLayer;
-}
-
-function movePoint(event: PointerEvent) {
+const movePoint = (event: MapBrowserEvent) => {
   if (!previewStartPointSource || !previewEndPointSource) return null;
 
   const coordinate = event.coordinate;
@@ -650,6 +639,89 @@ function movePoint(event: PointerEvent) {
   }
 
   return { point: closestPoint, segment: closestSegmentIndex };
-}
+};
+/*
+ * * Fonctions : Data
+ */
 
-export { cleanup, borderInteraction, drawBorder, invertSelection, getBorderLayer, setDistance, toggleAllBorder };
+const validateDivision = async () => {
+  const modifiedFeatures: CartoBioFeature[] = [];
+  const selectdId = store.selectedModifIds[0];
+  const geoJson = new GeoJSON();
+
+  for (const modifiedFeature of resSource.getFeatures()) {
+    modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
+  }
+  const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
+
+  if (result) {
+    store.setSelectedModifiedFeature([]);
+    const newFeatures = result.parcelles.features.filter(
+      (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+    );
+    store.setAll(result.parcelles.features);
+
+    const feature = props.vectorLayer.getSource()?.getFeatureById(selectdId);
+
+    if (feature) {
+      props.vectorLayer.getSource()?.removeFeature(feature);
+    }
+
+    for (const newFeature of newFeatures) {
+      props.vectorLayer.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
+    }
+  }
+  mapPrefs.value.currentMode = "edit";
+};
+
+/*
+ * * Fonctions : Utils
+ */
+
+const getTargetFeature = (): Feature | null => {
+  const features = new GeoJSON().readFeatures(store.collection, {});
+
+  if (store.selectedModifIds && store.selectedModifIds[0]) {
+    const selectedFeature = features.find(
+      (feature) => feature.getId() === store.selectedModifIds[0] || feature.get("id") === store.selectedModifIds[0],
+    );
+
+    if (selectedFeature) {
+      return selectedFeature;
+    }
+  }
+
+  return null;
+};
+
+/**
+ * * States fonctions
+ */
+onMounted(() => {
+  targetFeature = getTargetFeature();
+  borderInteraction();
+});
+onUnmounted(() => {
+  store.setSelectedModifiedFeature([]);
+
+  if (previewClosestPointLayer) {
+    props.map.removeLayer(previewClosestPointLayer);
+  }
+
+  if (previewStartPointLayer) {
+    props.map.removeLayer(previewStartPointLayer);
+  }
+
+  if (previewEndPointLayer) {
+    props.map.removeLayer(previewEndPointLayer);
+  }
+
+  if (previewBorderLayer) {
+    props.map.removeLayer(previewBorderLayer);
+  }
+
+  if (currentOverlay) {
+    props.map.removeOverlay(currentOverlay);
+  }
+});
+</script>
