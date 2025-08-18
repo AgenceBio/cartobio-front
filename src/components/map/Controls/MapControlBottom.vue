@@ -167,7 +167,8 @@ const clearInteractions = () => {
   height: fit-content;
   position: absolute;
   bottom: 10px;
-  left: 35%;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 10px;
   border-radius: 4px;

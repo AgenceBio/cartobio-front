@@ -163,7 +163,7 @@ const createStyles = () => {
       points: 4,
       radius: 7,
     }),
-    geometry: (e: Feature<any>) => {
+    geometry: (e: Feature) => {
       const coords = e.getGeometry()?.getCoordinates()?.[0];
       if (coords?.length) return new MultiPoint(coords);
     },
@@ -190,7 +190,7 @@ const createTooltipContent = (feature: Feature) => {
 };
 
 const handleTracing = (
-  e: any,
+  e: MapBrowserEvent,
   currentDrawing: Feature | null,
   snapStyle: Style,
   snapFeatureRef: { current: Feature | null },

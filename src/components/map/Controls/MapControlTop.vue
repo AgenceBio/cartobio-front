@@ -64,7 +64,8 @@ watch(
   height: fit-content;
   position: absolute;
   top: 10px;
-  left: 35%;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 10px;
 }

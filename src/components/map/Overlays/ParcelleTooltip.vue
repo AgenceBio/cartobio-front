@@ -31,7 +31,6 @@ defineProps<Props>();
 <style scoped>
 .openlayers-parcelle-tooltip {
   background-color: white;
-  z-index: 150;
 }
 .openlayers-parcelle-tooltip div {
   display: flex;

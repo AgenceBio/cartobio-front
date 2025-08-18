@@ -1,67 +1,72 @@
 <template>
-  <div v-if="isDraw && vectorLayer && vectorSource">
-    <EditFeature
-      v-if="mapPrefs.currentMode === 'edit'"
-      :map="map"
-      :vector-layer="vectorLayer"
-      :vector-source="vectorSource"
-      :record-id="recordId"
-      :undo-redo="interactions.undoRedo"
-      :hasUndo="hasUndo"
-    />
-    <DrawNewFeature
-      v-else-if="mapPrefs.currentMode === 'draw'"
-      :map="map"
-      :vector-layer="vectorLayer"
-      :vector-source="vectorSource"
-      :record-id="recordId"
-    />
-    <CutBorder
-      v-else-if="mapPrefs.currentMode === 'decouper'"
-      :map="map"
-      :vector-layer="vectorLayer"
-      :vector-source="vectorSource"
-      :record-id="recordId"
-    />
-    <DivideFeature
-      v-else-if="mapPrefs.currentMode === 'divide'"
-      :map="map"
-      :vector-layer="vectorLayer"
-      :vector-source="vectorSource"
-      :record-id="recordId"
-    />
-    <MergeFeatures
-      v-else-if="mapPrefs.currentMode === 'fusionner'"
-      :map="map"
-      :vector-layer="vectorLayer"
-      :vector-source="vectorSource"
-      :record-id="recordId"
-    />
-    <DeleteFeature
-      v-else-if="mapPrefs.currentMode === 'delete'"
-      :map="map"
-      :vector-layer="vectorLayer"
-      :vector-source="vectorSource"
-      :record-id="recordId"
-    />
-    <Teleport to=".toolbar">
-      <div class="toolbar-bottom">
-        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo" :disabled="!hasUndo">
-          <i class="ri-arrow-go-back-line"></i>
-        </button>
-        <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo" :disabled="!hasRedo">
-          <i class="ri-arrow-go-forward-line"></i>
-        </button>
-      </div>
-    </Teleport>
-  </div>
+  <template v-if="vectorLayer && vectorSource">
+    <div v-if="!isDraw">
+      <ConsultFeature :map="map" :vector-layer="vectorLayer" :vector-source="vectorSource" />
+    </div>
+    <div v-else>
+      <EditFeature
+        v-if="mapPrefs.currentMode === 'edit'"
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        :record-id="recordId"
+        :undo-redo="interactions.undoRedo"
+        :hasUndo="hasUndo"
+      />
+      <DrawNewFeature
+        v-else-if="mapPrefs.currentMode === 'draw'"
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        :record-id="recordId"
+      />
+      <CutBorder
+        v-else-if="mapPrefs.currentMode === 'decouper'"
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        :record-id="recordId"
+      />
+      <DivideFeature
+        v-else-if="mapPrefs.currentMode === 'divide'"
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        :record-id="recordId"
+      />
+      <MergeFeatures
+        v-else-if="mapPrefs.currentMode === 'fusionner'"
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        :record-id="recordId"
+      />
+      <DeleteFeature
+        v-else-if="mapPrefs.currentMode === 'delete'"
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        :record-id="recordId"
+      />
+      <Teleport to=".toolbar">
+        <div class="toolbar-bottom">
+          <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo" :disabled="!hasUndo">
+            <i class="ri-arrow-go-back-line"></i>
+          </button>
+          <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo" :disabled="!hasRedo">
+            <i class="ri-arrow-go-forward-line"></i>
+          </button>
+        </div>
+      </Teleport>
+    </div>
+  </template>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, inject, Ref, computed, createApp } from "vue";
+import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp } from "vue";
 import { storeToRefs } from "pinia";
 
-import { Map, MapBrowserEvent, Overlay } from "ol";
+import { Map, Overlay } from "ol";
 import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -71,25 +76,23 @@ import ModifyFeature from "ol-ext/interaction/ModifyFeature";
 import { Select, Draw, Interaction } from "ol/interaction";
 import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
-import Tooltip from "ol-ext/overlay/Tooltip";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
-import { legalProjectionSurface, inHa, getCultureIcon, featureName } from "@/utils/features.js";
+import { legalProjectionSurface, inHa, getCultureIcon } from "@/utils/features.js";
 import { getConversionLevel, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab";
-import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 
 // Utils Geom
 
 import { CartoBioFeature, CartoBioFeatureCollection } from "@agencebio/cartobio-types";
 import CultureOverlay from "../Overlays/CultureOverlay.vue";
-import ParcelleTooltip from "../Overlays/ParcelleTooltip.vue";
 import DrawNewFeature from "../Interactions/DrawNewFeature.vue";
 import EditFeature from "../Interactions/EditFeature.vue";
 import CutBorder from "../Interactions/CutBorder.vue";
 import DivideFeature from "../Interactions/DivideFeature.vue";
 import MergeFeatures from "../Interactions/MergeFeatures.vue";
 import DeleteFeature from "../Interactions/DeleteFeature.vue";
+import ConsultFeature from "../Interactions/ConsultFeature.vue";
 
 /*
  * * Interface
@@ -155,14 +158,6 @@ const features = ref<Feature[]>([]);
 
 const hasUndo = ref(false);
 const hasRedo = ref(false);
-
-/*
- * * Computed
- */
-
-const numberSelectedFeature = computed(() => {
-  return store.selectedModifIds.length;
-});
 
 /*
  * * Fonctions :  interactions
@@ -276,33 +271,12 @@ const createCultureOverlay = (feature: Feature) => {
   return element;
 };
 
-const createParcelleTooltip = (feature: Feature) => {
-  const cartobioFeature = new GeoJSON().writeFeatureObject(feature) as CartoBioFeature;
-  const name = featureName(cartobioFeature);
-  const area = calculateArea(cartobioFeature);
-  const codePostale = feature.get("COMMUNE");
-  const ville = feature.get("COMMUNE_LABEL");
-  const cultures: { CPF: "string" }[] = feature.get("cultures") || [];
-  const icon = getCultureIcon(cultures[0]?.CPF);
-  const libelleCulture = fromCodeCpf(cultures[0]?.CPF);
-
-  const element = document.createElement("div");
-  const app = createApp(ParcelleTooltip, {
-    name,
-    area,
-    codePostale,
-    ville,
-    icon,
-    libelleCulture: libelleCulture?.libelle_code_cpf,
-  });
-
-  app.mount(element);
-  return element.innerHTML;
-};
-
 const generateConversionLevelOverlays = () => {
   if (!zoom.value) return;
   for (const overlay of map.value.getOverlays().getArray()) {
+    if (overlay.getId() === undefined) {
+      continue;
+    }
     const feature = features.value.find((f) => f.getId() === overlay.getId());
 
     if (!feature) {
@@ -332,7 +306,12 @@ const generateConversionLevelOverlays = () => {
       }
     }
     if (!overlay) {
-      overlay = new Overlay({ element: createCultureOverlay(feature), id: feature.getId() });
+      overlay = new Overlay({
+        element: createCultureOverlay(feature as Feature),
+        id: feature.getId(),
+        stopEvent: false,
+        insertFirst: true,
+      });
 
       map.value.addOverlay(overlay);
       overlay.setPosition(feature.getGeometry()?.getInteriorPoint().getCoordinates());
@@ -356,16 +335,14 @@ watch(
 watch(
   () => props.isDraw,
   (isDraw) => {
-    if (isDraw) {
-      generateConversionLevelOverlays();
-    } else {
+    if (!isDraw) {
       mapPrefs.value.currentMode = "neutral";
       store.setSelectedModifiedFeature([]);
       for (const overlay of map.value.getOverlays().getArray()) {
-        if (overlay instanceof Overlay) {
-          map.value.removeOverlay(overlay);
-        }
+        map.value.removeOverlay(overlay);
       }
+
+      generateConversionLevelOverlays();
     }
   },
 );
@@ -378,9 +355,7 @@ watch(
 watch(
   () => store.collection,
   () => {
-    console.log(features.value.length);
     features.value = new GeoJSON().readFeatures(store.collection);
-    console.log(features.value.length);
     generateConversionLevelOverlays();
   },
   { deep: true },
@@ -436,41 +411,6 @@ onMounted(() => {
   map.value.getView().on("change:resolution", () => {
     zoom.value = map.value.getView().getZoom();
   });
-
-  const tooltip = new Tooltip({
-    className: "openlayers-culture-overlay",
-    closeBox: false,
-    positioning: "bottom-center",
-    offset: [0, -15],
-    getHTML: createParcelleTooltip,
-  });
-  let currentFeature: Feature | null = null;
-  map.value.on("pointermove", (evt: MapBrowserEvent) => {
-    if (numberSelectedFeature.value > 0 || mapPrefs.value.currentMode === "draw") {
-      map.value.removeOverlay(tooltip);
-      return;
-    }
-    const feature = map.value.forEachFeatureAtPixel(evt.pixel, (feature) => {
-      return feature.clone();
-    }) as Feature;
-    if (feature) {
-      if (feature !== currentFeature) {
-        map.value.removeOverlay(tooltip);
-        tooltip.setFeature(feature);
-        map.value.addOverlay(tooltip);
-      }
-    } else if (currentFeature) {
-      map.value.removeOverlay(tooltip);
-    }
-    currentFeature = feature;
-  });
-
-  map.value.getTargetElement().addEventListener("pointerleave", function () {
-    if (currentFeature) {
-      map.value.removeOverlay(tooltip);
-      currentFeature = null;
-    }
-  });
 });
 
 onUnmounted(() => {
@@ -512,12 +452,5 @@ onUnmounted(() => {
   gap: 2px;
   padding: 10px;
   border-radius: 4px;
-}
-</style>
-
-<style>
-/** Pour afficher la tooltip par dessus les overlays */
-.ol-overlaycontainer {
-  z-index: 1 !important;
 }
 </style>

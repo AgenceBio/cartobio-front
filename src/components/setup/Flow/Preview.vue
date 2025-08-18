@@ -25,7 +25,7 @@
           >
             <BaseLayer name="base" />
 
-            <FeaturesLayerOL :interactive="false" name="features" :data="featureCollection" :isDraw="false" />
+            <FeaturesLayerOL :interactive="false" name="features" :data="featureCollection" :is-draw="false" />
           </MapContainerOL>
           <div class="fr-mt-3w">
             <Spinner v-if="isLoading">Import en cours</Spinner>
