@@ -30,7 +30,10 @@ let cadastreLayer: VectorTileLayer | null = null;
  * * Fonctions
  */
 
-function parcelleStyle(feature: FeatureLike, resolution: number): Style {
+function parcelleStyle(feature: FeatureLike, resolution: number): Style | void {
+  if (feature.get("layer") != "parcelles") {
+    return;
+  }
   const section = feature.get("section") || "";
   const numero = feature.get("numero") || "";
   const label = `${section}.${numero}`.trim();
@@ -46,6 +49,7 @@ function parcelleStyle(feature: FeatureLike, resolution: number): Style {
 
   const styleOptions: ConstructorParameters<typeof Style>[0] = {
     stroke,
+    fill: new Fill({ color: "rgba(0, 0, 0, 0)" }),
   };
 
   if (showLabel) {

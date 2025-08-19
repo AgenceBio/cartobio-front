@@ -104,16 +104,21 @@ const createParcelleTooltip = (feature: Feature) => {
  * * Fonctions : Data
  */
 
-const handlePointerMove = (evt: MapBrowserEvent) => {
+const handlePointerMove = (e: MapBrowserEvent) => {
   if (numberSelectedFeature.value > 0) {
     props.map.removeOverlay(tooltip);
     return;
   }
-  const feature = props.map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-    return feature.clone();
-  }) as Feature;
+  const feature = props.map.forEachFeatureAtPixel(
+    e.pixel,
+    (feature) => {
+      return feature.clone();
+    },
+    { layerFilter: (l) => l.get("name") === props.vectorLayer.get("name") },
+  ) as Feature;
   if (feature) {
     if (feature !== currentFeature) {
+      console.log;
       if (currentFeature == null) {
         props.map.addOverlay(tooltip);
       }

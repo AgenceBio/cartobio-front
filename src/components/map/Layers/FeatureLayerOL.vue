@@ -1,6 +1,6 @@
 <template>
   <template v-if="vectorLayer && vectorSource">
-    <div v-if="!isDraw">
+    <div v-if="mapPrefs.currentMode === 'consult'">
       <ConsultFeature :map="map" :vector-layer="vectorLayer" :vector-source="vectorSource" />
     </div>
     <div v-else>
@@ -13,7 +13,7 @@
         :undo-redo="interactions.undoRedo"
         :hasUndo="hasUndo"
       />
-      <DrawNewFeature
+      <AddNewFeature
         v-else-if="mapPrefs.currentMode === 'draw'"
         :map="map"
         :vector-layer="vectorLayer"
@@ -78,6 +78,7 @@ import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
 
 import { useFeaturesStore } from "@/stores/features.js";
+import { useRecordStore } from "@/stores/record.js";
 import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa, getCultureIcon } from "@/utils/features.js";
 import { getConversionLevel, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab";
@@ -86,13 +87,14 @@ import { getConversionLevel, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiel
 
 import { CartoBioFeature, CartoBioFeatureCollection } from "@agencebio/cartobio-types";
 import CultureOverlay from "../Overlays/CultureOverlay.vue";
-import DrawNewFeature from "../Interactions/DrawNewFeature.vue";
+import AddNewFeature from "../Interactions/AddNewFeature.vue";
 import EditFeature from "../Interactions/EditFeature.vue";
 import CutBorder from "../Interactions/CutBorder.vue";
 import DivideFeature from "../Interactions/DivideFeature.vue";
 import MergeFeatures from "../Interactions/MergeFeatures.vue";
 import DeleteFeature from "../Interactions/DeleteFeature.vue";
 import ConsultFeature from "../Interactions/ConsultFeature.vue";
+import { FeatureLike } from "ol/Feature";
 
 /*
  * * Interface
@@ -102,7 +104,6 @@ interface Props {
   name?: string;
   interactive?: boolean;
   recordId: string;
-  isDraw: boolean;
   data?: CartoBioFeatureCollection;
 }
 
@@ -129,6 +130,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const preferences = usePreferences();
 const store = useFeaturesStore();
+const record = useRecordStore();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 
@@ -183,8 +185,8 @@ const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 
-const getFeatureStyle = (feature: Feature): Style[] => {
-  const size = calculateArea(new GeoJSON().writeFeatureObject(feature) as CartoBioFeature);
+const getFeatureStyle = (feature: FeatureLike): Style => {
+  const size = calculateArea(new GeoJSON().writeFeatureObject(feature as Feature) as CartoBioFeature);
   const numeroI = feature.get("NUMERO_I") || "";
   const numeroP = feature.get("NUMERO_P") || "";
   const nom = feature.get("NOM") || "";
@@ -218,7 +220,7 @@ const getFeatureStyle = (feature: Feature): Style[] => {
     }),
   });
 
-  return [styleText];
+  return styleText;
 };
 
 const clearInteractions = (): void => {
@@ -333,10 +335,9 @@ watch(
 );
 
 watch(
-  () => props.isDraw,
-  (isDraw) => {
-    if (!isDraw) {
-      mapPrefs.value.currentMode = "neutral";
+  () => mapPrefs.value.currentMode,
+  () => {
+    if (mapPrefs.value.currentMode === "consult") {
       store.setSelectedModifiedFeature([]);
       for (const overlay of map.value.getOverlays().getArray()) {
         map.value.removeOverlay(overlay);
@@ -367,9 +368,6 @@ watch(
 
 onMounted(() => {
   clearInteractions();
-  if (!props.isDraw) {
-    mapPrefs.value.currentMode = "neutral";
-  }
 
   features.value = new GeoJSON().readFeatures(props.data ?? store.collection, {});
 
@@ -388,8 +386,13 @@ onMounted(() => {
   vectorLayer.value.set("name", "plan-features-layer");
   map.value.addLayer(vectorLayer.value);
 
-  const extent = vectorSource.value?.getExtent();
-  if (extent && !isNaN(extent[0])) {
+  let extent = vectorSource.value?.getExtent();
+
+  if (!extent || isNaN(extent[0]) || extent[0] === Infinity) {
+    extent = record.bounds;
+  }
+
+  if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
     map.value.getView().fit(extent, { padding: [50, 50, 50, 50] });
   }
 

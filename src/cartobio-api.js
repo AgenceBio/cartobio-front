@@ -338,3 +338,8 @@ export async function addParcelleVerif(geojson, recordId) {
   const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload: geojson });
   return data;
 }
+
+export async function getRPG(extent) {
+  const data = await apiClient.post(`/v2/geometry/rpg`, { payload: extent });
+  return data;
+}

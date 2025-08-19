@@ -11,16 +11,16 @@
       <button
         type="button"
         class="fr-btn fr-icon-eye-line fr-btn--icon-left"
-        @click="changeMode()"
-        :class="[!drawMode ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapPrefs.currentMode === 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        @click="mapPrefs.currentMode = 'consult'"
       >
         Consulter
       </button>
       <button
         type="button"
         class="fr-btn"
-        :class="[drawMode ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        @click="changeMode()"
+        :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        @click="mapPrefs.currentMode = 'edit'"
       >
         <span class="ri-shape-line" />
         Modifier
@@ -42,8 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch, Ref } from "vue";
+import { inject, ref, Ref } from "vue";
 import type { Map as OlMap } from "ol";
+import { usePreferences } from "@/stores/preferences.js";
+import { storeToRefs } from "pinia";
 
 /**
  * * Refs
@@ -56,14 +58,20 @@ const map = inject<Ref<OlMap | null>>("map");
 const props = defineProps<{
   parcellesNb: number;
   parcellesSize: string;
-  drawModeProps: boolean;
 }>();
+
+/*
+ * * Stores
+ */
+
+const preferences = usePreferences();
+
+const { map: mapPrefs } = storeToRefs(preferences);
 
 /**
  * * Refs
  */
 const isFullScreen = ref<boolean>(false);
-const drawMode = ref<boolean>(false);
 
 /**
  * * Emits
@@ -71,18 +79,7 @@ const drawMode = ref<boolean>(false);
 const emit = defineEmits<{
   (e: "locate"): void;
   (e: "fullscreen"): void;
-  (e: "drawMode", value: boolean): void;
 }>();
-
-/**
- * * Watchers
- */
-watch(
-  () => props.drawModeProps,
-  (newValue) => {
-    drawMode.value = newValue;
-  },
-);
 
 /**
  * * Fonction
@@ -108,16 +105,6 @@ const onLocate = () => {
 const onFullScreen = () => {
   emit("fullscreen");
   isFullScreen.value = !isFullScreen.value;
-};
-
-const changeMode = () => {
-  drawMode.value = !drawMode.value;
-  if (!drawMode.value) clearInteractions();
-  emit("drawMode", drawMode.value);
-};
-
-const clearInteractions = () => {
-  map?.value?.getInteractions().pop();
 };
 </script>
 

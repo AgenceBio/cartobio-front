@@ -9,6 +9,29 @@
   >
     <template #title>Créer ma parcelle</template>
   </CertificationBodyEditForm>
+  <div class="pop-in-top">
+    <button
+      class="fr-btn-icon--left ri-pen-nib-line fr-btn--sm fr-btn fr-btn--tertiary-no-outline"
+      :class="[mode === 'dessiner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+      @click="mode = 'dessiner'"
+    >
+      Dessiner
+    </button>
+    <button
+      class="fr-btn-icon--left ri-collage-line fr-btn--sm fr-btn fr-btn--tertiary-no-outline"
+      :class="[mode === 'cadastre' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+      @click="mode = 'cadastre'"
+    >
+      Cadastre
+    </button>
+    <button
+      class="fr-btn-icon--left ri-collage-line fr-btn--sm fr-btn fr-btn--tertiary-no-outline"
+      :class="[mode === 'RPG' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+      @click="mode = 'RPG'"
+    >
+      RPG
+    </button>
+  </div>
 
   <div v-if="invalidDrawing" class="pop-in-top">
     <p>Votre parcelle a été rogner pour respecter les règles</p>
@@ -28,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, createApp } from "vue";
+import { ref, watch, onMounted, onUnmounted, createApp, nextTick } from "vue";
 
 import { Map, MapBrowserEvent } from "ol";
 import { Feature } from "ol";
@@ -38,10 +61,11 @@ import GeoJSON from "ol/format/GeoJSON";
 import { Style, Fill, Stroke, RegularShape } from "ol/style";
 
 import { useFeaturesStore } from "@/stores/features.js";
+import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { addParcelleVerif, submitNewParcelle } from "@/cartobio-api.js";
+import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
@@ -50,6 +74,12 @@ import Tooltip from "ol-ext/overlay/Tooltip";
 import { MultiPoint } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import NewParcelleTooltip from "../Overlays/NewParcelleTooltip.vue";
+import { storeToRefs } from "pinia";
+import VectorTileLayer from "ol/layer/VectorTile";
+import VectorTileSource from "ol/source/VectorTile";
+import { FeatureCollection } from "@turf/helpers";
+import axios from "axios";
+import proj4 from "proj4";
 
 /*
  * * Interface
@@ -73,6 +103,9 @@ const props = defineProps<Props>();
  */
 
 const store = useFeaturesStore();
+const preferences = usePreferences();
+
+const { map: mapPrefs } = storeToRefs(preferences);
 
 /*
  * * Refs
@@ -81,11 +114,18 @@ const store = useFeaturesStore();
 const showDetailsModal = ref(false);
 const feature = ref<Feature | null>(null);
 const correctedGeometry = ref<Feature | null>(null);
+const mode = ref<"dessiner" | "cadastre" | "RPG">("dessiner");
 
 // Refs draw interaction
 const invalidDrawing = ref<boolean>(false);
 const errorDrawing = ref<boolean>(false);
 
+let draw: Draw | null = null;
+let sourceLayer: VectorTileLayer<VectorTileSource> | null = null;
+let selectedIds: string[] = [];
+
+let cadastre: boolean | null = null;
+let rpg: boolean | null = null;
 /*
  * * Constantes
  */
@@ -116,11 +156,8 @@ const previewSource = new VectorSource();
 const previewLayer = new VectorLayer({
   source: previewSource,
   style: previewStyle,
+  zIndex: 3,
 });
-
-/*
- * * Components
- */
 
 /*
  * * Fonctions :  interactions
@@ -222,13 +259,109 @@ const handleTracing = (
   }
 };
 
+const handleClickCadastre = async (e: MapBrowserEvent) => {
+  const features = await sourceLayer?.getFeatures(e.pixel);
+
+  if (!features || features.length === 0) {
+    return;
+  }
+
+  const cadastreFeature = features[0];
+
+  if (cadastreFeature) {
+    const properties = cadastreFeature.getProperties();
+
+    if (selectedIds.includes(properties.id)) {
+      const feature = previewSource.getFeatureById(properties.id);
+
+      if (feature) {
+        previewSource.removeFeature(feature);
+      }
+      selectedIds = selectedIds.filter((s) => s != properties.id);
+
+      return;
+    }
+    let featureCollection: FeatureCollection;
+    try {
+      // @see https://geoservices.ign.fr/documentation/services/services-geoplateforme/geocodage
+      featureCollection = (
+        await axios.get("https://data.geopf.fr/geocodage/search", {
+          params: {
+            q: properties.id,
+            index: "parcel",
+            limit: 1,
+            returntruegeometry: true,
+          },
+        })
+      ).data;
+    } catch (error) {
+      console.error("Failed to fetch geometry for ref", properties, error);
+      return;
+    }
+
+    const newFeature = {
+      type: "Feature",
+      geometry: featureCollection.features?.at(0)?.properties?.truegeometry,
+      properties: {},
+    };
+
+    const previewFeature = new GeoJSON().readFeature(newFeature) as Feature;
+
+    previewFeature.setId(properties.id);
+    previewSource.addFeature(previewFeature);
+    selectedIds.push(properties.id);
+  }
+};
+
+const handleClickRPG = async (e: MapBrowserEvent) => {
+  const features = await sourceLayer?.getFeatures(e.pixel);
+
+  if (!features || features.length === 0) {
+    return;
+  }
+
+  const rpgFeature = features[0];
+
+  if (rpgFeature) {
+    const flatGeometry = rpgFeature.getGeometry();
+    if (!flatGeometry) {
+      return;
+    }
+    const data = (await getRPG(flatGeometry.getExtent())).data;
+
+    const newFeature = new GeoJSON().readFeature(data.geom) as Feature;
+
+    if (selectedIds.includes(data.fid)) {
+      const feature = previewSource.getFeatureById(data.fid);
+
+      if (feature) {
+        previewSource.removeFeature(feature);
+      }
+      selectedIds = selectedIds.filter((s) => s != data.fid);
+
+      return;
+    }
+
+    const geometry = newFeature.getGeometry();
+    geometry.setCoordinates(
+      geometry.getCoordinates().map((coord: number[][]) => {
+        return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
+      }),
+    );
+    newFeature.setId(data.fid);
+    newFeature.setStyle(previewStyle);
+    previewSource.addFeature(newFeature);
+    selectedIds.push(data.fid);
+  }
+};
+
 const drawInteraction = (): void => {
   const { styleDrawing, stylePointDrawing, snapStyle } = createStyles();
 
   let currentDrawing: Feature | null = null;
   const snapFeatureRef = { current: null as Feature | null };
 
-  const drawPoly = new Draw({
+  draw = new Draw({
     type: "Polygon",
     style: [styleDrawing, stylePointDrawing],
 
@@ -249,7 +382,7 @@ const drawInteraction = (): void => {
     freehandCondition: () => false,
   });
 
-  props.map.addInteraction(drawPoly);
+  props.map.addInteraction(draw);
 
   const tooltip = new Tooltip({
     className: "draw-tooltip",
@@ -259,13 +392,13 @@ const drawInteraction = (): void => {
     getHTML: createTooltipContent,
   });
 
-  drawPoly.on("drawstart", (e: DrawEvent) => {
+  draw.on("drawstart", (e: DrawEvent) => {
     tooltip.setFeature(e.feature);
     props.map.addOverlay(tooltip);
     currentDrawing = e.feature;
   });
 
-  drawPoly.on("drawend", (e: DrawEvent) => {
+  draw.on("drawend", (e: DrawEvent) => {
     const newFeature = e.feature;
 
     if (snapFeatureRef.current) {
@@ -287,6 +420,34 @@ const drawInteraction = (): void => {
   });
 };
 
+const cadastreInteraction = () => {
+  sourceLayer =
+    (props.map
+      .getLayers()
+      .getArray()
+      .find((l) => l.get("name") === "plan-cadastre-layer") as VectorTileLayer) ?? null;
+
+  if (!sourceLayer) {
+    return;
+  }
+
+  props.map.on("click", handleClickCadastre);
+};
+
+const rpgInteraction = () => {
+  sourceLayer =
+    (props.map
+      .getLayers()
+      .getArray()
+      .find((l) => l.get("name") === "plan-rpg-layer") as VectorTileLayer) ?? null;
+
+  if (!sourceLayer) {
+    return;
+  }
+
+  props.map.on("click", handleClickRPG);
+};
+
 /*
  * * Fonctions : Utils
  */
@@ -298,6 +459,48 @@ const calculateArea = (feature: CartoBioFeature): string => {
 /*
  * * Watchers
  */
+
+watch(
+  () => mode.value,
+  () => {
+    if (rpg === null && cadastre === null) {
+      rpg = mapPrefs.value.rpg;
+      cadastre = mapPrefs.value.cadastre;
+    }
+    store.setSelectedModifiedFeature([]);
+    selectedIds = [];
+    previewSource.clear();
+
+    if (draw) {
+      props.map.removeInteraction(draw);
+    }
+    props.map.un("click", handleClickCadastre);
+    props.map.un("click", handleClickRPG);
+
+    switch (mode.value) {
+      case "dessiner":
+        drawInteraction();
+        mapPrefs.value.cadastre = false;
+        mapPrefs.value.rpg = false;
+        break;
+      case "cadastre":
+        mapPrefs.value.cadastre = true;
+        mapPrefs.value.rpg = false;
+        nextTick(() => {
+          cadastreInteraction();
+        });
+        break;
+      case "RPG":
+        mapPrefs.value.cadastre = false;
+        mapPrefs.value.rpg = true;
+        nextTick(() => {
+          rpgInteraction();
+        });
+        break;
+    }
+  },
+  { immediate: true },
+);
 
 watch(
   () => feature.value,
@@ -334,7 +537,6 @@ watch(
     if (data.correction) {
       correctedGeometry.value = data.correction.corrected_input || data.correction.input_minus_existing;
 
-      console.log(correctedGeometry.value?.type);
       if (correctedGeometry.value && correctedGeometry.value.type != "MultiPolygon") {
         invalidDrawing.value = true;
         const correctedFeature = format.readFeature(correctedGeometry.value) as Feature;
@@ -364,11 +566,14 @@ watch(
  */
 
 onMounted(() => {
-  drawInteraction();
   props.map.addLayer(previewLayer);
 });
 onUnmounted(() => {
   store.setSelectedModifiedFeature([]);
   props.map.removeLayer(previewLayer);
+  props.map.un("click", handleClickCadastre);
+  props.map.un("click", handleClickRPG);
+  mapPrefs.value.cadastre = cadastre;
+  mapPrefs.value.rpg = rpg;
 });
 </script>
