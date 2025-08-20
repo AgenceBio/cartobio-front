@@ -4,11 +4,11 @@
   </p>
   <span v-else-if="conversionLevel.value === LEVEL_MAYBE_AB" class="badge badge-a-modifier">
     <template v-if="isOc">
-      <span v-if="!noIcon" class="fr-icon" :class="getCultureIcon(culture)"></span>
-      <p class="fr-mb-0">À préciser</p>
+      <span v-if="!noIcon" class="fr-icon fr-icon-pencil-line fr-icon--sm"></span>
+      <p class="fr-mb-0 small-text">Certification</p>
     </template>
     <template v-else>
-      <p class="fr-mb-0">{{ conversionLevel.shortLabel }}</p>
+      <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }}</p>
       <small> à préciser par l'OC</small>
     </template>
   </span>
@@ -37,7 +37,6 @@ import { LEVEL_MAYBE_AB, LEVEL_UNKNOWN, getConversionLevel, isABLevel } from "@/
 import { dateFormat, ddmmmmyyyy } from "@/utils/dates.js";
 import { storeToRefs } from "pinia";
 import { usePermissions } from "@/stores/permissions.js";
-import { getCultureIcon } from "@/utils/features";
 
 const props = defineProps({
   feature: {
@@ -73,14 +72,6 @@ const conversionDate = computed(
     new Date(props.feature.properties.engagement_date).toISOString(),
 );
 const isAB = computed(() => props.feature && isABLevel(props.feature.properties.conversion_niveau));
-const culture = computed(() =>
-  props.feature &&
-  props.feature.properties &&
-  props.feature.properties.culture &&
-  props.feature.properties.culture.length > 0
-    ? props.feature.properties.culture[0].CPF
-    : null,
-);
 </script>
 
 <style scoped>
@@ -90,12 +81,17 @@ time {
   line-height: 16px;
 }
 .badge {
-  padding: 4px 12px;
+  padding: 2px 8px;
   display: flex;
   gap: 5px;
   border-radius: 16px;
   border: 1px solid;
   align-items: center;
+  font-size: 12px;
+}
+
+.small-text {
+  font-size: 12px;
 }
 
 .badge-a-modifier {

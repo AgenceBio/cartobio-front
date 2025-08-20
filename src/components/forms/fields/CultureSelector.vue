@@ -1,18 +1,24 @@
 <template>
   <div>
     <div v-if="!disabledInput">
-      <fieldset class="culture-group fr-mb-1w fr-p-2w" :key="uuidedCultures[0].id" tabindex="-1">
+      <fieldset
+        class="culture-group fr-mb-1w fr-p-2w"
+        :key="culture.id"
+        v-for="(culture, index) in uuidedCultures"
+        tabindex="-1"
+      >
         <AsyncCultureTypeSelector
+          :key="culture.CPF"
           :disabled-input="disabledInput"
           :feature-id="featureId"
-          :culture="uuidedCultures[0]"
-          :modelValue="uuidedCultures[0].CPF"
-          @update:modelValue="($CPF) => updateCulture(uuidedCultures[0].id, 'CPF', $CPF)"
+          :culture="culture"
+          :modelValue="culture.CPF"
+          @update:modelValue="($CPF) => updateCulture(culture.id, 'CPF', $CPF)"
         />
 
         <button
           type="button"
-          v-if="!disabledInput"
+          v-if="!disabledInput && index != 1"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line fr-btn--icon-right fr-mb-3w"
           @click="openMulticultureModal"
         >
@@ -20,15 +26,15 @@
         </button>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`variete-${uuidedCultures[0].id}`">Variété (facultatif)</label>
+          <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>
           <div class="fr-hint-text">Précisions sur la culture, le cépage, etc.</div>
           <div class="fr-input-wrap">
             <input
               type="text"
               class="fr-input"
-              :id="`variete-${uuidedCultures[0].id}`"
-              :value="uuidedCultures[0].variete"
-              @input="updateCulture(uuidedCultures[0].id, 'variete', $event.target.value)"
+              :id="`variete-${culture.id}`"
+              :value="culture.variete"
+              @input="updateCulture(culture.id, 'variete', $event.target.value)"
               name="variete"
               :disabled="disabledInput"
             />
@@ -37,30 +43,30 @@
 
         <div class="horizontal-stack">
           <div class="fr-input-group">
-            <label class="fr-label" :for="`superficie-${uuidedCultures[0].id}`">Superficie (Ha)</label>
+            <label class="fr-label" :for="`superficie-${culture.id}`">Superficie (Ha)</label>
             <div class="fr-hint-text">(facultatif)</div>
             <input
               type="number"
               min="0"
               step="0.00001"
               class="fr-input"
-              :id="`superficie-${uuidedCultures[0].id}`"
-              :value="uuidedCultures[0].surface"
-              @input="updateCulture(uuidedCultures[0].id, 'surface', $event.target.value)"
+              :id="`superficie-${culture.id}`"
+              :value="culture.surface"
+              @input="updateCulture(culture.id, 'surface', $event.target.value)"
               name="surface"
               :disabled="disabledInput"
             />
           </div>
 
           <div class="fr-input-group">
-            <label class="fr-label" :for="`date_semis-${uuidedCultures[0].id}`">Date des semis </label>
+            <label class="fr-label" :for="`date_semis-${culture.id}`">Date des semis </label>
             <div class="fr-hint-text">(facultatif)</div>
             <input
               type="date"
               class="fr-input"
-              :id="`date_semis-${uuidedCultures[0].id}`"
-              :value="uuidedCultures[0].date_semis"
-              @input="updateCulture(uuidedCultures[0].id, 'date_semis', $event.target.value)"
+              :id="`date_semis-${culture.id}`"
+              :value="culture.date_semis"
+              @input="updateCulture(culture.id, 'date_semis', $event.target.value)"
               name="date_semis"
               :disabled="disabledInput"
             />
@@ -69,37 +75,42 @@
       </fieldset>
     </div>
     <div v-else>
-      <fieldset class="culture-group fr-mb-1w fr-p-2w" :key="uuidedCultures[0].id" tabindex="-1">
+      <fieldset
+        class="culture-group fr-mb-1w fr-p-2w"
+        v-for="culture in uuidedCultures"
+        :key="culture.id"
+        tabindex="-1"
+      >
         <p class="fr-h5">Culture</p>
         <p>
-          <span :class="getCultureIcon(uuidedCultures[0].CPF)"> </span>
-          {{ fromCodeCpf(uuidedCultures[0].CPF).libelle_code_cpf }}
+          <span :class="getCultureIcon(culture.CPF)"> </span>
+          {{ fromCodeCpf(culture.CPF).libelle_code_cpf }}
         </p>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`variete-${uuidedCultures[0].id}`">Variété</label>
+          <label class="fr-label" :for="`variete-${culture.id}`">Variété</label>
           <div class="fr-input-wrap">
-            {{ uuidedCultures[0].variete ? uuidedCultures[0].variete : "Non renseignée" }}
+            {{ culture.variete ? culture.variete : "Non renseignée" }}
           </div>
         </div>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`superficie-${uuidedCultures[0].id}`">
+          <label class="fr-label" :for="`superficie-${culture.id}`">
             <span> <i class="ri-custom-size"></i></span> Surface
           </label>
-          {{ uuidedCultures[0].surface ? uuidedCultures[0].surface : "Non renseignée" }}
+          {{ culture.surface ? culture.surface : "Non renseignée" }}
         </div>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`date_semis-${uuidedCultures[0].id}`">
+          <label class="fr-label" :for="`date_semis-${culture.id}`">
             <span class="fr-icon-calendar-line"> </span> Date des semis
           </label>
-          {{ uuidedCultures[0].date_semis ? uuidedCultures[0].date_semis : "Non renseignée" }}
+          {{ culture.date_semis ? culture.date_semis : "Non renseignée" }}
         </div>
       </fieldset>
     </div>
     <Teleport to="body">
-      <Modal @close="closeMulticultureModal()" v-if="isMulticultureModalOpen" large="true">
+      <Modal @close="closeWithoutSave()" v-if="isMulticultureModalOpen" large="true">
         <template #title>Saisie multiculture</template>
 
         <div class="fr-toggle fr-toggle--label-left fr-mb-2w">
@@ -126,15 +137,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="culture in uuidedCultures" :key="culture.id">
+              <tr v-for="culture in multiCultureTab" :key="culture.id">
                 <td>
                   <AsyncCultureTypeSelector
                     :needTitle="false"
                     :culture="culture"
                     :modelValue="culture.CPF"
-                    :disabledAutoComplete="!isMulticulture && culture !== uuidedCultures[0]"
-                    :disabledInput="!isMulticulture && culture !== uuidedCultures[0]"
-                    @update:modelValue="($CPF) => updateCulture(culture.id, 'CPF', $CPF)"
+                    :disabledAutoComplete="!isMulticulture && culture !== multiCultureTab[0]"
+                    :disabledInput="!isMulticulture && culture !== multiCultureTab[0]"
+                    @update:modelValue="($CPF) => updateCultureTempo(culture.id, 'CPF', $CPF)"
                   />
                 </td>
                 <td>
@@ -142,7 +153,8 @@
                     type="text"
                     class="fr-input"
                     v-model="culture.variete"
-                    :disabled="!isMulticulture && culture !== uuidedCultures[0]"
+                    :disabled="!isMulticulture && culture !== multiCultureTab[0]"
+                    @input="updateCultureTempo(culture.id, 'variete', $event.target.value)"
                   />
                 </td>
                 <td>
@@ -152,7 +164,8 @@
                     step="0.00001"
                     class="fr-input"
                     v-model="culture.surface"
-                    :disabled="!isMulticulture && culture !== uuidedCultures[0]"
+                    :disabled="!isMulticulture && culture !== multiCultureTab[0]"
+                    @input="updateCultureTempo(culture.id, 'surface', $event.target.value)"
                   />
                 </td>
                 <td>
@@ -160,7 +173,8 @@
                     type="date"
                     class="fr-input"
                     v-model="culture.date_semis"
-                    :disabled="!isMulticulture && culture !== uuidedCultures[0]"
+                    :disabled="!isMulticulture && culture !== multiCultureTab[0]"
+                    @input="updateCultureTempo(culture.id, 'date_semis', $event.target.value)"
                   />
                 </td>
                 <td>
@@ -209,7 +223,7 @@ const props = defineProps({
 });
 
 const isMulticulture = ref(false);
-
+const multiCultureTab = ref([]);
 const emit = defineEmits(["change"]);
 
 const uuidedCultures = computed(() => {
@@ -224,18 +238,25 @@ const uuidedCultures = computed(() => {
   }));
 });
 
+function closeWithoutSave() {
+  isMulticultureModalOpen.value = false;
+  multiCultureTab.value = [];
+}
+
 function openMulticultureModal() {
   isMulticultureModalOpen.value = true;
+  multiCultureTab.value = uuidedCultures.value;
+  isMulticulture.value = true;
   updateEditableCulture();
 }
 
 function closeMulticultureModal() {
-  let updatedCultures = uuidedCultures.value;
+  let updatedCultures = [];
 
   if (isMulticulture.value) {
-    updatedCultures = uuidedCultures.value.filter((c) => c.CPF || c.variete || c.surface || c.date_semis);
+    updatedCultures = multiCultureTab.value.filter((c) => c.CPF || c.variete || c.surface || c.date_semis);
   } else if (uuidedCultures.value.length > 1) {
-    updatedCultures = [uuidedCultures.value[0]];
+    updatedCultures = [multiCultureTab.value[0]];
   }
 
   emit("change", updatedCultures);
@@ -243,7 +264,8 @@ function closeMulticultureModal() {
 }
 
 function updateEditableCulture() {
-  const last = uuidedCultures.value[uuidedCultures.value.length - 1].CPF;
+  const last = multiCultureTab.value[multiCultureTab.value.length - 1].CPF;
+  console.log(last);
   if (last) {
     appendEmptyCulture();
   }
@@ -252,11 +274,22 @@ function updateEditableCulture() {
 watch(
   uuidedCultures,
   () => {
+    multiCultureTab.value = uuidedCultures.value;
     if (isMulticultureModalOpen.value === true) {
       updateEditableCulture();
     }
   },
   { deep: true },
+);
+
+watch(
+  multiCultureTab.value,
+  () => {
+    if (isMulticultureModalOpen.value === true) {
+      updateEditableCulture();
+    }
+  },
+  { deep: true, immediate: true },
 );
 
 watch(
@@ -269,30 +302,27 @@ watch(
 
 watch(isMulticulture, (val) => {
   if (val) {
-    if (uuidedCultures.value.length === 1) {
+    if (multiCultureTab.value.length === 1) {
       appendEmptyCulture();
     }
   }
 });
 
-const canBeDeleted = computed(() => uuidedCultures.value.length > 1);
+const canBeDeleted = computed(() => multiCultureTab.value.length > 1);
 
 function appendEmptyCulture() {
   const appendedCultures = [
-    ...uuidedCultures.value,
+    ...multiCultureTab.value,
     {
       CPF: "",
       id: crypto.randomUUID(),
     },
   ];
-
-  emit("change", appendedCultures);
+  multiCultureTab.value = appendedCultures;
 }
 
 function removeCulture(cultureId) {
-  const updatedCultures = uuidedCultures.value.filter(({ id }) => id !== cultureId);
-  if (updatedCultures.length === 1 && isMulticultureModalOpen.value === true) isMulticultureModalOpen.value = false;
-  emit("change", updatedCultures);
+  multiCultureTab.value = multiCultureTab.value.filter(({ id }) => id !== cultureId);
 }
 
 function updateCulture(cultureId, field, value) {
@@ -306,6 +336,18 @@ function updateCulture(cultureId, field, value) {
   );
 
   emit("change", updatedCultures);
+}
+
+function updateCultureTempo(cultureId, field, value) {
+  multiCultureTab.value = multiCultureTab.value.map((culture) =>
+    culture.id === cultureId
+      ? {
+          ...culture,
+          [field]: value,
+        }
+      : culture,
+  );
+  updateEditableCulture();
 }
 </script>
 

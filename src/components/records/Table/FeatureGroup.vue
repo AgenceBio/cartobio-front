@@ -2,6 +2,7 @@
   <div>
     <div
       class="fr-grid-row fr-mb-2v fr-px-4v fr-py-4v groupe-parcelles"
+      :class="{ 'groupe-titre-on': open }"
       @click.stop="open = !open"
       @keydown.enter="open = !open"
     >
@@ -87,15 +88,20 @@
             <small v-if="feature.properties.cultures.length > 1">Multiculture</small>
             <button
               v-else-if="
-                (permissions.canChangeCulture &&
-                  feature.properties.cultures.length === 1 &&
-                  feature.properties.cultures[0].CPF === undefined) ||
-                !feature.properties.cultures
+                permissions.canChangeCulture &&
+                feature.properties.cultures.length === 1 &&
+                (feature.properties.cultures[0].CPF === undefined ||
+                  feature.properties.cultures[0].CPF === '' ||
+                  !feature.properties.cultures) &&
+                !(
+                  feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
+                  feature.properties.conversion_niveau === LEVEL_UNKNOWN
+                )
               "
-              class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
-              @click="openCulturesModal(feature.id)"
+              class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+              @click.stop.prevent="openCulturesModal(feature.id)"
             >
-              Saisir la culture
+              Culture
             </button>
           </template>
           <p class="fr-mb-0">
@@ -129,8 +135,24 @@
       </div>
       <div class="fr-grid-row fr-grid-row--middle parcelle-titre">
         <div
+          v-if="
+            (feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
+              feature.properties.conversion_niveau === LEVEL_UNKNOWN) &&
+            (feature.properties.cultures[0].CPF === undefined || feature.properties.cultures[0].CPF === '') &&
+            feature.properties.cultures.length === 1
+          "
+        >
+          <button
+            class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+            @click.stop.prevent="toggleEditForm(feature.id)"
+          >
+            Compléter
+          </button>
+        </div>
+        <div
           @click.stop.prevent="openNiveauConversionModal(feature.id)"
           :class="{ clickable: permissions.canChangeConversionLevel }"
+          v-else
         >
           <ConversionLevel :feature="feature" with-date />
         </div>
@@ -175,6 +197,7 @@ import { useRecordStore } from "@/stores/record.js";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
+import { LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab.js";
 
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import {
@@ -318,19 +341,22 @@ function clickOn(id, event) {
 }
 
 .groupe-parcelles {
-  background-color: var(--blue-france-925-125);
   gap: 12px;
   justify-content: space-between;
+  border-top: 1px solid var(--artwork-decorative-blue-france);
+  border-bottom: 1px solid var(--artwork-decorative-blue-france);
 
   .groupe-titre {
     gap: 7px;
   }
-  .groupe-titre > h3 {
-    height: 40px;
-  }
+
   .actions-parcelles {
     align-content: center;
   }
+}
+
+.groupe-titre-on {
+  background-color: var(--blue-france-925-125);
 }
 
 .gap-10 {
@@ -385,7 +411,6 @@ function clickOn(id, event) {
 .red {
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
-  border: 1px solid var(--text-default-error);
   box-shadow: none;
 }
 
@@ -394,7 +419,7 @@ function clickOn(id, event) {
 }
 
 .red:hover {
-  background-color: var(--red-marianne-925-125-active);
+  background-color: var(--red-marianne-925-125);
 }
 
 .controlee:before {

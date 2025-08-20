@@ -4,6 +4,7 @@
       class="fr-grid-row fr-mb-2v fr-px-4v fr-py-4v groupe-parcelles"
       @click.stop="openLigne = !openLigne"
       @keydown.enter="openLigne = !openLigne"
+      :class="{ 'groupe-titre-on': openLigne }"
     >
       <div class="fr-grid-row groupe-titre fr-mb-0">
         <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
@@ -81,12 +82,13 @@
             (permissions.canChangeCulture &&
               feature.properties.cultures.length === 1 &&
               feature.properties.cultures[0].CPF === undefined) ||
+            feature.properties.cultures[0].CPF === '' ||
             !feature.properties.cultures
           "
-          class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
-          @click="openLigneCulturesModal(feature.id)"
+          class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+          @click.stop.prevent="openLigneCulturesModal(feature.id)"
         >
-          Saisir la culture
+          Culture
         </button>
         <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
       </div>
@@ -321,9 +323,10 @@ function clickOn(id, event) {
 }
 
 .groupe-parcelles {
-  background-color: var(--blue-france-925-125);
   gap: 12px;
   justify-content: space-between;
+  border-top: 1px solid var(--artwork-decorative-blue-france);
+  border-bottom: 1px solid var(--artwork-decorative-blue-france);
 
   .groupe-titre {
     gap: 7px;
@@ -416,5 +419,8 @@ function clickOn(id, event) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.groupe-titre-on {
+  background-color: var(--blue-france-925-125);
 }
 </style>

@@ -59,6 +59,7 @@
           <AccordionGroup v-if="permissions.isOc">
             <AccordionSection
               title="Culture"
+              isEdit
               :optionsCulture="optionsCulture(feature)"
               :requires-action="requiresAction(['cultures'])"
             >
@@ -158,6 +159,7 @@
             <AccordionSection
               title="Certification"
               :optionsCulture="{ name: getConversionLevel(patch.conversion_niveau).labelSelector }"
+              isEdit
               :open="open"
               :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
             >
@@ -190,7 +192,7 @@
         </template>
         <template v-else>
           <AccordionGroup>
-            <AccordionSection title="Culture">
+            <AccordionSection title="Culture" isEdit :optionsCulture="optionsCulture(feature)">
               <CultureSelector
                 :disabled-input="true"
                 :feature-id="feature.properties.id"
@@ -204,6 +206,8 @@
             <AccordionSection
               title="Certification"
               :open="open"
+              isEdit
+              :optionsCulture="{ name: getConversionLevel(patch.conversion_niveau).labelSelector }"
               :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
             >
               <ConversionLevelSelector
@@ -442,6 +446,8 @@ function tagParcelle(id) {
 }
 
 function optionsCulture(feature) {
+  if (feature.properties.cultures.length > 1)
+    return { name: "Multiculture", icon: getCultureIcon(feature.properties.cultures[0].CPF) };
   if (feature.properties.cultures[0].CPF)
     return {
       name: fromCodeCpf(feature.properties.cultures[0].CPF).libelle_code_cpf,

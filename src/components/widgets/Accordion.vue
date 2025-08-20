@@ -12,10 +12,10 @@
         <div
           :style="{
             display: 'flex',
-            flexDirection: optionsCulture ? 'row' : 'column',
-            alignItems: optionsCulture ? 'center' : 'flex-start',
+            flexDirection: isEdit ? 'row' : 'column',
+            alignItems: isEdit ? 'center' : 'flex-start',
             justifyContent: 'space-between',
-            gap: optionsCulture ? '0.5rem' : '0',
+            gap: isEdit ? '0.5rem' : '0',
           }"
         >
           <span>{{ title }}</span>
@@ -33,16 +33,14 @@
             <template v-if="optionsSuffix"> | {{ optionsSuffix }}</template>
           </span>
 
-          <span v-if="optionsCulture" class="fr-hint-text culture-name">
+          <span v-if="optionsCulture && isEdit" class="fr-hint-text culture-name">
             <span :class="optionsCulture.icon ? optionsCulture.icon : ''" aria-hidden="true"></span>
             {{ optionsCulture.name }}
           </span>
 
-          <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction && !optionsCulture"
-            >À préciser</span
-          >
+          <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction && !isEdit">À préciser</span>
         </div>
-        <div v-if="requiresAction && optionsCulture" class="badge-right">
+        <div v-if="requiresAction && isEdit" class="badge-right">
           <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
             <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
@@ -88,6 +86,11 @@ const props = defineProps({
   optionsCulture: {
     required: false,
     type: Object,
+  },
+  isEdit: {
+    required: false,
+    default: false,
+    type: Boolean,
   },
 });
 
