@@ -7,7 +7,7 @@
         data-tooltip="Éditer"
         @click="handleAction('edit')"
       >
-        <i class="ri-navigation-line"></i>
+        <i class="ri-navigation-line" aria-hidden="true" />
       </button>
 
       <button
@@ -16,7 +16,7 @@
         data-tooltip="Dessiner"
         @click="handleAction('draw')"
       >
-        <i class="ri-pen-nib-line"></i>
+        <i class="ri-pen-nib-line" aria-hidden="true" />
       </button>
 
       <hr />
@@ -28,7 +28,7 @@
         @click="handleAction('decouper')"
         :disabled="countSelected != 1"
       >
-        <i class="ri-crop-line"></i>
+        <i class="ri-crop-line" aria-hidden="true" />
       </button>
 
       <button
@@ -38,7 +38,7 @@
         @click="handleAction('divide')"
         :disabled="countSelected != 1"
       >
-        <i class="ri-scissors-cut-line"></i>
+        <i class="ri-scissors-cut-line" aria-hidden="true" />
       </button>
 
       <button
@@ -48,7 +48,7 @@
         @click="handleAction('fusionner')"
         :disabled="countSelected < 2"
       >
-        <i class="ri-merge-cells-horizontal"></i>
+        <i class="ri-merge-cells-horizontal" aria-hidden="true" />
       </button>
 
       <button
@@ -58,7 +58,7 @@
         @click="handleAction('delete')"
         :disabled="countSelected < 1"
       >
-        <i class="ri-delete-bin-line"></i>
+        <i class="ri-delete-bin-line" aria-hidden="true" />
       </button>
     </div>
   </div>

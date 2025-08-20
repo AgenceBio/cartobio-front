@@ -2,13 +2,13 @@
   <div class="button-group">
     <div class="left-button">
       <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('openDetail')">
-        <i class="ri-arrow-right-double-line"></i>
+        <i class="ri-arrow-right-double-line" aria-hidden="true" />
       </button>
     </div>
 
     <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
       <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')">
-        <i class="ri-arrow-left-right-line"></i> Comparer
+        <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button
         class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
@@ -67,8 +67,9 @@ watch(
 <style scoped>
 .mode-choice {
   background: #ffffff;
-  padding: 10px;
+  padding: 6px;
   justify-content: space-between;
+  border-radius: 4px;
   gap: 10px;
   height: fit-content;
   position: absolute;

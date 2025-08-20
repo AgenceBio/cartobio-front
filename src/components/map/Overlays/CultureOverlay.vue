@@ -1,7 +1,7 @@
 <template>
   <div class="openlayers-culture-overlay">
     <div class="badge-container">
-      <div class="badge" :class="cssClass"><i class="fr-icon" :class="icon"></i>{{ label }}</div>
+      <div class="badge" :class="cssClass"><i class="fr-icon" :class="icon" aria-hidden="true" />{{ label }}</div>
     </div>
   </div>
 </template>

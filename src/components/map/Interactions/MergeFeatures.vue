@@ -1,10 +1,8 @@
 <template>
-  <div class="pop-in-top">
-    <p v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">
-      Valider et compléter
-    </button>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler"></button>
+  <div class="pop-in-top merge">
+    <p class="fr-mb-0" v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
+    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">Confirmer</button>
+    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
   </div>
 </template>
 
@@ -176,7 +174,6 @@ const confirmer = async (): Promise<void> => {
 };
 
 const annuler = (): void => {
-  store.setSelectedModifiedFeature([]);
   mapPrefs.value.currentMode = "edit";
 };
 
@@ -202,3 +199,11 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.pop-in-top.merge {
+  gap: 10px;
+  padding: 5px 10px;
+  align-items: center;
+}
+</style>

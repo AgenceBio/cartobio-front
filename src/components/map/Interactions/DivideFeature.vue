@@ -397,8 +397,6 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  store.setSelectedModifiedFeature([]);
-
   if (previewLayer) {
     props.map.removeLayer(previewLayer);
   }

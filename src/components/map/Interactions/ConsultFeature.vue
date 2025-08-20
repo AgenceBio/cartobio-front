@@ -118,7 +118,6 @@ const handlePointerMove = (e: MapBrowserEvent) => {
   ) as Feature;
   if (feature) {
     if (feature !== currentFeature) {
-      console.log;
       if (currentFeature == null) {
         props.map.addOverlay(tooltip);
       }
@@ -161,7 +160,6 @@ onMounted(() => {
   props.map.addInteraction(selectInteraction);
 
   selectInteraction.on("select", (e: SelectEvent) => {
-    console.log(e);
     const features = e.target.getFeatures().getArray();
 
     if (features.length === 1) {

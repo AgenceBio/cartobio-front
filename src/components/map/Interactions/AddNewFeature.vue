@@ -11,24 +11,27 @@
   </CertificationBodyEditForm>
   <div class="pop-in-top">
     <button
-      class="fr-btn-icon--left ri-pen-nib-line fr-btn--sm fr-btn fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--tertiary-no-outline"
       :class="[mode === 'dessiner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'dessiner'"
     >
+      <i class="ri-pen-nib-line fr-mr-1w" aria-hidden="true" />
       Dessiner
     </button>
     <button
-      class="fr-btn-icon--left ri-collage-line fr-btn--sm fr-btn fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--tertiary-no-outline"
       :class="[mode === 'cadastre' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'cadastre'"
     >
+      <i class="ri-collage-line fr-mr-1w" aria-hidden="true" />
       Cadastre
     </button>
     <button
-      class="fr-btn-icon--left ri-collage-line fr-btn--sm fr-btn fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--tertiary-no-outline"
       :class="[mode === 'RPG' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'RPG'"
     >
+      <i class="ri-collage-line fr-mr-1w" aria-hidden="true" />
       RPG
     </button>
   </div>
@@ -528,6 +531,9 @@ watch(
         for (const newFeature of newFeatures) {
           props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
         }
+
+        store.setSelectedModifiedFeature(newFeatures.map((f) => f.id as string));
+        mapPrefs.value.currentMode = "edit";
       }
 
       return;
@@ -573,7 +579,9 @@ onUnmounted(() => {
   props.map.removeLayer(previewLayer);
   props.map.un("click", handleClickCadastre);
   props.map.un("click", handleClickRPG);
-  mapPrefs.value.cadastre = cadastre;
-  mapPrefs.value.rpg = rpg;
+  if (cadastre !== null && rpg !== null) {
+    mapPrefs.value.cadastre = cadastre;
+    mapPrefs.value.rpg = rpg;
+  }
 });
 </script>

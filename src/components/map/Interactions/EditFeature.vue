@@ -113,35 +113,6 @@ const modifyInteraction = () => {
 
     store.setSelectedModifiedFeature(selectedIds);
 
-    const source = props.vectorLayer.getSource();
-    const alreadySelectedIds = store.selectedModifIds ?? [];
-
-    const featuresToRemove: Feature[] = [];
-    selectedFeatures.forEach((feature) => {
-      const featureId = feature.getId();
-      if (!selectedIds.includes(featureId)) {
-        featuresToRemove.push(feature);
-      }
-    });
-
-    featuresToRemove.forEach((feature) => {
-      selectedFeatures.remove(feature);
-    });
-
-    alreadySelectedIds.forEach((id: number) => {
-      const feature = source?.getFeatureById(id);
-
-      if (feature) {
-        selectedFeatures.push(feature);
-
-        if (alreadySelectedIds.length >= 2) {
-          feature.setStyle([getPolygonMultipleStyle()]);
-        } else {
-          feature.setStyle([getPolygonStyle(), getPointStyle()]);
-        }
-      }
-    });
-
     if (selectedIds.length === 1) {
       modify = new Modify({
         features: selectedFeatures,
@@ -227,12 +198,6 @@ const createSelectInteraction = (selectedFeatures: Collection<Feature>): Select 
     const feature = source?.getFeatureById(id);
     if (feature && !selectedFeatures.getArray().includes(feature)) {
       selectedFeatures.push(feature);
-
-      if (alreadySelectedIds.length >= 2) {
-        feature.setStyle([getPolygonMultipleStyle()]);
-      } else {
-        feature.setStyle([getPolygonStyle(), getPointStyle()]);
-      }
     }
   });
 
@@ -240,6 +205,13 @@ const createSelectInteraction = (selectedFeatures: Collection<Feature>): Select 
     layers: [props.vectorLayer],
     condition: (e) => !isModifying.value && click(e),
     multi: true,
+    features: selectedFeatures,
+    style: () => {
+      if (store.selectedModifIds.length >= 2) {
+        return getPolygonMultipleStyle();
+      }
+      return [getPolygonStyle(), getPointStyle()];
+    },
   });
 
   return selectInteraction;

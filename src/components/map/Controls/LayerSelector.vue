@@ -54,7 +54,7 @@
       >
         <img src="@/assets/map/classification.jpg" alt="" />
         <span>
-          <abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}
+          <p class="fr-mb-0"><abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}</p>
           <small class="fr-hint-text"
             >Voir la
             <a
@@ -129,7 +129,9 @@ const cancelClickOutside = onClickOutside(layersMenuRef, () => (showMenu.value =
  */
 
 onBeforeUnmount(() => {
-  cancelClickOutside();
+  if (cancelClickOutside) {
+    cancelClickOutside();
+  }
   cancelKeyStroke();
 });
 </script>
@@ -192,13 +194,13 @@ onBeforeUnmount(() => {
 
 .menu {
   border: none;
-  border-radius: 0.3125rem;
+  border-radius: 5px;
   background: #fff;
-  left: calc(5.5rem + 1.5rem);
+  left: 7rem;
   padding: 1.5rem;
   /* shadow / light / lifted */
   box-shadow: 0 6px 18px 0 rgba(0, 0, 18, 0.16);
-  width: 21rem;
+  width: 22rem;
 }
 
 .close-button {

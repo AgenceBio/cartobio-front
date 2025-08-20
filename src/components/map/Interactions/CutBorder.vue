@@ -1,5 +1,5 @@
 <template>
-  <div class="pop-in-top">
+  <div class="pop-in-top border">
     <div class="column">
       <div class="fr-checkbox-group">
         <input type="checkbox" id="bordure-complete" @click="toggleAllBorder" />
@@ -14,20 +14,18 @@
         >
       </div>
     </div>
-    <div class="column">
-      <div class="fr-checkbox-group">
-        <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
-          >Distance (m)</label
-        >
-        <input
-          type="number"
-          id="largeur-bordure"
-          step="0.01"
-          class="fr-input fr-mt-0"
-          v-model="distance"
-          @change="setDistance"
-        />
-      </div>
+    <div class="column fr-checkbox-group">
+      <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
+        >Distance (m)</label
+      >
+      <input
+        type="number"
+        id="largeur-bordure"
+        step="0.01"
+        class="fr-input fr-mt-0 distance-input"
+        v-model="distance"
+        @change="setDistance"
+      />
     </div>
     <div class="column">
       <button class="fr-btn" :disabled="!hasBordure" @click="validateDivision">Découper</button>
@@ -702,8 +700,6 @@ onMounted(() => {
   borderInteraction();
 });
 onUnmounted(() => {
-  store.setSelectedModifiedFeature([]);
-
   if (previewClosestPointLayer) {
     props.map.removeLayer(previewClosestPointLayer);
   }
@@ -725,3 +721,21 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 10px;
+}
+
+.distance-input {
+  width: 10ch;
+}
+
+.pop-in-top.border {
+  gap: 10px;
+  padding: 8px 10px;
+}
+</style>

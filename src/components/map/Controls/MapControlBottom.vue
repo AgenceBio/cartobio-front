@@ -1,10 +1,10 @@
 <template>
   <div class="button-group">
     <div class="info-box">
-      <span><i class="ri-custom-size"></i> {{ props.parcellesSize }} ha</span>
+      <span><i class="ri-custom-size" aria-hidden="true" /> {{ sizeParcelles }} ha</span>
       <span>
-        <i class="ri-collage-line"></i>
-        {{ props.parcellesNb }} parcelle{{ props.parcellesNb > 1 ? "s" : "" }}
+        <i class="ri-collage-line" aria-hidden="true" />
+        {{ nbParcelles }} parcelle{{ nbParcelles > 1 ? "s" : "" }}
       </span>
     </div>
     <div class="mode-choice">
@@ -22,7 +22,7 @@
         :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'edit'"
       >
-        <span class="ri-shape-line" />
+        <i class="ri-shape-line" aria-hidden="true" />
         Modifier
       </button>
     </div>
@@ -46,19 +46,13 @@ import { inject, ref, Ref } from "vue";
 import type { Map as OlMap } from "ol";
 import { usePreferences } from "@/stores/preferences.js";
 import { storeToRefs } from "pinia";
+import { inHa, legalProjectionSurface } from "@/utils/features.js";
+import { useFeaturesStore } from "@/stores/features";
 
 /**
  * * Refs
  */
 const map = inject<Ref<OlMap | null>>("map");
-
-/**
- * * Props
- */
-const props = defineProps<{
-  parcellesNb: number;
-  parcellesSize: string;
-}>();
 
 /*
  * * Stores
@@ -67,11 +61,14 @@ const props = defineProps<{
 const preferences = usePreferences();
 
 const { map: mapPrefs } = storeToRefs(preferences);
+const featureStore = useFeaturesStore();
 
 /**
  * * Refs
  */
 const isFullScreen = ref<boolean>(false);
+const sizeParcelles = inHa(legalProjectionSurface(featureStore.collection.features));
+const nbParcelles = featureStore.collection.features.length;
 
 /**
  * * Emits
@@ -148,7 +145,7 @@ const onFullScreen = () => {
 
 .mode-choice {
   background: #ffffff;
-  padding: 10px;
+  padding: 6px;
   justify-content: space-between;
   gap: 10px;
   height: fit-content;
@@ -171,13 +168,11 @@ const onFullScreen = () => {
   border-radius: 6px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
   font-size: 14px;
   position: absolute;
   bottom: 1rem;
   left: 8rem;
-  display: flex;
-  gap: 10px;
+  font-weight: 500;
 }
 
 .group-button-right {

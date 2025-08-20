@@ -1,10 +1,10 @@
 <template>
-  <div class="pop-in-top">
-    <p v-if="numberSelectedFeature">Vous avez sélectionné {{ numberSelectedFeature }} parcelles à supprimer</p>
+  <div class="pop-in-top delete">
+    <p class="fr-mb-0" v-if="numberSelectedFeature">
+      Vous avez sélectionné {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} à supprimer
+    </p>
 
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">
-      Valider la suppression
-    </button>
+    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">Confirmer</button>
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler"></button>
   </div>
 </template>
@@ -133,7 +133,6 @@ const confirmer = async (): Promise<void> => {
 };
 
 const annuler = (): void => {
-  store.setSelectedModifiedFeature([]);
   mapPrefs.value.currentMode = "edit";
 };
 
@@ -151,3 +150,11 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.pop-in-top.delete {
+  gap: 10px;
+  padding: 5px 10px;
+  align-items: center;
+}
+</style>

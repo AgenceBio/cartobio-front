@@ -51,10 +51,10 @@
       <Teleport to=".toolbar">
         <div class="toolbar-bottom">
           <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo" :disabled="!hasUndo">
-            <i class="ri-arrow-go-back-line"></i>
+            <i class="ri-arrow-go-back-line" aria-hidden="true" />
           </button>
           <button class="fr-btn fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo" :disabled="!hasRedo">
-            <i class="ri-arrow-go-forward-line"></i>
+            <i class="ri-arrow-go-forward-line" aria-hidden="true" />
           </button>
         </div>
       </Teleport>
@@ -328,15 +328,19 @@ const generateConversionLevelOverlays = () => {
 watch(
   () => mapPrefs.value.currentMode,
   () => {
+    if (
+      store.selectedModifIds.length === 0 &&
+      mapPrefs.value.currentMode != "consult" &&
+      mapPrefs.value.currentMode != "edit" &&
+      mapPrefs.value.currentMode != "draw"
+    ) {
+      mapPrefs.value.currentMode = "edit";
+
+      return;
+    }
     interactions.value.undoRedo.clear();
     if (!props.interactive) return;
     clearInteractions();
-  },
-);
-
-watch(
-  () => mapPrefs.value.currentMode,
-  () => {
     if (mapPrefs.value.currentMode === "consult") {
       store.setSelectedModifiedFeature([]);
       for (const overlay of map.value.getOverlays().getArray()) {
@@ -434,16 +438,6 @@ onUnmounted(() => {
   display: flex;
   gap: 5px;
   border-radius: 10px;
-}
-
-:deep(.pop-in-top > p) {
-  align-content: center;
-}
-
-:deep(.column) {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
 }
 
 .toolbar-bottom {
