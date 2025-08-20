@@ -98,89 +98,90 @@
         </div>
       </fieldset>
     </div>
+    <Teleport to="body">
+      <Modal @close="closeMulticultureModal()" v-if="isMulticultureModalOpen" large="true">
+        <template #title>Saisie multiculture</template>
 
-    <Modal @close="closeMulticultureModal()" v-if="isMulticultureModalOpen" large="true">
-      <template #title>Saisie multiculture</template>
+        <div class="fr-toggle fr-toggle--label-left fr-mb-2w">
+          <input type="checkbox" id="toggle-multiculture" class="fr-toggle__input" v-model="isMulticulture" />
+          <label
+            class="fr-toggle__label"
+            for="toggle-multiculture"
+            data-fr-checked-label="Oui"
+            data-fr-unchecked-label="Non"
+          >
+            Multiculture
+          </label>
+        </div>
 
-      <div class="fr-toggle fr-toggle--label-left fr-mb-2w">
-        <input type="checkbox" id="toggle-multiculture" class="fr-toggle__input" v-model="isMulticulture" />
-        <label
-          class="fr-toggle__label"
-          for="toggle-multiculture"
-          data-fr-checked-label="Oui"
-          data-fr-unchecked-label="Non"
-        >
-          Multiculture
-        </label>
-      </div>
+        <div>
+          <table class="culture-table">
+            <thead>
+              <tr>
+                <th>Culture</th>
+                <th>Variété</th>
+                <th>Superficie (Ha)</th>
+                <th>Date des semis</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="culture in uuidedCultures" :key="culture.id">
+                <td>
+                  <AsyncCultureTypeSelector
+                    :needTitle="false"
+                    :culture="culture"
+                    :modelValue="culture.CPF"
+                    :disabledAutoComplete="!isMulticulture && culture !== uuidedCultures[0]"
+                    :disabledInput="!isMulticulture && culture !== uuidedCultures[0]"
+                    @update:modelValue="($CPF) => updateCulture(culture.id, 'CPF', $CPF)"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    class="fr-input"
+                    v-model="culture.variete"
+                    :disabled="!isMulticulture && culture !== uuidedCultures[0]"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.00001"
+                    class="fr-input"
+                    v-model="culture.surface"
+                    :disabled="!isMulticulture && culture !== uuidedCultures[0]"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    class="fr-input"
+                    v-model="culture.date_semis"
+                    :disabled="!isMulticulture && culture !== uuidedCultures[0]"
+                  />
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    v-if="isMulticulture && canBeDeleted"
+                    class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
+                    @click="removeCulture(culture.id)"
+                    aria-label="Supprimer la culture"
+                  ></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <div>
-        <table class="culture-table">
-          <thead>
-            <tr>
-              <th>Type de culture</th>
-              <th>Variété</th>
-              <th>Superficie (Ha)</th>
-              <th>Date des semis</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="culture in uuidedCultures" :key="culture.id">
-              <td>
-                <AsyncCultureTypeSelector
-                  :needTitle="false"
-                  :culture="culture"
-                  :modelValue="culture.CPF"
-                  :disabledAutoComplete="!isMulticulture && culture !== uuidedCultures[0]"
-                  :disabledInput="!isMulticulture && culture !== uuidedCultures[0]"
-                  @update:modelValue="($CPF) => updateCulture(culture.id, 'CPF', $CPF)"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  class="fr-input"
-                  v-model="culture.variete"
-                  :disabled="!isMulticulture && culture !== uuidedCultures[0]"
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.00001"
-                  class="fr-input"
-                  v-model="culture.surface"
-                  :disabled="!isMulticulture && culture !== uuidedCultures[0]"
-                />
-              </td>
-              <td>
-                <input
-                  type="date"
-                  class="fr-input"
-                  v-model="culture.date_semis"
-                  :disabled="!isMulticulture && culture !== uuidedCultures[0]"
-                />
-              </td>
-              <td>
-                <button
-                  type="button"
-                  v-if="isMulticulture && canBeDeleted"
-                  class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
-                  @click="removeCulture(culture.id)"
-                  aria-label="Supprimer la culture"
-                ></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <template #footer>
-        <button class="fr-btn" @click="closeMulticultureModal()">Enregistrer</button>
-      </template>
-    </Modal>
+        <template #footer>
+          <button class="fr-btn" @click="closeMulticultureModal()">Enregistrer</button>
+        </template>
+      </Modal>
+    </Teleport>
   </div>
 </template>
 
@@ -192,8 +193,6 @@ import { getCultureIcon } from "@/utils/features.js";
 
 const AsyncCultureTypeSelector = defineAsyncComponent(() => import("./CultureTypeSelector.vue"));
 const isMulticultureModalOpen = ref(false);
-
-const isMulticulture = ref(false);
 
 const props = defineProps({
   cultures: {
@@ -208,6 +207,8 @@ const props = defineProps({
     default: false,
   },
 });
+
+const isMulticulture = ref(false);
 
 const emit = defineEmits(["change"]);
 
@@ -229,9 +230,15 @@ function openMulticultureModal() {
 }
 
 function closeMulticultureModal() {
-  if (!isMulticulture.value && uuidedCultures.value.length > 1) {
-    emit("change", [uuidedCultures.value[0]]);
+  let updatedCultures = uuidedCultures.value;
+
+  if (isMulticulture.value) {
+    updatedCultures = uuidedCultures.value.filter((c) => c.CPF || c.variete || c.surface || c.date_semis);
+  } else if (uuidedCultures.value.length > 1) {
+    updatedCultures = [uuidedCultures.value[0]];
   }
+
+  emit("change", updatedCultures);
   isMulticultureModalOpen.value = false;
 }
 
@@ -250,6 +257,14 @@ watch(
     }
   },
   { deep: true },
+);
+
+watch(
+  () => props.cultures,
+  (newVal) => {
+    isMulticulture.value = newVal.length > 1;
+  },
+  { immediate: true, deep: true },
 );
 
 watch(isMulticulture, (val) => {

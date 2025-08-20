@@ -28,18 +28,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { getConversionLevel } from "@/referentiels/ab.js";
 
 const props = defineProps<{
-  historique: {
-    cultures: { CPF: string }[];
-    conversion_niveau: string;
-    annee_controle: number;
-    correspondance_geometrie: string;
-  }[] | null;
+  historique:
+    | {
+        cultures: { CPF: string }[];
+        conversion_niveau: string;
+        annee_controle: number;
+        correspondance_geometrie: string;
+      }[]
+    | null;
 }>();
 
 const getHistoriqueRota = (index: number) => {

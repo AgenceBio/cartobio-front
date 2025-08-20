@@ -22,8 +22,6 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
-
 defineProps({
   width: Number,
   height: Number,

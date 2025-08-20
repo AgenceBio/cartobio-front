@@ -17,8 +17,9 @@
             type="submit"
             form="feature-edit-cutlures-form"
             aria-label="Enregister le niveau de conversion"
+            @click="validate()"
           >
-            Ok
+            Enregistrer
           </button>
         </li>
         <li>
@@ -79,11 +80,9 @@ watch(
 
 const validate = () => {
   const set = featuresSet.byFeature(props.feature.id, true);
-
-  if (set.size) {
+  if (set.has("culture-unsure")) {
     return false;
   }
-
   emit("submit", { id: props.feature.id, properties: patch });
 };
 </script>

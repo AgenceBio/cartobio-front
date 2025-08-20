@@ -119,9 +119,8 @@ describe("Features Table", () => {
     // await rendering
     await flushPromises();
     const groups = wrapper.findAll(".groupe-parcelles");
-
-    expect(groups.at(0).find("h3").text()).toContain("26108");
-    expect(groups.at(1).find("h3").text()).toContain("26113");
+    expect(groups.at(0).find(".label-group").text()).toContain("26108");
+    expect(groups.at(1).find(".label-group").text()).toContain("26113");
   });
 
   test("we select a feature and its unfolds the group", async () => {

@@ -2,8 +2,8 @@
   <div>
     <div
       class="fr-grid-row fr-mb-2v fr-px-4v fr-py-4v groupe-parcelles"
-      @click.stop="open = !open"
-      @keydown.enter="open = !open"
+      @click.stop="openLigne = !openLigne"
+      @keydown.enter="openLigne = !openLigne"
     >
       <div class="fr-grid-row groupe-titre fr-mb-0">
         <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
@@ -40,103 +40,82 @@
             "
           />
         </div>
-        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
+        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="openLigne" aria-role="button" />
       </div>
     </div>
     <div
-      class="parcelle-carte fr-mb-2v fr-p-4v fr-mx-4v"
-      :class="{
-        'parcelle--is-new': feature.id === Number(route.query?.new),
-        'background-selected': selectedIds.includes(feature.id),
-      }"
-      :id="'parcelle-' + feature.id"
-      :hidden="!open"
+      class="fr-mb-2v fr-p-4v fr-mx-4v parcelle-ligne"
+      :class="{ 'fr-grid-row': openLigne }"
+      :id="'parcelle-' + feature.id + '-ligne'"
+      :hidden="!openLigne"
       v-for="feature in featureGroup.features"
       :key="feature.id"
-      @mouseover="hoveredId = feature.id"
-      :aria-current="feature.id === hoveredId ? 'location' : null"
       @click="(event) => clickOn(feature.id, event)"
     >
-      <div class="parcelle-titre fr-mb-1v">
-        <div v-if="isGroupedByCulture">
-          <h4
-            class="fr-text--lg fr-mb-0"
-            :class="{
-              'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--md fr-icon--left controlee': feature.properties.controlee,
-            }"
-          >
-            {{ featureName(feature, { explicitName: false }) }}
-          </h4>
-          <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true })">
-            {{ featureName(feature, { nameOnly: true }) }}
-          </p>
-        </div>
-        <div v-else>
-          <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-            Multi-cultures <span class="fr-sr-only"> : </span>
-            <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-              <span v-if="i" class="fr-sr-only">, </span> {{ cultureLabel(culture) }}
-            </small>
-          </p>
-          <h4 v-else class="fr-text--lg fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</h4>
-
-          <p class="fr-hint-text">{{ featureName(feature, { hint: true }) }}</p>
-        </div>
-        <div class="parcelle-actions">
-          <template v-if="isGroupedByCulture">
-            <small v-if="feature.properties.cultures.length > 1">Multiculture</small>
-            <button
-              v-else-if="
-                (permissions.canChangeCulture &&
-                  feature.properties.cultures.length === 1 &&
-                  feature.properties.cultures[0].CPF === undefined) ||
-                !feature.properties.cultures
-              "
-              class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
-              @click="openCulturesModal(feature.id)"
-            >
-              Saisir la culture
-            </button>
-          </template>
-          <p class="fr-mb-0">
-            {{
-              !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
-                ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
-                : inHa(legalProjectionSurface(feature))
-            }}
-          </p>
-          <div class="fr-checkbox-group fr-checkbox-group--sm">
-            <input
-              type="checkbox"
-              :id="'radio-' + feature.id"
-              :checked="selectedIds.includes(feature.id)"
-              @click="
-                toggleSingleSelected(feature.id);
-                selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-              "
-            />
-            <label
-              class="fr-label"
-              :for="'radio-' + feature.id"
-              :aria-label="
-                selectedIds.includes(feature.id)
-                  ? `Désélectionner ${featureName(feature)}`
-                  : `Sélectionner ${featureName(feature)}`
-              "
-            />
-          </div>
-        </div>
+      <div class="fr-col-2">
+        <h4
+          class="fr-text--lg fr-mb-0"
+          :class="{
+            'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--lg fr-icon--left controlee': feature.properties.controlee,
+          }"
+        >
+          {{ featureName(feature, { explicitName: false }) }}
+        </h4>
+        <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true })">
+          {{ featureName(feature, { nameOnly: true }) }}
+        </p>
       </div>
-      <div class="fr-grid-row fr-grid-row--middle parcelle-titre">
+
+      <div class="fr-col-2">
+        {{ feature.properties.cultures[0].variete ? feature.properties.cultures[0].variete : "-" }}
+      </div>
+      <div class="fr-col-2">
+        <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
+          Multiculture <span class="fr-sr-only"> : </span>
+          <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+            <span v-if="i" class="fr-sr-only">, </span> {{ cultureLabel(culture) }}
+          </small>
+        </p>
+        <button
+          v-else-if="
+            (permissions.canChangeCulture &&
+              feature.properties.cultures.length === 1 &&
+              feature.properties.cultures[0].CPF === undefined) ||
+            !feature.properties.cultures
+          "
+          class="red radius fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
+          @click="openLigneCulturesModal(feature.id)"
+        >
+          Saisir la culture
+        </button>
+        <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
+      </div>
+      <div class="fr-col-1">
+        <span>
+          {{
+            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+              ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
+              : inHa(legalProjectionSurface(feature))
+          }}
+        </span>
+      </div>
+      <div class="fr-col-2">
         <div
-          @click.stop.prevent="openNiveauConversionModal(feature.id)"
+          style="width: fit-content"
+          @click="openLigneNiveauConversionModal(feature.id)"
           :class="{ clickable: permissions.canChangeConversionLevel }"
         >
           <ConversionLevel :feature="feature" with-date />
         </div>
-        <div class="fr-grid-row fr-grid-row--middle gap-10">
-          <p class="fr-sr-only"></p>
-          <span v-if="isRota(feature)" :class="isRota(feature)"><i class="ri-exchange-funds-line"></i>ROTATION</span>
+      </div>
+      <div class="fr-col-3 fr-grid-row last-row">
+        <div class="fr-py-3v fr-px-2v">
+          <span v-if="isRota(feature)" :class="isRota(feature)" class="fr-px-2v"
+            ><i class="ri-exchange-funds-line"></i>ROTATION</span
+          >
+          <span class="fr-text--sm text-grey fr-px-2v">
+            {{ getTimeAgo(feature) }}
+          </span>
           <span
             v-if="feature.properties.commentaires || feature.properties.auditeur_notes"
             aria-hidden="true"
@@ -144,17 +123,36 @@
           >
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
-          <p class="fr-mb-0 fr-text--sm text-grey">
-            {{ getTimeAgo(feature) }}
-          </p>
+        </div>
+        <div class="fr-py-1v">
           <button
             type="button"
             @click.prevent="toggleDeleteForm(feature.id)"
             :disabled="!permissions.canDeleteFeature"
-            class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
+            class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error"
           >
             Supprimer la parcelle
           </button>
+        </div>
+        <div class="fr-py-3v">
+          <input
+            type="checkbox"
+            :id="'radio-' + feature.id"
+            :checked="selectedIds.includes(feature.id)"
+            @click="
+              toggleSingleSelected(feature.id);
+              selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+            "
+          />
+          <label
+            class="fr-label"
+            :for="'radio-' + feature.id"
+            :aria-label="
+              selectedIds.includes(feature.id)
+                ? `Désélectionner ${featureName(feature)}`
+                : `Sélectionner ${featureName(feature)}`
+            "
+          />
         </div>
       </div>
     </div>
@@ -199,6 +197,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  isTab: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -210,13 +212,14 @@ const emit = defineEmits([
   "zoom:featureId",
 ]);
 
-const { selectedIds, hoveredId } = storeToRefs(featuresStore);
+const { selectedIds } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id));
-const open = ref(
+const openLigne = ref(
   featureIds.value.includes(String(route.query?.new)) || featureIds.value.some((id) => selectedIds.value.includes(id)),
 );
+
 const allSelected = computed(() => featureIds.value.every((id) => selectedIds.value.includes(id)));
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === "CULTURE");
 
@@ -258,13 +261,13 @@ function toggleFeatureGroup() {
   }
 }
 
-function openNiveauConversionModal(id) {
+function openLigneNiveauConversionModal(id) {
   if (permissions.canChangeConversionLevel) {
     emit("edit-niveau-conversion:featureId", id);
   }
 }
 
-function openCulturesModal(id) {
+function openLigneCulturesModal(id) {
   if (permissions.canChangeConversionLevel) {
     emit("edit-cultures:featureId", id);
   }
@@ -291,7 +294,7 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
   });
 
   if (newItems.length === 1 && newItems.length !== featureIds.value.length) {
-    open.value = true;
+    openLigne.value = true;
   }
 });
 
@@ -335,29 +338,6 @@ function clickOn(id, event) {
 
 .gap-10 {
   gap: 10px;
-}
-
-.parcelle-carte {
-  border: 1px solid #ececfe;
-  &.parcelle--is-new {
-    background-color: var(--green-tilleul-verveine-975-75);
-  }
-  &.background-selected,
-  &:hover {
-    background-color: var(--background-alt-blue-france);
-  }
-  .parcelle-titre {
-    display: flex;
-    justify-content: space-between;
-    .parcelle-actions {
-      display: flex;
-      gap: 25px;
-    }
-  }
-  :deep(.show-actions) {
-    --hover-tint: var(--background-alt-blue-france-hover);
-    --active-tint: var(--background-alt-blue-france-active);
-  }
 }
 
 .text-grey {
@@ -418,6 +398,17 @@ function clickOn(id, event) {
   font-size: 12px;
   font-weight: bold;
   padding: 0px 6px;
+}
+
+.parcelle-ligne {
+  border: 1px solid #ececfe;
+  position: relative;
+  align-items: center;
+}
+.last-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0;
 }
 
 .label-group {

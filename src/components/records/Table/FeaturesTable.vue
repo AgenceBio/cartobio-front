@@ -22,7 +22,8 @@
       </select>
     </div>
   </div>
-  <div class="fr-grid-row fr-grid-row--midle liste-filtre fr-mb-3v">
+  <div class="fr-grid-row fr-grid-row--middle liste-filtre fr-mb-3v">
+    <b>Filtrer</b>
     <button
       :key="id"
       v-for="{ active, id, count, label, required } in tags"
@@ -38,7 +39,7 @@
     </button>
   </div>
 
-  <div v-if="selectedFeatureIds.length > 0" class="fr-grid-row selection-multiple fr-mt-4v fr-mb-2v">
+  <div v-if="selectedFeatureIds.length > 0" class="fr-grid-row selection-multiple fr-mt-4v fr-mb-2v fr-py-2v">
     <div class="fr-grid-row gap-10">
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line"
@@ -63,10 +64,19 @@
         label="Modifier"
         @submit="handleFeatureCollectionSubmit"
       />
+      <button
+        v-if="massActions.length"
+        type="button"
+        @click.prevent="toggleFeaturesDelete()"
+        :disabled="!permissions.canDeleteFeature"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
+      >
+        Supprimer la parcelle
+      </button>
     </div>
   </div>
-  <div class="fr-grid-row total-parcelles">
-    <p>{{ features.length }} parcelles</p>
+  <div class="fr-grid-row total-parcelles fr-mr-5w fr-mt-2w">
+    <p class="fr-hint-text fr-text--md">{{ features.length }} parcelles</p>
     <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
       <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
       <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
@@ -74,18 +84,34 @@
   </div>
 
   <p v-if="!hasFeatures">Votre parcellaire est vide.</p>
-  <FeatureGroup
-    :isTab="isTab"
-    v-for="featureGroup in featureGroups"
-    :featureGroup="featureGroup"
-    :key="featureGroup.key + (isTab ? '-modal' : '')"
-    @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
-    @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
-    @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
-    @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
-    @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
-    @editCultures:featureId="(featuredId) => emit('edit-cultures:featureId', featuredId)"
-  />
+  <div v-if="!isTab">
+    <FeatureGroup
+      v-for="featureGroup in featureGroups"
+      id="featureGroup1"
+      :featureGroup="featureGroup"
+      :key="featureGroup.key"
+      @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
+      @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
+      @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
+      @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
+      @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
+      @editCultures:featureId="(featuredId) => emit('edit-cultures:featureId', featuredId)"
+    />
+  </div>
+  <div v-else>
+    <FeatureGroupLigne
+      v-for="featureGroup in featureGroups"
+      id="featureGroup2"
+      :featureGroup="featureGroup"
+      :key="featureGroup.key + '-modal'"
+      @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
+      @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
+      @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
+      @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
+      @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
+      @editCultures:featureId="(featuredId) => emit('edit-cultures:featureId', featuredId)"
+    />
+  </div>
 
   <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
     Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}. Actuellement,
@@ -93,13 +119,6 @@
   </p>
   <p id="operator-features-summary-global" class="fr-sr-only" v-else>Ce parcellaire ne contient aucune parcelle.</p>
 
-  <p class="fr-my-3w" v-if="permissions.canAddParcelle && isOnline">
-    <router-link
-      :to="`/exploitations/${operator.numeroBio}/${record.record_id}/ajout-parcelle`"
-      class="fr-btn fr-btn--secondary fr-icon--sm fr-btn--icon-left fr-icon-add-line"
-      >Ajouter une parcelle</router-link
-    >
-  </p>
   <Teleport to="body">
     <DeleteFeatureModal
       v-if="maybeDeletedFeatureId"
@@ -119,13 +138,12 @@ import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
-import { useOperatorStore } from "@/stores/operator.js";
 import { usePermissions } from "@/stores/permissions.js";
-import { useRecordStore } from "@/stores/record.js";
 
 import MassActionsSelector from "@/components/records/Table/MassActionsSelector.vue";
 import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
 import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
+import FeatureGroupLigne from "@/components/records/Table/FeatureGroupLigne.vue";
 
 import toast from "@/utils/toast.js";
 import { statsPush } from "@/stats.js";
@@ -166,14 +184,10 @@ const emit = defineEmits([
 const loading = inject("loading");
 const isOnline = useOnline();
 
-const operatorStore = useOperatorStore();
-const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
 
-const { operator } = storeToRefs(operatorStore);
-const { record } = storeToRefs(recordStore);
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
 const { selectedIds: selectedFeatureIds, allSelected, selectedFeatures } = storeToRefs(featuresStore);
@@ -225,6 +239,10 @@ function handleFilterClick(id) {
   if (featuresSets.isToggled(id)) {
     statsPush(["trackEvent", "Filtre parcelles", id]);
   }
+}
+
+async function toggleFeaturesDelete() {
+  //TODO
 }
 
 watch(zoomFeature, (newValue) => {

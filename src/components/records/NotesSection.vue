@@ -107,8 +107,12 @@ const displayCallout = computed(() => record.audit_demandes && isCertificationIm
 
 .badge-commentaire {
   background-color: rgba(254, 236, 194, 1);
-  padding: 4px 10px;
-  border-radius: 16px;
+  padding: 0px 6px;
+  border-radius: 4px;
+}
+
+.badge-commentaire::before {
+  margin-right: 3px;
 }
 
 .icons {

@@ -23,7 +23,7 @@
         <p class="fr-h4 fr-mb-2v">{{ featureName(feature, { explicitName: false }) }}</p>
         <div class="fr-grid-row">
           <span class="fr-icon-map-pin-2-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
-          <p class="fr-mb-0">{{ feature.properties.COMMUNE_LABEL }} ({{ feature.properties.COMMUNE.slice(0, -3) }})</p>
+          <p class="fr-mb-0">{{ feature.properties.COMMUNE }} {{ feature.properties.COMMUNE_LABEL }}</p>
         </div>
         <div class="fr-grid-row">
           <span class="ri-custom-size fr-mr-1v" aria-hidden="true"></span>
@@ -360,7 +360,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isTab: {
+    type: Boolean,
+    default: false,
+  },
 });
+
 const emit = defineEmits(["submit", "close", "controlee", "non-controlee"]);
 const permissions = usePermissions();
 const featuresSet = useFeaturesSetsStore();
@@ -495,5 +500,6 @@ watch(
   width: 100%;
   border-top: 1px solid var(--grey-900-175);
   background-color: #f5f5fe;
+  z-index: 1;
 }
 </style>

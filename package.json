@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "start": "vite",
     "test": "vitest --coverage",
-    "posttest": "eslint ./src",
+    "posttest": "eslint ./src && npm run prettier:check",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 1 -u",
     "prettier:format": "prettier --write \"**/*.{vue,ts,tsx,js,md,json,css,yaml}\"",
     "prettier:check": "prettier --check \"**/*.{vue,ts,tsx,js,md,json,css,yaml}\""

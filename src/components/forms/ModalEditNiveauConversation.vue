@@ -123,7 +123,7 @@ watch(
 const validate = () => {
   const set = featuresSet.byFeature(props.feature.id, true);
 
-  if (set.size) {
+  if (set.has("conversion-level-unsure")) {
     return false;
   }
 

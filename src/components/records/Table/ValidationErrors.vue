@@ -7,8 +7,10 @@
   >
     <h3 class="fr-text--lg fr-mb-0">Notifications</h3>
     <div class="fr-grid-row icons">
-      <span class="fr-icon fr-icon-notification-3-line fr-icon--sm color-green" aria-hidden="true"></span>
-      <p class="color-green bg-bourgeon fr-px-1v fr-text--sm fr-text--bold">{{ countNotif }}</p>
+      <p class="color-green bg-bourgeon fr-px-1v fr-text--sm fr-text--bold">
+        <span class="fr-icon fr-icon-notification-3-line fr-icon--sm color-green" aria-hidden="true"></span>
+        {{ countNotif }}
+      </p>
       <span v-if="!open" class="fr-icon fr-icon-add-line fr-icon--sm color-green" aria-hidden="true"></span>
       <span v-else class="fr-icon fr-icon-subtract-line fr-icon--sm color-green" aria-hidden="true"></span>
     </div>

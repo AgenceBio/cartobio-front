@@ -34,7 +34,7 @@ describe("FeatureGroup", () => {
     expect(wrapper.vm.open).toEqual(true);
 
     // we should have a multi culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-2 .parcelle-actions small").text()).toEqual("Multi-culture");
+    expect(wrapper.find("#parcelle-2 .parcelle-actions small").text()).toEqual("Multiculture");
 
     // we should have a single culture name within the 3rd cell
     expect(wrapper.find("#parcelle-4 .parcelle-titre h4").text()).toEqual("îlot 2, parcelle 1");

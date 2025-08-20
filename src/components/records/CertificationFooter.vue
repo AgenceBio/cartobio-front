@@ -9,6 +9,9 @@ import CertificationModal from "@/components/forms/CertificationForm.vue";
 import SaveAuditModal from "@/components/forms/SaveAuditForm.vue";
 import { CertificationState } from "@agencebio/cartobio-types";
 import { getTimeAgo } from "@/utils/record";
+import { useOnline } from "@vueuse/core";
+
+const isOnline = useOnline();
 
 const storage = useCartoBioStorage();
 const recordStore = useRecordStore();
