@@ -5,6 +5,7 @@ const defaultMapPreferences = () => ({
   background: "plan",
   cadastre: false,
   rpg: false,
+  currentMode: "consult",
 });
 
 export const usePreferences = defineStore("preferences", () => {

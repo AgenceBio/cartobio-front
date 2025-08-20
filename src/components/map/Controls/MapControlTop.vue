@@ -1,0 +1,107 @@
+<template>
+  <div class="button-group">
+    <div class="left-button">
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('openDetail')">
+        <i class="ri-arrow-right-double-line" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')">
+        <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
+      </button>
+      <button
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
+        @click="emit('addParcelle')"
+      >
+        Ajouter une parcelle
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import { usePreferences } from "@/stores/preferences.js";
+import { storeToRefs } from "pinia";
+
+/**
+ * * Props
+ */
+const props = defineProps<{
+  isConsult: boolean;
+}>();
+/*
+ * * Stores
+ */
+
+const preferences = usePreferences();
+
+const { map: mapPrefs } = storeToRefs(preferences);
+
+/**
+ * * Refs
+ */
+const isConsult = ref<boolean>(props.isConsult);
+
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "addParcelle"): void;
+  (e: "compare"): void;
+  (e: "openDetail"): void;
+}>();
+
+/**
+ * * Watchers
+ */
+watch(
+  () => props.isConsult,
+  (newValue) => {
+    isConsult.value = newValue;
+  },
+);
+</script>
+
+<style scoped>
+.mode-choice {
+  background: #ffffff;
+  padding: 6px;
+  justify-content: space-between;
+  border-radius: 4px;
+  gap: 10px;
+  height: fit-content;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.left-button {
+  background: #ffffff;
+  justify-content: space-between;
+  gap: 10px;
+  height: fit-content;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.left-button > button {
+  border-radius: 4px;
+  width: 44px;
+  height: 44px;
+  text-align: center;
+}
+
+.button-group {
+  width: 100%;
+  z-index: 1;
+  position: absolute;
+}
+</style>

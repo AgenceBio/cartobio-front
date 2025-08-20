@@ -178,7 +178,7 @@ export async function tagParcelleNonControlee(recordId, id) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function submitNewParcelle({ recordId }, feature) {
+export async function submitNewParcelle(recordId, feature) {
   const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
     feature,
   });
@@ -191,10 +191,33 @@ export async function submitNewParcelle({ recordId }, feature) {
  *
  * @returns {Promise<NormalizedRecord>}
  */
-export async function divideNewParcelle(recordId, featureId, features) {
-  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles/${featureId}`, {
+export async function updateFeature(recordId, feature, featureId) {
+  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${featureId}`, feature);
+
+  return data;
+}
+
+/**
+ * Add a new plot without id to a feature collection
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function createFeaturesFromOther(recordId, features, from) {
+  const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles`, {
     features,
+    from,
   });
+
+  return data;
+}
+
+/**
+ * Add a new plot without id to a feature collection
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function deleteParcelle(recordId, featureId, reason) {
+  const { data } = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${featureId}`, { data: reason });
 
   return data;
 }
@@ -337,4 +360,14 @@ export async function getPDFData(numeroBio, record_id, signal) {
 
 export async function hideNotif(numeroBio) {
   await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
+}
+
+export async function addParcelleVerif(geojson, recordId) {
+  const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload: geojson });
+  return data;
+}
+
+export async function getRPG(extent) {
+  const data = await apiClient.post(`/v2/geometry/rpg`, { payload: extent });
+  return data;
 }
