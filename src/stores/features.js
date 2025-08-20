@@ -149,6 +149,10 @@ export const useFeaturesStore = defineStore("features", () => {
     selectedIds.value = selectedIds.value.filter((id) => ids.map(String).includes(String(id)) === false);
   }
 
+  function unselectAll() {
+    selectedIds.value = [];
+  }
+
   function bindFeatureState(map, layerId) {
     const layer = map.value
       .getLayers()
