@@ -187,7 +187,7 @@ export async function submitNewParcelle(recordId, feature) {
 }
 
 /**
- * Add a new plot without id to a feature collection
+ * Update parcelle
  *
  * @returns {Promise<NormalizedRecord>}
  */
@@ -198,7 +198,18 @@ export async function updateFeature(recordId, feature, featureId) {
 }
 
 /**
- * Add a new plot without id to a feature collection
+ * Update a collection of parcelle
+ *
+ * @returns {Promise<NormalizedRecord>}
+ */
+export async function updateFeatures(recordId, features) {
+  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, { features });
+
+  return data;
+}
+
+/**
+ * Add a new plot created from others without id to a feature collection
  *
  * @returns {Promise<NormalizedRecord>}
  */

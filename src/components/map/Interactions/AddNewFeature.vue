@@ -36,19 +36,19 @@
     </button>
   </div>
 
-  <div v-if="invalidDrawing" class="pop-in-top">
-    <p>Votre parcelle a été rogner pour respecter les règles</p>
+  <div v-if="invalidDrawing" class="pop-in-top close">
+    <p class="fr-mb-0">Votre parcelle a été rogner pour respecter les règles</p>
     <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection">
       Valider
     </button>
+    <button class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
+  </div>
+  <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
+    <p class="fr-mb-0">Votre parcelle est invalide. Veuillez recommencer !</p>
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
   </div>
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
-    <p>Votre parcelle est invalide. Veuillez recommencer !</p>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
-  </div>
-  <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
-    <p>Votre parcelle est invalide. Veuillez recommencer !</p>
+    <p class="fr-mb-0">Votre parcelle est invalide. Veuillez recommencer !</p>
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
   </div>
 </template>
@@ -74,13 +74,14 @@ import CertificationBodyEditForm from "@/components/forms/SingleItemCertificatio
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw } from "ol/interaction";
 import Tooltip from "ol-ext/overlay/Tooltip";
-import { MultiPoint } from "ol/geom";
+import { Geometry, MultiPoint, Polygon } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import NewParcelleTooltip from "../Overlays/NewParcelleTooltip.vue";
 import { storeToRefs } from "pinia";
 import VectorTileLayer from "ol/layer/VectorTile";
 import VectorTileSource from "ol/source/VectorTile";
 import { FeatureCollection } from "@turf/helpers";
+import intersect from "@turf/intersect";
 import axios from "axios";
 import proj4 from "proj4";
 
@@ -116,7 +117,7 @@ const { map: mapPrefs } = storeToRefs(preferences);
 
 const showDetailsModal = ref(false);
 const feature = ref<Feature | null>(null);
-const correctedGeometry = ref<Feature | null>(null);
+const correctedFeature = ref<Feature | null>(null);
 const mode = ref<"dessiner" | "cadastre" | "RPG">("dessiner");
 
 // Refs draw interaction
@@ -181,11 +182,13 @@ const cancelDraw = (): void => {
   clearPreviewSource();
   invalidDrawing.value = false;
   errorDrawing.value = false;
-  correctedGeometry.value = null;
+  correctedFeature.value = null;
 };
 
 const confirmCorrection = (): void => {
-  feature.value = correctedGeometry.value;
+  if (correctedFeature.value) {
+    feature.value = correctedFeature.value;
+  }
 };
 
 const createStyles = () => {
@@ -541,22 +544,37 @@ watch(
     }
 
     errorDrawing.value = true;
-    if (data.correction) {
-      correctedGeometry.value = data.correction.corrected_input || data.correction.input_minus_existing;
+    if (data.corrections && data.corrections.length > 0) {
+      let feature = null; // = format.readFeature(newFeature) as Feature;
 
-      if (correctedGeometry.value && correctedGeometry.value.type != "MultiPolygon") {
+      if (data.corrections.length === 1) {
+        feature = format.readFeature(data.corrections[0].new_minus_intersection) as Feature;
+      } else {
+        let correctedGeometry = data.corrections[0].new_minus_intersection;
+
+        for (let i = 1; i < data.corrections.length; i++) {
+          correctedGeometry = intersect(correctedGeometry, data.corrections[i].new_minus_intersection);
+        }
+        feature = format.readFeature(correctedGeometry) as Feature;
+      }
+      if (!feature) {
+        return;
+      }
+      if (feature.getGeometry() && feature.getGeometry()?.getType() != "MultiPolygon") {
         invalidDrawing.value = true;
-        const correctedFeature = format.readFeature(correctedGeometry.value) as Feature;
+        const correctedRes = format.writeFeatureObject(feature);
+        correctedRes.properties = {};
 
-        previewSource.addFeature(correctedFeature);
-
-        const extent = correctedFeature.getGeometry()?.getExtent();
+        correctedFeature.value = correctedRes;
+        const extent = feature.getGeometry()?.getExtent();
         if (extent && !isNaN(extent[0])) {
           props.map.getView().fit(extent, { padding: [50, 50, 50, 50] });
         }
+
+        previewSource.addFeature(feature as Feature);
         return;
       }
-      const previewFeature = format.readFeature(correctedGeometry) as Feature;
+      const previewFeature = format.readFeature(newFeature) as Feature;
       previewFeature.setStyle(errorStyle);
       previewSource.addFeature(previewFeature);
       return;
@@ -586,3 +604,9 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.pop-in-top {
+  align-items: center;
+}
+</style>
