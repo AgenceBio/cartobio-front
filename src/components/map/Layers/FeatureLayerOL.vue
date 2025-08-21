@@ -1,7 +1,12 @@
 <template>
   <template v-if="vectorLayer && vectorSource">
     <div v-if="mapPrefs.currentMode === 'consult'">
-      <ConsultFeature :map="map" :vector-layer="vectorLayer" :vector-source="vectorSource" />
+      <ConsultFeature
+        :map="map"
+        :vector-layer="vectorLayer"
+        :vector-source="vectorSource"
+        @selectFeature="(e) => emit('selectFeature', e)"
+      />
     </div>
     <div v-else>
       <EditFeature
@@ -161,6 +166,14 @@ const features = ref<Feature[]>([]);
 const hasUndo = ref(false);
 const hasRedo = ref(false);
 
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "clickOnOverlay", value: number | string): void;
+  (e: "selectFeature", value: number | string): void;
+}>();
+
 /*
  * * Fonctions :  interactions
  */
@@ -308,13 +321,17 @@ const generateConversionLevelOverlays = () => {
       }
     }
     if (!overlay) {
+      const element = createCultureOverlay(feature as Feature);
       overlay = new Overlay({
-        element: createCultureOverlay(feature as Feature),
+        element: element,
         id: feature.getId(),
         stopEvent: false,
         insertFirst: true,
       });
 
+      element.addEventListener("click", function () {
+        emit("clickOnOverlay", feature.getId());
+      });
       map.value.addOverlay(overlay);
       overlay.setPosition(feature.getGeometry()?.getInteriorPoint().getCoordinates());
     }

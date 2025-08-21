@@ -57,6 +57,15 @@ let selectInteraction: Select | null = null;
 let tooltip: Tooltip | null = null;
 let currentFeature: Feature | null = null;
 
+
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "selectFeature", value: number | string): void;
+}>();
+
+
 /*
  * * Computed
  */
@@ -167,6 +176,7 @@ onMounted(() => {
         duration: 1000,
         padding: [50, 50, 50, 50],
       });
+      emit("selectFeature",features[0].getId())
     }
   });
   tooltip = new Tooltip({

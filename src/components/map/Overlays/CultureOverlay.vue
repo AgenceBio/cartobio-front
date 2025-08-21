@@ -1,6 +1,6 @@
 <template>
   <div class="openlayers-culture-overlay">
-    <div class="badge-container">
+    <div class="badge-container" @click="test">
       <div class="badge" :class="cssClass"><i class="fr-icon" :class="icon" aria-hidden="true" />{{ label }}</div>
     </div>
   </div>
@@ -14,6 +14,10 @@ interface Props {
 }
 
 defineProps<Props>();
+
+function test() {
+  console.log("hello");
+}
 </script>
 
 <style scoped>

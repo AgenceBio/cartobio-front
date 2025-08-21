@@ -190,7 +190,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, inject } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { useRecordStore } from "@/stores/record.js";
@@ -224,6 +224,8 @@ const props = defineProps({
   },
 });
 
+const scrool = inject("scroolToFeatureId");
+
 const emit = defineEmits([
   "edit:featureId",
   "edit-niveau-conversion:featureId",
@@ -240,6 +242,13 @@ const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id
 const open = ref(
   featureIds.value.includes(String(route.query?.new)) || featureIds.value.some((id) => selectedIds.value.includes(id)),
 );
+
+const openComputed = computed(() => {
+  if (open.value) return true;
+  else if (props.featureGroup.features.some((e) => e.id === scrool.value)) return true;
+  else return false;
+});
+
 const allSelected = computed(() => featureIds.value.every((id) => selectedIds.value.includes(id)));
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === "CULTURE");
 
@@ -317,6 +326,20 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
     open.value = true;
   }
 });
+
+watch(
+  () => scrool,
+  (newValue) => {
+    if (newValue.value != null && props.featureGroup.features.some((e) => e.id === newValue.value)) {
+      open.value = true;
+      if (document.getElementById("parcelle-" + newValue.value)) {
+        document.getElementById("parcelle-" + newValue.value).scrollIntoView();
+        scrool.value = null;
+      }
+    }
+  },
+  { deep: true },
+);
 
 function clickOn(id, event) {
   if (event.ctrlKey) {

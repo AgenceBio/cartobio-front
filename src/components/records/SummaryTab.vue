@@ -1,46 +1,48 @@
 <template>
-  <CertificationSection />
-  <div class="fr-px-4v">
-    <ValidationErrors @switchTab="emit('switch-tab')" />
-  </div>
-  <hr class="fr-mt-6v" />
-
-  <div class="fr-px-4v">
-    <NotesSection />
-  </div>
-  <hr class="fr-mt-6v" />
-
-  <div class="fr-grid-row fr-grid-row--middle space-between fr-px-4v">
-    <h3 class="fr-text--lg fr-mb-0">Parcelles par niveau de conversion</h3>
-    <div class="fr-grid-row fr-grid-row--middle infos-parcelles">
-      <p class="fr-mb-0">{{ features.length }} parcelles</p>
-      <p class="fr-mb-0" v-if="surface">{{ surface }}</p>
+  <div>
+    <CertificationSection />
+    <div class="fr-px-4v">
+      <ValidationErrors @switchTab="emit('switch-tab')" />
     </div>
-  </div>
-  <div class="carte-container fr-mt-6v">
-    <div
-      v-for="group in featureGroups"
-      :key="group.key"
-      class="carte-niveau-conv fr-p-4v"
-      @click="selectFeatureGroup(group)"
-    >
-      <div class="fr-grid-row fr-grid-row--middle space-between fr-mb-6v">
-        <p class="fr-mb-0 badge fr-py-1v fr-px-3v" :class="`badge-${getConversionLevel(group.key).shortLabel}`">
-          {{ getConversionLevel(group.key).shortLabel }}
-        </p>
-        <p class="fr-mb-0 fr-text--bold">
-          {{
-            !isNaN(parseFloat(inHa(legalProjectionSurface(group.features))))
-              ? inHa(legalProjectionSurface(group.features)) + " ha"
-              : ""
-          }}
-        </p>
+    <hr class="fr-mt-6v" />
+
+    <div class="fr-px-4v">
+      <NotesSection />
+    </div>
+    <hr class="fr-mt-6v" />
+
+    <div class="fr-grid-row fr-grid-row--middle space-between fr-px-4v">
+      <h3 class="fr-text--lg fr-mb-0">Parcelles par niveau de conversion</h3>
+      <div class="fr-grid-row fr-grid-row--middle infos-parcelles">
+        <p class="fr-mb-0">{{ features.length }} parcelles</p>
+        <p class="fr-mb-0" v-if="surface">{{ surface }}</p>
       </div>
-      <div class="fr-grid-row align-baseline">
-        <p class="fr-mb-0 fr-h2 fr-mr-2v">
-          {{ group.features.length }}
-        </p>
-        <p class="fr-mb-0">Parcelles</p>
+    </div>
+    <div class="carte-container fr-mt-6v">
+      <div
+        v-for="group in featureGroups"
+        :key="group.key"
+        class="carte-niveau-conv fr-p-4v"
+        @click="selectFeatureGroup(group)"
+      >
+        <div class="fr-grid-row fr-grid-row--middle space-between fr-mb-6v">
+          <p class="fr-mb-0 badge fr-py-1v fr-px-3v" :class="`badge-${getConversionLevel(group.key).shortLabel}`">
+            {{ getConversionLevel(group.key).shortLabel }}
+          </p>
+          <p class="fr-mb-0 fr-text--bold">
+            {{
+              !isNaN(parseFloat(inHa(legalProjectionSurface(group.features))))
+                ? inHa(legalProjectionSurface(group.features)) + " ha"
+                : ""
+            }}
+          </p>
+        </div>
+        <div class="fr-grid-row align-baseline">
+          <p class="fr-mb-0 fr-h2 fr-mr-2v">
+            {{ group.features.length }}
+          </p>
+          <p class="fr-mb-0">Parcelles</p>
+        </div>
       </div>
     </div>
   </div>
@@ -90,6 +92,7 @@ function selectFeatureGroup(group) {
 .carte-container {
   gap: 14px;
   display: grid;
+  max-width: 98%;
   grid-template-columns: 50% 50%;
 }
 
