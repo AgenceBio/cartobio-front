@@ -179,6 +179,7 @@ const emit = defineEmits([
   "zoom:featureId",
   "edit-niveau-conversion:featureId",
   "edit-cultures:featureId",
+  "change-tri",
 ]);
 
 const loading = inject("loading");
@@ -248,6 +249,12 @@ async function toggleFeaturesDelete() {
 watch(zoomFeature, (newValue) => {
   if (newValue) {
     emit("zoom:featureId", newValue);
+  }
+});
+
+watch(userGroupingChoice, (newValue) => {
+  if (newValue) {
+    emit("changeTri");
   }
 });
 </script>

@@ -190,7 +190,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, inject } from "vue";
+import { computed, ref, watch, inject, nextTick, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { useRecordStore } from "@/stores/record.js";
@@ -242,13 +242,6 @@ const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id
 const open = ref(
   featureIds.value.includes(String(route.query?.new)) || featureIds.value.some((id) => selectedIds.value.includes(id)),
 );
-
-const openComputed = computed(() => {
-  if (open.value) return true;
-  else if (props.featureGroup.features.some((e) => e.id === scrool.value)) return true;
-  else return false;
-});
-
 const allSelected = computed(() => featureIds.value.every((id) => selectedIds.value.includes(id)));
 const isGroupedByCulture = computed(() => props.featureGroup.pivot === "CULTURE");
 
@@ -329,11 +322,15 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 
 watch(
   () => scrool,
-  (newValue) => {
+  async (newValue) => {
     if (newValue.value != null && props.featureGroup.features.some((e) => e.id === newValue.value)) {
       open.value = true;
+      await nextTick();
       if (document.getElementById("parcelle-" + newValue.value)) {
-        document.getElementById("parcelle-" + newValue.value).scrollIntoView();
+        const element = document.getElementById("parcelle-" + newValue.value);
+        const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
+
+        window.scrollTo({ top: y, behavior: "smooth" });
         scrool.value = null;
       }
     }
@@ -348,6 +345,20 @@ function clickOn(id, event) {
     toggleEditForm(id);
   }
 }
+
+onMounted(async () => {
+  if (scrool.value != null && props.featureGroup.features.some((e) => e.id === scrool.value)) {
+    open.value = true;
+    await nextTick();
+    if (document.getElementById("parcelle-" + scrool.value)) {
+      const element = document.getElementById("parcelle-" + scrool.value);
+      const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
+
+      window.scrollTo({ top: y, behavior: "smooth" });
+      scrool.value = null;
+    }
+  }
+});
 </script>
 
 <style scoped>

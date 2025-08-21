@@ -2,7 +2,7 @@
   <div class="toolbar">
     <div class="toolbar-top">
       <button
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Éditer"
         @click="handleAction('edit')"
@@ -11,7 +11,7 @@
       </button>
 
       <button
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'draw' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Dessiner"
         @click="handleAction('draw')"
@@ -22,7 +22,7 @@
       <hr />
 
       <button
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="decouper"
         @click="handleAction('decouper')"
@@ -32,7 +32,7 @@
       </button>
 
       <button
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Couper"
         @click="handleAction('divide')"
@@ -42,7 +42,7 @@
       </button>
 
       <button
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Fusionner"
         @click="handleAction('fusionner')"
@@ -52,7 +52,7 @@
       </button>
 
       <button
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Supprimer"
         @click="handleAction('delete')"
@@ -121,6 +121,7 @@ const handleAction = (mode: string) => {
   gap: 2px;
   padding: 10px;
   border-radius: 4px;
+  width:fit-content;
 }
 
 :deep(button[class^="ri"]),

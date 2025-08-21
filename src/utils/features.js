@@ -727,7 +727,7 @@ export function getTimeAgo(feature) {
  */
 export function getCultureIcon(key) {
   if (key === NO_GROUP) {
-    return "fr-icon-edit-line fr-icon--sm";
+    return "fr-icon-edit-line";
   }
 
   const groupeCulture = fromCodeCpf(key)?.groupe;

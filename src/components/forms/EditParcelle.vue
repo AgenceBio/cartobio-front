@@ -448,7 +448,7 @@ function tagParcelle(id) {
 function optionsCulture(feature) {
   if (feature.properties.cultures.length > 1)
     return { name: "Multiculture", icon: getCultureIcon(feature.properties.cultures[0].CPF) };
-  if (feature.properties.cultures[0].CPF)
+  if (feature.properties.cultures.length === 1 && feature.properties.cultures[0].CPF)
     return {
       name: fromCodeCpf(feature.properties.cultures[0].CPF).libelle_code_cpf,
       icon: getCultureIcon(feature.properties.cultures[0].CPF),

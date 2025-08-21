@@ -208,7 +208,7 @@ function unpin(numeroBio) {
 }
 
 async function redirectToRecord(record) {
-  await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${record.record_id}`);
+  await router.go(`/exploitations/${operatorStore.operator.numeroBio}/${record.record_id}`);
 }
 
 async function tryDownloadRecord(record) {

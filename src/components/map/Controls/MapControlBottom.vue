@@ -1,6 +1,6 @@
 <template>
   <div class="button-group">
-    <div class="info-box">
+    <div :class="[isEditParcelleOpen ? 'info-box-open' : 'info-box']">
       <span><i class="ri-custom-size" aria-hidden="true" /> {{ sizeParcelles }} ha</span>
       <span>
         <i class="ri-collage-line" aria-hidden="true" />
@@ -26,28 +26,51 @@
         Modifier
       </button>
     </div>
+
+    <div class="attribution fr-text--xs">
+      <a
+        v-if="!isEditParcelleOpen"
+        href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
+        target="_blank"
+        >Sources des données et licences<span class="fr-sr-only"> (ouvre un nouvel onglet)</span></a
+      >
+      <a
+        v-else
+        type="button"
+        class="fr-icon-info-line"
+        href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
+        target="_blank"
+      ></a>
+    </div>
+
+    <div id="scale-line" class="scale-line"></div>
     <div class="group-button-right">
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline"
-        :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"
-        @click="onFullScreen"
-      />
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFullScreen">
+        <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
+      </button>
       <div class="group-zoom">
-        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line" @click="onZoomIn" />
-        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-subtract-line" @click="onZoomOut" />
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn">
+          <span class="fr-icon-add-line fr-icon--sm"></span>
+        </button>
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut">
+          <span class="fr-icon-subtract-line fr-icon--sm"></span>
+        </button>
       </div>
-      <button class="fr-btn fr-btn--tertiary-no-outline ri-focus-3-line" @click="onLocate" />
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate">
+        <span class="ri-focus-3-line"></span>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, Ref } from "vue";
+import { inject, onMounted, ref, Ref } from "vue";
 import type { Map as OlMap } from "ol";
 import { usePreferences } from "@/stores/preferences.js";
 import { storeToRefs } from "pinia";
 import { inHa, legalProjectionSurface } from "@/utils/features.js";
 import { useFeaturesStore } from "@/stores/features";
+import ScaleLine from "ol/control/ScaleLine.js";
 
 /**
  * * Refs
@@ -62,6 +85,13 @@ const preferences = usePreferences();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 const featureStore = useFeaturesStore();
+
+/**
+ * * Props
+ */
+defineProps<{
+  isEditParcelleOpen: boolean;
+}>();
 
 /**
  * * Refs
@@ -103,6 +133,25 @@ const onFullScreen = () => {
   emit("fullscreen");
   isFullScreen.value = !isFullScreen.value;
 };
+
+const createScaleLine = () => {
+  const control = new ScaleLine({
+    className: "ol-scale-line",
+    target: document.getElementById("scale-line"),
+    units: "metric",
+    maxWidth: 100,
+    minWidth: 100,
+  });
+  map.value.addControl(control);
+};
+
+/**
+ * * States fonctions
+ */
+
+onMounted(() => {
+  createScaleLine();
+});
 </script>
 
 <style scoped>
@@ -129,18 +178,21 @@ const onFullScreen = () => {
 
 .group-button-right > button {
   background: white;
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+}
+
+.group-zoom > button {
+  background: white;
+  width: 30px;
+  height: 30px;
   justify-content: center;
 }
 
 .group-zoom {
   display: flex;
   flex-direction: column;
-}
-
-.group-zoom > button {
-  background: white;
 }
 
 .mode-choice {
@@ -175,6 +227,19 @@ const onFullScreen = () => {
   font-weight: 500;
 }
 
+.info-box-open {
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  position: absolute;
+  bottom: 8rem;
+  left: 1rem;
+  font-weight: 500;
+}
+
 .group-button-right {
   position: absolute;
   bottom: 10px;
@@ -194,5 +259,25 @@ i[class*=" ri"] {
 
 .button-group > div {
   border-radius: 6px;
+}
+
+.scale-line {
+  position: absolute;
+  bottom: 0.15rem;
+  right: 10rem;
+}
+.ol-scale-line {
+  position: relative;
+  bottom: 0px;
+  left: 0px;
+}
+
+.attribution {
+  position: absolute;
+  display: flex;
+  right: 160px;
+  bottom: -10px;
+  background-color: white;
+  border-radius: 0px !important;
 }
 </style>

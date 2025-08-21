@@ -16,8 +16,6 @@ import { useFeaturesStore } from "@/stores/features.js";
 import { legalProjectionSurface, inHa, getCultureIcon, featureName } from "@/utils/features.js";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 
-// Interactions
-
 // Utils Geom
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
@@ -57,14 +55,12 @@ let selectInteraction: Select | null = null;
 let tooltip: Tooltip | null = null;
 let currentFeature: Feature | null = null;
 
-
 /**
  * * Emits
  */
 const emit = defineEmits<{
   (e: "selectFeature", value: number | string): void;
 }>();
-
 
 /*
  * * Computed
@@ -91,6 +87,8 @@ const createParcelleTooltip = (feature: Feature) => {
   const cultures: { CPF: "string" }[] = feature.get("cultures") || [];
   const icon = getCultureIcon(cultures[0]?.CPF);
   const libelleCulture = fromCodeCpf(cultures[0]?.CPF);
+  const conversionLevel = feature.get("conversion_niveau")
+  const conversionDate = feature.get("engagement_date")
 
   const element = document.createElement("div");
   const app = createApp(ParcelleTooltip, {
@@ -100,6 +98,8 @@ const createParcelleTooltip = (feature: Feature) => {
     ville,
     icon,
     libelleCulture: libelleCulture?.libelle_code_cpf,
+    conversionLevel,
+    conversionDate
   });
 
   app.mount(element);
@@ -176,7 +176,7 @@ onMounted(() => {
         duration: 1000,
         padding: [50, 50, 50, 50],
       });
-      emit("selectFeature",features[0].getId())
+      emit("selectFeature", features[0].getId());
     }
   });
   tooltip = new Tooltip({

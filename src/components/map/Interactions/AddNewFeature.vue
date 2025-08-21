@@ -416,7 +416,7 @@ const drawInteraction = (): void => {
     const geojsonFeature = geojsonFormat.writeFeatureObject(newFeature);
     geojsonFeature.properties = {};
     feature.value = geojsonFeature;
-  });
+    feature.value.properties.cultures = [{ CPF: "", id: crypto.randomUUID() }];  });
 
   props.map.on("pointermove", (e: MapBrowserEvent) => {
     handleTracing(e, currentDrawing, snapStyle, snapFeatureRef);

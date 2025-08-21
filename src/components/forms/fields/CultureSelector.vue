@@ -18,7 +18,7 @@
 
         <button
           type="button"
-          v-if="!disabledInput && index != 1"
+          v-if="!disabledInput && index < 1"
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line fr-btn--icon-right fr-mb-3w"
           @click="openMulticultureModal"
         >
@@ -229,6 +229,7 @@ const emit = defineEmits(["change"]);
 const uuidedCultures = computed(() => {
   const uuidRegex =
     /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+  if (props.cultures.length === 0) return [{ id: crypto.randomUUID(), variete: "", date_semis: "", superficie: "" }];
   return props.cultures.map((culture) => ({
     ...culture,
     id: culture.id && uuidRegex.test(culture.id) ? culture.id : crypto.randomUUID(),

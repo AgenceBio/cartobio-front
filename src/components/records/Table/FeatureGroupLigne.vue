@@ -168,7 +168,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, nextTick, inject, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { useRecordStore } from "@/stores/record.js";
@@ -213,6 +213,8 @@ const emit = defineEmits([
   "delete:featureId",
   "zoom:featureId",
 ]);
+
+const scrool = inject("scroolToFeatureId");
 
 const { selectedIds } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
@@ -307,6 +309,20 @@ function clickOn(id, event) {
     toggleEditForm(id);
   }
 }
+
+onMounted(async () => {
+  if (scrool.value != null && props.featureGroup.features.some((e) => e.id === scrool.value)) {
+    open.value = true;
+    await nextTick();
+    if (document.getElementById("parcelle-" + scrool.value)) {
+      const element = document.getElementById("parcelle-" + scrool.value);
+      const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
+
+      window.scrollTo({ top: y, behavior: "smooth" });
+      scrool.value = null;
+    }
+  }
+});
 </script>
 
 <style scoped>
