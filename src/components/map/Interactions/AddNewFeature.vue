@@ -1,14 +1,4 @@
 <template>
-  <CertificationBodyEditForm
-    v-if="showDetailsModal"
-    :feature="feature"
-    @close="showDetailsModal = false"
-    icon="fr-icon-add-line"
-    data-content-name="Modale de confirmation d'ajout"
-    required-name
-  >
-    <template #title>Créer ma parcelle</template>
-  </CertificationBodyEditForm>
   <div class="pop-in-top">
     <button
       class="fr-btn fr-btn--tertiary-no-outline"
@@ -51,6 +41,20 @@
     <p class="fr-mb-0">Votre parcelle est invalide. Veuillez recommencer !</p>
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
   </div>
+
+  <Teleport to="body">
+    <CertificationBodyEditForm
+      v-if="showDetailsModal"
+      :feature="savedFeature"
+      @close="goToEdit"
+      @submit="submitFeature"
+      icon="fr-icon-add-line"
+      data-content-name="Modale de confirmation d'ajout"
+      required-name
+    >
+      <template #title>Créer ma parcelle</template>
+    </CertificationBodyEditForm>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -68,13 +72,13 @@ import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
+import { addParcelleVerif, submitNewParcelle, getRPG, updateFeature } from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw } from "ol/interaction";
 import Tooltip from "ol-ext/overlay/Tooltip";
-import { Geometry, MultiPoint, Polygon } from "ol/geom";
+import { MultiPoint } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import NewParcelleTooltip from "../Overlays/NewParcelleTooltip.vue";
 import { storeToRefs } from "pinia";
@@ -130,6 +134,8 @@ let selectedIds: string[] = [];
 
 let cadastre: boolean | null = null;
 let rpg: boolean | null = null;
+
+let savedFeature: CartoBioFeature | null = null;
 /*
  * * Constantes
  */
@@ -455,6 +461,20 @@ const rpgInteraction = () => {
   props.map.on("click", handleClickRPG);
 };
 
+const goToEdit = () => {
+  mapPrefs.value.currentMode = "edit";
+};
+
+const submitFeature = async (res: { id: string; properties: object }) => {
+  const result = await updateFeature(props.recordId, res, res.id);
+
+  if (result) {
+    store.setAll(result.parcelles.features);
+  }
+
+  goToEdit();
+};
+
 /*
  * * Fonctions : Utils
  */
@@ -536,8 +556,9 @@ watch(
           props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
         }
 
+        savedFeature = newFeatures[0];
+        showDetailsModal.value = true;
         store.setSelectedModifiedFeature(newFeatures.map((f) => f.id as string));
-        mapPrefs.value.currentMode = "edit";
       }
 
       return;
