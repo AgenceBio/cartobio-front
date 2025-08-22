@@ -55,10 +55,20 @@
       />
       <Teleport to=".toolbar">
         <div class="toolbar-bottom">
-          <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" data-tooltip="Annuler" @click="undo" :disabled="!hasUndo">
+          <button
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+            data-tooltip="Annuler"
+            @click="undo"
+            :disabled="!hasUndo"
+          >
             <i class="ri-arrow-go-back-line" aria-hidden="true" />
           </button>
-          <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" data-tooltip="Refaire" @click="redo" :disabled="!hasRedo">
+          <button
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+            data-tooltip="Refaire"
+            @click="redo"
+            :disabled="!hasRedo"
+          >
             <i class="ri-arrow-go-forward-line" aria-hidden="true" />
           </button>
         </div>
@@ -71,7 +81,7 @@
 import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp } from "vue";
 import { storeToRefs } from "pinia";
 
-import { Map, Overlay } from "ol";
+import { Map, Overlay, MapBrowserEvent } from "ol";
 import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -81,12 +91,14 @@ import ModifyFeature from "ol-ext/interaction/ModifyFeature";
 import { Select, Draw, Interaction } from "ol/interaction";
 import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
+import Tooltip from "ol-ext/overlay/Tooltip";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useRecordStore } from "@/stores/record.js";
 import { usePreferences } from "@/stores/preferences.js";
-import { legalProjectionSurface, inHa, getCultureIcon } from "@/utils/features.js";
+import { legalProjectionSurface, inHa, getCultureIcon, featureName } from "@/utils/features.js";
 import { getConversionLevel, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab";
+import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 
 // Utils Geom
 
@@ -100,6 +112,7 @@ import MergeFeatures from "../Interactions/MergeFeatures.vue";
 import DeleteFeature from "../Interactions/DeleteFeature.vue";
 import ConsultFeature from "../Interactions/ConsultFeature.vue";
 import { FeatureLike } from "ol/Feature";
+import ParcelleTooltip from "../Overlays/ParcelleTooltip.vue";
 
 /*
  * * Interface
@@ -165,6 +178,12 @@ const features = ref<Feature[]>([]);
 
 const hasUndo = ref(false);
 const hasRedo = ref(false);
+
+const currentTooltipParcelleId = ref<string | null>(null);
+const currentTooltipParcelle = ref<string | null>(null);
+
+let tooltip: Tooltip | null = null;
+let currentFeature: Feature | null = null;
 
 /**
  * * Emits
@@ -330,11 +349,93 @@ const generateConversionLevelOverlays = () => {
       });
 
       element.addEventListener("click", function () {
-        emit("clickOnOverlay", feature.getId());
+        if (mapPrefs.value.currentMode === "consult") {
+          emit("clickOnOverlay", feature.getId());
+        }
       });
+
+      watch(
+        () => mapPrefs.value.currentMode,
+        (newValue) => {
+          if (newValue != "consult" && newValue != "edit") element.style.visibility = "hidden";
+          else element.style.visibility = "visible";
+        },
+      );
       map.value.addOverlay(overlay);
       overlay.setPosition(feature.getGeometry()?.getInteriorPoint().getCoordinates());
     }
+  }
+};
+
+const createParcelleTooltip = (feature: Feature) => {
+  if (currentTooltipParcelleId.value === feature.get("id")) {
+    return currentTooltipParcelle.value;
+  }
+
+  const cartobioFeature = new GeoJSON().writeFeatureObject(feature) as CartoBioFeature;
+  const name = featureName(cartobioFeature);
+  const area = calculateArea(cartobioFeature);
+  const codePostale = feature.get("COMMUNE");
+  const ville = feature.get("COMMUNE_LABEL");
+  const cultures: { CPF: "string" }[] = feature.get("cultures") || [];
+  const icon = getCultureIcon(cultures[0]?.CPF);
+  const libelleCulture = fromCodeCpf(cultures[0]?.CPF);
+  const conversionLevel = feature.get("conversion_niveau");
+  const conversionDate = feature.get("engagement_date");
+
+  const element = document.createElement("div");
+  const app = createApp(ParcelleTooltip, {
+    name,
+    area,
+    codePostale,
+    ville,
+    icon,
+    libelleCulture: libelleCulture?.libelle_code_cpf,
+    conversionLevel,
+    conversionDate,
+  });
+
+  app.mount(element);
+
+  currentTooltipParcelle.value = element.innerHTML;
+  currentTooltipParcelleId.value = feature.get("id");
+
+  return element.innerHTML;
+};
+/*
+ * * Fonctions : Data
+ */
+
+const handlePointerMove = (e: MapBrowserEvent) => {
+  if (
+    mapPrefs.value.currentMode === "consult" ||
+    (mapPrefs.value.currentMode === "edit" && store.selectedModifIds.length === 0)
+  ) {
+    const feature = map.value.forEachFeatureAtPixel(
+      e.pixel,
+      (feature) => {
+        return feature.clone();
+      },
+      { layerFilter: (l) => l.get("name") === vectorLayer.value.get("name") },
+    ) as Feature;
+    if (feature) {
+      if (feature !== currentFeature) {
+        if (currentFeature == null) {
+          map.value.addOverlay(tooltip);
+        }
+        tooltip.setFeature(feature);
+      }
+    } else if (currentFeature) {
+      map.value.removeOverlay(tooltip);
+    }
+    currentFeature = feature;
+  }
+};
+
+const handlePointLeave = () => {
+  if (currentFeature) {
+    map.value.removeOverlay(tooltip);
+    currentFeature = null;
   }
 };
 
@@ -360,9 +461,11 @@ watch(
     clearInteractions();
     if (mapPrefs.value.currentMode === "consult") {
       store.setSelectedModifiedFeature([]);
-      for (const overlay of map.value.getOverlays().getArray()) {
+      const list = map.value.getOverlays().getArray();
+      for (const overlay of list) {
         map.value.removeOverlay(overlay);
       }
+      map.value.getOverlays().clear();
 
       generateConversionLevelOverlays();
     }
@@ -378,6 +481,16 @@ watch(
   () => store.collection,
   () => {
     features.value = new GeoJSON().readFeatures(store.collection);
+    vectorSource.value.clear();
+    vectorSource.value.addFeatures(features.value);
+    map.value
+      .getOverlays()
+      .getArray()
+      .slice(0)
+      .forEach((e) => {
+        map.value.removeOverlay(e);
+      });
+
     generateConversionLevelOverlays();
   },
   { deep: true },
@@ -435,11 +548,26 @@ onMounted(() => {
   map.value.getView().on("change:resolution", () => {
     zoom.value = map.value.getView().getZoom();
   });
+
+  tooltip = new Tooltip({
+    className: "openlayers-culture-overlay",
+    closeBox: false,
+    positioning: "bottom-center",
+    offset: [0, -25],
+    getHTML: createParcelleTooltip,
+    map: map.value,
+  });
+
+  map.value.on("pointermove", handlePointerMove);
+
+  map.value.getTargetElement().addEventListener("pointerleave", handlePointLeave);
 });
 
 onUnmounted(() => {
   if (vectorLayer.value) map.value.removeLayer(vectorLayer.value);
   clearInteractions();
+  map.value.un("pointermove", handlePointerMove);
+  map.value.getTargetElement().removeEventListener("pointerleave", handlePointLeave);
 });
 </script>
 

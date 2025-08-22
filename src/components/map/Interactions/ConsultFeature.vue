@@ -1,7 +1,7 @@
 <template><p class="fr-sr-only">La carte est en mode consultation</p></template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, createApp } from "vue";
+import { ref, onMounted, onUnmounted, computed, createApp, watch } from "vue";
 
 import { Map, MapBrowserEvent } from "ol";
 import { Feature } from "ol";
@@ -74,77 +74,6 @@ const numberSelectedFeature = computed(() => {
  * * Fonctions :  interactions
  */
 
-const createParcelleTooltip = (feature: Feature) => {
-  if (currentTooltipParcelleId.value === feature.get("id")) {
-    return currentTooltipParcelle.value;
-  }
-
-  const cartobioFeature = new GeoJSON().writeFeatureObject(feature) as CartoBioFeature;
-  const name = featureName(cartobioFeature);
-  const area = calculateArea(cartobioFeature);
-  const codePostale = feature.get("COMMUNE");
-  const ville = feature.get("COMMUNE_LABEL");
-  const cultures: { CPF: "string" }[] = feature.get("cultures") || [];
-  const icon = getCultureIcon(cultures[0]?.CPF);
-  const libelleCulture = fromCodeCpf(cultures[0]?.CPF);
-  const conversionLevel = feature.get("conversion_niveau")
-  const conversionDate = feature.get("engagement_date")
-
-  const element = document.createElement("div");
-  const app = createApp(ParcelleTooltip, {
-    name,
-    area,
-    codePostale,
-    ville,
-    icon,
-    libelleCulture: libelleCulture?.libelle_code_cpf,
-    conversionLevel,
-    conversionDate
-  });
-
-  app.mount(element);
-
-  currentTooltipParcelle.value = element.innerHTML;
-  currentTooltipParcelleId.value = feature.get("id");
-
-  return element.innerHTML;
-};
-/*
- * * Fonctions : Data
- */
-
-const handlePointerMove = (e: MapBrowserEvent) => {
-  if (numberSelectedFeature.value > 0) {
-    props.map.removeOverlay(tooltip);
-    return;
-  }
-  const feature = props.map.forEachFeatureAtPixel(
-    e.pixel,
-    (feature) => {
-      return feature.clone();
-    },
-    { layerFilter: (l) => l.get("name") === props.vectorLayer.get("name") },
-  ) as Feature;
-  if (feature) {
-    if (feature !== currentFeature) {
-      if (currentFeature == null) {
-        props.map.addOverlay(tooltip);
-      }
-      tooltip.setFeature(feature);
-    }
-  } else if (currentFeature) {
-    props.map.removeOverlay(tooltip);
-  }
-  currentFeature = feature;
-};
-
-const handlePointLeave = () => {
-  if (currentFeature) {
-    props.map.removeOverlay(tooltip);
-    currentFeature = null;
-  }
-};
-
 /*
  * * Fonctions : Utils
  */
@@ -179,29 +108,10 @@ onMounted(() => {
       emit("selectFeature", features[0].getId());
     }
   });
-  tooltip = new Tooltip({
-    className: "openlayers-culture-overlay",
-    closeBox: false,
-    positioning: "bottom-center",
-    offset: [0, -25],
-    getHTML: createParcelleTooltip,
-    map: props.map,
-  });
-
-  props.map.on("pointermove", handlePointerMove);
-
-  props.map.getTargetElement().addEventListener("pointerleave", handlePointLeave);
 });
 onUnmounted(() => {
-  props.map.un("pointermove", handlePointerMove);
-  props.map.getTargetElement().removeEventListener("pointerleave", handlePointLeave);
-
   if (selectInteraction) {
     props.map.removeInteraction(selectInteraction);
-  }
-
-  if (tooltip) {
-    props.map.removeOverlay(tooltip);
   }
 });
 </script>

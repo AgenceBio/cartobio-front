@@ -328,9 +328,7 @@ watch(
       await nextTick();
       if (document.getElementById("parcelle-" + newValue.value)) {
         const element = document.getElementById("parcelle-" + newValue.value);
-        const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
-
-        window.scrollTo({ top: y, behavior: "smooth" });
+        element.scrollIntoView({ block: "center" });
         scrool.value = null;
       }
     }

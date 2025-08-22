@@ -45,21 +45,18 @@ const props = defineProps<{
 }>();
 
 const getHistoriqueRota = (index: number) => {
-  const currentCultures = props.historique[index].cultures.map((c) => c.CPF);
+  const currentCultures = props.historique[index];
 
-  if (currentCultures.length !== 1) return null;
-  const cpf = currentCultures[0];
+  if (currentCultures.cultures.length !== 1) return null;
 
   let count = 1;
-  if (index < props.historique.length - 1) {
-    const prev = props.historique[index + 1].cultures.map((c) => c.CPF);
-    if (prev.includes(cpf)) count++;
-  }
-  // année suivante
-  if (index > 0) {
-    const next = props.historique[index - 1].cultures.map((c) => c.CPF);
-    if (next.includes(cpf)) count++;
-  }
+  const nbHisto = props.historique.filter(
+    (y) =>
+      (y.annee_controle === currentCultures.annee_controle + 1 ||
+        y.annee_controle === currentCultures.annee_controle - 1) &&
+      currentCultures.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
+  ).length;
+  if (nbHisto) count = count + nbHisto;
 
   if (count === 2) return "yellow";
   if (count === 3) return "red";
@@ -70,7 +67,6 @@ const isRotaErrors = computed(() => {
   let max = 0;
   if (props.historique) {
     props.historique.forEach((e) => {
-      console.log(e);
       const tempo = props.historique.filter(
         (y) =>
           (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&

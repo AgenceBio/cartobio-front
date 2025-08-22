@@ -186,6 +186,23 @@
                     :max="maxDate"
                   />
                 </div>
+                <AnnotationsSelector
+                  v-if="permissions.canAddAnnotations"
+                  v-model="patch.annotations"
+                  :feature-id="feature.properties.id"
+                  :readonly="readonly || !permissions.canEditParcellaire"
+                />
+
+                <div class="fr-input-group" v-if="permissions.canAddAnnotations">
+                  <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
+                  <textarea
+                    :disabled="readonly || !permissions.canEditParcellaire"
+                    class="fr-input"
+                    id="auditeur_notes"
+                    name="auditeur_notes"
+                    v-model="patch.auditeur_notes"
+                  />
+                </div>
               </div>
             </AccordionSection>
           </AccordionGroup>
@@ -244,25 +261,7 @@
           </AccordionGroup>
         </template>
 
-        <AnnotationsSelector
-          v-if="permissions.canAddAnnotations"
-          v-model="patch.annotations"
-          :feature-id="feature.properties.id"
-          :readonly="readonly || !permissions.canEditParcellaire"
-        />
-
-        <div class="fr-input-group fr-mt-2w" v-if="permissions.canAddAnnotations">
-          <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
-          <textarea
-            :disabled="readonly || !permissions.canEditParcellaire"
-            class="fr-input"
-            id="auditeur_notes"
-            name="auditeur_notes"
-            v-model="patch.auditeur_notes"
-          />
-        </div>
-
-        <p class="fr-text--bold" v-if="feature.properties.historique">Historique</p>
+        <p class="fr-text--bold fr-mt-2w" v-if="feature.properties.historique">Historique</p>
 
         <TimelineHistorique :historique="feature.properties.historique" />
 
@@ -328,6 +327,8 @@ import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useFocus } from "@vueuse/core";
 
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
+import AnnotationsSelector from "@/components/forms/fields/AnnotationsSelector.vue";
+
 import AccordionSection from "@/components/widgets/Accordion.vue";
 import { LEVEL_C1, LEVEL_C2, LEVEL_C3, isABLevel, getConversionLevel } from "@/referentiels/ab.js";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
@@ -390,6 +391,7 @@ const patch = ref({
   commentaires: props.feature.properties.commentaires || "",
   conversion_niveau: props.feature.properties.conversion_niveau || "",
   engagement_date: props.feature.properties.engagement_date,
+  auditeur_notes: props.feature.properties.auditeur_notes || "",
 });
 
 const featureId = computed(() => props.feature.id);

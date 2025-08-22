@@ -36,8 +36,7 @@
       >
       <a
         v-else
-        type="button"
-        class="fr-icon-info-line"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-info-line"
         href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
         target="_blank"
       ></a>
@@ -272,12 +271,20 @@ i[class*=" ri"] {
   left: 0px;
 }
 
-.attribution {
+.attribution > a {
   position: absolute;
   display: flex;
   right: 160px;
-  bottom: -10px;
+  bottom: 15px;
   background-color: white;
   border-radius: 0px !important;
+}
+
+.attribution > .fr-btn{
+  position: absolute;
+  display: flex;
+  right: 160px;
+  bottom: 10px;
+  background-color: white;
 }
 </style>

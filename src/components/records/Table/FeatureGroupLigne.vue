@@ -68,7 +68,13 @@
       </div>
 
       <div class="fr-col-2">
-        {{ feature.properties.cultures[0].variete ? feature.properties.cultures[0].variete : "-" }}
+        {{
+          feature.properties.cultures &&
+          feature.properties.cultures.length > 0 &&
+          feature.properties.cultures[0].variete
+            ? feature.properties.cultures[0].variete
+            : "-"
+        }}
       </div>
       <div class="fr-col-2">
         <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
@@ -79,11 +85,12 @@
         </p>
         <button
           v-else-if="
-            (permissions.canChangeCulture &&
-              feature.properties.cultures.length === 1 &&
-              feature.properties.cultures[0].CPF === undefined) ||
-            feature.properties.cultures[0].CPF === '' ||
-            !feature.properties.cultures
+            permissions.canChangeCulture &&
+            (!feature.properties.cultures ||
+              feature.properties.cultures.length === 0 ||
+              (feature.properties.cultures &&
+                feature.properties.cultures.length === 1 &&
+                (feature.properties.cultures[0].CPF === '' || feature.properties.cultures[0].CPF === undefined)))
           "
           class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
           @click.stop.prevent="openLigneCulturesModal(feature.id)"
@@ -317,7 +324,6 @@ onMounted(async () => {
     if (document.getElementById("parcelle-" + scrool.value)) {
       const element = document.getElementById("parcelle-" + scrool.value);
       const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
-
       window.scrollTo({ top: y, behavior: "smooth" });
       scrool.value = null;
     }
