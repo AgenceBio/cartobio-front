@@ -280,7 +280,7 @@ i[class*=" ri"] {
   border-radius: 0px !important;
 }
 
-.attribution > .fr-btn{
+.attribution > .fr-btn {
   position: absolute;
   display: flex;
   right: 160px;

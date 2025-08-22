@@ -1,6 +1,6 @@
 <template>
   <div v-if="numberSelectedFeature === 1" class="pop-in-top">
-    <button class="fr-btn " :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
+    <button class="fr-btn" :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
     <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
   </div>
 </template>

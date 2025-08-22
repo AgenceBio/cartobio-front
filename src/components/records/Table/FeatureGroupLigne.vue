@@ -221,7 +221,8 @@ const emit = defineEmits([
   "zoom:featureId",
 ]);
 
-const scrool = inject("scroolToFeatureId");
+const valueNull = ref(null);
+const scrool = inject("scroolToFeatureId", valueNull);
 
 const { selectedIds } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;

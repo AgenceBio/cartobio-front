@@ -223,8 +223,8 @@ const props = defineProps({
     required: true,
   },
 });
-
-const scrool = inject("scroolToFeatureId");
+const nullValue = ref(null);
+const scrool = inject("scroolToFeatureId", nullValue);
 
 const emit = defineEmits([
   "edit:featureId",
