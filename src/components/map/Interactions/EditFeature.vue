@@ -1,7 +1,21 @@
 <template>
-  <div v-if="numberSelectedFeature === 1" class="pop-in-top">
+  <div v-if="numberSelectedFeature === 1 && !isCorrecting" class="pop-in-top">
     <button class="fr-btn" :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
     <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
+  </div>
+  <div v-else-if="isCorrecting && corrections.length > 0" class="pop-in-top">
+    <button class="fr-btn" @click="correct">Valider la correction</button>
+  </div>
+  <div v-if="corrections.length > 0" class="correct-parcelle">
+    <div>
+      <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
+      <strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle</strong>
+    </div>
+    <div>
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="startCorrection">
+        <i class="ri-shape-line" aria-hidden="true" /> Corriger automatiquement
+      </button>
+    </div>
   </div>
 </template>
 
@@ -26,7 +40,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 // Interactions
 
 // Utils Geom
-import { updateFeature } from "@/cartobio-api.js";
+import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { click } from "ol/events/condition";
@@ -65,6 +79,27 @@ const { map: mapPrefs } = storeToRefs(preferences);
  */
 
 const isModifying = ref(false);
+const corrections = ref<
+  {
+    id: string;
+    new_minus_intersection: CartoBioFeature;
+    existing_minus_intersection: CartoBioFeature;
+  }[]
+>([]);
+
+/**
+ * Corrections
+ */
+const isCorrecting = ref(false);
+
+const correctionSource = new VectorSource();
+const correctionLayer = new VectorLayer({
+  source: correctionSource,
+});
+const featureToKeepForCorrection = new Collection<Feature>();
+
+let correctionInteraction: Select | null = null;
+let correctedParcellesId: string[] = [];
 
 /*
  * * Computed
@@ -91,6 +126,14 @@ const undoAll = (): void => {
 const resetEdit = () => {
   undoAll();
   isModifying.value = false;
+  correctionSource.clear();
+  corrections.value = [];
+  isCorrecting.value = false;
+  featureToKeepForCorrection.clear();
+  correctedParcellesId = [];
+  if (correctionInteraction) {
+    props.map.removeInteraction(correctionInteraction);
+  }
 };
 
 const modifyInteraction = () => {
@@ -243,18 +286,150 @@ const saveModifiedFeature = async () => {
   if (!feature) return;
 
   modifiedFeature = geoJson.writeFeatureObject(feature.clone()) as CartoBioFeature;
+  modifiedFeature.id = selectdId;
 
   if (!modifiedFeature) return;
+  const data = (await addParcelleVerif(modifiedFeature, props.recordId)).data;
 
-  const result = await updateFeature(props.recordId, modifiedFeature, selectdId);
+  if (
+    data.valid === true ||
+    data.corrections.filter((c: { id: string }) => !correctedParcellesId.includes(c.id)).length === 0
+  ) {
+    const correctedParcelles = [];
 
-  if (result) {
-    store.setSelectedModifiedFeature([]);
-    store.setAll(result.parcelles.features);
+    for (const id of correctedParcellesId) {
+      const correctedFeature = props.vectorSource.getFeatureById(id);
+
+      if (correctedFeature) {
+        const parcelle = geoJson.writeFeatureObject(correctedFeature.clone()) as CartoBioFeature;
+
+        parcelle.id = id;
+        correctedParcelles.push(parcelle);
+      }
+    }
+    const result = await updateFeatures(props.recordId, [modifiedFeature, ...correctedParcelles]);
+
+    if (result) {
+      store.setSelectedModifiedFeature([]);
+      store.setAll(result.parcelles.features);
+    }
+    isModifying.value = false;
+    mapPrefs.value.currentMode = "edit";
+    props.undoRedo.clear();
+
+    return;
   }
-  isModifying.value = false;
-  mapPrefs.value.currentMode = "edit";
-  props.undoRedo.clear();
+
+  if (data.corrections) {
+    corrections.value = data.corrections;
+  }
+};
+
+const selectToCorrect = (
+  correction: {
+    id: string;
+    new_minus_intersection: CartoBioFeature;
+    existing_minus_intersection: CartoBioFeature;
+  },
+  modifiedFeature: Feature,
+  overlappedFeature: Feature,
+  originalModifiedFeature: Feature,
+  originalOverlappedFeature: Feature,
+) => {
+  const format = new GeoJSON();
+
+  if (featureToKeepForCorrection.getLength() === 0) {
+    featureToKeepForCorrection.push(modifiedFeature);
+  }
+
+  const selectId = featureToKeepForCorrection.getArray()[0]?.get("id");
+
+  if (selectId === modifiedFeature.get("id")) {
+    originalModifiedFeature.setGeometry(modifiedFeature.getGeometry());
+    const feature = format.readFeature(correction.existing_minus_intersection) as Feature;
+
+    originalOverlappedFeature.setGeometry(feature.getGeometry());
+    return;
+  }
+
+  originalOverlappedFeature.setGeometry(overlappedFeature.getGeometry());
+  const feature = format.readFeature(correction.new_minus_intersection) as Feature;
+
+  originalModifiedFeature.setGeometry(feature.getGeometry());
+};
+
+const startCorrection = () => {
+  isModifying.value = true;
+  if (corrections.value.length === 0) {
+    return;
+  }
+  const correction = corrections.value[0];
+  featureToKeepForCorrection.clear();
+  correctionSource.clear();
+  const originalModifiedFeature = props.vectorSource.getFeatureById(store.selectedModifIds[0]);
+  const originalOverlappedFeature = props.vectorSource.getFeatureById(correction.id);
+
+  if (!originalModifiedFeature || !originalOverlappedFeature) {
+    return;
+  }
+
+  const modifiedFeature = originalModifiedFeature.clone();
+  const overlappedFeature = originalOverlappedFeature.clone();
+  const transparent = new Style({
+    stroke: new Stroke({ color: [0, 0, 0, 0] }),
+    fill: new Fill({ color: [0, 0, 0, 0] }),
+  });
+
+  modifiedFeature.setStyle(transparent);
+  overlappedFeature.setStyle(transparent);
+  featureToKeepForCorrection.push(modifiedFeature);
+  correctionSource.addFeatures([modifiedFeature, overlappedFeature]);
+  props.map.addLayer(correctionLayer);
+
+  correctionInteraction = new Select({
+    layers: [correctionLayer],
+    condition: click,
+    multi: false,
+    features: featureToKeepForCorrection,
+    style: new Style({
+      fill: new Fill({ color: "rgba(74, 140, 190, 0.5)" }),
+    }),
+  });
+
+  props.map.addInteraction(correctionInteraction);
+  isCorrecting.value = true;
+
+  selectToCorrect(correction, modifiedFeature, overlappedFeature, originalModifiedFeature, originalOverlappedFeature);
+
+  correctionInteraction.on("select", () => {
+    selectToCorrect(correction, modifiedFeature, overlappedFeature, originalModifiedFeature, originalOverlappedFeature);
+  });
+};
+
+const correct = () => {
+  if (corrections.value.length === 0) {
+    return;
+  }
+  const correction = corrections.value[0];
+  const selectedFeatureId = featureToKeepForCorrection.getArray()[0]?.get("id");
+
+  // On conserve la modification au détriment de l'autre parcelle
+  if (selectedFeatureId === store.selectedModifIds[0]) {
+    correctedParcellesId.push(correction.id);
+  }
+
+  corrections.value.shift();
+  if (correctionInteraction) {
+    props.map.removeInteraction(correctionInteraction);
+  }
+
+  props.map.removeLayer(correctionLayer);
+
+  if (corrections.value.length === 0) {
+    isCorrecting.value = false;
+  } else {
+    startCorrection();
+  }
 };
 
 /*
@@ -279,3 +454,22 @@ onUnmounted(() => {
   undoAll();
 });
 </script>
+
+<style scoped>
+.correct-parcelle {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  background: white;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 10px;
+  flex-direction: column;
+}
+
+.error {
+  color: var(--text-default-error);
+}
+</style>

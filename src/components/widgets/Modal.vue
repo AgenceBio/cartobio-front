@@ -13,7 +13,7 @@
         !extraLarge ?? 'fr-container fr-container--fluid',
       ]"
     >
-      <div :class="!extraLarge ?? 'fr-grid-row fr-grid-row--center'">
+      <div :class="[!extraLarge ? 'fr-grid-row fr-grid-row--center' : '']">
         <div
           ref="target"
           :class="[!extraLarge ?? 'fr-col-12 fr-col-md-8', !large && !extraLarge ? 'fr-col-lg-6' : null]"

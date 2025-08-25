@@ -60,7 +60,6 @@
               >
             </div>
           </div>
-
           <CultureSelector
             :feature-id="feature.properties.id || feature.id"
             :cultures="patch.cultures"
