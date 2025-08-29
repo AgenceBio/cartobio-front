@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp } from "vue";
+import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp, computed } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, Overlay, MapBrowserEvent } from "ol";
@@ -91,7 +91,6 @@ import ModifyFeature from "ol-ext/interaction/ModifyFeature";
 import { Select, Draw, Interaction } from "ol/interaction";
 import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
-import Tooltip from "ol-ext/overlay/Tooltip";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useRecordStore } from "@/stores/record.js";
@@ -113,6 +112,13 @@ import DeleteFeature from "../Interactions/DeleteFeature.vue";
 import ConsultFeature from "../Interactions/ConsultFeature.vue";
 import { FeatureLike } from "ol/Feature";
 import ParcelleTooltip from "../Overlays/ParcelleTooltip.vue";
+
+// Imports SVG
+import drawCursor from "@/assets/logos-edit/pen-nib-line.svg";
+import cropCursor from "@/assets/logos-edit/crop-line.svg";
+import scissorsCursor from "@/assets/logos-edit/scissors-cut-line.svg";
+import mergeCursor from "@/assets/logos-edit/merge-cells-horizontal.svg";
+import deleteCursor from "@/assets/logos-edit/delete-bin-line.svg";
 
 /*
  * * Interface
@@ -179,11 +185,8 @@ const features = ref<Feature[]>([]);
 const hasUndo = ref(false);
 const hasRedo = ref(false);
 
-const currentTooltipParcelleId = ref<string | null>(null);
-const currentTooltipParcelle = ref<string | null>(null);
-
-let tooltip: Tooltip | null = null;
-let currentFeature: Feature | null = null;
+let hoverOverlay: Overlay | null = null;
+let currentHoveredFeature: Feature | null = null;
 
 /**
  * * Emits
@@ -226,11 +229,14 @@ const getFeatureStyle = (feature: FeatureLike): Style => {
   const hover = feature.get("hover");
   const type = feature.get("TYPE");
 
-  let fillColor = "rgba(74, 140, 190, 0.3)";
-  let borderColor = "#ffffff";
-  if (selected || hover) {
-    fillColor = "rgba(0, 0, 145, 0.3)";
-    borderColor = "#6a6af4";
+  let fillColor = "rgba(166, 242, 250, 0.2)";
+  let borderColor = "rgba(96, 224, 235, 1)";
+  if (selected) {
+    fillColor = "rgba(88, 197, 207, 0.6)";
+    borderColor = "rgba(65, 156, 164, 1)";
+  } else if (hover) {
+    fillColor = "rgba(166, 242, 250, 0.5)";
+    borderColor = "rgba(76, 180, 189, 1)";
   } else if (type === "BOR") {
     fillColor = "#d2d2f4";
   }
@@ -242,13 +248,13 @@ const getFeatureStyle = (feature: FeatureLike): Style => {
   }
 
   const styleText = new Style({
-    zIndex: selected || hover ? 6 : 3,
+    zIndex: selected || hover ? 4 : 3,
     fill: new Fill({ color: fillColor }),
     stroke: new Stroke({ width: selected || hover ? 3 : 1, color: borderColor }),
     text: new Text({
       text: [text, "14px 'Marianne'", "\n", "", size, "bold 14px 'Marianne'", " ha", " 14px 'Marianne'"],
-      fill: new Fill({ color: "#000000" }),
-      stroke: new Stroke({ width: 2, color: "#ffffff" }),
+      fill: new Fill({ color: mapPrefs.value.background === "plan" ? "#000000" : "#ffffff" }),
+      stroke: new Stroke({ width: 1, color: mapPrefs.value.background === "plan" ? "#ffffff" : "#000000" }),
     }),
   });
 
@@ -279,8 +285,8 @@ const clearInteractions = (): void => {
 };
 
 const updateHasUndoRedo = () => {
-  hasUndo.value = !!interactions.value.undoRedo?.hasUndo();
-  hasRedo.value = !!interactions.value.undoRedo?.hasRedo();
+  hasUndo.value = interactions.value.undoRedo?.hasUndo() || false;
+  hasRedo.value = interactions.value.undoRedo?.hasRedo() || false;
 };
 
 const createCultureOverlay = (feature: Feature) => {
@@ -292,7 +298,10 @@ const createCultureOverlay = (feature: Feature) => {
       ? "badge-a-modifier"
       : "badge-" + conversionLevel.value;
   const icon = getCultureIcon(cultures[0]?.CPF);
-  const label = conversionLevel.value === LEVEL_MAYBE_AB ? "A préciser" : conversionLevel.shortLabel;
+  const label =
+    conversionLevel.value === LEVEL_MAYBE_AB
+      ? "A préciser"
+      : (conversionLevel.labelSelector ?? conversionLevel.shortLabel);
 
   const app = createApp(CultureOverlay, {
     cssClass,
@@ -308,7 +317,7 @@ const createCultureOverlay = (feature: Feature) => {
 const generateConversionLevelOverlays = () => {
   if (!zoom.value) return;
   for (const overlay of map.value.getOverlays().getArray()) {
-    if (overlay.getId() === undefined) {
+    if (overlay.getId() === undefined || overlay.getId() === "hover-tooltip") {
       continue;
     }
     const feature = features.value.find((f) => f.getId() === overlay.getId());
@@ -321,14 +330,14 @@ const generateConversionLevelOverlays = () => {
     let overlay = map.value.getOverlayById(feature.getId() ?? -1);
 
     //Zoom trop bas on affiche aucun overlay
-    if (zoom.value < 14) {
+    if (zoom.value < 12) {
       if (overlay) {
         map.value.removeOverlay(overlay);
       }
       continue;
     }
     //Uniquement les parcelle a préciser
-    if (zoom.value < 16) {
+    if (zoom.value < 10) {
       const conversionLevel = getConversionLevel(feature.get("conversion_niveau"));
 
       if (conversionLevel.value !== LEVEL_UNKNOWN && conversionLevel.value !== LEVEL_MAYBE_AB) {
@@ -348,30 +357,31 @@ const generateConversionLevelOverlays = () => {
         insertFirst: true,
       });
 
-      element.addEventListener("click", function () {
-        if (mapPrefs.value.currentMode === "consult") {
-          emit("clickOnOverlay", feature.getId());
-        }
-      });
-
       watch(
-        () => mapPrefs.value.currentMode,
-        (newValue) => {
-          if (newValue != "consult" && newValue != "edit") element.style.visibility = "hidden";
-          else element.style.visibility = "visible";
+        [() => mapPrefs.value.currentMode, () => store.selectedIds],
+        ([mode, selectedIds]) => {
+          if (mode !== "consult" && mode !== "edit") {
+            element.style.visibility = "hidden";
+            return;
+          }
+
+          if (mode === "edit" && selectedIds.length > 0) {
+            element.style.visibility = "hidden";
+            return;
+          }
+
+          element.style.visibility = "visible";
         },
+        { immediate: true },
       );
+
       map.value.addOverlay(overlay);
       overlay.setPosition(feature.getGeometry()?.getInteriorPoint().getCoordinates());
     }
   }
 };
 
-const createParcelleTooltip = (feature: Feature) => {
-  if (currentTooltipParcelleId.value === feature.get("id")) {
-    return currentTooltipParcelle.value;
-  }
-
+const createParcelleHoverOverlay = (feature: Feature) => {
   const cartobioFeature = new GeoJSON().writeFeatureObject(feature) as CartoBioFeature;
   const name = featureName(cartobioFeature);
   const area = calculateArea(cartobioFeature);
@@ -397,11 +407,45 @@ const createParcelleTooltip = (feature: Feature) => {
 
   app.mount(element);
 
-  currentTooltipParcelle.value = element.innerHTML;
-  currentTooltipParcelleId.value = feature.get("id");
-
-  return element.innerHTML;
+  return element;
 };
+
+const showHoverOverlay = (feature: Feature) => {
+  if (currentHoveredFeature === feature) return;
+
+  hideHoverOverlay();
+
+  const element = createParcelleHoverOverlay(feature);
+  const geometry = feature.getGeometry();
+
+  if (geometry) {
+    const extent = geometry.getExtent();
+    const centerX = (extent[0] + extent[2]) / 2;
+    const topY = extent[3];
+
+    hoverOverlay = new Overlay({
+      element: element,
+      id: "hover-tooltip",
+      position: [centerX, topY],
+      positioning: "bottom-center",
+      offset: [0, -10],
+      stopEvent: false,
+      insertFirst: false,
+    });
+
+    map.value.addOverlay(hoverOverlay);
+    currentHoveredFeature = feature;
+  }
+};
+
+const hideHoverOverlay = () => {
+  if (hoverOverlay) {
+    map.value.removeOverlay(hoverOverlay);
+    hoverOverlay = null;
+    currentHoveredFeature = null;
+  }
+};
+
 /*
  * * Fonctions : Data
  */
@@ -409,34 +453,26 @@ const createParcelleTooltip = (feature: Feature) => {
 const handlePointerMove = (e: MapBrowserEvent) => {
   if (
     mapPrefs.value.currentMode === "consult" ||
-    (mapPrefs.value.currentMode === "edit" && store.selectedModifIds.length === 0)
+    (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0)
   ) {
     const feature = map.value.forEachFeatureAtPixel(
       e.pixel,
       (feature) => {
-        return feature.clone();
+        return feature;
       },
       { layerFilter: (l) => l.get("name") === vectorLayer.value.get("name") },
     ) as Feature;
-    if (feature) {
-      if (feature !== currentFeature) {
-        if (currentFeature == null) {
-          map.value.addOverlay(tooltip);
-        }
-        tooltip.setFeature(feature);
-      }
-    } else if (currentFeature) {
-      map.value.removeOverlay(tooltip);
+
+    if (feature && feature !== currentHoveredFeature) {
+      showHoverOverlay(feature);
+    } else if (!feature && currentHoveredFeature) {
+      hideHoverOverlay();
     }
-    currentFeature = feature;
   }
 };
 
-const handlePointLeave = () => {
-  if (currentFeature) {
-    map.value.removeOverlay(tooltip);
-    currentFeature = null;
-  }
+const handlePointerLeave = () => {
+  hideHoverOverlay();
 };
 
 /*
@@ -447,7 +483,7 @@ watch(
   () => mapPrefs.value.currentMode,
   () => {
     if (
-      store.selectedModifIds.length === 0 &&
+      store.selectedIds.length === 0 &&
       mapPrefs.value.currentMode != "consult" &&
       mapPrefs.value.currentMode != "edit" &&
       mapPrefs.value.currentMode != "draw"
@@ -460,21 +496,66 @@ watch(
     if (!props.interactive) return;
     clearInteractions();
     if (mapPrefs.value.currentMode === "consult") {
-      store.setSelectedModifiedFeature([]);
+      store.unselect([]);
       const list = map.value.getOverlays().getArray();
       for (const overlay of list) {
-        map.value.removeOverlay(overlay);
+        if (overlay.getId() !== "hover-tooltip") {
+          map.value.removeOverlay(overlay);
+        }
       }
-      map.value.getOverlays().clear();
 
       generateConversionLevelOverlays();
+    } else {
+      // Masquer l'overlay de survol dans les autres modes
+      hideHoverOverlay();
     }
   },
 );
 
 watch(
+  () => mapPrefs.value.currentMode,
+  (mode) => {
+    const viewport = map.value.getViewport();
+    const target = map.value.getTargetElement();
+    const set = (v: string) => {
+      viewport.style.cursor = v;
+      target.style.cursor = v;
+    };
+    switch (mode) {
+      case "draw":
+        set(`url(${drawCursor}) 32 32, pointer`);
+        break;
+      case "decouper":
+        set(`url(${cropCursor}) 32 32, pointer`);
+        break;
+      case "divide":
+        set(`url(${scissorsCursor}) 32 32, pointer`);
+        break;
+      case "fusionner":
+        set(`url(${mergeCursor}) 32 32, pointer`);
+        break;
+      case "delete":
+        set(`url(${deleteCursor}) 32 32, pointer`);
+        break;
+      default:
+        set("default");
+    }
+  },
+  { immediate: true },
+);
+
+watch(
   () => zoom.value,
   () => generateConversionLevelOverlays(),
+);
+
+watch(
+  () => store.selectedIds,
+  (newValue) => {
+    if (newValue.length > 0) {
+      hideHoverOverlay();
+    }
+  },
 );
 
 watch(
@@ -488,12 +569,28 @@ watch(
       .getArray()
       .slice(0)
       .forEach((e) => {
-        map.value.removeOverlay(e);
+        if (e.getId() !== "hover-tooltip") {
+          map.value.removeOverlay(e);
+        }
       });
 
     generateConversionLevelOverlays();
   },
   { deep: true },
+);
+watch(
+  () => record.record.record_id,
+  () => {
+    let extent = null;
+
+    if (!extent || isNaN(extent[0]) || extent[0] === Infinity) {
+      extent = record.bounds;
+    }
+
+    if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
+      map.value.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 5000 });
+    }
+  },
 );
 
 /**
@@ -535,7 +632,7 @@ onMounted(() => {
     store.bindFeatureInteraction(map, "plan-features-layer");
   }
 
-  const undoRedo = new UndoRedo({ layers: [vectorLayer.value] });
+  const undoRedo = new UndoRedo({ layers: [vectorLayer.value], maxLength: 50 });
   map.value.addInteraction(undoRedo);
   interactions.value.undoRedo = undoRedo;
 
@@ -549,25 +646,18 @@ onMounted(() => {
     zoom.value = map.value.getView().getZoom();
   });
 
-  tooltip = new Tooltip({
-    className: "openlayers-culture-overlay",
-    closeBox: false,
-    positioning: "bottom-center",
-    offset: [0, -25],
-    getHTML: createParcelleTooltip,
-    map: map.value,
-  });
-
   map.value.on("pointermove", handlePointerMove);
+  map.value.getTargetElement().addEventListener("pointerleave", handlePointerLeave);
 
-  map.value.getTargetElement().addEventListener("pointerleave", handlePointLeave);
+  mapPrefs.value.currentMode = "consult";
 });
 
 onUnmounted(() => {
   if (vectorLayer.value) map.value.removeLayer(vectorLayer.value);
   clearInteractions();
+  hideHoverOverlay();
   map.value.un("pointermove", handlePointerMove);
-  map.value.getTargetElement().removeEventListener("pointerleave", handlePointLeave);
+  map.value.getTargetElement().removeEventListener("pointerleave", handlePointerLeave);
 });
 </script>
 
@@ -594,5 +684,13 @@ onUnmounted(() => {
   gap: 2px;
   padding: 10px;
   border-radius: 4px;
+}
+
+.cursor-icon {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2000;
+  font-size: 20px;
+  color: #6a6af4;
 }
 </style>

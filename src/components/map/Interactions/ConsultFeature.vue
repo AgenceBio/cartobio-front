@@ -52,9 +52,8 @@ onMounted(() => {
     multi: false,
     layers: [props.vectorLayer],
     style: new Style({
-      zIndex: 6,
-      fill: new Fill({ color: "rgba(0, 0, 145, 0.3)" }),
-      stroke: new Stroke({ width: 3, color: "#6a6af4" }),
+      fill: new Fill({ color: "rgba(88, 197, 207, 0.6)" }),
+      stroke: new Stroke({ width: 3, color: "rgba(65, 156, 164, 1)" }),
     }),
   });
   props.map.addInteraction(selectInteraction);

@@ -1,15 +1,14 @@
 <template>
   <div>
-    <CertificationSection />
     <div class="fr-px-4v">
       <ValidationErrors @switchTab="emit('switch-tab')" />
     </div>
     <hr class="fr-mt-6v" />
 
-    <div class="fr-px-4v">
+    <div class="fr-px-4v" v-if="record.certification_state != 'OPERATOR_DRAFT'">
       <NotesSection />
     </div>
-    <hr class="fr-mt-6v" />
+    <hr class="fr-mt-6v" v-if="record.certification_state != 'OPERATOR_DRAFT'"/>
 
     <div class="fr-grid-row fr-grid-row--middle space-between fr-px-4v">
       <h3 class="fr-text--lg fr-mb-0">Parcelles par niveau de conversion</h3>
@@ -56,10 +55,16 @@ import NotesSection from "@/components/records/NotesSection.vue";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, inHa, legalProjectionSurface } from "@/utils/features";
 import { getConversionLevel } from "@/referentiels/ab";
 import { useFeaturesStore } from "@/stores/features";
+import { useRecordStore } from "@/stores/record.js";
 
 const emit = defineEmits(["switch-tab"]);
 
 const featuresStore = useFeaturesStore();
+const recordStore = useRecordStore();
+
+
+const { record } = recordStore;
+
 const { all: features } = featuresStore;
 
 const featureGroups = computed(() => getFeatureGroups({ features }, GROUPE_NIVEAU_CONVERSION, null));
@@ -74,6 +79,7 @@ function selectFeatureGroup(group) {
 
   emit("switch-tab", group.pivot);
 }
+
 </script>
 
 <style scoped>

@@ -19,28 +19,37 @@ defineProps<Props>();
 <style scoped>
 .openlayers-culture-overlay .badge-container {
   background-color: white;
-  padding: 4px;
-  border-radius: 21px;
+  padding: 2px;
+  border-radius: 14px;
   transform: translate(-52%, -177%);
+  font-size: 0.75rem; /* réduit la taille globale du texte */
 }
+
 .openlayers-culture-overlay .badge-container::after {
   content: "";
   position: absolute;
-  top: 99%;
+  top: 98%;
   right: 50%;
   transform: translateX(50%);
-  border-width: 10px;
+  border-width: 6px;
   border-style: solid;
   border-color: white transparent transparent transparent;
-  border-bottom: 4px solid transparent;
+  border-bottom: 2px solid transparent;
 }
+
 .openlayers-culture-overlay .badge {
-  padding: 4px 12px;
+  padding: 0px 5px 0px 1px;
   display: flex;
-  gap: 5px;
-  border-radius: 16px;
+  gap: 3px;
+  border-radius: 12px;
   border: 1px solid;
   align-items: center;
+  font-weight: 600;
+  font-size: 0.75rem; /* réduit le texte */
+}
+
+.openlayers-culture-overlay .badge i {
+  font-size: 0.8em; /* icône plus petite */
 }
 
 .openlayers-culture-overlay .badge-a-modifier {

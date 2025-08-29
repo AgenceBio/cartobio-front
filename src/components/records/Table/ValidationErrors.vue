@@ -45,7 +45,7 @@
         class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
       >
         <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
+          <p class="warning-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
             <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span
             >{{ result.count }} parcelle{{ result.count > 1 ? "s" : "" }}
           </p>
@@ -122,6 +122,11 @@ function selectParcelles(featureIds) {
   text-transform: uppercase;
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
+}
+
+.warning-text {
+  text-transform: uppercase;
+  background-color: rgba(254, 236, 194, 1);
 }
 
 .notifications-icon {

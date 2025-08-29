@@ -46,7 +46,11 @@
         aria-label="Désélectionner toutes les parcelles"
         @click="unselectAll"
       ></button>
-      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">{{ selectedFeatureIds.length }} parcelles sélectionnées</p>
+      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
+        {{ selectedFeatureIds.length }} parcelle{{ selectedFeatureIds.length > 1 ? "s" : "" }} sélectionnée{{
+          selectedFeatureIds.length > 1 ? "s" : ""
+        }}
+      </p>
       <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
         <span
           >{{
@@ -126,6 +130,7 @@
       :feature-id="maybeDeletedFeatureId"
       @submit="handleSingleFeatureDeletion"
     />
+    <DeleteModal v-if="deleteModalMultiple" @submit="(e) => handleMultipleDelete(e)" />
   </Teleport>
 
   <p>
@@ -139,9 +144,11 @@ import { storeToRefs } from "pinia";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
+import { useRecordStore } from "@/stores/record.js";
 
 import MassActionsSelector from "@/components/records/Table/MassActionsSelector.vue";
 import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
+import DeleteModal from "@/components/forms/DeleteForm.vue";
 import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
 import FeatureGroupLigne from "@/components/records/Table/FeatureGroupLigne.vue";
 
@@ -185,6 +192,7 @@ const emit = defineEmits([
 const loading = inject("loading");
 const isOnline = useOnline();
 
+const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
@@ -198,6 +206,7 @@ const editedFeatureId = ref(null);
 const zoomFeatureId = ref(null);
 const zoomFeature = computed(() => (zoomFeatureId.value ? getFeatureById(zoomFeatureId.value) : null));
 const maybeDeletedFeatureId = ref(null);
+const deleteModalMultiple = ref(false);
 
 const userGroupingChoice = ref(props.groupKey);
 const featureGroups = computed(() =>
@@ -243,7 +252,19 @@ function handleFilterClick(id) {
 }
 
 async function toggleFeaturesDelete() {
-  //TODO
+  deleteModalMultiple.value = !deleteModalMultiple.value;
+}
+async function handleMultipleDelete(reason) {
+  for (const featureId of featuresStore.selectedIds) {
+    await featuresStore.deleteSingleFeature({ id: featureId, reason });
+  }
+  if (isOnline && loading) {
+    loading.value = true;
+  } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
+
+  featuresStore.unselectAll([]);
+  toggleFeaturesDelete();
+  return;
 }
 
 watch(zoomFeature, (newValue) => {

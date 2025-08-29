@@ -45,14 +45,14 @@
   <Teleport to="body">
     <CertificationBodyEditForm
       v-if="showDetailsModal"
-      :feature="savedFeature"
+      :feature="feature"
       @close="goToEdit"
       @submit="submitFeature"
       icon="fr-icon-add-line"
       data-content-name="Modale de confirmation d'ajout"
       required-name
     >
-      <template #title>Créer ma parcelle</template>
+      <template #title>Nouvelle parcelle</template>
     </CertificationBodyEditForm>
   </Teleport>
 </template>
@@ -74,7 +74,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 // Utils Geom
 import { addParcelleVerif, submitNewParcelle, getRPG, updateFeature } from "@/cartobio-api.js";
 
-import CertificationBodyEditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
+import CertificationBodyEditForm from "@/components/forms/AddParcelle.vue";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw } from "ol/interaction";
 import Tooltip from "ol-ext/overlay/Tooltip";
@@ -466,7 +466,26 @@ const goToEdit = () => {
 };
 
 const submitFeature = async (res: { id: string; properties: object }) => {
-  const result = await updateFeature(props.recordId, res, res.id);
+  feature.value.properties = { ...res.properties };
+
+  const result = await submitNewParcelle(props.recordId, feature.value);
+
+  if (result) {
+    const newFeatures = result.parcelles.features.filter(
+      (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+    );
+    const format = new GeoJSON();
+
+    store.setAll(result.parcelles.features);
+
+    for (const newFeature of newFeatures) {
+      props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
+    }
+
+    savedFeature = newFeatures[0];
+
+    store.select(newFeatures.map((f) => f.id as string));
+  }
 
   if (result) {
     store.setAll(result.parcelles.features);
@@ -494,7 +513,7 @@ watch(
       rpg = mapPrefs.value.rpg;
       cadastre = mapPrefs.value.cadastre;
     }
-    store.setSelectedModifiedFeature([]);
+    store.unselectAll();
     selectedIds = [];
     previewSource.clear();
 
@@ -543,23 +562,7 @@ watch(
       const previewFeature = format.readFeature(newFeature) as Feature;
       previewFeature.setStyle(previewStyle);
       previewSource.addFeature(previewFeature);
-
-      const result = await submitNewParcelle(props.recordId, newFeature);
-
-      if (result) {
-        const newFeatures = result.parcelles.features.filter(
-          (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
-        );
-        store.setAll(result.parcelles.features);
-
-        for (const newFeature of newFeatures) {
-          props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
-        }
-
-        savedFeature = newFeatures[0];
-        showDetailsModal.value = true;
-        store.setSelectedModifiedFeature(newFeatures.map((f) => f.id as string));
-      }
+      showDetailsModal.value = true;
 
       return;
     }
@@ -615,7 +618,7 @@ onMounted(() => {
   props.map.addLayer(previewLayer);
 });
 onUnmounted(() => {
-  store.setSelectedModifiedFeature([]);
+  store.unselectAll();
   props.map.removeLayer(previewLayer);
   props.map.un("click", handleClickCadastre);
   props.map.un("click", handleClickRPG);

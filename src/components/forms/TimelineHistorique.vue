@@ -1,8 +1,9 @@
 <template>
   <div>
-    <span v-if="isRotaErrors" class="badge-rota fr-ml-2w">
-      <i class="ri-exchange-funds-line fr-mr-1w"></i> ROTATION À CONTRÔLER
-    </span>
+    <div v-if="isRotaErrors" class="fr-ml-2w" :class="isRotaErrors === 'jaune' ? 'badge-rota-2' : 'badge-rota-3'">
+      <div v-if="isRotaErrors === 'jaune'"><i class="ri-exchange-funds-line fr-mr-1w"></i> ROTATION À CONTRÔLER</div>
+      <div v-if="isRotaErrors === 'rouge'"><i class="ri-exchange-funds-line fr-mr-1w"></i> ROTATION NON CONFORME</div>
+    </div>
 
     <div class="history-tl-container">
       <ul class="tl">
@@ -13,12 +14,17 @@
               {{ item.annee_controle }}
             </div>
             <div class="item-detail">
-              <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" />
-              <i v-if="getHistoriqueRota(index)" class="ri-exchange-funds-line"></i>
+              <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" noIcon labelSelector />
+              <i v-if="getHistoriqueRota(index) > 1" class="ri-exchange-funds-line"></i>
 
-              <span>{{
-                item.cultures.length > 1 ? "Multiculture" : fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf
-              }}</span>
+              <p v-if="item.cultures.length > 1" class="fr-mb-0">
+                Multiculture <span class="fr-sr-only"> : </span>
+                <br />
+                <small v-for="(culture, i) in item.cultures" :key="i">
+                  <span v-if="i">, </span> {{ cultureLabel(culture) }}
+                </small>
+              </p>
+              <span v-else>{{ fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf }}</span>
             </div>
           </div>
         </li>
@@ -32,6 +38,7 @@ import { computed } from "vue";
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { getConversionLevel } from "@/referentiels/ab.js";
+import { cultureLabel } from "@/utils/features.js";
 
 const props = defineProps<{
   historique:
@@ -46,37 +53,41 @@ const props = defineProps<{
 
 const getHistoriqueRota = (index: number) => {
   const currentCultures = props.historique[index];
-
-  if (currentCultures.cultures.length !== 1) return null;
+  if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
 
   let count = 1;
-  const nbHisto = props.historique.filter(
-    (y) =>
-      (y.annee_controle === currentCultures.annee_controle + 1 ||
-        y.annee_controle === currentCultures.annee_controle - 1) &&
-      currentCultures.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
-  ).length;
-  if (nbHisto) count = count + nbHisto;
 
-  if (count === 2) return "yellow";
-  if (count === 3) return "red";
-  return null;
+  for (let i = index - 1; i >= 0; i--) {
+    const voisin = props.historique[i];
+    if (!voisin) break;
+
+    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+    if (match) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  for (let i = index + 1; i < props.historique.length; i++) {
+    const voisin = props.historique[i];
+    if (!voisin) break;
+
+    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+    if (match) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return count;
 };
 
 const isRotaErrors = computed(() => {
-  let max = 0;
-  if (props.historique) {
-    props.historique.forEach((e) => {
-      const tempo = props.historique.filter(
-        (y) =>
-          (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
-          e.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
-      ).length;
+  if (!props.historique) return null;
+  const max = getHistoriqueRota(0);
 
-      if (!(tempo + 1 <= max)) max = tempo + 1;
-    });
-    return max >= 3 ? "rouge" : max > 1 ? "jaune" : null;
-  } else return null;
+  return max >= 3 ? "rouge" : max > 1 ? "jaune" : null;
 });
 </script>
 
@@ -138,12 +149,23 @@ const isRotaErrors = computed(() => {
   gap: 0.5rem;
 }
 
-.badge-rota {
+.badge-rota-2 > div {
   background: #ffc107;
   color: #000;
-  padding: 0.2rem 0.5rem;
+  padding: 0.1rem 0.3rem;
   border-radius: 0.3rem;
   font-size: 0.75rem;
   font-weight: bold;
+  width: fit-content;
+}
+
+.badge-rota-3 > div {
+  background: var(--red-marianne-925-125);
+  color: #000;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  width: fit-content;
 }
 </style>

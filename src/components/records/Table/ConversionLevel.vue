@@ -18,7 +18,7 @@
       {{ conversionLevel.shortLabel }}
     </div>
     <div v-else>
-      {{ conversionLevel.labelSelector }}
+      {{ conversionLevel.labelSelector ?? conversionLevel.shortLabel }}
     </div>
     <time
       class="fr-mb-0"
@@ -85,7 +85,6 @@ time {
   display: flex;
   gap: 5px;
   border-radius: 16px;
-  border: 1px solid;
   align-items: center;
   font-size: 12px;
 }
@@ -97,31 +96,25 @@ time {
 .badge-a-modifier {
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
-  border: 1px solid var(--red-marianne-925-125);
 }
 .badge-CONV {
   color: var(--green-tilleul-verveine-sun-418-moon-817);
   background-color: var(--green-tilleul-verveine-925-125);
-  border: 1px solid var(--green-tilleul-verveine-850-200);
 }
 .badge-C1 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-975-75);
-  border: 1px solid var(--green-bourgeon-850-200);
 }
 .badge-C2 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-950-100);
-  border: 1px solid var(--green-bourgeon-850-200);
 }
 .badge-C3 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-925-125);
-  border: 1px solid var(--green-bourgeon-850-200);
 }
 .badge-AB {
   color: white;
   background-color: var(--green-bourgeon-sun-425-moon-759);
-  border: 1px solid var(--green-bourgeon-sun-425-moon-759);
 }
 </style>

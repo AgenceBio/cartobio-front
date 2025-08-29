@@ -29,6 +29,7 @@
     </div>
     <div class="column">
       <button class="fr-btn" :disabled="!hasBordure" @click="validateDivision">Découper</button>
+      <button class="fr-btn" :disabled="!hasBordure" @click="resetChoice">Réinitialiser</button>
     </div>
   </div>
 </template>
@@ -339,7 +340,10 @@ const drawBorder = () => {
   if (!changeBorder) {
     changeBorder = changeBorderSize();
   }
-
+  if (currentOverlay) {
+    props.map.removeOverlay(currentOverlay);
+    currentOverlay = null;
+  }
   previewBorderSource?.clear();
   if (!targetFeature) return;
   const polygonIn3857 = targetFeature.getGeometry()?.clone();
@@ -564,6 +568,7 @@ const createTooltipOverlay = (map: Map, libelle: string, area1: number, area2: n
 
   if (currentOverlay) {
     map.removeOverlay(overlay);
+    currentOverlay = null;
   }
   map.addOverlay(overlay);
   currentOverlay = overlay;
@@ -644,7 +649,7 @@ const movePoint = (event: MapBrowserEvent) => {
 
 const validateDivision = async () => {
   const modifiedFeatures: CartoBioFeature[] = [];
-  const selectdId = store.selectedModifIds[0];
+  const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
 
   for (const modifiedFeature of resSource.getFeatures()) {
@@ -653,7 +658,7 @@ const validateDivision = async () => {
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
-    store.setSelectedModifiedFeature([]);
+    store.unselectAll([]);
     const newFeatures = result.parcelles.features.filter(
       (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
     );
@@ -672,6 +677,38 @@ const validateDivision = async () => {
   mapPrefs.value.currentMode = "edit";
 };
 
+const resetChoice = () => {
+  if (previewClosestPointLayer) {
+    props.map.removeLayer(previewClosestPointLayer);
+  }
+
+  if (previewStartPointLayer) {
+    props.map.removeLayer(previewStartPointLayer);
+  }
+
+  if (previewEndPointLayer) {
+    props.map.removeLayer(previewEndPointLayer);
+  }
+
+  if (previewBorderLayer) {
+    props.map.removeLayer(previewBorderLayer);
+  }
+
+  if (currentOverlay) {
+    props.map.removeOverlay(currentOverlay);
+    currentOverlay = null;
+  }
+
+  closestSegmentIndex = -1;
+  startBorderPoint = null;
+  endBorderPoint = null;
+  startSegmentIndex = -1;
+  endSegmentIndex = -1;
+  hasBordure.value = false;
+
+  borderInteraction();
+};
+
 /*
  * * Fonctions : Utils
  */
@@ -679,9 +716,9 @@ const validateDivision = async () => {
 const getTargetFeature = (): Feature | null => {
   const features = new GeoJSON().readFeatures(store.collection, {});
 
-  if (store.selectedModifIds && store.selectedModifIds[0]) {
+  if (store.selectedIds && store.selectedIds[0]) {
     const selectedFeature = features.find(
-      (feature) => feature.getId() === store.selectedModifIds[0] || feature.get("id") === store.selectedModifIds[0],
+      (feature) => feature.getId() === store.selectedIds[0] || feature.get("id") === store.selectedIds[0],
     );
 
     if (selectedFeature) {
@@ -718,7 +755,9 @@ onUnmounted(() => {
 
   if (currentOverlay) {
     props.map.removeOverlay(currentOverlay);
+    currentOverlay = null;
   }
+
 });
 </script>
 

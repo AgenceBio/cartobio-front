@@ -62,25 +62,16 @@
         >
           {{ featureName(feature, { explicitName: false }) }}
         </h4>
-        <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true })">
+        <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null">
           {{ featureName(feature, { nameOnly: true }) }}
         </p>
       </div>
-
-      <div class="fr-col-2">
-        {{
-          feature.properties.cultures &&
-          feature.properties.cultures.length > 0 &&
-          feature.properties.cultures[0].variete
-            ? feature.properties.cultures[0].variete
-            : "-"
-        }}
-      </div>
-      <div class="fr-col-2">
+      <div class="fr-col-2" v-if="!isGroupedByCulture">
         <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
           Multiculture <span class="fr-sr-only"> : </span>
+          <br />
           <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-            <span v-if="i" class="fr-sr-only">, </span> {{ cultureLabel(culture) }}
+            <span v-if="i">, </span> {{ cultureLabel(culture) }}
           </small>
         </p>
         <button
@@ -98,6 +89,22 @@
           Culture
         </button>
         <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
+      </div>
+      <div class="fr-col-2" v-else>
+        <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">Multiculture</p>
+        <p v-else>-</p>
+      </div>
+      <div v-if="isGroupedByCulture" class="fr-col-2">
+        {{
+          feature.properties.cultures && feature.properties.cultures.length > 0
+            ? feature.properties.cultures.find((e) => cultureLabel(e) == featureGroup.label).variete
+            : "-"
+        }}
+      </div>
+      <div v-else class="fr-col-2">
+        <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+          <span v-if="i" class="">, </span> {{ culture.variete || "NC" }}
+        </small>
       </div>
       <div class="fr-col-1">
         <span>
@@ -286,18 +293,37 @@ function openLigneCulturesModal(id) {
 }
 
 function isRota(feature) {
-  let max = 0;
-  if (feature.properties.historique) {
-    feature.properties.historique.forEach((e) => {
-      const tempo = feature.properties.historique.filter(
-        (y) =>
-          (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
-          e.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
-      ).length;
-      if (!(tempo + 1 <= max)) max = tempo + 1;
-    });
-    return max >= 3 ? "rouge" : max > 1 ? "jaune" : null;
-  } else return null;
+  const index = 0;
+  if (!feature.properties.historique) return 0;
+  const currentCultures = feature.properties.historique[index];
+  if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
+
+  let count = 1;
+
+  for (let i = index - 1; i >= 0; i--) {
+    const voisin = feature.properties.historique[i];
+    if (!voisin) break;
+
+    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+    if (match) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  for (let i = index + 1; i < feature.properties.historique.length; i++) {
+    const voisin = feature.properties.historique[i];
+    if (!voisin) break;
+
+    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+    if (match) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return count >= 3 ? "rouge" : count > 1 ? "jaune" : null;
 }
 
 watch(selectedIds, (selectedIds, prevSelectedIds) => {
@@ -349,7 +375,6 @@ onMounted(async () => {
   gap: 12px;
   justify-content: space-between;
   border-top: 1px solid var(--artwork-decorative-blue-france);
-  border-bottom: 1px solid var(--artwork-decorative-blue-france);
 
   .groupe-titre {
     gap: 7px;

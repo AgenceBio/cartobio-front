@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="fr-px-6v fr-py-6v">
+  <div class="global">
+    <div class="fr-px-6v fr-py-6v content">
       <div class="fr-grid-row">
         <button
           class="end-right fr-btn fr-btn--tertiary-no-outline fr-icon-close-line fr-btn--icon-right"
@@ -11,16 +11,17 @@
       </div>
       <div class="fr-mb-4v">
         <div class="fr-grid-row">
-          <ConversionLevel :feature="feature" with-date />
+          <ConversionLevel :feature="feature" with-date noIcon labelSelector />
         </div>
         <div class="flex-space-between">
-          <p class="fr-mt-1w">{{ feature.properties.NOM }}</p>
+          <p class="fr-mt-1w" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</p>
+          <em class="fr-mt-1w fr-hint-text" v-else>Nom de la parcelle</em>
           <button
             @click="modalName = true"
             class="fr-icon--sm fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
           ></button>
         </div>
-        <p class="fr-h4 fr-mb-2v">{{ featureName(feature, { explicitName: false }) }}</p>
+        <p class="fr-h4 fr-mb-2v fr-mt-0">{{ featureName(feature, { explicitName: false }) }}</p>
         <div class="fr-grid-row">
           <span class="fr-icon-map-pin-2-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
           <p class="fr-mb-0">{{ feature.properties.COMMUNE }} {{ feature.properties.COMMUNE_LABEL }}</p>
@@ -47,6 +48,7 @@
             </li>
           </ul>
         </div>
+
         <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires && permissions.isOc">
           <blockquote>
             <p>{{ feature.properties.commentaires }}</p>
@@ -262,14 +264,7 @@
         </template>
 
         <p class="fr-text--bold fr-mt-2w" v-if="feature.properties.historique">Historique</p>
-
-        <TimelineHistorique :historique="feature.properties.historique" />
-
-        <div class="fr-input-group">
-          <button class="fr-btn" type="submit" form="single-feature-edit-form" aria-label="Enregister le parcellaire">
-            Enregistrer
-          </button>
-        </div>
+        <TimelineHistorique class="fr-mt-1w" :historique="feature.properties.historique" />
       </form>
     </div>
     <div class="footer-controle fr-px-2w">
@@ -282,43 +277,50 @@
           v-model="estControlee"
           @change="tagParcelle(featureId)"
         />
-        <label class="fr-toggle__label" for="toggle">Marquée comme contrôlée</label>
+        <label class="fr-toggle__label" for="toggle">Marquer comme contrôlée</label>
         <div class="fr-messages-group" id="toggle-messages" aria-live="polite"></div>
       </div>
-    </div>
-    <Modal v-if="modalName" @close="modalName = false">
-      <template #title>Modification du nom de la parcelles</template>
-      <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
-        <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
-        <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
-        <input
-          class="fr-input"
-          id="feature-nom"
-          v-model="patch.NOM"
-          :required="requiredName"
-          :class="{ 'fr-input--error': nameErrors.size }"
-          ref="autofocusedElement"
-        />
+      <div class="fr-input-group fr-mt-1w">
+        <button class="fr-btn" type="submit" form="single-feature-edit-form" aria-label="Enregister le parcellaire">
+          Enregistrer
+        </button>
       </div>
-      <template #footer>
-        <div class="fr-input-group">
-          <button
-            class="fr-btn"
-            @click="
-              () => {
-                validate();
-                modalName = false;
-              }
-            "
-            form="single-feature-edit-form"
-            aria-label="Enregister le parcellaire"
-          >
-            Enregistrer
-          </button>
+    </div>
+    <Teleport to="body">
+      <Modal v-if="modalName" @close="modalName = false">
+        <template #title>Modification du nom de la parcelles</template>
+        <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
+          <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
+          <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
+          <input
+            class="fr-input"
+            id="feature-nom"
+            v-model="patch.NOM"
+            :required="requiredName"
+            :class="{ 'fr-input--error': nameErrors.size }"
+            ref="autofocusedElement"
+          />
         </div>
-      </template>
-    </Modal>
-    <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')" />
+        <template #footer>
+          <div class="fr-input-group">
+            <button
+              class="fr-btn"
+              @click="
+                () => {
+                  validate();
+                  modalName = false;
+                }
+              "
+              form="single-feature-edit-form"
+              aria-label="Enregister le parcellaire"
+            >
+              Enregistrer
+            </button>
+          </div>
+        </template>
+      </Modal>
+      <CancelModal v-if="showCancelModal" @cancel="showCancelModal = false" @close="$emit('close')" />
+    </Teleport>
   </div>
 </template>
 
@@ -475,6 +477,18 @@ watch(
   },
   { deep: true },
 );
+
+watch(props, (newValue) => {
+  newValue = newValue.feature;
+  patch.value = {
+    NOM: newValue.properties.NOM || "",
+    cultures: newValue.properties.cultures,
+    commentaires: newValue.properties.commentaires || "",
+    conversion_niveau: newValue.properties.conversion_niveau || "",
+    engagement_date: newValue.properties.engagement_date,
+    auditeur_notes: newValue.properties.auditeur_notes || "",
+  };
+});
 </script>
 
 <style scoped>
@@ -494,20 +508,34 @@ watch(
 .flex-space-between {
   display: flex;
   justify-content: space-between;
+  height: 35px;
 }
 
 .flex-space-between > p {
   display: flex;
   align-items: center;
+  height: fit-content;
+}
+.global {
+  display: flex;
+  flex-direction: column;
+  height: min(80vh, 1000px);
+  overflow: auto;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
 }
 
 .footer-controle {
-  display: flex;
   position: sticky;
+  display: flex;
+  justify-content: space-between;
   bottom: 0;
-  width: 100%;
+  margin-top: auto;
   border-top: 1px solid var(--grey-900-175);
   background-color: #f5f5fe;
-  z-index: 1;
+  z-index: 10;
 }
 </style>

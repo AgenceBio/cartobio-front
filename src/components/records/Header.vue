@@ -8,12 +8,12 @@
 
           <select class="version-name" name="select-version" id="select-version" v-model="selectedRecord">
             <option
-              :value="record.record_id"
-              :key="record.record_id"
-              v-for="record in sortedRecords"
-              @click="redirectToRecord(record)"
+              :value="recordList.record_id"
+              :key="recordList.record_id"
+              v-for="recordList in sortedRecords"
+              @click="redirectToRecord(recordList)"
             >
-              {{ record.version_name }}
+              {{ recordList.version_name }}
             </option>
           </select>
         </div>
@@ -207,8 +207,8 @@ function unpin(numeroBio) {
   unpinOperator(numeroBio).then(() => operatorStore.updatePinnedStatus(false));
 }
 
-async function redirectToRecord(record) {
-  await router.go(`/exploitations/${operatorStore.operator.numeroBio}/${record.record_id}`);
+async function redirectToRecord(recordTo) {
+  await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordTo.record_id}`);
 }
 
 async function tryDownloadRecord(record) {

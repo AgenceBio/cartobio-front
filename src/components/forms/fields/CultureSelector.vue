@@ -1,10 +1,18 @@
 <template>
   <div>
     <div v-if="!disabledInput">
+      <button
+        type="button fr-mt-2v"
+        v-if="!disabledInput"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line fr-btn--icon-right fr-mb-3w"
+        @click.prevent="openMulticultureModal"
+      >
+        Saisie multiculture
+      </button>
       <fieldset
-        class="culture-group fr-mb-1w fr-p-2w"
+        class="culture-group fr-mb-1w fr-p-2w fr-pt-1w"
         :key="culture.id"
-        v-for="(culture, index) in uuidedCultures"
+        v-for="culture in uuidedCultures"
         tabindex="-1"
       >
         <AsyncCultureTypeSelector
@@ -15,15 +23,6 @@
           :modelValue="culture.CPF"
           @update:modelValue="($CPF) => updateCulture(culture.id, 'CPF', $CPF)"
         />
-
-        <button
-          type="button"
-          v-if="!disabledInput && index < 1"
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line fr-btn--icon-right fr-mb-3w"
-          @click="openMulticultureModal"
-        >
-          Saisie multiculture
-        </button>
 
         <div class="fr-input-group">
           <label class="fr-label" :for="`variete-${culture.id}`">Variété (facultatif)</label>
@@ -72,6 +71,16 @@
             />
           </div>
         </div>
+        <button
+          type="button"
+          v-if="!disabledInput"
+          class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line fr-btn--icon-left"
+          :disabled="!canBeDeleted"
+          @click="removeCultureOld(culture.id)"
+          aria-label="Supprimer la culture"
+        >
+          Supprimer
+        </button>
       </fieldset>
     </div>
     <div v-else>
@@ -110,7 +119,7 @@
       </fieldset>
     </div>
     <Teleport to="body">
-      <Modal @close="closeWithoutSave()" v-if="isMulticultureModalOpen" large="true">
+      <Modal @close="closeWithoutSave()" v-if="isMulticultureModalOpen" large>
         <template #title>Saisie multiculture</template>
 
         <div class="fr-toggle fr-toggle--label-left fr-mb-2w">
@@ -180,7 +189,7 @@
                 <td>
                   <button
                     type="button"
-                    v-if="isMulticulture && canBeDeleted"
+                    v-if="isMulticulture && canBeDeletedModal"
                     class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
                     @click="removeCulture(culture.id)"
                     aria-label="Supprimer la culture"
@@ -266,7 +275,6 @@ function closeMulticultureModal() {
 
 function updateEditableCulture() {
   const last = multiCultureTab.value[multiCultureTab.value.length - 1].CPF;
-  console.log(last);
   if (last) {
     appendEmptyCulture();
   }
@@ -309,8 +317,8 @@ watch(isMulticulture, (val) => {
   }
 });
 
-const canBeDeleted = computed(() => multiCultureTab.value.length > 1);
-
+const canBeDeletedModal = computed(() => multiCultureTab.value.length > 1);
+const canBeDeleted = computed(() => uuidedCultures.value.length > 1);
 function appendEmptyCulture() {
   const appendedCultures = [
     ...multiCultureTab.value,
@@ -320,6 +328,18 @@ function appendEmptyCulture() {
     },
   ];
   multiCultureTab.value = appendedCultures;
+}
+
+function appendEmptyCultureUUID() {
+  const appendedCultures = [
+    ...uuidedCultures.value,
+    {
+      CPF: "",
+      id: crypto.randomUUID(),
+    },
+  ];
+
+  emit("change", appendedCultures);
 }
 
 function removeCulture(cultureId) {
@@ -350,6 +370,12 @@ function updateCultureTempo(cultureId, field, value) {
   );
   updateEditableCulture();
 }
+
+function removeCultureOld(cultureId) {
+  const updatedCultures = uuidedCultures.value.filter(({ id }) => id !== cultureId);
+
+  emit("change", updatedCultures);
+}
 </script>
 
 <style scoped>
@@ -375,5 +401,9 @@ td > input {
 
 td > .fr-input-group {
   margin-top: 0.5rem;
+}
+
+tr {
+  text-align: start;
 }
 </style>

@@ -24,7 +24,18 @@
 </template>
 
 <script setup>
-import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, render, shallowRef } from "vue";
+import {
+  computed,
+  Fragment,
+  h,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  render,
+  shallowRef,
+  watch,
+} from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 
 import { autocomplete } from "@algolia/autocomplete-js";
@@ -100,164 +111,111 @@ const requirePrecision = computed(
   () => (props.modelValue && !fromCodeCpf(props.modelValue)?.is_selectable) || props.modelValue === undefined,
 );
 
+const createAutocomplete = () => {
+  if (!autocompleteRef.value || autocompleteProps.value) return;
+
+  autocompleteProps.value = autocomplete({
+    container: autocompleteRef.value,
+    placeholder: props.placeholder,
+    openOnFocus: true,
+    id: `cpf-${props.culture.id}`,
+    classNames: {
+      form: "fr-input",
+    },
+
+    onStateChange({ state }) {
+      query.value = state.query;
+    },
+
+    getSources() {
+      return [
+        {
+          sourceId: "cultures",
+          getItems({ query }) {
+            let items;
+
+            if (query.length > 1) {
+              items = new Fuse(choices.value, {
+                keys: ["libelle_code_cpf"],
+                minMatchCharLength: 2,
+                threshold: 0.4,
+              })
+                .search(query)
+                .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
+            } else {
+              items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
+            }
+
+            if (requirePrecision.value && !showMore.value) {
+              items.push({
+                libelle: "Voir toutes les cultures",
+                code: "showMore",
+              });
+            }
+
+            return items;
+          },
+          templates: {
+            item({ item, html }) {
+              if (item.code === "showMore") {
+                return html`<span class="fr-link">Voir toutes les cultures</span>`;
+              }
+
+              return item.libelle;
+            },
+          },
+          onSelect: function (event) {
+            if (event.item.code === "showMore") {
+              showMore.value = true;
+              event.setQuery("");
+              event.setIsOpen(true);
+              return nextTick(() => {
+                event.refresh();
+              });
+            }
+
+            event.setQuery(event.item.libelle);
+            emit("update:modelValue", event.item.code);
+          },
+        },
+      ];
+    },
+
+    renderer: { createElement: h, Fragment, render },
+  });
+
+  autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
+};
+
+const destroyAutocomplete = () => {
+  if (autocompleteProps.value) {
+    autocompleteProps.value.destroy?.();
+    autocompleteProps.value = null;
+  }
+};
+
+watch(
+  () => props.disabledInput,
+  async (newValue) => {
+    await nextTick();
+
+    if (newValue) {
+      destroyAutocomplete();
+    } else {
+      createAutocomplete();
+    }
+  },
+);
+
 onMounted(() => {
   if (!props.disabledInput) {
-    autocompleteProps.value = autocomplete({
-      container: autocompleteRef.value,
-      placeholder: props.placeholder,
-      openOnFocus: true,
-      id: `cpf-${props.culture.id}`,
-      classNames: {
-        form: "fr-input",
-      },
-
-      // helps react to query and isOpen changes
-      onStateChange({ state }) {
-        query.value = state.query;
-      },
-
-      getSources() {
-        return [
-          {
-            sourceId: "cultures",
-            getItems({ query }) {
-              let items;
-
-              if (query.length > 1) {
-                items = new Fuse(choices.value, {
-                  keys: ["libelle_code_cpf"],
-                  minMatchCharLength: 2,
-                  threshold: 0.4,
-                })
-                  .search(query)
-                  .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
-              } else {
-                items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
-              }
-
-              if (requirePrecision.value && !showMore.value) {
-                items.push({
-                  libelle: "Voir toutes les cultures",
-                  code: "showMore",
-                });
-              }
-
-              return items;
-            },
-            templates: {
-              item({ item, html }) {
-                if (item.code === "showMore") {
-                  return html`<span class="fr-link">Voir toutes les cultures</span>`;
-                }
-
-                return item.libelle;
-              },
-            },
-            onSelect: function (event) {
-              if (event.item.code === "showMore") {
-                showMore.value = true;
-                event.setQuery("");
-                event.setIsOpen(true);
-                return nextTick(() => {
-                  event.refresh();
-                });
-              }
-
-              event.setQuery(event.item.libelle);
-              emit("update:modelValue", event.item.code);
-            },
-          },
-        ];
-      },
-
-      renderer: { createElement: h, Fragment, render },
-    });
-
-    autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
+    createAutocomplete();
   }
 });
 
-onUpdated(() => {
-  if (!props.disabledInput && autocompleteProps.value == null) {
-    autocompleteProps.value = autocomplete({
-      container: autocompleteRef.value,
-      placeholder: props.placeholder,
-      openOnFocus: true,
-      id: `cpf-${props.culture.id}`,
-      classNames: {
-        form: "fr-input",
-      },
-
-      // helps react to query and isOpen changes
-      onStateChange({ state }) {
-        query.value = state.query;
-      },
-
-      getSources() {
-        return [
-          {
-            sourceId: "cultures",
-            getItems({ query }) {
-              let items;
-
-              if (query.length > 1) {
-                items = new Fuse(choices.value, {
-                  keys: ["libelle_code_cpf"],
-                  minMatchCharLength: 2,
-                  threshold: 0.4,
-                })
-                  .search(query)
-                  .map(({ item: { libelle_code_cpf: libelle, code_cpf: code } }) => ({ code, libelle }));
-              } else {
-                items = choices.value.map(({ libelle_code_cpf: libelle, code_cpf: code }) => ({ code, libelle }));
-              }
-
-              if (requirePrecision.value && !showMore.value) {
-                items.push({
-                  libelle: "Voir toutes les cultures",
-                  code: "showMore",
-                });
-              }
-
-              return items;
-            },
-            templates: {
-              item({ item, html }) {
-                if (item.code === "showMore") {
-                  return html`<span class="fr-link">Voir toutes les cultures</span>`;
-                }
-
-                return item.libelle;
-              },
-            },
-            onSelect: function (event) {
-              if (event.item.code === "showMore") {
-                showMore.value = true;
-                event.setQuery("");
-                event.setIsOpen(true);
-                return nextTick(() => {
-                  event.refresh();
-                });
-              }
-
-              event.setQuery(event.item.libelle);
-              emit("update:modelValue", event.item.code);
-            },
-          },
-        ];
-      },
-
-      renderer: { createElement: h, Fragment, render },
-    });
-
-    autocompleteProps.value.setQuery?.(requirePrecision.value ? "" : query.value);
-  }
-});
 
 onBeforeUnmount(() => {
-  if (!props.disabledInput) {
-    autocompleteProps.value.setIsOpen(false);
-  }
+  destroyAutocomplete();
 });
 </script>
 
@@ -304,7 +262,6 @@ onBeforeUnmount(() => {
   --aa-search-input-height: calc((0.5rem * 2) + 1.5rem - var(--border-width));
   align-items: flex-start;
   margin-top: calc(var(--border-width) * -1);
-  /* to counteract the align-items: center of the container */
 }
 
 .aa-ClearButton {

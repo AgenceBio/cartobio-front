@@ -51,7 +51,7 @@ import { dateFormat } from "@/utils/dates.js";
 
 interface Props {
   name: string;
-  area: number;
+  area: string;
   codePostale: string;
   ville: string;
   icon: string;

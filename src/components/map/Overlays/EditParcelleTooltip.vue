@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 interface Props {
-  area: number;
+  area: string;
 }
 
 defineProps<Props>();

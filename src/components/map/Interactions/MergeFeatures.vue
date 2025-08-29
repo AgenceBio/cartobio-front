@@ -1,9 +1,30 @@
 <template>
   <div class="pop-in-top merge">
-    <p class="fr-mb-0" v-if="mergeFeature">Surface de la parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">Confirmer</button>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
+    <div v-if="mergeFeature">
+      <p class="fr-mb-0">Parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
+      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="showDetailsModal = true">
+        Ok
+      </button>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
+    </div>
+    <div v-if="isErrorMerging">
+      <p class="fr-mb-0">{{ errorMessage }}</p>
+      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
+    </div>
   </div>
+  <Teleport to="body">
+    <CertificationBodyEditForm
+      v-if="showDetailsModal"
+      :feature="mergeFeature"
+      @close="goToEdit"
+      @submit="(e) => confirmer(e)"
+      icon="fr-icon-add-line"
+      data-content-name="Modale de confirmation d'ajout"
+      required-name
+    >
+      <template #title>Nouvelle parcelle</template>
+    </CertificationBodyEditForm>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -15,6 +36,8 @@ import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
+
+import CertificationBodyEditForm from "@/components/forms/AddParcelle.vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
@@ -28,6 +51,12 @@ import { Geometry } from "ol/geom";
 import { featureCollection, FeatureCollection } from "@turf/helpers";
 import union from "@turf/union";
 import { Fill, Stroke, Style } from "ol/style";
+
+/*
+ * * Variables
+ */
+
+let fusionLayer: VectorLayer | null = null;
 
 /*
  * * Interface
@@ -55,8 +84,16 @@ const store = useFeaturesStore();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 
+/*
+ * * Refs
+ */
+
 const mergeFeature = ref<CartoBioFeature | null>(null);
-let fusionLayer: VectorLayer | null = null;
+
+const showDetailsModal = ref(false);
+
+const isErrorMerging = ref<boolean>(false);
+const errorMessage = ref<string>("");
 
 /*
  * * Fonctions :  interactions
@@ -70,17 +107,16 @@ const mergeFeatures = (): void => {
     mergeFeature.value = geojsonFormat.writeFeatureObject(resultMerge) as CartoBioFeature;
   } else {
     console.warn("Afficher message d'erreur");
-    mapPrefs.value.currentMode = "edit";
   }
 };
 
 const mergeInteractions = (): Feature<Geometry> | null => {
-  if (store.selectedModifIds.length < 2) {
+  if (store.selectedIds.length < 2) {
     console.error("Veuillez sélectionner au moins deux parcelles à fusionner.");
     return null;
   }
 
-  const features = props.vectorSource.getFeatures().filter((f) => store.selectedModifIds.includes(String(f.getId())));
+  const features = props.vectorSource.getFeatures().filter((f) => store.selectedIds.includes(String(f.getId())));
 
   if (features.length < 2) {
     console.error("Parcelles non trouvées dans la source.");
@@ -99,13 +135,14 @@ const mergeInteractions = (): Feature<Geometry> | null => {
   }
 
   if (!merged || merged.geometry.type === "MultiPolygon") {
-    // todo : Toast pour l'erreur
-    console.error("Les parcelles ne se touchent pas. Impossible de faire l’union.");
+    isErrorMerging.value = true;
+    errorMessage.value = "Les parcelles ne se touchent pas. Impossible de faire l’union.";
+    console.log("here");
     return null;
   }
 
   const olFeature: Feature<Geometry> = geojsonFormat.readFeature(merged) as Feature<Geometry>;
-  const firstFeatureSelected = props.vectorSource.getFeatureById(store.selectedModifIds[0]);
+  const firstFeatureSelected = props.vectorSource.getFeatureById(store.selectedIds[0]);
 
   if (!firstFeatureSelected) {
     return null;
@@ -143,15 +180,24 @@ const mergeInteractions = (): Feature<Geometry> | null => {
  * * Fonctions : Data
  */
 
-const confirmer = async (): Promise<void> => {
+const confirmer = async (e): Promise<void> => {
   if (mergeFeature.value) {
-    const result = await createFeaturesFromOther(props.recordId, [mergeFeature.value], store.selectedModifIds);
+    mergeFeature.value.properties = {
+      ...mergeFeature.value.properties,
+      NOM: e.properties.NOM,
+      annotations: e.properties.annotations,
+      auditeur_notes: e.properties.auditeur_notes,
+      conversion_niveau: e.properties.conversion_niveau,
+      cultures: e.properties.cultures,
+      engagement_date: e.properties.engagement_date,
+    };
+    const result = await createFeaturesFromOther(props.recordId, [mergeFeature.value], store.selectedIds);
 
     if (result) {
-      const selectdIds = store.selectedModifIds;
+      const selectdIds = store.selectedIds;
       const geoJson = new GeoJSON();
 
-      store.setSelectedModifiedFeature([]);
+      store.unselectAll();
       const newFeatures = result.parcelles.features.filter(
         (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
       );
@@ -185,6 +231,10 @@ const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 
+const goToEdit = () => {
+  mapPrefs.value.currentMode = "edit";
+};
+
 /**
  * * States fonctions
  */
@@ -205,5 +255,6 @@ onUnmounted(() => {
   gap: 10px;
   padding: 5px 10px;
   align-items: center;
+  width: fit-content;
 }
 </style>

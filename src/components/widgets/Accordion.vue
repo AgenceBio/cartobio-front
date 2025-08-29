@@ -12,10 +12,10 @@
         <div
           :style="{
             display: 'flex',
-            flexDirection: isEdit ? 'row' : 'column',
-            alignItems: isEdit ? 'center' : 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
-            gap: isEdit ? '0.5rem' : '0',
+            gap: '0',
           }"
         >
           <span>{{ title }}</span>
@@ -167,7 +167,7 @@ if (activeAccordionId) {
 }
 
 .culture-name {
-  max-width: 14ch;
+  max-width: 30ch;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

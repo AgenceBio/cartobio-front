@@ -18,105 +18,55 @@
             {{ result.errorMessage }}.
           </div>
         </div>
-        <p class="fr-mb-0">Sa superficie est de {{ inHa(legalProjectionSurface(feature)) }} ha.</p>
-
-        <ul v-if="details.length">
-          <li v-for="(detail, index) in details" :key="index">
-            {{ detail }}
-          </li>
-        </ul>
       </div>
 
-      <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires">
-        <blockquote>
-          <p>{{ feature.properties.commentaires }}</p>
-        </blockquote>
-        <figcaption>
-          <p class="fr-quote__author">Notes de l'exploitant‧e</p>
-        </figcaption>
-      </figure>
-      <AccordionGroup :constraint-toggle="!open">
-        <AccordionSection title="Culture" :open="open" :requires-action="requiresAction(['cultures'])">
-          <div class="fr-card fr-p-2w fr-mb-3w" v-if="feature.properties.CODE_CULTURE">
-            <div class="fr-mb-3w import-pac">
-              <span class="fr-label">Culture de l'import PAC</span>
-              <span class="fr-hint-text">réalisé le {{ jjmmyyyy(feature.properties.createdAt) }}</span>
-            </div>
-            <div class="code-culture">
-              {{ feature.properties.CODE_CULTURE }}
-              <template v-if="feature.properties.CODE_PRECISION"> - {{ feature.properties.CODE_PRECISION }}</template>
-              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
-                :
-                {{
-                  getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "").libelle
-                }}</template
-              >
-            </div>
-            <div class="fr-hint-text">
-              Code culture
-              <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
-              <template v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')">
-                : culture</template
-              >
-            </div>
-          </div>
-          <CultureSelector
-            :feature-id="feature.properties.id || feature.id"
-            :cultures="patch.cultures"
-            @change="($cultures) => (patch.cultures = $cultures)"
-            :disabled-input="readonly || !permissions.canChangeCulture"
-          />
-        </AccordionSection>
-      </AccordionGroup>
+      <CultureSelector
+        :feature-id="feature.properties.id || feature.id"
+        :cultures="patch.cultures"
+        @change="($cultures) => (patch.cultures = $cultures)"
+        :disabled-input="readonly || !permissions.canChangeCulture"
+      />
 
-      <AccordionGroup :constraint-toggle="!open">
-        <AccordionSection
-          title="Annotations d'audit"
-          :open="open"
-          :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
+      <ConversionLevelSelector
+        :feature-id="feature.properties.id || feature.id"
+        :readonly="!permissions.canChangeConversionLevel || readonly"
+        v-model="patch.conversion_niveau"
+      />
+
+      <div class="fr-input-group" v-if="isAB">
+        <label class="fr-label" for="engagement_date"
+          >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
         >
-          <ConversionLevelSelector
-            :feature-id="feature.properties.id || feature.id"
-            :readonly="!permissions.canChangeConversionLevel || readonly"
-            v-model="patch.conversion_niveau"
-          />
+        <input
+          type="date"
+          class="fr-input"
+          v-model="patch.engagement_date"
+          name="engagement_date"
+          id="engagement_date"
+          :required="isEngagementDateRequired"
+          :disabled="!isAB || readonly || !permissions.canChangeConversionLevel"
+          min="1985-01-01"
+          :max="maxDate"
+        />
+      </div>
 
-          <div class="fr-input-group" v-if="isAB">
-            <label class="fr-label" for="engagement_date"
-              >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
-            >
-            <input
-              type="date"
-              class="fr-input"
-              v-model="patch.engagement_date"
-              name="engagement_date"
-              id="engagement_date"
-              :required="isEngagementDateRequired"
-              :disabled="!isAB || readonly || !permissions.canChangeConversionLevel"
-              min="1985-01-01"
-              :max="maxDate"
-            />
-          </div>
+      <AnnotationsSelector
+        v-if="permissions.canAddAnnotations"
+        v-model="patch.annotations"
+        :feature-id="feature.properties.id"
+        :readonly="readonly || !permissions.canEditParcellaire"
+      />
 
-          <AnnotationsSelector
-            v-if="permissions.canAddAnnotations"
-            v-model="patch.annotations"
-            :feature-id="feature.properties.id"
-            :readonly="readonly || !permissions.canEditParcellaire"
-          />
-
-          <div class="fr-input-group">
-            <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
-            <textarea
-              :disabled="readonly || !permissions.canEditParcellaire"
-              class="fr-input"
-              id="auditeur_notes"
-              name="auditeur_notes"
-              v-model="patch.auditeur_notes"
-            />
-          </div>
-        </AccordionSection>
-      </AccordionGroup>
+      <div class="fr-input-group">
+        <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
+        <textarea
+          :disabled="readonly || !permissions.canEditParcellaire"
+          class="fr-input"
+          id="auditeur_notes"
+          name="auditeur_notes"
+          v-model="patch.auditeur_notes"
+        />
+      </div>
     </form>
 
     <template #title><slot name="title" /></template>

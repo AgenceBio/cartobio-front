@@ -21,7 +21,6 @@ export const useFeaturesStore = defineStore("features", () => {
   const activeId = ref(null);
   const hoveredId = ref(null);
   const recordId = ref(null);
-  const selectedModifIds = ref([]);
 
   /**
    * @type {reactive<CartoBioFeatureCollection>}
@@ -129,17 +128,18 @@ export const useFeaturesStore = defineStore("features", () => {
   }
 
   /**
-   * @param {String[]} featureIds
-   */
-  function setSelectedModifiedFeature(featureIds) {
-    selectedModifIds.value = featureIds.map(String);
-  }
-
-  /**
    * @param  {...String} ids
    */
   function select(...ids) {
+    console.log(ids);
     selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids.map(String)]));
+  }
+
+  /**
+   * @param {string[]} ids
+   */
+  function setSelectedIds(ids) {
+    selectedIds.value = ids;
   }
 
   /**
@@ -314,7 +314,6 @@ export const useFeaturesStore = defineStore("features", () => {
     activeId,
     hoveredId,
     selectedIds,
-    selectedModifIds,
     // computed
     activeFeature,
     all,
@@ -331,6 +330,7 @@ export const useFeaturesStore = defineStore("features", () => {
     bindFeatureInteraction,
     getFeatureById,
     select,
+    setSelectedIds,
     setAll,
     setCandidate,
     commitCandidate,
@@ -342,6 +342,5 @@ export const useFeaturesStore = defineStore("features", () => {
     updateFeatureCollectionProperties,
     deleteSingleFeature,
     updateMatchingFeatures,
-    setSelectedModifiedFeature,
   };
 });

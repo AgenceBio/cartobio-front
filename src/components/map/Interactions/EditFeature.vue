@@ -1,26 +1,28 @@
 <template>
-  <div v-if="numberSelectedFeature === 1 && !isCorrecting" class="pop-in-top">
-    <button class="fr-btn" :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
-    <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
-  </div>
-  <div v-else-if="isCorrecting && corrections.length > 0" class="pop-in-top">
-    <button class="fr-btn" @click="correct">Valider la correction</button>
-  </div>
-  <div v-if="corrections.length > 0" class="correct-parcelle">
-    <div>
-      <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
-      <strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle</strong>
+  <div>
+    <div v-if="numberSelectedFeature === 1 && !isCorrecting" class="pop-in-top">
+      <button class="fr-btn" :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
+      <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
-    <div>
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="startCorrection">
-        <i class="ri-shape-line" aria-hidden="true" /> Corriger automatiquement
-      </button>
+    <div v-else-if="isCorrecting && corrections.length > 0" class="pop-in-top">
+      <button class="fr-btn" @click="correct">Valider la correction</button>
+    </div>
+    <div v-if="corrections.length > 0" class="correct-parcelle">
+      <div>
+        <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
+        <strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle</strong>
+      </div>
+      <div>
+        <button class="fr-btn fr-btn--tertiary-no-outline" @click="startCorrection">
+          <i class="ri-shape-line" aria-hidden="true" /> Corriger automatiquement
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, createApp } from "vue";
+import { ref, onMounted, onUnmounted, computed, createApp, watch } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Collection, Map } from "ol";
@@ -106,7 +108,7 @@ let correctedParcellesId: string[] = [];
  */
 
 const numberSelectedFeature = computed(() => {
-  return store.selectedModifIds.length;
+  return store.selectedIds.length;
 });
 
 /*
@@ -116,11 +118,12 @@ const numberSelectedFeature = computed(() => {
 const undoAll = (): void => {
   if (props.undoRedo) {
     let hasUndo = props.undoRedo.hasUndo();
-    while (hasUndo > 0) {
+    while (hasUndo != false) {
       props.undoRedo.undo();
       hasUndo = props.undoRedo.hasUndo();
     }
   }
+  props.undoRedo.clear();
 };
 
 const resetEdit = () => {
@@ -154,9 +157,14 @@ const modifyInteraction = () => {
       .map((feature: Feature) => feature.getId())
       .filter((id: string | number | undefined): id is string | number => id !== undefined);
 
-    store.setSelectedModifiedFeature(selectedIds);
+    store.setSelectedIds(selectedIds);
 
     if (selectedIds.length === 1) {
+      if (modify) {
+        props.map.removeInteraction(modify);
+        modify = null;
+      }
+
       modify = new Modify({
         features: selectedFeatures,
         style: [
@@ -170,7 +178,9 @@ const modifyInteraction = () => {
           }),
         ],
       });
+
       props.map.addInteraction(modify);
+
       const tooltip = new Tooltip({
         className: "draw-tooltip",
         closeBox: false,
@@ -178,6 +188,7 @@ const modifyInteraction = () => {
         offset: [10, -10],
         getHTML: createTooltipContent,
       });
+
       tooltip.setFeature(selectedFeatures.getArray()[0]);
 
       modify.on("modifystart", () => {
@@ -235,7 +246,7 @@ const getPointStyle = (): Style => {
 
 const createSelectInteraction = (selectedFeatures: Collection<Feature>): Select => {
   const source = props.vectorLayer.getSource();
-  const alreadySelectedIds = store.selectedModifIds ?? [];
+  const alreadySelectedIds = store.selectedIds ?? [];
 
   alreadySelectedIds.forEach((id: number) => {
     const feature = source?.getFeatureById(id);
@@ -250,7 +261,7 @@ const createSelectInteraction = (selectedFeatures: Collection<Feature>): Select 
     multi: true,
     features: selectedFeatures,
     style: () => {
-      if (store.selectedModifIds.length >= 2) {
+      if (store.selectedIds.length >= 2) {
         return getPolygonMultipleStyle();
       }
       return [getPolygonStyle(), getPointStyle()];
@@ -279,7 +290,7 @@ const createTooltipContent = (feature: Feature) => {
 
 const saveModifiedFeature = async () => {
   let modifiedFeature: CartoBioFeature | null = null;
-  const selectdId = store.selectedModifIds[0];
+  const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
   const feature = props.vectorSource.getFeatureById(selectdId);
 
@@ -310,7 +321,7 @@ const saveModifiedFeature = async () => {
     const result = await updateFeatures(props.recordId, [modifiedFeature, ...correctedParcelles]);
 
     if (result) {
-      store.setSelectedModifiedFeature([]);
+      store.setSelectedIds([]);
       store.setAll(result.parcelles.features);
     }
     isModifying.value = false;
@@ -366,7 +377,7 @@ const startCorrection = () => {
   const correction = corrections.value[0];
   featureToKeepForCorrection.clear();
   correctionSource.clear();
-  const originalModifiedFeature = props.vectorSource.getFeatureById(store.selectedModifIds[0]);
+  const originalModifiedFeature = props.vectorSource.getFeatureById(store.selectedIds[0]);
   const originalOverlappedFeature = props.vectorSource.getFeatureById(correction.id);
 
   if (!originalModifiedFeature || !originalOverlappedFeature) {
@@ -414,7 +425,7 @@ const correct = () => {
   const selectedFeatureId = featureToKeepForCorrection.getArray()[0]?.get("id");
 
   // On conserve la modification au détriment de l'autre parcelle
-  if (selectedFeatureId === store.selectedModifIds[0]) {
+  if (selectedFeatureId === store.selectedIds[0]) {
     correctedParcellesId.push(correction.id);
   }
 
@@ -443,6 +454,13 @@ const calculateArea = (feature: CartoBioFeature): string => {
 /*
  * * Watchers
  */
+
+watch(
+  () => props.hasUndo,
+  (newValue) => {
+    if (!newValue) isModifying.value = false;
+  },
+);
 
 /**
  * * States fonctions

@@ -9,7 +9,7 @@
   >
     <div
       :class="[
-        !extraLarge ? (!large ? 'fr-container-md ' : 'fr-container-lg') : '',
+        !extraLarge ? (!large ? 'fr-container-md ' : 'fr-container-lg') : 'fr-px-6v',
         !extraLarge ?? 'fr-container fr-container--fluid',
       ]"
     >

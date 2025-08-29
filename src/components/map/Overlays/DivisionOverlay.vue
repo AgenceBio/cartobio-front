@@ -7,7 +7,7 @@
     </div>
     <div style="display: flex; align-items: center; gap: 8px">
       <span class="area-info green"></span>
-      2: {{ area1 }} ha
+      2: {{ area2 }} ha
     </div>
   </div>
 </template>
@@ -15,8 +15,8 @@
 <script setup lang="ts">
 interface Props {
   libelle: string;
-  area1: number;
-  area2: number;
+  area1: string;
+  area2: string;
 }
 
 defineProps<Props>();

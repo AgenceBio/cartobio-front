@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="fr-grid-row fr-mb-2v fr-px-4v fr-py-4v groupe-parcelles"
+      class="fr-grid-row fr-px-4v fr-py-4v groupe-parcelles"
       :class="{ 'groupe-titre-on': open }"
       @click.stop="open = !open"
       @keydown.enter="open = !open"
@@ -49,10 +49,11 @@
       :class="{
         'parcelle--is-new': feature.id === Number(route.query?.new),
         'background-selected': selectedIds.includes(feature.id),
+        'fr-mt-2v': index === 0,
       }"
       :id="'parcelle-' + feature.id"
       :hidden="!open"
-      v-for="feature in featureGroup.features"
+      v-for="(feature, index) in featureGroup.features"
       :key="feature.id"
       @mouseover="hoveredId = feature.id"
       :aria-current="feature.id === hoveredId ? 'location' : null"
@@ -68,7 +69,7 @@
           >
             {{ featureName(feature, { explicitName: false }) }}
           </h4>
-          <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true })">
+          <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null">
             {{ featureName(feature, { nameOnly: true }) }}
           </p>
         </div>
@@ -154,7 +155,7 @@
           :class="{ clickable: permissions.canChangeConversionLevel }"
           v-else
         >
-          <ConversionLevel :feature="feature" with-date />
+          <ConversionLevel noIcon labelSelector with-date :feature="feature" />
         </div>
         <div class="fr-grid-row fr-grid-row--middle gap-10">
           <p class="fr-sr-only"></p>
@@ -296,18 +297,37 @@ function openCulturesModal(id) {
 }
 
 function isRota(feature) {
-  let max = 0;
-  if (feature.properties.historique) {
-    feature.properties.historique.forEach((e) => {
-      const tempo = feature.properties.historique.filter(
-        (y) =>
-          (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
-          e.cultures.some((a) => y.cultures.some((e) => e.CPF === a.CPF)),
-      ).length;
-      if (!(tempo + 1 <= max)) max = tempo + 1;
-    });
-    return max >= 3 ? "rouge" : max > 1 ? "jaune" : null;
-  } else return null;
+  const index = 0;
+  if (!feature.properties.historique) return 0;
+  const currentCultures = feature.properties.historique[index];
+  if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
+
+  let count = 1;
+
+  for (let i = index - 1; i >= 0; i--) {
+    const voisin = feature.properties.historique[i];
+    if (!voisin) break;
+
+    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+    if (match) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  for (let i = index + 1; i < feature.properties.historique.length; i++) {
+    const voisin = feature.properties.historique[i];
+    if (!voisin) break;
+
+    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+    if (match) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return count >= 3 ? "rouge" : count > 1 ? "jaune" : null;
 }
 
 watch(selectedIds, (selectedIds, prevSelectedIds) => {
@@ -376,7 +396,6 @@ onMounted(async () => {
   gap: 12px;
   justify-content: space-between;
   border-top: 1px solid var(--artwork-decorative-blue-france);
-  border-bottom: 1px solid var(--artwork-decorative-blue-france);
 
   .groupe-titre {
     gap: 7px;

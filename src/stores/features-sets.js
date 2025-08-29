@@ -261,25 +261,40 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             property: "rotation",
             required: false,
             rotation: true,
-            label: "Rotation non conforme (2 années de suite)",
+            label: "Rotation à controler",
             errorMessage: "Une culture a été répétée 2 années de suite",
             select(f) {
               const historique = f.properties.historique ?? [];
-              let max = 0;
+              const index = 0
+              const currentCultures = historique[index];
+              if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
 
-              historique.forEach((e) => {
-                const tempo = historique.filter(
-                  (y) =>
-                    (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
-                    e.cultures.some((a) => y.cultures.some((yy) => yy.CPF === a.CPF)),
-                ).length;
+              let count = 1;
 
-                if (tempo + 1 > max) {
-                  max = tempo + 1;
+              for (let i = index - 1; i >= 0; i--) {
+                const voisin = historique[i];
+                if (!voisin) break;
+
+                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+                if (match) {
+                  count++;
+                } else {
+                  break;
                 }
-              });
+              }
+              for (let i = index + 1; i < historique.length; i++) {
+                const voisin = historique[i];
+                if (!voisin) break;
 
-              return max === 2;
+                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+                if (match) {
+                  count++;
+                } else {
+                  break;
+                }
+              }
+
+              return count === 2;
             },
           },
         ],
@@ -290,25 +305,40 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             property: "rotation",
             required: false,
             rotation: true,
-            label: "Rotation non conforme (3 années de suite)",
+            label: "Rotation non conforme",
             errorMessage: "Une culture a été répétée 3 années de suite",
             select(f) {
               const historique = f.properties.historique ?? [];
-              let max = 0;
+              const index = 0
+              const currentCultures = historique[index];
+              if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
 
-              historique.forEach((e) => {
-                const tempo = historique.filter(
-                  (y) =>
-                    (y.annee_controle === e.annee_controle + 1 || y.annee_controle === e.annee_controle - 1) &&
-                    e.cultures.some((a) => y.cultures.some((yy) => yy.CPF === a.CPF)),
-                ).length;
+              let count = 1;
 
-                if (tempo + 1 > max) {
-                  max = tempo + 1;
+              for (let i = index - 1; i >= 0; i--) {
+                const voisin = historique[i];
+                if (!voisin) break;
+
+                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+                if (match) {
+                  count++;
+                } else {
+                  break;
                 }
-              });
+              }
+              for (let i = index + 1; i < historique.length; i++) {
+                const voisin = historique[i];
+                if (!voisin) break;
 
-              return max === 3;
+                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
+                if (match) {
+                  count++;
+                } else {
+                  break;
+                }
+              }
+
+              return count >= 3;
             },
           },
         ],

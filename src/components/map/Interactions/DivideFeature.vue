@@ -1,12 +1,12 @@
 <template>
-  <div class="pop-in-top">
+  <div class="pop-in-top" v-if="hasDivision">
     <button class="fr-btn" :disabled="!hasDivision" @click="validateDivision">Valider la découpe</button>
     <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="cancelDivision">Annuler</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, createApp } from "vue";
+import { ref, onMounted, onUnmounted, createApp, watch } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, MapBrowserEvent, Overlay } from "ol";
@@ -21,6 +21,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
 import { createFeaturesFromOther } from "@/cartobio-api.js";
+import { unByKey } from "ol/Observable";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw, Modify, Select } from "ol/interaction";
@@ -60,6 +61,7 @@ const { map: mapPrefs } = storeToRefs(preferences);
 
 // Refs division
 const hasDivision = ref<boolean>(false);
+const currentGeom = ref<LineString | null>(null);
 
 /*
  * * Constantes
@@ -75,6 +77,10 @@ let previewLayer: VectorLayer<VectorSource> | null = null;
 let drawingLineSource: VectorSource | null = null;
 let drawingLineLayer: VectorLayer<VectorSource> | null = null;
 let clickCount = 0;
+const previewSource = new VectorSource();
+
+let geomListenerKey: any = null;
+let sourceListenerKey: any = null;
 
 /*
  * * Fonctions : Data
@@ -82,7 +88,7 @@ let clickCount = 0;
 
 const validateDivision = async () => {
   const modifiedFeatures: CartoBioFeature[] = [];
-  const selectdId = store.selectedModifIds[0];
+  const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
 
   for (const modifiedFeature of resSource.getFeatures()) {
@@ -91,7 +97,7 @@ const validateDivision = async () => {
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
-    store.setSelectedModifiedFeature([]);
+    store.unselectAll([]);
     const newFeatures = result.parcelles.features.filter(
       (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
     );
@@ -114,13 +120,10 @@ const cancelDivision = () => {
   clickCount = 0;
   hasDivision.value = false;
   resSource.clear();
+  previewSource.clear();
 
   if (previewLayer) {
     props.map.removeLayer(previewLayer);
-  }
-
-  if (drawingLineLayer) {
-    props.map.removeLayer(drawingLineLayer);
   }
 
   if (drawingLineLayer) {
@@ -131,8 +134,17 @@ const cancelDivision = () => {
     props.map.removeOverlay(currentOverlay);
   }
 
+  if (modifyInteraction) {
+    props.map.removeInteraction(modifyInteraction);
+  }
+
+  if (selectInteraction) {
+    props.map.removeInteraction(selectInteraction);
+  }
+
   divideInteraction();
 };
+
 const divideInteraction = (): void => {
   const lineStyle = new Style({
     stroke: new Stroke({ color: [0, 0, 255, 0.8], width: 3 }),
@@ -154,7 +166,6 @@ const divideInteraction = (): void => {
     zIndex: 7,
   });
 
-  const previewSource = new VectorSource();
   previewLayer = new VectorLayer({
     source: previewSource,
     zIndex: 5,
@@ -230,8 +241,16 @@ const divideInteraction = (): void => {
       modifyInteraction.on("modifyend", () => {
         const lineFeature = drawingLineSource?.getFeatures()[0];
         if (lineFeature && lineFeature.getGeometry()) {
+          currentGeom.value = lineFeature.getGeometry() as LineString;
+
           updatePreview(lineFeature.getGeometry() as LineString, previewSource);
         }
+      });
+    }
+    if (modifyInteraction) {
+      attachPreviewListeners();
+      modifyInteraction.on("modifystart", () => {
+        attachPreviewListeners();
       });
     }
   });
@@ -318,6 +337,35 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
   });
 };
 
+const attachPreviewListeners = () => {
+  if (geomListenerKey) {
+    unByKey(geomListenerKey);
+    geomListenerKey = null;
+  }
+  if (sourceListenerKey) {
+    unByKey(sourceListenerKey);
+    sourceListenerKey = null;
+  }
+
+  const lineFeature = drawingLineSource?.getFeatures()[0];
+  if (!lineFeature) return;
+
+  const geom = lineFeature.getGeometry() as LineString;
+
+  geomListenerKey = geom.on("change", (evt: BaseEvent) => {
+    currentGeom.value = evt.target as LineString;
+    updatePreview(currentGeom.value, previewSource);
+  });
+
+  sourceListenerKey = drawingLineSource?.on("change", () => {
+    const f = drawingLineSource?.getFeatures()[0];
+    if (f && f.getGeometry()) {
+      currentGeom.value = f.getGeometry() as LineString;
+      updatePreview(currentGeom.value, previewSource);
+    }
+  });
+};
+
 /*
  * * Fonctions : Utils
  */
@@ -359,7 +407,7 @@ const createTooltipOverlay = (map: Map, libelle: string, area1: number, area2: n
   });
 
   if (currentOverlay) {
-    map.removeOverlay(overlay);
+    map.removeOverlay(currentOverlay);
   }
   map.addOverlay(overlay);
   currentOverlay = overlay;
@@ -373,9 +421,9 @@ const calculateArea = (feature: CartoBioFeature): number => {
 const getTargetFeature = (): Feature | null => {
   const features = new GeoJSON().readFeatures(store.collection, {});
 
-  if (store.selectedModifIds && store.selectedModifIds[0]) {
+  if (store.selectedIds && store.selectedIds[0]) {
     const selectedFeature = features.find(
-      (feature) => feature.getId() === store.selectedModifIds[0] || feature.get("id") === store.selectedModifIds[0],
+      (feature) => feature.getId() === store.selectedIds[0] || feature.get("id") === store.selectedIds[0],
     );
 
     if (selectedFeature) {
@@ -386,7 +434,20 @@ const getTargetFeature = (): Feature | null => {
   return null;
 };
 
-/**
+/*
+ * * Watchers
+ */
+watch(
+  () => currentGeom.value,
+  (newValue) => {
+    console.log(newValue);
+    if (newValue) {
+      updatePreview(newValue, previewSource);
+    }
+  },
+  { immediate: true },
+);
+
 /**
  * * States fonctions
  */

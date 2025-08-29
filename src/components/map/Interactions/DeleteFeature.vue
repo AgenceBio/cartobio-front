@@ -7,10 +7,14 @@
     <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">Confirmer</button>
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler"></button>
   </div>
+
+  <Teleport to="body">
+    <DeleteModal v-if="deleteModalMultiple" @submit="(e) => handleMultipleDelete(e)" />
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed } from "vue";
+import { onMounted, onUnmounted, computed, ref, inject, Ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map } from "ol";
@@ -20,12 +24,15 @@ import VectorSource from "ol/source/Vector";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
-import { DeletionReasonsCode } from "@/utils/features.js";
+
+import DeleteModal from "@/components/forms/DeleteForm.vue";
+import toast from "@/utils/toast.js";
 
 // Utils Geom
 import { deleteParcelle } from "@/cartobio-api.js";
 
 import { Fill, Stroke, Style } from "ol/style";
+import { useOnline } from "@vueuse/core";
 
 /*
  * * Interface
@@ -60,8 +67,16 @@ let deleteLayer: VectorLayer | null = null;
  */
 
 const numberSelectedFeature = computed(() => {
-  return store.selectedModifIds.length;
+  return store.selectedIds.length;
 });
+
+/*
+ * * Refs
+ */
+
+const deleteModalMultiple = ref(false);
+const loading: Ref<boolean> = inject("loading", ref(false));
+const isOnline = useOnline();
 
 /*
  * * Fonctions :  interactions
@@ -86,7 +101,7 @@ const deleteSelected = (): void => {
     zIndex: 5,
   });
 
-  store.selectedModifIds.forEach((id: number) => {
+  store.selectedIds.forEach((id: number) => {
     const feature = props.vectorSource.getFeatureById(id);
     if (feature) {
       const clonedGeometry = feature.getGeometry()?.clone();
@@ -106,13 +121,14 @@ const deleteSelected = (): void => {
  * * Fonctions : Data
  */
 
-const confirmer = async (): Promise<void> => {
+const handleMultipleDelete = async (reason): Promise<void> => {
   if (numberSelectedFeature.value > 0 && mapPrefs.value.currentMode === "delete") {
-    let result = null;
-    for (const featureId of store.selectedModifIds) {
-      result = await deleteParcelle(props.recordId, featureId, {
-        reason: { code: DeletionReasonsCode.OTHER, details: "Test" },
-      });
+    for (const featureId of store.selectedIds) {
+      await store.deleteSingleFeature({ id: featureId, reason });
+
+      if (isOnline && loading) {
+        loading.value = true;
+      } else toast.success(`Parcelles supprimée.`);
 
       const feature = props.vectorLayer.getSource()?.getFeatureById(featureId);
 
@@ -121,11 +137,7 @@ const confirmer = async (): Promise<void> => {
       }
     }
 
-    if (result) {
-      store.setAll(result.parcelles.features);
-    }
-
-    store.setSelectedModifiedFeature([]);
+    store.unselectAll([]);
     mapPrefs.value.currentMode = "edit";
 
     return;
@@ -135,6 +147,10 @@ const confirmer = async (): Promise<void> => {
 const annuler = (): void => {
   mapPrefs.value.currentMode = "edit";
 };
+
+async function confirmer() {
+  deleteModalMultiple.value = !deleteModalMultiple.value;
+}
 
 /**
  * * States fonctions

@@ -7,7 +7,7 @@
     </div>
 
     <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')">
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')" :disabled="true">
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button
@@ -21,16 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import { usePreferences } from "@/stores/preferences.js";
 import { storeToRefs } from "pinia";
 
-/**
- * * Props
- */
-const props = defineProps<{
-  isConsult: boolean;
-}>();
 /*
  * * Stores
  */
@@ -40,11 +33,6 @@ const preferences = usePreferences();
 const { map: mapPrefs } = storeToRefs(preferences);
 
 /**
- * * Refs
- */
-const isConsult = ref<boolean>(props.isConsult);
-
-/**
  * * Emits
  */
 const emit = defineEmits<{
@@ -52,16 +40,6 @@ const emit = defineEmits<{
   (e: "compare"): void;
   (e: "openDetail"): void;
 }>();
-
-/**
- * * Watchers
- */
-watch(
-  () => props.isConsult,
-  (newValue) => {
-    isConsult.value = newValue;
-  },
-);
 </script>
 
 <style scoped>
