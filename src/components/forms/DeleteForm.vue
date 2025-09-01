@@ -49,7 +49,9 @@
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-left">
         <li>
-          <button class="fr-btn fr-icon-delete-line" form="delete-feature-form">Supprimer la parcelle</button>
+          <button class="fr-btn fr-icon-delete-line" form="delete-feature-form">
+            Supprimer {{ selectedIds > 1 ? "les" : "la" }} parcelle{{ selectedIds > 1 ? "s" : "" }}
+          </button>
         </li>
       </ul>
     </template>

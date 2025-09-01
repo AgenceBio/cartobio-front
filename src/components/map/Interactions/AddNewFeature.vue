@@ -42,6 +42,28 @@
     <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
   </div>
 
+  <div v-if="showCadastreModal && mode === 'cadastre'" class="pop-in-top">
+    <p class="fr-mb-0">
+      {{ selectedIds.length }} parcelle<span v-if="selectedIds.length > 1">s</span> sélectionnée<span
+        v-if="selectedIds.length > 1"
+        >s</span
+      >
+    </p>
+    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="addCadastreFeatures">
+      Ajouter
+    </button>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      @click="
+        () => {
+          selectedIds = [];
+          previewSource.clear();
+          showCadastreModal = false;
+        }
+      "
+    />
+  </div>
+
   <Teleport to="body">
     <CertificationBodyEditForm
       v-if="showDetailsModal"
@@ -58,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, createApp, nextTick } from "vue";
+import { ref, watch, onMounted, onUnmounted, createApp, nextTick, Ref, inject } from "vue";
 
 import { Map, MapBrowserEvent } from "ol";
 import { Feature } from "ol";
@@ -124,18 +146,22 @@ const feature = ref<Feature | null>(null);
 const correctedFeature = ref<Feature | null>(null);
 const mode = ref<"dessiner" | "cadastre" | "RPG">("dessiner");
 
+const loading: Ref<boolean> = inject("loading", ref(false));
+
 // Refs draw interaction
 const invalidDrawing = ref<boolean>(false);
 const errorDrawing = ref<boolean>(false);
 
 let draw: Draw | null = null;
 let sourceLayer: VectorTileLayer<VectorTileSource> | null = null;
-let selectedIds: string[] = [];
+const selectedIds = ref<string[]>([]);
 
 let cadastre: boolean | null = null;
 let rpg: boolean | null = null;
 
 let savedFeature: CartoBioFeature | null = null;
+
+const showCadastreModal = ref(false);
 /*
  * * Constantes
  */
@@ -283,13 +309,13 @@ const handleClickCadastre = async (e: MapBrowserEvent) => {
   if (cadastreFeature) {
     const properties = cadastreFeature.getProperties();
 
-    if (selectedIds.includes(properties.id)) {
+    if (selectedIds.value.includes(properties.id)) {
       const feature = previewSource.getFeatureById(properties.id);
 
       if (feature) {
         previewSource.removeFeature(feature);
       }
-      selectedIds = selectedIds.filter((s) => s != properties.id);
+      selectedIds.value = selectedIds.value.filter((s) => s != properties.id);
 
       return;
     }
@@ -314,14 +340,23 @@ const handleClickCadastre = async (e: MapBrowserEvent) => {
     const newFeature = {
       type: "Feature",
       geometry: featureCollection.features?.at(0)?.properties?.truegeometry,
-      properties: {},
+      properties: {
+        prefixe: cadastreFeature.getProperties().prefixe,
+        numero: cadastreFeature.getProperties().numero,
+        section: cadastreFeature.getProperties().section,
+      },
     };
 
     const previewFeature = new GeoJSON().readFeature(newFeature) as Feature;
 
     previewFeature.setId(properties.id);
     previewSource.addFeature(previewFeature);
-    selectedIds.push(properties.id);
+    selectedIds.value.push(properties.id);
+    if (selectedIds.value.length > 0) {
+      showCadastreModal.value = true;
+    } else {
+      showCadastreModal.value = false;
+    }
   }
 };
 
@@ -333,7 +368,6 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
   }
 
   const rpgFeature = features[0];
-
   if (rpgFeature) {
     const flatGeometry = rpgFeature.getGeometry();
     if (!flatGeometry) {
@@ -343,13 +377,13 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
 
     const newFeature = new GeoJSON().readFeature(data.geom) as Feature;
 
-    if (selectedIds.includes(data.fid)) {
+    if (selectedIds.value.includes(data.fid)) {
       const feature = previewSource.getFeatureById(data.fid);
 
       if (feature) {
         previewSource.removeFeature(feature);
       }
-      selectedIds = selectedIds.filter((s) => s != data.fid);
+      selectedIds.value = selectedIds.value.filter((s) => s != data.fid);
 
       return;
     }
@@ -363,7 +397,7 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
     newFeature.setId(data.fid);
     newFeature.setStyle(previewStyle);
     previewSource.addFeature(newFeature);
-    selectedIds.push(data.fid);
+    selectedIds.value.push(data.fid);
   }
 };
 
@@ -462,11 +496,13 @@ const rpgInteraction = () => {
 };
 
 const goToEdit = () => {
+  loading.value = false;
   mapPrefs.value.currentMode = "edit";
 };
 
 const submitFeature = async (res: { id: string; properties: object }) => {
   feature.value.properties = { ...res.properties };
+  loading.value = true;
 
   const result = await submitNewParcelle(props.recordId, feature.value);
 
@@ -493,6 +529,41 @@ const submitFeature = async (res: { id: string; properties: object }) => {
 
   goToEdit();
 };
+const addCadastreFeatures = async () => {
+  const format = new GeoJSON();
+  loading.value = true;
+
+  for (const f of previewSource.getFeatures()) {
+    const featureObj = format.writeFeatureObject(f);
+    featureObj.properties = {
+      NOM: `Parcelle ${f.getProperties().prefixe}${f.getProperties().section}${f.getProperties().numero}`,
+      cultures: [{ CPF: "", id: crypto.randomUUID() }],
+    };
+
+    const result = await submitNewParcelle(props.recordId, featureObj);
+
+    if (result) {
+      const newFeatures = result.parcelles.features.filter(
+        (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+      );
+
+      const format = new GeoJSON();
+      store.setAll(result.parcelles.features);
+
+      for (const newFeature of newFeatures) {
+        props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
+      }
+
+      savedFeature = newFeatures[0];
+      store.select(newFeatures.map((f) => f.id as string));
+    }
+  }
+
+  showCadastreModal.value = false;
+  selectedIds.value = [];
+  previewSource.clear();
+  loading.value = false;
+};
 
 /*
  * * Fonctions : Utils
@@ -514,7 +585,7 @@ watch(
       cadastre = mapPrefs.value.cadastre;
     }
     store.unselectAll();
-    selectedIds = [];
+    selectedIds.value = [];
     previewSource.clear();
 
     if (draw) {

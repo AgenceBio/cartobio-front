@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, inject, Ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map } from "ol";
@@ -95,6 +95,8 @@ const showDetailsModal = ref(false);
 const isErrorMerging = ref<boolean>(false);
 const errorMessage = ref<string>("");
 
+const loading: Ref<boolean> = inject("loading", ref(false));
+
 /*
  * * Fonctions :  interactions
  */
@@ -137,7 +139,6 @@ const mergeInteractions = (): Feature<Geometry> | null => {
   if (!merged || merged.geometry.type === "MultiPolygon") {
     isErrorMerging.value = true;
     errorMessage.value = "Les parcelles ne se touchent pas. Impossible de faire l’union.";
-    console.log("here");
     return null;
   }
 
@@ -191,6 +192,7 @@ const confirmer = async (e): Promise<void> => {
       cultures: e.properties.cultures,
       engagement_date: e.properties.engagement_date,
     };
+    loading.value = true;
     const result = await createFeaturesFromOther(props.recordId, [mergeFeature.value], store.selectedIds);
 
     if (result) {
@@ -215,6 +217,8 @@ const confirmer = async (e): Promise<void> => {
         props.vectorLayer.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
       }
     }
+    showDetailsModal.value = false;
+    loading.value = false;
     mapPrefs.value.currentMode = "edit";
   }
 };
@@ -232,6 +236,7 @@ const calculateArea = (feature: CartoBioFeature): string => {
 };
 
 const goToEdit = () => {
+  showDetailsModal.value = false;
   mapPrefs.value.currentMode = "edit";
 };
 

@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, createApp, watch } from "vue";
+import { ref, onMounted, onUnmounted, createApp, watch, Ref, inject } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, MapBrowserEvent, Overlay } from "ol";
@@ -63,6 +63,8 @@ const { map: mapPrefs } = storeToRefs(preferences);
 const hasDivision = ref<boolean>(false);
 const currentGeom = ref<LineString | null>(null);
 
+const loading: Ref<boolean> = inject("loading", ref(false));
+
 /*
  * * Constantes
  */
@@ -94,6 +96,7 @@ const validateDivision = async () => {
   for (const modifiedFeature of resSource.getFeatures()) {
     modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
   }
+  loading.value = true;
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
@@ -113,6 +116,8 @@ const validateDivision = async () => {
       props.vectorLayer.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
     }
   }
+  loading.value = false;
+
   mapPrefs.value.currentMode = "edit";
 };
 
