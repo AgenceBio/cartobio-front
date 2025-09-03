@@ -31,7 +31,7 @@
       </button>
       <button class="fr-btn fr-btn--sm fr-mr-1v" :disabled="!hasBordure" @click="validateDivision">Découper</button>
       <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-if="hasBordure" @click="resetChoice">
-        Annuler
+        <i class="ri-loop-left-line"></i>
       </button>
       <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-else @click="mapPrefs.currentMode = 'edit'">
         <i class="fr-icon-close-line fr-icon--sm"></i>
@@ -177,8 +177,7 @@ const borderInteraction = (): void => {
     style: new Style({
       image: new CircleStyle({
         radius: 6,
-        fill: new Fill({ color: [40, 167, 69, 1] }),
-        stroke: new Stroke({ color: "white", width: 2 }),
+        fill: new Fill({ color: "rgba(247, 103, 239, 1)" }),
       }),
     }),
     zIndex: 6,
@@ -190,8 +189,7 @@ const borderInteraction = (): void => {
     style: new Style({
       image: new CircleStyle({
         radius: 6,
-        fill: new Fill({ color: [40, 167, 69, 1] }),
-        stroke: new Stroke({ color: "white", width: 2 }),
+        fill: new Fill({ color: "rgba(247, 103, 239, 1)" }),
       }),
     }),
     zIndex: 9,
@@ -203,8 +201,7 @@ const borderInteraction = (): void => {
     style: new Style({
       image: new CircleStyle({
         radius: 6,
-        fill: new Fill({ color: [40, 167, 69, 1] }),
-        stroke: new Stroke({ color: "white", width: 2 }),
+        fill: new Fill({ color: "rgba(247, 103, 239, 1)" }),
       }),
     }),
     zIndex: 10,
@@ -790,12 +787,13 @@ onUnmounted(() => {
 }
 
 .distance-input {
-  width: 10ch;
+  width: 12ch;
 }
 
 .pop-in-top.border {
   gap: 10px;
   padding: 8px 10px;
+  width: fit-content;
 }
 
 :deep(button[class^="ri"]),
