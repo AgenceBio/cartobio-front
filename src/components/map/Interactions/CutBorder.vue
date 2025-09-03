@@ -1,23 +1,11 @@
 <template>
-  <div class="pop-in-top border">
-    <div class="column">
-      <div class="fr-checkbox-group">
-        <input type="checkbox" id="bordure-complete" @click="toggleAllBorder" />
-        <label class="fr-label" for="bordure-complete" aria-label="Appliquer la bordure sur toute la parcelle"
-          >Bordure complète</label
-        >
+  <div>
+    <div class="pop-in-top border">
+      <div class="title fr-mr-2v">
+        <i class="ri-crop-line" aria-hidden="true" />
+        <strong class="fr-ml-1v">Bordure</strong>
       </div>
-      <div class="fr-checkbox-group">
-        <input type="checkbox" id="inverser-selection" @click="invertSelection" />
-        <label class="fr-label" for="inverser-selection" aria-label="Inverser le sens de la bordure"
-          >Inverser la séléction</label
-        >
-      </div>
-    </div>
-    <div class="column fr-checkbox-group">
-      <label class="fr-label fr-text--bold" for="largeur-bordure" aria-label="Largeur de la bordure"
-        >Distance (m)</label
-      >
+      <label class="fr-label" for="largeur-bordure" aria-label="Largeur de la bordure">Distance (m)</label>
       <input
         type="number"
         id="largeur-bordure"
@@ -26,10 +14,40 @@
         v-model="distance"
         @change="setDistance"
       />
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        data-tooltip="Inverser la séléction"
+        @click="invertSelection"
+      >
+        <i class="ri-arrow-left-right-line"></i>
+      </button>
+      <button
+        class="fr-btn fr-btn--sm"
+        :class="[allBorder ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        @click="toggleAllBorder"
+        data-tooltip="Faire la découpe tout autour de la parcelle"
+      >
+        <i class="ri-shape-line"></i>
+      </button>
+      <button class="fr-btn fr-btn--sm fr-mr-1v" :disabled="!hasBordure" @click="validateDivision">Découper</button>
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-if="hasBordure" @click="resetChoice">
+        Annuler
+      </button>
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-else @click="mapPrefs.currentMode = 'edit'">
+        <i class="fr-icon-close-line fr-icon--sm"></i>
+      </button>
     </div>
-    <div class="column">
-      <button class="fr-btn" :disabled="!hasBordure" @click="validateDivision">Découper</button>
-      <button class="fr-btn" :disabled="!hasBordure" @click="resetChoice">Réinitialiser</button>
+    <div class="pop-in-info" v-if="parcelle1Area != null && parcelle2Area != null">
+      <div class="division-overlay">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span class="area-info blue"></span>
+          {{ parcelle1Area }} ha
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v">
+          <span class="area-info green"></span>
+          {{ parcelle2Area }} ha
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -107,6 +125,9 @@ const distance = ref<number>(5);
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
+const parcelle1Area: Ref<number | null> = ref(null);
+const parcelle2Area: Ref<number | null> = ref(null);
+
 /*
  * * Computed
  */
@@ -140,8 +161,8 @@ let startBorderPoint: Coordinate | undefined | null;
 let endBorderPoint: Coordinate | undefined | null;
 let startSegmentIndex = -1;
 let endSegmentIndex = -1;
-let isInverted = false;
-let allBorder = false;
+const isInverted = ref(false);
+const allBorder = ref(false);
 let isDragging = false;
 
 let handleMapClick: () => void;
@@ -193,8 +214,14 @@ const borderInteraction = (): void => {
   previewBorderLayer = new VectorLayer({
     source: previewBorderSource,
     style: new Style({
-      stroke: new Stroke({ color: [40, 167, 69, 0.8], width: 2 }),
-      fill: new Fill({ color: [40, 167, 69, 0.3] }),
+      stroke: new Stroke({
+        color: "rgba(247, 103, 239, 1)",
+        width: 4,
+        lineDash: [10, 20, 10, 20],
+        lineCap: "square",
+        lineJoin: "bevel",
+      }),
+      fill: new Fill({ color: "rgba(247, 103, 239, 0.6)" }),
     }),
     zIndex: 8,
   });
@@ -369,7 +396,7 @@ const drawBorder = () => {
   const allBordureJsts = parcelleAggrandieJsts.difference(parcelleSansBordureJsts);
 
   let bordureJsts;
-  if (allBorder) {
+  if (allBorder.value) {
     bordureJsts = allBordureJsts;
   } else {
     const parcelle = parser.write(parcelleSansBordureJsts);
@@ -382,7 +409,7 @@ const drawBorder = () => {
     const polys = polygonizer.getPolygons();
     bordureJsts = polys.array
       .filter((poly) => poly.intersection(allBordureJsts).getArea() > 0)
-      [+isInverted].intersection(allBordureJsts);
+      [+isInverted.value].intersection(allBordureJsts);
   }
 
   const bordure = parser.write(bordureJsts);
@@ -409,28 +436,15 @@ const drawBorder = () => {
     geometry: withoutBordure,
   });
 
-  const numeroI = targetFeature.get("NUMERO_I") || "";
-  const numeroP = targetFeature.get("NUMERO_P") || "";
-  const nom = targetFeature.get("NOM") || "";
-
-  let text = "";
-  if (numeroI.toString() !== "") {
-    text = `Ilôt ${numeroI} parcelle ${numeroP}\r`;
-  } else if (nom) {
-    text = nom;
-  }
-
   resSource?.clear();
   resSource?.addFeature(featureWithoutBordure);
   resSource?.addFeature(res);
 
   const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
-  const parcelle1Area = calculateArea(parcelle1Geometry as CartoBioFeature);
+  parcelle1Area.value = calculateArea(parcelle1Geometry as CartoBioFeature);
 
   const parcelle2Geometry = new GeoJSON().writeFeatureObject(res, {});
-  const parcelle2Area = calculateArea(parcelle2Geometry as CartoBioFeature);
-
-  createTooltipOverlay(props.map, `Découpe de la parcelle : ${text}`, parcelle1Area, parcelle2Area);
+  parcelle2Area.value = calculateArea(parcelle2Geometry as CartoBioFeature);
 
   previewBorderSource?.addFeature(res);
   hasBordure.value = true;
@@ -580,19 +594,19 @@ const createTooltipOverlay = (map: Map, libelle: string, area1: number, area2: n
 };
 
 const invertSelection = () => {
-  isInverted = !isInverted;
+  isInverted.value = !isInverted.value;
   if (startBorderPoint && endBorderPoint) {
     drawBorder();
   }
 };
 
 const toggleAllBorder = () => {
-  allBorder = !allBorder;
-  hasBordure.value = allBorder;
+  allBorder.value = !allBorder.value;
+  hasBordure.value = allBorder.value;
   previewClosestPointSource?.clear();
   previewStartPointSource?.clear();
   previewEndPointSource?.clear();
-  if (allBorder) {
+  if (allBorder.value) {
     props.map.un("pointermove", handlePointerMove);
     props.map.un("click", handleMapClick);
     drawBorder();
@@ -611,7 +625,7 @@ const toggleAllBorder = () => {
 };
 
 const setDistance = () => {
-  if ((!isNaN(distance.value) && startBorderPoint && endBorderPoint) || allBorder) {
+  if ((!isNaN(distance.value) && startBorderPoint && endBorderPoint) || allBorder.value) {
     drawBorder();
   }
 };
@@ -710,6 +724,8 @@ const resetChoice = () => {
   startSegmentIndex = -1;
   endSegmentIndex = -1;
   hasBordure.value = false;
+  parcelle1Area.value = 0;
+  parcelle2Area.value = 0;
 
   borderInteraction();
 };
@@ -780,5 +796,98 @@ onUnmounted(() => {
 .pop-in-top.border {
   gap: 10px;
   padding: 8px 10px;
+}
+
+:deep(button[class^="ri"]),
+:deep(button[class*=" ri"]) {
+  font-size: 1.2em;
+}
+
+.pop-in-info {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 10px;
+}
+
+.division-overlay {
+  background: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+  border-radius: 4px;
+  display: flex;
+}
+
+.area-info {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.area-info.blue {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(247, 103, 239, 0.3);
+  border: 2px dashed #f767ef;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.area-info.green {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(88, 197, 207, 0.5);
+  border: 2px dashed #60e0eb;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.title {
+  align-content: center;
+}
+
+.fr-label {
+  align-content: center;
+}
+button[data-tooltip] {
+  position: relative;
+}
+
+button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translate(-50%, -100%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  opacity: 0;
+  white-space: normal; /* permet retour à la ligne */
+  width: max-content;
+  max-width: 220px; /* limite pour éviter des tooltips trop larges */
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 2000;
+}
+
+button[data-tooltip]:hover::after {
+  opacity: 1;
 }
 </style>

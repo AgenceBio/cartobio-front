@@ -1,6 +1,10 @@
 <template>
   <div class="pop-in-top delete">
-    <p class="fr-mb-0" v-if="numberSelectedFeature">
+    <div class="title fr-mr-2v">
+      <i class="ri-delete-bin-line" aria-hidden="true" />
+      <strong class="fr-ml-1v">Supprimer</strong>
+    </div>
+    <p class="fr-mb-0 fr-text--xs" v-if="numberSelectedFeature">
       Vous avez sélectionné {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} à supprimer
     </p>
 

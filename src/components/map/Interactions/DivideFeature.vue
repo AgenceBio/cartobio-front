@@ -1,7 +1,39 @@
 <template>
-  <div class="pop-in-top" v-if="hasDivision">
-    <button class="fr-btn" :disabled="!hasDivision" @click="validateDivision">Valider la découpe</button>
-    <button class="fr-btn fr-btn--secondary" :disabled="!hasDivision" @click="cancelDivision">Annuler</button>
+  <div>
+    <div class="pop-in-top">
+      <div class="title fr-mr-2v">
+        <i class="ri-scissors-cut-line" aria-hidden="true" />
+        <strong class="fr-ml-1v">Découper</strong>
+      </div>
+      <button class="fr-btn fr-btn--sm" :disabled="!hasDivision" @click="validateDivision">Découper</button>
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        :disabled="!hasDivision"
+        @click="cancelDivision"
+        v-if="hasDivision"
+      >
+        Annuler
+      </button>
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line fr-icon--sm"
+        v-else
+        @click="mapPrefs.currentMode = 'edit'"
+      >
+        Fermer
+      </button>
+    </div>
+    <div class="pop-in-info" v-if="parcelle1Area != null && parcelle2Area != null">
+      <div class="division-overlay">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span class="area-info blue"></span>
+          {{ parcelle1Area }} ha
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v">
+          <span class="area-info green"></span>
+          {{ parcelle2Area }} ha
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,6 +115,13 @@ const previewSource = new VectorSource();
 
 let geomListenerKey: any = null;
 let sourceListenerKey: any = null;
+
+/*
+ * * Refs
+ */
+
+const parcelle1Area: Ref<number | null> = ref(null);
+const parcelle2Area: Ref<number | null> = ref(null);
 
 /*
  * * Fonctions : Data
@@ -288,14 +327,26 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
 
       if (polys.array.length === 2) {
         const parcelle1Style = new Style({
-          stroke: new Stroke({ color: [0, 123, 255, 0.8], width: 2 }),
-          fill: new Fill({ color: [0, 123, 255, 0.3] }),
+          stroke: new Stroke({
+            color: "rgba(247, 103, 239, 1)",
+            width: 4,
+            lineDash: [10, 20, 10, 20],
+            lineCap: "square",
+            lineJoin: "bevel",
+          }),
+          fill: new Fill({ color: "rgba(247, 103, 239, 0.3)" }),
           zIndex: 4,
         });
 
         const parcelle2Style = new Style({
-          stroke: new Stroke({ color: [40, 167, 69, 0.8], width: 2 }),
-          fill: new Fill({ color: [40, 167, 69, 0.3] }),
+          stroke: new Stroke({
+            color: "rgba(96, 224, 235, 1)",
+            width: 4,
+            lineDash: [10, 20, 10, 20],
+            lineCap: "square",
+            lineJoin: "bevel",
+          }),
+          fill: new Fill({ color: "rgba(166, 242, 250, 0.2)" }),
           zIndex: 4,
         });
 
@@ -317,24 +368,11 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
   }
 
   if (newPolygons.length === 2) {
-    const numeroI = targetFeature.get("NUMERO_I") || "";
-    const numeroP = targetFeature.get("NUMERO_P") || "";
-    const nom = targetFeature.get("NOM") || "";
-
-    let text = "";
-    if (numeroI.toString() !== "") {
-      text = `Ilôt ${numeroI} parcelle ${numeroP}\r`;
-    } else if (nom) {
-      text = nom;
-    }
-
     const parcelle1Geometry = new GeoJSON().writeFeatureObject(newPolygons[0], {});
-    const parcelle1Area = calculateArea(parcelle1Geometry as CartoBioFeature);
+    parcelle1Area.value = calculateArea(parcelle1Geometry as CartoBioFeature);
 
     const parcelle2Geometry = new GeoJSON().writeFeatureObject(newPolygons[1], {});
-    const parcelle2Area = calculateArea(parcelle2Geometry as CartoBioFeature);
-
-    createTooltipOverlay(props.map, `Division de la parcelle : ${text}`, parcelle1Area, parcelle2Area);
+    parcelle2Area.value = calculateArea(parcelle2Geometry as CartoBioFeature);
   }
 
   newPolygons.forEach((poly) => {
@@ -480,3 +518,64 @@ onUnmounted(() => {
   }
 });
 </script>
+<style scoped>
+:deep(button[class^="ri"]),
+:deep(button[class*=" ri"]) {
+  font-size: 1.2em;
+}
+
+.pop-in-info {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 10px;
+}
+
+.division-overlay {
+  background: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+  border-radius: 4px;
+  display: flex;
+}
+
+.area-info {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.area-info.blue {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(247, 103, 239, 0.3);
+  border: 2px dashed #f767ef;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.area-info.green {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(88, 197, 207, 0.5);
+  border: 2px dashed #60e0eb;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+.title {
+  align-content: center;
+}
+</style>

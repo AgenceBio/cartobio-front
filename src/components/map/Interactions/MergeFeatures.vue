@@ -1,9 +1,17 @@
 <template>
   <div class="pop-in-top merge">
-    <div v-if="mergeFeature">
-      <p class="fr-mb-0">Parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
-      <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="showDetailsModal = true">
-        Ok
+    <div class="title fr-mr-2v">
+      <i class="ri-merge-cells-horizontal" aria-hidden="true" />
+      <strong class="fr-ml-1v">Fusionner</strong>
+    </div>
+    <div class="action" v-if="mergeFeature">
+      <span class="area-info green fr-mr-2v"></span>
+      <p class="fr-mb-0 fr-text--s title fr-mr-2v">Parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
+      <button
+        class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+        @click="showDetailsModal = true"
+      >
+        Confirmer
       </button>
       <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
     </div>
@@ -261,5 +269,25 @@ onUnmounted(() => {
   padding: 5px 10px;
   align-items: center;
   width: fit-content;
+}
+
+.title {
+  align-content: center;
+}
+
+.action {
+  text-align: center;
+  display: flex;
+}
+
+.area-info.green {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(88, 197, 207, 0.5);
+  border: 2px dashed #60e0eb;
+  display: inline-block;
+
+  margin: auto 0px;
 }
 </style>

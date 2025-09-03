@@ -64,7 +64,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
@@ -141,7 +140,7 @@ button[data-tooltip] {
 button[data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
-  left: -5px;
+  left: 0px;
   top: 50%;
   transform: translate(-100%, -50%);
   background: rgba(0, 0, 0, 0.85);
@@ -162,5 +161,4 @@ button[data-tooltip]::after {
 button[data-tooltip]:hover::after {
   opacity: 1;
 }
-
 </style>

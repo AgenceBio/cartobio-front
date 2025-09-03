@@ -1,11 +1,21 @@
 <template>
   <div>
     <div v-if="numberSelectedFeature === 1 && !isCorrecting" class="pop-in-top">
+      <div class="title fr-mr-2v">
+        <i class="ri-pen-nib-line" aria-hidden="true" />
+        <strong class="fr-ml-1v">Modifier</strong>
+      </div>
       <button class="fr-btn" :disabled="!hasUndo" @click="saveModifiedFeature">Valider la modification</button>
       <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
     <div v-else-if="isCorrecting && corrections.length > 0" class="pop-in-top">
       <button class="fr-btn" @click="correct">Valider la correction</button>
+    </div>
+    <div class="pop-in-info" v-if="numberSelectedFeature > 0">
+      {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} sélectionnée{{
+        numberSelectedFeature > 1 ? "s" : ""
+      }}
+      {{ globalHa }} ha
     </div>
     <div v-if="corrections.length > 0" class="correct-parcelle">
       <div>
@@ -111,6 +121,15 @@ let correctedParcellesId: string[] = [];
 
 const numberSelectedFeature = computed(() => {
   return store.selectedIds.length;
+});
+
+const globalHa = computed(() => {
+  let tempo = 0;
+  for (const f of store.selectedIds) {
+    const feature = store.getFeatureById(f);
+    tempo += legalProjectionSurface(feature);
+  }
+  return inHa(tempo);
 });
 
 /*
@@ -494,5 +513,20 @@ onUnmounted(() => {
 
 .error {
   color: var(--text-default-error);
+}
+.title {
+  align-content: center;
+}
+.pop-in-info {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 10px;
 }
 </style>
