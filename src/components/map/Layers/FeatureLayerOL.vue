@@ -286,8 +286,8 @@ const clearInteractions = (): void => {
 };
 
 const updateHasUndoRedo = () => {
-  hasUndo.value = interactions.value.undoRedo?.hasUndo() || false;
-  hasRedo.value = interactions.value.undoRedo?.hasRedo() || false;
+  hasUndo.value = (interactions.value.undoRedo?.getStack("undo").length || 0) > 0;
+  hasRedo.value = (interactions.value.undoRedo?.getStack("redo").length || 0) > 0;
 };
 
 const createCultureOverlay = (feature: Feature) => {

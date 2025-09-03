@@ -551,9 +551,7 @@ const submitFeature = async (res: { id: string; properties: object }) => {
       props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
     }
 
-    savedFeature = newFeatures[0];
-
-    store.select(newFeatures.map((f) => f.id as string));
+    store.select(...newFeatures.map((f) => f.id as string));
   }
 
   if (result) {
