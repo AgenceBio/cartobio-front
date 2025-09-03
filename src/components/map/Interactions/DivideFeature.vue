@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, createApp, watch, Ref, inject } from "vue";
+import { ref, onMounted, onUnmounted, watch, Ref, inject } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, MapBrowserEvent, Overlay } from "ol";
@@ -62,7 +62,6 @@ import { click } from "ol/events/condition";
 import { DrawEvent } from "ol/interaction/Draw";
 import { LinearRing, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from "ol/geom";
 import * as jsts from "jsts/dist/jsts.min";
-import DivisionOverlay from "../Overlays/DivisionOverlay.vue";
 import BaseEvent from "ol/events/Event";
 
 /*
@@ -420,42 +419,6 @@ const cleanupPreview = (previewSource: VectorSource): void => {
   }
 
   previewSource.clear();
-};
-
-const createTooltipOverlay = (map: Map, libelle: string, area1: number, area2: number): void => {
-  if (!targetFeature) return;
-  const extent = targetFeature.getGeometry()?.getExtent();
-
-  if (!extent) {
-    return;
-  }
-  const [minX, , maxX, maxY] = extent;
-  const centerX = (minX + maxX) / 2;
-  const positionning = [centerX, maxY];
-
-  const element = document.createElement("div");
-
-  const app = createApp(DivisionOverlay, {
-    libelle,
-    area1,
-    area2,
-  });
-
-  app.mount(element);
-
-  const overlay = new Overlay({
-    element,
-    offset: [0, -15],
-    positioning: "bottom-center",
-  });
-
-  if (currentOverlay) {
-    map.removeOverlay(currentOverlay);
-  }
-  map.addOverlay(overlay);
-  currentOverlay = overlay;
-
-  overlay.setPosition(positionning);
 };
 
 const calculateArea = (feature: CartoBioFeature): number => {

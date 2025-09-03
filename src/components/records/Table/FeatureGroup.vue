@@ -69,7 +69,10 @@
           >
             {{ featureName(feature, { explicitName: false }) }}
           </h4>
-          <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null">
+          <p
+            class="fr-hint-text"
+            v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
+          >
             {{ featureName(feature, { nameOnly: true }) }}
           </p>
         </div>

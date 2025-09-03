@@ -144,7 +144,6 @@ import { storeToRefs } from "pinia";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
-import { useRecordStore } from "@/stores/record.js";
 
 import MassActionsSelector from "@/components/records/Table/MassActionsSelector.vue";
 import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
@@ -192,7 +191,6 @@ const emit = defineEmits([
 const loading = inject("loading");
 const isOnline = useOnline();
 
-const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();

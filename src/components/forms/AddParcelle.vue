@@ -96,16 +96,11 @@ import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { toDateInputString } from "@/utils/dates.js";
 
-import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
-import AccordionSection from "@/components/widgets/Accordion.vue";
 import Modal from "@/components/widgets/Modal.vue";
 import AnnotationsSelector from "@/components/forms/fields/AnnotationsSelector.vue";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import CancelModal from "@/components/forms/CancelModal.vue";
-import { featureDetails, inHa, legalProjectionSurface } from "@/utils/features.js";
-import { getCulturePAC } from "@agencebio/rosetta-cultures";
-import { jjmmyyyy } from "@/utils/dates";
 
 const props = defineProps({
   feature: {
@@ -145,12 +140,7 @@ const patch = reactive({
 const isAB = computed(() => isABLevel(patch.conversion_niveau));
 const maxDate = computed(() => toDateInputString(new Date()));
 const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau));
-const details = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
-
-function requiresAction(properties) {
-  return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
-}
 
 const validate = () => {
   if (props.readonly) {

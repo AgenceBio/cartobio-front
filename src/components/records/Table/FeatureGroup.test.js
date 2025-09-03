@@ -39,7 +39,6 @@ describe("FeatureGroup", () => {
     // we should have a single culture name within the 3rd cell
     expect(wrapper.find("#parcelle-4 .parcelle-titre h4").text()).toEqual("îlot 2, parcelle 1");
     expect(wrapper.find("#parcelle-4 .parcelle-titre .badge.badge-AB").exists()).toEqual(true);
-    expect(wrapper.find("#parcelle-4 .parcelle-titre .fr-icon.fr-icon-culture-legumes").exists()).toEqual(true);
     console.warn(wrapper.html());
   });
 

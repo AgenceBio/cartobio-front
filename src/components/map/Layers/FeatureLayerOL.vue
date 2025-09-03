@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp, computed, nextTick } from "vue";
+import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, Overlay, MapBrowserEvent } from "ol";
@@ -119,7 +119,6 @@ import cropCursor from "@/assets/logos-edit/crop-line.svg";
 import scissorsCursor from "@/assets/logos-edit/scissors-cut-line.svg";
 import editCursor from "@/assets/logos-edit/edit.svg";
 import consultCursor from "@/assets/logos-edit/consult.svg";
-
 
 /*
  * * Interface
@@ -675,6 +674,7 @@ onUnmounted(() => {
 
   padding: 6px 16px;
 }
+
 :deep(.pop-in-info) {
   padding: 6px 16px;
   box-shadow: 0px 0px 30px 0px rgba(64, 102, 68, 0.2);

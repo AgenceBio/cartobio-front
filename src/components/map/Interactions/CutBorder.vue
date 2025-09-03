@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, createApp, Ref, inject } from "vue";
+import { ref, onMounted, onUnmounted, Ref, inject } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, MapBrowserEvent, Overlay } from "ol";
@@ -87,7 +87,6 @@ import {
   Polygon,
 } from "ol/geom";
 import * as jsts from "jsts/dist/jsts.min";
-import DivisionOverlay from "../Overlays/DivisionOverlay.vue";
 
 /*
  * * Interface
@@ -551,43 +550,6 @@ const squaredDistance = (point1: Coordinate, point2: Coordinate) => {
   const dx = p1[0] - p2[0];
   const dy = p1[1] - p2[1];
   return dx * dx + dy * dy;
-};
-
-const createTooltipOverlay = (map: Map, libelle: string, area1: number, area2: number): void => {
-  if (!targetFeature) return;
-  const extent = targetFeature.getGeometry()?.getExtent();
-
-  if (!extent) {
-    return;
-  }
-  const [minX, , maxX, maxY] = extent;
-  const centerX = (minX + maxX) / 2;
-  const positionning = [centerX, maxY];
-
-  const element = document.createElement("div");
-
-  const app = createApp(DivisionOverlay, {
-    libelle,
-    area1,
-    area2,
-  });
-
-  app.mount(element);
-
-  const overlay = new Overlay({
-    element,
-    offset: [0, -15],
-    positioning: "bottom-center",
-  });
-
-  if (currentOverlay) {
-    map.removeOverlay(overlay);
-    currentOverlay = null;
-  }
-  map.addOverlay(overlay);
-  currentOverlay = overlay;
-
-  overlay.setPosition(positionning);
 };
 
 const invertSelection = () => {

@@ -123,7 +123,7 @@ import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { addParcelleVerif, submitNewParcelle, getRPG, updateFeature } from "@/cartobio-api.js";
+import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
 
 import CertificationBodyEditForm from "@/components/forms/AddParcelle.vue";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
@@ -187,8 +187,6 @@ const selectedIds = ref<string[]>([]);
 
 let cadastre: boolean | null = null;
 let rpg: boolean | null = null;
-
-let savedFeature: CartoBioFeature | null = null;
 
 const showCadastreModal = ref(false);
 const showRPGModal = ref(false);

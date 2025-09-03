@@ -24,18 +24,7 @@
 </template>
 
 <script setup>
-import {
-  computed,
-  Fragment,
-  h,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  render,
-  shallowRef,
-  watch,
-} from "vue";
+import { computed, Fragment, h, nextTick, onBeforeUnmount, onMounted, ref, render, shallowRef, watch } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 
 import { autocomplete } from "@algolia/autocomplete-js";
@@ -212,7 +201,6 @@ onMounted(() => {
     createAutocomplete();
   }
 });
-
 
 onBeforeUnmount(() => {
   destroyAutocomplete();

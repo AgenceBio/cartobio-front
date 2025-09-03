@@ -265,7 +265,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             errorMessage: "Une culture a été répétée 2 années de suite",
             select(f) {
               const historique = f.properties.historique ?? [];
-              const index = 0
+              const index = 0;
               const currentCultures = historique[index];
               if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
 
@@ -309,7 +309,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             errorMessage: "Une culture a été répétée 3 années de suite",
             select(f) {
               const historique = f.properties.historique ?? [];
-              const index = 0
+              const index = 0;
               const currentCultures = historique[index];
               if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
 

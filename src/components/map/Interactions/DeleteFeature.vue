@@ -33,7 +33,6 @@ import DeleteModal from "@/components/forms/DeleteForm.vue";
 import toast from "@/utils/toast.js";
 
 // Utils Geom
-import { deleteParcelle } from "@/cartobio-api.js";
 
 import { Fill, Stroke, Style } from "ol/style";
 import { useOnline } from "@vueuse/core";

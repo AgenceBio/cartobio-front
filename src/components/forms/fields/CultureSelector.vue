@@ -330,18 +330,6 @@ function appendEmptyCulture() {
   multiCultureTab.value = appendedCultures;
 }
 
-function appendEmptyCultureUUID() {
-  const appendedCultures = [
-    ...uuidedCultures.value,
-    {
-      CPF: "",
-      id: crypto.randomUUID(),
-    },
-  ];
-
-  emit("change", appendedCultures);
-}
-
 function removeCulture(cultureId) {
   multiCultureTab.value = multiCultureTab.value.filter(({ id }) => id !== cultureId);
 }
