@@ -41,11 +41,11 @@
       <div class="division-overlay">
         <div style="display: flex; align-items: center; gap: 8px">
           <span class="area-info blue"></span>
-          {{ parcelle1Area }} ha
+          {{ parcelle2Area }} ha
         </div>
         <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v">
           <span class="area-info green"></span>
-          {{ parcelle2Area }} ha
+          {{ parcelle1Area }} ha
         </div>
       </div>
     </div>

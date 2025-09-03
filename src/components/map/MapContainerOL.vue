@@ -37,6 +37,7 @@ const initMap = (): void => {
       constrainResolution: true,
     }),
   });
+
 };
 
 /**
@@ -47,6 +48,7 @@ onMounted(() => {
   if (mapRef.value) {
     map.value?.setTarget(mapRef.value);
   }
+
 });
 
 onUpdated(() => {

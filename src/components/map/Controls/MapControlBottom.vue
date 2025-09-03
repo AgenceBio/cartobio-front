@@ -22,7 +22,7 @@
         :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'edit'"
       >
-        <i class="ri-shape-line" aria-hidden="true" />
+        <i class="ri-shape-line fr-mr-2v" aria-hidden="true" />
         Modifier
       </button>
     </div>

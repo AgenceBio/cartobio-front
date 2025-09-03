@@ -57,7 +57,7 @@
         <div class="toolbar-bottom">
           <button
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-            data-tooltip="Annuler"
+            data-tooltip="Annuler la dernière modification"
             @click="undo"
             :disabled="!hasUndo"
           >
@@ -65,7 +65,7 @@
           </button>
           <button
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-            data-tooltip="Refaire"
+            data-tooltip="Refaire la dernière modification"
             @click="redo"
             :disabled="!hasRedo"
           >
@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp, computed } from "vue";
+import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp, computed, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, Overlay, MapBrowserEvent } from "ol";
@@ -117,8 +117,9 @@ import ParcelleTooltip from "../Overlays/ParcelleTooltip.vue";
 import drawCursor from "@/assets/logos-edit/pen-nib-line.svg";
 import cropCursor from "@/assets/logos-edit/crop-line.svg";
 import scissorsCursor from "@/assets/logos-edit/scissors-cut-line.svg";
-import mergeCursor from "@/assets/logos-edit/merge-cells-horizontal.svg";
-import deleteCursor from "@/assets/logos-edit/delete-bin-line.svg";
+import editCursor from "@/assets/logos-edit/edit.svg";
+import consultCursor from "@/assets/logos-edit/consult.svg";
+
 
 /*
  * * Interface
@@ -188,6 +189,7 @@ const hasRedo = ref(false);
 let hoverOverlay: Overlay | null = null;
 let currentHoveredFeature: Feature | null = null;
 
+const currentCursor: Ref<string> = ref("default");
 /**
  * * Emits
  */
@@ -451,6 +453,8 @@ const hideHoverOverlay = () => {
  */
 
 const handlePointerMove = (e: MapBrowserEvent) => {
+  if (currentCursor.value) map.value.getViewport().style.cursor = currentCursor.value;
+
   if (
     mapPrefs.value.currentMode === "consult" ||
     (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0)
@@ -514,31 +518,26 @@ watch(
 
 watch(
   () => mapPrefs.value.currentMode,
-  (mode) => {
-    const viewport = map.value.getViewport();
-    const target = map.value.getTargetElement();
-    const set = (v: string) => {
-      viewport.style.cursor = v;
-      target.style.cursor = v;
-    };
+  async (mode) => {
     switch (mode) {
+      case "consult":
+        currentCursor.value = `url("${consultCursor}"), pointer`;
+        break;
       case "draw":
-        set(`url(${drawCursor}) 32 32, pointer`);
+        currentCursor.value = `url("${drawCursor}"), pointer`;
         break;
       case "decouper":
-        set(`url(${cropCursor}) 32 32, pointer`);
+        currentCursor.value = `url("${cropCursor}"), pointer`;
         break;
       case "divide":
-        set(`url(${scissorsCursor}) 32 32, pointer`);
+        currentCursor.value = `url("${scissorsCursor}"), pointer`;
         break;
-      case "fusionner":
-        set(`url(${mergeCursor}) 32 32, pointer`);
-        break;
-      case "delete":
-        set(`url(${deleteCursor}) 32 32, pointer`);
+      case "edit":
+        currentCursor.value = `url("${editCursor}"), pointer`;
         break;
       default:
-        set("default");
+        currentCursor.value = "default";
+        break;
     }
   },
   { immediate: true },
@@ -648,7 +647,6 @@ onMounted(() => {
 
   map.value.on("pointermove", handlePointerMove);
   map.value.getTargetElement().addEventListener("pointerleave", handlePointerLeave);
-
   mapPrefs.value.currentMode = "consult";
 });
 
@@ -673,6 +671,13 @@ onUnmounted(() => {
   display: flex;
   gap: 5px;
   border-radius: 10px;
+  box-shadow: 0px 0px 30px 0px rgba(64, 102, 68, 0.2);
+
+  padding: 6px 16px;
+}
+:deep(.pop-in-info) {
+  padding: 6px 16px;
+  box-shadow: 0px 0px 30px 0px rgba(64, 102, 68, 0.2);
 }
 
 .toolbar-bottom {
@@ -692,5 +697,34 @@ onUnmounted(() => {
   z-index: 2000;
   font-size: 20px;
   color: #6a6af4;
+}
+
+button[data-tooltip] {
+  position: relative;
+}
+
+button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translate(-100%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  opacity: 0;
+  white-space: normal; /* permet retour à la ligne */
+  width: max-content;
+  max-width: 220px; /* limite pour éviter des tooltips trop larges */
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 2000;
+}
+
+button[data-tooltip]:hover::after {
+  opacity: 1;
 }
 </style>

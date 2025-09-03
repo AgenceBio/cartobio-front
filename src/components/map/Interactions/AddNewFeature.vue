@@ -26,9 +26,16 @@
     </button>
   </div>
 
-  <div v-if="invalidDrawing" class="pop-in-top close">
-    <p class="fr-mb-0">Votre parcelle a été rogner pour respecter les règles</p>
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmCorrection">
+  <div v-if="invalidDrawing" class="pop-in-info close">
+    <div class="title fr-mr-2v">
+      <i class="ri-pen-nib-line" aria-hidden="true" />
+      <strong class="fr-ml-1v">Dessiner</strong>
+    </div>
+    <p class="fr-mb-0 fr-text--xs title">Votre parcelle a été rogner pour respecter les règles</p>
+    <button
+      class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right fr-btn--sm"
+      @click="confirmCorrection"
+    >
       Valider
     </button>
     <button class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
@@ -657,6 +664,8 @@ watch(
     }
     props.map.un("click", handleClickCadastre);
     props.map.un("click", handleClickRPG);
+    invalidDrawing.value = false;
+    errorDrawing.value = false;
 
     switch (mode.value) {
       case "dessiner":
@@ -767,5 +776,21 @@ onUnmounted(() => {
 <style scoped>
 .pop-in-top {
   align-items: center;
+}
+.title {
+  align-content: center;
+}
+
+.pop-in-info {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 10px;
 }
 </style>
