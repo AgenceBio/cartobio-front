@@ -19,7 +19,7 @@
           :class="[!extraLarge ?? 'fr-col-12 fr-col-md-8', !large && !extraLarge ? 'fr-col-lg-6' : null]"
         >
           <div class="fr-modal__body">
-            <div class="fr-modal__header">
+            <div class="fr-modal__header" v-if="!noHeader">
               <template v-if="!slots.header">
                 <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
                   <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
@@ -76,6 +76,10 @@ const props = defineProps({
     default: false,
   },
   extraLarge: {
+    type: Boolean,
+    default: false,
+  },
+  noHeader: {
     type: Boolean,
     default: false,
   },

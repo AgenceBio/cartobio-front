@@ -64,6 +64,28 @@
     />
   </div>
 
+  <div v-if="showRPGModal && mode === 'rpg'" class="pop-in-top">
+    <p class="fr-mb-0">
+      {{ selectedIds.length }} parcelle<span v-if="selectedIds.length > 1">s</span> sélectionnée<span
+        v-if="selectedIds.length > 1"
+        >s</span
+      >
+    </p>
+    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="addRpgFeatures">
+      Ajouter
+    </button>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      @click="
+        () => {
+          selectedIds = [];
+          previewSource.clear();
+          showRPGModal = false;
+        }
+      "
+    />
+  </div>
+
   <Teleport to="body">
     <CertificationBodyEditForm
       v-if="showDetailsModal"
@@ -162,6 +184,7 @@ let rpg: boolean | null = null;
 let savedFeature: CartoBioFeature | null = null;
 
 const showCadastreModal = ref(false);
+const showRPGModal = ref(false);
 /*
  * * Constantes
  */
@@ -398,6 +421,11 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
     newFeature.setStyle(previewStyle);
     previewSource.addFeature(newFeature);
     selectedIds.value.push(data.fid);
+    if (selectedIds.value.length > 0) {
+      showCadastreModal.value = true;
+    } else {
+      showCadastreModal.value = false;
+    }
   }
 };
 
@@ -560,6 +588,42 @@ const addCadastreFeatures = async () => {
   }
 
   showCadastreModal.value = false;
+  selectedIds.value = [];
+  previewSource.clear();
+  loading.value = false;
+};
+
+const addRpgFeatures = async () => {
+  const format = new GeoJSON();
+  loading.value = true;
+
+  for (const f of previewSource.getFeatures()) {
+    const featureObj = format.writeFeatureObject(f);
+    featureObj.properties = {
+      NOM: `Parcelle RPG`,
+      cultures: [{ CPF: "", id: crypto.randomUUID() }],
+    };
+
+    const result = await submitNewParcelle(props.recordId, featureObj);
+
+    if (result) {
+      const newFeatures = result.parcelles.features.filter(
+        (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+      );
+
+      const format = new GeoJSON();
+      store.setAll(result.parcelles.features);
+
+      for (const newFeature of newFeatures) {
+        props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
+      }
+
+      savedFeature = newFeatures[0];
+      store.select(newFeatures.map((f) => f.id as string));
+    }
+  }
+
+  showRPGModal.value = false;
   selectedIds.value = [];
   previewSource.clear();
   loading.value = false;

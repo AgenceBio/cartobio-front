@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref, Ref } from "vue";
+import { inject, onMounted, ref, Ref, watch } from "vue";
 import type { Map as OlMap } from "ol";
 import { usePreferences } from "@/stores/preferences.js";
 import { storeToRefs } from "pinia";
@@ -88,8 +88,9 @@ const featureStore = useFeaturesStore();
 /**
  * * Props
  */
-defineProps<{
+const props = defineProps<{
   isEditParcelleOpen: boolean;
+  isFullScreenProps: boolean;
 }>();
 
 /**
@@ -143,6 +144,17 @@ const createScaleLine = () => {
   });
   map.value.addControl(control);
 };
+
+/**
+ * * Watchers
+ */
+
+watch(
+  () => props.isFullScreenProps,
+  (newValue) => {
+    isFullScreen.value = newValue;
+  },
+);
 
 /**
  * * States fonctions

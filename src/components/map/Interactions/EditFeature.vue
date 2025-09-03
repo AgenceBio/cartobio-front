@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, createApp, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, createApp, watch, Ref, inject } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Collection, Map } from "ol";
@@ -88,6 +88,8 @@ const corrections = ref<
     existing_minus_intersection: CartoBioFeature;
   }[]
 >([]);
+
+const loading: Ref<boolean> = inject("loading", ref(false));
 
 /**
  * Corrections
@@ -307,6 +309,7 @@ const saveModifiedFeature = async () => {
     data.corrections.filter((c: { id: string }) => !correctedParcellesId.includes(c.id)).length === 0
   ) {
     const correctedParcelles = [];
+    loading.value = true;
 
     for (const id of correctedParcellesId) {
       const correctedFeature = props.vectorSource.getFeatureById(id);
@@ -324,6 +327,8 @@ const saveModifiedFeature = async () => {
       store.setSelectedIds([]);
       store.setAll(result.parcelles.features);
     }
+    loading.value = false;
+
     isModifying.value = false;
     mapPrefs.value.currentMode = "edit";
     props.undoRedo.clear();

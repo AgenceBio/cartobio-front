@@ -64,6 +64,7 @@ onMounted(() => {
       groupe: "IGN_BASE_LAYER",
       ordre: 1,
     },
+    background: "white",
   });
 
   satelliteLayer.set("name", "plan-satellite-layer");

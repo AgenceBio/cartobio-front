@@ -1,8 +1,8 @@
 <template>
   <div class="button-group">
-    <div class="left-button">
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('openDetail')">
-        <i class="ri-arrow-right-double-line" aria-hidden="true" />
+    <div class="left-button" v-if="!fullScreenMap">
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('openFullScreen')">
+        <i class="ri-sidebar-fold-line" aria-hidden="true" />
       </button>
     </div>
 
@@ -33,12 +33,18 @@ const preferences = usePreferences();
 const { map: mapPrefs } = storeToRefs(preferences);
 
 /**
+ * *Props
+ */
+
+defineProps<{ fullScreenMap: boolean }>();
+
+/**
  * * Emits
  */
 const emit = defineEmits<{
   (e: "addParcelle"): void;
   (e: "compare"): void;
-  (e: "openDetail"): void;
+  (e: "openFullScreen"): void;
 }>();
 </script>
 
