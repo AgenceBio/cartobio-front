@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
 import { useLocalStorage, useOnline } from "@vueuse/core";
-import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
+import {  createOperatorRecord } from "@/cartobio-api.js";
 import { legalProjectionSurface } from "@/utils/features.js";
 import { AxiosError } from "axios";
 import toast from "@/utils/toast.js";
 import { CertificationState } from "@agencebio/cartobio-types";
+import axios from "axios";
 
 /**
  * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator} AgenceBioNormalizedOperator
@@ -71,19 +72,19 @@ class SyncQueue {
     let result;
     switch (op.action) {
       case SyncOperation.ACTIONS.RECORD_INFO:
-        result = await apiClient.patch(`/v2/audits/${recordId}`, op.payload, config);
+        result = await axios.patch(`/v2/audits/${recordId}`, op.payload, config);
         break;
       case SyncOperation.ACTIONS.DELETE_FEATURE:
-        result = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${op.featureId}`, {
+        result = await axios.delete(`/v2/audits/${recordId}/parcelles/${op.featureId}`, {
           data: op.payload,
           ...config,
         });
         break;
       case SyncOperation.ACTIONS.UPDATE_FEATURE:
-        result = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${op.featureId}`, op.payload, config);
+        result = await axios.patch(`/v2/audits/${recordId}/parcelles/${op.featureId}`, op.payload, config);
         break;
       case SyncOperation.ACTIONS.UPDATE_COLLECTION:
-        result = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, op.payload, config);
+        result = await axios.patch(`/v2/audits/${recordId}/parcelles`, op.payload, config);
         break;
     }
 

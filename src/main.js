@@ -11,11 +11,12 @@ import "vue3-toastify/dist/index.css";
 import App from "./App.vue";
 import { version } from "../package.json";
 import toast from "@/utils/toast.js";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { useUserStore } from "@/stores/user.js";
 
 const { VUE_APP_MATOMO_SITE_ID: siteId = "58", VUE_APP_API_ENDPOINT } = import.meta.env;
 const { VUE_APP_SENTRY_DSN } = import.meta.env;
+const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -96,6 +97,7 @@ const userStore = useUserStore();
 userStore.enablePersistance();
 
 app.config.errorHandler = (error) => {
+  console.log("Error hadnler la")
   if (error?.response?.data?.code === "EXPIRED_CREDENTIALS" || error?.response?.data?.code === "INVALID_CREDENTIALS") {
     userStore.logout();
     router.replace({ path: "/login" });
@@ -143,44 +145,11 @@ router.beforeEach(async (to) => {
       await operatorStore.ready(to.params.numeroBio);
     }
   } catch (error) {
-    if (
-      error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
-      error?.response?.data?.code === "INVALID_CREDENTIALS"
-    ) {
-      userStore.logout();
-      return { path: "login", replace: true };
-    }
-
     if (error?.response?.status === 404) {
       toast.error("L'exploitation demandée n'existe pas.");
       return false;
     }
-
-    if (error?.response?.status === 403) {
-      toast.error("Vous n'avez pas les droits pour accéder à cette page.");
-      return { path: userStore.startPage, replace: true };
-    }
-
-    if (error?.response?.status === 401) {
-      return { path: "/login", replace: true };
-    }
-
-    if (
-      error.name === "AxiosError" &&
-      [AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)
-    ) {
-      toast.error(
-        "Une erreur de réseau est survenue. Si votre connexion " +
-          "est instable, vous pouvez passer en mode hors-ligne.",
-      );
-      return false;
-    }
-
-    if (error.name === "OPERATOR_CHANGEMENT_OC") {
-      toast.error(error.message);
-
-      return false;
-    }
+    
     throw error;
   }
 
@@ -244,4 +213,48 @@ router.afterEach(async () => {
 window.addEventListener("vite:preloadError", (e) => {
   e.preventDefault(); // prevent the default handling
   window.location.reload(); // refresh the page
+});
+
+
+axios.defaults.baseURL = baseURL;
+axios.defaults.timeout = 20000
+axios.interceptors.response.use((response) => {
+  console.log("axios Reponse")
+  return response
+}, (error) => {
+  console.log("axios error")
+  if (
+    error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
+    error?.response?.data?.code === "INVALID_CREDENTIALS" ||
+    error?.response?.status === 401
+  ) {
+    userStore.logout();
+    router.replace({ path: "login"});
+
+    return
+  }
+
+  if (error?.response?.status === 403) {
+    router.replace({ path: userStore.startPage});
+        toast.error("Vous n'avez pas les droits pour accéder à cette page.");
+    return;
+  }
+
+  if (
+    error.name === "AxiosError" &&
+    [AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)
+  ) {
+    toast.error(
+      "Une erreur de réseau est survenue. Si votre connexion " +
+        "est instable, vous pouvez passer en mode hors-ligne.",
+    );
+    return;
+  }
+
+  if (error.name === "OPERATOR_CHANGEMENT_OC") {
+    toast.error(error.message);
+
+    return;
+  }
+  throw error;
 });

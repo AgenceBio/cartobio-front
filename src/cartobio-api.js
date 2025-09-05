@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
-
 /**
  * @typedef {import('geojson').FeatureCollection} FeatureCollection
  * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
@@ -11,8 +9,6 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
  * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
  */
 
-export const apiClient = axios.create({ baseURL, timeout: 20000 });
-
 /**
  *
  * @returns {Promise<String>}
@@ -20,7 +16,7 @@ export const apiClient = axios.create({ baseURL, timeout: 20000 });
 export async function getVersion() {
   const {
     data: { version: version },
-  } = await apiClient.get("/version");
+  } = await axios.get("/version");
   return version;
 }
 
@@ -30,7 +26,7 @@ export async function getVersion() {
  * @returns {Promise<FeatureCollection>}
  */
 export async function getOperatorNcviFeatures({ evv, numeroBio }) {
-  const { data } = await apiClient.get(`/v2/import/evv/${evv}+${numeroBio}`);
+  const { data } = await axios.get(`/v2/import/evv/${evv}+${numeroBio}`);
 
   return data;
 }
@@ -40,7 +36,7 @@ export async function getOperatorNcviFeatures({ evv, numeroBio }) {
  * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
  */
 export async function searchOperators({ input, page, filter, limit = 7 }) {
-  const { data } = await apiClient.post(`/v2/certification/search`, { input, page, filter, limit }, { timeout: 60000 });
+  const { data } = await axios.post(`/v2/certification/search`, { input, page, filter, limit }, { timeout: 60000 });
 
   return data;
 }
@@ -50,7 +46,7 @@ export async function searchOperators({ input, page, filter, limit = 7 }) {
  * @returns {Promise<any[]>}
  */
 export async function getForAutocomplete(search) {
-  const { data } = await apiClient.get(`/v2/certification/autocomplete`, { params: { search } });
+  const { data } = await axios.get(`/v2/certification/autocomplete`, { params: { search } });
 
   return data;
 }
@@ -61,7 +57,7 @@ export async function getForAutocomplete(search) {
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
 export async function getUserOperators(search, limit, offset) {
-  const { data } = await apiClient.get(`/v2/operators`, { params: { limit, offset, search } });
+  const { data } = await axios.get(`/v2/operators`, { params: { limit, offset, search } });
 
   return data;
 }
@@ -72,7 +68,7 @@ export async function getUserOperators(search, limit, offset) {
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
 export async function getUserOperatorsForDashboard() {
-  const { data } = await apiClient.get(`/v2/operators/dashboard`);
+  const { data } = await axios.get(`/v2/operators/dashboard`);
 
   return data;
 }
@@ -83,7 +79,7 @@ export async function getUserOperatorsForDashboard() {
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
 export async function getDashboardSummary(departements, anneeReferenceControle) {
-  const { data } = await apiClient.post(`/v2/operators/dashboard-summary`, { departements, anneeReferenceControle });
+  const { data } = await axios.post(`/v2/operators/dashboard-summary`, { departements, anneeReferenceControle });
 
   return data;
 }
@@ -93,7 +89,7 @@ export async function getDashboardSummary(departements, anneeReferenceControle) 
  * @returns {Promise<FeatureCollection>}
  */
 export async function pacageLookup(pacage) {
-  const { data } = await apiClient.get(`/v2/import/pacage/${pacage}`);
+  const { data } = await axios.get(`/v2/import/pacage/${pacage}`);
 
   return data;
 }
@@ -106,7 +102,7 @@ export async function pacageLookup(pacage) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function createOperatorRecord(numeroBio, payload) {
-  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/records`, payload, { timeout: 600000 });
+  const { data } = await axios.post(`/v2/operator/${numeroBio}/records`, payload, { timeout: 600000 });
 
   return data;
 }
@@ -116,7 +112,7 @@ export async function createOperatorRecord(numeroBio, payload) {
  * @returns {Promise<void>}
  */
 export async function deleteRecord(recordId) {
-  await apiClient.delete(`/v2/audits/${recordId}`);
+  await axios.delete(`/v2/audits/${recordId}`);
 }
 
 /**
@@ -127,7 +123,7 @@ export async function deleteRecord(recordId) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function pinOperator(numeroBio) {
-  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/pin`);
+  const { data } = await axios.post(`/v2/operator/${numeroBio}/pin`);
 
   return data;
 }
@@ -140,7 +136,7 @@ export async function pinOperator(numeroBio) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function unpinOperator(numeroBio) {
-  const { data } = await apiClient.post(`/v2/operator/${numeroBio}/unpin`);
+  const { data } = await axios.post(`/v2/operator/${numeroBio}/unpin`);
 
   return data;
 }
@@ -154,7 +150,7 @@ export async function unpinOperator(numeroBio) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function tagParcelleControlee(recordId, id) {
-  const { data } = await apiClient.post(`/v2/audits/${recordId}/${id}/controlee`);
+  const { data } = await axios.post(`/v2/audits/${recordId}/${id}/controlee`);
 
   return data;
 }
@@ -168,7 +164,7 @@ export async function tagParcelleControlee(recordId, id) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function tagParcelleNonControlee(recordId, id) {
-  const { data } = await apiClient.post(`/v2/audits/${recordId}/${id}/non-controlee`);
+  const { data } = await axios.post(`/v2/audits/${recordId}/${id}/non-controlee`);
 
   return data;
 }
@@ -179,7 +175,7 @@ export async function tagParcelleNonControlee(recordId, id) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function submitNewParcelle(recordId, feature) {
-  const { data } = await apiClient.post(`/v2/audits/${recordId}/parcelles`, {
+  const { data } = await axios.post(`/v2/audits/${recordId}/parcelles`, {
     feature,
   });
 
@@ -192,7 +188,7 @@ export async function submitNewParcelle(recordId, feature) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function updateFeature(recordId, feature, featureId) {
-  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${featureId}`, feature);
+  const { data } = await axios.patch(`/v2/audits/${recordId}/parcelles/${featureId}`, feature);
 
   return data;
 }
@@ -203,7 +199,7 @@ export async function updateFeature(recordId, feature, featureId) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function updateFeatures(recordId, features) {
-  const { data } = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, { features });
+  const { data } = await axios.patch(`/v2/audits/${recordId}/parcelles`, { features });
 
   return data;
 }
@@ -214,7 +210,7 @@ export async function updateFeatures(recordId, features) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function createFeaturesFromOther(recordId, features, from) {
-  const { data } = await apiClient.put(`/v2/audits/${recordId}/parcelles`, {
+  const { data } = await axios.put(`/v2/audits/${recordId}/parcelles`, {
     features,
     from,
   });
@@ -228,7 +224,7 @@ export async function createFeaturesFromOther(recordId, features, from) {
  * @returns {Promise<NormalizedRecord>}
  */
 export async function deleteParcelle(recordId, featureId, reason) {
-  const { data } = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${featureId}`, { data: reason });
+  const { data } = await axios.delete(`/v2/audits/${recordId}/parcelles/${featureId}`, { data: reason });
 
   return data;
 }
@@ -238,7 +234,7 @@ export async function deleteParcelle(recordId, featureId, reason) {
  * @returns {Promise<CartoBioUser>}
  */
 export async function verifyToken(userToken) {
-  const { data } = await apiClient.get(`/v2/user/verify`, {
+  const { data } = await axios.get(`/v2/user/verify`, {
     headers: {
       Authorization: `Bearer ${userToken}`,
     },
@@ -253,7 +249,7 @@ export async function verifyToken(userToken) {
  * @return {Promise<{ operator: AgenceBioNormalizedOperator, token: CartoBioUser}>}
  */
 export async function exchangeNotificationToken(token) {
-  const { data } = await apiClient.get(`/v2/user/exchangeToken`, {
+  const { data } = await axios.get(`/v2/user/exchangeToken`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -264,9 +260,9 @@ export async function exchangeNotificationToken(token) {
 
 export function setAuthorization(userToken) {
   if (userToken) {
-    apiClient.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
   } else {
-    delete apiClient.defaults.headers.common["Authorization"];
+    delete axios.defaults.headers.common["Authorization"];
   }
 }
 
@@ -279,7 +275,7 @@ export function setAuthorization(userToken) {
 export async function convertGeographicalFileToGeoJSON(archive) {
   const form = new FormData();
   form.append("archive", archive);
-  const { data: geojson } = await apiClient.post(`/v2/convert/anygeo/geojson`, form);
+  const { data: geojson } = await axios.post(`/v2/convert/anygeo/geojson`, form);
   return geojson;
 }
 
@@ -292,7 +288,7 @@ export async function convertGeographicalFileToGeoJSON(archive) {
 export async function convertTelepacFileToGeoJSON(archive) {
   const form = new FormData();
   form.append("archive", archive);
-  const { data: geojson } = await apiClient.post(`/v2/convert/telepac/geojson`, form);
+  const { data: geojson } = await axios.post(`/v2/convert/telepac/geojson`, form);
   return geojson;
 }
 
@@ -305,7 +301,7 @@ export async function convertTelepacFileToGeoJSON(archive) {
 export async function convertGeofoliaArchiveToGeoJSON(archive) {
   const form = new FormData();
   form.append("archive", archive);
-  const { data: geojson } = await apiClient.post(`/v2/convert/geofolia/geojson`, form);
+  const { data: geojson } = await axios.post(`/v2/convert/geofolia/geojson`, form);
   return geojson;
 }
 
@@ -316,7 +312,7 @@ export async function convertGeofoliaArchiveToGeoJSON(archive) {
  * @returns {Promise<Number>}
  */
 export async function checkGeofoliaAccountStatus(numeroBio) {
-  const { status } = await apiClient.head(`/v2/import/geofolia/${numeroBio}`);
+  const { status } = await axios.head(`/v2/import/geofolia/${numeroBio}`);
   return status;
 }
 
@@ -328,7 +324,7 @@ export async function checkGeofoliaAccountStatus(numeroBio) {
  * @returns {Promise<GeoJSON>}
  */
 export async function getOperatorGeofoliaFeatures(numeroBio) {
-  const { data: geojson } = await apiClient.get(`/v2/import/geofolia/${numeroBio}`);
+  const { data: geojson } = await axios.get(`/v2/import/geofolia/${numeroBio}`);
   return geojson;
 }
 
@@ -338,7 +334,7 @@ export async function getOperatorGeofoliaFeatures(numeroBio) {
  * @returns {Promise<{any}>}
  */
 export async function getDepartements() {
-  const { data: departements } = await apiClient.get(`/v2/departements`);
+  const { data: departements } = await axios.get(`/v2/departements`);
   return departements;
 }
 
@@ -349,7 +345,7 @@ export async function getDepartements() {
  * @returns {Promise<any>}
  */
 export async function getDataXLSX(payload) {
-  const data = await apiClient.post("/v2/exportParcellaire", { payload }, { timeout: 600000 });
+  const data = await axios.post("/v2/exportParcellaire", { payload }, { timeout: 600000 });
   return data;
 }
 
@@ -362,7 +358,7 @@ export async function getDataXLSX(payload) {
  * @returns {Promise<string>} -Base64 du fichier pdf
  */
 export async function getPDFData(numeroBio, record_id, signal) {
-  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}`, {
+  const data = await axios.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}`, {
     timeout: 600000,
     signal,
   });
@@ -370,15 +366,15 @@ export async function getPDFData(numeroBio, record_id, signal) {
 }
 
 export async function hideNotif(numeroBio) {
-  await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
+  await axios.patch(`/v2/operator/${numeroBio}/hideNotif`);
 }
 
 export async function addParcelleVerif(geojson, recordId) {
-  const data = await apiClient.post(`/v2/geometry/${recordId}/add`, { payload: geojson });
+  const data = await axios.post(`/v2/geometry/${recordId}/add`, { payload: geojson });
   return data;
 }
 
 export async function getRPG(extent) {
-  const data = await apiClient.post(`/v2/geometry/rpg`, { payload: extent });
+  const data = await axios.post(`/v2/geometry/rpg`, { payload: extent });
   return data;
 }

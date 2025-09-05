@@ -5,8 +5,9 @@ import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import bbox from "@turf/bbox";
 import toast from "@/utils/toast.js";
 import { useOperatorStore } from "@/stores/operator.js";
-import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
+import {  createOperatorRecord } from "@/cartobio-api.js";
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
+import axios from "axios";
 
 /**
  * @typedef {import('@agencebio/cartobio-types').NormalizedRecord} NormalizedRecord
@@ -172,7 +173,7 @@ export const useRecordStore = defineStore("record", () => {
    * @return {Promise<NormalizedRecord>}
    */
   async function getRecord(recordId, store = false) {
-    const { data } = await apiClient.get(`/v2/audits/${recordId}`);
+    const { data } = await axios.get(`/v2/audits/${recordId}`);
 
     // Update storage if requested or if already present and no local changes are pending
     if (store || (storage.records[recordId] && !storage.syncQueues[recordId])) {

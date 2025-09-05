@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js";
-import { apiClient } from "@/cartobio-api.js";
 import { useCartoBioStorage } from "@/stores/storage.js";
+import axios from "axios";
 
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
@@ -118,7 +118,7 @@ export const useOperatorStore = defineStore("operator", () => {
    */
   function markAsConsulted() {
     if (operator.value) {
-      apiClient.post(`/v2/operator/${operator.value.numeroBio}/consulte`);
+      axios.post(`/v2/operator/${operator.value.numeroBio}/consulte`);
     }
   }
 
@@ -132,9 +132,9 @@ export const useOperatorStore = defineStore("operator", () => {
 
   async function getOperator(numeroBio, store = false) {
     const [{ data: operatorData }, { data: recordsData }, { data: importData }] = await Promise.all([
-      apiClient.get(`/v2/operator/${numeroBio}`),
-      apiClient.get(`/v2/operator/${numeroBio}/records`),
-      apiClient.get(`/v2/operator/${numeroBio}/importData`),
+      axios.get(`/v2/operator/${numeroBio}`),
+      axios.get(`/v2/operator/${numeroBio}/records`),
+      axios.get(`/v2/operator/${numeroBio}/importData`),
     ]);
 
     // Update storage if requested or if already present
