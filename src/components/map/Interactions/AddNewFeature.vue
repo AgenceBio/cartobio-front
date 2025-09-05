@@ -71,7 +71,7 @@
     />
   </div>
 
-  <div v-if="showRPGModal && mode === 'rpg'" class="pop-in-top">
+  <div v-if="showRPGModal && mode === 'RPG'" class="pop-in-top">
     <p class="fr-mb-0">
       {{ selectedIds.length }} parcelle<span v-if="selectedIds.length > 1">s</span> sélectionnée<span
         v-if="selectedIds.length > 1"
@@ -427,9 +427,9 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
     previewSource.addFeature(newFeature);
     selectedIds.value.push(data.fid);
     if (selectedIds.value.length > 0) {
-      showCadastreModal.value = true;
+      showRPGModal.value = true;
     } else {
-      showCadastreModal.value = false;
+      showRPGModal.value = false;
     }
   }
 };
@@ -585,7 +585,6 @@ const addCadastreFeatures = async () => {
         props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
       }
 
-      savedFeature = newFeatures[0];
       store.select(newFeatures.map((f) => f.id as string));
     }
   }
@@ -621,7 +620,6 @@ const addRpgFeatures = async () => {
         props.vectorLayer.getSource()?.addFeature(format.readFeature(newFeature) as Feature);
       }
 
-      savedFeature = newFeatures[0];
       store.select(newFeatures.map((f) => f.id as string));
     }
   }
