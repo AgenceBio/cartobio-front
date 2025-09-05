@@ -32,15 +32,27 @@
     <div v-if="corrections.length > 0" class="correct-parcelle">
       <div>
         <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
-        <strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle</strong>
+        <template v-if="canCorrect()">
+          <strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle</strong>
+        </template>
+        <template v-else>
+          <strong>Attention ! Le tracé de votre parcelle coupe une autre parcelle</strong>
+        </template>
       </div>
       <div>
         <button
-          v-if="!isCorrecting"
+          v-if="!isCorrecting && canCorrect()"
           class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left"
           @click="startCorrection"
         >
           <i class="ri-shape-line" aria-hidden="true" /> Corriger automatiquement
+        </button>
+        <button
+          v-else-if="!isCorrecting && !canCorrect()"
+          class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-close-line"
+          @click="resetEdit"
+        >
+          Annuler
         </button>
         <template v-else>
           <button
@@ -88,6 +100,7 @@ import { click, platformModifierKey } from "ol/events/condition";
 import { MultiPoint } from "ol/geom";
 import EditParcelleTooltip from "../Overlays/EditParcelleTooltip.vue";
 import intersect from "@turf/intersect";
+import { MultiPolygon, Polygon } from "@turf/helpers";
 
 /*
  * * Interface
@@ -124,9 +137,9 @@ const isModifying = ref(false);
 const corrections = ref<
   {
     id: string;
-    new_minus_intersection: CartoBioFeature;
-    existing_minus_intersection: CartoBioFeature;
-    intersection: CartoBioFeature;
+    new_minus_intersection: Polygon | MultiPolygon;
+    existing_minus_intersection: Polygon | MultiPolygon;
+    intersection: Polygon | MultiPolygon;
   }[]
 >([]);
 
@@ -187,6 +200,14 @@ const globalHa = computed(() => {
 const resetEdit = () => {
   props.undoRedo.clear();
   isModifying.value = false;
+
+  resetCorrection();
+  nextTick(() => {
+    initModifyInteraction(selectedFeatures, tooltip);
+  });
+};
+
+const resetCorrection = (resetModifiedFeature = true) => {
   correctionSource.clear();
   intersectionSource.clear();
   props.map.removeLayer(correctionLayer);
@@ -195,23 +216,27 @@ const resetEdit = () => {
   isCorrecting.value = false;
   featureToKeepForCorrection.clear();
   const format = new GeoJSON();
-  for (const id of [...correctedParcellesId, ...store.selectedIds]) {
+  const selectedIds = store.selectedIds as string[];
+  for (const id of [...correctedParcellesId, ...selectedIds]) {
     const feature = store.getFeatureById(id);
 
-    if (feature) {
-      const displayedFeature = props.vectorSource.getFeatureById(id);
+    if (!feature) {
+      continue;
+    }
+    const displayedFeature = props.vectorSource.getFeatureById(id);
 
-      if (displayedFeature) {
-        displayedFeature.setGeometry((format.readFeature(feature) as Feature).getGeometry());
-        if ((store.selectedIds as string[]).includes(id)) {
-          displayedFeature.setStyle([getPolygonStyle(), getPointStyle()]);
-        } else {
-          displayedFeature.setStyle();
-        }
+    if (!displayedFeature) {
+      continue;
+    }
+    if (resetModifiedFeature === true || !selectedIds.includes(id)) {
+      displayedFeature.setGeometry((format.readFeature(feature) as Feature).getGeometry());
+      if (selectedIds.includes(id)) {
+        displayedFeature.setStyle([getPolygonStyle(), getPointStyle()]);
+        continue;
       }
+      displayedFeature.setStyle();
     }
   }
-
   correctedParcellesId = [];
   if (correctionInteraction) {
     props.map.removeInteraction(correctionInteraction);
@@ -243,12 +268,16 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   props.map.addInteraction(modify);
 
   modify.on("modifystart", () => {
+    if (corrections.value.length > 0) {
+      resetCorrection(false);
+    }
     isModifying.value = true;
     props.map.addOverlay(tooltip);
   });
 
   modify.on("modifyend", () => {
     props.map.removeOverlay(tooltip);
+    selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
     initModifyInteraction(selectedFeatures, tooltip);
   });
 };
@@ -292,6 +321,15 @@ const modifyInteraction = () => {
   });
 
   props.map.addInteraction(select);
+
+  props.undoRedo.on("undo", () => {
+    resetCorrection(false);
+    selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
+  });
+  props.undoRedo.on("redo", () => {
+    resetCorrection(false);
+    selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
+  });
 };
 
 const getPolygonStyle = (): Style => {
@@ -440,6 +478,7 @@ const saveModifiedFeature = async () => {
             spacing: 6,
             angle: 0,
           }),
+          stroke: new Stroke({ color: "red", width: 1 }),
         }),
       );
       intersectionSource.addFeature(feature);
@@ -450,8 +489,8 @@ const saveModifiedFeature = async () => {
 const selectToCorrect = (
   correction: {
     id: string;
-    new_minus_intersection: CartoBioFeature;
-    existing_minus_intersection: CartoBioFeature;
+    new_minus_intersection: Polygon | MultiPolygon;
+    existing_minus_intersection: Polygon | MultiPolygon;
   },
   modifiedFeature: Feature,
   overlappedFeature: Feature,
@@ -575,6 +614,23 @@ const correct = () => {
   } else {
     startCorrection();
   }
+};
+
+const canCorrect = () => {
+  if (corrections.value.length === 0) {
+    return false;
+  }
+
+  for (const correction of corrections.value) {
+    if (
+      correction.existing_minus_intersection.type !== "Polygon" ||
+      correction.new_minus_intersection.type !== "Polygon"
+    ) {
+      return false;
+    }
+  }
+
+  return true;
 };
 
 /*
