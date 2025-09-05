@@ -139,6 +139,7 @@ import OperatorHistoryModal from "@/components/records/HistoryModal/index.vue";
 import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.vue";
 import FullStorageModal from "@/components/versions/FullStorageModal.vue";
 import DeleteDownloadModal from "@/components/versions/DeleteDownloadModal.vue";
+import { usePreferences } from "@/stores/preferences.js";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useOperatorStore } from "@/stores/operator.js";
@@ -179,11 +180,14 @@ const userStore = useUserStore();
 const permissions = usePermissions();
 const isOnline = useOnline();
 const storage = useCartoBioStorage();
+const preferences = usePreferences();
 
 const { record } = recordStore;
 const { operator } = operatorStore;
 const featuresSets = useFeaturesSetsStore();
 const { collection, hasFeatures } = storeToRefs(featuresStore);
+const { map: mapPrefs } = storeToRefs(preferences);
+
 const { tags } = storeToRefs(featuresSets);
 const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && record.audit_history.length);
 
@@ -208,6 +212,7 @@ function unpin(numeroBio) {
 }
 
 async function redirectToRecord(recordTo) {
+  mapPrefs.value.currentMode = "consult";
   await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordTo.record_id}`);
 }
 

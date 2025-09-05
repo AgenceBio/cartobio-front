@@ -5,7 +5,7 @@
         <i class="ri-scissors-cut-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Découper</strong>
       </div>
-      <button class="fr-btn fr-btn--sm" :disabled="!hasDivision" @click="validateDivision">Découper</button>
+      <button class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right" :disabled="!hasDivision" @click="validateDivision">Découper</button>
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         :disabled="!hasDivision"
@@ -190,19 +190,20 @@ const cancelDivision = () => {
 
 const divideInteraction = (): void => {
   const lineStyle = new Style({
-    stroke: new Stroke({ color: [0, 0, 255, 0.8], width: 3 }),
+    stroke: new Stroke({ color: "rgba(247, 103, 239, 1)", width: 3 }),
     image: new RegularShape({
       fill: new Fill({ color: "white" }),
       points: 4,
       radius: 7,
     }),
+
     zIndex: 6,
   });
 
   const modifyStyle = new Style({
     stroke: new Stroke({ color: [0, 0, 255, 0.8], width: 3 }),
     image: new RegularShape({
-      fill: new Fill({ color: "white" }),
+      fill: new Fill({ color: "rgba(247, 103, 239, 1)" }),
       points: 4,
       radius: 7,
     }),

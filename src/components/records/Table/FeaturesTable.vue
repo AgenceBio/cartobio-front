@@ -1,6 +1,6 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-  <div class="fr-grid-row fr-grid-row--middle fr-mt-7v fr-mb-5v fr-mr-2w">
+  <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w">
     <div class="fr-search-bar fr-col-12 fr-col-md-6" id="search" role="search">
       <p class="fr-sr-only">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>

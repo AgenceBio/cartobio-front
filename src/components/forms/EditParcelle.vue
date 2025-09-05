@@ -188,13 +188,6 @@
                     :max="maxDate"
                   />
                 </div>
-                <AnnotationsSelector
-                  v-if="permissions.canAddAnnotations"
-                  v-model="patch.annotations"
-                  :feature-id="feature.properties.id"
-                  :readonly="readonly || !permissions.canEditParcellaire"
-                />
-
                 <div class="fr-input-group" v-if="permissions.canAddAnnotations">
                   <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
                   <textarea
@@ -235,21 +228,13 @@
                 v-model="patch.conversion_niveau"
               />
 
-              <div>
+              <div v-if="patch.engagement_date">
                 <label class="fr-label" for="engagement_date"
                   >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
                 >
                 <p>{{ jjmmyyyy(patch.engagement_date) }}</p>
               </div>
-
-              <AnnotationsSelector
-                v-if="permissions.canAddAnnotations"
-                v-model="patch.annotations"
-                :feature-id="feature.properties.id"
-                :readonly="readonly || !permissions.canEditParcellaire"
-              />
-
-              <div class="fr-input-group" v-if="permissions.isOc">
+              <div class="fr-input-group" v-if="permissions.canChangeConversionLevel">
                 <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
                 <textarea
                   :disabled="readonly || !permissions.canEditParcellaire"
@@ -259,6 +244,14 @@
                   v-model="patch.auditeur_notes"
                 />
               </div>
+              <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-else-if="patch.auditeur_notes">
+                <blockquote>
+                  <p>{{ patch.auditeur_notes }}</p>
+                </blockquote>
+                <figcaption>
+                  <p class="fr-quote__author">Notes de l'OC</p>
+                </figcaption>
+              </figure>
             </AccordionSection>
           </AccordionGroup>
         </template>
@@ -281,7 +274,13 @@
         <div class="fr-messages-group" id="toggle-messages" aria-live="polite"></div>
       </div>
       <div class="fr-input-group fr-mt-1w">
-        <button class="fr-btn" type="submit" form="single-feature-edit-form" aria-label="Enregister le parcellaire">
+        <button
+          class="fr-btn"
+          type="submit"
+          form="single-feature-edit-form"
+          aria-label="Enregister le parcellaire"
+          :disabled="!featuresSet.isDirty"
+        >
           Enregistrer
         </button>
       </div>
@@ -329,7 +328,6 @@ import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useFocus } from "@vueuse/core";
 
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
-import AnnotationsSelector from "@/components/forms/fields/AnnotationsSelector.vue";
 
 import AccordionSection from "@/components/widgets/Accordion.vue";
 import { LEVEL_C1, LEVEL_C2, LEVEL_C3, isABLevel, getConversionLevel } from "@/referentiels/ab.js";
@@ -387,6 +385,7 @@ useFocus(autofocusedElement, { initialValue: true });
 function requiresAction(properties) {
   return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
 }
+
 const patch = ref({
   NOM: props.feature.properties.NOM || "",
   cultures: props.feature.properties.cultures,
