@@ -212,7 +212,7 @@ const operatorStore = useOperatorStore();
 const permissions = usePermissions();
 const openModalVersion = ref(false);
 
-const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
+const isOnCartobio = new URL(baseURL).origin.includes(window.location.hostname);
 const sortedRecords = computed(
   () =>
     operatorStore.records?.toSorted((recordA, recordB) => {
