@@ -12,6 +12,7 @@
       </button>
       <button
         class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
+        :disabled="!permissions.canEditParcellaire"
         @click="emit('addParcelle')"
       >
         Ajouter une parcelle
@@ -22,6 +23,8 @@
 
 <script setup lang="ts">
 import { usePreferences } from "@/stores/preferences.js";
+import { usePermissions } from "@/stores/permissions.js";
+
 import { storeToRefs } from "pinia";
 
 /*
@@ -29,6 +32,7 @@ import { storeToRefs } from "pinia";
  */
 
 const preferences = usePreferences();
+const permissions = usePermissions();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 

@@ -29,9 +29,15 @@
       >
         <i class="ri-shape-line"></i>
       </button>
-      <button class="fr-btn fr-btn--sm fr-mr-1v" :disabled="!hasBordure" @click="validateDivision">Découper</button>
+      <button
+        class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right fr-mr-1v"
+        :disabled="!hasBordure"
+        @click="validateDivision"
+      >
+        Découper
+      </button>
       <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-if="hasBordure" @click="resetChoice">
-        <i class="ri-loop-left-line"></i>
+        Annuler
       </button>
       <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-else @click="mapPrefs.currentMode = 'edit'">
         <i class="fr-icon-close-line fr-icon--sm"></i>

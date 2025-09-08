@@ -57,7 +57,7 @@
       >
     </p>
     <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="addCadastreFeatures">
-      Ajouter
+      Ajouter les parcelles cadastrales
     </button>
     <button
       class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
@@ -79,7 +79,7 @@
       >
     </p>
     <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="addRpgFeatures">
-      Ajouter
+      Ajouter les parcelles RPG
     </button>
     <button
       class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
@@ -247,6 +247,7 @@ const cancelDraw = (): void => {
 
 const confirmCorrection = (): void => {
   if (correctedFeature.value) {
+    console.log(correctedFeature);
     feature.value = correctedFeature.value;
   }
 };
@@ -694,10 +695,10 @@ watch(
     invalidDrawing.value = false;
     errorDrawing.value = false;
     const data = (await addParcelleVerif(newFeature, props.recordId)).data;
-
     if (data.valid === true) {
       errorDrawing.value = false;
       const previewFeature = format.readFeature(newFeature) as Feature;
+      console.log(feature.value);
       previewFeature.setStyle(previewStyle);
       previewSource.addFeature(previewFeature);
       showDetailsModal.value = true;
