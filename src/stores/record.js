@@ -5,7 +5,7 @@ import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import bbox from "@turf/bbox";
 import toast from "@/utils/toast.js";
 import { useOperatorStore } from "@/stores/operator.js";
-import {  createOperatorRecord } from "@/cartobio-api.js";
+import { createOperatorRecord } from "@/cartobio-api.js";
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
 import axios from "axios";
 

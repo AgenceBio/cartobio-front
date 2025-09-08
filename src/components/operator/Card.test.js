@@ -15,7 +15,7 @@ const user = useUserStore(pinia);
 
 describe("Card", () => {
   beforeEach(() => {
-    axios.__createMock.post.mockResolvedValue({
+    axios.post.mockResolvedValue({
       data: {
         operator: { ...operatorJson, epingle: !operatorJson.epingle },
       },
@@ -158,7 +158,7 @@ describe("Card", () => {
     expect(wrapper.find(".fr-card__footer p").exists()).toEqual(true);
   });
 
-  test("Ppun / unpin", async () => {
+  test("Pin / unpin", async () => {
     const { record_id, audit_date, certification_date_debut, certification_state, ...operator } = operatorJson;
     const wrapper = mount(Card, {
       props: {

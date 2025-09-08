@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
 import { useLocalStorage, useOnline } from "@vueuse/core";
-import {  createOperatorRecord } from "@/cartobio-api.js";
+import { createOperatorRecord } from "@/cartobio-api.js";
 import { legalProjectionSurface } from "@/utils/features.js";
 import { AxiosError } from "axios";
 import toast from "@/utils/toast.js";

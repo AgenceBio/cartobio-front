@@ -259,9 +259,9 @@ export async function exchangeNotificationToken(token) {
 }
 
 export function setAuthorization(userToken) {
-  if (userToken) {
+  if (userToken && axios.defaults?.headers?.common) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
-  } else {
+  } else if (axios.defaults?.headers?.common) {
     delete axios.defaults.headers.common["Authorization"];
   }
 }

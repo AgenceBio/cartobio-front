@@ -181,7 +181,7 @@ describe("OperatorSetupFlow", () => {
         },
       });
 
-      axios.__createMock.post.mockResolvedValueOnce({
+      axios.post.mockResolvedValueOnce({
         data: featureCollectionFixture,
       });
 
@@ -205,7 +205,7 @@ describe("OperatorSetupFlow", () => {
       const error = new AxiosError("Fichier invalide");
       error.response = { status: 400, data: { message: "Votre fichier ne semble pas être une déclaration PAC." } };
 
-      axios.__createMock.post.mockRejectedValueOnce(error);
+      axios.post.mockRejectedValueOnce(error);
 
       await wrapper.find('input[type="file"]').setValue("");
       await flushPromises();
@@ -227,7 +227,7 @@ describe("OperatorSetupFlow", () => {
       await wrapper.find("ul").find(".import-source-tab--anygeo").trigger("click");
       expect(wrapper.text()).toContain(`QGIS`);
 
-      axios.__createMock.post.mockResolvedValueOnce({
+      axios.post.mockResolvedValueOnce({
         data: featureCollectionFixture,
       });
 
@@ -251,7 +251,7 @@ describe("OperatorSetupFlow", () => {
       const error = new AxiosError("Fichier invalide");
       error.response = { status: 400, data: { message: "L'archive ZIP ne peut pas être lue." } };
 
-      axios.__createMock.post.mockRejectedValueOnce(error);
+      axios.post.mockRejectedValueOnce(error);
 
       await wrapper.find('input[type="file"]').setValue("");
       await flushPromises();
@@ -276,7 +276,7 @@ describe("OperatorSetupFlow", () => {
       await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
       expect(wrapper.text()).toContain(`Parcelles et interventions (ZIP)`);
 
-      axios.__createMock.post.mockResolvedValueOnce({
+      axios.post.mockResolvedValueOnce({
         data: featureCollectionFixture,
       });
 
@@ -299,7 +299,7 @@ describe("OperatorSetupFlow", () => {
         },
       });
 
-      axios.__createMock.head.mockResolvedValueOnce({ status: 204 });
+      axios.head.mockResolvedValueOnce({ status: 204 });
 
       // Click on geofolia tab
       await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
@@ -308,14 +308,14 @@ describe("OperatorSetupFlow", () => {
 
       await flushPromises();
       expect(wrapper.text()).not.toContain("Vérification de votre contrat");
-      expect(axios.__createMock.head).toHaveBeenCalled(1);
+      expect(axios.head).toHaveBeenCalled(1);
 
       // we should be ready to import (first attempt, not ready)
       const importBtn = wrapper.find("form .fr-btn");
       expect(importBtn.text()).toBe("Collecter les parcelles");
       expect(importBtn.attributes("disabled")).toBe(undefined);
 
-      axios.__createMock.get.mockResolvedValueOnce({ status: 202 });
+      axios.get.mockResolvedValueOnce({ status: 202 });
       await form.trigger("submit.prevent");
       // FIXME : Ne passe plus suite à la mise à jour de certaines dépendances
       // expect(wrapper.text()).toContain("Collecte des parcelles en cours");
@@ -324,14 +324,14 @@ describe("OperatorSetupFlow", () => {
       expect(wrapper.text()).toContain("Les données ne sont pas encore prêtes");
 
       // second attempt, ready to import
-      axios.__createMock.get.mockResolvedValueOnce({
+      axios.get.mockResolvedValueOnce({
         data: featureCollectionFixture,
       });
 
       await form.trigger("submit.prevent");
       await flushPromises();
       expect(wrapper.text()).not.toContain("Les données ne sont pas encore prêtes");
-      expect(axios.__createMock.get).toHaveBeenCalled(2);
+      expect(axios.get).toHaveBeenCalled(2);
 
       const confirmBtn = wrapper.find(".fr-btn");
       expect(confirmBtn.exists()).toEqual(true);
@@ -351,7 +351,7 @@ describe("OperatorSetupFlow", () => {
       // Click on geofolia tab
       await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
 
-      axios.__createMock.head.mockResolvedValueOnce({ status: 404 });
+      axios.head.mockResolvedValueOnce({ status: 404 });
       await flushPromises();
 
       // button is now disabled and we should read the manual
@@ -373,7 +373,7 @@ describe("OperatorSetupFlow", () => {
       const error = new AxiosError("Fichier invalide");
       error.response = { status: 400 };
 
-      axios.__createMock.post.mockRejectedValueOnce(error);
+      axios.post.mockRejectedValueOnce(error);
 
       await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
       await wrapper.find('input[type="file"]').setValue("");
@@ -402,7 +402,7 @@ describe("OperatorSetupFlow", () => {
 
       const error = new AxiosError("Server is down");
       error.response = { status: 500 };
-      axios.__createMock.post.mockRejectedValueOnce(error);
+      axios.post.mockRejectedValueOnce(error);
 
       await wrapper.find('input[type="file"]').setValue("");
       await flushPromises();
@@ -424,7 +424,7 @@ describe("OperatorSetupFlow", () => {
       await wrapper.find("ul").find(".import-source-tab--mesparcelles").trigger("click");
       expect(wrapper.text()).toContain(`Sélectionner mon export MesParcelles (service Telepac)`);
 
-      axios.__createMock.post.mockResolvedValueOnce({
+      axios.post.mockResolvedValueOnce({
         data: featureCollectionFixture,
       });
 
@@ -447,7 +447,7 @@ describe("OperatorSetupFlow", () => {
 
       const error = new AxiosError("Fichier invalide");
       error.response = { status: 400 };
-      axios.__createMock.post.mockRejectedValueOnce(error);
+      axios.post.mockRejectedValueOnce(error);
 
       await wrapper.find("ul").find(".import-source-tab--mesparcelles").trigger("click");
       await wrapper.find('input[type="file"]').setValue("");
@@ -476,7 +476,7 @@ describe("OperatorSetupFlow", () => {
 
       const error = new AxiosError("Server is down");
       error.response = { status: 500 };
-      axios.__createMock.post.mockRejectedValueOnce(error);
+      axios.post.mockRejectedValueOnce(error);
 
       await wrapper.find('input[type="file"]').setValue("");
       await flushPromises();
@@ -525,7 +525,7 @@ describe("OperatorSetupFlow", () => {
         },
       });
 
-      axios.__createMock.get.mockResolvedValueOnce({
+      axios.get.mockResolvedValueOnce({
         data: featureCollectionFixture,
       });
 
@@ -535,7 +535,7 @@ describe("OperatorSetupFlow", () => {
       await wrapper.find(".fr-btn").trigger("click");
       await flushPromises();
 
-      expect(axios.__createMock.get).toHaveBeenCalledOnce();
+      expect(axios.get).toHaveBeenCalledOnce();
       const confirmBtn = await wrapper.find(".fr-btn");
       expect(confirmBtn.exists()).toEqual(true);
     });
@@ -561,7 +561,7 @@ describe("OperatorSetupFlow", () => {
       // Submit an invalid EVV
       const error = new AxiosError("EVV et SIRET non correspondants");
       error.response = { status: 401, data: { error: "EVV et SIRET non correspondants" } };
-      axios.__createMock.get.mockRejectedValueOnce(error);
+      axios.get.mockRejectedValueOnce(error);
 
       await wrapper.find("ul").find(".import-source-tab--cvi").trigger("click");
 

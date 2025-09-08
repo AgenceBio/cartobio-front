@@ -7,8 +7,8 @@ import axios, { AxiosError } from "axios";
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 
 beforeEach(() => {
-  axios.__createMock.patch.mockResolvedValue({ data: record });
-  axios.__createMock.delete.mockResolvedValue({ data: record });
+  axios.patch.mockResolvedValue({ data: record });
+  axios.delete.mockResolvedValue({ data: record });
 });
 
 const storage = useCartoBioStorage(pinia);
@@ -103,7 +103,7 @@ describe("storage", () => {
 
       const error = new AxiosError("BAD_REQUEST_AXIOS");
       error.response = { status: 400, data: { message: "bad request" } };
-      axios.__createMock.patch.mockRejectedValueOnce(error);
+      axios.patch.mockRejectedValueOnce(error);
 
       storage.addSyncOperation(
         recordId,
