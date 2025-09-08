@@ -574,7 +574,6 @@ watch(
 
     generateConversionLevelOverlays();
   },
-  { deep: true },
 );
 watch(
   () => record.record.record_id,
