@@ -141,12 +141,14 @@ const onFullScreen = () => {
 const createScaleLine = () => {
   const control = new ScaleLine({
     className: "ol-scale-line",
-    target: document.getElementById("scale-line"),
+    target: document.getElementById("scale-line") ?? undefined,
     units: "metric",
     maxWidth: 100,
     minWidth: 100,
   });
-  map.value.addControl(control);
+  if (map?.value) {
+    map.value.addControl(control);
+  }
 };
 
 /**

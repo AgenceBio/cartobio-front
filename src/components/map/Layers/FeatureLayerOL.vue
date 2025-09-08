@@ -154,7 +154,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const preferences = usePreferences();
 const store = useFeaturesStore();
-const record = useRecordStore();
+const recordStore = useRecordStore();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 
@@ -463,7 +463,7 @@ const handlePointerMove = (e: MapBrowserEvent) => {
       (feature) => {
         return feature;
       },
-      { layerFilter: (l) => l.get("name") === vectorLayer.value.get("name") },
+      { layerFilter: (l) => l.get("name") === vectorLayer.value?.get("name") },
     ) as Feature;
 
     if (feature && feature !== currentHoveredFeature) {
@@ -560,8 +560,10 @@ watch(
   () => store.collection,
   () => {
     features.value = new GeoJSON().readFeatures(store.collection);
-    vectorSource.value.clear();
-    vectorSource.value.addFeatures(features.value);
+    if (vectorSource.value) {
+      vectorSource.value.clear();
+      vectorSource.value.addFeatures(features.value as Feature[]);
+    }
     map.value
       .getOverlays()
       .getArray()
@@ -576,13 +578,9 @@ watch(
   },
 );
 watch(
-  () => record.record.record_id,
+  () => recordStore.record.record_id,
   () => {
-    let extent = null;
-
-    if (!extent || isNaN(extent[0]) || extent[0] === Infinity) {
-      extent = record.bounds;
-    }
+    const extent = recordStore.bounds;
 
     if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
       map.value.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 5000 });
@@ -617,7 +615,7 @@ onMounted(() => {
   let extent = vectorSource.value?.getExtent();
 
   if (!extent || isNaN(extent[0]) || extent[0] === Infinity) {
-    extent = record.bounds;
+    extent = recordStore.bounds;
   }
 
   if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
@@ -688,14 +686,6 @@ onUnmounted(() => {
   gap: 2px;
   padding: 10px;
   border-radius: 4px;
-}
-
-.cursor-icon {
-  position: fixed;
-  pointer-events: none;
-  z-index: 2000;
-  font-size: 20px;
-  color: #6a6af4;
 }
 
 button[data-tooltip] {

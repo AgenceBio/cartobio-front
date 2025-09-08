@@ -94,8 +94,8 @@
   </div>
 
   <Teleport to="body">
-    <CertificationBodyEditForm
-      v-if="showDetailsModal"
+    <AddParcelleModal
+      v-if="showDetailsModal && feature"
       :feature="feature"
       @close="goToEdit"
       @submit="submitFeature"
@@ -104,7 +104,7 @@
       required-name
     >
       <template #title>Nouvelle parcelle</template>
-    </CertificationBodyEditForm>
+    </AddParcelleModal>
   </Teleport>
 </template>
 
@@ -125,7 +125,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 // Utils Geom
 import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
 
-import CertificationBodyEditForm from "@/components/forms/AddParcelle.vue";
+import AddParcelleModal from "@/components/forms/AddParcelleModal.vue";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw } from "ol/interaction";
 import Tooltip from "ol-ext/overlay/Tooltip";
@@ -450,7 +450,7 @@ const drawInteraction = (): void => {
       let canDraw = true;
 
       props.vectorSource.getFeatures().forEach((feature: Feature) => {
-        if (feature.getGeometry().intersectsCoordinate(coordPoint)) {
+        if (feature.getGeometry()?.intersectsCoordinate(coordPoint)) {
           canDraw = false;
         }
       });

@@ -18,17 +18,17 @@
     </div>
   </div>
   <Teleport to="body">
-    <CertificationBodyEditForm
-      v-if="showDetailsModal"
+    <AddParcelleModal
+      v-if="showDetailsModal && mergeFeature"
       :feature="mergeFeature"
       @close="goToEdit"
-      @submit="(e) => confirmer(e)"
+      @submit="confirmer"
       icon="fr-icon-add-line"
       data-content-name="Modale de confirmation d'ajout"
       required-name
     >
       <template #title>Nouvelle parcelle</template>
-    </CertificationBodyEditForm>
+    </AddParcelleModal>
   </Teleport>
 </template>
 
@@ -42,7 +42,7 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 
-import CertificationBodyEditForm from "@/components/forms/AddParcelle.vue";
+import AddParcelleModal from "@/components/forms/AddParcelleModal.vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
@@ -56,6 +56,7 @@ import { Geometry } from "ol/geom";
 import { featureCollection, FeatureCollection } from "@turf/helpers";
 import union from "@turf/union";
 import { Fill, Stroke, Style } from "ol/style";
+import { CartoBioCulture } from "@agencebio/cartobio-types/outputs/types/features";
 
 /*
  * * Variables
@@ -186,7 +187,17 @@ const mergeInteractions = (): Feature<Geometry> | null => {
  * * Fonctions : Data
  */
 
-const confirmer = async (e): Promise<void> => {
+const confirmer = async (e: {
+  id: string;
+  properties: {
+    NOM: string;
+    annotations: Array<object>;
+    conversion_niveau: string;
+    cultures: CartoBioCulture[];
+    engagement_date: string;
+    auditeur_notes: string;
+  };
+}): Promise<void> => {
   if (mergeFeature.value) {
     mergeFeature.value.properties = {
       ...mergeFeature.value.properties,
