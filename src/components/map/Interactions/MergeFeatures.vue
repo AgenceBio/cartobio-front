@@ -6,11 +6,8 @@
     </div>
     <div class="action" v-if="mergeFeature">
       <span class="area-info green fr-mr-2v"></span>
-      <p class="fr-mb-0 fr-text--s title fr-mr-2v">Parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
-      <button
-        class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
-        @click="showDetailsModal = true"
-      >
+      <p class="fr-mb-0 title fr-mr-2v">Parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
+      <button class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right" @click="showDetailsModal = true">
         Confirmer
       </button>
       <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>

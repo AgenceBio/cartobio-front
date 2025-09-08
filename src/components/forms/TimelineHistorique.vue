@@ -8,25 +8,48 @@
     <div class="history-tl-container">
       <ul class="tl">
         <li v-for="(item, index) in historique" :key="index" class="tl-item">
-          <div class="tl-point"></div>
-          <div class="tl-content">
-            <div class="timestamp">
-              {{ item.annee_controle }}
-            </div>
-            <div class="item-detail">
-              <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" noIcon labelSelector />
-              <i v-if="getHistoriqueRota(index) > 1" class="ri-exchange-funds-line"></i>
+          <template v-if="index > 0">
+            <div class="tl-point"></div>
+            <div class="tl-content">
+              <div class="timestamp">
+                {{ item.annee_controle }}
+              </div>
+              <div class="item-detail">
+                <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" noIcon labelSelector />
+                <i v-if="getHistoriqueRota(index) > 1" class="ri-exchange-funds-line"></i>
 
-              <p v-if="item.cultures.length > 1" class="fr-mb-0">
-                Multiculture <span class="fr-sr-only"> : </span>
-                <br />
-                <small v-for="(culture, i) in item.cultures" :key="i">
-                  <span v-if="i">, </span> {{ cultureLabel(culture) }}
-                </small>
-              </p>
-              <span v-else>{{ fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf }}</span>
+                <p v-if="item.cultures.length > 1" class="fr-mb-0">
+                  Multiculture <span class="fr-sr-only"> : </span>
+                  <br />
+                  <small v-for="(culture, i) in item.cultures" :key="i">
+                    <span v-if="i">, </span> {{ cultureLabel(culture) }}
+                  </small>
+                </p>
+                <span v-else>{{ fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf }}</span>
+              </div>
             </div>
-          </div>
+          </template>
+          <template v-else>
+            <div class="current-point">
+              <div class="tl-point-actual"></div>
+              <div class="timestamp">En cours</div>
+            </div>
+            <div class="tl-content currentelement">
+              <div class="item-detail">
+                <ConversionLevel :level="getConversionLevel(item.conversion_niveau)" noIcon labelSelector />
+                <i v-if="getHistoriqueRota(index) > 1" class="ri-exchange-funds-line"></i>
+
+                <p v-if="item.cultures.length > 1" class="fr-mb-0">
+                  Multiculture <span class="fr-sr-only"> : </span>
+                  <br />
+                  <small v-for="(culture, i) in item.cultures" :key="i">
+                    <span v-if="i">, </span> {{ cultureLabel(culture) }}
+                  </small>
+                </p>
+                <span v-else>{{ fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf }}</span>
+              </div>
+            </div>
+          </template>
         </li>
       </ul>
     </div>
@@ -112,6 +135,7 @@ const isRotaErrors = computed(() => {
   width: 4px;
   height: 100%;
   background: #33c24d;
+  z-index: 1;
 }
 
 .tl-item {
@@ -129,6 +153,14 @@ const isRotaErrors = computed(() => {
   border-radius: 50%;
   height: 16px;
   width: 16px;
+}
+
+.tl-point-actual {
+  background: #00450d;
+  border-radius: 50%;
+  height: 16px;
+  width: 16px;
+  z-index: 2;
 }
 
 .tl-content {
@@ -150,8 +182,8 @@ const isRotaErrors = computed(() => {
 }
 
 .badge-rota-2 > div {
-  background: #ffc107;
-  color: #000;
+  background: rgba(254, 236, 194, 1);
+  color: rgba(113, 96, 67, 1);
   padding: 0.1rem 0.3rem;
   border-radius: 0.3rem;
   font-size: 0.75rem;
@@ -167,5 +199,26 @@ const isRotaErrors = computed(() => {
   font-size: 0.75rem;
   font-weight: bold;
   width: fit-content;
+}
+
+.current-point {
+  background-color: rgba(149, 226, 87, 1);
+  position: absolute;
+  left: -41px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 5px;
+  gap: 3px;
+  display: flex;
+  border-radius: 20px;
+}
+
+.current-point > .timestamp {
+  margin-left: 16px;
+}
+
+.currentelement {
+  margin-left: 80px;
 }
 </style>

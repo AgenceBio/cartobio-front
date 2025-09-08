@@ -7,7 +7,7 @@
         {{ nbParcelles }} parcelle{{ nbParcelles > 1 ? "s" : "" }}
       </span>
     </div>
-    <div class="mode-choice">
+    <div class="mode-choice" v-if="permissions.canEditParcellaire">
       <button
         type="button"
         class="fr-btn fr-icon-eye-line fr-btn--icon-left"
@@ -21,6 +21,7 @@
         class="fr-btn"
         :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'edit'"
+        :disabled="!permissions.canEditParcellaire"
       >
         <i class="ri-shape-line fr-mr-2v" aria-hidden="true" />
         Modifier
@@ -69,6 +70,8 @@ import { usePreferences } from "@/stores/preferences.js";
 import { storeToRefs } from "pinia";
 import { inHa, legalProjectionSurface } from "@/utils/features.js";
 import { useFeaturesStore } from "@/stores/features";
+import { usePermissions } from "@/stores/permissions.js";
+
 import ScaleLine from "ol/control/ScaleLine.js";
 
 /**
@@ -81,6 +84,7 @@ const map = inject<Ref<OlMap | null>>("map");
  */
 
 const preferences = usePreferences();
+const permissions = usePermissions();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 const featureStore = useFeaturesStore();

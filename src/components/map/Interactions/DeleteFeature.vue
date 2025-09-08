@@ -8,8 +8,8 @@
       Vous avez sélectionné {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} à supprimer
     </p>
 
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="confirmer">Confirmer</button>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="annuler"></button>
+    <button class="fr-btn fr-icon-check-line fr-btn--icon-right fr-btn--sm" @click="confirmer">Confirmer</button>
+    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
   </div>
 
   <Teleport to="body">

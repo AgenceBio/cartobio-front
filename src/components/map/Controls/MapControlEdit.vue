@@ -15,6 +15,7 @@
         :class="[mapPrefs.currentMode === 'draw' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Dessiner une nouvelle parcelle sur la carte"
         @click="handleAction('draw')"
+        :disabled="!permissions.canEditParcellaire"
       >
         <i class="ri-pen-nib-line" aria-hidden="true" />
       </button>
@@ -26,7 +27,7 @@
         :class="[mapPrefs.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Découper le contour de la parcelle sélectionnée "
         @click="handleAction('decouper')"
-        :disabled="countSelected != 1"
+        :disabled="countSelected != 1 || !permissions.canEditParcellaire"
       >
         <i class="ri-crop-line" aria-hidden="true" />
       </button>
@@ -36,7 +37,7 @@
         :class="[mapPrefs.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Tracer une ligne pour couper la parcelle sélectionnée en deux"
         @click="handleAction('divide')"
-        :disabled="countSelected != 1"
+        :disabled="countSelected != 1 || !permissions.canEditParcellaire"
       >
         <i class="ri-scissors-cut-line" aria-hidden="true" />
       </button>
@@ -46,7 +47,7 @@
         :class="[mapPrefs.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Fusionner plusieurs parcelles sélectionnées en un seul"
         @click="handleAction('fusionner')"
-        :disabled="countSelected < 2"
+        :disabled="countSelected < 2 || !permissions.canEditParcellaire"
       >
         <i class="ri-merge-cells-horizontal" aria-hidden="true" />
       </button>
@@ -56,7 +57,7 @@
         :class="[mapPrefs.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Supprimer la ou les parcelles sélectionnées"
         @click="handleAction('delete')"
-        :disabled="countSelected < 1"
+        :disabled="countSelected < 1 || !permissions.canEditParcellaire"
       >
         <i class="ri-delete-bin-line" aria-hidden="true" />
       </button>
@@ -70,12 +71,15 @@ import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features";
 import { usePreferences } from "@/stores/preferences.js";
+import { usePermissions } from "@/stores/permissions.js";
 
 /**
  * * Stores
  */
 const store = useFeaturesStore();
 const preferences = usePreferences();
+const permissions = usePermissions();
+
 const { map: mapPrefs } = storeToRefs(preferences);
 
 /**
