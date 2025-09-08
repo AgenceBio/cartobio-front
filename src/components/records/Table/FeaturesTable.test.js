@@ -146,7 +146,7 @@ describe("Features Table", () => {
     await wrapper.find(".groupe-parcelles").trigger("click");
     await wrapper.find("#parcelle-3  .fr-icon-delete-line").trigger("click");
 
-    axios.__createMock.delete.mockResolvedValueOnce({ data: record });
+    axios.delete.mockResolvedValueOnce({ data: record });
 
     const modal = wrapper.getComponent(DeleteFeatureModal);
     expect(modal.text()).toContain("parcelle 3");
@@ -202,7 +202,7 @@ describe("Features Table", () => {
     // expect(modal.exists()).toEqual(false);
 
     // // now, we change a field and we should not be able to close it
-    // axios.__createMock.patch.mockResolvedValueOnce({ data: record });
+    // axios.patch.mockResolvedValueOnce({ data: record });
 
     // table.find("tr.parcelle td.actions button:first-child").trigger("click");
     // await flushPromises();

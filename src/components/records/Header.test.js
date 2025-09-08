@@ -27,7 +27,7 @@ describe("RecordHeader", () => {
   beforeEach(() => {
     recordStore.update(record);
     operatorStore.operator = operator;
-    axios.__createMock.patch.mockResolvedValue({ data: record });
+    axios.patch.mockResolvedValue({ data: record });
   });
 
   afterEach(() => {
@@ -111,7 +111,7 @@ describe("RecordHeader", () => {
       await modal.find("form").trigger("submit");
       await flushPromises();
 
-      expect(axios.__createMock.patch).toHaveBeenCalledWith(
+      expect(axios.patch).toHaveBeenCalledWith(
         "/v2/audits/054f0d70-c3da-448f-823e-81fcf7c2bf6e",
         {
           annee_reference_controle: null,

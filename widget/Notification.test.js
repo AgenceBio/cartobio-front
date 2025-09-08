@@ -11,7 +11,7 @@ const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 
 describe("Notification", () => {
   beforeEach(() => {
-    axios.__createMock.get.mockResolvedValue({
+    axios.get.mockResolvedValue({
       data: {
         /* contains { "numeroBio": "30022", "userId": 151243 } */
         operator: operator,
@@ -31,12 +31,12 @@ describe("Notification", () => {
     expect(wrapper.text()).toContain("Établissement d'une connexion sécurisée");
 
     await flushPromises();
-    expect(axios.__createMock.get).toHaveBeenCalledOnce();
+    expect(axios.get).toHaveBeenCalledOnce();
     expect(wrapper.text()).toContain("Sélectionner ma dernière déclaration PAC");
   });
 
   it("should render error state when exchangeNotificationToken fails", async () => {
-    axios.__createMock.get.mockRejectedValueOnce(new Error("Error"));
+    axios.get.mockRejectedValueOnce(new Error("Error"));
 
     const wrapper = mount(Notification, {
       props: {
@@ -52,7 +52,7 @@ describe("Notification", () => {
     });
 
     await flushPromises();
-    expect(axios.__createMock.get).toHaveBeenCalledOnce();
+    expect(axios.get).toHaveBeenCalledOnce();
     expect(wrapper.text()).toContain("Impossible d'établir une connexion sécurisée");
   });
 });

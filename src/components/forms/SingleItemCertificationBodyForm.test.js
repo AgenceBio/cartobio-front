@@ -112,8 +112,8 @@ describe("SingleItemCertificationBodyForm", () => {
       await form.find("#downgraded_state").setValue(CERTIFICATION_BODY_DECISION.ACCEPTED);
 
       // click and assess server update
-      axios.__createMock.patch.mockResolvedValueOnce({ data: record });
-      axios.__createMock.get.mockResolvedValueOnce({ data: record });
+      axios.patch.mockResolvedValueOnce({ data: record });
+      axios.get.mockResolvedValueOnce({ data: record });
       await form.find(".fr-modal__footer button.fr-btn").trigger("click");
 
       await flushPromises();

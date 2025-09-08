@@ -97,7 +97,7 @@ const userStore = useUserStore();
 userStore.enablePersistance();
 
 app.config.errorHandler = (error) => {
-  console.log("Error hadnler la")
+  console.log("Error hadnler la");
   if (error?.response?.data?.code === "EXPIRED_CREDENTIALS" || error?.response?.data?.code === "INVALID_CREDENTIALS") {
     userStore.logout();
     router.replace({ path: "/login" });
@@ -149,7 +149,7 @@ router.beforeEach(async (to) => {
       toast.error("L'exploitation demandée n'existe pas.");
       return false;
     }
-    
+
     throw error;
   }
 
@@ -215,46 +215,48 @@ window.addEventListener("vite:preloadError", (e) => {
   window.location.reload(); // refresh the page
 });
 
-
 axios.defaults.baseURL = baseURL;
-axios.defaults.timeout = 20000
-axios.interceptors.response.use((response) => {
-  console.log("axios Reponse")
-  return response
-}, (error) => {
-  console.log("axios error")
-  if (
-    error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
-    error?.response?.data?.code === "INVALID_CREDENTIALS" ||
-    error?.response?.status === 401
-  ) {
-    userStore.logout();
-    router.replace({ path: "login"});
+axios.defaults.timeout = 20000;
+axios.interceptors.response.use(
+  (response) => {
+    console.log("axios Reponse");
+    return response;
+  },
+  (error) => {
+    console.log("axios error");
+    if (
+      error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
+      error?.response?.data?.code === "INVALID_CREDENTIALS" ||
+      error?.response?.status === 401
+    ) {
+      userStore.logout();
+      router.replace({ path: "login" });
 
-    return
-  }
+      return;
+    }
 
-  if (error?.response?.status === 403) {
-    router.replace({ path: userStore.startPage});
-        toast.error("Vous n'avez pas les droits pour accéder à cette page.");
-    return;
-  }
+    if (error?.response?.status === 403) {
+      router.replace({ path: userStore.startPage });
+      toast.error("Vous n'avez pas les droits pour accéder à cette page.");
+      return;
+    }
 
-  if (
-    error.name === "AxiosError" &&
-    [AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)
-  ) {
-    toast.error(
-      "Une erreur de réseau est survenue. Si votre connexion " +
-        "est instable, vous pouvez passer en mode hors-ligne.",
-    );
-    return;
-  }
+    if (
+      error.name === "AxiosError" &&
+      [AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)
+    ) {
+      toast.error(
+        "Une erreur de réseau est survenue. Si votre connexion " +
+          "est instable, vous pouvez passer en mode hors-ligne.",
+      );
+      return;
+    }
 
-  if (error.name === "OPERATOR_CHANGEMENT_OC") {
-    toast.error(error.message);
+    if (error.name === "OPERATOR_CHANGEMENT_OC") {
+      toast.error(error.message);
 
-    return;
-  }
-  throw error;
-});
+      return;
+    }
+    throw error;
+  },
+);

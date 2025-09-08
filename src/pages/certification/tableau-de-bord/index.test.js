@@ -18,7 +18,7 @@ afterEach(() => user.$reset());
 
 describe("certification/tableau-de-bord", () => {
   it("should display a page with only a search bar if user has no pinned operators", async () => {
-    axios.__createMock.get.mockResolvedValueOnce({
+    axios.get.mockResolvedValueOnce({
       data: {
         pinnedOperators: [],
         consultedOperators: [],
@@ -37,7 +37,7 @@ describe("certification/tableau-de-bord", () => {
   });
 
   it("should display 2 pinned operators", async () => {
-    axios.__createMock.get.mockResolvedValueOnce({
+    axios.get.mockResolvedValueOnce({
       data: {
         pinnedOperators: records.slice(0, 2),
         consultedOperators: records.slice(0, 2),
@@ -47,7 +47,7 @@ describe("certification/tableau-de-bord", () => {
     const wrapper = mount(Page);
 
     await flushPromises();
-    expect(axios.__createMock.get).toHaveBeenCalled(1);
+    expect(axios.get).toHaveBeenCalled(1);
     expect(wrapper.findAll(".operateurs-epingles")).toHaveLength(1);
     expect(wrapper.findAll(".operateurs-epingles > div")).toHaveLength(2);
 
