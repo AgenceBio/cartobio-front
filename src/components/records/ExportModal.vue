@@ -5,7 +5,6 @@
     icon="fr-icon-road-map-line"
     data-track-content
     data-content-name="Modale d'export"
-    :lockClose="isPdfLoading"
   >
     <template #title>Export de parcellaire</template>
 
@@ -67,7 +66,7 @@
             aria-label="Télécharger l'attestation de production au format PDF"
           >
             <div v-if="isPdfLoading">
-              <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
+              <Spinner :hint="'Cela peut prendre plusieurs minutes, patientez sur la page ou revenez ultérieurement.'">
                 Téléchargement...
               </Spinner>
             </div>
@@ -79,7 +78,16 @@
               </p>
             </span>
           </button>
-
+          <button
+            v-if="hasAttestationProduction && !isPdfLoading"
+            class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
+            @click="() => exportAttestationPdf(true)"
+            data-content-piece="Export PDF"
+            aria-label="Re-générer l'attestation de production au format PDF"
+            title="Générer une nouvelle attestation pour mettre à jour mes informations"
+          >
+            Re-générer l'attestation
+          </button>
           <div v-if="hasError.length > 0" class="fr-alert fr-alert--warning">
             <p>
               Génération de l'attestation de production non disponible car des informations obligatoires sont
@@ -102,14 +110,14 @@
 </template>
 
 <script setup>
-import { computed, ref, toRaw } from "vue";
+import { computed, ref, toRaw, onMounted } from "vue";
 import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
-import { getPDFData } from "@/cartobio-api.js";
+import { getHasAttestationProduction, getPDFData } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {
@@ -148,6 +156,8 @@ const copied = ref(false);
 const isPdfLoading = ref(false);
 const pdfError = ref(false);
 const autofocusedElement = ref();
+const hasAttestationProduction = ref(false);
+
 useFocus(autofocusedElement, { initialValue: true });
 
 function geojsonExport() {
@@ -180,7 +190,7 @@ function ocClipboardExport() {
   }, 2000);
 }
 
-async function exportAttestationPdf() {
+async function exportAttestationPdf(force = false) {
   if (isPdfLoading.value) {
     controller.abort();
     return;
@@ -190,7 +200,7 @@ async function exportAttestationPdf() {
 
   try {
     isPdfLoading.value = true;
-    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal);
+    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal, force);
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
@@ -210,4 +220,8 @@ async function exportAttestationPdf() {
     isPdfLoading.value = false;
   }
 }
+
+onMounted(async () => {
+  hasAttestationProduction.value = (await getHasAttestationProduction(props.record.record_id)).hasAttestationProduction;
+});
 </script>
