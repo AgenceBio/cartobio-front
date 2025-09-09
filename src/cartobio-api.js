@@ -310,3 +310,9 @@ export async function getPDFData(numeroBio, record_id, signal) {
 export async function hideNotif(numeroBio) {
   await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
 }
+
+export async function getHasAttestationProduction(recordId) {
+ const { data } = await apiClient.get(`/v2/audits/${recordId}/has-attestation-production`);
+
+ return data
+}
