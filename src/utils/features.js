@@ -639,10 +639,18 @@ async function fetchCadastreGeometry(q, baseFeature) {
 export async function applyCadastreGeometries(baseCollection, field = "cadastre") {
   const warnings = [];
 
+  // L'api du récupération du cadastre a une limite de 50 appels/seconde
   const results = await Promise.allSettled(
-    baseCollection.features.map((feature) => {
+    baseCollection.features.map((feature, index) => {
       if (!feature.geometry && Array.isArray(feature.properties[field])) {
-        return fetchCadastreGeometry(feature.properties[field][0], feature);
+        return new Promise((resolve) =>
+          setTimeout(
+            () => {
+              resolve(fetchCadastreGeometry(feature.properties[field][0], feature));
+            },
+            1500 * (index / 50),
+          ),
+        );
       }
     }),
   );
