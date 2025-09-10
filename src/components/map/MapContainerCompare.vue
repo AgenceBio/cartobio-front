@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div class="flex">
     <div ref="mapRef" class="openlayers-container">
       <slot name="map1" v-if="map" />
     </div>
@@ -93,7 +93,7 @@ onUpdated(() => {
   max-width: 50%;
   min-width: 50%;
 }
-.hello {
+.flex {
   display: flex;
 }
 </style>
