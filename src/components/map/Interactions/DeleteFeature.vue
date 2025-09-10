@@ -13,7 +13,7 @@
   </div>
 
   <Teleport to="body">
-    <DeleteModal v-if="deleteModalMultiple" @submit="handleMultipleDelete" />
+    <DeleteModal v-if="deleteModalMultiple" @submit="handleMultipleDelete" @close="deleteModalMultiple = false" />
   </Teleport>
 </template>
 
