@@ -29,9 +29,9 @@ let rpgLayer: VectorTileLayer | null = null;
  * * Fonctions
  */
 
-function styleFunction(feature: FeatureLike, resolution: number): Style | null {
+function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   const layerName = feature.get("layer");
-  if (layerName !== "rpg2023") return null;
+  if (layerName !== "rpg2023") return;
 
   const BIO = feature.get("BIO");
   const CODE_CULTU = feature.get("CODE_CULTU");
@@ -107,8 +107,8 @@ onMounted(() => {
     source: new VectorTileSource({
       format: new MVT(),
       url: "https://cartobio.agencebio.org/tiles/rpg-2023/{z}/{x}/{y}.pbf",
-      crossOrigin: "Anonymous",
-      maxZoom: 16,
+      minZoom: 10,
+      maxZoom: 14,
     }),
     style: styleFunction,
   });

@@ -82,6 +82,7 @@ onMounted(() => {
     source: new VectorTileSource({
       format: new MVT(),
       url: "https://openmaptiles.geo.data.gouv.fr/data/cadastre/{z}/{x}/{y}.pbf",
+      minZoom: 13,
       maxZoom: 16,
     }),
     style: parcelleStyle,
