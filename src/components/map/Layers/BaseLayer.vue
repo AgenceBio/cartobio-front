@@ -9,10 +9,18 @@ import { applyStyle } from "ol-mapbox-style";
 import baseStyle from "@/map-styles/base.json";
 
 /**
+ * * Props
+ */
+
+const props = defineProps<{
+  isCompare?: boolean;
+}>();
+
+/**
  * * Injects
  */
 
-const map = inject<Ref<OlMap>>("map");
+const map = inject<Ref<OlMap>>(!props.isCompare ? "map" : "map2");
 if (!map) {
   throw new Error("Pas de map disponible");
 }

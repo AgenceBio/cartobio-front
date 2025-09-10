@@ -7,7 +7,7 @@
     </div>
 
     <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')" :disabled="true">
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')">
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button

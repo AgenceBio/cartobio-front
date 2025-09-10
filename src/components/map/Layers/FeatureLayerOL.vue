@@ -129,6 +129,7 @@ interface Props {
   interactive?: boolean;
   recordId: string;
   data?: CartoBioFeatureCollection;
+  isCompare?: boolean;
 }
 
 interface Interactions {
@@ -162,7 +163,7 @@ const { map: mapPrefs } = storeToRefs(preferences);
  * * Injects
  */
 
-const map = inject<Ref<Map>>("map");
+const map = inject<Ref<Map>>(!props.isCompare ? "map" : "map2");
 if (!map) {
   throw new Error("Pas de map disponible");
 }
@@ -509,7 +510,6 @@ watch(
 
       generateConversionLevelOverlays();
     } else {
-      // Masquer l'overlay de survol dans les autres modes
       hideHoverOverlay();
     }
   },
@@ -520,7 +520,7 @@ watch(
   async (mode) => {
     switch (mode) {
       case "consult":
-        currentCursor.value = `url("${consultCursor}"), pointer`;
+        currentCursor.value = `url("${editCursor}"), pointer`;
         break;
       case "draw":
         currentCursor.value = `url("${drawCursor}"), pointer`;
@@ -589,6 +589,35 @@ watch(
       map.value.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 5000 });
     }
   },
+);
+
+watch(
+  () => props.data,
+  (newData) => {
+    if (!vectorSource.value) return;
+    features.value = new GeoJSON().readFeatures(newData ?? store.collection);
+
+    vectorSource.value.clear();
+    vectorSource.value.addFeatures(features.value);
+
+    map.value
+      .getOverlays()
+      .getArray()
+      .slice(0)
+      .forEach((e) => {
+        if (e.getId() !== "hover-tooltip") {
+          map.value.removeOverlay(e);
+        }
+      });
+
+    generateConversionLevelOverlays();
+
+    const extent = vectorSource.value?.getExtent();
+    if (extent && !isNaN(extent[0]) && extent[0] !== Infinity) {
+      map.value.getView().fit(extent, { padding: [50, 50, 50, 50] });
+    }
+  },
+  { deep: true },
 );
 
 /**
