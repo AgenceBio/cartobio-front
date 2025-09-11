@@ -299,7 +299,7 @@ export async function getDataXLSX(payload) {
  * @param {object} signal - Signal de la requete Axios
  * @returns {Promise<string>} -Base64 du fichier pdf
  */
-export async function getPDFData(numeroBio, record_id, signal, force) {
+export async function getPDFData(numeroBio, record_id, signal = null, force = false) {
   const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}&force_refresh=${force}`, {
     timeout: 600000,
     signal,
