@@ -3,6 +3,18 @@
     <div ref="mapRef" class="openlayers-container">
       <slot name="map1" v-if="map" />
     </div>
+
+    <div class="separator"></div>
+    <div class="arrow">
+      <span
+        v-if="arrowDirection"
+        :class="{
+          'fr-icon-arrow-right-fill': arrowDirection === 'right',
+          'fr-icon-arrow-left-fill': arrowDirection === 'left',
+        }"
+      ></span>
+    </div>
+
     <div ref="mapRef2" class="openlayers-container">
       <slot name="map2" v-if="map2" />
     </div>
@@ -10,35 +22,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
-import LayerDiff from "./Interactions/LayerDiff.vue";
+import { ref, onMounted, provide, shallowRef, onUpdated, computed } from "vue";
 import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
 import { Select } from "ol/interaction";
 import { click } from "ol/events/condition";
 
-/**
- * * Refs
- */
 const mapRef = ref<HTMLElement | null>(null);
 const map = shallowRef<Map | null>(null);
 const mapRef2 = ref<HTMLElement | null>(null);
 const map2 = shallowRef<Map | null>(null);
 
-/**
- * * Providers
- */
-
 provide("map", map);
 provide("map2", map2);
 
-defineExpose({
-  map,
-});
+defineExpose({ map, map2 });
 
-/**
- * * Functions
- */
 const initMap = (): void => {
   useGeographic();
   const view = new View({
@@ -46,14 +45,8 @@ const initMap = (): void => {
     zoom: 2,
     constrainResolution: true,
   });
-  map.value = new Map({
-    controls: [],
-    view: view,
-  });
-  map2.value = new Map({
-    controls: [],
-    view: view,
-  });
+  map.value = new Map({ controls: [], view });
+  map2.value = new Map({ controls: [], view });
 
   const select1 = new Select({ condition: click });
   map.value.addInteraction(select1);
@@ -61,9 +54,6 @@ const initMap = (): void => {
   map2.value.addInteraction(select2);
 };
 
-/**
- * * States component
- */
 onMounted(() => {
   initMap();
   if (mapRef.value && mapRef2.value) {
@@ -73,12 +63,44 @@ onMounted(() => {
 });
 
 onUpdated(() => {
+  map.value?.updateSize();
+  map2.value?.updateSize();
+});
+
+const diffOnMap = ref<"map1" | "map2" | null>(null);
+
+onMounted(() => {
   if (map.value) {
-    map.value.updateSize();
+    map.value.getLayers().on("add", (e) => {
+      if (e.element.get("name") === "diffLayer") {
+        diffOnMap.value = "map1";
+      }
+    });
+    map.value.getLayers().on("remove", (e) => {
+      if (e.element.get("name") === "diffLayer") {
+        diffOnMap.value = null;
+      }
+    });
   }
+
   if (map2.value) {
-    map2.value.updateSize();
+    map2.value.getLayers().on("add", (e) => {
+      if (e.element.get("name") === "diffLayer") {
+        diffOnMap.value = "map2";
+      }
+    });
+    map2.value.getLayers().on("remove", (e) => {
+      if (e.element.get("name") === "diffLayer") {
+        diffOnMap.value = null;
+      }
+    });
   }
+});
+
+const arrowDirection = computed(() => {
+  if (diffOnMap.value === "map2") return "right";
+  if (diffOnMap.value === "map1") return "left";
+  return null;
 });
 </script>
 
@@ -90,10 +112,41 @@ onUpdated(() => {
 .openlayers-container {
   z-index: 0;
   height: min(80vh, 1000px);
-  max-width: 50%;
-  min-width: 50%;
+  flex: 1;
 }
+
 .flex {
   display: flex;
+}
+
+.separator {
+  position: relative;
+  width: 6px;
+  background: white;
+  z-index: 0;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.arrow span {
+  font-size: 20px;
+  line-height: 1;
 }
 </style>

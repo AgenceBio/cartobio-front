@@ -25,6 +25,7 @@ import { getGeometryEquals } from "@/cartobio-api.js";
 
 const recordStore = useRecordStore();
 
+const map1 = inject<Ref<Map | null>>("map");
 const map2 = inject<Ref<Map | null>>("map2");
 const whoIsOlder = ref<"r2_old_r1_new" | "r1_old_r2_new" | null>(null);
 const { record } = recordStore;
@@ -43,10 +44,9 @@ async function fetchDiff(recordIdOld: string, recordIdNew: string) {
 }
 
 function renderDiff(geojson: any) {
-  if (!map2?.value) return;
-
   if (diffLayer.value) {
-    map2.value.removeLayer(diffLayer.value);
+    map1?.value?.removeLayer(diffLayer.value);
+    map2?.value?.removeLayer(diffLayer.value);
     diffLayer.value = null;
   }
 
@@ -62,9 +62,15 @@ function renderDiff(geojson: any) {
   diffLayer.value = new VectorLayer({
     source: diffSource,
     zIndex: 999,
+    name:"diffLayer"
   });
 
-  map2.value.addLayer(diffLayer.value);
+
+  if (whoIsOlder.value === "r1_old_r2_new") {
+    map2?.value?.addLayer(diffLayer.value);
+  } else if (whoIsOlder.value === "r2_old_r1_new") {
+    map1?.value?.addLayer(diffLayer.value);
+  }
 }
 
 function getStyle(type: "added" | "deleted" | "modified") {
@@ -103,8 +109,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (diffLayer.value && map2?.value) {
-    map2.value.removeLayer(diffLayer.value);
+  if (diffLayer.value) {
+    map1?.value?.removeLayer(diffLayer.value);
+    map2?.value?.removeLayer(diffLayer.value);
   }
 });
 </script>
