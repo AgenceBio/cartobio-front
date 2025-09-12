@@ -168,7 +168,8 @@ describe("RecordHeader", () => {
       await flushPromises();
 
       const modal = wrapper.getComponent(ExportModal);
-      expect(modal.findAll(".fr-modal__footer .fr-btn").length).toEqual(3);
+      expect(modal.findAll(".fr-modal__footer .fr-btn").length).toEqual(4);
+      expect(modal.findAll(".fr-modal__footer .fr-btn")[3].isDisabled()).toEqual(true);
     });
     it("devrait avoir 4 actions si record certifié", async () => {
       let wrapper = mount(AsyncComponent);

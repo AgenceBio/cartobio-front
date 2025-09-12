@@ -56,14 +56,19 @@
           </button>
         </div>
 
-        <div class="" v-if="record.certification_state === 'CERTIFIED'">
+        <div>
           <button
             class="fr-btn fr-btn--secondary button-disabled"
             :class="{ 'fr-icon-file-line': !isPdfLoading }"
             @click="exportAttestationPdf"
             data-content-piece="Export PDF"
-            :disabled="pdfError || isPdfLoading || hasError.length > 0"
+            :disabled="record.certification_state !== 'CERTIFIED' || pdfError || isPdfLoading || hasError.length > 0"
             aria-label="Télécharger l'attestation de production au format PDF"
+            :title="
+              record.certification_state === 'CERTIFIED'
+                ? 'Télécharger l\'attestation de production au format PDF'
+                : 'Non disponible, le parcellaire n\'est pas certifié'
+            "
           >
             <div v-if="isPdfLoading">
               <Spinner :hint="'Cela peut prendre plusieurs minutes, patientez sur la page ou revenez ultérieurement.'">
@@ -88,7 +93,10 @@
           >
             Re-générer l'attestation
           </button>
-          <div v-if="hasError.length > 0" class="fr-alert fr-alert--warning">
+          <div
+            v-if="record.certification_state === 'CERTIFIED' && hasError.length > 0"
+            class="fr-alert fr-alert--warning"
+          >
             <p>
               Génération de l'attestation de production non disponible car des informations obligatoires sont
               manquantes.
