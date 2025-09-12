@@ -31,13 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref, Ref, watch } from "vue";
+import { inject, onMounted, ref, Ref } from "vue";
 import type { Map as OlMap } from "ol";
-import { usePreferences } from "@/stores/preferences.js";
-import { storeToRefs } from "pinia";
-import { inHa, legalProjectionSurface } from "@/utils/features.js";
-import { useFeaturesStore } from "@/stores/features";
-import { usePermissions } from "@/stores/permissions.js";
 
 import ScaleLine from "ol/control/ScaleLine.js";
 
@@ -60,16 +55,10 @@ if (!map) {
 }
 
 /**
- * * Refs
- */
-const isFullScreen = ref<boolean>(false);
-
-/**
  * * Emits
  */
 const emit = defineEmits<{
   (e: "locate"): void;
-  (e: "fullscreen"): void;
 }>();
 
 /**
@@ -91,11 +80,6 @@ const onZoomOut = () => {
 
 const onLocate = () => {
   emit("locate");
-};
-
-const onFullScreen = () => {
-  emit("fullscreen");
-  isFullScreen.value = !isFullScreen.value;
 };
 
 const createScaleLine = () => {

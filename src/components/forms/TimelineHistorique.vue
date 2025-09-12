@@ -29,7 +29,7 @@
               </div>
             </div>
           </template>
-          <template v-else >
+          <template v-else>
             <div class="current-point">
               <div class="tl-point-actual"></div>
               <div class="timestamp">En cours</div>
@@ -215,10 +215,10 @@ const isRotaErrors = computed(() => {
 }
 
 .current-point > .timestamp {
-  margin-left : 16px
+  margin-left: 16px;
 }
 
 .currentelement {
-  margin-left : 80px
+  margin-left: 80px;
 }
 </style>

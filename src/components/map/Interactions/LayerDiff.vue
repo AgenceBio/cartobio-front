@@ -62,9 +62,8 @@ function renderDiff(geojson: any) {
   diffLayer.value = new VectorLayer({
     source: diffSource,
     zIndex: 999,
-    name:"diffLayer"
+    name: "diffLayer",
   });
-
 
   if (whoIsOlder.value === "r1_old_r2_new") {
     map2?.value?.addLayer(diffLayer.value);

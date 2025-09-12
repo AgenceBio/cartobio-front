@@ -5,7 +5,13 @@
         <i class="ri-scissors-cut-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Découper</strong>
       </div>
-      <button class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right" :disabled="!hasDivision" @click="validateDivision">Découper</button>
+      <button
+        class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
+        :disabled="!hasDivision"
+        @click="validateDivision"
+      >
+        Découper
+      </button>
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         :disabled="!hasDivision"

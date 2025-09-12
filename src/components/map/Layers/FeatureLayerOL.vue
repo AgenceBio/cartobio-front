@@ -118,7 +118,6 @@ import drawCursor from "@/assets/logos-edit/pen-nib-line.svg";
 import cropCursor from "@/assets/logos-edit/crop-line.svg";
 import scissorsCursor from "@/assets/logos-edit/scissors-cut-line.svg";
 import editCursor from "@/assets/logos-edit/edit.svg";
-import consultCursor from "@/assets/logos-edit/consult.svg";
 
 /*
  * * Interface

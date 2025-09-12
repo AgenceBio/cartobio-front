@@ -66,7 +66,7 @@ export const useRecordStore = defineStore("record", () => {
       const [minX, minY, maxX, maxY] = extent;
       const padding = 0.01; // ~1 km en degrées
       extent = [minX - padding, minY - padding, maxX + padding, maxY + padding];
-      return extent
+      return extent;
     }
 
     return [];
