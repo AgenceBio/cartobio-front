@@ -402,7 +402,13 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
     if (!flatGeometry) {
       return;
     }
-    const data = (await getRPG(flatGeometry.getExtent())).data;
+    const data = (
+      await getRPG({
+        extent: flatGeometry.getExtent(),
+        surface: rpgFeature.getProperties().SURF_ADM,
+        codeCulture: rpgFeature.getProperties().CODE_CULTU,
+      })
+    ).data;
 
     const newFeature = new GeoJSON().readFeature(data.geom) as Feature;
 
