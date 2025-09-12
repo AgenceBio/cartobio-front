@@ -12,6 +12,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  icon: {
+    type: String,
+    default: "fr-icon-more-fill",
+  },
   disabled: {
     type: Boolean,
     default: false,
@@ -74,7 +78,8 @@ watch(show, (value) => {
       <button
         type="button"
         @click.stop.prevent="show = !show"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-more-fill show-actions"
+        class="fr-btn fr-btn--tertiary-no-outline show-actions"
+        :class="[props.icon]"
         :disabled="props.disabled"
         :aria-expanded="show"
       >
