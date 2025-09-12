@@ -78,7 +78,8 @@
             <span v-else>
               <p class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</p>
               <p v-else>
-                Attestation de production
+                <template v-if="hasAttestationProduction">Télécharger l'attestation de production </template>
+                <template v-else>Générer l'attestation de production </template>
                 <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
               </p>
             </span>
