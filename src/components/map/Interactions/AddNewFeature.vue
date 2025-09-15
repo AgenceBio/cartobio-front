@@ -24,6 +24,16 @@
       <i class="ri-collage-line fr-mr-1w" aria-hidden="true" />
       RPG
     </button>
+    <button class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline" @click="quitDraw"></button>
+  </div>
+  <div class="pop-in-info-cadastre close" v-if="mode === 'cadastre'">
+    <CommuneSelect @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
+    <button
+      class="fr-btn fr-icon-check-line fr-btn--icon-left fr-btn--sm fr-btn--tertiary-no-outline"
+      @click="showModalCadastre = true"
+    >
+      Saisir une référence cadastrale
+    </button>
   </div>
 
   <div v-if="invalidDrawing" class="pop-in-info close">
@@ -105,6 +115,13 @@
     >
       <template #title>Nouvelle parcelle</template>
     </AddParcelleModal>
+
+    <CadastreFieldModal
+      v-if="showModalCadastre"
+      :commune="selectedCommune"
+      @close="showModalCadastre = false"
+      @feature="(e) => addParcelleCadastraleModal(e)"
+    />
   </Teleport>
 </template>
 
@@ -126,6 +143,8 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
 
 import AddParcelleModal from "@/components/forms/AddParcelleModal.vue";
+import CommuneSelect from "@/components/forms/fields/CommuneSelect.vue";
+import CadastreFieldModal from "@/components/forms/fields/CadastreFieldModal.vue";
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw } from "ol/interaction";
 import Tooltip from "ol-ext/overlay/Tooltip";
@@ -190,6 +209,9 @@ let rpg: boolean | null = null;
 
 const showCadastreModal = ref(false);
 const showRPGModal = ref(false);
+
+const selectedCommune = ref(null);
+const showModalCadastre = ref(false);
 /*
  * * Constantes
  */
@@ -389,6 +411,54 @@ const handleClickCadastre = async (e: MapBrowserEvent) => {
   }
 };
 
+const zoomCommune = (e) => {
+  if (!props.map || !e) return;
+
+  console.log(e);
+
+  const format = new GeoJSON();
+  const feature = format.readFeature(e, {});
+
+  if (!feature) return;
+
+  const geometry = feature.getGeometry();
+  if (!geometry) return;
+
+  props.map.getView().fit(geometry.getExtent(), {
+    size: props.map.getSize(),
+    padding: [50, 50, 50, 50],
+    maxZoom: 18,
+    duration: 500,
+  });
+};
+
+const addParcelleCadastraleModal = (e) => {
+  if (!e) return;
+
+  const format = new GeoJSON();
+  const previewFeature = format.readFeature(e) as Feature;
+
+  if (!previewFeature) return;
+  const properties = e.properties || {};
+  const parcelleId =
+    properties.id ||
+    `${properties.prefixe === "000" ? "" : properties.prefixe}${properties.section}${properties.numero}`;
+
+  if (selectedIds.value.includes(parcelleId)) {
+    const feature = previewSource.getFeatureById(parcelleId);
+    if (feature) {
+      previewSource.removeFeature(feature);
+    }
+    selectedIds.value = selectedIds.value.filter((s) => s !== parcelleId);
+  } else {
+    previewFeature.setId(parcelleId);
+    previewSource.addFeature(previewFeature);
+    selectedIds.value.push(parcelleId);
+  }
+
+  showCadastreModal.value = selectedIds.value.length > 0;
+};
+
 const handleClickRPG = async (e: MapBrowserEvent) => {
   const features = await sourceLayer?.getFeatures(e.pixel);
 
@@ -568,7 +638,7 @@ const addCadastreFeatures = async () => {
   for (const f of previewSource.getFeatures()) {
     const featureObj = format.writeFeatureObject(f);
     featureObj.properties = {
-      NOM: `Parcelle ${f.getProperties().prefixe}${f.getProperties().section}${f.getProperties().numero}`,
+      NOM: `Parcelle ${f.getProperties().prefixe === "000" ? "" : f.getProperties().prefixe}${f.getProperties().section}${f.getProperties().numero}`,
       cultures: [{ CPF: "", id: crypto.randomUUID() }],
     };
 
@@ -629,6 +699,11 @@ const addRpgFeatures = async () => {
   selectedIds.value = [];
   previewSource.clear();
   loading.value = false;
+};
+
+const quitDraw = () => {
+  cancelDraw();
+  mapPrefs.value.currentMode = "consult";
 };
 
 /*
@@ -787,5 +862,19 @@ onUnmounted(() => {
   display: flex;
   gap: 5px;
   border-radius: 10px;
+}
+
+.pop-in-info-cadastre {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 10px;
+  width : fit-content
 }
 </style>
