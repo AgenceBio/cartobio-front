@@ -5,17 +5,24 @@
     icon="fr-icon-road-map-line"
     data-track-content
     data-content-name="Modale d'export"
-    :lockClose="isPdfLoading"
   >
-    <template #title>Export de parcellaire</template>
+    <template v-if="onlyAttestation" #title>Attestation de production</template>
+    <template v-else #title>Export de parcellaire</template>
 
-    <p>Réutilisez vos données dans d'autres applications sans avoir à les recopier.</p>
+    <template v-if="onlyAttestation">
+      <p>Générez votre attestation de production, cela peut prendre quelques minutes.</p>
+      <p>Restez sur cette page ou revenez ultérieurement.</p>
+    </template>
 
-    <p>Choisissez un format qui vous semble adapté à votre usage.</p>
+    <template v-else>
+      <p>Réutilisez vos données dans d'autres applications sans avoir à les recopier.</p>
+
+      <p>Choisissez un format qui vous semble adapté à votre usage.</p>
+    </template>
 
     <template #footer>
       <div class="fr-btns-group fr-btns-group--icon-left" role="group" aria-label="Actions d'export">
-        <div class="fr-grid-row">
+        <div v-if="!onlyAttestation" class="fr-grid-row">
           <div class="fr-col" v-if="exporter.toFileData">
             <button
               class="fr-btn fr-icon-table-line fr-btn--secondary"
@@ -45,7 +52,7 @@
           </div>
         </div>
 
-        <div class="">
+        <div v-if="!onlyAttestation">
           <button
             class="fr-btn fr-icon-france-line fr-btn--secondary"
             @click="geojsonExport"
@@ -57,30 +64,48 @@
           </button>
         </div>
 
-        <div class="" v-if="record.certification_state === 'CERTIFIED'">
+        <div>
           <button
             class="fr-btn fr-btn--secondary button-disabled"
             :class="{ 'fr-icon-file-line': !isPdfLoading }"
             @click="exportAttestationPdf"
             data-content-piece="Export PDF"
-            :disabled="pdfError || isPdfLoading || hasError.length > 0"
+            :disabled="record.certification_state !== 'CERTIFIED' || pdfError || isPdfLoading || hasError.length > 0"
             aria-label="Télécharger l'attestation de production au format PDF"
+            :title="
+              record.certification_state === 'CERTIFIED'
+                ? 'Télécharger l\'attestation de production au format PDF'
+                : 'Non disponible, le parcellaire n\'est pas certifié'
+            "
           >
             <div v-if="isPdfLoading">
-              <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
+              <Spinner :hint="'Cela peut prendre plusieurs minutes, patientez sur la page ou revenez ultérieurement.'">
                 Téléchargement...
               </Spinner>
             </div>
             <span v-else>
               <p class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</p>
               <p v-else>
-                Attestation de production
+                <template v-if="hasAttestationProduction">Télécharger l'attestation de production </template>
+                <template v-else>Générer l'attestation de production </template>
                 <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
               </p>
             </span>
           </button>
-
-          <div v-if="hasError.length > 0" class="fr-alert fr-alert--warning">
+          <button
+            v-if="hasAttestationProduction && !isPdfLoading"
+            class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
+            @click="() => exportAttestationPdf(true)"
+            data-content-piece="Export PDF"
+            aria-label="Re-générer l'attestation de production au format PDF"
+            title="Générer une nouvelle attestation pour mettre à jour mes informations"
+          >
+            Re-générer l'attestation
+          </button>
+          <div
+            v-if="record.certification_state === 'CERTIFIED' && hasError.length > 0"
+            class="fr-alert fr-alert--warning"
+          >
             <p>
               Génération de l'attestation de production non disponible car des informations obligatoires sont
               manquantes.
@@ -102,14 +127,14 @@
 </template>
 
 <script setup>
-import { computed, ref, toRaw } from "vue";
+import { computed, ref, toRaw, onMounted } from "vue";
 import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
-import { getPDFData } from "@/cartobio-api.js";
+import { getHasAttestationProduction, getPDFData } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {
@@ -127,6 +152,11 @@ const props = defineProps({
   hasError: {
     type: Object,
     required: false,
+  },
+  onlyAttestation: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 
@@ -148,6 +178,8 @@ const copied = ref(false);
 const isPdfLoading = ref(false);
 const pdfError = ref(false);
 const autofocusedElement = ref();
+const hasAttestationProduction = ref(false);
+
 useFocus(autofocusedElement, { initialValue: true });
 
 function geojsonExport() {
@@ -180,7 +212,7 @@ function ocClipboardExport() {
   }, 2000);
 }
 
-async function exportAttestationPdf() {
+async function exportAttestationPdf(force = false) {
   if (isPdfLoading.value) {
     controller.abort();
     return;
@@ -190,7 +222,7 @@ async function exportAttestationPdf() {
 
   try {
     isPdfLoading.value = true;
-    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal);
+    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal, force);
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
@@ -210,4 +242,8 @@ async function exportAttestationPdf() {
     isPdfLoading.value = false;
   }
 }
+
+onMounted(async () => {
+  hasAttestationProduction.value = (await getHasAttestationProduction(props.record.record_id)).hasAttestationProduction;
+});
 </script>
