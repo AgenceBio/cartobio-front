@@ -6,15 +6,23 @@
     data-track-content
     data-content-name="Modale d'export"
   >
-    <template #title>Export de parcellaire</template>
+    <template v-if="onlyAttestation" #title>Attestation de production</template>
+    <template v-else #title>Export de parcellaire</template>
 
-    <p>Réutilisez vos données dans d'autres applications sans avoir à les recopier.</p>
+    <template v-if="onlyAttestation">
+      <p>Générez votre attestation de production, cela peut prendre quelques minutes.</p>
+      <p>Restez sur cette page ou revenez ultérieurement.</p>
+    </template>
 
-    <p>Choisissez un format qui vous semble adapté à votre usage.</p>
+    <template v-else>
+      <p>Réutilisez vos données dans d'autres applications sans avoir à les recopier.</p>
+
+      <p>Choisissez un format qui vous semble adapté à votre usage.</p>
+    </template>
 
     <template #footer>
       <div class="fr-btns-group fr-btns-group--icon-left" role="group" aria-label="Actions d'export">
-        <div class="fr-grid-row">
+        <div v-if="!onlyAttestation" class="fr-grid-row">
           <div class="fr-col" v-if="exporter.toFileData">
             <button
               class="fr-btn fr-icon-table-line fr-btn--secondary"
@@ -44,7 +52,7 @@
           </div>
         </div>
 
-        <div class="">
+        <div v-if="!onlyAttestation">
           <button
             class="fr-btn fr-icon-france-line fr-btn--secondary"
             @click="geojsonExport"
@@ -144,6 +152,11 @@ const props = defineProps({
   hasError: {
     type: Object,
     required: false,
+  },
+  onlyAttestation: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 

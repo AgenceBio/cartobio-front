@@ -99,7 +99,14 @@
       >
         Exporter
       </button>
-
+      <button
+        v-if="hasFeatures && record.certification_state === 'CERTIFIED'"
+        class="export-action fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-file-line"
+        @click="attestationModal = true"
+        aria-label="Télécharger l'attestation de production"
+      >
+        Attestation
+      </button>
       <button
         v-if="!disableActions && permissions.canEditVersion"
         class="fr-btn fr-btn--tertiary-no-outline fr-icon fr-icon-edit-line edit-version-info fr-hidden-sm"
@@ -122,6 +129,15 @@
       :collection="collection"
       :record="record"
       @close="exportModal = false"
+      :hasError="tags.filter((e) => e.errorMessage != undefined)"
+    />
+    <AsyncFeaturesExportModal
+      v-if="attestationModal"
+      :operator="operator"
+      :collection="collection"
+      :record="record"
+      :only-attestation="true"
+      @close="attestationModal = false"
       :hasError="tags.filter((e) => e.errorMessage != undefined)"
     />
     <DeleteParcellaireModal :record="record" v-if="deleteModal" @close="deleteModal = false" />
@@ -159,6 +175,7 @@ defineProps({
 const isOnline = useOnline();
 
 const exportModal = ref(false);
+const attestationModal = ref(false);
 const historyModal = ref(false);
 const deleteModal = ref(false);
 const featuresStore = useFeaturesStore();
