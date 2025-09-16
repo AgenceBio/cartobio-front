@@ -875,6 +875,6 @@ onUnmounted(() => {
   display: flex;
   gap: 5px;
   border-radius: 10px;
-  width : fit-content
+  width: fit-content;
 }
 </style>

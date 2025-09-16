@@ -315,5 +315,4 @@ button[data-tooltip]:hover::after,
 button[data-tooltip]:focus::after {
   opacity: 1;
 }
-
 </style>
