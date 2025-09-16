@@ -28,6 +28,13 @@
     >
       {{ dateFormat(conversionDate) }}
     </time>
+    <div
+      v-else-if="withDate && !conversionDate && ['C1', 'C2', 'C3'].includes(conversionLevel.value)"
+      class="conversion-missing-date"
+    >
+      <span class="fr-icon fr-icon-calendar-line fr-icon--sm"></span>
+      <span class="conversion-text">Conversion</span>
+    </div>
   </div>
 </template>
 
@@ -116,5 +123,15 @@ time {
 .badge-AB {
   color: white;
   background-color: var(--green-bourgeon-sun-425-moon-759);
+}
+
+.conversion-missing-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.conversion-text {
+  color: var(--text-default-error);
+  font-weight: 600;
 }
 </style>

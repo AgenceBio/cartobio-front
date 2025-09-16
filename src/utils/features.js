@@ -727,13 +727,12 @@ export function getTimeAgo(feature) {
  */
 export function getCultureIcon(key) {
   if (key === NO_GROUP) {
-    return "fr-icon-edit-line";
+    return "";
   }
 
   const groupeCulture = fromCodeCpf(key)?.groupe;
-
   if (!groupeCulture) {
-    return "fr-icon-culture-autres-surfaces";
+    return "";
   }
 
   const res = groupeCulture

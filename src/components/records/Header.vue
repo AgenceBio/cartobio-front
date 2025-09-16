@@ -1,12 +1,34 @@
 <template>
   <header class="fr-mb-2w">
     <div class="fr-grid-row fr-grid-row--middle header">
+      <div class="fr-grid-row fr-text--xs">{{ operator.nom }}</div>
+      <div class="fr-grid-row">
+        <template v-if="permissions.isOc">
+          <button
+            v-if="operatorStore.operator.epingle"
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-fill"
+            @click="unpin(operatorStore.operator.numeroBio)"
+            aria-label="Désepingler le parcellaire"
+            data-tooltip="Désepingler le parcellaire"
+          ></button>
+          <button
+            v-else
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-line"
+            @click="pin(operatorStore.operator.numeroBio)"
+            aria-label="Epingler le parcellaire"
+            data-tooltip="Epingler le parcellaire"
+          ></button>
+        </template>
+      </div>
+    </div>
+
+    <div class="fr-grid-row fr-grid-row--middle header">
       <div class="fr-grid-row">
         <p class="fr-sr-only operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</p>
         <div class="seamless-select fr-grid-row">
-          <b class="version-name">{{ record.version_name }}</b>
+          <b class="version-name fr-mr-2w">{{ record.version_name }}</b>
 
-          <select class="version-name" name="select-version" id="select-version" v-model="selectedRecord">
+          <select class="version-name fr-ml-2w" name="select-version" id="select-version" v-model="selectedRecord">
             <option
               :value="recordList.record_id"
               :key="recordList.record_id"
@@ -20,20 +42,6 @@
         <p v-if="readonly" class="readonly-badge">Lecture seule</p>
       </div>
       <div class="fr-grid-row">
-        <template v-if="permissions.isOc">
-          <button
-            v-if="operatorStore.operator.epingle"
-            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-fill"
-            @click="unpin(operatorStore.operator.numeroBio)"
-            aria-label="Désepingler le parcellaire"
-          ></button>
-          <button
-            v-else
-            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-line"
-            @click="pin(operatorStore.operator.numeroBio)"
-            aria-label="Epingler le parcellaire"
-          ></button>
-        </template>
         <ActionDropdown
           v-if="hasFeatures && !readonly"
           with-icons
@@ -252,7 +260,7 @@ hr {
   position: relative;
   padding-right: 1rem;
   font-weight: normal;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Direction=Bas'%3E%3Cpath id='Ic&%23195;&%23180;ne' fill-rule='evenodd' clip-rule='evenodd' d='M12 13.172L16.95 8.222L18.364 9.636L12 16L5.63599 9.636L7.04999 8.222L12 13.172Z' fill='%23000091'/%3E%3C/g%3E%3C/svg%3E%0A");
   background-position: right center;
   background-repeat: no-repeat;
   justify-content: flex-end;
@@ -277,4 +285,35 @@ hr {
 .font-blue {
   color: black;
 }
+
+button[data-tooltip] {
+  position: relative;
+}
+
+button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translate(-50%, -100%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  opacity: 0;
+  white-space: normal; /* permet retour à la ligne */
+  width: max-content;
+  max-width: 220px; /* limite pour éviter des tooltips trop larges */
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 2000;
+}
+
+button[data-tooltip]:hover::after,
+button[data-tooltip]:focus::after {
+  opacity: 1;
+}
+
 </style>

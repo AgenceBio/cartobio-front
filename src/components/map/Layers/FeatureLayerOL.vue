@@ -118,7 +118,6 @@ import drawCursor from "@/assets/logos-edit/pen-nib-line.svg";
 import cropCursor from "@/assets/logos-edit/crop-line.svg";
 import scissorsCursor from "@/assets/logos-edit/scissors-cut-line.svg";
 import editCursor from "@/assets/logos-edit/edit.svg";
-import consultCursor from "@/assets/logos-edit/consult.svg";
 
 /*
  * * Interface
@@ -317,6 +316,7 @@ const createCultureOverlay = (feature: Feature) => {
 
 const generateConversionLevelOverlays = () => {
   if (!zoom.value) return;
+  if (!props.interactive) return;
   for (const overlay of map.value.getOverlays().getArray()) {
     if (overlay.getId() === undefined || overlay.getId() === "hover-tooltip") {
       continue;
@@ -455,8 +455,9 @@ const handlePointerMove = (e: MapBrowserEvent) => {
   if (currentCursor.value) map.value.getViewport().style.cursor = currentCursor.value;
 
   if (
-    mapPrefs.value.currentMode === "consult" ||
-    (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0)
+    props.interactive &&
+    (mapPrefs.value.currentMode === "consult" ||
+      (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0))
   ) {
     const feature = map.value.forEachFeatureAtPixel(
       e.pixel,
@@ -520,7 +521,7 @@ watch(
   async (mode) => {
     switch (mode) {
       case "consult":
-        currentCursor.value = `url("${consultCursor}"), pointer`;
+        currentCursor.value = `url("${editCursor}"), pointer`;
         break;
       case "draw":
         currentCursor.value = `url("${drawCursor}"), pointer`;

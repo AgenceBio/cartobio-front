@@ -70,21 +70,16 @@ const emit = defineEmits<{
 
 .left-button {
   background: #ffffff;
-  justify-content: space-between;
-  gap: 10px;
   height: fit-content;
   position: absolute;
   top: 10px;
   left: 10px;
-  display: flex;
-  gap: 10px;
 }
 
 .left-button > button {
   border-radius: 4px;
   width: 44px;
   height: 44px;
-  text-align: center;
 }
 
 .button-group {
