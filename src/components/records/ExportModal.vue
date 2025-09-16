@@ -70,7 +70,13 @@
             :class="{ 'fr-icon-file-line': !isPdfLoading }"
             @click="exportAttestationPdf"
             data-content-piece="Export PDF"
-            :disabled="record.certification_state !== 'CERTIFIED' || pdfError || isPdfLoading || hasError.length > 0"
+            :disabled="
+              record.certification_state !== 'CERTIFIED' ||
+              pdfError ||
+              isPdfLoading ||
+              hasError.length > 0 ||
+              isPdfGenerating
+            "
             aria-label="Télécharger l'attestation de production au format PDF"
             :title="
               record.certification_state === 'CERTIFIED'
@@ -120,6 +126,12 @@
           >
             Annuler le téléchargement
           </button>
+          <div v-if="isPdfGenerating" class="fr-alert fr-alert--info">
+            <p>
+              Votre attestation est en cours de génération, cela peut prendre quelques minutes, merci de revenir
+              ultérieurement
+            </p>
+          </div>
         </div>
       </div>
     </template>
@@ -176,6 +188,7 @@ const exporter = computed(function () {
 });
 const copied = ref(false);
 const isPdfLoading = ref(false);
+const isPdfGenerating = ref(false);
 const pdfError = ref(false);
 const autofocusedElement = ref();
 const hasAttestationProduction = ref(false);
@@ -223,6 +236,11 @@ async function exportAttestationPdf(force = false) {
   try {
     isPdfLoading.value = true;
     const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal, force);
+    if (response.status === 204) {
+      isPdfGenerating.value = true;
+
+      return;
+    }
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
@@ -231,6 +249,7 @@ async function exportAttestationPdf(force = false) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(linkSource);
+    hasAttestationProduction.value = true;
   } catch (error) {
     if (error.code === "ERR_CANCELED") {
       isPdfLoading.value = false;
