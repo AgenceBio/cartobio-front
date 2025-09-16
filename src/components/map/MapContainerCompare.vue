@@ -5,24 +5,16 @@
     </div>
 
     <div class="separator"></div>
-    <div class="arrow">
-      <span
-        v-if="arrowDirection"
-        :class="{
-          'fr-icon-arrow-right-fill': arrowDirection === 'right',
-          'fr-icon-arrow-left-fill': arrowDirection === 'left',
-        }"
-      ></span>
-    </div>
 
     <div ref="mapRef2" class="openlayers-container">
       <slot name="map2" v-if="map2" />
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, provide, shallowRef, onUpdated, computed } from "vue";
+import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
 import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
 import { Select } from "ol/interaction";
@@ -96,12 +88,6 @@ onMounted(() => {
     });
   }
 });
-
-const arrowDirection = computed(() => {
-  if (diffOnMap.value === "map2") return "right";
-  if (diffOnMap.value === "map1") return "left";
-  return null;
-});
 </script>
 
 <style>
@@ -121,32 +107,8 @@ const arrowDirection = computed(() => {
 
 .separator {
   position: relative;
-  width: 6px;
+  width: 3px;
   background: white;
   z-index: 0;
-}
-
-.arrow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 40px;
-  height: 40px;
-
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-}
-
-.arrow span {
-  font-size: 20px;
-  line-height: 1;
 }
 </style>

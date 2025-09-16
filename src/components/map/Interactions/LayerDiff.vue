@@ -1,17 +1,5 @@
-<template>
-  <div class="geometric-diff-viewer">
-    <div class="legend">
-      <div class="legend-item"><span class="legend-color added"></span> Ajouté</div>
-      <div class="legend-item"><span class="legend-color removed"></span> Supprimé</div>
-      <div class="legend-item"><span class="legend-color modified"></span> Modifié</div>
-    </div>
-  </div>
-  <div v-if="whoIsOlder" class="versionrecente" :class="[whoIsOlder === 'r1_old_r2_new' ? 'right' : 'left']">
-    <p class="fr-text--xs fr-p-0 fr-mb-0">Version la + récente</p>
-  </div>
-</template>
+<template></template>
 
-//
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted, Ref, watch } from "vue";
 import { Map } from "ol";
@@ -76,22 +64,60 @@ function getStyle(type: "added" | "deleted" | "modified") {
   switch (type) {
     case "added":
       return new Style({
-        fill: new Fill({ color: "rgba(0,255,0,0.3)" }),
-        stroke: new Stroke({ color: "green", width: 3 }),
+        fill: new Fill({ color: "rgba(251, 184, 246, 0.3)" }),
+        stroke: new Stroke({ color: "rgba(247, 103, 239, 1)", width: 1 }),
       });
     case "deleted":
       return new Style({
-        fill: new Fill({ color: "rgba(255,0,0,0.3)" }),
-        stroke: new Stroke({ color: "red", width: 3, lineDash: [6, 4] }),
+        stroke: new Stroke({
+          color: "rgba(207, 207, 207, 1)",
+          width: 1,
+        }),
+        fill: new Fill({
+          color: makeHatchPattern(),
+        }),
       });
     case "modified":
       return new Style({
         fill: new Fill({ color: "rgba(255,165,0,0.3)" }),
-        stroke: new Stroke({ color: "orange", width: 3, lineDash: [2, 4] }),
+        stroke: new Stroke({ color: "orange", width: 1, lineDash: [2, 4] }),
       });
     default:
       return new Style();
   }
+}
+
+function makeHatchPattern(
+  lineWidth = 1,
+  spacing = 10,
+  lineColor = "rgba(207,207,207,1)",
+  bg = "rgba(246,246,246,0.3)",
+): CanvasPattern | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = spacing * 2;
+  canvas.height = spacing;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+
+  ctx.moveTo(canvas.width + spacing / 2, -spacing / 2);
+  ctx.lineTo(-spacing / 2, canvas.height + spacing / 2);
+
+  ctx.moveTo(spacing / 2, -spacing / 2);
+  ctx.lineTo(-canvas.width + spacing / 2, canvas.height + spacing / 2);
+
+  ctx.moveTo(canvas.width * 1.5 + spacing / 2, -spacing / 2);
+  ctx.lineTo(canvas.width / 2 + spacing / 2, canvas.height + spacing / 2);
+
+  ctx.stroke();
+
+  return ctx.createPattern(canvas, "repeat");
 }
 
 watch(
@@ -114,69 +140,3 @@ onUnmounted(() => {
   }
 });
 </script>
-
-<style scoped>
-.geometric-diff-viewer {
-  position: absolute;
-  top: 10px;
-  left: 42.5%;
-  background: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 10000;
-}
-.legend {
-  display: flex;
-  gap: 1rem;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.legend-color {
-  width: 14px;
-  height: 14px;
-  border: 1px solid #000;
-}
-.legend-color.added {
-  background: rgba(0, 255, 0, 0.3);
-  border-color: green;
-}
-.legend-color.removed {
-  background: rgba(255, 0, 0, 0.3);
-  border-color: red;
-  border-style: dashed;
-}
-.legend-color.modified {
-  background: rgba(255, 165, 0, 0.3);
-  border-color: orange;
-  border-style: dashed;
-}
-
-.versionrecente {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 5px 10px;
-  z-index: 1;
-
-  position: absolute;
-  max-width: 100%;
-  top: 10px;
-
-  background: #adf7ff;
-  border-radius: 50px;
-}
-
-.versionrecente.right {
-  right: 10px;
-}
-
-.versionrecente.left {
-  left: 10px;
-}
-</style>
