@@ -1,4 +1,4 @@
-<template></template>
+<template><p class="fr-sr-only">La carte est en mode comparaison</p></template>
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted, Ref, watch } from "vue";

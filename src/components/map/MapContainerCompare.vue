@@ -9,7 +9,6 @@
     <div ref="mapRef2" class="openlayers-container">
       <slot name="map2" v-if="map2" />
     </div>
-
   </div>
 </template>
 
