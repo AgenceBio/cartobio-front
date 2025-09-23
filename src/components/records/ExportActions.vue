@@ -42,52 +42,77 @@
     <hr />
   </li>
 
-  <li v-if="record.certification_state === 'CERTIFIED'">
+  <li>
     <button
-      class="fr-btn fr-btn--tertiary-no-outline button-disabled"
+      class="fr-btn button-disabled fr-btn--tertiary-no-outline"
       :class="{ 'fr-icon-file-line': !isPdfLoading }"
       @click="exportAttestationPdf"
       data-content-piece="Export PDF"
-      :disabled="pdfError || isPdfLoading || hasError.length > 0"
+      :disabled="
+        record.certification_state !== 'CERTIFIED' || pdfError || isPdfLoading || hasError.length > 0 || isPdfGenerating
+      "
       aria-label="Télécharger l'attestation de production au format PDF"
+      :title="
+        record.certification_state === 'CERTIFIED'
+          ? 'Télécharger l\'attestation de production au format PDF'
+          : 'Non disponible, le parcellaire n\'est pas certifié'
+      "
     >
       <div v-if="isPdfLoading">
-        <Spinner :hint="'Cela peut prendre jusqu\'à 2 minutes, merci de rester sur la page du parcellaire.'">
+        <Spinner :hint="'Cela peut prendre plusieurs minutes, patientez sur la page ou revenez ultérieurement.'">
           Téléchargement...
         </Spinner>
       </div>
       <span v-else>
-        <p class="fr-hint" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</p>
-        <span v-else>
-          Télécharger l'attestation de production
+        <p class="fr-text--sm" v-if="pdfError">Erreur dans le téléchargement, veuillez réessayer plus tard</p>
+        <p class="fr-text--sm" v-else>
+          <template v-if="hasAttestationProduction">Télécharger l'attestation de production </template>
+          <template v-else>Générer l'attestation de production </template>
           <small>(<code aria-label="Extension de fichier .pdf">.pdf</code>)</small>
-        </span>
+        </p>
       </span>
     </button>
 
-    <div v-if="hasError.length > 0" class="fr-alert fr-alert--warning">
+    <div v-if="record.certification_state === 'CERTIFIED' && hasError.length > 0" class="fr-alert fr-alert--warning">
       <p>Génération de l'attestation de production non disponible car des informations obligatoires sont manquantes.</p>
     </div>
 
     <button
       v-if="isPdfLoading"
       @click="exportAttestationPdf"
-      class="fr-btn fr-p-0w fr-btn--tertiary-no-outline-no-outline fr-btn--sm"
+      class="fr-btn fr-p-0w fr-btn--tertiary-no-outline fr-btn--sm"
       aria-label="Annuler le téléchargement de l'attestation"
     >
       Annuler le téléchargement
+    </button>
+    <div v-if="isPdfGenerating" class="fr-alert fr-alert--info">
+      <p>
+        Votre attestation est en cours de génération, cela peut prendre quelques minutes, merci de revenir
+        ultérieurement
+      </p>
+    </div>
+  </li>
+  <li v-if="hasAttestationProduction && !isPdfLoading">
+    <button
+      class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
+      @click="() => exportAttestationPdf(true)"
+      data-content-piece="Export PDF"
+      aria-label="Re-générer l'attestation de production au format PDF"
+      title="Générer une nouvelle attestation pour mettre à jour mes informations"
+    >
+      Re-générer l'attestation
     </button>
   </li>
 </template>
 
 <script setup>
-import { computed, ref, toRaw } from "vue";
+import { computed, ref, toRaw, onMounted } from "vue";
 import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
-import { getPDFData } from "@/cartobio-api.js";
+import { getHasAttestationProduction, getPDFData } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {
@@ -124,8 +149,10 @@ const exporter = computed(function () {
 });
 const copied = ref(false);
 const isPdfLoading = ref(false);
+const isPdfGenerating = ref(false);
 const pdfError = ref(false);
 const autofocusedElement = ref();
+const hasAttestationProduction = ref(false);
 useFocus(autofocusedElement, { initialValue: true });
 
 function geojsonExport() {
@@ -158,7 +185,7 @@ function ocClipboardExport() {
   }, 2000);
 }
 
-async function exportAttestationPdf() {
+async function exportAttestationPdf(force = false) {
   if (isPdfLoading.value) {
     controller.abort();
     return;
@@ -168,7 +195,12 @@ async function exportAttestationPdf() {
 
   try {
     isPdfLoading.value = true;
-    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal);
+    const response = await getPDFData(props.record.numerobio, props.record.record_id, controller.signal, force);
+    if (response.status === 204) {
+      isPdfGenerating.value = true;
+
+      return;
+    }
     const linkSource = `data:application/pdf;base64,${response.data}`;
     const a = document.createElement("a");
     a.href = linkSource;
@@ -177,6 +209,7 @@ async function exportAttestationPdf() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(linkSource);
+    hasAttestationProduction.value = true;
   } catch (error) {
     if (error.code === "ERR_CANCELED") {
       isPdfLoading.value = false;
@@ -188,6 +221,10 @@ async function exportAttestationPdf() {
     isPdfLoading.value = false;
   }
 }
+
+onMounted(async () => {
+  hasAttestationProduction.value = (await getHasAttestationProduction(props.record.record_id)).hasAttestationProduction;
+});
 </script>
 
 <style scoped>

@@ -6,18 +6,22 @@
         <template v-if="permissions.isOc">
           <button
             v-if="operatorStore.operator.epingle"
-            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-fill"
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
             @click="unpin(operatorStore.operator.numeroBio)"
             aria-label="Désepingler le parcellaire"
             data-tooltip="Désepingler le parcellaire"
-          ></button>
+          >
+            <i class="ri-pushpin-fill" aria-hidden="true" />
+          </button>
           <button
             v-else
-            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline ri-pushpin-line"
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
             @click="pin(operatorStore.operator.numeroBio)"
             aria-label="Epingler le parcellaire"
             data-tooltip="Epingler le parcellaire"
-          ></button>
+          >
+            <i class="ri-pushpin-line" aria-hidden="true" />
+          </button>
         </template>
       </div>
     </div>
@@ -46,7 +50,7 @@
           v-if="hasFeatures && !readonly"
           with-icons
           smallList
-          icon-class="fr-icon-download-line fr-btn--sm"
+          icon-class="fr-icon-download-line fr-btn--sm export-action"
         >
           <ExportActions
             :operator="operator"
