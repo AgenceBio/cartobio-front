@@ -5,7 +5,7 @@
     data-track-content
     data-content-name="Modale de modification multiple du niveau de conversion"
   >
-    <template #title>Suppresion de parcelles</template>
+    <template #title>Suppression de parcelles</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
@@ -50,7 +50,7 @@
       <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-left">
         <li>
           <button class="fr-btn fr-icon-delete-line" form="delete-feature-form">
-            Supprimer {{ selectedIds > 1 ? "les" : "la" }} parcelle{{ selectedIds > 1 ? "s" : "" }}
+            Supprimer {{ selectedIds.length > 1 ? "des" : "la" }} parcelle{{ selectedIds.length > 1 ? "s" : "" }}
           </button>
         </li>
       </ul>

@@ -8,7 +8,7 @@
     >
       <h3 class="fr-text--lg fr-mb-0">Notifications</h3>
       <div class="fr-grid-row icons">
-        <p class="color-green bg-bourgeon fr-px-1v fr-text--sm fr-text--bold">
+        <p class="color-green bg-bourgeon fr-px-1v fr-text--sm fr-text--bold count">
           <span class="fr-icon fr-icon-notification-3-line fr-icon--sm color-green" aria-hidden="true"></span>
           {{ countNotif }}
         </p>
@@ -92,7 +92,6 @@ const featuresSet = useFeaturesSetsStore();
 const featuresStore = useFeaturesStore();
 
 const { record } = recordStore;
-const open = ref(false);
 const countNotif = computed(() => {
   return (
     (featuresSet.required.size ?? 0) +
@@ -100,6 +99,8 @@ const countNotif = computed(() => {
     +(record.record_id !== operatorStore.records?.[0]?.record_id)
   );
 });
+
+const open = ref(countNotif.value > 0 ? true : false);
 
 function selectParcelles(featureIds) {
   featuresStore.unselectAll();
@@ -122,6 +123,7 @@ function selectParcelles(featureIds) {
   text-transform: uppercase;
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
+  border-radius: 4px;
 }
 
 .warning-text {
@@ -144,8 +146,16 @@ function selectParcelles(featureIds) {
 
 .notif-title {
   justify-content: space-between;
+  display: flex;
+  align-items: center;
 }
 .icons {
   gap: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.count {
+  margin: auto;
 }
 </style>
