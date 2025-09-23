@@ -9,10 +9,18 @@ import WMTSTileGrid from "ol/tilegrid/WMTS";
 import { Map as OlMap } from "ol";
 
 /**
+ * * Props
+ */
+
+const props = defineProps<{
+  isCompare?: boolean;
+}>();
+
+/**
  * * Injects
  */
 
-const map = inject<Ref<OlMap>>("map");
+const map = inject<Ref<OlMap>>(!props.isCompare ? "map" : "map2");
 if (!map) {
   throw new Error("Pas de map disponible");
 }

@@ -11,10 +11,18 @@ import { Map as OlMap } from "ol";
 import { FeatureLike } from "ol/Feature";
 
 /**
+ * * Props
+ */
+
+const props = defineProps<{
+  isCompare?: boolean;
+}>();
+
+/**
  * * Injects
  */
 
-const map = inject<Ref<OlMap>>("map");
+const map = inject<Ref<OlMap>>(!props.isCompare ? "map" : "map2");
 
 if (!map) {
   throw new Error("Pas de map disponible");

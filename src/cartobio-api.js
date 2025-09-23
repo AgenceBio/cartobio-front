@@ -382,3 +382,8 @@ export async function getRPG(rpgData) {
   const data = await apiClient.post(`/v2/geometry/rpg`, rpgData);
   return data;
 }
+
+export async function getGeometryEquals(oldRecordId, newRecordId) {
+  const data = await apiClient.post(`/v2/geometry/geometryEquals`, { payload: { old: oldRecordId, new: newRecordId } });
+  return data;
+}
