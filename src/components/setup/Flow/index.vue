@@ -120,7 +120,7 @@ const warnings = ref([]);
 const versionName = ref(null);
 const isLoading = ref(false);
 
-const isOnCartobio = new URL(baseURL).origin.includes(window.location.host);
+const isOnCartobio = new URL(baseURL).origin.includes(window.location.hostname);
 
 // Provide
 provide("operator", props.operator);

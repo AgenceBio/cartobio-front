@@ -101,7 +101,6 @@
             >
               Télécharger pour travailler hors connexion
             </button>
-
             <!-- ri-cloud-off-line -->
           </li>
           <li class="break">
