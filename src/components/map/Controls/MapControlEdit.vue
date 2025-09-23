@@ -103,7 +103,6 @@ watch(
  */
 const handleAction = (mode: string) => {
   if (mapPrefs.value.currentMode === mode) {
-    mapPrefs.value.currentMode = "edit";
     return;
   }
   mapPrefs.value.currentMode = mode;

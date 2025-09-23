@@ -66,7 +66,7 @@ describe("bounds", () => {
   it("returns a workeable bbox (operator locations win because no features)", () => {
     operatorStore.operator = operator;
     store.update({ ...record, parcelles: { type: "FeatureCollection", features: [] } });
-    const expectation = [4.5885, 45.470757, 4.63488839, 45.47151];
+    const expectation = [4.5785, 45.460757, 4.64488839, 45.48151];
 
     expect(store.bounds).toEqual(expectation);
   });

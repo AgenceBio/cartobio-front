@@ -141,12 +141,14 @@ const onFullScreen = () => {
 const createScaleLine = () => {
   const control = new ScaleLine({
     className: "ol-scale-line",
-    target: document.getElementById("scale-line"),
+    target: document.getElementById("scale-line") ?? undefined,
     units: "metric",
     maxWidth: 100,
     minWidth: 100,
   });
-  map.value.addControl(control);
+  if (map?.value) {
+    map.value.addControl(control);
+  }
 };
 
 /**
@@ -180,7 +182,7 @@ onMounted(() => {
 .group-button-right {
   position: relative;
   right: 0;
-  bottom: 0;
+  bottom: 10px;
   width: fit-content;
 
   display: flex;
@@ -196,18 +198,20 @@ onMounted(() => {
   width: 30px;
   height: 30px;
   justify-content: center;
+  border-radius: 4px;
 }
 
 .group-zoom > button {
-  background: white;
   width: 30px;
   height: 30px;
   justify-content: center;
 }
 
 .group-zoom {
+  background: white;
   display: flex;
   flex-direction: column;
+  border-radius: 4px;
 }
 
 .mode-choice {
@@ -237,7 +241,7 @@ onMounted(() => {
   flex-direction: column;
   font-size: 14px;
   position: absolute;
-  bottom: 1rem;
+  bottom: 10px;
   left: 8rem;
   font-weight: 500;
 }
@@ -278,12 +282,12 @@ i[class*=" ri"] {
 
 .scale-line {
   position: absolute;
-  bottom: 0.15rem;
+  bottom: 0px;
   right: 10rem;
 }
 .ol-scale-line {
   position: relative;
-  bottom: 0px;
+  bottom: 10px;
   left: 0px;
 }
 
@@ -291,7 +295,7 @@ i[class*=" ri"] {
   position: absolute;
   display: flex;
   right: 160px;
-  bottom: 15px;
+  bottom: 10px;
   background-color: white;
   border-radius: 0px !important;
 }

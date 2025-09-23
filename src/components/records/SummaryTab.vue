@@ -3,7 +3,7 @@
     <div class="fr-px-4v">
       <ValidationErrors @switchTab="emit('switch-tab')" />
     </div>
-    <hr class="fr-mt-6v" />
+    <hr class="fr-mt-4v" />
 
     <div class="fr-px-4v" v-if="record.certification_state != 'OPERATOR_DRAFT'">
       <NotesSection />
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, nextTick } from "vue";
 import ValidationErrors from "./Table/ValidationErrors.vue";
 import NotesSection from "@/components/records/NotesSection.vue";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, inHa, legalProjectionSurface } from "@/utils/features";
@@ -71,11 +71,13 @@ const surface = computed(() =>
   !isNaN(parseFloat(inHa(legalProjectionSurface(features)))) ? inHa(legalProjectionSurface(features)) + " ha" : "",
 );
 
-function selectFeatureGroup(group) {
+async function selectFeatureGroup(group) {
   featuresStore.unselectAll();
   featuresStore.select(...group.features.map((f) => f.id));
 
   emit("switch-tab", group.pivot);
+  await nextTick();
+  featuresStore.unselectAll();
 }
 </script>
 
@@ -117,31 +119,25 @@ function selectFeatureGroup(group) {
 .badge-Inconnue {
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
-  border: 1px solid var(--red-marianne-925-125);
 }
 .badge-Conventionnel {
   color: var(--green-tilleul-verveine-sun-418-moon-817);
   background-color: var(--green-tilleul-verveine-925-125);
-  border: 1px solid var(--green-tilleul-verveine-850-200);
 }
 .badge-C1 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-975-75);
-  border: 1px solid var(--green-bourgeon-850-200);
 }
 .badge-C2 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-950-100);
-  border: 1px solid var(--green-bourgeon-850-200);
 }
 .badge-C3 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-925-125);
-  border: 1px solid var(--green-bourgeon-850-200);
 }
 .badge-AB {
   color: white;
   background-color: var(--green-bourgeon-sun-425-moon-759);
-  border: 1px solid var(--green-bourgeon-sun-425-moon-759);
 }
 </style>

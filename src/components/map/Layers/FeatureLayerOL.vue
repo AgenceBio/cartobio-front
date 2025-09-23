@@ -154,7 +154,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const preferences = usePreferences();
 const store = useFeaturesStore();
-const record = useRecordStore();
+const recordStore = useRecordStore();
 
 const { map: mapPrefs } = storeToRefs(preferences);
 
@@ -286,8 +286,8 @@ const clearInteractions = (): void => {
 };
 
 const updateHasUndoRedo = () => {
-  hasUndo.value = interactions.value.undoRedo?.hasUndo() || false;
-  hasRedo.value = interactions.value.undoRedo?.hasRedo() || false;
+  hasUndo.value = (interactions.value.undoRedo?.getStack("undo").length || 0) > 0;
+  hasRedo.value = (interactions.value.undoRedo?.getStack("redo").length || 0) > 0;
 };
 
 const createCultureOverlay = (feature: Feature) => {
@@ -317,6 +317,7 @@ const createCultureOverlay = (feature: Feature) => {
 
 const generateConversionLevelOverlays = () => {
   if (!zoom.value) return;
+  if (!props.interactive) return;
   for (const overlay of map.value.getOverlays().getArray()) {
     if (overlay.getId() === undefined || overlay.getId() === "hover-tooltip") {
       continue;
@@ -455,15 +456,16 @@ const handlePointerMove = (e: MapBrowserEvent) => {
   if (currentCursor.value) map.value.getViewport().style.cursor = currentCursor.value;
 
   if (
-    mapPrefs.value.currentMode === "consult" ||
-    (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0)
+    props.interactive &&
+    (mapPrefs.value.currentMode === "consult" ||
+      (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0))
   ) {
     const feature = map.value.forEachFeatureAtPixel(
       e.pixel,
       (feature) => {
         return feature;
       },
-      { layerFilter: (l) => l.get("name") === vectorLayer.value.get("name") },
+      { layerFilter: (l) => l.get("name") === vectorLayer.value?.get("name") },
     ) as Feature;
 
     if (feature && feature !== currentHoveredFeature) {
@@ -559,8 +561,10 @@ watch(
   () => store.collection,
   () => {
     features.value = new GeoJSON().readFeatures(store.collection);
-    vectorSource.value.clear();
-    vectorSource.value.addFeatures(features.value);
+    if (vectorSource.value) {
+      vectorSource.value.clear();
+      vectorSource.value.addFeatures(features.value as Feature[]);
+    }
     map.value
       .getOverlays()
       .getArray()
@@ -573,16 +577,11 @@ watch(
 
     generateConversionLevelOverlays();
   },
-  { deep: true },
 );
 watch(
-  () => record.record.record_id,
+  () => recordStore.record.record_id,
   () => {
-    let extent = null;
-
-    if (!extent || isNaN(extent[0]) || extent[0] === Infinity) {
-      extent = record.bounds;
-    }
+    const extent = recordStore.bounds;
 
     if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
       map.value.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 5000 });
@@ -646,7 +645,7 @@ onMounted(() => {
   let extent = vectorSource.value?.getExtent();
 
   if (!extent || isNaN(extent[0]) || extent[0] === Infinity) {
-    extent = record.bounds;
+    extent = recordStore.bounds;
   }
 
   if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
@@ -717,14 +716,6 @@ onUnmounted(() => {
   gap: 2px;
   padding: 10px;
   border-radius: 4px;
-}
-
-.cursor-icon {
-  position: fixed;
-  pointer-events: none;
-  z-index: 2000;
-  font-size: 20px;
-  color: #6a6af4;
 }
 
 button[data-tooltip] {

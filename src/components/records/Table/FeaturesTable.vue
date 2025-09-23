@@ -16,7 +16,7 @@
     </div>
     <div class="seamless-select fr-col-12 fr-col-md-6 fr-grid-row">
       <label for="plots-group-by">Regrouper par </label>
-      <b class="font-blue">{{ groupingChoiceLabel }}</b>
+      <b class="font-blue fr-mr-2w">{{ groupingChoiceLabel }}</b>
       <select id="plots-group-by" v-model="userGroupingChoice">
         <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
       </select>
@@ -133,8 +133,8 @@
     <DeleteModal v-if="deleteModalMultiple" @submit="(e) => handleMultipleDelete(e)" />
   </Teleport>
 
-  <p>
-    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill"> retour en haut de page </a>
+  <p class="fr-mt-4v">
+    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill"> retour en haut de la page </a>
   </p>
 </template>
 <script setup>
@@ -295,8 +295,8 @@ watch(userGroupingChoice, (newValue) => {
   position: relative;
   padding-right: 1rem;
   font-weight: normal;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEyIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNiA2TDAgMEgxMkw2IDZaIiBmaWxsPSIjMDAwMDkxIi8+Cjwvc3ZnPgo=");
-  background-position: right center;
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Direction=Bas'%3E%3Cpath id='Ic&%23195;&%23180;ne' fill-rule='evenodd' clip-rule='evenodd' d='M12 13.172L16.95 8.222L18.364 9.636L12 16L5.63599 9.636L7.04999 8.222L12 13.172Z' fill='%23000091'/%3E%3C/g%3E%3C/svg%3E%0A");
+  background-position: right bottom;
   background-repeat: no-repeat;
   justify-content: flex-end;
 

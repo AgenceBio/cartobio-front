@@ -13,7 +13,7 @@
   </div>
 
   <Teleport to="body">
-    <DeleteModal v-if="deleteModalMultiple" @submit="(e) => handleMultipleDelete(e)" />
+    <DeleteModal v-if="deleteModalMultiple" @submit="handleMultipleDelete" @close="deleteModalMultiple = false" />
   </Teleport>
 </template>
 
@@ -124,7 +124,7 @@ const deleteSelected = (): void => {
  * * Fonctions : Data
  */
 
-const handleMultipleDelete = async (reason): Promise<void> => {
+const handleMultipleDelete = async (reason: { code: string; details: string }): Promise<void> => {
   if (numberSelectedFeature.value > 0 && mapPrefs.value.currentMode === "delete") {
     for (const featureId of store.selectedIds) {
       await store.deleteSingleFeature({ id: featureId, reason });

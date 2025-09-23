@@ -69,6 +69,7 @@ import { DrawEvent } from "ol/interaction/Draw";
 import { LinearRing, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from "ol/geom";
 import * as jsts from "jsts/dist/jsts.min";
 import BaseEvent from "ol/events/Event";
+import { EventsKey } from "ol/events";
 
 /*
  * * Interface
@@ -118,8 +119,8 @@ let drawingLineLayer: VectorLayer<VectorSource> | null = null;
 let clickCount = 0;
 const previewSource = new VectorSource();
 
-let geomListenerKey: any = null;
-let sourceListenerKey: any = null;
+let geomListenerKey: EventsKey | null = null;
+let sourceListenerKey: EventsKey | null = null;
 
 /*
  * * Refs
@@ -357,9 +358,9 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
         });
 
         resSource.clear();
-        polys.array.forEach((geom, index) => {
+        polys.array.forEach((geom: Polygon, index: number) => {
           const newFeature = new Feature({
-            ...targetFeature.getProperties(),
+            ...targetFeature?.getProperties(),
             geometry: new Polygon(parser.write(geom).getCoordinates()),
           });
           resSource.addFeature(newFeature);
@@ -396,7 +397,10 @@ const attachPreviewListeners = () => {
     sourceListenerKey = null;
   }
 
-  const lineFeature = drawingLineSource?.getFeatures()[0];
+  if (!drawingLineSource) {
+    return;
+  }
+  const lineFeature = drawingLineSource.getFeatures()[0];
   if (!lineFeature) return;
 
   const geom = lineFeature.getGeometry() as LineString;
@@ -406,7 +410,7 @@ const attachPreviewListeners = () => {
     updatePreview(currentGeom.value, previewSource);
   });
 
-  sourceListenerKey = drawingLineSource?.on("change", () => {
+  sourceListenerKey = drawingLineSource.on("change", () => {
     const f = drawingLineSource?.getFeatures()[0];
     if (f && f.getGeometry()) {
       currentGeom.value = f.getGeometry() as LineString;
@@ -428,7 +432,7 @@ const cleanupPreview = (previewSource: VectorSource): void => {
   previewSource.clear();
 };
 
-const calculateArea = (feature: CartoBioFeature): number => {
+const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 const getTargetFeature = (): Feature | null => {
@@ -453,7 +457,6 @@ const getTargetFeature = (): Feature | null => {
 watch(
   () => currentGeom.value,
   (newValue) => {
-    console.log(newValue);
     if (newValue) {
       updatePreview(newValue, previewSource);
     }

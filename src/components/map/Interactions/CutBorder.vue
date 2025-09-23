@@ -402,7 +402,13 @@ const drawBorder = () => {
     bordureJsts = allBordureJsts;
   } else {
     const parcelle = parser.write(parcelleSansBordureJsts);
-    const splittingLine = getSplittingLine(distance.value * 1.1, polygonIn3857, parcelle);
+    let splittingLine;
+    try {
+      splittingLine = getSplittingLine(distance.value * 1.1, polygonIn3857, parcelle);
+    } catch (e) {
+      return;
+    }
+
     const lineJsts = parser.read(splittingLine);
 
     const union = allBordureJsts.getExteriorRing().union(lineJsts);
@@ -526,7 +532,7 @@ const getSplittingLine = (projectionDistance: number, geometry: Geometry, buffer
  * * Utils
  */
 
-const calculateArea = (feature: CartoBioFeature): number => {
+const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 
@@ -747,13 +753,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.column {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  gap: 10px;
-}
-
 .distance-input {
   width: 12ch;
 }
