@@ -13,6 +13,7 @@ import record from "@/utils/__fixtures__/record-with-features.json" assert { typ
 import RecordHeader from "./Header.vue";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";
 import ExportActions from "@/components/records/ExportActions.vue";
+import ExportModal from "@/components/records/ExportActions.vue";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const operatorStore = useOperatorStore(pinia);

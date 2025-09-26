@@ -28,6 +28,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  vertical: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 onUpdated(() => {
@@ -88,7 +92,7 @@ watch(show, (value) => {
         @click.stop.prevent="show = !show"
         class="fr-btn fr-btn--tertiary-no-outline show-actions"
         :class="props.iconClass"
-        :style="props.iconStyle"
+        :style="[props.iconStyle, props.vertical ? { transform: 'rotate(90deg)' } : {}]"
         :disabled="props.disabled"
         :aria-expanded="show"
         aria-label="Choix des actions"
