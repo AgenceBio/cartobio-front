@@ -1,8 +1,8 @@
 <template>
   <header class="fr-mb-2w">
     <div class="fr-grid-row fr-grid-row--middle header">
-      <div class="fr-grid-row fr-text--xs">{{ operator.nom }}</div>
-      <div class="fr-grid-row">
+      <div class="fr-grid-row fr-text--xs">
+        <p class="fr-text--sm fr-my-auto">{{ operator.nom }}</p>
         <template v-if="permissions.isOc">
           <button
             v-if="operatorStore.operator.epingle"
@@ -32,13 +32,14 @@
         <div class="seamless-select fr-grid-row">
           <b class="version-name fr-mr-2w">{{ record.version_name }}</b>
 
-          <select class="version-name fr-ml-2w" name="select-version" id="select-version" v-model="selectedRecord">
-            <option
-              :value="recordList.record_id"
-              :key="recordList.record_id"
-              v-for="recordList in sortedRecords"
-              @click="redirectToRecord(recordList)"
-            >
+          <select
+            class="version-name fr-ml-2w"
+            name="select-version"
+            id="select-version"
+            v-model="selectedRecord"
+            @change="redirectToRecord(selectedRecord)"
+          >
+            <option :value="recordList.record_id" :key="recordList.record_id" v-for="recordList in sortedRecords">
               {{ recordList.version_name }}
             </option>
           </select>
@@ -224,7 +225,7 @@ function unpin(numeroBio) {
 
 async function redirectToRecord(recordTo) {
   mapPrefs.value.currentMode = "consult";
-  await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordTo.record_id}`);
+  await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordTo}`);
 }
 
 async function tryDownloadRecord(record) {

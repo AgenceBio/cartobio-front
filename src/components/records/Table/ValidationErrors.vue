@@ -34,7 +34,7 @@
         <button
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-search-line fr-btn--icon-right"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
-          @click="selectParcelles(result.featureIds)"
+          @click="selectParcelles(ruleId)"
         >
           Afficher
         </button>
@@ -56,7 +56,7 @@
         <button
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-search-line fr-btn--icon-right"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
-          @click="selectParcelles(result.featureIds)"
+          @click="selectParcelles(ruleId)"
         >
           Afficher
         </button>
@@ -82,14 +82,14 @@ import { computed, ref } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { useOperatorStore } from "@/stores/operator";
 import { useRecordStore } from "@/stores/record";
-import { useFeaturesStore } from "@/stores/features";
+import { statsPush } from "@/stats.js";
+
 
 const emit = defineEmits(["switch-tab"]);
 
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
 const featuresSet = useFeaturesSetsStore();
-const featuresStore = useFeaturesStore();
 
 const { record } = recordStore;
 const countNotif = computed(() => {
@@ -102,9 +102,12 @@ const countNotif = computed(() => {
 
 const open = ref(countNotif.value > 0 ? true : false);
 
-function selectParcelles(featureIds) {
-  featuresStore.unselectAll();
-  featuresStore.select(...featureIds);
+function selectParcelles(id) {
+  featuresSet.toggle(id);
+
+  if (featuresSet.isToggled(id)) {
+    statsPush(["trackEvent", "Filtre parcelles", id]);
+  }
   emit("switch-tab");
 }
 </script>
