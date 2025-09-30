@@ -97,7 +97,7 @@ async function selectFeatureGroup(group) {
 .carte-container {
   gap: 14px;
   display: grid;
-  max-width: 98%;
+  max-width: 95%;
   grid-template-columns: 50% 50%;
 }
 
