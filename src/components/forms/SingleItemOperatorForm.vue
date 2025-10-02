@@ -127,7 +127,7 @@ import { useFocus } from "@vueuse/core";
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
 import Modal from "@/components/widgets/Modal.vue";
-import { LEVEL_C1, LEVEL_C2, LEVEL_C3 } from "@/referentiels/ab.js";
+import { LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB } from "@/referentiels/ab.js";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import { usePermissions } from "@/stores/permissions.js";
@@ -168,7 +168,9 @@ const patch = reactive({
 
 const details = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau));
+const isEngagementDateRequired = computed(() =>
+  [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.conversion_niveau),
+);
 
 const validate = () => {
   const set = featuresSet.byFeature(props.feature.id, true);

@@ -86,6 +86,10 @@
             <label class="fr-label" for="engagement_date"
               >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
             >
+            <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
+              Une date est requise pour l'attestation de production, si vous ne la connaissez pas ou ne souhaitez pas la
+              mettre, celle-ci sera automatiquement remplie par 01/01/2023.
+            </p>
             <input
               type="date"
               class="fr-input"
@@ -142,7 +146,7 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from "vue";
 import { useFocus } from "@vueuse/core";
 
-import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from "@/referentiels/ab.js";
+import { isABLevel, LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB } from "@/referentiels/ab.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { toDateInputString } from "@/utils/dates.js";
@@ -195,7 +199,9 @@ const patch = reactive({
 
 const isAB = computed(() => isABLevel(patch.conversion_niveau));
 const maxDate = computed(() => toDateInputString(new Date()));
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau));
+const isEngagementDateRequired = computed(() =>
+  [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.conversion_niveau),
+);
 const details = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
 
@@ -246,6 +252,21 @@ watch(
     ]);
   },
   { immediate: props.feature.properties.isCertified ?? false },
+);
+
+watch(
+  () => patch.conversion_niveau,
+  (newValue) => {
+    if (newValue === LEVEL_AB && !patch.engagement_date) {
+      patch.engagement_date = "2023-01-01";
+    }
+    if (newValue != LEVEL_AB && patch.engagement_date === "2023-01-01") {
+      patch.engagement_date = "";
+    }
+    if (newValue === LEVEL_CONVENTIONAL) {
+      patch.engagement_date = "";
+    }
+  },
 );
 </script>
 
