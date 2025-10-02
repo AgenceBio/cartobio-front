@@ -1,9 +1,9 @@
 <template>
   <ActionDropdown>
-    <template #trigger="{ toggle }">
+    <template #trigger="{}">
       <button
         class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
-        @click.stop.prevent="toggle"
+        @click.stop.prevent="onTriggerClick"
       >
         {{ label }}
       </button>
@@ -33,7 +33,7 @@ import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 
-defineProps({
+const props = defineProps({
   label: {
     type: String,
     required: true,
@@ -44,7 +44,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["submit"]);
+const emit = defineEmits(["submit", "openModal"]);
 
 const isMenuOpen = ref(false);
 const isModalOpen = ref(false);
@@ -54,6 +54,7 @@ const modalComponent = ref(null);
 onClickOutside(openerElement, () => (isMenuOpen.value = false));
 
 function openModalWithComponent(component) {
+  emit("openModal");
   modalComponent.value = component;
   isModalOpen.value = true;
   isMenuOpen.value = false;
@@ -62,6 +63,14 @@ function openModalWithComponent(component) {
 function handleSubmit({ ids, patch }) {
   emit("submit", { ids, patch });
   isModalOpen.value = false;
+}
+
+function onTriggerClick() {
+  if (props.actions.length === 1) {
+    openModalWithComponent(props.actions[0].component);
+  } else {
+    isMenuOpen.value = !isMenuOpen.value;
+  }
 }
 </script>
 

@@ -4,7 +4,7 @@
   </p>
   <span v-else-if="conversionLevel.value === LEVEL_MAYBE_AB" class="badge badge-a-modifier">
     <template v-if="isOc">
-      <span v-if="!noIcon" class="fr-icon fr-icon-pencil-line fr-icon--sm"></span>
+      <span class="fr-icon fr-icon-pencil-line fr-icon--sm"></span>
       <p class="fr-mb-0 small-text">Certification</p>
     </template>
     <template v-else>

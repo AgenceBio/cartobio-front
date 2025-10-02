@@ -66,6 +66,7 @@
         v-if="massActions.length"
         :actions="massActions"
         label="Modifier"
+        @openModal="emit('edit:featureId', null)"
         @submit="handleFeatureCollectionSubmit"
       />
       <button
@@ -227,7 +228,7 @@ async function handleSingleFeatureDeletion({ id, reason }) {
 async function handleFeatureCollectionSubmit({ ids, patch }) {
   statsPush(["trackEvent", "Parcelles", "Modification multiple (sauvegarde)"]);
   editedFeatureId.value = null;
-
+  console.log("here");
   const featureCollection = {
     type: "FeatureCollection",
     features: ids.map((id) => ({
@@ -318,9 +319,8 @@ watch(userGroupingChoice, (newValue) => {
 }
 
 .red {
-  color: var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
-  border: 1px solid var(--red-marianne-925-125);
+  color: var(--warning-425-625);
+  background-color: var(--warning-950-100);
 }
 .red:hover {
   background-color: var(--red-marianne-925-125-active);

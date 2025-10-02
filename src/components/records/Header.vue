@@ -2,7 +2,9 @@
   <header class="fr-mb-2w">
     <div class="fr-grid-row fr-grid-row--middle header">
       <div class="fr-grid-row fr-text--xs">
-        <p class="fr-text--sm fr-my-auto">{{ operator.nom }}</p>
+        <p class="fr-text--sm fr-my-auto">
+          <b>{{ operator.nom }}</b>
+        </p>
         <template v-if="permissions.isOc">
           <button
             v-if="operatorStore.operator.epingle"

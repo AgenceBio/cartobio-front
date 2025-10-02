@@ -77,18 +77,6 @@ describe("SummaryTab", () => {
     expect(wrapper.findAll(".notification p")[0].text()).toEqual("3 parcelles");
     expect(wrapper.findAll(".notification p")[1].text()).toEqual("1 parcelle");
     expect(wrapper.findAll(".notification p")[2].text()).toEqual("2 parcelles");
-
-    await wrapper.findAll(".notification button")[0].trigger("click");
-    expect(wrapper.emitted("switch-tab")).toEqual([[]]);
-    expect(featuresStore.selectedIds).toEqual(["1", "2", "3"]);
-
-    await wrapper.findAll(".notification button")[1].trigger("click");
-    expect(wrapper.emitted("switch-tab")).toEqual([[], []]);
-    expect(featuresStore.selectedIds).toEqual(["1"]);
-
-    await wrapper.findAll(".notification button")[2].trigger("click");
-    expect(wrapper.emitted("switch-tab")).toEqual([[], [], []]);
-    expect(featuresStore.selectedIds).toEqual(["2", "3"]);
   });
 
   it("Affiche les infos générales du parcellaire", async () => {

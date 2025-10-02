@@ -147,7 +147,7 @@
           "
         >
           <button
-            class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+            class="complete-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
             @click.stop.prevent="toggleEditForm(feature.id)"
           >
             Compléter
@@ -158,7 +158,7 @@
           :class="{ clickable: permissions.canChangeConversionLevel }"
           v-else
         >
-          <ConversionLevel noIcon labelSelector with-date :feature="feature" />
+          <ConversionLevel noIcon with-date :feature="feature" />
         </div>
         <div class="fr-grid-row fr-grid-row--middle gap-10">
           <p class="fr-sr-only"></p>
@@ -171,6 +171,7 @@
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
           <p class="fr-mb-0 fr-text--sm text-grey">
+            <span v-if="getTimeAgo(feature)" aria-hidden="true" class="fr-icon-refresh-line fr-icon--sm"></span>
             {{ getTimeAgo(feature) }}
           </p>
           <button
@@ -385,9 +386,9 @@ onMounted(async () => {
 <style scoped>
 .erreurs {
   align-self: center;
-  color: var(--text-default-error);
-  border: 1px solid var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
+  color: var(--warning-425-625);
+  border: 1px solid #ffbdb2;
+  background-color: var(--warning-950-100);
   border-radius: 4px;
 }
 
@@ -504,5 +505,24 @@ onMounted(async () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.complete-button {
+  color: var(--text-default-error);
+  background-color: var(--red-marianne-925-125);
+  box-shadow: none;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  font-weight: 400;
+  border-radius: 16px;
+  padding-top: 2px;
+  padding-right: 8px;
+  padding-bottom: 2px;
+  padding-left: 8px;
+}
+
+.complete-button:hover {
+  background-color: var(--red-marianne-925-125);
 }
 </style>

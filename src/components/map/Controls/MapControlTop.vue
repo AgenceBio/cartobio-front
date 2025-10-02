@@ -2,7 +2,7 @@
   <div class="button-group">
     <div class="left-button" v-if="!fullScreenMap">
       <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('openFullScreen')">
-        <i class="ri-sidebar-fold-line" aria-hidden="true" />
+        <span class="ri-sidebar-fold-line" aria-hidden="true" />
       </button>
     </div>
 
@@ -80,6 +80,7 @@ const emit = defineEmits<{
   border-radius: 4px;
   width: 44px;
   height: 44px;
+  justify-content: center;
 }
 
 .button-group {

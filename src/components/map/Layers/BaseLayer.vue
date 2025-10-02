@@ -38,7 +38,7 @@ onMounted(() => {
   layer = new VectorTileLayer({
     declutter: true,
     zIndex: 0,
-    background: "white",
+    background: "#F5F5F5",
     preload: 0,
     visible: true,
   });

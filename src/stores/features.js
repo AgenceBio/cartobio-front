@@ -131,7 +131,6 @@ export const useFeaturesStore = defineStore("features", () => {
    * @param  {...String} ids
    */
   function select(...ids) {
-    console.log(ids);
     selectedIds.value = Array.from(new Set([...selectedIds.value, ...ids.map(String)]));
   }
 
