@@ -84,7 +84,6 @@ import { useOperatorStore } from "@/stores/operator";
 import { useRecordStore } from "@/stores/record";
 import { statsPush } from "@/stats.js";
 
-
 const emit = defineEmits(["switch-tab"]);
 
 const operatorStore = useOperatorStore();

@@ -114,6 +114,10 @@ const createAutocomplete = () => {
 
     onStateChange({ state }) {
       query.value = state.query;
+      if (query.value == "") {
+        console.log("update");
+        emit("update:modelValue", "");
+      }
     },
 
     getSources() {
@@ -162,7 +166,6 @@ const createAutocomplete = () => {
                 event.refresh();
               });
             }
-
             event.setQuery(event.item.libelle);
             emit("update:modelValue", event.item.code);
           },

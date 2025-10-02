@@ -25,7 +25,7 @@
                     <span v-if="i">, </span> {{ cultureLabel(culture) }}
                   </small>
                 </p>
-                <span v-else>{{ fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf }}</span>
+                <span v-else>{{ fromCodeCpf(item.cultures[0].CPF)?.libelle_code_cpf ?? "-" }}</span>
               </div>
             </div>
           </template>
@@ -46,7 +46,7 @@
                     <span v-if="i">, </span> {{ cultureLabel(culture) }}
                   </small>
                 </p>
-                <span v-else>{{ fromCodeCpf(item.cultures[0].CPF).libelle_code_cpf }}</span>
+                <span v-else>{{ fromCodeCpf(item.cultures[0].CPF)?.libelle_code_cpf ?? "-" }}</span>
               </div>
             </div>
           </template>

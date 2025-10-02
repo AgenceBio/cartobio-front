@@ -16,7 +16,7 @@
     </div>
 
     <div v-if="conversionLevel" class="align-center fr-mt-3w">
-      <ConversionLevel :level="getConversionLevel(conversionLevel)" :noIcon="true" :labelSelector="true" />
+      <ConversionLevel :level="getConversionLevel(conversionLevel)" :noIcon="true" />
     </div>
     <div v-else-if="libelleCulture" class="red radius fr-mt-1v">
       <span class="fr-icon-pencil-line fr-icon--sm fr-hint-text"> </span>
@@ -66,6 +66,7 @@ defineProps<Props>();
 <style scoped>
 .openlayers-parcelle-tooltip {
   background-color: white;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 .openlayers-parcelle-tooltip div {
   display: flex;
