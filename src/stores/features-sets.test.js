@@ -47,6 +47,7 @@ describe("results", () => {
         [
           RuleSet.NAMELESS,
           {
+            label: "Sans nom",
             count: 3,
             details: [
               ["1", true],
@@ -63,6 +64,7 @@ describe("results", () => {
         [
           RuleSet.CULTURE_MISSING,
           {
+            label: "Sans culture",
             count: 1,
             details: [["1", true]],
             errorMessage: "Il manque un type de culture",
@@ -75,6 +77,7 @@ describe("results", () => {
         [
           RuleSet.CULTURE_UNSURE,
           {
+            label: "Culture à préciser",
             count: 2,
             details: [
               ["2", [0, true]],
@@ -90,6 +93,7 @@ describe("results", () => {
         [
           RuleSet.CONVERSION_LEVEL_MISSING,
           {
+            label: "Niveau de conversion manquant",
             count: 4,
             details: [
               ["1", true],
@@ -107,6 +111,7 @@ describe("results", () => {
         [
           RuleSet.CONVERSION_LEVEL_UNSURE,
           {
+            label: "Niveau de conversion à préciser",
             count: 1,
             details: [["6", true]],
             errorMessage: "Le niveau de conversion en agriculture biologique a besoin d'être précisé",
@@ -119,10 +124,14 @@ describe("results", () => {
         [
           RuleSet.ENGAGEMENT_DATE_MISSING,
           {
-            count: 1,
-            details: [["5", true]],
+            label: "Date de début de conversion manquante",
+            count: 2,
+            details: [
+              ["5", true],
+              ["7", true],
+            ],
             errorMessage: "Il manque une date de début de conversion",
-            featureIds: ["5"],
+            featureIds: ["5", "7"],
             property: "engagement_date",
             required: false,
           },
@@ -131,6 +140,7 @@ describe("results", () => {
         [
           RuleSet.GEOMETRY_MISSING,
           {
+            label: "Dessin géographique manquant",
             count: 8,
             details: [
               ["1", true],

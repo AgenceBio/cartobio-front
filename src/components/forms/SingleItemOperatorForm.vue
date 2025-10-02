@@ -127,7 +127,7 @@ import { useFocus } from "@vueuse/core";
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
 import Modal from "@/components/widgets/Modal.vue";
-import { LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB } from "@/referentiels/ab.js";
+import { LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB } from "@/referentiels/ab.js";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import { usePermissions } from "@/stores/permissions.js";
