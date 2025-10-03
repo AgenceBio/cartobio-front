@@ -8,7 +8,7 @@
       </p>
     </div>
     <AccordionGroup>
-      <AccordionSection title="Parcelles selectionnées">
+      <AccordionSection title="Parcelles à modifier">
         <ul class="fr-mt-2w">
           <li v-for="f in selectedFeatures" :key="f.id">
             {{ f.properties.nom ? f.properties.nom + " - " : "" }}
@@ -20,15 +20,39 @@
     </AccordionGroup>
 
     <form id="mass-edit-form" @submit.prevent="validate">
-      <AccordionGroup>
-        <AccordionSection title="Cultures" open>
-          <div class="fr-input-group fr-mt-2w">
-            <CultureSelector :cultures="patch.cultures" @change="($cultures) => (patch.cultures = $cultures)" />
-          </div>
-        </AccordionSection>
-      </AccordionGroup>
-      <AccordionGroup>
-        <AccordionSection title="Certification" open>
+      <div class="fr-tabs fr-mt-2w">
+        <ul class="fr-tabs__list" role="tablist" aria-label="onglet de sélection">
+          <li role="presentation">
+            <button
+              type="button"
+              class="fr-tabs__tab"
+              :class="{ 'fr-tabs__tab--active': activeTab === 0 }"
+              role="tab"
+              :aria-selected="activeTab === 0"
+              @click="activeTab = 0"
+            >
+              Cultures
+            </button>
+          </li>
+          <li role="presentation">
+            <button
+              type="button"
+              class="fr-tabs__tab"
+              :class="{ 'fr-tabs__tab--active': activeTab === 1 }"
+              role="tab"
+              :aria-selected="activeTab === 1"
+              @click="activeTab = 1"
+            >
+              Certification
+            </button>
+          </li>
+        </ul>
+
+        <div v-show="activeTab === 0" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
+          <CultureSelector :cultures="patch.cultures" @change="($cultures) => (patch.cultures = $cultures)" />
+        </div>
+
+        <div v-show="activeTab === 1" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
           <ConversionLevelSelector v-model="patch.conversion_niveau" />
 
           <div class="fr-input-group">
@@ -44,8 +68,8 @@
               ref="autofocusedElement"
             />
           </div>
-        </AccordionSection>
-      </AccordionGroup>
+        </div>
+      </div>
     </form>
 
     <template #footer>
@@ -54,16 +78,16 @@
           <button class="fr-btn" form="mass-edit-form" aria-label="Enregistrer les changements">Enregistrer</button>
         </li>
         <li>
-          <button type="button" class="fr-btn fr-btn--tertiary" @click="resetPatch">Annuler</button>
+          <button
+            type="button"
+            class="fr-btn fr-btn--tertiary"
+            @click="resetPatch"
+            :disabled="!(changes != {} && Object.keys(changes).length > 0)"
+          >
+            Réinitialiser
+          </button>
         </li>
       </ul>
-      <div v-if="footerMsg.length" class="">
-        <p class="fr-text--sm fr-mb-0">
-          {{ footerMsg.length }} modification{{ footerMsg.length > 1 ? "s vont" : " va" }} être effectuée{{
-            footerMsg.length > 1 ? "s" : ""
-          }}
-        </p>
-      </div>
     </template>
   </Modal>
 </template>
@@ -96,6 +120,8 @@ const initial = {
 };
 
 const validationErrors = ref([]);
+
+const activeTab = ref(0);
 
 const patch = reactive({ ...initial });
 
