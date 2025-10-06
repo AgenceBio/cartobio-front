@@ -299,11 +299,13 @@ export const notificationsStateLevel = {
 export const engagementList = {
   ["AB"]: {
     label: "100% AB",
-    tooltipText: "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB (hors bande tampon, fleurie et bordure)",
+    tooltipText:
+      "En 100% AB, toutes les parcelles de l'exploitation ont atteint le niveau AB (hors bande tampon, fleurie et bordure)",
   },
   ["ABCONV"]: {
     label: "AB/en conversion",
-    tooltipText: "Présence sur l’exploitation de parcelles en conversion sans parcelle en conventionnel (hors bande tampon, fleurie et bordure)",
+    tooltipText:
+      "Présence sur l’exploitation de parcelles en conversion sans parcelle en conventionnel (hors bande tampon, fleurie et bordure)",
   },
   ["MIXTE"]: {
     label: "Mixte",
