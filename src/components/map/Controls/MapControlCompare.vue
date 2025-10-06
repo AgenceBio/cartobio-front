@@ -190,6 +190,7 @@ onMounted(() => {
 .group-zoom {
   display: flex;
   flex-direction: column;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .mode-choice {
@@ -222,6 +223,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   background: #ffffff;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .info-box-right {
@@ -233,6 +235,8 @@ onMounted(() => {
   padding: 24px;
   border-radius: 6px;
   display: flex;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
+
   flex-direction: column;
   background: #ffffff;
 }

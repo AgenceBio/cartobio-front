@@ -15,7 +15,7 @@
       <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
     </div>
     <div class="seamless-select fr-col-12 fr-col-md-6 fr-grid-row">
-      <label for="plots-group-by">Regrouper par </label>
+      <label for="plots-group-by ">Regrouper par </label>
       <b class="font-blue fr-mr-2w">{{ groupingChoiceLabel }}</b>
       <select id="plots-group-by" v-model="userGroupingChoice">
         <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
@@ -29,9 +29,9 @@
       v-for="{ active, id, count, label, required } in tags"
       class="fr-tag red"
       :class="{
-        'fr-tag--dismiss': active,
         'fr-icon-filter-line fr-tag--icon-left': required,
       }"
+      :aria-pressed="active"
       :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`"
       @click="handleFilterClick(id)"
     >
@@ -296,6 +296,7 @@ watch(userGroupingChoice, (newValue) => {
   position: relative;
   padding-right: 1rem;
   font-weight: normal;
+  font-size: 14px;
   background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Direction=Bas'%3E%3Cpath id='Ic&%23195;&%23180;ne' fill-rule='evenodd' clip-rule='evenodd' d='M12 13.172L16.95 8.222L18.364 9.636L12 16L5.63599 9.636L7.04999 8.222L12 13.172Z' fill='%23000091'/%3E%3C/g%3E%3C/svg%3E%0A");
   background-position: right bottom;
   background-repeat: no-repeat;
@@ -318,12 +319,35 @@ watch(userGroupingChoice, (newValue) => {
   }
 }
 
+button.fr-tag[aria-pressed="true"]:not(:disabled),
+input[type="button"].fr-tag[aria-pressed="true"]:not(:disabled) {
+  background-color: transparent;
+  background-image: radial-gradient(
+    circle at 100% 0.25rem,
+    transparent 0.578125rem,
+    var(--red-marianne-925-125-active) 0.625rem
+  );
+  color: var(--warning-425-625);
+}
+button.fr-tag[aria-pressed="true"]:not(:disabled):hover,
+input[type="button"].fr-tag[aria-pressed="true"]:not(:disabled):hover {
+  background-image: radial-gradient(
+    circle at 100% 0.25rem,
+    transparent 0.578125rem,
+    var(--red-marianne-925-125-active) 0.625rem
+  );
+}
+
+button.fr-tag[aria-pressed="true"]::after,
+input[type="button"].fr-tag[aria-pressed="true"]::after {
+  color: var(--warning-425-625);
+}
 .red {
   color: var(--warning-425-625);
   background-color: var(--warning-950-100);
 }
 .red:hover {
-  background-color: var(--red-marianne-925-125-active);
+  background-color: var(--red-marianne-925-125-hover);
 }
 .red.fr-tag--dismiss {
   border: 1px solid var(--text-default-error);

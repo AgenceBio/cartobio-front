@@ -199,6 +199,7 @@ onMounted(() => {
   height: 30px;
   justify-content: center;
   border-radius: 4px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .group-zoom > button {
@@ -212,6 +213,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   border-radius: 4px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .mode-choice {
@@ -227,6 +229,7 @@ onMounted(() => {
   display: flex;
   gap: 10px;
   border-radius: 4px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .active {
@@ -244,6 +247,7 @@ onMounted(() => {
   bottom: 10px;
   left: 8rem;
   font-weight: 500;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .info-box-open {

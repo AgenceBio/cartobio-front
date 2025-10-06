@@ -66,14 +66,18 @@ const emit = defineEmits<{
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .left-button {
   background: #ffffff;
   height: fit-content;
+  border-radius: 4px;
+
   position: absolute;
   top: 10px;
   left: 10px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .left-button > button {

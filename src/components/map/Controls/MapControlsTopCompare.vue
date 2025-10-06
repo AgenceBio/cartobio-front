@@ -217,7 +217,7 @@ const closeComparison = () => {
   border-radius: 4px;
   position: absolute;
   top: 10px;
-  left: 35%;
+  left: 30%;
   display: flex;
   align-items: center;
   justify-content: space-between;

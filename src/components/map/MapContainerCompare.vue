@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <div ref="mapRef" class="openlayers-container">
+    <div ref="mapRef" class="openlayers-container fr-ml-2w">
       <slot name="map1" v-if="map" />
     </div>
 

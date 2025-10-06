@@ -125,6 +125,7 @@ const handleAction = (mode: string) => {
   padding: 10px;
   border-radius: 4px;
   width: fit-content;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 :deep(button[class^="ri"]),

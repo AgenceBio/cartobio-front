@@ -414,6 +414,11 @@ onMounted(async () => {
   background-color: var(--blue-france-925-125);
 }
 
+.groupe-parcelles:hover {
+  background-color: var(--blue-france-925-125-hover);
+  cursor: pointer;
+}
+
 .gap-10 {
   gap: 10px;
 }

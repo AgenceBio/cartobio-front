@@ -106,7 +106,7 @@
               :disabled="!isOnline || readonly"
               @click.stop.prevent="tryDownloadRecord(record)"
             >
-              Télécharger pour travailler hors connexion
+              Préparer pour travailler hors connexion
             </button>
             <!-- ri-cloud-off-line -->
           </li>
