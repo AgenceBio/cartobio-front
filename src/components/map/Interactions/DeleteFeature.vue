@@ -1,5 +1,5 @@
 <template>
-  <div class="pop-in-top delete">
+  <div class="pop-in-top delete" role="dialog" aria-labelledby="delete-title">
     <div class="title fr-mr-2v">
       <i class="ri-delete-bin-line" aria-hidden="true" />
       <strong class="fr-ml-1v">Supprimer</strong>
@@ -8,8 +8,18 @@
       Vous avez sélectionné {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} à supprimer
     </p>
 
-    <button class="fr-btn fr-icon-check-line fr-btn--icon-right fr-btn--sm" @click="confirmer">Confirmer</button>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
+    <button
+      class="fr-btn fr-icon-check-line fr-btn--icon-right fr-btn--sm"
+      aria-label="Confirmer la suppression"
+      @click="confirmer"
+    >
+      Confirmer
+    </button>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm"
+      aria-label="Annuler la suppression"
+      @click="annuler"
+    ></button>
   </div>
 
   <Teleport to="body">

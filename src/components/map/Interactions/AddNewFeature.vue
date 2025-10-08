@@ -4,12 +4,14 @@
       class="fr-btn fr-btn--tertiary-no-outline"
       :class="[mode === 'dessiner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'dessiner'"
+      aria-label="Accéder au mode dessin"
     >
       <i class="ri-pen-nib-line fr-mr-1w" aria-hidden="true" />
       Dessiner
     </button>
     <button
       class="fr-btn fr-btn--tertiary-no-outline"
+      aria-label="Accéder au mode Cadastre"
       :class="[mode === 'cadastre' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'cadastre'"
     >
@@ -18,18 +20,24 @@
     </button>
     <button
       class="fr-btn fr-btn--tertiary-no-outline"
+      aria-label="Accéder au mode RPG"
       :class="[mode === 'RPG' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'RPG'"
     >
       <i class="ri-collage-line fr-mr-1w" aria-hidden="true" />
       RPG
     </button>
-    <button class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline" @click="quitDraw"></button>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      aria-label="Quitter le mode dessin"
+      @click="quitDraw"
+    ></button>
   </div>
   <div class="pop-in-info-cadastre close" v-if="mode === 'cadastre'">
     <CommuneSelect @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
     <button
       class="fr-btn fr-icon-check-line fr-btn--icon-left fr-btn--sm fr-btn--tertiary-no-outline"
+      aria-label="Saisir les references cadastrales"
       @click="showModalCadastre = true"
     >
       Saisir une référence cadastrale
@@ -41,22 +49,35 @@
       <i class="ri-pen-nib-line" aria-hidden="true" />
       <strong class="fr-ml-1v">Dessiner</strong>
     </div>
-    <p class="fr-mb-0 fr-text--xs title">Votre parcelle a été rogner pour respecter les règles</p>
+    <p class="fr-mb-0 fr-text--xs title" role="alert">Votre parcelle a été rogner pour respecter les règles</p>
     <button
       class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right fr-btn--sm"
+      aria-label="Valider le dessin"
       @click="confirmCorrection"
     >
       Valider
     </button>
-    <button class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      aria-label="Annuler le dessin"
+      @click="cancelDraw"
+    ></button>
   </div>
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
-    <p class="fr-mb-0">Votre parcelle est invalide. Veuillez recommencer !</p>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
+    <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer !</p>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline"
+      aria-label="Annuler le dessin"
+      @click="cancelDraw"
+    ></button>
   </div>
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
-    <p class="fr-mb-0">Votre parcelle est invalide. Veuillez recommencer !</p>
-    <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline" @click="cancelDraw"></button>
+    <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer !</p>
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline"
+      aria-label="Annuler le dessin"
+      @click="cancelDraw"
+    ></button>
   </div>
 
   <div v-if="showCadastreModal && mode === 'cadastre'" class="pop-in-top">
@@ -66,11 +87,16 @@
         >s</span
       >
     </p>
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="addCadastreFeatures">
+    <button
+      class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+      aria-label="Ajouter les parcelles cadastrales"
+      @click="addCadastreFeatures"
+    >
       Ajouter les parcelles cadastrales
     </button>
     <button
       class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      aria-label="Annuler les parcelles cadastrales"
       @click="
         () => {
           selectedIds = [];
@@ -88,7 +114,11 @@
         >s</span
       >
     </p>
-    <button class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right" @click="addRpgFeatures">
+    <button
+      class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+      aria-label="Ajouter les parcelles RPG"
+      @click="addRpgFeatures"
+    >
       Ajouter les parcelles RPG
     </button>
     <button

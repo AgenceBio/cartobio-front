@@ -1,17 +1,22 @@
 <template>
   <div class="button-group">
     <div class="left-button" v-if="!fullScreenMap">
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('openFullScreen')">
+      <button
+        class="fr-btn fr-btn--tertiary-no-outline"
+        @click="emit('openFullScreen')"
+        aria-label="Ouvrir le mode plein écran"
+      >
         <span class="ri-sidebar-fold-line" aria-hidden="true" />
       </button>
     </div>
 
     <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')">
+      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')" aria-label="Comparer les parcelles">
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button
         class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
+        aria-label="Ajouter une nouvelle parcelle"
         :disabled="!permissions.canEditParcellaire"
         @click="emit('addParcelle')"
       >

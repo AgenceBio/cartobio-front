@@ -28,7 +28,7 @@
         aria-label="Choisir le fond plan"
         :aria-pressed="fond === 'plan'"
       >
-        <img src="@/assets/map/plan.jpg" alt="" />
+        <img src="@/assets/map/plan.jpg" alt="Fond plan" />
         <span>Plan</span>
       </button>
       <button
@@ -38,7 +38,7 @@
         aria-label="Choisir le fond satellite"
         :aria-pressed="fond === 'satellite'"
       >
-        <img src="@/assets/map/satellite.jpg" alt="" />
+        <img src="@/assets/map/satellite.jpg" alt="Fond satellite" />
         <span>Satellite</span>
       </button>
 
@@ -52,7 +52,7 @@
         :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`"
         :aria-pressed="classification"
       >
-        <img src="@/assets/map/classification.jpg" alt="" />
+        <img src="@/assets/map/classification.jpg" alt="Fond RPG" />
         <span>
           <p class="fr-mb-0"><abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }}</p>
           <small class="fr-hint-text"
@@ -72,7 +72,7 @@
         :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`"
         :aria-pressed="cadastre"
       >
-        <img src="@/assets/map/cadastre.jpg" alt="" />
+        <img src="@/assets/map/cadastre.jpg" alt="Fond cadastre" />
         <span>Cadastre</span>
       </button>
     </dialog>

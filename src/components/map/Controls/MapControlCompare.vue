@@ -1,7 +1,7 @@
 <template>
   <div class="button-group">
     <div :class="[props.isCompare ? 'info-box-left' : 'info-box-right']">
-      <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap">
+      <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap" aria-live="polite">
         <div class="legend">
           <div class="legend-item">
             <span class="legend-color added"></span> Ajoutées <span class="nb-class">{{ addNb }}</span>
@@ -30,14 +30,14 @@
     <div id="scale-line" class="scale-line" v-if="isCompare"></div>
     <div class="group-button-right" v-if="isCompare">
       <div class="group-zoom">
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn">
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn" aria-label="Zoomer">
           <span class="fr-icon-add-line fr-icon--sm"></span>
         </button>
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut">
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut"  aria-label="Dézoomer">
           <span class="fr-icon-subtract-line fr-icon--sm"></span>
         </button>
       </div>
-      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate">
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate" aria-label="Localiser">
         <span class="ri-focus-3-line"></span>
       </button>
     </div>

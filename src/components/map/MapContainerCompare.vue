@@ -1,12 +1,12 @@
 <template>
-  <div class="flex">
-    <div ref="mapRef" class="openlayers-container fr-ml-2w">
+  <div class="flex" role="group" aria-label="Comparaison de deux cartes interactives">
+    <div ref="mapRef" aria-label="Carte gauche, première version" class="openlayers-container fr-ml-2w">
       <slot name="map1" v-if="map" />
     </div>
 
     <div class="separator"></div>
 
-    <div ref="mapRef2" class="openlayers-container">
+    <div ref="mapRef2" class="openlayers-container" aria-label="Carte droite, seconde version">
       <slot name="map2" v-if="map2" />
     </div>
   </div>

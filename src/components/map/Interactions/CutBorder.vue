@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="pop-in-top border">
+    <div class="pop-in-top border" role="region" aria-label="Découpe de bordure">
       <div class="title fr-mr-2v">
         <i class="ri-crop-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Bordure</strong>
@@ -17,6 +17,7 @@
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         data-tooltip="Inverser la séléction"
+        aria-label="Inverser la séléction"
         @click="invertSelection"
       >
         <i class="ri-arrow-left-right-line"></i>
@@ -26,30 +27,42 @@
         :class="[allBorder ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="toggleAllBorder"
         data-tooltip="Faire la découpe tout autour de la parcelle"
+        aria-label="Faire la découpe tout autour de la parcelle"
       >
         <i class="ri-shape-line"></i>
       </button>
       <button
         class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right fr-mr-1v"
         :disabled="!hasBordure"
+        aria-label="Découper"
         @click="validateDivision"
       >
         Découper
       </button>
-      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-if="hasBordure" @click="resetChoice">
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        aria-label="Annuler la découpe"
+        v-if="hasBordure"
+        @click="resetChoice"
+      >
         Annuler
       </button>
-      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" v-else @click="mapPrefs.currentMode = 'edit'">
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        aria-label="Retourner au mode editer"
+        v-else
+        @click="mapPrefs.currentMode = 'edit'"
+      >
         <i class="fr-icon-close-line fr-icon--sm"></i>
       </button>
     </div>
-    <div class="pop-in-info" v-if="parcelle1Area != null && parcelle2Area != null">
+    <div class="pop-in-info" role="status" aria-live="polite" v-if="parcelle1Area != null && parcelle2Area != null">
       <div class="division-overlay">
         <div style="display: flex; align-items: center; gap: 8px">
           <span class="area-info blue"></span>
           {{ parcelle2Area }} ha
         </div>
-        <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v">
+        <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v" role="dialog" aria-labelledby="delete-title">
           <span class="area-info green"></span>
           {{ parcelle1Area }} ha
         </div>

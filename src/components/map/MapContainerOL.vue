@@ -1,5 +1,9 @@
 <template>
-  <aside ref="mapRef" class="openlayers-container">
+  <aside ref="mapRef" class="openlayers-container" aria-label="Carte interactive OpenLayers">
+    <p class="fr-sr-only" id="mapDescription">
+      Carte interactive affichant les parcelles agricoles. Vous pouvez zoomer, déplacer la carte et sélectionner des
+      zones.
+    </p>
     <slot v-if="map" />
   </aside>
 </template>
