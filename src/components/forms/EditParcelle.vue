@@ -5,6 +5,7 @@
         <button
           class="end-right fr-btn fr-btn--tertiary-no-outline fr-icon-close-line fr-btn--icon-right"
           @click="handleClose"
+          aria-label="Fermer la fiche de la parcelle"
         >
           Fermer
         </button>
@@ -19,6 +20,7 @@
           <button
             @click="modalName = true"
             class="fr-icon--sm fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
+            aria-label="Modifier le nom de la parcelle {{ feature.properties.NOM || '' }}"
           ></button>
         </div>
         <p class="fr-h4 fr-mb-2v fr-mt-0">{{ featureName(feature, { explicitName: false }) }}</p>
@@ -49,7 +51,11 @@
           </ul>
         </div>
 
-        <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-if="feature.properties.commentaires && permissions.isOc">
+        <figure
+          class="fr-quote fr-py-1w fr-px-2w fr-my-2w"
+          aria-label="Notes de l'exploitant ou de l'exploitante"
+          v-if="feature.properties.commentaires && permissions.isOc"
+        >
           <blockquote>
             <p>{{ feature.properties.commentaires }}</p>
           </blockquote>
@@ -155,7 +161,16 @@
               Vos notes
               <span class="fr-hint-text">Elles seront visibles par votre organisme de certification.</span>
             </label>
-            <textarea class="fr-input" id="feature-commentaires" name="commentaires" v-model="patch.commentaires" />
+            <textarea
+              class="fr-input"
+              aria-describedby="feature-commentaires-hint"
+              id="feature-commentaires"
+              name="commentaires"
+              v-model="patch.commentaires"
+            />
+            <span id="feature-commentaires-hint" class="fr-sr-only">
+              Ces notes sont visibles par votre organisme de certification.
+            </span>
           </div>
           <AccordionGroup v-if="permissions.isOc && permissions.canEditParcellaire" :constraint-toggle="!open">
             <AccordionSection
@@ -269,6 +284,8 @@
           aria-describedby="toggle-messages"
           v-model="estControlee"
           @change="tagParcelle(featureId)"
+          role="switch"
+          :aria-checked="estControlee"
         />
         <label class="fr-toggle__label" for="toggle">Marquer comme contrôlée</label>
         <div class="fr-messages-group" id="toggle-messages" aria-live="polite"></div>
@@ -287,7 +304,7 @@
     </div>
     <Teleport to="body">
       <Modal v-if="modalName" @close="modalName = false">
-        <template #title>Modification du nom de la parcelles</template>
+        <template #title>Modification du nom de la parcelle</template>
         <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
           <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
           <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
@@ -298,6 +315,8 @@
             :required="requiredName"
             :class="{ 'fr-input--error': nameErrors.size }"
             ref="autofocusedElement"
+            aria-invalid="nameErrors.size > 0"
+            aria-describedby="feature-nom-hint"
           />
         </div>
         <template #footer>

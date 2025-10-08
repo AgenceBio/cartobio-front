@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="pop-in-top">
+    <div class="pop-in-top" role="dialog" aria-labelledby="Découper">
       <div class="title fr-mr-2v">
         <i class="ri-scissors-cut-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Découper</strong>
@@ -15,6 +15,7 @@
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         :disabled="!hasDivision"
+        :aria-disabled="!hasDivision"
         @click="cancelDivision"
         v-if="hasDivision"
       >
@@ -24,11 +25,12 @@
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line fr-icon--sm"
         v-else
         @click="mapPrefs.currentMode = 'edit'"
+        aria-label="Fermer la découpe"
       >
         Fermer
       </button>
     </div>
-    <div class="pop-in-info" v-if="parcelle1Area != null && parcelle2Area != null">
+    <div class="pop-in-info" role="status" v-if="parcelle1Area != null && parcelle2Area != null">
       <div class="division-overlay">
         <div style="display: flex; align-items: center; gap: 8px">
           <span class="area-info blue"></span>

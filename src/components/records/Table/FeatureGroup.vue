@@ -2,6 +2,9 @@
   <div>
     <div
       class="fr-grid-row fr-px-4v fr-py-4v groupe-parcelles"
+      tabindex="0"
+      aria-expanded="open"
+      aria-controls="group-content-{{ featureGroup.key }}"
       :class="{ 'groupe-titre-on': open }"
       @click.stop="open = !open"
       @keydown.enter="open = !open"

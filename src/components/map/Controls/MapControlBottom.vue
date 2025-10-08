@@ -1,6 +1,6 @@
 <template>
   <div class="button-group">
-    <div :class="[isEditParcelleOpen ? 'info-box-open' : 'info-box']">
+    <div :class="[isEditParcelleOpen ? 'info-box-open' : 'info-box']" aria-live="polite">
       <span><i class="ri-custom-size" aria-hidden="true" /> {{ sizeParcelles }} ha</span>
       <span>
         <i class="ri-collage-line" aria-hidden="true" />
@@ -13,6 +13,7 @@
         class="fr-btn fr-icon-eye-line fr-btn--icon-left"
         :class="[mapPrefs.currentMode === 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'consult'"
+        :aria-pressed="mapPrefs.currentMode === 'consult'"
       >
         Consulter
       </button>
@@ -22,6 +23,7 @@
         :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'edit'"
         :disabled="!permissions.canEditParcellaire"
+        :aria-pressed="mapPrefs.currentMode === 'edit'"
       >
         <i class="ri-shape-line fr-mr-2v" aria-hidden="true" />
         Modifier
@@ -45,18 +47,23 @@
 
     <div id="scale-line" class="scale-line"></div>
     <div class="group-button-right">
-      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFullScreen">
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        @click="onFullScreen"
+        :aria-label="isFullScreen ? 'Quitter plein écran' : 'Passer en plein écran'"
+      >
+        >
         <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
       </button>
       <div class="group-zoom">
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn">
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn" aria-label="Zoomer">
           <span class="fr-icon-add-line fr-icon--sm"></span>
         </button>
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut">
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut" aria-label="Dézoomer">
           <span class="fr-icon-subtract-line fr-icon--sm"></span>
         </button>
       </div>
-      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate">
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate" aria-label="Localiser">
         <span class="ri-focus-3-line"></span>
       </button>
     </div>

@@ -2,7 +2,7 @@
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
   <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w">
     <div class="fr-search-bar fr-col-12 fr-col-md-6" id="search" role="search">
-      <p class="fr-sr-only">Recherche soumis automatiquement lors de la saisie</p>
+      <p class="fr-sr-only" id="search-desc">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
       <input
         class="fr-input"
@@ -11,6 +11,7 @@
         id="search-784-input"
         name="search-784-input"
         v-model="filterInput"
+        aria-describedby="search-desc"
       />
       <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
     </div>
@@ -31,15 +32,20 @@
       :class="{
         'fr-icon-filter-line fr-tag--icon-left': required,
       }"
-      :aria-pressed="active"
-      :aria-label="`${active ? 'Ne plus filtrer' : 'Filtrer'} sur le critère ${label}`"
+      :aria-checked="active"
+      :aria-label="`${label}, ${active ? 'filtre activé' : 'filtre désactivé'}`"
       @click="handleFilterClick(id)"
     >
       {{ label }} ({{ count }})
     </button>
   </div>
 
-  <div v-if="selectedFeatureIds.length > 0" class="fr-grid-row selection-multiple fr-mt-4v fr-mb-2v fr-py-2v">
+  <div
+    v-if="selectedFeatureIds.length > 0"
+    role="status"
+    aria-live="polite"
+    class="fr-grid-row selection-multiple fr-mt-4v fr-mb-2v fr-py-2v"
+  >
     <div class="fr-grid-row gap-10">
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line"
@@ -118,11 +124,11 @@
     />
   </div>
 
-  <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures">
+  <p id="operator-features-summary-global" class="fr-sr-only" v-if="hasFeatures" role="status" aria-live="polite">
     Liste de {{ features.length }} parcelles regroupées par {{ groupingChoiceLabel }}. Actuellement,
     {{ selectedFeatureIds.length }} parcelles sont sélectionnées.
   </p>
-  <p id="operator-features-summary-global" class="fr-sr-only" v-else>Ce parcellaire ne contient aucune parcelle.</p>
+  <p class="fr-sr-only" v-else role="status" aria-live="polite">Ce parcellaire ne contient aucune parcelle.</p>
 
   <Teleport to="body">
     <DeleteFeatureModal
@@ -135,7 +141,9 @@
   </Teleport>
 
   <p class="fr-mt-4v">
-    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill"> retour en haut de la page </a>
+    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill" aria-label="Retour en haut de la page">
+      retour en haut de la page
+    </a>
   </p>
 </template>
 <script setup>

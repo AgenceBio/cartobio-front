@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="numberSelectedFeature === 1" class="pop-in-top">
+    <div v-if="numberSelectedFeature === 1" class="pop-in-top" role="dialog" aria-labelledby="edit">
       <div class="title fr-mr-2v">
         <i class="ri-pen-nib-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Modifier</strong>
@@ -9,6 +9,7 @@
         v-if="!isCorrecting"
         class="fr-btn"
         :disabled="!hasUndo || corrections.length > 0"
+        :aria-disabled="!hasUndo || corrections.length > 0"
         @click="saveModifiedFeature"
       >
         Valider la modification
@@ -17,19 +18,20 @@
         v-else-if="isCorrecting && corrections.length > 0"
         class="fr-btn"
         :disabled="corrections.length > 1"
+        :aria-disabled="corrections.length > 1"
         @click="correct"
       >
         Valider la correction
       </button>
       <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
-    <div class="pop-in-info" v-if="numberSelectedFeature > 0">
+    <div class="pop-in-info" v-if="numberSelectedFeature > 0" role="status" aria-live="polite">
       {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} sélectionnée{{
         numberSelectedFeature > 1 ? "s" : ""
       }}
       {{ globalHa }} ha
     </div>
-    <div v-if="corrections.length > 0" class="correct-parcelle">
+    <div v-if="corrections.length > 0" class="correct-parcelle"  role="alert" aria-live="assertive">
       <div>
         <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
         <template v-if="canCorrect()">

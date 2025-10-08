@@ -1,10 +1,11 @@
 <template>
   <div class="toolbar">
-    <div class="toolbar-top">
+    <div class="toolbar-top" role="group" aria-label="Outils de gestion des parcelles">
       <button
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Activer le mode édition pour modifier les parcelles existants"
+        aria-label="Activer le mode édition pour modifier les parcelles existantes"
         @click="handleAction('edit')"
       >
         <i class="ri-navigation-line" aria-hidden="true" />
@@ -14,6 +15,7 @@
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'draw' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Dessiner une nouvelle parcelle sur la carte"
+        aria-label="Dessiner une nouvelle parcelle sur la carte"
         @click="handleAction('draw')"
         :disabled="!permissions.canEditParcellaire"
       >
@@ -26,6 +28,7 @@
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Découper le contour de la parcelle sélectionnée "
+        aria-label="Découper le contour de la parcelle sélectionnée "
         @click="handleAction('decouper')"
         :disabled="countSelected != 1 || !permissions.canEditParcellaire"
       >
@@ -36,6 +39,7 @@
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Tracer une ligne pour couper la parcelle sélectionnée en deux"
+        aria-label="Tracer une ligne pour couper la parcelle sélectionnée en deux"
         @click="handleAction('divide')"
         :disabled="countSelected != 1 || !permissions.canEditParcellaire"
       >
@@ -46,6 +50,7 @@
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Fusionner plusieurs parcelles sélectionnées en un seul"
+        aria-label="Fusionner plusieurs parcelles sélectionnées en un seul"
         @click="handleAction('fusionner')"
         :disabled="countSelected < 2 || !permissions.canEditParcellaire"
       >
@@ -56,6 +61,7 @@
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         data-tooltip="Supprimer la ou les parcelles sélectionnées"
+        aria-label="Supprimer la ou les parcelles sélectionnées"
         @click="handleAction('delete')"
         :disabled="countSelected < 1 || !permissions.canEditParcellaire"
       >

@@ -3,7 +3,14 @@
     <div class="mode-choice" v-if="!isCompare">
       <b class="fr-ml-1w">{{ record?.version_name }}</b>
       <p class="fr-text--xs cec">Contrôle en cours</p>
-      <p class="fr-text--xs version-recente fr-pr-0w fr-mr-0w" v-if="diffOnMap === 'map1'">Version + récente</p>
+      <p
+        class="fr-text--xs version-recente fr-pr-0w fr-mr-0w"
+        v-if="diffOnMap === 'map1'"
+        role="status"
+        aria-live="polite"
+      >
+        Version + récente
+      </p>
     </div>
 
     <div class="mode-choice" v-else>
@@ -14,6 +21,7 @@
           id="select-version"
           v-model="currentRecordId"
           @change="onSelectionChange"
+          aria-label="Sélectionner la version à comparer"
         >
           <optgroup label="Navigation rapide" v-if="hasNavigationOptions">
             <option
@@ -41,10 +49,18 @@
           </optgroup>
         </select>
       </div>
-      <p class="fr-text--xs version-recente fr-pr-0w fr-mr-0w" v-if="diffOnMap === 'map2'">Version + récente</p>
+      <p
+        class="fr-text--xs version-recente fr-pr-0w fr-mr-0w"
+        v-if="diffOnMap === 'map2'"
+        role="status"
+        aria-live="polite"
+      >
+        Version + récente
+      </p>
 
       <button
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-close-line"
+        aria-label="Fermer la comparaison"
         @click="closeComparison"
       ></button>
     </div>

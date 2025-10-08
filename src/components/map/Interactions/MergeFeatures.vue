@@ -1,20 +1,36 @@
 <template>
   <div class="pop-in-top merge">
     <div class="title fr-mr-2v">
+      <p v-if="mergeFeature" class="fr-sr-only" role="status" aria-live="polite">
+        Une fusion de parcelles est en cours. Surface totale : {{ calculateArea(mergeFeature) }} hectares.
+      </p>
+      <p v-else-if="isErrorMerging" class="fr-sr-only" role="alert">Erreur : {{ errorMessage }}.</p>
       <i class="ri-merge-cells-horizontal" aria-hidden="true" />
       <strong class="fr-ml-1v">Fusionner</strong>
     </div>
     <div class="action" v-if="mergeFeature">
       <span class="area-info green fr-mr-2v"></span>
       <p class="fr-mb-0 title fr-mr-2v">Parcelle fusionné {{ calculateArea(mergeFeature) }} ha</p>
-      <button class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right" @click="showDetailsModal = true">
+      <button
+        class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
+        aria-label="Confirmer la fusion des parcelles"
+        @click="showDetailsModal = true"
+      >
         Confirmer
       </button>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
+      <button
+        class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm"
+        aria-label="Annuler la fusion"
+        @click="annuler"
+      ></button>
     </div>
     <div v-if="isErrorMerging">
       <p class="fr-mb-0">{{ errorMessage }}</p>
-      <button class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm" @click="annuler"></button>
+      <button
+        class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm"
+        @click="annuler"
+        aria-label="Fermer le message d’erreur"
+      ></button>
     </div>
   </div>
   <Teleport to="body">
