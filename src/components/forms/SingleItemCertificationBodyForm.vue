@@ -258,9 +258,9 @@ watch(
   () => patch.conversion_niveau,
   (newValue) => {
     if (newValue === LEVEL_AB && !patch.engagement_date) {
-      patch.engagement_date = "2023-01-01";
+      patch.engagement_date = "1900-01-01";
     }
-    if (newValue != LEVEL_AB && patch.engagement_date === "2023-01-01") {
+    if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
       patch.engagement_date = "";
     }
     if (newValue === LEVEL_CONVENTIONAL) {
