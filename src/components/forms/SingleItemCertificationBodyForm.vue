@@ -88,7 +88,7 @@
             >
             <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
               Une date est requise pour l'attestation de production, si vous ne la connaissez pas ou ne souhaitez pas la
-              mettre, celle-ci sera automatiquement remplie par 01/01/2023.
+              mettre, celle-ci sera automatiquement remplie par 01/01/1900.
             </p>
             <input
               type="date"
@@ -98,7 +98,7 @@
               id="engagement_date"
               :required="isEngagementDateRequired"
               :disabled="!isAB || readonly || !permissions.canChangeConversionLevel"
-              min="1985-01-01"
+              min="1900-01-01"
               :max="maxDate"
             />
           </div>

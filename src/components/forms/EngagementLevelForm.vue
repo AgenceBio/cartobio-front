@@ -16,7 +16,10 @@
     <form id="mass-edit-form" @submit.prevent="emit('submit', { ids: selectedIds, patch })">
       <ConversionLevelSelector v-model="patch.conversion_niveau" />
     </form>
-
+    <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
+      Une date est requise pour l'attestation de production, les parcelles sélectionnées actuellement n'ayant pas de
+      date de conversion seront automatiquement remplies par 01/01/1900.
+    </p>
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--inline-lg">
         <li>
@@ -36,6 +39,7 @@ import { useFeaturesStore } from "@/stores/features.js";
 
 import Modal from "@/components/widgets/Modal.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
+import { LEVEL_AB } from "@/referentiels/ab.js";
 
 defineProps({});
 const emit = defineEmits(["submit"]);
