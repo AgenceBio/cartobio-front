@@ -33,7 +33,7 @@
         <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn" aria-label="Zoomer">
           <span class="fr-icon-add-line fr-icon--sm"></span>
         </button>
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut"  aria-label="Dézoomer">
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomOut" aria-label="Dézoomer">
           <span class="fr-icon-subtract-line fr-icon--sm"></span>
         </button>
       </div>

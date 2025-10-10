@@ -62,7 +62,12 @@
           <span class="area-info blue"></span>
           {{ parcelle2Area }} ha
         </div>
-        <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v" role="dialog" aria-labelledby="delete-title">
+        <div
+          style="display: flex; align-items: center; gap: 8px"
+          class="fr-ml-2v"
+          role="dialog"
+          aria-labelledby="delete-title"
+        >
           <span class="area-info green"></span>
           {{ parcelle1Area }} ha
         </div>
