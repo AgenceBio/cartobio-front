@@ -31,7 +31,7 @@
       }}
       {{ globalHa }} ha
     </div>
-    <div v-if="corrections.length > 0" class="correct-parcelle"  role="alert" aria-live="assertive">
+    <div v-if="corrections.length > 0" class="correct-parcelle" role="alert" aria-live="assertive">
       <div>
         <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
         <template v-if="canCorrect()">
