@@ -11,11 +11,15 @@
     </div>
 
     <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
-      <button class="fr-btn fr-btn--tertiary-no-outline" @click="emit('compare')" aria-label="Comparer les parcelles">
+      <button
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        @click="emit('compare')"
+        aria-label="Comparer les parcelles"
+      >
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
         aria-label="Ajouter une nouvelle parcelle"
         :disabled="!permissions.canEditParcellaire"
         @click="emit('addParcelle')"

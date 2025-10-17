@@ -23,6 +23,16 @@ const open = ref(false);
  */
 
 const displayCallout = computed(() => record.audit_demandes && isCertificationImmutable(record.certification_state));
+const lengthMessage = computed(() => {
+  const toreturn = 0;
+  if (record.audit_notes) {
+    toreturn++;
+  }
+  if (displayCallout.value) {
+    toreturn++;
+  }
+  return toreturn;
+});
 </script>
 <template>
   <div>
@@ -35,7 +45,7 @@ const displayCallout = computed(() => record.audit_demandes && isCertificationIm
       <h3 class="fr-text--lg fr-mb-0">Notes du contrôle</h3>
       <div class="fr-grid-row icons">
         <span aria-hidden="true" class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire">
-          {{ [record.audit_demandes, record.audit_notes].filter((e) => e != null && e != "").length }}
+          {{ lengthMessage }}
         </span>
         <span v-if="!open" class="fr-icon fr-icon-add-line fr-icon--sm color-green" aria-hidden="true"></span>
         <span v-else class="fr-icon fr-icon-subtract-line fr-icon--sm color-green" aria-hidden="true"></span>
@@ -60,15 +70,6 @@ const displayCallout = computed(() => record.audit_demandes && isCertificationIm
         </blockquote>
       </figure>
     </div>
-    <!-- <div class="demandes fr-callout fr-callout--blue-ecume fr-mb-2w" v-if="displayCallout">
-      <h3 class="fr-callout__title">Demandes formulées lors de l'audit</h3>
-      <div>{{ record.audit_demandes }}</div>
-    </div> -->
-    <!-- <div class="fr-callout fr-callout--blue-ecume fr-mb-2w" v-if="permissions.isOc && record.audit_notes">
-      <h3 class="fr-callout__title">Notes finales de l'audit</h3>
-
-      <div>{{ record.audit_notes }}</div>
-    </div> -->
   </div>
 </template>
 
@@ -117,5 +118,10 @@ const displayCallout = computed(() => record.audit_demandes && isCertificationIm
 
 .icons {
   gap: 5px;
+  cursor: pointer;
+}
+
+.notif-title {
+  cursor: pointer;
 }
 </style>

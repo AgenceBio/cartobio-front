@@ -3,7 +3,7 @@
     <p class="fr-text--bold fr-mb-0">Nouvelle parcelle</p>
     <div class="legend">
       <span class="fr-icon--sm fr-icon-map-pin-2-line" aria-hidden="true"></span>
-      <p class="fr-mb-0">Double clic pour finaliser le tracé</p>
+      <p class="fr-mb-0 fr-text--sm">Double clic pour finaliser le tracé</p>
     </div>
     <div class="fr-text--bold legend"><i class="ri-custom-size" aria-hidden="true" />{{ area }} ha</div>
   </div>

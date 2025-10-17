@@ -82,14 +82,14 @@ onUnmounted(() => {
 
 <template>
   <div class="fr-grid-row fr-py-8v banner" style="display: flex; justify-content: space-between; align-items: center">
-    <p style="margin: 0; text-align: left" class="fr-hint-text">Enregistré {{ timeAgo }}</p>
+    <p style="margin: 0; text-align: left; padding: 4px 12px" class="fr-hint-text">Enregistré {{ timeAgo }}</p>
 
     <div>
       <template v-if="record.certification_state === CertificationState.OPERATOR_DRAFT">
         <button
           v-if="permissions.canSaveAudit && permissions.isOc"
           :disabled="!canEndAudit"
-          class="fr-btn fr-ml-1v fr-btn--icon-right"
+          class="fr-btn fr-ml-1v fr-btn--icon-right fr-btn--sm"
           @click="
             () => {
               showSaveAuditModal = true;
@@ -102,7 +102,7 @@ onUnmounted(() => {
         <button
           v-if="permissions.canSaveAudit"
           :disabled="!canEndAudit"
-          class="fr-btn fr-btn--secondary fr-ml-1v fr-icon-check-line fr-btn--icon-right"
+          class="fr-btn fr-btn--secondary fr-ml-1v fr-icon-check-line fr-btn--icon-right fr-btn--sm"
           @click="
             () => {
               showSaveAuditModal = true;
@@ -117,7 +117,7 @@ onUnmounted(() => {
         <button
           v-if="permissions.canSendAudit"
           :disabled="!canEndAudit"
-          class="fr-btn fr-icon-check-line fr-btn--icon-right"
+          class="fr-btn fr-icon-check-line fr-btn--icon-right fr-btn--sm"
           @click="handleSendAudit"
         >
           Soumettre pour certification
@@ -127,7 +127,7 @@ onUnmounted(() => {
         <button
           v-if="permissions.canCertify"
           :disabled="!canEndAudit"
-          class="fr-btn fr-icon-check-line fr-btn--icon-right"
+          class="fr-btn fr-icon-check-line fr-btn--icon-right fr-btn--sm"
           @click="showCertificationModal = true"
         >
           Certifier le parcellaire

@@ -13,7 +13,7 @@
         <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
           <span v-if="isGroupedByCulture" :class="getCultureIcon(featureGroup.key)" class="fr-mr-1v"></span>
           <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
-          <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v fr-mx-2v">
+          <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v fr-mx-2v fr-text--sm">
             <span
               class="fr-icon fr-icon--sm fr-icon-warning-line fr-py-0 icon-error"
               :title="`${groupErrors} parcelles à amender`"
@@ -102,7 +102,8 @@
                   !feature.properties.cultures) &&
                 !(
                   feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
-                  feature.properties.conversion_niveau === LEVEL_UNKNOWN
+                  feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
+                  feature.properties.conversion_niveau === ''
                 )
               "
               class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
@@ -144,13 +145,14 @@
         <div
           v-if="
             (feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
-              feature.properties.conversion_niveau === LEVEL_UNKNOWN) &&
+              feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
+              feature.properties.conversion_niveau === '') &&
             (feature.properties.cultures[0].CPF === undefined || feature.properties.cultures[0].CPF === '') &&
             feature.properties.cultures.length === 1
           "
         >
           <button
-            class="complete-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+            class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
             @click.stop.prevent="toggleEditForm(feature.id)"
           >
             Compléter
@@ -169,7 +171,7 @@
           <span
             v-if="feature.properties.commentaires || feature.properties.auditeur_notes"
             aria-hidden="true"
-            class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire"
+            class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
           >
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
@@ -428,21 +430,26 @@ onMounted(async () => {
 
 .parcelle-carte {
   border: 1px solid #ececfe;
+
   &.parcelle--is-new {
     background-color: var(--green-tilleul-verveine-975-75);
   }
+
   &.background-selected,
   &:hover {
     background-color: var(--background-alt-blue-france);
   }
+
   .parcelle-titre {
     display: flex;
     justify-content: space-between;
+
     .parcelle-actions {
       display: flex;
       gap: 25px;
     }
   }
+
   :deep(.show-actions) {
     --hover-tint: var(--background-alt-blue-france-hover);
     --active-tint: var(--background-alt-blue-france-active);
@@ -455,6 +462,7 @@ onMounted(async () => {
 
 .badge-commentaire {
   background-color: var(--blue-france-950-100);
+  color: var(--artwork-minor-blue-france);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -471,18 +479,19 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-.red {
-  color: var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
-  box-shadow: none;
-}
-
 .radius {
   border-radius: 16px;
 }
 
+.red {
+  color: var(--warning-425-625);
+  background-color: var(--warning-950-100);
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .red:hover {
-  background-color: var(--red-marianne-925-125);
+  background-color: var(--red-marianne-925-125-hover);
 }
 
 .controlee:before {
@@ -532,5 +541,51 @@ onMounted(async () => {
 
 .complete-button:hover {
   background-color: var(--red-marianne-925-125);
+}
+
+.fr-hint-text {
+  margin-bottom: 5px;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.groupe-parcelles {
+  flex-wrap: nowrap !important;
+}
+
+.groupe-titre {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap !important;
+}
+
+.groupe-titre .fr-text {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap !important;
+}
+
+.groupe-titre .fr-text .erreurs {
+  flex-shrink: 0;
+}
+
+.label-group {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.actions-parcelles {
+  flex-shrink: 0;
+  flex-wrap: nowrap !important;
 }
 </style>

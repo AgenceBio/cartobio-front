@@ -1,7 +1,7 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
   <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w">
-    <div class="fr-search-bar fr-col-12 fr-col-md-6" id="search" role="search">
+    <div class="fr-search-bar fr-pl-1v fr-col-12 fr-col-md-6" id="search" role="search">
       <p class="fr-sr-only" id="search-desc">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
       <input
@@ -15,9 +15,9 @@
       />
       <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
     </div>
-    <div class="seamless-select fr-col-12 fr-col-md-6 fr-grid-row">
-      <label for="plots-group-by ">Regrouper par </label>
-      <b class="font-blue fr-mr-2w">{{ groupingChoiceLabel }}</b>
+    <div class="seamless-select fr-col-12 fr-col-md-6 fr-pl-1v fr-grid-row">
+      <label for="plots-group-by">Regrouper par </label>
+      <b class="font-blue fr-mr-2w text-truncate">{{ groupingChoiceLabel }}</b>
       <select id="plots-group-by" v-model="userGroupingChoice">
         <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
       </select>
@@ -28,11 +28,11 @@
     <button
       :key="id"
       v-for="{ active, id, count, label, required } in tags"
-      class="fr-tag red"
+      class="fr-tag fr-tag--sm red"
       :class="{
         'fr-icon-filter-line fr-tag--icon-left': required,
       }"
-      :aria-checked="active"
+      :aria-pressed="active"
       :aria-label="`${label}, ${active ? 'filtre activé' : 'filtre désactivé'}`"
       @click="handleFilterClick(id)"
     >
@@ -87,7 +87,14 @@
     </div>
   </div>
   <div class="fr-grid-row total-parcelles fr-mr-5w fr-mt-2w">
-    <p class="fr-hint-text fr-text--md">{{ features.length }} parcelles</p>
+    <p class="fr-hint-text fr-text--md">
+      {{ features.length }} parcelles
+      {{
+        !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
+          ? "(" + inHa(legalProjectionSurface(features)) + " ha)"
+          : ""
+      }}
+    </p>
     <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
       <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
       <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
@@ -137,7 +144,11 @@
       :feature-id="maybeDeletedFeatureId"
       @submit="handleSingleFeatureDeletion"
     />
-    <DeleteModal v-if="deleteModalMultiple" @submit="(e) => handleMultipleDelete(e)" />
+    <DeleteModal
+      v-if="deleteModalMultiple"
+      @submit="(e) => handleMultipleDelete(e)"
+      @close="deleteModalMultiple = false"
+    />
   </Teleport>
 
   <p class="fr-mt-4v">
@@ -293,6 +304,7 @@ watch(userGroupingChoice, (newValue) => {
   top: auto !important;
   margin: 0 !important;
 }
+
 .single-checkbox input[type="checkbox"] + label {
   margin: 0 !important;
 }
@@ -337,6 +349,7 @@ input[type="button"].fr-tag[aria-pressed="true"]:not(:disabled) {
   );
   color: var(--warning-425-625);
 }
+
 button.fr-tag[aria-pressed="true"]:not(:disabled):hover,
 input[type="button"].fr-tag[aria-pressed="true"]:not(:disabled):hover {
   background-image: radial-gradient(
@@ -350,16 +363,20 @@ button.fr-tag[aria-pressed="true"]::after,
 input[type="button"].fr-tag[aria-pressed="true"]::after {
   color: var(--warning-425-625);
 }
+
 .red {
   color: var(--warning-425-625);
   background-color: var(--warning-950-100);
 }
+
 .red:hover {
   background-color: var(--red-marianne-925-125-hover);
 }
+
 .red.fr-tag--dismiss {
   border: 1px solid var(--text-default-error);
 }
+
 .font-blue {
   color: #000091;
 }
@@ -391,5 +408,14 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
   justify-content: flex-end;
   gap: 10px;
   padding: 0 10px;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: bottom;
 }
 </style>

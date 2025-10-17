@@ -42,7 +42,7 @@
             @change="redirectToRecord(selectedRecord)"
           >
             <option :value="recordList.record_id" :key="recordList.record_id" v-for="recordList in sortedRecords">
-              {{ recordList.version_name }}
+              &nbsp;{{ recordList.version_name }}
             </option>
           </select>
         </div>
@@ -256,7 +256,8 @@ const selectedRecord = ref(record.record_id);
   clear: both;
   padding: 0px 10px;
 }
-hr {
+
+.break > hr {
   margin-bottom: 0px !important;
   padding-bottom: 1px !important;
 }
@@ -270,6 +271,7 @@ hr {
   background-position: right center;
   background-repeat: no-repeat;
   justify-content: flex-end;
+  font-size: 20px;
   color: black;
 
   & label {
@@ -288,6 +290,7 @@ hr {
     opacity: 0;
   }
 }
+
 .font-blue {
   color: black;
 }
@@ -309,9 +312,11 @@ button[data-tooltip]::after {
   font-size: 0.8rem;
   line-height: 1.2;
   opacity: 0;
-  white-space: normal; /* permet retour à la ligne */
+  white-space: normal;
+  /* permet retour à la ligne */
   width: max-content;
-  max-width: 220px; /* limite pour éviter des tooltips trop larges */
+  max-width: 220px;
+  /* limite pour éviter des tooltips trop larges */
   pointer-events: none;
   transition: opacity 0.2s ease-in-out;
   z-index: 2000;

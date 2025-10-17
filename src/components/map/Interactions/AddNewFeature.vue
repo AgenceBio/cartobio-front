@@ -1,7 +1,7 @@
 <template>
   <div class="pop-in-top">
     <button
-      class="fr-btn fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
       :class="[mode === 'dessiner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'dessiner'"
       aria-label="Accéder au mode dessin"
@@ -10,7 +10,7 @@
       Dessiner
     </button>
     <button
-      class="fr-btn fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Accéder au mode Cadastre"
       :class="[mode === 'cadastre' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'cadastre'"
@@ -19,7 +19,7 @@
       Cadastre
     </button>
     <button
-      class="fr-btn fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Accéder au mode RPG"
       :class="[mode === 'RPG' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
       @click="mode = 'RPG'"
@@ -28,13 +28,13 @@
       RPG
     </button>
     <button
-      class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Quitter le mode dessin"
       @click="quitDraw"
     ></button>
   </div>
   <div class="pop-in-info-cadastre close" v-if="mode === 'cadastre'">
-    <CommuneSelect @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
+    <CommuneSelect class="fr-mb-0" @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
     <button
       class="fr-btn fr-icon-check-line fr-btn--icon-left fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Saisir les references cadastrales"
@@ -51,14 +51,14 @@
     </div>
     <p class="fr-mb-0 fr-text--xs title" role="alert">Votre parcelle a été rogner pour respecter les règles</p>
     <button
-      class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right fr-btn--sm"
+      class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right fr-btn--sm"
       aria-label="Valider le dessin"
       @click="confirmCorrection"
     >
       Valider
     </button>
     <button
-      class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Annuler le dessin"
       @click="cancelDraw"
     ></button>
@@ -66,7 +66,7 @@
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
     <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer !</p>
     <button
-      class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--tertiary-no-outline"
       aria-label="Annuler le dessin"
       @click="cancelDraw"
     ></button>
@@ -74,7 +74,7 @@
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
     <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer !</p>
     <button
-      class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline"
+      class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--tertiary-no-outline"
       aria-label="Annuler le dessin"
       @click="cancelDraw"
     ></button>
@@ -88,7 +88,7 @@
       >
     </p>
     <button
-      class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+      class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
       aria-label="Ajouter les parcelles cadastrales"
       @click="addCadastreFeatures"
     >
@@ -115,7 +115,7 @@
       >
     </p>
     <button
-      class="fr-btn fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+      class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
       aria-label="Ajouter les parcelles RPG"
       @click="addRpgFeatures"
     >
@@ -167,6 +167,8 @@ import { Style, Fill, Stroke, RegularShape } from "ol/style";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
+import { useRecordStore } from "@/stores/record.js";
+
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
@@ -209,6 +211,7 @@ const props = defineProps<Props>();
 /*
  * * Stores
  */
+const recordStore = useRecordStore();
 
 const store = useFeaturesStore();
 const preferences = usePreferences();
@@ -299,8 +302,10 @@ const cancelDraw = (): void => {
 
 const confirmCorrection = (): void => {
   if (correctedFeature.value) {
-    console.log(correctedFeature);
     feature.value = correctedFeature.value;
+    feature.value.id = 1;
+    feature.value.properties.isCertified = recordStore.record.certification_state === "CERTIFIED";
+    feature.value.properties.cultures = [{ CPF: "", id: crypto.randomUUID() }];
   }
 };
 
@@ -443,8 +448,6 @@ const handleClickCadastre = async (e: MapBrowserEvent) => {
 
 const zoomCommune = (e) => {
   if (!props.map || !e) return;
-
-  console.log(e);
 
   const format = new GeoJSON();
   const feature = format.readFeature(e, {});
@@ -599,6 +602,9 @@ const drawInteraction = (): void => {
     const geojsonFeature = geojsonFormat.writeFeatureObject(newFeature);
     geojsonFeature.properties = {};
     feature.value = geojsonFeature;
+    feature.value.id = 1;
+    feature.value.properties.isCertified = recordStore.record.certification_state === "CERTIFIED";
+
     feature.value.properties.cultures = [{ CPF: "", id: crypto.randomUUID() }];
   });
 
@@ -809,7 +815,6 @@ watch(
     if (data.valid === true) {
       errorDrawing.value = false;
       const previewFeature = format.readFeature(newFeature) as Feature;
-      console.log(feature.value);
       previewFeature.setStyle(previewStyle);
       previewSource.addFeature(previewFeature);
       showDetailsModal.value = true;
@@ -883,6 +888,7 @@ onUnmounted(() => {
 .pop-in-top {
   align-items: center;
 }
+
 .title {
   align-content: center;
 }

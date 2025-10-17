@@ -21,13 +21,18 @@
         v-for="[ruleId, result] in featuresSet.required"
         :key="ruleId"
         class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
+        style="flex-wrap: nowrap"
       >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
+        <div class="fr-grid-row fr-grid-row--middle left-block" style="flex: 1; min-width: 0; flex-wrap: nowrap">
+          <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold" style="flex-shrink: 0">
             <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span
             >{{ result.count }} parcelle{{ result.count > 1 ? "s" : "" }}
           </p>
-          <h4 class="fr-text--md fr-mb-0">
+          <h4
+            class="fr-text--sm fr-mb-0"
+            style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0"
+            :title="result.label"
+          >
             {{ result.label }}
           </h4>
         </div>
@@ -35,6 +40,7 @@
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-search-line fr-btn--icon-right"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
           @click="selectParcelles(ruleId)"
+          style="flex-shrink: 0"
         >
           Afficher
         </button>
@@ -43,13 +49,18 @@
         v-for="[ruleId, result] in featuresSet.rotationErrors"
         :key="ruleId"
         class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
+        style="flex-wrap: nowrap"
       >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="warning-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
+        <div class="fr-grid-row fr-grid-row--middle left-block" style="flex: 1; min-width: 0; flex-wrap: nowrap">
+          <p class="warning-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold" style="flex-shrink: 0">
             <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span
             >{{ result.count }} parcelle{{ result.count > 1 ? "s" : "" }}
           </p>
-          <h4 class="fr-text--md fr-mb-0">
+          <h4
+            class="fr-text--sm fr-mb-0"
+            style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0"
+            :title="result.label"
+          >
             {{ result.label }}
           </h4>
         </div>
@@ -57,6 +68,7 @@
           class="fr-btn fr-btn--tertiary-no-outline fr-icon-search-line fr-btn--icon-right"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
           @click="selectParcelles(ruleId)"
+          style="flex-shrink: 0"
         >
           Afficher
         </button>
@@ -151,6 +163,7 @@ function selectParcelles(id) {
   display: flex;
   align-items: center;
 }
+
 .icons {
   gap: 5px;
   display: flex;

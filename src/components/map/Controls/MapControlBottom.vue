@@ -10,7 +10,7 @@
     <div class="mode-choice" v-if="permissions.canEditParcellaire">
       <button
         type="button"
-        class="fr-btn fr-icon-eye-line fr-btn--icon-left"
+        class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
         :class="[mapPrefs.currentMode === 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'consult'"
         :aria-pressed="mapPrefs.currentMode === 'consult'"
@@ -19,7 +19,7 @@
       </button>
       <button
         type="button"
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'edit'"
         :disabled="!permissions.canEditParcellaire"
@@ -52,7 +52,6 @@
         @click="onFullScreen"
         :aria-label="isFullScreen ? 'Quitter plein écran' : 'Passer en plein écran'"
       >
-        >
         <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
       </button>
       <div class="group-zoom">
@@ -296,6 +295,7 @@ i[class*=" ri"] {
   bottom: 0px;
   right: 10rem;
 }
+
 .ol-scale-line {
   position: relative;
   bottom: 10px;

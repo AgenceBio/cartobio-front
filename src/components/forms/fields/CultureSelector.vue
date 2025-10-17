@@ -2,15 +2,15 @@
   <div>
     <div v-if="!disabledInput">
       <button
-        type="button fr-mt-2v"
+        type="button"
         v-if="!disabledInput"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line fr-btn--icon-right fr-mb-3w"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line fr-btn--icon-right"
         @click.prevent="openMulticultureModal"
       >
         Saisie multiculture
       </button>
       <fieldset
-        class="culture-group fr-mb-1w fr-p-2w fr-pt-1w"
+        class="culture-group fr-mb-1w fr-p-2w"
         :key="culture.id"
         v-for="culture in uuidedCultures"
         tabindex="-1"
@@ -42,7 +42,7 @@
 
         <div class="horizontal-stack">
           <div class="fr-input-group">
-            <label class="fr-label" :for="`superficie-${culture.id}`">Superficie (Ha)</label>
+            <label class="fr-label" :for="`superficie-${culture.id}`">Superficie&nbsp;(ha)</label>
             <div class="fr-hint-text">(facultatif)</div>
             <input
               type="number"
@@ -265,8 +265,13 @@ function closeMulticultureModal() {
 
   if (isMulticulture.value) {
     updatedCultures = multiCultureTab.value.filter((c) => c.CPF || c.variete || c.surface || c.date_semis);
-  } else if (uuidedCultures.value.length > 1) {
-    updatedCultures = [multiCultureTab.value[0]];
+  } else {
+    const first = multiCultureTab.value[0];
+    if (first && first.CPF) {
+      updatedCultures = [first];
+    } else {
+      updatedCultures = [];
+    }
   }
 
   emit("change", updatedCultures);
@@ -374,8 +379,8 @@ function removeCultureOld(cultureId) {
 }
 
 .horizontal-stack {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1em;
   margin-bottom: 1rem;
 }
@@ -383,6 +388,7 @@ function removeCultureOld(cultureId) {
 .horizontal-stack > .fr-input-group {
   flex-grow: 1;
 }
+
 td > input {
   margin-top: 0.5rem;
 }

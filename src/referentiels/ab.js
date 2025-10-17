@@ -17,7 +17,6 @@ export const certificationStatesLabels = {
     label: "Non renseigné",
     labelFilter: "Pas de parcellaire",
   },
-
   [CertificationState.OPERATOR_DRAFT]: {
     label: "Parcellaire importé",
     color: "fr-badge--info",
@@ -53,7 +52,8 @@ export const conversionLevels = [
   {
     value: LEVEL_UNKNOWN,
     label: "Niveau de conversion inconnu",
-    shortLabel: "Inconnue",
+    shortLabel: "Non rens.",
+    icon: "fr-icon-warning-line",
   },
   {
     value: LEVEL_CONVENTIONAL,
@@ -66,7 +66,7 @@ export const conversionLevels = [
   {
     value: LEVEL_MAYBE_AB,
     label: "AB — niveau de conversion à préciser",
-    shortLabel: "AB",
+    shortLabel: "AB - à préciser",
   },
   {
     value: LEVEL_C1,
@@ -81,7 +81,6 @@ export const conversionLevels = [
     label: "Deuxième année de conversion",
     shortLabel: "C2",
     labelSelector: "C2",
-
     is_selectable: true,
     icon: "fr-icon-culture-fruits",
   },
@@ -90,7 +89,6 @@ export const conversionLevels = [
     label: "Troisième année de conversion",
     shortLabel: "C3",
     labelSelector: "C3",
-
     is_selectable: true,
     icon: "fr-icon-culture-autres-surfaces",
   },
