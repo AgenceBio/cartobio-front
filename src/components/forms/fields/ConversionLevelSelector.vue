@@ -3,7 +3,7 @@
     <label class="fr-label">Niveau de conversion</label>
 
     <div
-      class="fr-radio-group fr-radio-group--sm fr-my-1w fr-p-2w"
+      class="fr-radio-group fr-radio-rich fr-radio-group--sm fr-my-1w fr-p-2w"
       v-for="niveau in conversionLevels"
       :key="niveau.value"
     >
@@ -20,7 +20,7 @@
         {{ niveau.label }}
       </label>
 
-      <div class="end-conversion">
+      <div class="fr-radio-rich__pictogram">
         <ConversionLevel :level="niveau" :noIcon="true" :labelSelector="true" />
       </div>
     </div>

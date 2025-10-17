@@ -1,6 +1,12 @@
 <template>
-  <div :style="style" :class="$props.class">
-    <div ref="autocompleteRef"></div>
+  <div :style="style" :class="$props.class" class="fr-search-bar fr-mb-1v">
+    <div class="wrapper">
+      <label class="fr-label" for="search">Saisissez le nom d'une commune</label>
+      <div class="input" ref="autocompleteRef"></div>
+      <button class="fr-btn button-search" type="submit" title="Rechercher">
+        {{ buttonLabel }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -38,6 +44,7 @@ onMounted(async () => {
   const { setQuery } = autocomplete({
     container: autocompleteRef.value,
     placeholder: "Saisissez le nom d’une commune",
+    id: "search",
     openOnFocus: true,
     classNames: {
       form: "fr-input",
@@ -63,7 +70,6 @@ onMounted(async () => {
                   autocomplete: 1,
                 },
               });
-              // autocomplete lib does not handle errors properly so we have to do it ourselves
             } catch (error) {
               if (
                 error.name === "AxiosError" &&
@@ -111,16 +117,6 @@ onMounted(async () => {
   padding-right: 10px;
 }
 
-.aa-InputWrapperSuffix::before {
-  content: "";
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  background: no-repeat center/contain
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z"/></svg>');
-  margin: auto;
-}
-
 .aa-Input {
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -145,6 +141,7 @@ onMounted(async () => {
 .aa-Item:hover {
   background-color: #ececfe;
 }
+
 .aa-Item[aria-selected="true"] {
   outline: 2px solid var(--border-active-blue-france);
 }
@@ -157,9 +154,28 @@ onMounted(async () => {
   --border-width: 2px;
   --aa-search-input-height: calc((0.5rem * 2) + 1.5rem - var(--border-width));
   align-items: flex-start;
-  margin-top: calc(var(--border-width) * -1); /* to counteract the align-items: center of the container */
+  margin-top: calc(var(--border-width) * -1);
+  /* to counteract the align-items: center of the container */
 }
+
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
+}
+
+.input {
+  flex: 1;
+}
+
+.icon-btn {
+  padding: 0rem 0rem 0rem 0rem;
+}
+
+.button-search {
+  height: fit-content;
+  margin-top: 8px;
+}
+
+.wrapper {
+  display: flex;
 }
 </style>

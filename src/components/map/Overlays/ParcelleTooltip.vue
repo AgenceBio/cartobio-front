@@ -1,5 +1,5 @@
 <template>
-  <div class="openlayers-parcelle-tooltip fr-px-2w fr-py-3w">
+  <div class="openlayers-parcelle-tooltip fr-px-2w fr-py-2w">
     <div class="not-flex">
       <div class="space-between">
         <b class="fr-text--sm fr-mb-0">{{ name }}</b>
@@ -67,7 +67,9 @@ defineProps<Props>();
 .openlayers-parcelle-tooltip {
   background-color: white;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
+  border-radius: 4px;
 }
+
 .openlayers-parcelle-tooltip div {
   display: flex;
 }
@@ -83,12 +85,15 @@ defineProps<Props>();
   margin: 0px;
   padding: 0px;
 }
+
 .openlayers-parcelle-tooltip .align-center {
   align-items: center;
 }
+
 .openlayers-parcelle-tooltip .gap-3 {
   gap: 3px;
 }
+
 .openlayers-parcelle-tooltip .gap-1 {
   gap: 1px;
 }

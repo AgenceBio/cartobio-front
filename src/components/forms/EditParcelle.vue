@@ -3,7 +3,7 @@
     <div class="fr-px-6v fr-py-6v content">
       <div class="fr-grid-row">
         <button
-          class="end-right fr-btn fr-btn--tertiary-no-outline fr-icon-close-line fr-btn--icon-right"
+          class="end-right fr-btn fr-btn--tertiary-no-outline fr-icon-close-line fr-btn--icon-right fr-btn--sm"
           @click="handleClose"
           aria-label="Fermer la fiche de la parcelle"
         >
@@ -12,10 +12,17 @@
       </div>
       <div class="fr-mb-4v">
         <div class="fr-grid-row">
-          <ConversionLevel :feature="feature" with-date noIcon labelSelector />
+          <ConversionLevel
+            v-if="feature.properties.conversion_niveau && feature.properties.conversion_niveau != ''"
+            :feature="feature"
+            with-date
+            noIcon
+            labelSelector
+          />
+          <span v-else class="fr-badge fr-badge--warning fr-badge--sm"> Saisir la certification </span>
         </div>
         <div class="flex-space-between">
-          <p class="fr-mt-1w" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</p>
+          <p class="fr-mt-1w fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</p>
           <em class="fr-mt-1w fr-hint-text" v-else>Nom de la parcelle</em>
           <button
             @click="modalName = true"
@@ -52,12 +59,12 @@
         </div>
 
         <figure
-          class="fr-quote fr-py-1w fr-px-2w fr-my-2w"
+          class="fr-quote fr-py-1w fr-px-2w fr-my-2w fr-mx-1w"
           aria-label="Notes de l'exploitant ou de l'exploitante"
           v-if="feature.properties.commentaires && permissions.isOc"
         >
           <blockquote>
-            <p>{{ feature.properties.commentaires }}</p>
+            <p class="fr-text--md no-gras">{{ feature.properties.commentaires }}</p>
           </blockquote>
           <figcaption>
             <p class="fr-quote__author">Notes de l'exploitant‧e</p>
@@ -189,8 +196,12 @@
 
                 <div class="fr-input-group" v-if="isAB && !readonly">
                   <label class="fr-label" for="engagement_date"
-                    >Date de début de conversion <span v-if="!isEngagementDateRequired">(facultatif)</span></label
-                  >
+                    >Date de début de conversion <span v-if="!isEngagementDateRequired"></span
+                  ></label>
+                  <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
+                    Une date est requise pour l'attestation de production, si vous ne la connaissez pas ou ne souhaitez
+                    pas la mettre, celle-ci sera automatiquement remplie par 01/01/1900.
+                  </p>
                   <input
                     type="date"
                     class="fr-input"
@@ -199,7 +210,7 @@
                     id="engagement_date"
                     :required="isEngagementDateRequired"
                     :disabled="!isAB || readonly || !permissions.canChangeConversionLevel"
-                    min="1985-01-01"
+                    min="1900-01-01"
                     :max="maxDate"
                   />
                 </div>
@@ -296,7 +307,7 @@
           type="submit"
           form="single-feature-edit-form"
           aria-label="Enregister le parcellaire"
-          :disabled="!featuresSet.isDirty"
+          :disabled="!hasRealChanges"
         >
           Enregistrer
         </button>
@@ -343,13 +354,21 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch, nextTick } from "vue";
 import { useFocus } from "@vueuse/core";
 
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 
 import AccordionSection from "@/components/widgets/Accordion.vue";
-import { LEVEL_C1, LEVEL_C2, LEVEL_C3, isABLevel, getConversionLevel } from "@/referentiels/ab.js";
+import {
+  LEVEL_C1,
+  LEVEL_C2,
+  LEVEL_C3,
+  LEVEL_AB,
+  LEVEL_CONVENTIONAL,
+  isABLevel,
+  getConversionLevel,
+} from "@/referentiels/ab.js";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
@@ -395,39 +414,58 @@ const permissions = usePermissions();
 const featuresSet = useFeaturesSetsStore();
 const showCancelModal = ref(false);
 const autofocusedElement = ref();
+
 const estControlee = ref(props.feature.properties.controlee);
+
 const isAB = computed(() => isABLevel(patch.value.conversion_niveau));
 const maxDate = computed(() => toDateInputString(new Date()));
 const modalName = ref(false);
 
+const isInitializing = ref(true);
+
 useFocus(autofocusedElement, { initialValue: true });
+
 function requiresAction(properties) {
   return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
 }
 
-const patch = ref({
-  NOM: props.feature.properties.NOM || "",
-  cultures: props.feature.properties.cultures,
-  commentaires: props.feature.properties.commentaires || "",
-  conversion_niveau: props.feature.properties.conversion_niveau || "",
-  engagement_date: props.feature.properties.engagement_date,
-  auditeur_notes: props.feature.properties.auditeur_notes || "",
-});
-
-const featureId = computed(() => props.feature.id);
-watch(featureId, () => {
-  estControlee.value = props.feature.properties.validee;
-  patch.value = {
+function createInitialPatch() {
+  return {
     NOM: props.feature.properties.NOM || "",
     cultures: props.feature.properties.cultures,
     commentaires: props.feature.properties.commentaires || "",
-    ...(!permissions.canChangeCulture
-      ? {
-          conversion_niveau: props.feature.properties.conversion_niveau || "",
-          engagement_date: props.feature.properties.engagement_date,
-        }
-      : {}),
+    conversion_niveau: props.feature.properties.conversion_niveau || "",
+    engagement_date: props.feature.properties.engagement_date,
+    auditeur_notes: props.feature.properties.auditeur_notes || "",
   };
+}
+
+const patch = ref(createInitialPatch());
+
+const initialPatchState = ref(JSON.stringify(createInitialPatch()));
+
+const hasRealChanges = computed(() => {
+  const currentState = JSON.stringify(patch.value);
+  return currentState !== initialPatchState.value;
+});
+
+const featureId = computed(() => props.feature.id);
+
+watch(featureId, (newId, oldId) => {
+  if (newId !== oldId) {
+    isInitializing.value = true;
+    estControlee.value = props.feature.properties.controlee;
+
+    const newPatch = createInitialPatch();
+    patch.value = newPatch;
+    initialPatchState.value = JSON.stringify(newPatch);
+
+    featuresSet.setCandidate([]);
+
+    nextTick(() => {
+      isInitializing.value = false;
+    });
+  }
 });
 
 const details = featureDetails(props.feature);
@@ -442,10 +480,11 @@ const validate = () => {
   }
 
   emit("submit", { id: props.feature.id, properties: patch });
+  initialPatchState.value = JSON.stringify(patch.value);
 };
 
 function handleClose() {
-  if (featuresSet.isDirty) {
+  if (hasRealChanges.value) {
     showCancelModal.value = true;
   } else {
     emit("close");
@@ -454,17 +493,26 @@ function handleClose() {
 
 function tagParcelle(id) {
   if (estControlee.value) {
-    tagParcelleControlee(props.record.record_id, id).then(() => {
-      estControlee.value = true;
-      emit("controlee", id);
-    });
-
-    return;
+    tagParcelleControlee(props.record.record_id, id)
+      .then(() => {
+        estControlee.value = true;
+        emit("controlee", id);
+        initialPatchState.value = JSON.stringify(patch.value);
+      })
+      .catch(() => {
+        estControlee.value = false;
+      });
+  } else {
+    tagParcelleNonControlee(props.record.record_id, id)
+      .then(() => {
+        estControlee.value = false;
+        emit("non-controlee", id);
+        initialPatchState.value = JSON.stringify(patch.value);
+      })
+      .catch(() => {
+        estControlee.value = true;
+      });
   }
-  tagParcelleNonControlee(props.record.record_id, id).then(() => {
-    estControlee.value = false;
-    emit("non-controlee", id);
-  });
 }
 
 function optionsCulture(feature) {
@@ -483,29 +531,38 @@ onBeforeUnmount(() => featuresSet.setCandidate([]));
 watch(
   patch,
   (properties) => {
-    featuresSet.setCandidate([
-      {
-        id: props.feature.id,
-        properties: {
-          ...props.feature.properties,
-          ...properties,
+    if (!isInitializing.value) {
+      featuresSet.setCandidate([
+        {
+          id: props.feature.id,
+          properties: {
+            ...props.feature.properties,
+            ...properties,
+          },
         },
-      },
-    ]);
+      ]);
+    }
   },
   { deep: true },
 );
 
-watch(props, (newValue) => {
-  newValue = newValue.feature;
-  patch.value = {
-    NOM: newValue.properties.NOM || "",
-    cultures: newValue.properties.cultures,
-    commentaires: newValue.properties.commentaires || "",
-    conversion_niveau: newValue.properties.conversion_niveau || "",
-    engagement_date: newValue.properties.engagement_date,
-    auditeur_notes: newValue.properties.auditeur_notes || "",
-  };
+watch(
+  () => patch.conversion_niveau,
+  (newValue) => {
+    if (newValue === LEVEL_AB && !patch.engagement_date) {
+      patch.engagement_date = "1900-01-01";
+    }
+    if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
+      patch.engagement_date = "";
+    }
+    if (newValue === LEVEL_CONVENTIONAL) {
+      patch.engagement_date = "";
+    }
+  },
+);
+
+nextTick(() => {
+  isInitializing.value = false;
 });
 </script>
 
@@ -515,6 +572,7 @@ watch(props, (newValue) => {
   align-items: flex-end;
   gap: 0.5rem;
 }
+
 .code-culture {
   line-height: 1.2rem;
 }
@@ -534,6 +592,7 @@ watch(props, (newValue) => {
   align-items: center;
   height: fit-content;
 }
+
 .global {
   display: flex;
   flex-direction: column;
@@ -555,5 +614,9 @@ watch(props, (newValue) => {
   border-top: 1px solid var(--grey-900-175);
   background-color: #f5f5fe;
   z-index: 10;
+}
+
+.no-gras {
+  font-weight: 400;
 }
 </style>

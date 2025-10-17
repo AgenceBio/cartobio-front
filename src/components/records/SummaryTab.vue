@@ -26,7 +26,12 @@
       >
         <div class="fr-grid-row fr-grid-row--middle space-between fr-mb-6v">
           <p class="fr-mb-0 badge fr-py-1v fr-px-3v" :class="`badge-${getConversionLevel(group.key).shortLabel}`">
-            {{ getConversionLevel(group.key).shortLabel }}
+            <span
+              v-if="group.key === '__nogroup__'"
+              class="fr-icon--sm"
+              :class="getConversionLevel(group.key).icon"
+            ></span>
+            {{ getConversionLevel(group.key).labelSelector ?? getConversionLevel(group.key).shortLabel }}
           </p>
           <p class="fr-mb-0 fr-text--bold">
             {{
@@ -112,6 +117,7 @@ async function selectFeatureGroup(group) {
   margin-bottom: 3px;
   background-color: var(--hover);
 }
+
 .badge {
   border-radius: 1rem;
 }
@@ -120,24 +126,39 @@ async function selectFeatureGroup(group) {
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
 }
+
 .badge-Conventionnel {
   color: var(--green-tilleul-verveine-sun-418-moon-817);
   background-color: var(--green-tilleul-verveine-925-125);
 }
+
 .badge-C1 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-975-75);
 }
+
 .badge-C2 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-950-100);
 }
+
 .badge-C3 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-925-125);
 }
+
 .badge-AB {
   color: white;
   background-color: var(--green-bourgeon-sun-425-moon-759);
+}
+
+[class*="badge-AB?"] {
+  color: white;
+  background-color: var(--green-bourgeon-sun-425-moon-759);
+}
+
+[class*="badge-Non rens."] {
+  color: var(--text-default-error);
+  background-color: var(--red-marianne-925-125);
 }
 </style>

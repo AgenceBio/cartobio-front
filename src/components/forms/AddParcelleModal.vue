@@ -15,18 +15,16 @@
             :disabled="readonly"
           />
           <div v-for="[id, result] in nameErrors" :key="id" class="fr-hint-text fr-error-text">
-            {{ result.errorMessage }}.
+            {{ result.errorMessage }}
           </div>
         </div>
       </div>
-
       <CultureSelector
         :feature-id="feature.properties.id || feature.id"
         :cultures="patch.cultures"
         @change="($cultures) => (patch.cultures = $cultures)"
         :disabled-input="readonly || !permissions.canChangeCulture"
       />
-
       <ConversionLevelSelector
         :feature-id="feature.properties.id || feature.id"
         :readonly="!permissions.canChangeConversionLevel || readonly"
@@ -45,9 +43,13 @@
           id="engagement_date"
           :required="isEngagementDateRequired"
           :disabled="!isAB || readonly || !permissions.canChangeConversionLevel"
-          min="1985-01-01"
+          min="1900-01-01"
           :max="maxDate"
         />
+        <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
+          Une date est requise pour l'attestation de production, les parcelles sélectionnées actuellement n'ayant pas de
+          date de conversion seront automatiquement remplies par 01/01/1900.
+        </p>
       </div>
 
       <AnnotationsSelector
@@ -69,7 +71,9 @@
       </div>
     </form>
 
-    <template #title><slot name="title" /></template>
+    <template #title>
+      <slot name="title" />
+    </template>
 
     <template #footer>
       <div class="fr-input-group">
@@ -91,7 +95,7 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from "vue";
 import { useFocus } from "@vueuse/core";
 
-import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3 } from "@/referentiels/ab.js";
+import { isABLevel, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, LEVEL_CONVENTIONAL } from "@/referentiels/ab.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { toDateInputString } from "@/utils/dates.js";
@@ -139,8 +143,12 @@ const patch = reactive({
 
 const isAB = computed(() => isABLevel(patch.conversion_niveau));
 const maxDate = computed(() => toDateInputString(new Date()));
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.conversion_niveau));
+const isEngagementDateRequired = computed(() =>
+  [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.conversion_niveau),
+);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
+
+const cultureErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "cultures"));
 
 const validate = () => {
   if (props.readonly) {
@@ -148,7 +156,6 @@ const validate = () => {
     return;
   }
   const set = featuresSet.byFeature(props.feature.id, true);
-
   if (set.size) {
     return false;
   }
@@ -172,7 +179,6 @@ watch(
     if (props.readonly) {
       return;
     }
-
     featuresSet.setCandidate([
       {
         id: props.feature.id,
@@ -186,6 +192,21 @@ watch(
   },
   { immediate: props.feature.properties.isCertified ?? false },
 );
+
+watch(
+  () => patch.conversion_niveau,
+  (newValue) => {
+    if (newValue === LEVEL_AB && !patch.engagement_date) {
+      patch.engagement_date = "1900-01-01";
+    }
+    if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
+      patch.engagement_date = "";
+    }
+    if (newValue === LEVEL_CONVENTIONAL) {
+      patch.engagement_date = "";
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -194,14 +215,17 @@ watch(
   border-left: none;
   border-radius: 5px;
 }
+
 .fr-quote blockquote p {
   font-weight: normal;
 }
+
 .import-pac {
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
 }
+
 .code-culture {
   line-height: 1.2rem;
 }

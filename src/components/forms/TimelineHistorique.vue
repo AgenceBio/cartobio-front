@@ -134,8 +134,8 @@ const isRotaErrors = computed(() => {
   left: 20px;
   width: 4px;
   height: 100%;
-  background: #33c24d;
-  z-index: 1;
+  background: #95e257;
+  z-index: 0;
 }
 
 .tl-item {
@@ -149,7 +149,7 @@ const isRotaErrors = computed(() => {
 .tl-point {
   position: absolute;
   left: -36px;
-  background: #33c24d;
+  background: #95e257;
   border-radius: 50%;
   height: 16px;
   width: 16px;
@@ -212,10 +212,7 @@ const isRotaErrors = computed(() => {
   gap: 3px;
   display: flex;
   border-radius: 20px;
-}
-
-.current-point > .timestamp {
-  margin-left: 16px;
+  z-index: 10;
 }
 
 .currentelement {

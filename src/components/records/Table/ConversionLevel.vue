@@ -1,8 +1,8 @@
 <template>
-  <p v-if="conversionLevel.value === LEVEL_UNKNOWN" class="badge fr-mb-0">
-    {{ conversionLevel.shortLabel }}
-  </p>
-  <span v-else-if="conversionLevel.value === LEVEL_MAYBE_AB" class="badge badge-a-modifier">
+  <span
+    v-if="conversionLevel.value === LEVEL_MAYBE_AB || conversionLevel.value === LEVEL_UNKNOWN"
+    class="badge badge-a-modifier"
+  >
     <template v-if="isOc">
       <span class="fr-icon fr-icon-pencil-line fr-icon--sm"></span>
       <p class="fr-mb-0 small-text">Certification</p>
@@ -87,6 +87,7 @@ time {
   padding-left: 5px;
   line-height: 16px;
 }
+
 .badge {
   padding: 2px 8px;
   display: flex;
@@ -100,26 +101,40 @@ time {
   font-size: 12px;
 }
 
-.badge-a-modifier {
+.badge-unknown {
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
 }
+
+.badge-a-modifier {
+  color: var(--warning-425-625);
+  background-color: var(--warning-950-100);
+}
+
+.badge-a-modifier:hover {
+  background-color: var(--red-marianne-925-125-hover);
+}
+
 .badge-CONV {
   color: var(--green-tilleul-verveine-sun-418-moon-817);
   background-color: var(--green-tilleul-verveine-925-125);
 }
+
 .badge-C1 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-975-75);
 }
+
 .badge-C2 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-950-100);
 }
+
 .badge-C3 {
   color: var(--green-bourgeon-sun-425-moon-759);
   background-color: var(--green-bourgeon-925-125);
 }
+
 .badge-AB {
   color: white;
   background-color: var(--green-bourgeon-sun-425-moon-759);
@@ -130,6 +145,7 @@ time {
   align-items: center;
   gap: 4px;
 }
+
 .conversion-text {
   color: var(--text-default-error);
   font-weight: 600;

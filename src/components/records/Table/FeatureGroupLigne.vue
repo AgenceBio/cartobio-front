@@ -57,7 +57,7 @@
         <h4
           class="fr-text--lg fr-mb-0"
           :class="{
-            'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--lg fr-icon--left controlee': feature.properties.controlee,
+            'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--md fr-icon--left controlee': feature.properties.controlee,
           }"
         >
           {{ featureName(feature, { explicitName: false }) }}
@@ -92,18 +92,35 @@
       </div>
       <div class="fr-col-2" v-else>
         <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">Multiculture</p>
-        <p v-else>-</p>
+        <p class="fr-my-auto" v-else>-</p>
       </div>
-      <div v-if="isGroupedByCulture" class="fr-col-2">
-        {{
-          feature.properties.cultures && feature.properties.cultures.length > 0
-            ? feature.properties.cultures.find((e) => cultureLabel(e) == featureGroup.label).variete
-            : "-"
-        }}
+      <div v-if="isGroupedByCulture" style="position: relative" class="fr-col-2">
+        <small style="position: absolute; top: 0; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
+          Variété
+        </small>
+        <em
+          v-if="
+            !(
+              feature.properties.cultures &&
+              feature.properties.cultures.length > 0 &&
+              feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label)?.variete
+            )
+          "
+        >
+          Non rens.
+        </em>
+        <span v-else class="fr-mt-1v">
+          {{ feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label).variete }}
+        </span>
       </div>
-      <div v-else class="fr-col-2">
+      <div v-else style="position: relative" class="fr-col-2">
+        <small style="position: absolute; top: 0; left: 0; font-size: 0.5rem; color: #666; line-height: 1">
+          Variété
+        </small>
         <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-          <span v-if="i" class="">, </span> {{ culture.variete || "NC" }}
+          <span v-if="i" class="">, </span>
+          <em class="fr-mt-1v" v-if="!culture.variete || culture.variete">Non rens.</em>
+          <span v-else>{{ culture.variete }}</span>
         </small>
       </div>
       <div class="fr-col-1">
@@ -121,7 +138,7 @@
           @click="openLigneNiveauConversionModal(feature.id)"
           :class="{ clickable: permissions.canChangeConversionLevel }"
         >
-          <ConversionLevel :feature="feature" with-date />
+          <ConversionLevel :feature="feature" with-date noIcon />
         </div>
       </div>
       <div class="fr-col-3 fr-grid-row last-row">
@@ -140,35 +157,37 @@
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
         </div>
-        <div class="fr-py-1v">
+        <div class="fr-py-2v">
           <button
             type="button"
             @click.prevent="toggleDeleteForm(feature.id)"
             :disabled="!permissions.canDeleteFeature"
-            class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error"
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line btn--error"
           >
             Supprimer la parcelle
           </button>
         </div>
         <div class="fr-py-3v">
-          <input
-            type="checkbox"
-            :id="'radio-' + feature.id"
-            :checked="selectedIds.includes(feature.id)"
-            @click="
-              toggleSingleSelected(feature.id);
-              selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-            "
-          />
-          <label
-            class="fr-label"
-            :for="'radio-' + feature.id"
-            :aria-label="
-              selectedIds.includes(feature.id)
-                ? `Désélectionner ${featureName(feature)}`
-                : `Sélectionner ${featureName(feature)}`
-            "
-          />
+          <div class="fr-checkbox-group fr-checkbox-group--sm">
+            <input
+              type="checkbox"
+              :id="'radio-' + feature.id"
+              :checked="selectedIds.includes(feature.id)"
+              @click="
+                toggleSingleSelected(feature.id);
+                selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
+              "
+            />
+            <label
+              class="fr-label"
+              :for="'radio-' + feature.id"
+              :aria-label="
+                selectedIds.includes(feature.id)
+                  ? `Désélectionner ${featureName(feature)}`
+                  : `Sélectionner ${featureName(feature)}`
+              "
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -379,9 +398,11 @@ onMounted(async () => {
   .groupe-titre {
     gap: 7px;
   }
+
   .groupe-titre > h3 {
     height: 40px;
   }
+
   .actions-parcelles {
     align-content: center;
   }
@@ -413,19 +434,19 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-.red {
-  color: var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
-  border: 1px solid var(--text-default-error);
-  box-shadow: none;
-}
-
 .radius {
   border-radius: 16px;
 }
 
+.red {
+  color: var(--warning-425-625);
+  background-color: var(--warning-950-100);
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .red:hover {
-  background-color: var(--red-marianne-925-125-active);
+  background-color: var(--red-marianne-925-125-hover);
 }
 
 .controlee:before {
@@ -456,6 +477,7 @@ onMounted(async () => {
   position: relative;
   align-items: center;
 }
+
 .last-row {
   display: flex;
   justify-content: flex-end;
@@ -468,6 +490,7 @@ onMounted(async () => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .groupe-titre-on {
   background-color: var(--blue-france-925-125);
 }

@@ -558,7 +558,7 @@ watch(
 );
 
 watch(
-  () => store.collection,
+  () => store.collection.features,
   () => {
     features.value = new GeoJSON().readFeatures(store.collection);
     if (vectorSource.value) {
@@ -736,9 +736,11 @@ button[data-tooltip]::after {
   font-size: 0.8rem;
   line-height: 1.2;
   opacity: 0;
-  white-space: normal; /* permet retour à la ligne */
+  white-space: normal;
+  /* permet retour à la ligne */
   width: max-content;
-  max-width: 220px; /* limite pour éviter des tooltips trop larges */
+  max-width: 220px;
+  /* limite pour éviter des tooltips trop larges */
   pointer-events: none;
   transition: opacity 0.2s ease-in-out;
   z-index: 2000;
