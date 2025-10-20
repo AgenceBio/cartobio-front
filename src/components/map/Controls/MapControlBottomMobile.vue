@@ -1,59 +1,25 @@
 <template>
   <div class="button-group">
-    <div :class="[isEditParcelleOpen ? 'info-box-open' : 'info-box']" aria-live="polite">
+    <div class="info-box-open" aria-live="polite">
       <span><i class="ri-custom-size" aria-hidden="true" /> {{ sizeParcelles }} ha</span>
       <span>
         <i class="ri-collage-line" aria-hidden="true" />
         {{ nbParcelles }} parcelle{{ nbParcelles > 1 ? "s" : "" }}
       </span>
     </div>
-    <div class="mode-choice" v-if="permissions.canEditParcellaire && !isMobile">
-      <button
-        type="button"
-        class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
-        :class="[mapPrefs.currentMode === 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        @click="mapPrefs.currentMode = 'consult'"
-        :aria-pressed="mapPrefs.currentMode === 'consult'"
-      >
-        Consulter
-      </button>
-      <button
-        type="button"
-        class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        @click="mapPrefs.currentMode = 'edit'"
-        :disabled="!permissions.canEditParcellaire"
-        :aria-pressed="mapPrefs.currentMode === 'edit'"
-      >
-        <i class="ri-shape-line fr-mr-2v" aria-hidden="true" />
-        Modifier
-      </button>
-    </div>
-
-    <div class="attribution fr-text--xs">
-      <a
-        v-if="!isEditParcelleOpen"
-        href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
-        target="_blank"
-        >Sources des données et licences<span class="fr-sr-only"> (ouvre un nouvel onglet)</span></a
-      >
-      <a
-        v-else
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-info-line"
-        href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
-        target="_blank"
-      ></a>
-    </div>
 
     <div id="scale-line" class="scale-line"></div>
+
     <div class="group-button-right">
-      <button
+      <a
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-        @click="onFullScreen"
-        :aria-label="isFullScreen ? 'Quitter plein écran' : 'Passer en plein écran'"
+        style="--icon-size: 0"
+        href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
+        target="_blank"
+        rel="noopener noreferrer"
       >
-        <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
-      </button>
+        <span class="fr-icon--sm fr-icon-info-line"></span>
+      </a>
       <div class="group-zoom">
         <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn" aria-label="Zoomer">
           <span class="fr-icon-add-line fr-icon--sm"></span>
@@ -98,19 +64,14 @@ const featureStore = useFeaturesStore();
 /**
  * * Props
  */
-const props = withDefaults(
-  defineProps<{
-    isEditParcelleOpen: boolean;
-    isFullScreenProps: boolean;
-    isMobile?: boolean;
-  }>(),
-  { isMobile: false },
-);
+const props = defineProps<{
+  isEditParcelleOpen: boolean;
+  isFullScreenProps: boolean;
+}>();
 
 /**
  * * Refs
  */
-const isFullScreen = ref<boolean>(false);
 const sizeParcelles = inHa(legalProjectionSurface(featureStore.collection.features));
 const nbParcelles = featureStore.collection.features.length;
 
@@ -119,7 +80,6 @@ const nbParcelles = featureStore.collection.features.length;
  */
 const emit = defineEmits<{
   (e: "locate"): void;
-  (e: "fullscreen"): void;
 }>();
 
 /**
@@ -143,34 +103,18 @@ const onLocate = () => {
   emit("locate");
 };
 
-const onFullScreen = () => {
-  emit("fullscreen");
-  isFullScreen.value = !isFullScreen.value;
-};
-
 const createScaleLine = () => {
   const control = new ScaleLine({
     className: "ol-scale-line",
     target: document.getElementById("scale-line") ?? undefined,
     units: "metric",
-    maxWidth: 100,
-    minWidth: 100,
+    maxWidth: props.isMobile ? 80 : 100,
+    minWidth: props.isMobile ? 60 : 100,
   });
   if (map?.value) {
     map.value.addControl(control);
   }
 };
-
-/**
- * * Watchers
- */
-
-watch(
-  () => props.isFullScreenProps,
-  (newValue) => {
-    isFullScreen.value = newValue;
-  },
-);
 
 /**
  * * States fonctions
@@ -187,11 +131,12 @@ onMounted(() => {
   bottom: 0;
   z-index: 1;
   display: inline-flex;
+  width: 100%;
 }
 
 .group-button-right {
-  position: relative;
-  right: 0;
+  position: absolute;
+  right: 10px;
   bottom: 10px;
   width: fit-content;
 
@@ -203,13 +148,26 @@ onMounted(() => {
   border-radius: 4px;
 }
 
-.group-button-right > button {
+.group-button-right > button,
+.group-button-right > a {
   background: white;
   width: 30px;
   height: 30px;
   justify-content: center;
   border-radius: 4px;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
+  display: flex;
+  align-items: center;
+}
+
+.group-button-right > a {
+  text-decoration: none;
+}
+
+.group-button-right > a .button-text {
+  font-size: 12px;
+  margin-left: 4px;
+  white-space: nowrap;
 }
 
 .group-zoom > button {
@@ -242,10 +200,6 @@ onMounted(() => {
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
-.active {
-  border-radius: 4px;
-}
-
 .info-box {
   background: #ffffff;
   padding: 8px 12px;
@@ -268,21 +222,10 @@ onMounted(() => {
   flex-direction: column;
   font-size: 14px;
   position: absolute;
-  bottom: 8rem;
-  left: 1rem;
+  bottom: 6rem;
+  left: 0.5rem;
   font-weight: 500;
-}
-
-.group-button-right {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  display: flex;
-  gap: 10px;
-}
-
-.button-group {
-  width: 100%;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 i[class^="ri"],
@@ -296,30 +239,45 @@ i[class*=" ri"] {
 
 .scale-line {
   position: absolute;
-  bottom: 0px;
-  right: 10rem;
+  bottom: 10px;
+  left: 1px;
 }
 
 .ol-scale-line {
   position: relative;
-  bottom: 10px;
-  left: 0px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 18, 0.12);
 }
 
-.attribution > a {
-  position: absolute;
-  display: flex;
-  right: 160px;
-  bottom: 10px;
-  background-color: white;
-  border-radius: 0px !important;
+@media (max-width: 768px) {
+  .info-box {
+    left: 10px;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .scale-line {
+    left: 0px;
+    bottom: 50px;
+  }
+
+  .group-button-right > a:not(.fr-icon-info-line) .button-text {
+    display: none;
+  }
 }
 
-.attribution > .fr-btn {
-  position: absolute;
-  display: flex;
-  right: 160px;
-  bottom: 10px;
-  background-color: white;
+@media (min-width: 769px) {
+  .group-button-right > a {
+    width: auto;
+    padding: 0 12px;
+  }
+}
+
+[target="_blank"]::after {
+  width: 0px;
+  height: 0px;
+  content: none;
 }
 </style>
