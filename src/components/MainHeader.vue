@@ -251,7 +251,7 @@
         </div>
       </div>
 
-      <div class="fr-notice fr-notice--info" v-if="isStaging">
+      <div class="fr-notice fr-notice--info" v-if="false">
         <div class="fr-container">
           <div class="fr-notice__body">
             <p class="fr-notice__title">
@@ -381,6 +381,7 @@ const exploitationsMenuLabel = computed(() => {
   text-overflow: ellipsis;
   max-width: 100% !important;
 }
+
 .tool-username span::before {
   display: inline-block;
 }

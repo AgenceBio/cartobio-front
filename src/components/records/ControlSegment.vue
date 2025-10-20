@@ -2,7 +2,7 @@
   <fieldset
     role="list"
     class="fr-segmented fr-pb-6v"
-    :class="{ 'fr-hidden': model !== 'parcellaire', 'fr-unhidden-lg': model !== 'parcellaire' }"
+    :class="{ 'fr-unhidden-lg': model !== 'parcellaire' }"
     aria-labelledby="viewmode-switcher-heading"
   >
     <legend
