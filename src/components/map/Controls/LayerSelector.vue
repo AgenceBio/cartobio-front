@@ -32,7 +32,6 @@
       </button>
 
       <h6 class="fr-my-2w fr-text--md">Fonds de carte</h6>
-
       <div v-if="isMobile" class="menu-entries-mobile">
         <button
           class="menu-entry-mobile"
@@ -113,6 +112,7 @@
           @click="$emit('update:classification', !classification)"
           :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`"
           :aria-pressed="classification"
+          :disabled="mapPrefs.blockPlan"
         >
           <img src="@/assets/map/classification.jpg" alt="Fond RPG" />
           <span>
@@ -133,6 +133,7 @@
           @click="$emit('update:cadastre', !cadastre)"
           :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`"
           :aria-pressed="cadastre"
+          :disabled="mapPrefs.blockPlan"
         >
           <img src="@/assets/map/cadastre.jpg" alt="Fond cadastre" />
           <span>Cadastre</span>
@@ -146,6 +147,8 @@
 import { onBeforeUnmount, ref } from "vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useTélépac } from "@/referentiels/pac.js";
+import { usePreferences } from "@/stores/preferences.js";
+import { storeToRefs } from "pinia";
 
 /**
  * * Refs
@@ -154,6 +157,13 @@ import { useTélépac } from "@/referentiels/pac.js";
 const showMenu = ref(false);
 const layersMenuRef = ref(null);
 const { preloadedCampagne: currentCampagne } = useTélépac();
+
+/**
+ * * Stores
+ */
+const preferences = usePreferences();
+
+const { map: mapPrefs } = storeToRefs(preferences);
 
 /**
  * * Props
