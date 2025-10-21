@@ -547,16 +547,16 @@ watch(
 );
 
 watch(
-  () => patch.conversion_niveau,
+  () => patch.value.conversion_niveau,
   (newValue) => {
-    if (newValue === LEVEL_AB && !patch.engagement_date) {
-      patch.engagement_date = "1900-01-01";
+    if (newValue === LEVEL_AB && !patch.value.engagement_date) {
+      patch.value.engagement_date = "1900-01-01";
     }
-    if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
-      patch.engagement_date = "";
+    if (newValue != LEVEL_AB && patch.value.engagement_date === "1900-01-01") {
+      patch.value.engagement_date = "";
     }
     if (newValue === LEVEL_CONVENTIONAL) {
-      patch.engagement_date = "";
+      patch.value.engagement_date = "";
     }
   },
 );
