@@ -128,7 +128,15 @@ const mergeFeatures = (): void => {
 
   const resultMerge = mergeInteractions();
   if (resultMerge) {
-    mergeFeature.value = geojsonFormat.writeFeatureObject(resultMerge) as CartoBioFeature;
+    const mergedFeature = geojsonFormat.writeFeatureObject(resultMerge) as CartoBioFeature;
+
+    const features = props.vectorSource.getFeatures().filter((f) => store.selectedIds.includes(String(f.getId())));
+
+    mergedFeature.properties = mergedFeature.properties || {};
+    mergedFeature.properties.cultures = getUniformProperty(features, "cultures") || [];
+    mergedFeature.properties.conversion_niveau = getUniformProperty(features, "conversion_niveau") || "";
+
+    mergeFeature.value = mergedFeature;
   } else {
     console.warn("Afficher message d'erreur");
   }
@@ -270,6 +278,12 @@ const calculateArea = (feature: CartoBioFeature): string => {
 const goToEdit = () => {
   showDetailsModal.value = false;
   mapPrefs.value.currentMode = "edit";
+};
+
+const getUniformProperty = (features: Feature<Geometry>[], propName: string) => {
+  const values = features.map((f) => f.get(propName));
+  const firstValue = values[0];
+  return values.every((v) => JSON.stringify(v) === JSON.stringify(firstValue)) ? firstValue : null;
 };
 
 /**
