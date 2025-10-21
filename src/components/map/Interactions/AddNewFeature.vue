@@ -190,6 +190,7 @@ import { FeatureCollection } from "@turf/helpers";
 import intersect from "@turf/intersect";
 import axios from "axios";
 import proj4 from "proj4";
+import { TRUE } from "ol/functions";
 
 /*
  * * Interface
@@ -784,10 +785,12 @@ watch(
         drawInteraction();
         mapPrefs.value.cadastre = false;
         mapPrefs.value.rpg = false;
+        mapPrefs.value.blockPlan = false;
         break;
       case "cadastre":
         mapPrefs.value.cadastre = true;
         mapPrefs.value.rpg = false;
+        mapPrefs.value.blockPlan = true;
         nextTick(() => {
           cadastreInteraction();
         });
@@ -795,6 +798,7 @@ watch(
       case "RPG":
         mapPrefs.value.cadastre = false;
         mapPrefs.value.rpg = true;
+        mapPrefs.value.blockPlan = true;
         nextTick(() => {
           rpgInteraction();
         });
@@ -874,6 +878,7 @@ onMounted(() => {
 });
 onUnmounted(() => {
   store.unselectAll();
+  mapPrefs.value.blockPlan = false;
   props.map.removeLayer(previewLayer);
   props.map.un("click", handleClickCadastre);
   props.map.un("click", handleClickRPG);
