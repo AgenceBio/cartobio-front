@@ -25,29 +25,50 @@
       </button>
       <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
-    <div class="pop-in-info" v-if="numberSelectedFeature > 0" role="status" aria-live="polite">
+    <div
+      class="pop-in-info"
+      v-if="numberSelectedFeature > 0 && corrections.length < 1"
+      role="status"
+      aria-live="polite"
+    >
       {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} sélectionnée{{
         numberSelectedFeature > 1 ? "s" : ""
       }}
       {{ globalHa }} ha
     </div>
+    <div class="pop-in-info" role="status" v-if="isCorrecting">
+      <div class="division-overlay">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span class="area-info blue"></span>
+          {{ parcelle1Area }} ha
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px" class="fr-ml-2v">
+          <span class="area-info green"></span>
+          {{ parcelle2Area }} ha
+        </div>
+      </div>
+    </div>
+
     <div v-if="corrections.length > 0" class="correct-parcelle" role="alert" aria-live="assertive">
-      <div>
-        <i class="fr-icon fr-icon-warning-line error" aria-hidden="true"></i>
+      <div class="fr-text--sm fr-mb-0">
+        <i class="fr-icon fr-icon-error-warning-fill error" aria-hidden="true"></i>
         <template v-if="canCorrect()">
-          <strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle</strong>
+          <span
+            >Attention ! Le tracé de votre parcelle chevauche une autre parcelle. Vous pouvez déplacer les points pour
+            corriger ou utiliser la correction guidée.</span
+          >
         </template>
         <template v-else>
-          <strong>Attention ! Le tracé de votre parcelle coupe une autre parcelle</strong>
+          <span>Attention ! Le tracé de votre parcelle coupe une autre parcelle</span>
         </template>
       </div>
       <div>
         <button
           v-if="!isCorrecting && canCorrect()"
-          class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left"
+          class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
           @click="startCorrection"
         >
-          <i class="ri-shape-line" aria-hidden="true" /> Corriger automatiquement
+          <i class="ri-shape-line fr-mr-2v" aria-hidden="true" /> Correction guidée
         </button>
         <button
           v-else-if="!isCorrecting && !canCorrect()"
@@ -144,6 +165,9 @@ const corrections = ref<
     intersection: Polygon | MultiPolygon;
   }[]
 >([]);
+
+const parcelle1Area = ref<string | null>(null);
+const parcelle2Area = ref<string | null>(null);
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
@@ -515,7 +539,16 @@ const selectToCorrect = (
     const feature = format.readFeature(correction.existing_minus_intersection) as Feature;
 
     originalOverlappedFeature.setGeometry(feature.getGeometry());
-    correctedParcellesId.push(correction.id);
+
+    if (!correctedParcellesId.includes(correction.id)) {
+      correctedParcellesId.push(correction.id);
+    }
+
+    const updatedParcelle1Geometry = format.writeFeatureObject(originalModifiedFeature, {});
+    parcelle1Area.value = calculateArea(updatedParcelle1Geometry as CartoBioFeature);
+
+    const updatedParcelle2Geometry = format.writeFeatureObject(originalOverlappedFeature, {});
+    parcelle2Area.value = calculateArea(updatedParcelle2Geometry as CartoBioFeature);
 
     return;
   }
@@ -526,10 +559,20 @@ const selectToCorrect = (
     format.writeFeatureObject(originalModifiedFeature) as CartoBioFeature,
   );
 
-  const feature = format.readFeature(newGeometry) as Feature;
+  if (!newGeometry) {
+    return;
+  }
 
+  const feature = format.readFeature(newGeometry) as Feature;
   originalModifiedFeature.setGeometry(feature.getGeometry());
-  correctedParcellesId.filter((id) => id !== correction.id);
+
+  correctedParcellesId = correctedParcellesId.filter((id) => id !== correction.id);
+
+  const updatedParcelle1Geometry = format.writeFeatureObject(originalModifiedFeature, {});
+  parcelle1Area.value = calculateArea(updatedParcelle1Geometry as CartoBioFeature);
+
+  const updatedParcelle2Geometry = format.writeFeatureObject(originalOverlappedFeature, {});
+  parcelle2Area.value = calculateArea(updatedParcelle2Geometry as CartoBioFeature);
 };
 
 const startCorrection = () => {
@@ -556,21 +599,35 @@ const startCorrection = () => {
   });
 
   const parcelle1Style = new Style({
-    stroke: new Stroke({ color: "rgba(65, 156, 164, 1)", width: 3 }),
-    fill: new Fill({ color: [0, 123, 255, 0.5] }),
-    zIndex: 5,
+    stroke: new Stroke({
+      color: "rgba(247, 103, 239, 1)",
+      width: 4,
+    }),
+    fill: new Fill({ color: "rgba(247, 103, 239, 0.3)" }),
+    zIndex: 4,
   });
 
   const parcelle2Style = new Style({
-    stroke: new Stroke({ color: [40, 167, 69, 0.8], width: 2 }),
-    fill: new Fill({ color: [40, 167, 69, 0.5] }),
+    stroke: new Stroke({
+      color: "rgba(96, 224, 235, 1)",
+      width: 4,
+    }),
+    fill: new Fill({ color: "rgba(166, 242, 250, 0.2)" }),
     zIndex: 4,
   });
 
   modifiedFeature.setStyle(transparent);
   overlappedFeature.setStyle(transparent);
   originalModifiedFeature.setStyle([parcelle1Style, getPointStyle()]);
+  const parcelle1Geometry = new GeoJSON().writeFeatureObject(originalModifiedFeature, {});
+
+  parcelle1Area.value = calculateArea(parcelle1Geometry as CartoBioFeature);
+
   originalOverlappedFeature.setStyle(parcelle2Style);
+  const parcelle2Geometry = new GeoJSON().writeFeatureObject(originalOverlappedFeature, {});
+
+  parcelle2Area.value = calculateArea(parcelle2Geometry as CartoBioFeature);
+
   featureToKeepForCorrection.push(modifiedFeature);
   correctionSource.addFeatures([modifiedFeature, overlappedFeature]);
   props.map.addLayer(correctionLayer);
@@ -669,22 +726,26 @@ onUnmounted(() => {
 .correct-parcelle {
   position: absolute;
   bottom: 10%;
-  left: 50%;
+  left: 55%;
   background: white;
   z-index: 1000;
-  padding: 5px;
+  padding: 8px 12px;
   display: flex;
   gap: 5px;
-  border-radius: 10px;
+  max-width: 50ch;
+  border-radius: 6px;
   flex-direction: column;
 }
 
 .error {
   color: var(--text-default-error);
+  margin-right: 10px;
 }
+
 .title {
   align-content: center;
 }
+
 .pop-in-info {
   position: absolute;
   top: 12%;
@@ -696,5 +757,44 @@ onUnmounted(() => {
   display: flex;
   gap: 5px;
   border-radius: 10px;
+}
+
+.division-overlay {
+  background: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+  border-radius: 4px;
+  display: flex;
+}
+
+.area-info {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.area-info.blue {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(247, 103, 239, 0.3);
+  border: 2px dashed #f767ef;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.area-info.green {
+  width: 15px;
+  height: 15px;
+
+  background: rgba(88, 197, 207, 0.5);
+  border: 2px dashed #60e0eb;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
 }
 </style>

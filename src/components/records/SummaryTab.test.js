@@ -92,7 +92,7 @@ describe("SummaryTab", () => {
 
     expect(wrapper.findAll(".carte-niveau-conv")).toHaveLength(2);
     expect(wrapper.findAll(".carte-niveau-conv > div > p")).toHaveLength(8);
-    expect(wrapper.findAll(".carte-niveau-conv > div > p")[0].text()).toEqual("AB");
+    expect(wrapper.findAll(".carte-niveau-conv > div > p")[0].text()).toEqual("BIO");
     expect(wrapper.findAll(".carte-niveau-conv > div > p")[1].text()).toEqual("2 718,48 ha");
     expect(wrapper.findAll(".carte-niveau-conv > div > p")[2].text()).toEqual("3");
     expect(wrapper.findAll(".carte-niveau-conv > div > p")[3].text()).toEqual("Parcelles");

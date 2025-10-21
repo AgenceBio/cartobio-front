@@ -128,8 +128,8 @@ let sourceListenerKey: EventsKey | null = null;
  * * Refs
  */
 
-const parcelle1Area: Ref<number | null> = ref(null);
-const parcelle2Area: Ref<number | null> = ref(null);
+const parcelle1Area: Ref<string | null> = ref(null);
+const parcelle2Area: Ref<string | null> = ref(null);
 
 /*
  * * Fonctions : Data
@@ -550,6 +550,7 @@ onUnmounted(() => {
   order: 0;
   flex-grow: 0;
 }
+
 .title {
   align-content: center;
 }
