@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted,  Ref, } from "vue";
+import { inject, onMounted, Ref } from "vue";
 import type { Map as OlMap } from "ol";
 import { inHa, legalProjectionSurface } from "@/utils/features.js";
 import { useFeaturesStore } from "@/stores/features";
