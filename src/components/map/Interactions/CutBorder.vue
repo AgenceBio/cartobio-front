@@ -5,7 +5,7 @@
         <i class="ri-crop-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Bordure</strong>
       </div>
-      <label class="fr-label" for="largeur-bordure" aria-label="Largeur de la bordure">Distance (m)</label>
+      <label class="fr-label" for="largeur-bordure" aria-label="Largeur de la bordure">Largeur&nbsp;(m)</label>
       <input
         type="number"
         id="largeur-bordure"
@@ -658,14 +658,32 @@ const validateDivision = async () => {
   const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
 
-  for (const modifiedFeature of resSource.getFeatures()) {
-    modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
-  }
+  const originalFeature = store.all.find((f: CartoBioFeature) => f.id === selectdId);
+  const baseNom = originalFeature?.properties?.NOM || null;
+  const baseNumero = originalFeature?.properties?.NUMERO_P || null;
+
+  const features = resSource.getFeatures();
+
+  features.forEach((feature, index) => {
+    const featureClone = feature.clone();
+    const featureObj = geoJson.writeFeatureObject(featureClone) as CartoBioFeature;
+
+    if (baseNom) {
+      featureObj.properties.NOM = `${baseNom}.${index + 1}`;
+    } else if (baseNumero) {
+      featureObj.properties.NOM = `Parcelle ${baseNumero}.${index + 1}`;
+    } else {
+      featureObj.properties.NOM = `Parcelle ${index + 1}`;
+    }
+
+    modifiedFeatures.push(featureObj);
+  });
+
   loading.value = true;
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
-    store.unselectAll([]);
+    store.unselectAll();
     const newFeatures = result.parcelles.features.filter(
       (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
     );
@@ -786,6 +804,11 @@ onUnmounted(() => {
   font-size: 1.2em;
 }
 
+.fr-btn {
+  height: fit-content;
+  margin: auto 0px;
+}
+
 .pop-in-info {
   position: absolute;
   top: 12%;
@@ -845,6 +868,7 @@ onUnmounted(() => {
 .fr-label {
   align-content: center;
 }
+
 button[data-tooltip] {
   position: relative;
 }
@@ -862,9 +886,11 @@ button[data-tooltip]::after {
   font-size: 0.8rem;
   line-height: 1.2;
   opacity: 0;
-  white-space: normal; /* permet retour à la ligne */
+  white-space: normal;
+  /* permet retour à la ligne */
   width: max-content;
-  max-width: 220px; /* limite pour éviter des tooltips trop larges */
+  max-width: 220px;
+  /* limite pour éviter des tooltips trop larges */
   pointer-events: none;
   transition: opacity 0.2s ease-in-out;
   z-index: 2000;
