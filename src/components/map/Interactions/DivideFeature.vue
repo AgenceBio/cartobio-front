@@ -140,21 +140,40 @@ const validateDivision = async () => {
   const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
 
-  for (const modifiedFeature of resSource.getFeatures()) {
-    modifiedFeatures.push(geoJson.writeFeatureObject(modifiedFeature.clone()) as CartoBioFeature);
-  }
+  const originalFeature = store.all.find((f: CartoBioFeature) => f.id === selectdId);
+  const baseNom = originalFeature?.properties?.NOM || null;
+  const baseNumero = originalFeature?.properties?.NUMERO_P || null;
+
+  const features = resSource.getFeatures();
+
+  features.forEach((feature, index) => {
+    const featureClone = feature.clone();
+    const featureObj = geoJson.writeFeatureObject(featureClone) as CartoBioFeature;
+
+    if (baseNom) {
+      featureObj.properties.NOM = `${baseNom}.${index + 1}`;
+    } else if (baseNumero) {
+      featureObj.properties.NOM = `Parcelle ${baseNumero}.${index + 1}`;
+    } else {
+      featureObj.properties.NOM = `Parcelle ${index + 1}`;
+    }
+
+    modifiedFeatures.push(featureObj);
+  });
+
   loading.value = true;
+
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
-    store.unselectAll([]);
+    store.unselectAll();
     const newFeatures = result.parcelles.features.filter(
       (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
     );
+
     store.setAll(result.parcelles.features);
 
     const feature = props.vectorLayer.getSource()?.getFeatureById(selectdId);
-
     if (feature) {
       props.vectorLayer.getSource()?.removeFeature(feature);
     }
@@ -163,8 +182,8 @@ const validateDivision = async () => {
       props.vectorLayer.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
     }
   }
-  loading.value = false;
 
+  loading.value = false;
   mapPrefs.value.currentMode = "edit";
 };
 
@@ -315,6 +334,7 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
     props.map.removeOverlay(currentOverlay);
     currentOverlay = null;
   }
+
   const parser = new jsts.io.OL3Parser();
   parser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
 
@@ -329,12 +349,45 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
 
   if (lineJsts.intersects(polyJsts)) {
     try {
-      const union = polyJsts.getExteriorRing().union(lineJsts);
-      const polygonizer = new jsts.operation.polygonize.Polygonizer();
-      polygonizer.add(union);
-      const polys = polygonizer.getPolygons();
+      let parts: any[] = [];
 
-      if (polys.array.length === 2) {
+      if (typeof (polyJsts as any).split === "function") {
+        const splitGeom = (polyJsts as any).split(lineJsts);
+        const num = splitGeom.getNumGeometries ? splitGeom.getNumGeometries() : 0;
+        for (let i = 0; i < num; i++) {
+          const g = splitGeom.getGeometryN(i);
+          if (g.getArea && g.getArea() > 0 && polyJsts.contains(g.getInteriorPoint())) {
+            parts.push(g);
+          }
+        }
+      }
+
+      if (parts.length === 0) {
+        const union = polyJsts.getBoundary().union(lineJsts);
+        const polygonizer = new jsts.operation.polygonize.Polygonizer();
+        polygonizer.add(union);
+        const polys = polygonizer.getPolygons();
+
+        if (polys && (polys.getGeometryN || polys.array)) {
+          if (typeof polys.getNumGeometries === "function") {
+            const n = polys.getNumGeometries();
+            for (let i = 0; i < n; i++) {
+              const g = polys.getGeometryN(i);
+              if (g.getArea && g.getArea() > 0 && polyJsts.contains(g.getInteriorPoint())) {
+                parts.push(g);
+              }
+            }
+          } else if (Array.isArray(polys.array)) {
+            polys.array.forEach((g: any) => {
+              if (g.getArea && g.getArea() > 0 && polyJsts.contains(g.getInteriorPoint())) {
+                parts.push(g);
+              }
+            });
+          }
+        }
+      }
+
+      if (parts.length === 2) {
         const parcelle1Style = new Style({
           stroke: new Stroke({
             color: "rgba(247, 103, 239, 1)",
@@ -360,10 +413,11 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
         });
 
         resSource.clear();
-        polys.array.forEach((geom: Polygon, index: number) => {
+        parts.forEach((geom: any, index: number) => {
+          const olGeom = parser.write(geom);
           const newFeature = new Feature({
             ...targetFeature?.getProperties(),
-            geometry: new Polygon(parser.write(geom).getCoordinates()),
+            geometry: new Polygon(olGeom.getCoordinates()),
           });
           resSource.addFeature(newFeature);
           newFeature.setStyle(index === 0 ? parcelle1Style : parcelle2Style);
