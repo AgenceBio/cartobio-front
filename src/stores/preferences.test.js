@@ -14,6 +14,7 @@ describe("preferences/map", () => {
       cadastre: false,
       rpg: false,
       currentMode: "consult",
+      blockPlan: false,
     });
   });
 

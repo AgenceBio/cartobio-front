@@ -190,7 +190,6 @@ import { FeatureCollection } from "@turf/helpers";
 import intersect from "@turf/intersect";
 import axios from "axios";
 import proj4 from "proj4";
-import { TRUE } from "ol/functions";
 
 /*
  * * Interface

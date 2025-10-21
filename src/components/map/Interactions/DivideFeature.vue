@@ -349,7 +349,7 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
 
   if (lineJsts.intersects(polyJsts)) {
     try {
-      let parts: any[] = [];
+      const parts: any[] = [];
 
       if (typeof (polyJsts as any).split === "function") {
         const splitGeom = (polyJsts as any).split(lineJsts);
