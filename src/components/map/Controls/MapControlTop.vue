@@ -5,6 +5,7 @@
         class="fr-btn fr-btn--tertiary-no-outline"
         @click="emit('openFullScreen')"
         aria-label="Ouvrir le mode plein écran"
+        :disabled="!online"
       >
         <span class="ri-sidebar-fold-line" aria-hidden="true" />
       </button>
@@ -15,13 +16,14 @@
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         @click="emit('compare')"
         aria-label="Comparer les parcelles"
+        :disabled="!online"
       >
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
         aria-label="Ajouter une nouvelle parcelle"
-        :disabled="!permissions.canEditParcellaire"
+        :disabled="!permissions.canEditParcellaire || !online"
         @click="emit('addParcelle')"
       >
         Ajouter une parcelle
@@ -33,8 +35,11 @@
 <script setup lang="ts">
 import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";
+import { useOnline } from "@vueuse/core";
 
 import { storeToRefs } from "pinia";
+
+const online = useOnline();
 
 /*
  * * Stores

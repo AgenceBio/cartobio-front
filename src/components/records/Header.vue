@@ -2,7 +2,7 @@
   <header class="fr-mb-2w">
     <div class="fr-grid-row fr-grid-row--middle header">
       <div class="fr-grid-row fr-text--xs">
-        <p class="fr-text--sm fr-my-auto">
+        <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0">
           <b>{{ operator.nom }}</b>
         </p>
         <template v-if="permissions.isOc">
@@ -17,7 +17,7 @@
           </button>
           <button
             v-else
-            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-0"
             @click="pin(operatorStore.operator.numeroBio)"
             aria-label="Epingler le parcellaire"
             data-tooltip="Epingler le parcellaire"
@@ -49,6 +49,17 @@
         <p v-if="readonly" class="readonly-badge">Lecture seule</p>
       </div>
       <div class="fr-grid-row">
+        <span
+          class="fr-tag fr-tag--sm tag-attestation"
+          v-if="record.certification_state === 'CERTIFIED'"
+          @click="
+            () => {
+              attestationModal = true;
+            }
+          "
+        >
+          <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>Attestation</span
+        >
         <ActionDropdown
           v-if="hasFeatures && !readonly"
           with-icons
@@ -126,9 +137,31 @@
       </div>
     </div>
 
-    <p class="state fr-subtitle fr-mt-1w">
+    <p v-if="record.certification_state === 'OPERATOR_DRAFT'" class="state fr-subtitle fr-mt-1w">
       <ParcellaireState :record="record" />
     </p>
+    <div v-else class="fr-highlight flex fr-mt-1w">
+      <div>
+        <div class="flex">
+          <ParcellaireState :record="record" :show-date="false" />
+        </div>
+        <p class="fr-text--sm fr-mb-0">
+          <b>Réalisé le {{ jjmmyyyy(record.audit_date) }}</b
+          ><br />Par
+          {{
+            ((record?.audit_history ?? [])
+              .filter((d) => d.type === "CertificationStateChange")
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .at(-1)?.user?.nom ?? "") +
+            " " +
+            ((record?.audit_history ?? [])
+              .filter((d) => d.type === "CertificationStateChange")
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .at(-1)?.user?.prenom ?? "")
+          }}
+        </p>
+      </div>
+    </div>
   </header>
 
   <Teleport to="body">
@@ -141,6 +174,37 @@
       :record-id="deleteDownloadModal"
       @close="deleteDownloadModal = null"
     />
+    <Modal @close="attestationModal = false" v-if="attestationModal">
+      <template #title> Attestation de production </template>
+      <div class="buttons-attestation">
+        <button
+          type="button"
+          @click="exportAttestationPdf(record)"
+          class="fr-btn fr-btn--secondary button-export fr-btn--icon-left"
+          :class="{ 'fr-icon-download-line': !isPdfLoading }"
+          :disabled="
+            record.certification_state !== 'CERTIFIED' || isPdfLoading || errorText[record.record_id] || isPdfGenerating
+          "
+        >
+          <Spinner v-if="isPdfLoading"> </Spinner>
+          <template v-if="fetchHasAttestationProduction(record)">Télécharger l'attestation de production</template>
+          <template v-else>Générer l'attestation de production</template>
+        </button>
+        <p v-if="errorText[record.record_id]" class="fr-px-1w fr-text--sm fr-text--sm fr-error-text fr-mt-0">
+          {{ errorText[record.record_id] }}
+        </p>
+        <button
+          class="fr-btn fr-btn--secondary fr-icon-refresh-line fr-btn--icon-left"
+          @click="() => exportAttestationPdf(record, true)"
+          data-content-piece="Export PDF"
+          aria-label="Re-générer l'attestation de production au format PDF"
+          title="Générer une nouvelle attestation pour mettre à jour mes informations"
+          :disabled="!fetchHasAttestationProduction(record) || isPdfLoading"
+        >
+          Re-générer l'attestation
+        </button>
+      </div>
+    </Modal>
   </Teleport>
 </template>
 
@@ -154,6 +218,7 @@ import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.v
 import FullStorageModal from "@/components/versions/FullStorageModal.vue";
 import DeleteDownloadModal from "@/components/versions/DeleteDownloadModal.vue";
 import { usePreferences } from "@/stores/preferences.js";
+import Modal from "@/components/widgets/Modal.vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useOperatorStore } from "@/stores/operator.js";
@@ -166,11 +231,12 @@ import { useUserStore } from "@/stores/user";
 import { useOnline } from "@vueuse/core";
 import { useCartoBioStorage } from "@/stores/storage.js";
 
-import { pinOperator, unpinOperator } from "@/cartobio-api";
+import { pinOperator, unpinOperator, getPDFData, getHasAttestationProduction } from "@/cartobio-api";
 import ActionDropdown from "../widgets/ActionDropdown.vue";
 import ExportActions from "./ExportActions.vue";
 import toast from "@/utils/toast.js";
 import { useRouter } from "vue-router";
+import { jjmmyyyy } from "@/utils/dates";
 
 const router = useRouter();
 
@@ -195,6 +261,13 @@ const permissions = usePermissions();
 const isOnline = useOnline();
 const storage = useCartoBioStorage();
 const preferences = usePreferences();
+
+const attestationModal = ref(false);
+const recordAttestation = ref(null);
+const hasAttestationProduction = ref({});
+const isPdfLoading = ref(false);
+const isPdfGenerating = ref(false);
+const errorText = ref({});
 
 const { record } = recordStore;
 const { operator } = operatorStore;
@@ -244,6 +317,63 @@ async function tryDownloadRecord(record) {
 const sortedRecords = computed(() => operatorStore.records);
 
 const selectedRecord = ref(record.record_id);
+
+async function exportAttestationPdf(record, force = false) {
+  if (record.certification_state !== "CERTIFIED" || isPdfLoading.value) {
+    return;
+  }
+
+  try {
+    isPdfLoading.value = true;
+    const response = await getPDFData(record.numerobio, record.record_id, null, force);
+    if (response.status === 204) {
+      isPdfGenerating.value = true;
+      return;
+    }
+    const linkSource = `data:application/pdf;base64,${response.data}`;
+    const a = document.createElement("a");
+    a.href = linkSource;
+    a.download = `cartobio_attestation_${record.annee_reference_controle}_${record.numerobio}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(linkSource);
+    hasAttestationProduction.value[record.record_id] = true;
+  } catch (error) {
+    if (error.code === "ERR_CANCELED") {
+      isPdfLoading.value = false;
+      return;
+    }
+
+    if (error.response?.data?.message) {
+      errorText.value[record.record_id] = error.response.data.message;
+    }
+    throw new Error("Erreur lors du téléchargement du PDF: Réessayez plus tard");
+  } finally {
+    isPdfLoading.value = false;
+  }
+}
+
+function fetchHasAttestationProduction(record) {
+  if (record.certification_state !== "CERTIFIED") {
+    return false;
+  }
+  if (hasAttestationProduction.value[record.record_id] != undefined) {
+    return hasAttestationProduction.value[record.record_id];
+  }
+
+  hasAttestationProduction.value[record.record_id] = false;
+
+  getHasAttestationProduction(record.record_id).then((res) => {
+    hasAttestationProduction.value[record.record_id] = res.hasAttestationProduction;
+  });
+  return false;
+}
+
+function openAttestationModal() {
+  attestationModal.value = true;
+  recordAttestation.value = latestDraftRecord;
+}
 </script>
 
 <style scoped>
@@ -325,5 +455,41 @@ button[data-tooltip]::after {
 button[data-tooltip]:hover::after,
 button[data-tooltip]:focus::after {
   opacity: 1;
+}
+
+.exploit-name {
+  color: #161616;
+}
+
+.attestation-tag {
+  margin-left: auto;
+  margin-right: 0;
+  display: flex;
+  height: fit-content;
+}
+
+.tag-attestation {
+  background-color: var(--background-action-low-blue-france);
+  color: var(--text-action-high-blue-france);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tag-attestation:hover {
+  background-color: var(--background-action-low-blue-france-hover);
+}
+
+.buttons-attestation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.buttons-attestation > button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>

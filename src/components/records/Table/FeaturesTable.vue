@@ -1,6 +1,6 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-  <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w">
+  <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w" ref="contentTopFeatures">
     <div class="fr-search-bar fr-pl-1v fr-col-12 fr-col-md-6" id="search" role="search">
       <p class="fr-sr-only" id="search-desc">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
@@ -152,7 +152,12 @@
   </Teleport>
 
   <p class="fr-mt-4v">
-    <a href="#content" class="fr-icon--sm fr-icon-arrow-up-fill" aria-label="Retour en haut de la page">
+    <a
+      href=""
+      @click.prevent.stop="scrollToTop()"
+      class="fr-icon--sm fr-icon-arrow-up-fill"
+      aria-label="Retour en haut de la page"
+    >
       retour en haut de la page
     </a>
   </p>
@@ -214,6 +219,8 @@ const isOnline = useOnline();
 const featuresStore = useFeaturesStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
+
+const contentTopFeatures = ref(null);
 
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
@@ -283,6 +290,12 @@ async function handleMultipleDelete(reason) {
   featuresStore.unselectAll([]);
   toggleFeaturesDelete();
   return;
+}
+
+function scrollToTop() {
+  if (contentTopFeatures.value) {
+    contentTopFeatures.value.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
 
 watch(zoomFeature, (newValue) => {

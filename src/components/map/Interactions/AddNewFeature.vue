@@ -27,6 +27,7 @@
       <i class="ri-collage-line fr-mr-1w" aria-hidden="true" />
       RPG
     </button>
+    <div class="vr" />
     <button
       class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Quitter le mode dessin"
@@ -907,7 +908,7 @@ onUnmounted(() => {
   padding: 5px;
   display: flex;
   gap: 5px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .pop-in-info-cadastre {
@@ -922,5 +923,14 @@ onUnmounted(() => {
   gap: 5px;
   border-radius: 10px;
   width: fit-content;
+}
+
+.vr {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  min-height: 0.5em;
+  background-color: grey;
+  opacity: 0.25;
 }
 </style>

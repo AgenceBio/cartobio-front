@@ -103,7 +103,8 @@
                 !(
                   feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
                   feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
-                  feature.properties.conversion_niveau === ''
+                  feature.properties.conversion_niveau === '' ||
+                  feature.properties.conversion_niveau === null
                 )
               "
               class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
@@ -146,7 +147,8 @@
           v-if="
             (feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
               feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
-              feature.properties.conversion_niveau === '') &&
+              feature.properties.conversion_niveau === '' ||
+              feature.properties.conversion_niveau === null) &&
             (feature.properties.cultures[0].CPF === undefined || feature.properties.cultures[0].CPF === '') &&
             feature.properties.cultures.length === 1
           "

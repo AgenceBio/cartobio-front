@@ -39,6 +39,7 @@
       >
         Découper
       </button>
+      <div class="vr" />
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         aria-label="Annuler la découpe"
@@ -819,7 +820,7 @@ onUnmounted(() => {
   padding: 5px;
   display: flex;
   gap: 5px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .division-overlay {
@@ -898,5 +899,14 @@ button[data-tooltip]::after {
 
 button[data-tooltip]:hover::after {
   opacity: 1;
+}
+
+.vr {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  min-height: 0.5em;
+  background-color: grey;
+  opacity: 0.25;
 }
 </style>
