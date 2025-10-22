@@ -293,8 +293,9 @@ async function handleMultipleDelete(reason) {
 }
 
 function scrollToTop() {
-  if (contentTopFeatures.value) {
-    contentTopFeatures.value.scrollTo({ top: 0, behavior: "smooth" });
+  if (document.getElementById("headerRecord")) {
+    const element = document.getElementById("headerRecord");
+    element.scrollIntoView({ block: "start" });
   }
 }
 
