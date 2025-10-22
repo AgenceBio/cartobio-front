@@ -13,6 +13,7 @@
         class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
         :class="[mapPrefs.currentMode === 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'consult'"
+        :disabled="!online"
         :aria-pressed="mapPrefs.currentMode === 'consult'"
       >
         Consulter
@@ -22,7 +23,7 @@
         class="fr-btn fr-btn--sm"
         :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         @click="mapPrefs.currentMode = 'edit'"
-        :disabled="!permissions.canEditParcellaire"
+        :disabled="!permissions.canEditParcellaire || !online"
         :aria-pressed="mapPrefs.currentMode === 'edit'"
       >
         <i class="ri-shape-line fr-mr-2v" aria-hidden="true" />
@@ -77,8 +78,10 @@ import { storeToRefs } from "pinia";
 import { inHa, legalProjectionSurface } from "@/utils/features.js";
 import { useFeaturesStore } from "@/stores/features";
 import { usePermissions } from "@/stores/permissions.js";
+import { useOnline } from "@vueuse/core";
 
 import ScaleLine from "ol/control/ScaleLine.js";
+const online = useOnline();
 
 /**
  * * Refs

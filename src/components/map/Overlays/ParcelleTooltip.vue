@@ -2,7 +2,7 @@
   <div class="openlayers-parcelle-tooltip fr-px-2w fr-py-2w">
     <div class="not-flex">
       <div class="space-between">
-        <b class="fr-text--sm fr-mb-0">{{ name }}</b>
+        <b class="fr-text--sm fr-mb-0 name">{{ name }}</b>
         <p class="fr-hint-text fr-text--xs fr-mb-0">{{ area }} ha</p>
       </div>
       <div class="align-center gap-3 fr-mt-1v">
@@ -99,8 +99,10 @@ defineProps<Props>();
 }
 
 .red {
-  color: var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
+  color: var(--warning-425-625);
+  background-color: var(--warning-950-100);
+  font-size: 12px;
+  font-weight: 400;
   box-shadow: none;
   width: fit-content;
   padding: 2px 8px;
@@ -108,5 +110,12 @@ defineProps<Props>();
 
 .radius {
   border-radius: 16px;
+}
+
+.name {
+  margin-left: 2px;
+}
+.red > .fr-icon-pencil-line {
+  color: var(--warning-425-625) !important;
 }
 </style>

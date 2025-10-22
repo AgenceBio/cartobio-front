@@ -15,6 +15,7 @@
     >
       Confirmer
     </button>
+    <div class="vr" />
     <button
       class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm"
       aria-label="Annuler la suppression"
@@ -185,5 +186,14 @@ onUnmounted(() => {
   gap: 10px;
   padding: 5px 10px;
   align-items: center;
+}
+
+.vr {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  min-height: 0.5em;
+  background-color: grey;
+  opacity: 0.25;
 }
 </style>

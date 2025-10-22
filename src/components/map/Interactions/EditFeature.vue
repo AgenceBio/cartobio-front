@@ -756,7 +756,7 @@ onUnmounted(() => {
   padding: 5px;
   display: flex;
   gap: 5px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .division-overlay {

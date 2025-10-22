@@ -50,7 +50,7 @@
       <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-left">
         <li>
           <button class="fr-btn fr-icon-delete-line" form="delete-feature-form">
-            Supprimer {{ selectedIds.length > 1 ? "des" : "la" }} parcelle{{ selectedIds.length > 1 ? "s" : "" }}
+            Supprimer {{ selectedIds.length > 1 ? "les" : "la" }} parcelle{{ selectedIds.length > 1 ? "s" : "" }}
           </button>
         </li>
       </ul>

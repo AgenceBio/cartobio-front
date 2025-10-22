@@ -46,6 +46,7 @@ defineProps<Props>();
   align-items: center;
   font-weight: 600;
   font-size: 0.75rem; /* réduit le texte */
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
 
 .openlayers-culture-overlay .badge i {

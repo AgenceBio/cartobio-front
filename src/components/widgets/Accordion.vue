@@ -179,4 +179,11 @@ if (activeAccordionId) {
   margin-left: auto;
   margin-right: 0px;
 }
+
+.error-text {
+  color: var(--warning-425-625);
+  border: 1px solid #ffbdb2;
+  background-color: var(--warning-950-100);
+  border-radius: 4px;
+}
 </style>

@@ -7,6 +7,7 @@
         data-tooltip="Activer le mode édition pour modifier les parcelles existants"
         aria-label="Activer le mode édition pour modifier les parcelles existantes"
         @click="handleAction('edit')"
+        :disabled="!online"
       >
         <i class="ri-navigation-line" aria-hidden="true" />
       </button>
@@ -17,7 +18,7 @@
         data-tooltip="Dessiner une nouvelle parcelle sur la carte"
         aria-label="Dessiner une nouvelle parcelle sur la carte"
         @click="handleAction('draw')"
-        :disabled="!permissions.canEditParcellaire"
+        :disabled="!permissions.canEditParcellaire || !online"
       >
         <i class="ri-pen-nib-line" aria-hidden="true" />
       </button>
@@ -30,7 +31,7 @@
         data-tooltip="Découper le contour de la parcelle sélectionnée "
         aria-label="Découper le contour de la parcelle sélectionnée "
         @click="handleAction('decouper')"
-        :disabled="countSelected != 1 || !permissions.canEditParcellaire"
+        :disabled="countSelected != 1 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-crop-line" aria-hidden="true" />
       </button>
@@ -41,7 +42,7 @@
         data-tooltip="Tracer une ligne pour couper la parcelle sélectionnée en deux"
         aria-label="Tracer une ligne pour couper la parcelle sélectionnée en deux"
         @click="handleAction('divide')"
-        :disabled="countSelected != 1 || !permissions.canEditParcellaire"
+        :disabled="countSelected != 1 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-scissors-cut-line" aria-hidden="true" />
       </button>
@@ -52,7 +53,7 @@
         data-tooltip="Fusionner plusieurs parcelles sélectionnées en un seul"
         aria-label="Fusionner plusieurs parcelles sélectionnées en un seul"
         @click="handleAction('fusionner')"
-        :disabled="countSelected < 2 || !permissions.canEditParcellaire"
+        :disabled="countSelected < 2 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-merge-cells-horizontal" aria-hidden="true" />
       </button>
@@ -63,7 +64,7 @@
         data-tooltip="Supprimer la ou les parcelles sélectionnées"
         aria-label="Supprimer la ou les parcelles sélectionnées"
         @click="handleAction('delete')"
-        :disabled="countSelected < 1 || !permissions.canEditParcellaire"
+        :disabled="countSelected < 1 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-delete-bin-line" aria-hidden="true" />
       </button>
@@ -78,6 +79,9 @@ import { storeToRefs } from "pinia";
 import { useFeaturesStore } from "@/stores/features";
 import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";
+import { useOnline } from "@vueuse/core";
+
+const online = useOnline();
 
 /**
  * * Stores

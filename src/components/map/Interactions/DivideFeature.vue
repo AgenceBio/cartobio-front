@@ -12,6 +12,7 @@
       >
         Découper
       </button>
+      <div class="vr" />
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         :disabled="!hasDivision"
@@ -607,5 +608,14 @@ onUnmounted(() => {
 
 .title {
   align-content: center;
+}
+
+.vr {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  min-height: 0.5em;
+  background-color: grey;
+  opacity: 0.25;
 }
 </style>

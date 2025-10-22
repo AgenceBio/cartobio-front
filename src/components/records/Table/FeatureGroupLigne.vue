@@ -380,9 +380,9 @@ onMounted(async () => {
 <style scoped>
 .erreurs {
   align-self: center;
-  color: var(--text-default-error);
-  border: 1px solid var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
+  color: var(--warning-425-625);
+  border: 1px solid #ffbdb2;
+  background-color: var(--warning-950-100);
   border-radius: 4px;
 }
 
