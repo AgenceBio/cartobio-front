@@ -1,6 +1,6 @@
 <template>
   <header class="fr-mb-2w">
-    <div class="fr-grid-row fr-grid-row--middle header">
+    <div class="fr-grid-row fr-grid-row--middle header" id="headerRecord">
       <div class="fr-grid-row fr-text--xs">
         <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0">
           <b>{{ operator.nom }}</b>

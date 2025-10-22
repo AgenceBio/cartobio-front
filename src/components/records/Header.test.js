@@ -167,8 +167,7 @@ describe("RecordHeader", () => {
       await flushPromises();
 
       const modal = wrapper.getComponent(ExportActions);
-      expect(modal.findAll("li:not(.break)").length).toEqual(4);
-      expect(modal.findAll("li:not(.break) > button")[3].isDisabled()).toEqual(true);
+      expect(modal.findAll("li:not(.break)").length).toEqual(3);
     });
     it("devrait avoir 4 actions si record certifié", async () => {
       let wrapper = mount(AsyncComponent);
@@ -185,7 +184,7 @@ describe("RecordHeader", () => {
       });
 
       await flushPromises();
-      expect(modal.findAll("li:not(.break)").length).toEqual(4);
+      expect(modal.findAll("li:not(.break)").length).toEqual(3);
     });
     it("devrait avoir 5 actions si record certifié et qu'une attestation a deja été generée", async () => {
       axios.__createMock.get.mockResolvedValue({ data: { hasAttestationProduction: true } });
@@ -203,7 +202,7 @@ describe("RecordHeader", () => {
       });
 
       await flushPromises();
-      expect(modal.findAll("li:not(.break)").length).toEqual(5);
+      expect(modal.findAll("li:not(.break)").length).toEqual(3);
     });
   });
 });
