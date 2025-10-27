@@ -32,7 +32,9 @@
       <div class="fr-grid-row">
         <p class="fr-sr-only operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</p>
         <div v-tooltip="tooltips.selectVersion" class="seamless-select fr-grid-row">
-          <b class="version-name fr-mr-2w">{{ record.version_name }}</b>
+          <b class="version-name fr-mr-2w">
+            {{ record.version_name.length > 32 ? record.version_name.slice(0, 32) + "…" : record.version_name }}
+          </b>
 
           <select
             class="version-name fr-ml-2w"
