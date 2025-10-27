@@ -16,7 +16,7 @@
     </div>
 
     <div v-if="conversionLevel" class="align-center fr-mt-3w">
-      <ConversionLevel :level="getConversionLevel(conversionLevel)" :noIcon="true" />
+      <ConversionLevel :level="getConversionLevel(conversionLevel)" :noIcon="true" labelSelector />
     </div>
     <div v-else-if="libelleCulture" class="red radius fr-mt-1v">
       <span class="fr-icon-pencil-line fr-icon--sm fr-hint-text"> </span>

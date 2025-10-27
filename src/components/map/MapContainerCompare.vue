@@ -1,6 +1,6 @@
 <template>
   <div class="flex" role="group" aria-label="Comparaison de deux cartes interactives">
-    <div ref="mapRef" aria-label="Carte gauche, première version" class="openlayers-container fr-ml-2w">
+    <div ref="mapRef" aria-label="Carte gauche, première version" class="openlayers-container">
       <slot name="map1" v-if="map" />
     </div>
 

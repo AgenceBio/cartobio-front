@@ -158,6 +158,7 @@ onMounted(() => {
   z-index: 1;
   display: inline-flex;
   max-width: 50vw;
+  border-radius: 4px;
 }
 
 .group-button-right {
@@ -178,6 +179,7 @@ onMounted(() => {
   width: 30px;
   height: 30px;
   justify-content: center;
+  margin-right: 1rem;
 }
 
 .group-zoom > button {
@@ -230,7 +232,7 @@ onMounted(() => {
   font-size: 14px;
   position: absolute;
   bottom: 1rem;
-  right: 1rem;
+  right: 1.5rem;
   font-weight: 500;
   padding: 24px;
   border-radius: 6px;

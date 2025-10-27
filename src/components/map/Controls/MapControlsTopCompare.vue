@@ -2,7 +2,7 @@
   <div class="button-group">
     <div class="mode-choice" v-if="!isCompare">
       <b class="fr-ml-1w">{{ record?.version_name }}</b>
-      <p class="fr-text--xs cec">Contrôle en cours</p>
+      <p class="fr-text--xs cec">{{ permissions.isOc ? "Contrôle en cours" : "Consultation en cours" }}</p>
       <p
         class="fr-text--xs version-recente fr-pr-0w fr-mr-0w"
         v-if="diffOnMap === 'map1'"
@@ -14,7 +14,7 @@
     </div>
 
     <div class="mode-choice" v-else>
-      <div class="fr-select-group fr-mbé-0w fr-p-0w">
+      <div class="fr-select-group fr-mb-0w fr-p-0w">
         <select
           class="fr-select"
           name="select-version"
@@ -57,6 +57,7 @@
       >
         Version + récente
       </p>
+      <div class="vr" />
 
       <button
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-close-line"
@@ -74,9 +75,12 @@ import { useRecordStore } from "@/stores/record.js";
 import { useOperatorStore } from "@/stores/operator.js";
 import { apiClient } from "@/cartobio-api.js";
 import { Map } from "ol";
+import { usePermissions } from "@/stores/permissions.js";
 
 const recordStore = useRecordStore();
 const operatorStore = useOperatorStore();
+const permissions = usePermissions();
+
 const { record } = storeToRefs(recordStore);
 const { records } = storeToRefs(operatorStore);
 
@@ -353,5 +357,14 @@ const closeComparison = () => {
     align-self: stretch;
     justify-content: center;
   }
+}
+
+.vr {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  min-height: 0.5em;
+  background-color: grey;
+  opacity: 0.25;
 }
 </style>
