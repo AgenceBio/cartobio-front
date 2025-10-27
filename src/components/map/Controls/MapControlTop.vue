@@ -6,6 +6,7 @@
         @click="emit('openFullScreen')"
         aria-label="Ouvrir le mode plein écran"
         :disabled="!online"
+        v-tooltip="{ text: 'Ouvrir le mode plein écran', position: 'right' }"
       >
         <span class="ri-sidebar-fold-line" aria-hidden="true" />
       </button>

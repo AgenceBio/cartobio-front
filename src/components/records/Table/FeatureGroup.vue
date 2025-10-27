@@ -42,6 +42,12 @@
                 ? `Désélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
                 : `Sélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
             "
+            v-tooltip="{
+              text: allSelected
+                ? `Désélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
+                : `Sélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`,
+              position: 'bottom',
+            }"
           />
         </div>
         <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
@@ -109,6 +115,7 @@
               "
               class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
               @click.stop.prevent="openCulturesModal(feature.id)"
+              v-tooltip="tooltips.modifCul"
             >
               Culture
             </button>
@@ -138,6 +145,7 @@
                   ? `Désélectionner ${featureName(feature)}`
                   : `Sélectionner ${featureName(feature)}`
               "
+              v-tooltip="selectedIds.includes(feature.id) ? tooltips.unselectP : tooltips.selectP"
             />
           </div>
         </div>
@@ -156,6 +164,7 @@
           <button
             class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
             @click.stop.prevent="toggleEditForm(feature.id)"
+            v-tooltip="tooltips.complete"
           >
             Compléter
           </button>
@@ -164,6 +173,7 @@
           @click.stop.prevent="openNiveauConversionModal(feature.id)"
           :class="{ clickable: permissions.canChangeConversionLevel }"
           v-else
+          v-tooltip="tooltips.modifConv"
         >
           <ConversionLevel noIcon with-date :feature="feature" />
         </div>
@@ -186,6 +196,7 @@
             @click.prevent="toggleDeleteForm(feature.id)"
             :disabled="!permissions.canDeleteFeature"
             class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
+            v-tooltip="tooltips.deleteParcelle"
           >
             Supprimer la parcelle
           </button>
@@ -247,6 +258,14 @@ const emit = defineEmits([
   "zoom:featureId",
 ]);
 
+const tooltips = {
+  complete: { text: "Compléter la culture et le niveau de conversion", position: "top" },
+  modifConv: { text: "Modifier le niveau de conversion", position: "top" },
+  deleteParcelle: { text: "Supprimer la parcelle", position: "top" },
+  selectP: { text: "Sélectionner la parcelle", position: "top" },
+  unselectP: { text: "Désélectionner la parcelle", position: "top" },
+  modifCul: { text: "Modifier la culture", position: "top" },
+};
 const { selectedIds, hoveredId } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
 

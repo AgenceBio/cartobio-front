@@ -57,7 +57,7 @@
         <div class="toolbar-bottom">
           <button
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-            data-tooltip="Annuler la dernière modification"
+            v-tooltip="{ text: 'Annuler la dernière modification', position: 'left' }"
             @click="undo"
             :disabled="!hasUndo"
           >
@@ -65,7 +65,7 @@
           </button>
           <button
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-            data-tooltip="Refaire la dernière modification"
+            v-tooltip="{ text: 'Refaire la dernière modification', position: 'left' }"
             @click="redo"
             :disabled="!hasRedo"
           >

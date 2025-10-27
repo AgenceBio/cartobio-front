@@ -11,7 +11,7 @@
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
             @click="unpin(operatorStore.operator.numeroBio)"
             aria-label="Désepingler le parcellaire"
-            data-tooltip="Désepingler le parcellaire"
+            v-tooltip="tooltips.unpin"
           >
             <i class="ri-pushpin-fill" aria-hidden="true" />
           </button>
@@ -20,7 +20,7 @@
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-0"
             @click="pin(operatorStore.operator.numeroBio)"
             aria-label="Epingler le parcellaire"
-            data-tooltip="Epingler le parcellaire"
+            v-tooltip="tooltips.pin"
           >
             <i class="ri-pushpin-line" aria-hidden="true" />
           </button>
@@ -31,7 +31,7 @@
     <div class="fr-grid-row fr-grid-row--middle header">
       <div class="fr-grid-row">
         <p class="fr-sr-only operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</p>
-        <div class="seamless-select fr-grid-row">
+        <div v-tooltip="tooltips.selectVersion" class="seamless-select fr-grid-row">
           <b class="version-name fr-mr-2w">{{ record.version_name }}</b>
 
           <select
@@ -65,6 +65,7 @@
           with-icons
           smallList
           icon-class="fr-icon-download-line fr-btn--sm export-action"
+          v-tooltip="tooltips.exportActions"
         >
           <ExportActions
             :operator="operator"
@@ -80,6 +81,7 @@
           smallList
           icon-class="ri-more-2-line fr-btn--sm"
           icon-style="font-size: 1.2em"
+          v-tooltip="tooltips.actionsParcellaire"
         >
           <li v-if="!disableActions && permissions.canEditVersion">
             <button
@@ -281,6 +283,15 @@ const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && 
 const versionMenu = ref(false);
 const versionMenuRef = ref(null);
 const showEditVersionModal = ref(false);
+
+const tooltips = {
+  pin: { text: "Épingler le parcellaire", position: "top" },
+  unpin: { text: "Désepingler le parcellaire", position: "top" },
+  selectVersion: { text: "Sélectionner une version de parcellaire", position: "bottom" },
+  exportActions: { text: "Ouvrir le menu d'export", position: "top" },
+  actionsParcellaire: { text: "Ouvrir le menu du parcellaire", position: "top" },
+};
+
 const readonly = computed(
   () => permissions.isOc && record.oc_id != null && record.oc_id !== userStore.user?.organismeCertificateur?.id,
 );
@@ -423,38 +434,6 @@ function openAttestationModal() {
 
 .font-blue {
   color: black;
-}
-
-button[data-tooltip] {
-  position: relative;
-}
-
-button[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: -50px;
-  top: 50%;
-  transform: translate(-50%, -100%);
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  line-height: 1.2;
-  opacity: 0;
-  white-space: normal;
-  /* permet retour à la ligne */
-  width: max-content;
-  max-width: 220px;
-  /* limite pour éviter des tooltips trop larges */
-  pointer-events: none;
-  transition: opacity 0.2s ease-in-out;
-  z-index: 2000;
-}
-
-button[data-tooltip]:hover::after,
-button[data-tooltip]:focus::after {
-  opacity: 1;
 }
 
 .exploit-name {

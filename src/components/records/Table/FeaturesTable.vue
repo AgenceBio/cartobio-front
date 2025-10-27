@@ -35,6 +35,10 @@
       :aria-pressed="active"
       :aria-label="`${label}, ${active ? 'filtre activé' : 'filtre désactivé'}`"
       @click="handleFilterClick(id)"
+      v-tooltip="{
+        text: `${label}, ${active ? 'filtre activé' : 'filtre désactivé'}`,
+        position: 'top',
+      }"
     >
       {{ label }} ({{ count }})
     </button>
@@ -51,6 +55,7 @@
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line"
         aria-label="Désélectionner toutes les parcelles"
         @click="unselectAll"
+        v-tooltip="{ text: 'Déselectionner les parcelles sélectionnées ', position: 'top' }"
       ></button>
       <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
         {{ selectedFeatureIds.length }} parcelle{{ selectedFeatureIds.length > 1 ? "s" : "" }} sélectionnée{{
@@ -81,6 +86,7 @@
         @click.prevent="toggleFeaturesDelete()"
         :disabled="!permissions.canDeleteFeature"
         class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
+        v-tooltip="{ text: 'Supprimer les parcelles sélectionnées', position: 'top' }"
       >
         Supprimer la parcelle
       </button>
@@ -97,7 +103,12 @@
     </p>
     <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
       <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
-      <label class="fr-label" for="radio-select-all" aria-label="Sélectionner toutes les parcelles" />
+      <label
+        class="fr-label"
+        for="radio-select-all"
+        aria-label="Sélectionner toutes les parcelles"
+        v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'top' }"
+      />
     </div>
   </div>
 
