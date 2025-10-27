@@ -250,7 +250,7 @@ const getFeatureStyle = (feature: FeatureLike): Style => {
 
   const styleText = new Style({
     zIndex: selected || hover ? 4 : 3,
-    fill: new Fill({ color: fillColor }),
+    fill: new Fill({ color: fillColor, fillRule: "evenodd" }),
     stroke: new Stroke({ width: selected || hover ? 3 : 1, color: borderColor }),
     text: new Text({
       text: [text, "14px 'Marianne'", "\n", "", size, "bold 14px 'Marianne'", " ha", " 14px 'Marianne'"],

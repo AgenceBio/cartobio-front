@@ -95,7 +95,7 @@
         <p class="fr-my-auto" v-else>-</p>
       </div>
       <div v-if="isGroupedByCulture" style="position: relative" class="fr-col-2">
-        <small style="position: absolute; top: 0; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
+        <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
           Variété
         </small>
         <em
@@ -157,7 +157,7 @@
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
         </div>
-        <div class="fr-py-2v">
+        <div class="fr-py-2v fr-px-1v">
           <button
             type="button"
             @click.prevent="toggleDeleteForm(feature.id)"
@@ -407,6 +407,14 @@ onMounted(async () => {
     align-content: center;
   }
 }
+.groupe-titre-on {
+  background-color: var(--blue-france-925-125);
+}
+
+.groupe-parcelles:hover {
+  background-color: var(--blue-france-925-125-hover);
+  cursor: pointer;
+}
 
 .gap-10 {
   gap: 10px;
@@ -476,6 +484,10 @@ onMounted(async () => {
   border: 1px solid #ececfe;
   position: relative;
   align-items: center;
+
+  &:hover {
+    background-color: var(--background-alt-blue-france);
+  }
 }
 
 .last-row {

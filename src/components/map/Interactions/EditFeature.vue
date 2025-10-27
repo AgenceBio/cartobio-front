@@ -380,9 +380,10 @@ const getPointStyle = (): Style => {
       radius: 7,
     }),
     geometry: (feature: Feature) => {
-      const coords = (feature.getGeometry() as Polygon)?.getCoordinates()[0];
-      if (coords?.length) {
-        return new MultiPoint(coords);
+      const allCoords = (feature.getGeometry() as Polygon)?.getCoordinates();
+      if (allCoords?.length) {
+        const points = allCoords.flat();
+        return new MultiPoint(points);
       }
     },
     zIndex: 6,
