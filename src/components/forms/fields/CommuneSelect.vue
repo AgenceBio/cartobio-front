@@ -3,9 +3,7 @@
     <div class="wrapper">
       <label class="fr-label" for="search">Saisissez le nom d'une commune</label>
       <div class="input" ref="autocompleteRef"></div>
-      <button class="fr-btn button-search" type="submit" title="Rechercher">
-        {{ buttonLabel }}
-      </button>
+      <button class="fr-btn button-search" type="submit" title="Rechercher"></button>
     </div>
   </div>
 </template>
@@ -105,7 +103,7 @@ onMounted(async () => {
 });
 </script>
 
-<style>
+<style scoped>
 .aa-Panel {
   z-index: 2000;
 }
@@ -114,7 +112,7 @@ onMounted(async () => {
   background-color: var(--background-contrast-grey);
   border: none;
   border-radius: 0.25rem 0.25rem 0 0;
-  padding-right: 10px;
+  padding-right: 0px;
 }
 
 .aa-Input {
@@ -124,10 +122,11 @@ onMounted(async () => {
 }
 
 .aa-Form:focus-within {
-  box-shadow: none;
+  box-shadow: inset 0 -2px 0 0 var(--border-action-high-blue-france);
   outline-offset: 2px;
   outline-width: 2px;
   outline-color: #0a76f6;
+  outline-style: solid;
 }
 
 .aa-PanelLayout {
@@ -158,12 +157,14 @@ onMounted(async () => {
   /* to counteract the align-items: center of the container */
 }
 
+.aa-Input::placeholder {
+  color: #666666;
+}
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
 }
 
 .input {
-  flex: 1;
 }
 
 .icon-btn {
@@ -172,10 +173,16 @@ onMounted(async () => {
 
 .button-search {
   height: fit-content;
-  margin-top: 8px;
 }
 
 .wrapper {
   display: flex;
+}
+.aa-Item {
+  padding: 0.5rem 1.8em 0.5rem 1.8em;
+}
+
+:deep(.aa-SubmitButton) {
+  display: none !important;
 }
 </style>
