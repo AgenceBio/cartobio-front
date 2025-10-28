@@ -62,7 +62,7 @@ a[aria-disabled] {
 
 .fr-table {
   &.table-data table {
-    @media (width >=62em) {
+    @media (width >= 62em) {
       display: table;
     }
   }
@@ -71,7 +71,6 @@ a[aria-disabled] {
     tr.clickable:hover {
       background-color: #ececfe !important;
     }
-
     tr.clickable:hover th:first-of-type {
       text-decoration: underline;
     }
@@ -86,7 +85,6 @@ a[aria-disabled] {
 .fr-background-alt--blue-france {
   background-color: var(--background-alt-blue-france);
 }
-
 .fr-background-alt--grey {
   background-color: var(--background-alt-grey);
 }

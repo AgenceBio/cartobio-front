@@ -119,7 +119,7 @@
       </fieldset>
     </div>
     <Teleport to="body">
-      <Modal @close="closeWithoutSave()" v-if="isMulticultureModalOpen" large>
+      <Modal @close="handleCloseAttempt()" v-if="isMulticultureModalOpen" large>
         <template #title>Saisie multiculture</template>
 
         <div class="fr-toggle fr-toggle--label-left fr-mb-2w">
@@ -204,6 +204,15 @@
           <button class="fr-btn" @click="closeMulticultureModal()">Enregistrer</button>
         </template>
       </Modal>
+
+      <Modal @close="cancelClose()" v-if="showConfirmModal" small>
+        <template #title>Confirmer la fermeture</template>
+        <p>Êtes-vous sûr de vouloir fermer sans enregistrer ? Les modifications seront perdues.</p>
+        <template #footer>
+          <button class="fr-btn fr-btn--secondary fr-mr-2w" @click="cancelClose()">Annuler</button>
+          <button class="fr-btn" @click="confirmClose()">Fermer sans enregistrer</button>
+        </template>
+      </Modal>
     </Teleport>
   </div>
 </template>
@@ -216,6 +225,7 @@ import { getCultureIcon } from "@/utils/features.js";
 
 const AsyncCultureTypeSelector = defineAsyncComponent(() => import("./CultureTypeSelector.vue"));
 const isMulticultureModalOpen = ref(false);
+const showConfirmModal = ref(false);
 
 const props = defineProps({
   cultures: {
@@ -233,6 +243,7 @@ const props = defineProps({
 
 const isMulticulture = ref(false);
 const multiCultureTab = ref([]);
+const initialMultiCultureTab = ref([]);
 const emit = defineEmits(["change"]);
 
 const uuidedCultures = computed(() => {
@@ -242,11 +253,29 @@ const uuidedCultures = computed(() => {
   return props.cultures.map((culture) => ({
     ...culture,
     id: culture.id && uuidRegex.test(culture.id) ? culture.id : crypto.randomUUID(),
-    // variete: '',
-    // date_semis: '',
-    // superficie: ''
   }));
 });
+
+function hasChanges() {
+  return JSON.stringify(multiCultureTab.value) !== JSON.stringify(initialMultiCultureTab.value);
+}
+
+function handleCloseAttempt() {
+  if (hasChanges()) {
+    showConfirmModal.value = true;
+  } else {
+    closeWithoutSave();
+  }
+}
+
+function cancelClose() {
+  showConfirmModal.value = false;
+}
+
+function confirmClose() {
+  showConfirmModal.value = false;
+  closeWithoutSave();
+}
 
 function closeWithoutSave() {
   isMulticultureModalOpen.value = false;
@@ -256,6 +285,7 @@ function closeWithoutSave() {
 function openMulticultureModal() {
   isMulticultureModalOpen.value = true;
   multiCultureTab.value = uuidedCultures.value;
+  initialMultiCultureTab.value = JSON.parse(JSON.stringify(uuidedCultures.value));
   isMulticulture.value = true;
   updateEditableCulture();
 }
