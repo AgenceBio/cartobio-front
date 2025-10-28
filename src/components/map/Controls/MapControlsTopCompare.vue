@@ -30,7 +30,11 @@
               class="navigation-option"
               :key="'prev-' + previousRecordFromCurrent.record_id"
             >
-              Version précédente ({{ formatRecordDisplay(previousRecordFromCurrent) }})
+              Version précédente ({{
+                previousRecordFromCurrent.version_name.length > 25
+                  ? previousRecordFromCurrent.version_name.slice(0, 25) + "..."
+                  : record.version_name
+              }})
             </option>
             <option
               v-if="nextRecordFromCurrent"
@@ -38,7 +42,11 @@
               class="navigation-option"
               :key="'next-' + nextRecordFromCurrent.record_id"
             >
-              Version suivante ({{ formatRecordDisplay(nextRecordFromCurrent) }})
+              Version suivante ({{
+                nextRecordFromCurrent.version_name.length > 25
+                  ? nextRecordFromCurrent.version_name.slice(0, 25) + "..."
+                  : record.version_name
+              }})
             </option>
           </optgroup>
 
@@ -127,27 +135,12 @@ onMounted(() => {
   }
 });
 
-const formatRecordDisplay = (r: any | null): string => {
-  if (!r) return "";
-  if (r.audit_date) {
-    return new Date(r.audit_date).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  }
-  return r.annee_reference_controle?.toString() ?? "N/A";
-};
-
 const sortedRecords = computed(() => {
-  const list = Array.isArray(records.value) ? records.value.slice() : [];
+  console.log(operatorStore);
+  const list = operatorStore.recordsByYear ? operatorStore.recordsByYear.flatMap((item) => item.records) : [];
+  console.log(list);
   const excludeId = record.value?.record_id ?? null;
   const filtered = list.filter((r) => r.record_id !== excludeId);
-  filtered.sort((a, b) => {
-    const dateA = new Date(a.audit_date ?? `${a.annee_reference_controle}-01-01`);
-    const dateB = new Date(b.audit_date ?? `${b.annee_reference_controle}-01-01`);
-    return dateB.getTime() - dateA.getTime();
-  });
   return filtered;
 });
 
@@ -262,10 +255,15 @@ const closeComparison = () => {
   font-weight: 500;
   color: #000091;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
   margin-bottom: 0rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+}
+
+.fr-select:not(:focus) {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .fr-select:focus {
