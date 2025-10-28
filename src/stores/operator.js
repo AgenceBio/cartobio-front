@@ -42,6 +42,7 @@ export const useOperatorStore = defineStore("operator", () => {
 
     // Versions years is same as yearLabel output with fallback to created_at
     return records.value
+      .filter((r) => r.certification_state !== "OPERATOR_DRAFT")
       .reduce(
         (acc, record) => {
           const year = (
@@ -65,7 +66,75 @@ export const useOperatorStore = defineStore("operator", () => {
           },
         ],
       )
-      .sort((a, b) => b.year - a.year);
+      .sort((a, b) => b.year - a.year)
+      .reduce((acc, curr, i) => {
+        if (i === 0) {
+          acc.push(curr);
+          return acc;
+        }
+
+        const prev = acc[acc.length - 1];
+        let y = Number(prev.year) - 1;
+
+        while (y > Number(curr.year)) {
+          acc.push({ year: y.toString(), records: [] });
+          y--;
+        }
+
+        acc.push(curr);
+        return acc;
+      }, []);
+  });
+
+  /**
+   * @type {ComputedRef<NormalizedRecordSummary[]>}
+   */
+  const recordsByYearAll = computed(() => {
+    if (!records.value?.length) return [];
+
+    // Versions years is same as yearLabel output with fallback to created_at
+    return records.value
+      .reduce(
+        (acc, record) => {
+          const year = (
+            record.annee_reference_controle || (record.audit_date || record.created_at).split("-")[0]
+          ).toString();
+
+          if (!acc.some((e) => e.year === year)) {
+            acc.push({ year, records: [] });
+          }
+
+          acc.find((e) => e.year === year).records.push(record);
+          return acc;
+        },
+        [
+          {
+            year: (
+              records.value[0].annee_reference_controle ||
+              (records.value[0].audit_date || records.value[0].created_at).split("-")[0]
+            ).toString(),
+            records: [],
+          },
+        ],
+      )
+      .sort((a, b) => b.year - a.year)
+      .reduce((acc, curr, i) => {
+        if (i === 0) {
+          acc.push(curr);
+          return acc;
+        }
+
+        const prev = acc[acc.length - 1];
+        let y = Number(prev.year) - 1;
+
+        while (y > Number(curr.year)) {
+          acc.push({ year: y.toString(), records: [] });
+          y--;
+        }
+
+        acc.push(curr);
+        return acc;
+      }, []);
   });
 
   /**
@@ -155,6 +224,7 @@ export const useOperatorStore = defineStore("operator", () => {
     imported,
     // computed
     recordsByYear,
+    recordsByYearAll,
     // store methods
     ready,
     $reset,
