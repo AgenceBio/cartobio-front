@@ -92,9 +92,9 @@ describe("MainHeader", () => {
           $route: createRouterMock("/certification/tableau-de-bord"),
         },
         stubs: {
-          'router-link': {
+          "router-link": {
             template: '<a :href="to"><slot /></a>',
-            props: ['to'],
+            props: ["to"],
           },
         },
       },
@@ -128,9 +128,9 @@ describe("MainHeader", () => {
           $route: createRouterMock("/exploitations"),
         },
         stubs: {
-          'router-link': {
+          "router-link": {
             template: '<a :href="to"><slot /></a>',
-            props: ['to'],
+            props: ["to"],
           },
         },
       },
@@ -161,9 +161,9 @@ describe("MainHeader", () => {
           $route: createRouterMock("/"),
         },
         stubs: {
-          'router-link': {
+          "router-link": {
             template: '<a :href="to"><slot /></a>',
-            props: ['to'],
+            props: ["to"],
           },
         },
       },
@@ -188,9 +188,9 @@ describe("MainHeader", () => {
           $route: createRouterMock("/exploitations/123456/2024"),
         },
         stubs: {
-          'router-link': {
+          "router-link": {
             template: '<a :href="to"><slot /></a>',
-            props: ['to'],
+            props: ["to"],
           },
         },
       },
@@ -215,7 +215,7 @@ describe("MainHeader", () => {
       const links = dropdown.findAll("a");
       expect(links.length).toBeGreaterThan(0);
 
-      links.forEach(link => {
+      links.forEach((link) => {
         const hasIcon = link.find("span[class*='fr-icon-']").exists();
         expect(hasIcon).toBe(true);
       });
