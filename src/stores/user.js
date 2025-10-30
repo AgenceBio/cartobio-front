@@ -89,6 +89,16 @@ export const useUserStore = defineStore("user", () => {
     if (isOc.value) {
       return "/certification/tableau-de-bord";
     } else if (isAgri.value) {
+      return "/exploitations/liste";
+    }
+
+    return "/";
+  });
+
+  const accueilPage = computed(() => {
+    if (isOc.value) {
+      return "/certification/tableau-de-bord";
+    } else if (isAgri.value) {
       return "/exploitations";
     }
 
@@ -182,6 +192,7 @@ export const useUserStore = defineStore("user", () => {
     isUnknown,
     roles,
     startPage,
+    accueilPage,
     exploitationPage,
     libelleExploitationPage,
     documentationPage,
