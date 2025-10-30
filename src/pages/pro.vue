@@ -5,7 +5,36 @@ meta:
 </route>
 
 <template>
-  <div class="fr-container--fluid fr-py-9v">
+  <div class="fr-container--fluid fr-pt-9v">
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-4">
+          <fieldset class="fr-segmented fr-segmented--no-legend">
+            <legend class="fr-segmented__legend">Selection du professionel</legend>
+            <div class="fr-segmented__elements">
+              <div class="fr-segmented__element">
+                <input
+                  value="1"
+                  checked
+                  type="radio"
+                  id="segmented-1-1"
+                  name="segmented-1"
+                  @click="currentMode = 'agri'"
+                />
+                <label class="fr-label" for="segmented-1-1"> Agriculteur </label>
+              </div>
+              <div class="fr-segmented__element">
+                <input value="2" type="radio" id="segmented-1-2" name="segmented-1" @click="currentMode = 'oc'" />
+                <label class="fr-label" for="segmented-1-2"> Organisme de certification </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-container--fluid fr-py-9v" v-if="currentMode === 'agri'">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-md-8">
@@ -21,7 +50,7 @@ meta:
               <div class="fr-card__footer">
                 <ul class="fr-btns-group fr-btns-group--inline">
                   <li>
-                    <router-link class="fr-btn" to="/certification/exploitations"> Se connecter </router-link>
+                    <router-link class="fr-btn" to="/certification/exploitations"> Mon espace </router-link>
                   </li>
                 </ul>
               </div>
@@ -35,21 +64,38 @@ meta:
           </svg>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="fr-container--fluid fr-py-9v" v-else>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-8">
+          <div class="fr-card fr-card--no-border">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h1 class="fr-h2 fr-h1-sm">Organisme de certification</h1>
 
-      <ul class="advantages fr-text--bold fr-py-9v">
-        <li>
-          <img src="@gouvfr/dsfr/artwork/pictograms/digital/calendar.svg" role="illustration" alt="" />
-          Rapide
-        </li>
-        <li>
-          <img src="@gouvfr/dsfr/artwork/pictograms/map/map.svg" role="illustration" alt="" />
-          Efficace
-        </li>
-        <li>
-          <img src="@gouvfr/dsfr/artwork/pictograms/system/success.svg" role="illustration" alt="" />
-          Gratuit
-        </li>
-      </ul>
+                <p class="fr-card__desc fr-text--lead">
+                  Partagez votre parcellaire avec votre organisme de certification sur CartoBio.
+                </p>
+              </div>
+              <div class="fr-card__footer">
+                <ul class="fr-btns-group fr-btns-group--inline">
+                  <li>
+                    <router-link class="fr-btn" to="/certification/exploitations"> Mon espace </router-link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-col-md-3 fr-col-offset-md-1 fr-col--middle fr-hidden fr-unhidden-sm">
+          <svg class="illustration" aria-hidden="true">
+            <use href="@/assets/illustrations.svg#undraw_job_hunt" />
+          </svg>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -86,21 +132,44 @@ meta:
     </div>
   </div>
 
+  <div class="fr-container--fluid fr-py-9v" v-if="currentMode === 'agri'">
+    <div class="fr-container">
+      <ul class="advantages fr-text--bold fr-py-9v">
+        <li>
+          <img src="@gouvfr/dsfr/artwork/pictograms/digital/calendar.svg" role="illustration" alt="" />
+          Rapide
+        </li>
+        <li>
+          <img src="@gouvfr/dsfr/artwork/pictograms/map/map.svg" role="illustration" alt="" />
+          Efficace
+        </li>
+        <li>
+          <img src="@gouvfr/dsfr/artwork/pictograms/system/success.svg" role="illustration" alt="" />
+          Gratuit
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <ProductFlowSection v-if="currentMode === 'agri'" />
+
   <PartnersSection certification-bodies sponsors>
     <template #headline>L'outil privilégié des organismes de certification</template>
   </PartnersSection>
-
-  <ProductFlowSection />
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
 import PartnersSection from "@/components/landing-page/Partners.vue";
 import ProductFlowSection from "@/components/landing-page/ProductFlow.vue";
+
+const currentMode = ref<"agri" | "oc">("agri");
 </script>
 
 <style scoped>
 .list-marks {
-  font-size: 1.25rem; /* as .fr-text--lead */
+  font-size: 1.25rem;
+  /* as .fr-text--lead */
   padding-left: 0;
 
   li {

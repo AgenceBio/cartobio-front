@@ -1,6 +1,6 @@
 <template>
   <header class="fr-mb-2w">
-    <div class="fr-grid-row fr-grid-row--middle header" id="headerRecord">
+    <div class="fr-grid-row fr-grid-row--middle header fr-py-1w" id="headerRecord">
       <div class="fr-grid-row fr-text--xs">
         <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0">
           <b>{{ operator.nom }}</b>
@@ -26,6 +26,14 @@
           </button>
         </template>
       </div>
+      <button
+        v-if="!isMobile && !noButtonFS"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline button-fullscreen"
+        @click="emit('fullScreen')"
+        v-tooltip="tooltips.fullScreen"
+      >
+        <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
+      </button>
     </div>
 
     <div class="fr-grid-row fr-grid-row--middle header">
@@ -217,7 +225,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 
 import ParcellaireState from "@/components/records/State.vue";
@@ -248,12 +256,22 @@ import { jjmmyyyy } from "@/utils/dates";
 
 const router = useRouter();
 
-defineProps({
+const props = defineProps({
   disableActions: {
     type: Boolean,
     default: false,
   },
+  stateFS: {
+    type: Boolean,
+    default: false,
+  },
+  noButtonFS: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+const emit = defineEmits(["fullScreen"]);
 
 const exportModal = ref(false);
 const historyModal = ref(false);
@@ -290,13 +308,20 @@ const versionMenu = ref(false);
 const versionMenuRef = ref(null);
 const showEditVersionModal = ref(false);
 
+const isFullScreen = ref(props.stateFS);
+
 const tooltips = {
   pin: { text: "Épingler le parcellaire", position: "top" },
   unpin: { text: "Désepingler le parcellaire", position: "top" },
   selectVersion: { text: "Sélectionner une version de parcellaire", position: "bottom" },
   exportActions: { text: "Ouvrir le menu d'export", position: "top" },
   actionsParcellaire: { text: "Ouvrir le menu du parcellaire", position: "top" },
+  fullScreen: { text: "Ouvrir le mode fullscreen", position: "bottom" },
 };
+
+const windowWidth = ref(window.innerWidth);
+
+const isMobile = computed(() => windowWidth.value < 992);
 
 const readonly = computed(
   () => permissions.isOc && record.oc_id != null && record.oc_id !== userStore.user?.organismeCertificateur?.id,
@@ -387,10 +412,12 @@ function fetchHasAttestationProduction(record) {
   return false;
 }
 
-function openAttestationModal() {
-  attestationModal.value = true;
-  recordAttestation.value = latestDraftRecord;
-}
+watch(
+  () => props.stateFS,
+  (newValue) => {
+    isFullScreen.value = newValue;
+  },
+);
 </script>
 
 <style scoped>
