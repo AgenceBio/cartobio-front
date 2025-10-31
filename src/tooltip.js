@@ -1,6 +1,7 @@
 export default {
   mounted(el, binding) {
-    const { text, position = "top" } = binding.value;
+    const { text = "", position = "top" } = binding.value || {};
+    if (!text) return;
 
     const tooltip = document.createElement("div");
     tooltip.textContent = text;
@@ -67,7 +68,7 @@ export default {
   },
 
   unmounted(el) {
-    if (el._tooltipEl) {
+    if (el != null && el._tooltipEl) {
       el._tooltipEl.remove();
       delete el._tooltipEl;
     }

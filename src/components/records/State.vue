@@ -67,7 +67,8 @@ const computedClass = computed(() => {
   border-radius: 4px;
   width: fit-content;
   padding: 2px 3px;
-  color: var(--blue-ecume-sun-247-moon-675);
+  border: 1px solid #bfccfb;
+  color: #2f4077;
 }
 
 .class-audited {
@@ -75,6 +76,7 @@ const computedClass = computed(() => {
   border-radius: 4px;
   width: fit-content;
   padding: 2px 3px;
+  border: 1px solid #fbaff5;
   color: #a558a0;
 }
 
@@ -83,6 +85,7 @@ const computedClass = computed(() => {
   border-radius: 4px;
   width: fit-content;
   padding: 2px 3px;
+  border: 1px solid #fbaff5;
   color: #a558a0;
 }
 
@@ -90,6 +93,7 @@ const computedClass = computed(() => {
   background: #e5fbfd;
   border-radius: 4px;
   width: fit-content;
+  border: 1px solid #4cb4bd;
   padding: 2px 3px;
   color: #006a6f;
 }
@@ -98,6 +102,7 @@ const computedClass = computed(() => {
   font-style: italic;
   font-weight: 400;
   text-align: center;
+  border: 1px solid #e5e5e5;
   width: fit-content;
   padding: 2px 3px;
   color: #666666;
@@ -111,10 +116,13 @@ const computedClass = computed(() => {
   gap: 0.25rem;
   align-items: center;
   max-width: 100%;
+  height: fit-content;
 }
+
 .badge > .padding-left {
   padding-left: 1ch;
 }
+
 .badge > p {
   font-weight: 600;
   font-size: 12px;

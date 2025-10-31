@@ -1,14 +1,14 @@
 <template>
   <div class="button-group">
-    <div class="left-button" v-if="!fullScreenMap">
+    <div class="left-button">
       <button
         class="fr-btn fr-btn--tertiary-no-outline"
         @click="emit('openFullScreen')"
         aria-label="Ouvrir le mode plein écran"
         :disabled="!online"
-        v-tooltip="{ text: 'Ouvrir le mode plein écran', position: 'right' }"
       >
-        <span class="ri-sidebar-fold-line" aria-hidden="true" />
+        <span v-if="!fullScreenMap" class="ri-sidebar-fold-line" aria-hidden="true" />
+        <span v-else class="ri-sidebar-unfold-line" aria-hidden="true"> </span>
       </button>
     </div>
 

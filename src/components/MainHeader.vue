@@ -75,7 +75,6 @@
                 >
                   Retour {{ operator ? operator.nom : "" }}</router-link
                 >
-
                 <div class="dropdown-menu-container">
                   <button
                     class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-menu-2-fill"
@@ -94,26 +93,13 @@
                   >
                     <ul class="fr-menu__list">
                       <li class="fr-menu__item">
-                        <div class="user-info">
-                          <strong>{{ user.prenom }} {{ user.nom }}</strong>
-                        </div>
-                      </li>
-                      <li class="fr-menu__item">
                         <router-link :to="accueilPage" class="fr-nav__link" @click="closeMonEspace">
-                          <span class="fr-icon-account-circle-line" aria-hidden="true"></span>
                           Accueil
                         </router-link>
                       </li>
                       <li class="fr-menu__item">
                         <router-link to="/certification/exploitations" class="fr-nav__link" @click="closeDropdown">
-                          <span class="fr-icon-building-line" aria-hidden="true"></span>
                           {{ exploitationsMenuLabel }}
-                        </router-link>
-                      </li>
-                      <li class="fr-menu__item">
-                        <router-link to="/parametres" class="fr-nav__link" @click="closeMonEspace">
-                          <span class="fr-icon-settings-5-line" aria-hidden="true"></span>
-                          Paramètres du compte
                         </router-link>
                       </li>
                       <li class="fr-menu__item">
@@ -124,13 +110,20 @@
                           class="fr-nav__link"
                           @click="closeDropdown"
                         >
-                          <span class="fr-icon-questionnaire-line" aria-hidden="true"></span>
                           Aide
                         </a>
                       </li>
                       <li class="fr-menu__item">
+                        <strong class="header-top">Mon compte</strong>
+                      </li>
+                      <li class="fr-menu__item">
+                        <router-link to="/parametres" class="fr-nav__link" @click="closeMonEspace">
+                          Paramètres du compte
+                        </router-link>
+                      </li>
+                      <li class="fr-menu__item">
                         <router-link to="/logout" class="fr-nav__link" @click="closeDropdown">
-                          <span class="fr-icon-logout-box-r-line" aria-hidden="true"></span>
+                          <span class="fr-icon-logout-box-r-line fr-icon--sm" aria-hidden="true"></span>
                           Déconnexion
                         </router-link>
                       </li>
@@ -152,6 +145,9 @@
                       "
                       >Retour au site grand public
                     </router-link>
+                    <router-link class="fr-btn fr-mr-1w fr-icon--sm fr-icon-arrow-left-line" :to="accueilPage" v-else
+                      >Retour vers mon espace
+                    </router-link>
                   </li>
                   <li class="tool-grandpublic">
                     <a
@@ -171,19 +167,14 @@
                       aria-controls="navigation-espace"
                       :aria-expanded="isMonEspaceOpen"
                     >
-                      <template
-                        v-if="
-                          !isActive('/exploitations/*') && !isActive('/certification/*') && !isActive('/exploitations')
-                        "
-                        >Mon espace |&nbsp;</template
-                      >{{ user.nom }} {{ user.prenom }}
+                      <span>{{ getName() }}</span>
                       <span
                         :class="{
                           'fr-icon-arrow-down-s-line': !isMonEspaceOpen,
                           'fr-icon-arrow-up-s-line': isMonEspaceOpen,
                         }"
                         aria-hidden="true"
-                      ></span>
+                      />
                     </button>
 
                     <div
@@ -195,26 +186,14 @@
                     >
                       <ul class="fr-menu__list">
                         <li class="fr-menu__item">
-                          <div class="user-info">
-                            <strong>{{ user.prenom }} {{ user.nom }}</strong>
-                          </div>
-                        </li>
-                        <li class="fr-menu__item">
-                          <router-link :to="accueilPage" class="fr-nav__link" @click="closeMonEspace">
-                            <span class="fr-icon-account-circle-line" aria-hidden="true"></span>
-                            Accueil
-                          </router-link>
-                        </li>
-                        <li class="fr-menu__item">
                           <router-link to="/parametres" class="fr-nav__link" @click="closeMonEspace">
-                            <span class="fr-icon-settings-5-line" aria-hidden="true"></span>
                             Paramètres du compte
                           </router-link>
                         </li>
                         <li class="fr-menu__item">
-                          <router-link to="/logout" class="fr-nav__link fr-btn--tertiary" @click="closeMonEspace">
-                            <span class="fr-icon-logout-box-r-line" aria-hidden="true"></span>
-                            Se déconnecter
+                          <router-link to="/logout" class="fr-nav__link" @click="closeMonEspace">
+                            <span class="fr-icon-logout-box-r-line fr-icon--sm" aria-hidden="true"></span>
+                            Déconnexion
                           </router-link>
                         </li>
                       </ul>
@@ -358,8 +337,8 @@
           !isLogged ||
           (!isActive('/certification/*') &&
             !isActive('/exploitations/*') &&
-            !isOnExploitationsPage &&
-            !isActive('/exploitations'))
+            !isActive('/exploitations') &&
+            !isOnExploitationsPage)
         "
       >
         <div class="fr-container">
@@ -442,14 +421,24 @@
       </div>
 
       <!-- Header Organisme certificateur -->
-      <div class="fr-container" v-if="isOc && !isMobile && !isOnExploitationsPage && isActive('/certification/*')">
+      <div
+        class="fr-container"
+        v-if="(isOc && !isMobile && isActive('/certification/*')) || isActive('/exploitations/*')"
+      >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
               <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Accueil</router-link>
             </li>
             <li class="fr-nav__item">
-              <router-link to="/certification/exploitations" class="fr-nav__link">Liste des exploitations</router-link>
+              <router-link
+                to="/certification/exploitations"
+                class="fr-nav__link"
+                :aria-current="
+                  isActive('/exploitations/*') || isActive('/certification/exploitations') ? 'page' : undefined
+                "
+                >Liste des exploitations</router-link
+              >
             </li>
             <li class="fr-nav__item">
               <button
@@ -607,6 +596,11 @@ const isActive = (path: string): boolean => {
   return currentPath === path;
 };
 
+function getName(): string {
+  if (!user?.value.prenom || !user?.value.nom) return "Mon profil";
+  return `${user.value.prenom} ${user.value.nom}`;
+}
+
 const closeAllMenus = () => {
   isOpenCartoBio.value = false;
   isOpenHelp.value = false;
@@ -689,7 +683,7 @@ const isOc = computed(() => userStore.isOc);
 const isAgri = computed(() => userStore.isAgri);
 
 const isOnExploitationsPage = computed(() => {
-  return /^\/exploitations\/[^/]+\/[^/]+/.test(route.path);
+  return /^\/exploitations\/[^/]+\/[^/]+$/.test(route.path);
 });
 
 const exploitationsMenuLabel = computed(() => {
@@ -754,6 +748,17 @@ const exploitationsMenuLabel = computed(() => {
   justify-content: start;
   gap: 10px;
   padding: 0.75rem 1rem;
+  box-shadow: none;
+}
+
+.dropdown-menu-container .fr-menu__list .fr-menu__item .header-top {
+  -webkit-box-shadow: 0 calc(-1rem - 1px) 0 -1rem #ddd;
+  box-shadow: 0 calc(-1rem - 1px) 0 -1rem #ddd;
+  -webkit-box-shadow: 0 calc(-1rem - 1px) 0 -1rem var(--border-default-grey);
+  box-shadow: 0 calc(-1rem - 1px) 0 -1rem var(--border-default-grey);
+  display: flex;
+  padding: 0.75rem 1rem;
+  justify-content: start;
 }
 
 .tool-grandpublic a[target="_blank"]::after {
@@ -787,5 +792,6 @@ const exploitationsMenuLabel = computed(() => {
 #navigation-espace > .fr-menu__list .fr-menu__item .fr-nav__link {
   justify-content: start;
   gap: 10px;
+  box-shadow: none !important;
 }
 </style>

@@ -64,7 +64,7 @@
       </div>
       <div class="fr-grid-row">
         <span
-          class="fr-tag fr-tag--sm tag-attestation"
+          class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
           v-if="record.certification_state === 'CERTIFIED'"
           @click="
             () => {
@@ -163,18 +163,31 @@
         </div>
         <p class="fr-text--sm fr-mb-0">
           <b>Réalisé le {{ jjmmyyyy(record.audit_date) }}</b
-          ><br />Par
-          {{
-            ((record?.audit_history ?? [])
-              .filter((d) => d.type === "CertificationStateChange")
-              .sort((a, b) => new Date(b.date) - new Date(a.date))
-              .at(-1)?.user?.nom ?? "") +
-            " " +
-            ((record?.audit_history ?? [])
-              .filter((d) => d.type === "CertificationStateChange")
-              .sort((a, b) => new Date(b.date) - new Date(a.date))
-              .at(-1)?.user?.prenom ?? "")
-          }}
+          ><br /><span
+            v-if="
+              (record?.audit_history ?? [])
+                .filter((d) => d.type === 'CertificationStateChange')
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .at(-1)?.user?.nom ||
+              (record?.audit_history ?? [])
+                .filter((d) => d.type === 'CertificationStateChange')
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .at(-1)?.user?.prenom
+            "
+          >
+            Par
+            {{
+              ((record?.audit_history ?? [])
+                .filter((d) => d.type === "CertificationStateChange")
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .at(-1)?.user?.nom ?? "") +
+              " " +
+              ((record?.audit_history ?? [])
+                .filter((d) => d.type === "CertificationStateChange")
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .at(-1)?.user?.prenom ?? "")
+            }}
+          </span>
         </p>
       </div>
     </div>
@@ -192,34 +205,43 @@
     />
     <Modal @close="attestationModal = false" v-if="attestationModal">
       <template #title> Attestation de production </template>
-      <div class="buttons-attestation">
-        <button
-          type="button"
-          @click="exportAttestationPdf(record)"
-          class="fr-btn fr-btn--secondary button-export fr-btn--icon-left"
-          :class="{ 'fr-icon-download-line': !isPdfLoading }"
-          :disabled="
-            record.certification_state !== 'CERTIFIED' || isPdfLoading || errorText[record.record_id] || isPdfGenerating
-          "
-        >
-          <Spinner v-if="isPdfLoading"> </Spinner>
-          <template v-if="fetchHasAttestationProduction(record)">Télécharger l'attestation de production</template>
-          <template v-else>Générer l'attestation de production</template>
-        </button>
-        <p v-if="errorText[record.record_id]" class="fr-px-1w fr-text--sm fr-text--sm fr-error-text fr-mt-0">
-          {{ errorText[record.record_id] }}
-        </p>
-        <button
-          class="fr-btn fr-btn--secondary fr-icon-refresh-line fr-btn--icon-left"
-          @click="() => exportAttestationPdf(record, true)"
-          data-content-piece="Export PDF"
-          aria-label="Re-générer l'attestation de production au format PDF"
-          title="Générer une nouvelle attestation pour mettre à jour mes informations"
-          :disabled="!fetchHasAttestationProduction(record) || isPdfLoading"
-        >
-          Re-générer l'attestation
-        </button>
+      <div>
+        <p>Générez votre attestation de production, cela peut prendre quelques minutes.</p>
+        <p>Restez sur cette page ou revenez ultérieurement.</p>
       </div>
+      <template #footer>
+        <div class="fr-btns-group fr-btns-group--icon-left" role="group" aria-label="Actions d'export">
+          <button
+            type="button"
+            @click="exportAttestationPdf(record)"
+            class="fr-btn fr-btn--secondary button-export fr-btn--icon-left"
+            :class="{ 'fr-icon-download-line': !isPdfLoading }"
+            :disabled="
+              record.certification_state !== 'CERTIFIED' ||
+              isPdfLoading ||
+              errorText[record.record_id] ||
+              isPdfGenerating
+            "
+          >
+            <Spinner v-if="isPdfLoading"> </Spinner>
+            <template v-if="fetchHasAttestationProduction(record)">Télécharger l'attestation de production</template>
+            <template v-else>Générer l'attestation de production</template>
+          </button>
+          <p v-if="errorText[record.record_id]" class="fr-px-1w fr-text--sm fr-text--sm fr-error-text fr-mt-0">
+            {{ errorText[record.record_id] }}
+          </p>
+          <button
+            class="fr-btn fr-btn--secondary fr-icon-refresh-line fr-btn--icon-left"
+            @click="() => exportAttestationPdf(record, true)"
+            data-content-piece="Export PDF"
+            aria-label="Re-générer l'attestation de production au format PDF"
+            title="Générer une nouvelle attestation pour mettre à jour mes informations"
+            :disabled="!fetchHasAttestationProduction(record) || isPdfLoading"
+          >
+            Re-générer l'attestation
+          </button>
+        </div>
+      </template>
     </Modal>
   </Teleport>
 </template>
@@ -474,8 +496,6 @@ watch(
 }
 
 .attestation-tag {
-  margin-left: auto;
-  margin-right: 0;
   display: flex;
   height: fit-content;
 }
@@ -485,6 +505,8 @@ watch(
   color: var(--text-action-high-blue-france);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  padding: 0.125rem 0.5rem;
+  height: fit-content;
 }
 
 .tag-attestation:hover {

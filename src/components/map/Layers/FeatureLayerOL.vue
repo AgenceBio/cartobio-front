@@ -6,6 +6,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         @selectFeature="(e) => emit('selectFeature', e)"
+        v-if="interactive"
       />
     </div>
     <div v-else>
@@ -519,25 +520,28 @@ watch(
 watch(
   () => mapPrefs.value.currentMode,
   async (mode) => {
-    switch (mode) {
-      case "consult":
-        currentCursor.value = `url("${editCursor}"), pointer`;
-        break;
-      case "draw":
-        currentCursor.value = `url("${drawCursor}"), pointer`;
-        break;
-      case "decouper":
-        currentCursor.value = `url("${cropCursor}"), pointer`;
-        break;
-      case "divide":
-        currentCursor.value = `url("${scissorsCursor}"), pointer`;
-        break;
-      case "edit":
-        currentCursor.value = `url("${editCursor}"), pointer`;
-        break;
-      default:
-        currentCursor.value = "default";
-        break;
+    if (!props.interactive) currentCursor.value = "default";
+    else {
+      switch (mode) {
+        case "consult":
+          currentCursor.value = `url("${editCursor}"), pointer`;
+          break;
+        case "draw":
+          currentCursor.value = `url("${drawCursor}"), pointer`;
+          break;
+        case "decouper":
+          currentCursor.value = `url("${cropCursor}"), pointer`;
+          break;
+        case "divide":
+          currentCursor.value = `url("${scissorsCursor}"), pointer`;
+          break;
+        case "edit":
+          currentCursor.value = `url("${editCursor}"), pointer`;
+          break;
+        default:
+          currentCursor.value = "default";
+          break;
+      }
     }
   },
   { immediate: true },
