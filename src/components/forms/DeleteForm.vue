@@ -9,7 +9,8 @@
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
-        Cette modification impactera <b>{{ selectedIds.length }} parcelles</b>.
+        Cette modification impactera <b>{{ selectedIds.length }} parcelle{{ selectedIds.length > 1 ? "s" : "" }}</b
+        >.
       </p>
     </div>
 

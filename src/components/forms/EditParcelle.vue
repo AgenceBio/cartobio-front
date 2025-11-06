@@ -336,7 +336,7 @@
               class="fr-btn"
               @click="
                 () => {
-                  validate();
+                  validateName();
                   modalName = false;
                 }
               "
@@ -483,6 +483,15 @@ const validate = () => {
   initialPatchState.value = JSON.stringify(patch.value);
 };
 
+const validateName = () => {
+  const set = featuresSet.byFeature(props.feature.id, true);
+
+  emit("submit", { id: props.feature.id, properties: { NOM: patch.value.NOM } });
+  const temp = createInitialPatch();
+  temp.NOM = patch.value.NOM;
+  initialPatchState.value = JSON.stringify(temp);
+};
+
 function handleClose() {
   if (hasRealChanges.value) {
     showCancelModal.value = true;
@@ -497,7 +506,6 @@ function tagParcelle(id) {
       .then(() => {
         estControlee.value = true;
         emit("controlee", id);
-        initialPatchState.value = JSON.stringify(patch.value);
       })
       .catch(() => {
         estControlee.value = false;
@@ -507,7 +515,6 @@ function tagParcelle(id) {
       .then(() => {
         estControlee.value = false;
         emit("non-controlee", id);
-        initialPatchState.value = JSON.stringify(patch.value);
       })
       .catch(() => {
         estControlee.value = true;

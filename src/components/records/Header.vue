@@ -2,7 +2,7 @@
   <header class="fr-mb-2w">
     <div class="fr-grid-row fr-grid-row--middle header fr-py-1w" id="headerRecord">
       <div class="fr-grid-row fr-text--xs">
-        <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0">
+        <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0" @click="redirectToParcellaire()">
           <b>{{ operator.nom }}</b>
         </p>
         <template v-if="permissions.isOc">
@@ -42,7 +42,7 @@
         <div v-tooltip="tooltips.selectVersion" class="seamless-select fr-grid-row">
           <b class="version-name fr-mr-2w">
             {{
-              record.version_name && record.version_name.length > 32
+              record.version_name && record.version_name.length > 32 && !noButtonFS
                 ? record.version_name.slice(0, 32) + "…"
                 : record.version_name
             }}
@@ -367,6 +367,10 @@ async function redirectToRecord(recordTo) {
   await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordTo}`);
 }
 
+async function redirectToParcellaire() {
+  await router.push("/exploitations/" + (operatorStore.operator ? operatorStore.operator.numeroBio : ""));
+}
+
 async function tryDownloadRecord(record) {
   if (readonly.value) {
     return;
@@ -493,6 +497,7 @@ watch(
 
 .exploit-name {
   color: #161616;
+  cursor: pointer;
 }
 
 .attestation-tag {

@@ -23,7 +23,7 @@
         <i class="ri-pen-nib-line" aria-hidden="true" />
       </button>
 
-      <hr />
+      <hr style="margin: 5px 0 -15px 0" />
 
       <button
         class="fr-btn fr-btn--sm"
@@ -126,13 +126,14 @@ const handleAction = (mode: string) => {
   right: 1rem;
   z-index: 1000;
 }
+
 .toolbar-top {
   background: white;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
   gap: 2px;
-  padding: 10px;
+  padding: 6px;
   border-radius: 4px;
   width: fit-content;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
@@ -141,9 +142,5 @@ const handleAction = (mode: string) => {
 :deep(button[class^="ri"]),
 :deep(button[class*=" ri"]) {
   font-size: 1.2em;
-}
-
-hr {
-  padding: 1px;
 }
 </style>

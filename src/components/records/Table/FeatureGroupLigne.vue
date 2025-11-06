@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="fr-grid-row fr-mb-2v fr-px-4v fr-py-4v groupe-parcelles"
+      class="fr-grid-row fr-px-4v fr-py-4v groupe-parcelles"
       @click.stop="openLigne = !openLigne"
       @keydown.enter="openLigne = !openLigne"
       :class="{ 'groupe-titre-on': openLigne }"
@@ -46,10 +46,10 @@
     </div>
     <div
       class="fr-mb-2v fr-p-4v fr-mx-4v parcelle-ligne"
-      :class="{ 'fr-grid-row': openLigne }"
+      :class="{ 'fr-grid-row': openLigne, 'fr-mt-2v': index === 0 }"
       :id="'parcelle-' + feature.id + '-ligne'"
       :hidden="!openLigne"
-      v-for="feature in featureGroup.features"
+      v-for="(feature, index) in featureGroup.features"
       :key="feature.id"
       @click="(event) => clickOn(feature.id, event)"
     >

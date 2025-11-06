@@ -7,7 +7,7 @@
       </div>
       <button
         v-if="!isCorrecting"
-        class="fr-btn"
+        class="fr-btn fr-icon-check-line fr-btn--icon-right"
         :disabled="!hasUndo || corrections.length > 0"
         :aria-disabled="!hasUndo || corrections.length > 0"
         @click="saveModifiedFeature"
@@ -23,7 +23,7 @@
       >
         Valider la correction
       </button>
-      <button class="fr-btn fr-btn--secondary" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
+      <button class="fr-btn fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
     <div
       class="pop-in-info"
@@ -31,9 +31,8 @@
       role="status"
       aria-live="polite"
     >
-      {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }} sélectionnée{{
-        numberSelectedFeature > 1 ? "s" : ""
-      }}
+      {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }}
+      {{ !isCorrecting && hasUndo ? "modifiée" : "sélectionnée" }} {{ numberSelectedFeature > 1 ? "s" : "" }}
       {{ globalHa }} ha
     </div>
     <div class="pop-in-info" role="status" v-if="isCorrecting">
@@ -54,8 +53,12 @@
         <i class="fr-icon fr-icon-error-warning-fill error" aria-hidden="true"></i>
         <template v-if="canCorrect()">
           <span
-            >Attention ! Le tracé de votre parcelle chevauche une autre parcelle. Vous pouvez déplacer les points pour
-            corriger ou utiliser la correction guidée.</span
+            ><strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle.</strong>
+            {{
+              !(corrections.length > 1)
+                ? "Cliquez sur la parcelle à conserver"
+                : "Vous pouvez déplacer les points pour	corriger ou utiliser la correction guidée."
+            }}</span
           >
         </template>
         <template v-else>
@@ -603,6 +606,7 @@ const startCorrection = () => {
     stroke: new Stroke({
       color: "rgba(247, 103, 239, 1)",
       width: 4,
+      lineDash: [8, 6],
     }),
     fill: new Fill({ color: "rgba(247, 103, 239, 0.3)" }),
     zIndex: 4,
@@ -612,6 +616,7 @@ const startCorrection = () => {
     stroke: new Stroke({
       color: "rgba(96, 224, 235, 1)",
       width: 4,
+      lineDash: [8, 6],
     }),
     fill: new Fill({ color: "rgba(166, 242, 250, 0.2)" }),
     zIndex: 4,

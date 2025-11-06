@@ -132,10 +132,7 @@
               type="checkbox"
               :id="'radio-' + feature.id"
               :checked="selectedIds.includes(feature.id)"
-              @click="
-                toggleSingleSelected(feature.id);
-                selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-              "
+              @change.prevent.stop="handleClickChebox(feature.id)"
             />
             <label
               class="fr-label"
@@ -175,7 +172,7 @@
           v-else
           v-tooltip="tooltips.modifConv"
         >
-          <ConversionLevel noIcon with-date :feature="feature" />
+          <ConversionLevel noIcon with-date :feature="feature" labelSelector />
         </div>
         <div class="fr-grid-row fr-grid-row--middle gap-10">
           <p class="fr-sr-only"></p>
@@ -311,6 +308,14 @@ function toggleFeatureGroup() {
     featuresStore.unselect(...featureIds.value);
   } else {
     featuresStore.select(...featureIds.value);
+  }
+}
+
+function handleClickChebox(featureIds) {
+  toggleSingleSelected(featureIds);
+  selectedIds.value.includes(featureIds) ? pressZoom(featureIds) : null;
+  if (selectedIds.value.length > 1) {
+    emit("edit:featureId", null);
   }
 }
 

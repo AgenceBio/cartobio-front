@@ -13,8 +13,7 @@ export default {
       border-radius: 6px;
       font-size: 0.8rem;
       line-height: 1.2;
-      white-space: normal;
-      max-width: 220px;
+width:fit-content;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       opacity: 0;
       pointer-events: none;

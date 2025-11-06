@@ -19,6 +19,7 @@ defineProps<Props>();
   font-size: 14px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
+  border-radius: 4px;
 }
 
 .openlayer-tooltip-container .legend {

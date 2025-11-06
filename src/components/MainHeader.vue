@@ -73,7 +73,7 @@
                   class="fr-btn fr-mr-1w fr-icon--sm fr-icon-arrow-left-line"
                   :to="'/exploitations/' + (operator ? operator.numeroBio : '')"
                 >
-                  Retour {{ operator ? operator.nom : "" }}</router-link
+                  Retour vers {{ operator ? operator.nom : "" }}</router-link
                 >
                 <div class="dropdown-menu-container">
                   <button
@@ -135,7 +135,7 @@
               <!-- Header hors page exploitations -->
               <div class="fr-header__tools-links" v-else>
                 <ul class="fr-btns-group" id="header-navigation" role="navigation">
-                  <li class="tool-grandpublic">
+                  <li class="tool-grandpublic" v-if="isLogged">
                     <router-link
                       class="fr-btn fr-mr-1w fr-icon--sm fr-icon-arrow-left-line"
                       to="/"
@@ -293,7 +293,7 @@
           </nav>
         </div>
       </div>
-      <div class="fr-notice fr-notice--info" v-if="isStaging">
+      <div class="fr-notice fr-notice--info" v-if="false">
         <div class="fr-container">
           <div class="fr-notice__body">
             <p class="fr-notice__title">
@@ -359,24 +359,26 @@
                 >
                   Qu'est ce que CartoBio ?
                 </button>
-                <div
-                  class="fr-collapse fr-menu"
-                  id="navigation-01"
-                  :class="{ 'fr-collapse--expanded': isOpenCartoBio }"
-                >
-                  <ul class="fr-menu__list">
-                    <li>
-                      <router-link id="navigation-item-01-1" to="/projet" class="fr-nav__link" @click="closeAllMenus"
-                        >A propos
-                      </router-link>
-                    </li>
-                    <li>
-                      <router-link id="navigation-item-01-2" to="/stats" class="fr-nav__link" @click="closeAllMenus"
-                        >Les chiffres</router-link
-                      >
-                    </li>
-                  </ul>
-                </div>
+                <transition name="fade-slide">
+                  <div
+                    class="fr-collapse fr-menu"
+                    id="navigation-01"
+                    :class="{ 'fr-collapse--expanded': isOpenCartoBio }"
+                  >
+                    <ul class="fr-menu__list">
+                      <li>
+                        <router-link id="navigation-item-01-1" to="/projet" class="fr-nav__link" @click="closeAllMenus"
+                          >A propos
+                        </router-link>
+                      </li>
+                      <li>
+                        <router-link id="navigation-item-01-2" to="/stats" class="fr-nav__link" @click="closeAllMenus"
+                          >Les chiffres</router-link
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </transition>
               </li>
               <li class="fr-nav__item">
                 <router-link to="/pro" class="fr-nav__link"> Professionnels </router-link>
@@ -770,8 +772,7 @@ const exploitationsMenuLabel = computed(() => {
   background-color: var(--background-alt-blue-france);
   text-align: start;
 }
-
-.user-info strong {
+fr .user-info strong {
   display: block;
   margin-bottom: 0.25rem;
 }
@@ -793,5 +794,13 @@ const exploitationsMenuLabel = computed(() => {
   justify-content: start;
   gap: 10px;
   box-shadow: none !important;
+}
+
+.fr-collapse {
+  transition: visibility 0.3s;
+}
+.fr-collapse::before {
+  transition: margin-top 0.3s;
+  margin-top: 0;
 }
 </style>

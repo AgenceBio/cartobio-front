@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick } from "vue";
+import { computed, nextTick, toRef } from "vue";
 import ValidationErrors from "./Table/ValidationErrors.vue";
 import NotesSection from "@/components/records/NotesSection.vue";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, inHa, legalProjectionSurface } from "@/utils/features";
@@ -68,12 +68,13 @@ const recordStore = useRecordStore();
 
 const { record } = recordStore;
 
-const { all: features } = featuresStore;
-
-const featureGroups = computed(() => getFeatureGroups({ features }, GROUPE_NIVEAU_CONVERSION, null));
+const features = toRef(featuresStore, "all");
+const featureGroups = computed(() => getFeatureGroups({ features: features.value }, GROUPE_NIVEAU_CONVERSION, null));
 
 const surface = computed(() =>
-  !isNaN(parseFloat(inHa(legalProjectionSurface(features)))) ? inHa(legalProjectionSurface(features)) + " ha" : "",
+  !isNaN(parseFloat(inHa(legalProjectionSurface(features.value))))
+    ? inHa(legalProjectionSurface(features.value)) + " ha"
+    : "",
 );
 
 async function selectFeatureGroup(group) {

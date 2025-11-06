@@ -18,7 +18,7 @@
       >
         Confirmer
       </button>
-      <div class="vr" />
+      <div class="fr-ml-2w vr" />
       <button
         class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm"
         aria-label="Annuler la fusion"
@@ -27,7 +27,7 @@
     </div>
     <div v-if="isErrorMerging" class="flex">
       <p class="fr-text--sm fr-my-auto fr-mr-1w">{{ errorMessage }}</p>
-      <div class="vr" />
+      <div class="fr-ml-3w vr" />
       <button
         class="fr-btn fr-icon-close-line fr-btn--tertiary-no-outline fr-btn--sm"
         @click="annuler"
@@ -134,10 +134,14 @@ const mergeFeatures = (): void => {
 
     const features = props.vectorSource.getFeatures().filter((f) => store.selectedIds.includes(String(f.getId())));
 
-    mergedFeature.properties = mergedFeature.properties || {};
-    mergedFeature.properties.cultures = getUniformProperty(features, "cultures") || [];
+    mergedFeature.properties = {};
+    mergedFeature.id = 1;
+    // needed to get validation on all form
+    mergedFeature.properties.isCertified = true;
+    mergedFeature.properties.cultures = getUniformProperty(features, "cultures") || [
+      { CPF: "", id: crypto.randomUUID() },
+    ];
     mergedFeature.properties.conversion_niveau = getUniformProperty(features, "conversion_niveau") || "";
-
     mergeFeature.value = mergedFeature;
   } else {
     console.warn("Afficher message d'erreur");
@@ -170,7 +174,7 @@ const mergeInteractions = (): Feature<Geometry> | null => {
 
   if (!merged || merged.geometry.type === "MultiPolygon") {
     isErrorMerging.value = true;
-    errorMessage.value = "Les parcelles ne se touchent pas. Impossible de faire l’union.";
+    errorMessage.value = "Les parcelles ne se touchent pas. Impossible de les fusionner.";
     return null;
   }
 
@@ -285,7 +289,7 @@ const goToEdit = () => {
 const getUniformProperty = (features: Feature<Geometry>[], propName: string) => {
   const values = features.map((f) => f.get(propName));
   const firstValue = values[0];
-  return values.every((v) => JSON.stringify(v) === JSON.stringify(firstValue)) ? firstValue : null;
+  return values.every((v) => JSON.stringify(v) === JSON.stringify(firstValue)) ? firstValue : false;
 };
 
 /**

@@ -34,6 +34,12 @@ if (!map) {
 let rpgLayer: VectorTileLayer | null = null;
 
 /**
+ * * Constantes
+ */
+
+const MAX_RESOLUTION = 42;
+
+/**
  * * Fonctions
  */
 
@@ -112,6 +118,7 @@ onMounted(() => {
   rpgLayer = new VectorTileLayer({
     declutter: true,
     zIndex: 1,
+    maxResolution: MAX_RESOLUTION,
     source: new VectorTileSource({
       format: new MVT(),
       url: "https://cartobio.agencebio.org/tiles/rpg-2023/{z}/{x}/{y}.pbf",

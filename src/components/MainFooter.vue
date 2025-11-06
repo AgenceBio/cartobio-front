@@ -1,9 +1,33 @@
 <template>
-  <footer class="fr-footer" role="contentinfo" id="footer">
+  <button
+    class="fr-btn fr-btn--tertiary-no-outline"
+    :class="{
+      'fr-icon-arrow-up-s-line fr-footer-toggle-label-expanded fr-btn--sm fr-mt-1w fr-btn--icon-right': isExpanded,
+      'fr-icon-arrow-down-s-line fr-footer-toggle-label-not-expanded': !isExpanded,
+    }"
+    @click="isExpanded = !isExpanded"
+    v-if="isOnExploitationsPage"
+  >
+    <template v-if="isExpanded">Fermer</template>
+  </button>
+  <footer
+    class="fr-footer"
+    :class="{
+      'footer-not-expanded': !isExpanded && isOnExploitationsPage,
+      'footer-expanded': isExpanded && isOnExploitationsPage,
+    }"
+    role="contentinfo"
+    id="footer"
+  >
     <div class="fr-container">
-      <div class="fr-footer__body">
+      <div class="fr-footer__body" v-if="isExpanded || !isOnExploitationsPage">
         <div class="fr-footer__brand fr-enlarge-link">
-          <a href="https://agencebio.org" title="Accéder au site de l'Agence Bio - République française" tabindex="-1">
+          <a
+            href="https://agencebio.org"
+            title="Accéder au site de l'Agence Bio - République française"
+            tabindex="-1"
+            class="fr-footer__brand-link"
+          >
             <p class="fr-logo" title="République française">
               République<br />
               française
@@ -24,23 +48,7 @@
         </div>
 
         <div class="fr-footer__content">
-          <div class="fr-footer__content-desc">
-            <h2 class="fr-icon-leaf-fill fr-icon--sm fr-icon--left fr-mb-0 fr-text--md">
-              Aidez-nous à améliorer ce service !
-            </h2>
-            <p>
-              Si vous rencontrez un problème, vous n'arrivez pas à finaliser une action ou vous avez un commentaire sur
-              cette page, envoyez-nous un message à l'adresse suivante :
-            </p>
-            <p class="fr-my-2v">
-              <a
-                class="fr-btn fr-icon-mail-fill fr-btn--icon-left"
-                :href="'mailto:support-cartobio@agencebio.org?subject=' + mailtoSubject"
-                >support-cartobio@agencebio.org</a
-              >
-            </p>
-            <p class="fr-text--bold">Merci !</p>
-          </div>
+          <p class="fr-footer__content-desc">Ce site est géré par l'Agence Bio</p>
           <ul class="fr-footer__content-list">
             <li class="fr-footer__content-item">
               <a
@@ -65,8 +73,39 @@
       </div>
       <div class="fr-footer__bottom">
         <ul class="fr-footer__bottom-list">
+          <li class="fr-footer__bottom-item" v-if="isOnExploitationsPage">
+            <router-link class="fr-footer__bottom-link" to="/certification/tableau-de-bord">Accueil</router-link>
+          </li>
+          <li class="fr-footer__bottom-item" v-if="isOnExploitationsPage">
+            <router-link class="fr-footer__bottom-link" to="/certification/exploitations">
+              {{ isOc ? "Liste des exploitations" : "Mes exploitations" }}</router-link
+            >
+          </li>
+          <li class="fr-footer__bottom-item">
+            <a class="fr-footer__bottom-link" :href="'mailto:support-cartobio@agencebio.org?subject=' + mailtoSubject"
+              >Nous contacter</a
+            >
+          </li>
+          <li class="fr-footer__bottom-item" v-if="isOc">
+            <router-link class="fr-footer__bottom-link" to="/faq">FAQ</router-link>
+          </li>
+          <li class="fr-footer__bottom-item">
+            <a class="fr-footer__bottom-link" :href="'/testcartobio'" target="_blank">Aide</a>
+          </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/sitemap">Plan du site</router-link>
+          </li>
+
+          <li class="fr-footer__bottom-item">
+            <router-link
+              class="fr-footer__bottom-link"
+              to="/accessibilite"
+              title="Accessibilité :  partiellement conforme, accéder aux détails"
+              >Accessibilité : partiellement conforme</router-link
+            >
+          </li>
+          <li class="fr-footer__bottom-item">
+            <router-link class="fr-footer__bottom-link" to="/mentions-legales">Mentions légales</router-link>
           </li>
           <li class="fr-footer__bottom-item fr-footer__bottom-link">
             Code source :
@@ -88,19 +127,8 @@
             /></a>
             {{ versions.api }}
           </li>
-          <li class="fr-footer__bottom-item">
-            <router-link
-              class="fr-footer__bottom-link"
-              to="/accessibilite"
-              title="Accessibilité :  partiellement conforme, accéder aux détails"
-              >Accessibilité : partiellement conforme</router-link
-            >
-          </li>
-          <li class="fr-footer__bottom-item">
-            <router-link class="fr-footer__bottom-link" to="/mentions-legales">Mentions légales</router-link>
-          </li>
         </ul>
-        <div class="fr-footer__bottom-copy">
+        <div class="fr-footer__bottom-copy" v-if="isExpanded">
           <p>
             Sauf mention contraire, tous les contenus de ce site sont sous
             <a
@@ -116,15 +144,22 @@
   </footer>
 </template>
 
-<script setup>
-import { onMounted, computed, reactive } from "vue";
+<script setup lang="ts">
+import { onMounted, computed, reactive, ref, Ref } from "vue";
 import { useRoute } from "vue-router";
 import { getVersion } from "@/cartobio-api.js";
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
 
 const versions = reactive({
   front: __APP_VERSION__,
   api: "",
 });
+
+const isOc = computed((): boolean => userStore.isOc);
+
+const isExpanded: Ref<Boolean> = ref(false);
 
 onMounted(async () => {
   versions.api = await getVersion();
@@ -132,10 +167,43 @@ onMounted(async () => {
 
 const route = useRoute();
 const mailtoSubject = computed(() => encodeURIComponent(`À propos de la page ${route.path}`));
+
+const isOnExploitationsPage = computed((): boolean => {
+  return /^\/exploitations\/[^/]+\/[^/]+$/.test(route.path);
+});
 </script>
 
 <style scoped>
 .logo {
   max-width: 3.5rem;
+}
+
+.fr-footer-toggle-label-not-expanded {
+  position: absolute;
+  right: 10px;
+  width: 32px;
+  min-height: 32px;
+  padding: 8px;
+  transform: translate(-20px, 10px);
+}
+
+.fr-footer-toggle-label-expanded {
+  position: absolute;
+  right: 10px;
+  min-height: 32px;
+  padding: 8px;
+}
+
+.footer-not-expanded {
+  padding-top: 0;
+  margin-top: -2rem;
+
+  > .fr-container .fr-footer__bottom {
+    box-shadow: none;
+  }
+}
+
+.footer-expanded {
+  padding-top: 4rem;
 }
 </style>

@@ -35,6 +35,12 @@ if (!map) {
 let cadastreLayer: VectorTileLayer | null = null;
 
 /**
+ * * Constantes
+ */
+
+const MAX_RESOLUTION = 21;
+
+/**
  * * Fonctions
  */
 
@@ -86,6 +92,7 @@ function parcelleStyle(feature: FeatureLike, resolution: number): Style | void {
 onMounted(() => {
   cadastreLayer = new VectorTileLayer({
     declutter: true,
+    maxResolution: MAX_RESOLUTION,
     zIndex: 2,
     source: new VectorTileSource({
       format: new MVT(),

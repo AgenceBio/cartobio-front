@@ -630,7 +630,6 @@ onMounted(() => {
   clearInteractions();
 
   features.value = new GeoJSON().readFeatures(props.data ?? store.collection, {});
-
   vectorSource.value = new VectorSource({
     features: features.value,
   });
@@ -677,6 +676,7 @@ onMounted(() => {
 
   map.value.on("pointermove", handlePointerMove);
   map.value.getTargetElement().addEventListener("pointerleave", handlePointerLeave);
+
   mapPrefs.value.currentMode = "consult";
 });
 
@@ -697,17 +697,10 @@ onUnmounted(() => {
   transform: translateX(-50%);
   background: white;
   z-index: 1000;
-  padding: 5px;
+  padding: 6px;
   display: flex;
   gap: 5px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 30px 0px rgba(64, 102, 68, 0.2);
-
-  padding: 6px 16px;
-}
-
-:deep(.pop-in-info) {
-  padding: 6px 16px;
+  border-radius: 4px;
   box-shadow: 0px 0px 30px 0px rgba(64, 102, 68, 0.2);
 }
 
@@ -718,7 +711,7 @@ onUnmounted(() => {
   justify-content: space-between;
   flex-direction: column;
   gap: 2px;
-  padding: 10px;
+  padding: 6px;
   border-radius: 4px;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }

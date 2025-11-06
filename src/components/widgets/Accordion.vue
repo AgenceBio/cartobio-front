@@ -186,4 +186,8 @@ if (activeAccordionId) {
   background-color: var(--warning-950-100);
   border-radius: 4px;
 }
+
+button:not(:disabled):hover {
+  background-color: var(--background-open-blue-france-hover);
+}
 </style>
