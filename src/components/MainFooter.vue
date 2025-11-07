@@ -159,7 +159,7 @@ const versions = reactive({
 
 const isOc = computed((): boolean => userStore.isOc);
 
-const isExpanded: Ref<Boolean> = ref(false);
+const isExpanded: Ref<boolean> = ref(false);
 
 onMounted(async () => {
   versions.api = await getVersion();

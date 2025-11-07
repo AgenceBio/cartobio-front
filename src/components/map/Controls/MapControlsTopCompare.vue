@@ -90,7 +90,6 @@ const operatorStore = useOperatorStore();
 const permissions = usePermissions();
 
 const { record } = storeToRefs(recordStore);
-const { records } = storeToRefs(operatorStore);
 
 const props = defineProps<{
   fullScreenMap: boolean;

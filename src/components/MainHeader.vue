@@ -359,26 +359,24 @@
                 >
                   Qu'est ce que CartoBio ?
                 </button>
-                <transition name="fade-slide">
-                  <div
-                    class="fr-collapse fr-menu"
-                    id="navigation-01"
-                    :class="{ 'fr-collapse--expanded': isOpenCartoBio }"
-                  >
-                    <ul class="fr-menu__list">
-                      <li>
-                        <router-link id="navigation-item-01-1" to="/projet" class="fr-nav__link" @click="closeAllMenus"
-                          >A propos
-                        </router-link>
-                      </li>
-                      <li>
-                        <router-link id="navigation-item-01-2" to="/stats" class="fr-nav__link" @click="closeAllMenus"
-                          >Les chiffres</router-link
-                        >
-                      </li>
-                    </ul>
-                  </div>
-                </transition>
+                <div
+                  class="fr-collapse fr-menu"
+                  id="navigation-01"
+                  :class="{ 'fr-collapse--expanded': isOpenCartoBio }"
+                >
+                  <ul class="fr-menu__list">
+                    <li>
+                      <router-link id="navigation-item-01-1" to="/projet" class="fr-nav__link" @click="closeAllMenus"
+                        >A propos
+                      </router-link>
+                    </li>
+                    <li>
+                      <router-link id="navigation-item-01-2" to="/stats" class="fr-nav__link" @click="closeAllMenus"
+                        >Les chiffres</router-link
+                      >
+                    </li>
+                  </ul>
+                </div>
               </li>
               <li class="fr-nav__item">
                 <router-link to="/pro" class="fr-nav__link"> Professionnels </router-link>

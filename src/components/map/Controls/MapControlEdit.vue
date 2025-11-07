@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features";
