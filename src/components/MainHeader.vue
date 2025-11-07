@@ -293,7 +293,7 @@
           </nav>
         </div>
       </div>
-      <div class="fr-notice fr-notice--info" v-if="false">
+      <div class="fr-notice fr-notice--info" v-if="isStaging">
         <div class="fr-container">
           <div class="fr-notice__body">
             <p class="fr-notice__title">
@@ -772,6 +772,7 @@ const exploitationsMenuLabel = computed(() => {
   background-color: var(--background-alt-blue-france);
   text-align: start;
 }
+
 fr .user-info strong {
   display: block;
   margin-bottom: 0.25rem;
@@ -799,6 +800,7 @@ fr .user-info strong {
 .fr-collapse {
   transition: visibility 0.3s;
 }
+
 .fr-collapse::before {
   transition: margin-top 0.3s;
   margin-top: 0;

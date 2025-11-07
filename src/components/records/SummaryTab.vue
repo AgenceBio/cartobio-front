@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, toRef } from "vue";
+import { computed, nextTick } from "vue";
 import ValidationErrors from "./Table/ValidationErrors.vue";
 import NotesSection from "@/components/records/NotesSection.vue";
 import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, inHa, legalProjectionSurface } from "@/utils/features";
@@ -67,14 +67,13 @@ const featuresStore = useFeaturesStore();
 const recordStore = useRecordStore();
 
 const { record } = recordStore;
+// TODO : Passer en Ref afin d'avoir l'update en temps réel
+const { all: features } = featuresStore;
 
-const features = toRef(featuresStore, "all");
-const featureGroups = computed(() => getFeatureGroups({ features: features.value }, GROUPE_NIVEAU_CONVERSION, null));
+const featureGroups = computed(() => getFeatureGroups({ features: features }, GROUPE_NIVEAU_CONVERSION, null));
 
 const surface = computed(() =>
-  !isNaN(parseFloat(inHa(legalProjectionSurface(features.value))))
-    ? inHa(legalProjectionSurface(features.value)) + " ha"
-    : "",
+  !isNaN(parseFloat(inHa(legalProjectionSurface(features)))) ? inHa(legalProjectionSurface(features)) + " ha" : "",
 );
 
 async function selectFeatureGroup(group) {

@@ -160,6 +160,7 @@ onMounted(async () => {
 .aa-Input::placeholder {
   color: #666666;
 }
+
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
 }
@@ -173,11 +174,14 @@ onMounted(async () => {
 
 .button-search {
   height: fit-content;
+  margin-bottom: 0px;
+  margin-top: auto;
 }
 
 .wrapper {
   display: flex;
 }
+
 .aa-Item {
   padding: 0.5rem 1.8em 0.5rem 1.8em;
 }

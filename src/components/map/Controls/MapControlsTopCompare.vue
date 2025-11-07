@@ -16,7 +16,7 @@
     <div class="mode-choice" v-else>
       <div class="fr-select-group fr-mb-0w fr-p-0w">
         <select
-          class="fr-select"
+          class="fr-select fr-text--sm"
           name="select-version"
           id="select-version"
           v-model="currentRecordId"
@@ -33,7 +33,7 @@
               Version précédente ({{
                 previousRecordFromCurrent.version_name.length > 25
                   ? previousRecordFromCurrent.version_name.slice(0, 25) + "..."
-                  : record.version_name
+                  : previousRecordFromCurrent.version_name
               }})
             </option>
             <option
@@ -45,7 +45,7 @@
               Version suivante ({{
                 nextRecordFromCurrent.version_name.length > 25
                   ? nextRecordFromCurrent.version_name.slice(0, 25) + "..."
-                  : record.version_name
+                  : nextRecordFromCurrent.version_name
               }})
             </option>
           </optgroup>
@@ -136,46 +136,40 @@ onMounted(() => {
 });
 
 const sortedRecords = computed(() => {
-  console.log(operatorStore);
-  const list = operatorStore.recordsByYear ? operatorStore.recordsByYear.flatMap((item) => item.records) : [];
-  console.log(list);
+  const list = operatorStore.recordsByYearAll ? operatorStore.recordsByYearAll.flatMap((item) => item.records) : [];
   const excludeId = record.value?.record_id ?? null;
   const filtered = list.filter((r) => r.record_id !== excludeId);
   return filtered;
 });
 
-const recordBasedSortedList = computed(() => {
-  if (!record.value) return [];
+const sortedRecordsWithCurrent = computed(() => {
+  const list = operatorStore.recordsByYearAll ? operatorStore.recordsByYearAll.flatMap((item) => item.records) : [];
 
-  const list = Array.isArray(records.value) ? records.value.slice() : [];
-  list.sort((a, b) => {
-    const dateA = new Date(a.audit_date ?? `${a.annee_reference}-01-01`);
-    const dateB = new Date(b.audit_date ?? `${b.annee_reference}-01-01`);
-    return dateB.getTime() - dateA.getTime();
-  });
   return list;
 });
 
 const currentRecordId = ref<string | null>(props.selectedRecord?.record_id ?? null);
 
-const currentRecordIndexInFixedList = computed(() => {
-  if (!record.value) return -1;
-  return recordBasedSortedList.value.findIndex((r) => r.record_id === record.value.record_id);
+const fixedRecordIndexInSortedList = computed(() => {
+  if (!record.value.record_id) return -1;
+  return sortedRecordsWithCurrent.value.findIndex((r) => r.record_id === record.value.record_id);
 });
 
 const previousRecordFromCurrent = computed(() => {
-  if (currentRecordIndexInFixedList.value > 0) {
-    return recordBasedSortedList.value[currentRecordIndexInFixedList.value + 1];
+  const currentIndex = fixedRecordIndexInSortedList.value;
+
+  if (currentIndex >= 0 && currentIndex < sortedRecordsWithCurrent.value.length - 1) {
+    const prev = sortedRecordsWithCurrent.value[currentIndex + 1];
+    return prev;
   }
   return null;
 });
 
 const nextRecordFromCurrent = computed(() => {
-  if (
-    currentRecordIndexInFixedList.value >= 0 &&
-    currentRecordIndexInFixedList.value < recordBasedSortedList.value.length - 1
-  ) {
-    return recordBasedSortedList.value[currentRecordIndexInFixedList.value - 1];
+  const currentIndex = fixedRecordIndexInSortedList.value;
+  if (currentIndex > 0) {
+    const next = sortedRecordsWithCurrent.value[currentIndex - 1];
+    return next;
   }
   return null;
 });
@@ -234,7 +228,7 @@ const closeComparison = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
   min-width: 300px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 56px;
@@ -319,6 +313,7 @@ const closeComparison = () => {
   top: 0;
   position: absolute;
 }
+
 .fr-select-group:not(:last-child),
 .fr-input-group:not(:last-child) {
   margin-bottom: 0rem;

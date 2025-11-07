@@ -96,7 +96,7 @@ onMounted(() => {
 <style scoped>
 .openlayers-container {
   z-index: 0;
-  height: min(80vh, 1000px);
+  height: 80vh;
   flex: 1;
 }
 

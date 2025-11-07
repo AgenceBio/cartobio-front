@@ -60,7 +60,7 @@
             </option>
           </select>
         </div>
-        <p v-if="readonly" class="readonly-badge">Lecture seule</p>
+        <br />
       </div>
       <div class="fr-grid-row">
         <span
@@ -153,17 +153,20 @@
       </div>
     </div>
 
+    <p v-if="readonly" class="readonly-badge">Lecture seule</p>
+
     <p v-if="record.certification_state === 'OPERATOR_DRAFT'" class="state fr-subtitle fr-mt-1w">
       <ParcellaireState :record="record" />
     </p>
     <div v-else class="fr-highlight flex fr-mt-1w">
       <div>
         <div class="flex">
-          <ParcellaireState :record="record" :show-date="false" />
+          <ParcellaireState :record="record" :show-date="true" />
         </div>
         <p class="fr-text--sm fr-mb-0">
           <b>Réalisé le {{ jjmmyyyy(record.audit_date) }}</b
           ><br /><span
+            class="fr-mt-1w"
             v-if="
               (record?.audit_history ?? [])
                 .filter((d) => d.type === 'CertificationStateChange')
@@ -530,5 +533,18 @@ watch(
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+.readonly-badge {
+  padding: 0px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--background-default-grey-active);
+  margin-bottom: 0.5em;
+  font-weight: 400;
+  line-height: 23px;
+  white-space: nowrap;
 }
 </style>

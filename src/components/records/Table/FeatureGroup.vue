@@ -132,7 +132,7 @@
               type="checkbox"
               :id="'radio-' + feature.id"
               :checked="selectedIds.includes(feature.id)"
-              @change.prevent.stop="handleClickChebox(feature.id)"
+              @click="handleClickChebox(feature.id)"
             />
             <label
               class="fr-label"
@@ -286,9 +286,7 @@ const readonly = computed(() => {
 });
 
 function toggleEditForm(featureId) {
-  if (readonly.value) {
-    return;
-  }
+  pressZoom(featureId);
   return emit("edit:featureId", featureId);
 }
 

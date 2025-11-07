@@ -628,7 +628,6 @@ watch(
 
 onMounted(() => {
   clearInteractions();
-
   features.value = new GeoJSON().readFeatures(props.data ?? store.collection, {});
   vectorSource.value = new VectorSource({
     features: features.value,
