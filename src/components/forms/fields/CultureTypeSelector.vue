@@ -115,7 +115,6 @@ const createAutocomplete = () => {
     onStateChange({ state }) {
       query.value = state.query;
       if (query.value == "") {
-        console.log("update");
         emit("update:modelValue", "");
       }
     },

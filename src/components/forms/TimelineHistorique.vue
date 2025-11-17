@@ -130,12 +130,11 @@ const isRotaErrors = computed(() => {
 .tl::before {
   content: "";
   position: absolute;
-  top: 0;
+  top: 10%;
   left: 20px;
   width: 4px;
-  height: 100%;
+  height: 76%;
   background: #95e257;
-  z-index: 0;
 }
 
 .tl-item {

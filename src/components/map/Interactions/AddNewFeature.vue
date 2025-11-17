@@ -851,7 +851,7 @@ watch(
         correctedFeature.value = correctedRes;
         const extent = feature.getGeometry()?.getExtent();
         if (extent && !isNaN(extent[0])) {
-          props.map.getView().fit(extent, { padding: [50, 50, 50, 50] });
+          props.map.getView().fit(extent, { padding: [50, 50, 50, 50], maxZoom: 18 });
         }
 
         previewSource.addFeature(feature as Feature);

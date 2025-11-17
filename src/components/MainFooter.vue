@@ -196,14 +196,13 @@ const isOnExploitationsPage = computed((): boolean => {
 
 .footer-not-expanded {
   padding-top: 0;
-  margin-top: -2rem;
-
   > .fr-container .fr-footer__bottom {
     box-shadow: none;
+    margin-top: 0;
   }
 }
 
 .footer-expanded {
-  padding-top: 4rem;
+  padding-top: 2rem;
 }
 </style>

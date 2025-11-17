@@ -32,7 +32,7 @@
       aria-live="polite"
     >
       {{ numberSelectedFeature }} parcelle{{ numberSelectedFeature > 1 ? "s" : "" }}
-      {{ !isCorrecting && hasUndo ? "modifiée" : "sélectionnée" }} {{ numberSelectedFeature > 1 ? "s" : "" }}
+      {{ !isCorrecting && hasUndo ? "modifiée" : "sélectionnée" }}{{ numberSelectedFeature > 1 ? "s" : "" }}
       {{ globalHa }} ha
     </div>
     <div class="pop-in-info" role="status" v-if="isCorrecting">

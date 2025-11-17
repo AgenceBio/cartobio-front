@@ -65,6 +65,7 @@ onMounted(() => {
       props.map.getView().fit(features[0].getGeometry(), {
         duration: 1000,
         padding: [50, 50, 50, 50],
+        maxZoom: 16,
       });
       emit("selectFeature", features[0].getId());
     }

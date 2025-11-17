@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp } from "vue";
+import { ref, watch, onMounted, onUnmounted, inject, Ref, createApp, computed } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Map, Overlay, MapBrowserEvent } from "ol";
@@ -190,6 +190,14 @@ let hoverOverlay: Overlay | null = null;
 let currentHoveredFeature: Feature | null = null;
 
 const currentCursor: Ref<string> = ref("default");
+
+/**
+ * * Computed
+ */
+const windowWidth = ref(window.innerWidth);
+
+const isMobile = computed(() => windowWidth.value < 992);
+
 /**
  * * Emits
  */
@@ -588,7 +596,9 @@ watch(
     const extent = recordStore.bounds;
 
     if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
-      map.value.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 5000 });
+      map.value
+        .getView()
+        .fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [50, 50, 50, 50], duration: 5000, maxZoom: 18 });
     }
   },
 );
@@ -616,7 +626,7 @@ watch(
 
     const extent = vectorSource.value?.getExtent();
     if (extent && !isNaN(extent[0]) && extent[0] !== Infinity) {
-      map.value.getView().fit(extent, { padding: [50, 50, 50, 50] });
+      map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [50, 50, 50, 50], maxZoom: 18 });
     }
   },
   { deep: true },
@@ -651,7 +661,7 @@ onMounted(() => {
   }
 
   if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
-    map.value.getView().fit(extent, { padding: [50, 50, 50, 50] });
+    map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [50, 50, 50, 50], maxZoom: 16 });
   }
 
   if (props.interactive) {

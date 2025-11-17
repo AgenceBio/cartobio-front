@@ -432,10 +432,10 @@ function requiresAction(properties) {
 function createInitialPatch() {
   return {
     NOM: props.feature.properties.NOM || "",
-    cultures: props.feature.properties.cultures,
+    cultures: props.feature.properties.cultures.map((c) => ({ ...c, CPF: c.CPF || "" })),
     commentaires: props.feature.properties.commentaires || "",
     conversion_niveau: props.feature.properties.conversion_niveau || "",
-    engagement_date: props.feature.properties.engagement_date,
+    engagement_date: props.feature.properties.engagement_date || "",
     auditeur_notes: props.feature.properties.auditeur_notes || "",
   };
 }
@@ -446,6 +446,8 @@ const initialPatchState = ref(JSON.stringify(createInitialPatch()));
 
 const hasRealChanges = computed(() => {
   const currentState = JSON.stringify(patch.value);
+  console.log(currentState);
+  console.log(initialPatchState.value);
   return currentState !== initialPatchState.value;
 });
 

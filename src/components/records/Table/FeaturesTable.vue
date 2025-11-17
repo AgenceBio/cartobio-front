@@ -122,7 +122,7 @@
       @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
       @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
       @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
-      @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
+      @zoom:featureId="(featureId) => emit('zoom:featureId', featureId)"
       @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
       @editCultures:featureId="(featuredId) => emit('edit-cultures:featureId', featuredId)"
     />
@@ -136,7 +136,7 @@
       @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
       @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
       @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
-      @zoom:featureId="(featureId) => (zoomFeatureId = featureId)"
+      @zoom:featureId="(featureId) => emit('zoom:featureId', featureId)"
       @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
       @editCultures:featureId="(featuredId) => emit('edit-cultures:featureId', featuredId)"
     />
@@ -239,8 +239,6 @@ const { selectedIds: selectedFeatureIds, allSelected, selectedFeatures } = store
 const { getFeatureById, toggleAllSelected, unselectAll } = featuresStore;
 
 const editedFeatureId = ref(null);
-const zoomFeatureId = ref(null);
-const zoomFeature = computed(() => (zoomFeatureId.value ? getFeatureById(zoomFeatureId.value) : null));
 const maybeDeletedFeatureId = ref(null);
 const deleteModalMultiple = ref(false);
 
@@ -265,7 +263,6 @@ async function handleSingleFeatureDeletion({ id, reason }) {
 async function handleFeatureCollectionSubmit({ ids, patch }) {
   statsPush(["trackEvent", "Parcelles", "Modification multiple (sauvegarde)"]);
   editedFeatureId.value = null;
-  console.log("here");
   const featureCollection = {
     type: "FeatureCollection",
     features: ids.map((id) => ({
@@ -309,12 +306,6 @@ function scrollToTop() {
     element.scrollIntoView({ block: "start" });
   }
 }
-
-watch(zoomFeature, (newValue) => {
-  if (newValue) {
-    emit("zoom:featureId", newValue);
-  }
-});
 
 watch(userGroupingChoice, (newValue) => {
   if (newValue) {

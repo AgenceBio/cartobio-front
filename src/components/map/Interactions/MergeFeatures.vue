@@ -239,33 +239,37 @@ const confirmer = async (e: {
       engagement_date: e.properties.engagement_date,
     };
     loading.value = true;
-    const result = await createFeaturesFromOther(props.recordId, [mergeFeature.value], store.selectedIds);
+    try {
+      const result = await createFeaturesFromOther(props.recordId, [mergeFeature.value], store.selectedIds);
 
-    if (result) {
-      const selectdIds = store.selectedIds;
-      const geoJson = new GeoJSON();
+      if (result) {
+        const selectdIds = store.selectedIds;
+        const geoJson = new GeoJSON();
 
-      store.unselectAll();
-      const newFeatures = result.parcelles.features.filter(
-        (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
-      );
-      store.setAll(result.parcelles.features);
+        store.unselectAll();
+        const newFeatures = result.parcelles.features.filter(
+          (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
+        );
+        store.setAll(result.parcelles.features);
 
-      for (const selectdId of selectdIds) {
-        const feature = props.vectorLayer.getSource()?.getFeatureById(selectdId);
+        for (const selectdId of selectdIds) {
+          const feature = props.vectorLayer.getSource()?.getFeatureById(selectdId);
 
-        if (feature) {
-          props.vectorLayer.getSource()?.removeFeature(feature);
+          if (feature) {
+            props.vectorLayer.getSource()?.removeFeature(feature);
+          }
+        }
+
+        for (const newFeature of newFeatures) {
+          props.vectorLayer.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
         }
       }
-
-      for (const newFeature of newFeatures) {
-        props.vectorLayer.getSource()?.addFeature(geoJson.readFeature(newFeature) as Feature);
-      }
+      showDetailsModal.value = false;
+      loading.value = false;
+      mapPrefs.value.currentMode = "edit";
+    } finally {
+      loading.value = false;
     }
-    showDetailsModal.value = false;
-    loading.value = false;
-    mapPrefs.value.currentMode = "edit";
   }
 };
 
@@ -312,7 +316,7 @@ onUnmounted(() => {
   gap: 10px;
   padding: 5px 10px;
   align-items: center;
-  width: fit-content;
+  width: max-content;
   border-radius: 4px;
 }
 

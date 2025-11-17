@@ -248,7 +248,7 @@ const emit = defineEmits([
 ]);
 
 const valueNull = ref(null);
-const scrool = inject("scroolToFeatureId", valueNull);
+const scroll = inject("scrollToFeatureId", valueNull);
 
 const { selectedIds } = storeToRefs(featuresStore);
 const { toggleSingleSelected } = featuresStore;
@@ -364,14 +364,14 @@ function clickOn(id, event) {
 }
 
 onMounted(async () => {
-  if (scrool.value != null && props.featureGroup.features.some((e) => e.id === scrool.value)) {
+  if (scroll.value != null && props.featureGroup.features.some((e) => e.id === scroll.value)) {
     open.value = true;
     await nextTick();
-    if (document.getElementById("parcelle-" + scrool.value)) {
-      const element = document.getElementById("parcelle-" + scrool.value);
+    if (document.getElementById("parcelle-" + scroll.value)) {
+      const element = document.getElementById("parcelle-" + scroll.value);
       const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
       window.scrollTo({ top: y, behavior: "smooth" });
-      scrool.value = null;
+      scroll.value = null;
     }
   }
 });

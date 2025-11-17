@@ -127,13 +127,8 @@
                 : inHa(legalProjectionSurface(feature))
             }}
           </p>
-          <div class="fr-checkbox-group fr-checkbox-group--sm">
-            <input
-              type="checkbox"
-              :id="'radio-' + feature.id"
-              :checked="selectedIds.includes(feature.id)"
-              @click="handleClickChebox(feature.id)"
-            />
+          <div class="fr-checkbox-group fr-checkbox-group--sm" @click.stop.prevent="handleClickChebox(feature.id)">
+            <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" />
             <label
               class="fr-label"
               :for="'radio-' + feature.id"
@@ -244,7 +239,7 @@ const props = defineProps({
   },
 });
 const nullValue = ref(null);
-const scrool = inject("scroolToFeatureId", nullValue);
+const scroll = inject("scrollToFeatureId", nullValue);
 
 const emit = defineEmits([
   "edit:featureId",
@@ -311,10 +306,6 @@ function toggleFeatureGroup() {
 
 function handleClickChebox(featureIds) {
   toggleSingleSelected(featureIds);
-  selectedIds.value.includes(featureIds) ? pressZoom(featureIds) : null;
-  if (selectedIds.value.length > 1) {
-    emit("edit:featureId", null);
-  }
 }
 
 function openNiveauConversionModal(id) {
@@ -374,7 +365,7 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
 });
 
 watch(
-  () => scrool,
+  () => scroll,
   async (newValue) => {
     if (newValue.value != null && props.featureGroup.features.some((e) => e.id === newValue.value)) {
       open.value = true;
@@ -382,7 +373,7 @@ watch(
       if (document.getElementById("parcelle-" + newValue.value)) {
         const element = document.getElementById("parcelle-" + newValue.value);
         element.scrollIntoView({ block: "center" });
-        scrool.value = null;
+        scroll.value = null;
       }
     }
   },
@@ -398,15 +389,15 @@ function clickOn(id, event) {
 }
 
 onMounted(async () => {
-  if (scrool.value != null && props.featureGroup.features.some((e) => e.id === scrool.value)) {
+  if (scroll.value != null && props.featureGroup.features.some((e) => e.id === scroll.value)) {
     open.value = true;
     await nextTick();
-    if (document.getElementById("parcelle-" + scrool.value)) {
-      const element = document.getElementById("parcelle-" + scrool.value);
+    if (document.getElementById("parcelle-" + scroll.value)) {
+      const element = document.getElementById("parcelle-" + scroll.value);
       const y = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
 
       window.scrollTo({ top: y, behavior: "smooth" });
-      scrool.value = null;
+      scroll.value = null;
     }
   }
 });
