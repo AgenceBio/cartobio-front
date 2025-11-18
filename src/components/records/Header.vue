@@ -314,7 +314,6 @@ const storage = useCartoBioStorage();
 const preferences = usePreferences();
 
 const attestationModal = ref(false);
-const recordAttestation = ref(null);
 const hasAttestationProduction = ref({});
 const isPdfLoading = ref(false);
 const isPdfGenerating = ref(false);

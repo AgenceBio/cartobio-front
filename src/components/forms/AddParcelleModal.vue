@@ -148,8 +148,6 @@ const isEngagementDateRequired = computed(() =>
 );
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
 
-const cultureErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "cultures"));
-
 const validate = () => {
   if (props.readonly) {
     emit("close");

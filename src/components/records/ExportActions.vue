@@ -49,7 +49,7 @@ import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
-import { getHasAttestationProduction, getPDFData } from "@/cartobio-api.js";
+import { getHasAttestationProduction } from "@/cartobio-api.js";
 
 const props = defineProps({
   operator: {

@@ -55,14 +55,6 @@ const map = inject<Ref<OlMap | null>>("map");
 const featureStore = useFeaturesStore();
 
 /**
- * * Props
- */
-const props = defineProps<{
-  isEditParcelleOpen: boolean;
-  isFullScreenProps: boolean;
-}>();
-
-/**
  * * Refs
  */
 const sizeParcelles = inHa(legalProjectionSurface(featureStore.collection.features));
@@ -101,8 +93,8 @@ const createScaleLine = () => {
     className: "ol-scale-line",
     target: document.getElementById("scale-line") ?? undefined,
     units: "metric",
-    maxWidth: props.isMobile ? 80 : 100,
-    minWidth: props.isMobile ? 60 : 100,
+    maxWidth: 100,
+    minWidth: 100,
   });
   if (map?.value) {
     map.value.addControl(control);

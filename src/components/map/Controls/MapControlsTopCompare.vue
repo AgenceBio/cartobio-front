@@ -107,7 +107,7 @@ const map2 = inject<Ref<Map | null>>("map2");
 const diffOnMap = ref<"map1" | "map2" | null>(null);
 
 onMounted(() => {
-  if (map1.value) {
+  if (map1?.value) {
     map1.value.getLayers().on("add", (e) => {
       if (e.element.get("name") === "diffLayer") {
         diffOnMap.value = "map1";
@@ -120,7 +120,7 @@ onMounted(() => {
     });
   }
 
-  if (map2.value) {
+  if (map2?.value) {
     map2.value.getLayers().on("add", (e) => {
       if (e.element.get("name") === "diffLayer") {
         diffOnMap.value = "map2";

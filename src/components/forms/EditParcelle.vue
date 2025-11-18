@@ -486,8 +486,6 @@ const validate = () => {
 };
 
 const validateName = () => {
-  const set = featuresSet.byFeature(props.feature.id, true);
-
   emit("submit", { id: props.feature.id, properties: { NOM: patch.value.NOM } });
   const temp = createInitialPatch();
   temp.NOM = patch.value.NOM;

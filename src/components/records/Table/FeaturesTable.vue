@@ -236,7 +236,7 @@ const contentTopFeatures = ref(null);
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
 const { selectedIds: selectedFeatureIds, allSelected, selectedFeatures } = storeToRefs(featuresStore);
-const { getFeatureById, toggleAllSelected, unselectAll } = featuresStore;
+const { toggleAllSelected, unselectAll } = featuresStore;
 
 const editedFeatureId = ref(null);
 const maybeDeletedFeatureId = ref(null);

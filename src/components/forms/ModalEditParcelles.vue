@@ -151,24 +151,6 @@ const selectedFeatures = computed(() => {
   return coll.features.filter((f) => idSet.has(String(f.id)));
 });
 
-const footerMsg = computed(() => {
-  if (validationErrors.value.length) {
-    return validationErrors.value;
-  }
-
-  const msgs = [];
-  if ("cultures" in changes.value) {
-    msgs.push("La culture a été modifiée");
-  }
-  if ("conversion_niveau" in changes.value) {
-    msgs.push("Le niveau de conversion a été modifié");
-  }
-  if ("engagement_date" in changes.value) {
-    msgs.push("La date de conversion a été modifiée");
-  }
-  return msgs;
-});
-
 const validate = () => {
   const errs = [];
 
