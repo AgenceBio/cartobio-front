@@ -6,7 +6,7 @@
     </div>
 
     <div class="history-tl-container">
-      <ul class="tl">
+      <ul class="tl" :class="{ 'multiple-item': historique && historique.length > 1 }">
         <li v-for="(item, index) in historique" :key="index" class="tl-item">
           <template v-if="index > 0">
             <div class="tl-point"></div>
@@ -127,13 +127,13 @@ const isRotaErrors = computed(() => {
   position: relative;
 }
 
-.tl::before {
+.tl.multiple-item::before {
   content: "";
   position: absolute;
   top: 10%;
   left: 20px;
   width: 4px;
-  height: 76%;
+  height: 80%;
   background: #95e257;
 }
 

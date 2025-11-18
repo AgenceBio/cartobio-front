@@ -423,7 +423,7 @@
       <!-- Header Organisme certificateur -->
       <div
         class="fr-container"
-        v-if="(isOc && !isMobile && isActive('/certification/*')) || isActive('/exploitations/*')"
+        v-if="isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*'))"
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
@@ -492,7 +492,12 @@
               <router-link to="/exploitations" class="fr-nav__link">Accueil</router-link>
             </li>
             <li class="fr-nav__item">
-              <router-link to="/exploitations/liste" class="fr-nav__link">Mes exploitations</router-link>
+              <router-link
+                to="/exploitations/liste"
+                class="fr-nav__link"
+                :aria-current="isActive('/exploitations/*') ? 'page' : undefined"
+                >Mes exploitations</router-link
+              >
             </li>
             <li class="fr-nav__item">
               <button
