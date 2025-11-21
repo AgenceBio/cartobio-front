@@ -86,7 +86,7 @@
               >Nous contacter</a
             >
           </li>
-          <li class="fr-footer__bottom-item" v-if="isOc">
+          <li class="fr-footer__bottom-item" v-if="isAgri">
             <router-link class="fr-footer__bottom-link" to="/faq">FAQ</router-link>
           </li>
           <li class="fr-footer__bottom-item">
@@ -158,6 +158,7 @@ const versions = reactive({
 });
 
 const isOc = computed((): boolean => userStore.isOc);
+const isAgri = computed((): boolean => userStore.isAgri);
 
 const isExpanded: Ref<boolean> = ref(false);
 
