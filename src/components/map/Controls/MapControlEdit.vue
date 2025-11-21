@@ -126,6 +126,11 @@ const handleAction = (mode: string) => {
   right: 1rem;
   z-index: 1000;
 }
+@media (height <= 800px) {
+  .toolbar {
+    top: 5%;
+  }
+}
 
 .toolbar-top {
   background: white;
