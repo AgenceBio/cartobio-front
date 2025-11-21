@@ -26,6 +26,7 @@
         :disabled-input="readonly || !permissions.canChangeCulture"
       />
       <ConversionLevelSelector
+        v-if="permissions.canChangeConversionLevel"
         :feature-id="feature.properties.id || feature.id"
         :readonly="!permissions.canChangeConversionLevel || readonly"
         v-model="patch.conversion_niveau"

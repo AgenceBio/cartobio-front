@@ -251,8 +251,11 @@ const emit = defineEmits([
 ]);
 
 const tooltips = {
-  complete: { text: "Compléter la culture et le niveau de conversion", position: "top" },
-  modifConv: { text: "Modifier le niveau de conversion", position: "top" },
+  complete: {
+    text: permissions.isAgri ? "Compléter la culture" : "Compléter la culture et le niveau de conversion",
+    position: "right",
+  },
+  modifConv: { text: permissions.isAgri ? "A saisir par l'OC" : "Modifier le niveau de conversion", position: "right" },
   deleteParcelle: { text: "Supprimer la parcelle", position: "top" },
   selectP: { text: "Sélectionner la parcelle", position: "top" },
   unselectP: { text: "Désélectionner la parcelle", position: "top" },

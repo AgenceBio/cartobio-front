@@ -19,7 +19,9 @@
             noIcon
             labelSelector
           />
-          <span v-else class="fr-badge fr-badge--warning fr-badge--sm"> Saisir la certification </span>
+          <span v-else-if="permissions.isOc" class="fr-badge fr-badge--warning fr-badge--sm">
+            Saisir la certification
+          </span>
         </div>
         <div class="flex-space-between">
           <p class="fr-mt-1w fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</p>

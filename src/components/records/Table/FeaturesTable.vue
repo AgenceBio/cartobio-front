@@ -27,7 +27,7 @@
     <b>Filtrer</b>
     <button
       :key="id"
-      v-for="{ active, id, count, label, required } in tags"
+      v-for="{ active, id, count, label, required } in tags.filter((t) => t.required)"
       class="fr-tag fr-tag--sm red"
       :class="{
         'fr-icon-filter-line fr-tag--icon-left': required,

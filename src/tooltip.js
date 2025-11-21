@@ -20,9 +20,9 @@ width:fit-content;
       transition: opacity 0.15s ease-in-out;
       z-index: 2000;
     `;
-    document.body.appendChild(tooltip);
 
     function show() {
+      document.body.appendChild(tooltip);
       const rect = el.getBoundingClientRect();
       const margin = 8;
       let top, left;
@@ -55,7 +55,7 @@ width:fit-content;
     }
 
     function hide() {
-      tooltip.style.opacity = "0";
+      document.body.removeChild(tooltip);
     }
 
     el.addEventListener("mouseenter", show);
