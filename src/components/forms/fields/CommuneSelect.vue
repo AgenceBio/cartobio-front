@@ -1,9 +1,9 @@
 <template>
-  <div :style="style" :class="$props.class" class="fr-search-bar fr-mb-1v">
+  <div :style="style" class="fr-search-bar fr-mb-1v" :class="$props.class">
     <div class="wrapper">
       <label class="fr-label" for="search">Saisissez le nom d'une commune</label>
       <div class="input" ref="autocompleteRef"></div>
-      <button class="fr-btn button-search" type="submit" title="Rechercher"></button>
+      <button class="fr-btn button-search fr-mt-0" type="submit" title="Rechercher"></button>
     </div>
   </div>
 </template>

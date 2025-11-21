@@ -34,8 +34,8 @@
       @click="quitDraw"
     ></button>
   </div>
-  <div class="pop-in-info-cadastre close" v-if="mode === 'cadastre'">
-    <CommuneSelect class="fr-mb-0" @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
+  <div class="pop-in-info-cadastre close fr-pl-2w" v-if="mode === 'cadastre'">
+    <CommuneSelect class="fr-mt-1v" @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
     <button
       class="fr-btn fr-icon-check-line fr-btn--icon-left fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Saisir les references cadastrales"
@@ -900,7 +900,7 @@ onUnmounted(() => {
 
 .pop-in-info {
   position: absolute;
-  top: 12%;
+  top: 75px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -913,7 +913,7 @@ onUnmounted(() => {
 
 .pop-in-info-cadastre {
   position: absolute;
-  top: 12%;
+  top: 75px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -923,6 +923,7 @@ onUnmounted(() => {
   gap: 5px;
   border-radius: 10px;
   width: fit-content;
+  align-items: center;
 }
 
 .vr {
