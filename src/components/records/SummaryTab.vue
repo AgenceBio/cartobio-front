@@ -60,6 +60,7 @@ import { getFeatureGroups, GROUPE_NIVEAU_CONVERSION, inHa, legalProjectionSurfac
 import { getConversionLevel } from "@/referentiels/ab";
 import { useFeaturesStore } from "@/stores/features";
 import { useRecordStore } from "@/stores/record.js";
+import { storeToRefs } from "pinia";
 
 const emit = defineEmits(["switch-tab"]);
 
@@ -68,12 +69,14 @@ const recordStore = useRecordStore();
 
 const { record } = recordStore;
 // TODO : Passer en Ref afin d'avoir l'update en temps réel
-const { all: features } = featuresStore;
+const { all: features } = storeToRefs(featuresStore);
 
-const featureGroups = computed(() => getFeatureGroups({ features: features }, GROUPE_NIVEAU_CONVERSION, null));
+const featureGroups = computed(() => getFeatureGroups({ features: features.value }, GROUPE_NIVEAU_CONVERSION, null));
 
 const surface = computed(() =>
-  !isNaN(parseFloat(inHa(legalProjectionSurface(features)))) ? inHa(legalProjectionSurface(features)) + " ha" : "",
+  !isNaN(parseFloat(inHa(legalProjectionSurface(features.value))))
+    ? inHa(legalProjectionSurface(features.value)) + " ha"
+    : "",
 );
 
 async function selectFeatureGroup(group) {

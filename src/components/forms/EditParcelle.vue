@@ -448,8 +448,6 @@ const initialPatchState = ref(JSON.stringify(createInitialPatch()));
 
 const hasRealChanges = computed(() => {
   const currentState = JSON.stringify(patch.value);
-  console.log(currentState);
-  console.log(initialPatchState.value);
   return currentState !== initialPatchState.value;
 });
 

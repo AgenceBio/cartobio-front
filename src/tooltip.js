@@ -55,7 +55,9 @@ width:fit-content;
     }
 
     function hide() {
-      document.body.removeChild(tooltip);
+      if (document.body.contains(tooltip)) {
+        document.body.removeChild(tooltip);
+      }
     }
 
     el.addEventListener("mouseenter", show);

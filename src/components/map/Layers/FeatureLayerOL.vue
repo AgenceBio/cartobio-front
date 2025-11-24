@@ -157,6 +157,7 @@ const preferences = usePreferences();
 const store = useFeaturesStore();
 const recordStore = useRecordStore();
 
+const { hoveredId } = storeToRefs(store);
 const { map: mapPrefs } = storeToRefs(preferences);
 
 /*
@@ -478,8 +479,10 @@ const handlePointerMove = (e: MapBrowserEvent) => {
     ) as Feature;
 
     if (feature && feature !== currentHoveredFeature) {
+      hoveredId.value = feature.getId() as string;
       showHoverOverlay(feature);
     } else if (!feature && currentHoveredFeature) {
+      hoveredId.value = null;
       hideHoverOverlay();
     }
   }

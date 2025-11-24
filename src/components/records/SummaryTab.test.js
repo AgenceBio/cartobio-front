@@ -54,7 +54,6 @@ describe("SummaryTab", () => {
       { id: "7", properties: { NOM: "test", cultures: [{ CPF: "01.13.42" }], conversion_niveau: "AB" } },
       {
         id: "8",
-        geometry: { coordinates: [] },
         properties: {
           NOM: "test",
           cultures: [{ CPF: "01.13.42" }],

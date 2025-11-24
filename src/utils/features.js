@@ -73,6 +73,9 @@ export function legalProjectionSurface(feature) {
   if (feature.type === "FeatureCollection") {
     feature = feature.features;
   }
+  if (!Array.isArray(feature) && !feature.geometry) {
+    return NaN;
+  }
 
   if (Array.isArray(feature)) {
     return feature.reduce((total, f) => total + legalProjectionSurface(f), 0);

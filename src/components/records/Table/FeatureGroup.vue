@@ -454,7 +454,8 @@ onMounted(async () => {
   }
 
   &.background-selected,
-  &:hover {
+  &:hover,
+  &[aria-current="location"] {
     background-color: var(--background-alt-blue-france);
   }
 
