@@ -37,7 +37,7 @@
   <div class="pop-in-info-cadastre close fr-pl-2w" v-if="mode === 'cadastre'">
     <CommuneSelect class="fr-mt-1v" @feature="(e) => zoomCommune(e)" v-model="selectedCommune" />
     <button
-      class="fr-btn fr-icon-check-line fr-btn--icon-left fr-btn--sm fr-btn--tertiary-no-outline"
+      class="fr-btn fr-icon-pencil-line fr-btn--icon-left fr-btn--sm fr-btn--tertiary-no-outline"
       aria-label="Saisir les references cadastrales"
       @click="showModalCadastre = true"
     >
