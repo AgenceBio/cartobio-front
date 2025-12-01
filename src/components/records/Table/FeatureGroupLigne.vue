@@ -114,14 +114,14 @@
         </span>
       </div>
       <div v-else style="position: relative" class="fr-col-2">
-        <small style="position: absolute; top: 0; left: 0; font-size: 0.5rem; color: #666; line-height: 1">
+        <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
           Variété
         </small>
-        <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+        <template v-for="(culture, i) in feature.properties.cultures" :key="i">
           <span v-if="i" class="">, </span>
-          <em class="fr-mt-1v" v-if="!culture.variete || culture.variete">Non rens.</em>
-          <span v-else>{{ culture.variete }}</span>
-        </small>
+          <em class="fr-mt-1v" v-if="!culture.variete">Non rens.</em>
+          <span v-else class="fr-mt-1v">{{ culture.variete }}</span>
+        </template>
       </div>
       <div class="fr-col-1">
         <span>
