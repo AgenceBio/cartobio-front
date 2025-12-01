@@ -74,6 +74,23 @@
         >
           <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>Attestation</span
         >
+        <span
+          v-if="storage.syncQueues[record.record_id]"
+          class="fr-my-auto fr-icon-refresh-line fr-icon--sm"
+          v-tooltip="tooltips.changeNotSync"
+          role="img"
+          aria-label="Changements non-synchronisés"
+        >
+        </span>
+        <span
+          v-else-if="storage.records[record.record_id]"
+          class="fr-my-auto fr-icon-cloud-line fr-icon--sm"
+          role="img"
+          v-tooltip="tooltips.changeSync"
+          aria-label="Prêt pour travailler hors ligne"
+        >
+        </span>
+
         <ActionDropdown
           v-if="hasFeatures && !readonly"
           with-icons
@@ -121,21 +138,20 @@
             <button
               v-else-if="storage.records[record.record_id]"
               type="button"
-              class="fr-btn fr-btn--tertiary-no-outline fr-icon-success-fill"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-cloud-close"
               @click.stop.prevent="deleteDownloadModal = record.record_id"
             >
-              Supprimer des téléchargements hors-ligne
+              Arrêter le mode hors connexion et vider le cache
             </button>
             <button
               v-else
               type="button"
-              class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-calendar-2-line"
+              class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-cloud-check"
               :disabled="!isOnline || readonly"
               @click.stop.prevent="tryDownloadRecord(record)"
             >
               Préparer pour travailler hors connexion
             </button>
-            <!-- ri-cloud-off-line -->
           </li>
           <li class="break">
             <hr />
@@ -341,6 +357,8 @@ const tooltips = {
   exportActions: { text: "Ouvrir le menu d'export", position: "top" },
   actionsParcellaire: { text: "Ouvrir le menu du parcellaire", position: "top" },
   fullScreen: { text: "Ouvrir le mode fullscreen", position: "bottom" },
+  changeSync: { text: "Prêt pour travailler hors ligne", position: "top" },
+  changeNotSync: { text: "Changements non-synchronisés", position: "top" },
 };
 
 const windowWidth = ref(window.innerWidth);
@@ -380,7 +398,7 @@ async function tryDownloadRecord(record) {
   if (!(await storage.addRecord(record.record_id))) {
     fullStorageModal.value = true;
   } else {
-    toast.success("Le parcellaire a bien été téléchargé.");
+    toast.success("Le parcellaire est prêt pour travailler hors connexion");
   }
 }
 
@@ -545,5 +563,11 @@ watch(
   font-weight: 400;
   line-height: 23px;
   white-space: nowrap;
+}
+
+.center-icon {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>

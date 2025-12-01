@@ -23,3 +23,9 @@
 .fr-icon-culture-surfaces-fourrageres::before {
   mask-image: url(@/assets/culture/surfaces-fourrageres.svg);
 }
+.fr-icon-cloud-check::before {
+	mask-image: url(@/assets/icon-check-cloud.svg);
+}
+.fr-icon-cloud-close::before {
+	mask-image: url(@/assets/icon-cloud-close.svg);
+}
