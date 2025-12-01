@@ -55,7 +55,7 @@
           <span
             ><strong>Attention ! Le tracé de votre parcelle chevauche une autre parcelle.</strong>
             {{
-              !(corrections.length > 1)
+              isCorrecting
                 ? "Cliquez sur la parcelle à conserver"
                 : "Vous pouvez déplacer les points pour	corriger ou utiliser la correction guidée."
             }}</span
