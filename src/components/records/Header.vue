@@ -62,111 +62,6 @@
         </div>
         <br />
       </div>
-      <div class="fr-grid-row">
-        <span
-          class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
-          v-if="record.certification_state === 'CERTIFIED'"
-          @click="
-            () => {
-              attestationModal = true;
-            }
-          "
-        >
-          <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>Attestation</span
-        >
-        <span
-          v-if="storage.syncQueues[record.record_id]"
-          class="fr-my-auto fr-icon-refresh-line fr-icon--sm"
-          v-tooltip="tooltips.changeNotSync"
-          role="img"
-          aria-label="Changements non-synchronisés"
-        >
-        </span>
-        <span
-          v-else-if="storage.records[record.record_id]"
-          class="fr-my-auto fr-icon-cloud-line fr-icon--sm"
-          role="img"
-          v-tooltip="tooltips.changeSync"
-          aria-label="Prêt pour travailler hors ligne"
-        >
-        </span>
-
-        <ActionDropdown
-          v-if="hasFeatures && !readonly"
-          with-icons
-          smallList
-          icon-class="fr-icon-download-line fr-btn--sm export-action"
-          v-tooltip="tooltips.exportActions"
-        >
-          <ExportActions
-            :operator="operator"
-            :collection="collection"
-            :record="record"
-            @close="exportModal = false"
-            :hasError="tags.filter((e) => e.errorMessage != undefined)"
-          />
-        </ActionDropdown>
-        <ActionDropdown
-          v-if="!disableActions && permissions.canEditVersion"
-          with-icons
-          smallList
-          icon-class="ri-more-2-line fr-btn--sm"
-          icon-style="font-size: 1.2em"
-          v-tooltip="tooltips.actionsParcellaire"
-        >
-          <li v-if="!disableActions && permissions.canEditVersion">
-            <button
-              class="fr-btn fr-btn--sm fr-icon-edit-line fr-btn--tertiary-no-outline edit-version-info"
-              @click="showEditVersionModal = true"
-              aria-label="Modifier la version du parcellaire"
-            >
-              Modifier les données de la version
-            </button>
-          </li>
-          <li class="break">
-            <hr />
-          </li>
-          <li class="">
-            <button
-              v-if="storage.syncQueues[record.record_id]"
-              type="button"
-              class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
-              disabled
-            >
-              Changements non-synchronisés
-            </button>
-            <button
-              v-else-if="storage.records[record.record_id]"
-              type="button"
-              class="fr-btn fr-btn--tertiary-no-outline fr-icon-cloud-close"
-              @click.stop.prevent="deleteDownloadModal = record.record_id"
-            >
-              Arrêter le mode hors connexion et vider le cache
-            </button>
-            <button
-              v-else
-              type="button"
-              class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-cloud-check"
-              :disabled="!isOnline || readonly"
-              @click.stop.prevent="tryDownloadRecord(record)"
-            >
-              Préparer pour travailler hors connexion
-            </button>
-          </li>
-          <li class="break">
-            <hr />
-          </li>
-          <li v-if="canDisplayHistory" class="">
-            <button
-              class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-time-line"
-              @click="historyModal = true"
-              aria-label="Afficher l'historique des modifications"
-            >
-              Historique général du parcellaire
-            </button>
-          </li>
-        </ActionDropdown>
-      </div>
     </div>
 
     <p v-if="readonly" class="readonly-badge">Lecture seule</p>
@@ -176,8 +71,112 @@
     </p>
     <div v-else class="fr-highlight flex fr-mt-1w">
       <div>
-        <div class="flex">
+        <div class="fr-grid-row fr-grid-row--middle header">
           <ParcellaireState :record="record" :show-date="true" />
+          <div class="fr-grid-row margin-left">
+            <span
+              class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
+              v-if="record.certification_state === 'CERTIFIED'"
+              @click="
+                () => {
+                  attestationModal = true;
+                }
+              "
+            >
+              <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>Attestation</span
+            >
+            <span
+              v-if="storage.syncQueues[record.record_id]"
+              class="fr-my-auto fr-icon-refresh-line fr-icon--sm"
+              v-tooltip="tooltips.changeNotSync"
+              role="img"
+              aria-label="Changements non-synchronisés"
+            >
+            </span>
+            <span
+              v-else-if="storage.records[record.record_id]"
+              class="fr-my-auto fr-icon-cloud-line fr-icon--sm fr-ml-2v"
+              role="img"
+              v-tooltip="tooltips.changeSync"
+              aria-label="Prêt pour travailler hors ligne"
+            >
+            </span>
+
+            <ActionDropdown
+              v-if="hasFeatures && !readonly"
+              with-icons
+              smallList
+              icon-class="fr-icon-download-line fr-btn--sm export-action"
+              v-tooltip="tooltips.exportActions"
+            >
+              <ExportActions
+                :operator="operator"
+                :collection="collection"
+                :record="record"
+                @close="exportModal = false"
+                :hasError="tags.filter((e) => e.errorMessage != undefined)"
+              />
+            </ActionDropdown>
+            <ActionDropdown
+              with-icons
+              smallList
+              icon-class="ri-more-2-line fr-btn--sm"
+              icon-style="font-size: 1.2em; "
+              v-tooltip="tooltips.actionsParcellaire"
+            >
+              <li v-if="!disableActions && permissions.canEditVersion">
+                <button
+                  class="fr-btn fr-btn--sm fr-icon-edit-line fr-btn--tertiary-no-outline edit-version-info"
+                  @click="showEditVersionModal = true"
+                  aria-label="Modifier la version du parcellaire"
+                >
+                  Modifier les données de la version
+                </button>
+              </li>
+              <li class="break">
+                <hr />
+              </li>
+              <li class="">
+                <button
+                  v-if="storage.syncQueues[record.record_id]"
+                  type="button"
+                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
+                  disabled
+                >
+                  Changements non-synchronisés
+                </button>
+                <button
+                  v-else-if="storage.records[record.record_id]"
+                  type="button"
+                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-cloud-close"
+                  @click.stop.prevent="deleteDownloadModal = record.record_id"
+                >
+                  Arrêter le mode hors connexion et vider le cache
+                </button>
+                <button
+                  v-else
+                  type="button"
+                  class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-cloud-check"
+                  :disabled="!isOnline || readonly"
+                  @click.stop.prevent="tryDownloadRecord(record)"
+                >
+                  Préparer pour travailler hors connexion
+                </button>
+              </li>
+              <li class="break">
+                <hr />
+              </li>
+              <li v-if="canDisplayHistory" class="">
+                <button
+                  class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-time-line"
+                  @click="historyModal = true"
+                  aria-label="Afficher l'historique des modifications"
+                >
+                  Historique général du parcellaire
+                </button>
+              </li>
+            </ActionDropdown>
+          </div>
         </div>
         <p class="fr-text--sm fr-mb-0">
           <b>Réalisé le {{ jjmmyyyy(record.audit_date) }}</b
@@ -565,9 +564,16 @@ watch(
   white-space: nowrap;
 }
 
-.center-icon {
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+.margin-left {
+  margin-left: auto;
+}
+
+.ri-more-2-line.fr-btn--sm {
+  padding: 0.25rem 0.45rem;
+}
+</style>
+<style>
+.ri-more-2-line.fr-btn--sm {
+  padding: 0.25rem 0.45rem;
 }
 </style>

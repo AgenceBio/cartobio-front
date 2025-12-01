@@ -20,10 +20,10 @@
       <div
         v-for="[ruleId, result] in featuresSet.required"
         :key="ruleId"
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
+        class="notification fr-p-3v fr-mb-2v"
         style="flex-wrap: nowrap"
       >
-        <div class="fr-grid-row fr-grid-row--middle left-block" style="flex: 1; min-width: 0; flex-wrap: nowrap">
+        <div class="left-block" style="flex: 1; min-width: 0; flex-wrap: nowrap">
           <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold" style="flex-shrink: 0">
             <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span
             >{{ result.count }} parcelle{{ result.count > 1 ? "s" : "" }}
@@ -48,13 +48,14 @@
       <div
         v-for="[ruleId, result] in featuresSet.rotationErrors"
         :key="ruleId"
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
+        class="notification fr-p-3v fr-mb-2v"
         style="flex-wrap: nowrap"
       >
-        <div class="fr-grid-row fr-grid-row--middle left-block" style="flex: 1; min-width: 0; flex-wrap: nowrap">
+        <div class="left-block" style="flex: 1; min-width: 0; flex-wrap: nowrap">
           <p class="warning-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold" style="flex-shrink: 0">
-            <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span
-            >{{ result.count }} parcelle{{ result.count > 1 ? "s" : "" }}
+            <i class="ri-exchange-funds-line fr-mr-1v" aria-hidden="true"></i>{{ result.count }} parcelle{{
+              result.count > 1 ? "s" : ""
+            }}
           </p>
           <h4
             class="fr-text--sm fr-mb-0"
@@ -74,15 +75,49 @@
         </button>
       </div>
 
-      <div
-        v-if="record.record_id !== operatorStore.records?.[0]?.record_id"
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
-      >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
+      <div v-if="record.record_id !== operatorStore.records?.[0]?.record_id" class="notification fr-p-3v fr-mb-2v">
+        <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
           <h4 class="fr-text--md fr-mb-0">Cette version du parcellaire n'est pas la plus récente.</h4>
+        </div>
+      </div>
+
+      <div v-if="showAgriPendingCertificationState()" class="notification fr-p-3v fr-mb-2v">
+        <div class="left-block">
+          <p class="notifications-icon fr-mb-0 fr-px-1v">
+            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
+          </p>
+          <h4 class="fr-text--md fr-mb-0">
+            Votre parcellaire est en cours de certification, vous ne pouvez plus modifier les données.
+          </h4>
+        </div>
+      </div>
+      <div v-if="showOCPendingCertificationState()" class="notification fr-p-3v fr-mb-2v">
+        <div class="left-block">
+          <p class="notifications-icon fr-mb-0 fr-px-1v">
+            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
+          </p>
+          <h4 class="fr-text--md fr-mb-0">Le chargé de certification doit maintenant certifier le parcellaire.</h4>
+        </div>
+      </div>
+      <div v-if="showAgriCertifiedState()" class="notification fr-p-3v fr-mb-2v">
+        <div class="left-block">
+          <p class="notifications-icon fr-mb-0 fr-px-1v">
+            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
+          </p>
+          <h4 class="fr-text--md fr-mb-0">
+            Votre parcellaire a été certifié, vous ne pouvez plus modifier les données.
+          </h4>
+        </div>
+      </div>
+      <div v-if="showOCCertifiedState()" class="notification fr-p-3v fr-mb-2v">
+        <div class="left-block">
+          <p class="notifications-icon fr-mb-0 fr-px-1v">
+            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
+          </p>
+          <h4 class="fr-text--md fr-mb-0">Ce parcellaire a été certifié, vous ne pouvez plus modifier les données.</h4>
         </div>
       </div>
     </div>
@@ -95,19 +130,29 @@ import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { useOperatorStore } from "@/stores/operator";
 import { useRecordStore } from "@/stores/record";
 import { statsPush } from "@/stats.js";
+import { useUserStore } from "@/stores/user";
+import { CertificationState } from "@agencebio/cartobio-types";
 
 const emit = defineEmits(["switch-tab"]);
 
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
 const featuresSet = useFeaturesSetsStore();
+const userStore = useUserStore();
+
+const isOc = computed(() => userStore.isOc);
+const isAgri = computed(() => userStore.isAgri);
 
 const { record } = recordStore;
 const countNotif = computed(() => {
   return (
     (featuresSet.required.size ?? 0) +
     (featuresSet.rotationErrors.size ?? 0) +
-    +(record.record_id !== operatorStore.records?.[0]?.record_id)
+    +(record.record_id !== operatorStore.records?.[0]?.record_id) +
+    +showAgriPendingCertificationState() +
+    +showOCPendingCertificationState() +
+    +showAgriCertifiedState() +
+    +showOCCertifiedState()
   );
 });
 
@@ -121,16 +166,38 @@ function selectParcelles(id) {
   }
   emit("switch-tab");
 }
+
+function showAgriPendingCertificationState() {
+  return (
+    isAgri.value &&
+    [CertificationState.PENDING_CERTIFICATION, CertificationState.AUDITED].includes(record.certification_state)
+  );
+}
+
+function showOCPendingCertificationState() {
+  return isOc.value && [CertificationState.PENDING_CERTIFICATION].includes(record.certification_state);
+}
+
+function showAgriCertifiedState() {
+  return isAgri.value && [CertificationState.CERTIFIED].includes(record.certification_state);
+}
+
+function showOCCertifiedState() {
+  return isOc.value && [CertificationState.CERTIFIED].includes(record.certification_state);
+}
 </script>
 
 <style scoped>
 .notification {
   border: 1px solid var(--blue-france-950-100);
   justify-content: space-between;
+  display: flex;
 }
 
 .left-block {
   gap: 8px;
+  display: flex;
+  align-items: center;
 }
 
 .error-text {
@@ -148,6 +215,7 @@ function selectParcelles(id) {
 .notifications-icon {
   color: var(--blue-ecume-sun-247-moon-675);
   background-color: var(--blue-ecume-925-125);
+  white-space: nowrap;
 }
 
 .color-green {
