@@ -17,72 +17,6 @@
       </div>
     </div>
     <div :hidden="!open">
-      <!-- OPERATEUR : parcellaire AUDITED ou PENDING_CERTIFICATION -->
-      <div
-        v-if="
-          permissions.isAgri &&
-          (record.certification_state === CertificationState.AUDITED ||
-            record.certification_state === CertificationState.PENDING_CERTIFICATION)
-        "
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
-      >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="notifications-icon fr-mb-0 fr-px-1v">
-            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v"></span>1
-          </p>
-          <h4 class="fr-text--md fr-mb-0">
-            Votre parcellaire est en cours de certification, vous ne pouvez plus modifier les données.
-          </h4>
-        </div>
-      </div>
-
-      <!-- OPERATEUR : parcellaire CERTIFIED -->
-      <div
-        v-if="permissions.isAgri && record.certification_state === CertificationState.CERTIFIED"
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
-      >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="notifications-icon fr-mb-0 fr-px-1v">
-            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v"></span>1
-          </p>
-          <h4 class="fr-text--md fr-mb-0">
-            Votre parcellaire a été certifié, vous ne pouvez plus modifier les données.
-          </h4>
-        </div>
-      </div>
-
-      <!-- AUDITEUR : parcellaire CERTIFIED -->
-      <div
-        v-if="permissions.isOc && userStore.isOcAudit && record.certification_state === CertificationState.CERTIFIED"
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
-      >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="notifications-icon fr-mb-0 fr-px-1v">
-            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v"></span>1
-          </p>
-          <h4 class="fr-text--md fr-mb-0">Ce parcellaire a été certifié, vous ne pouvez plus modifier les données.</h4>
-        </div>
-      </div>
-
-      <!-- AUDITEUR : parcellaire PENDING_CERTIFICATION -->
-      <div
-        v-if="
-          permissions.isOc &&
-          userStore.isOcAudit &&
-          record.certification_state === CertificationState.PENDING_CERTIFICATION
-        "
-        class="fr-grid-row fr-grid-row--middle notification fr-p-3v fr-mb-2v"
-      >
-        <div class="fr-grid-row fr-grid-row--middle left-block">
-          <p class="notifications-icon fr-mb-0 fr-px-1v">
-            <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v"></span>1
-          </p>
-          <h4 class="fr-text--md fr-mb-0">
-            Certification en cours : Le chargé de certification doit maintenant certifier le parcellaire.
-          </h4>
-        </div>
-      </div>
-
       <div
         v-for="[ruleId, result] in featuresSet.required"
         :key="ruleId"
@@ -159,59 +93,22 @@
 import { computed, ref } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { useOperatorStore } from "@/stores/operator";
-import { useUserStore } from "@/stores/user.js";
 import { useRecordStore } from "@/stores/record";
 import { statsPush } from "@/stats.js";
-import { usePermissions } from "@/stores/permissions.js";
-
-import { CertificationState } from "@agencebio/cartobio-types";
 
 const emit = defineEmits(["switch-tab"]);
 
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
-const userStore = useUserStore();
-const permissions = usePermissions();
-
 const featuresSet = useFeaturesSetsStore();
-
-const isOc = computed(() => userStore.isOc);
-const isAgri = computed(() => userStore.isAgri);
 
 const { record } = recordStore;
 const countNotif = computed(() => {
-  let count = 0;
-
-  count += featuresSet.required.size ?? 0;
-  count += featuresSet.rotationErrors.size ?? 0;
-
-  count += +(record.record_id !== operatorStore.records?.[0]?.record_id);
-
-  if (
-    permissions.isAgri &&
-    (record.certification_state === CertificationState.AUDITED ||
-      record.certification_state === CertificationState.PENDING_CERTIFICATION)
-  ) {
-    count++;
-  }
-
-  if (permissions.isAgri && record.certification_state === CertificationState.CERTIFIED) {
-    count++;
-  }
-
-  if (permissions.isOc && userStore.isOcAudit && record.certification_state === CertificationState.CERTIFIED) {
-    count++;
-  }
-
-  if (
-    permissions.isOc &&
-    userStore.isOcAudit &&
-    record.certification_state === CertificationState.PENDING_CERTIFICATION
-  ) {
-    count++;
-  }
-
-  return count;
+  return (
+    (featuresSet.required.size ?? 0) +
+    (featuresSet.rotationErrors.size ?? 0) +
+    +(record.record_id !== operatorStore.records?.[0]?.record_id)
+  );
 });
 
 const open = ref(countNotif.value > 0 ? true : false);
