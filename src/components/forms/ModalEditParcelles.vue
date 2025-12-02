@@ -61,7 +61,6 @@
               type="date"
               class="fr-input"
               v-model="patch.engagement_date"
-              :required="isEngagementDateRequired"
               name="engagement_date"
               min="1985-01-01"
               :max="maxDate"
@@ -154,15 +153,11 @@ const selectedFeatures = computed(() => {
 const validate = () => {
   const errs = [];
 
-  if (
-    "cultures" in changes.value &&
-    (!patch.cultures.length || patch.cultures.some((c) => !c.CPF || c.CPF.trim() === ""))
-  ) {
-    errs.push("Une culture sans code CPF n'est pas autorisée.");
-  }
-
-  if (["C1", "C2", "C3"].includes(patch.conversion_niveau) && !patch.engagement_date) {
-    errs.push("La date de début de conversion est obligatoire pour C1, C2 ou C3.");
+  // Vérifier uniquement les cultures si elles ont été modifiées
+  if ("cultures" in changes.value) {
+    if (!patch.cultures.length || patch.cultures.some((c) => !c.CPF || c.CPF.trim() === "")) {
+      errs.push("Une culture sans code CPF n'est pas autorisée.");
+    }
   }
 
   if (errs.length) {
