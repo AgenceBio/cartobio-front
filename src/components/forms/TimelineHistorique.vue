@@ -62,6 +62,7 @@ import ConversionLevel from "@/components/records/Table/ConversionLevel.vue";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { getConversionLevel } from "@/referentiels/ab.js";
 import { cultureLabel } from "@/utils/features.js";
+import { countRotationErrors } from "@/utils/culture";
 
 const props = defineProps<{
   historique:
@@ -75,35 +76,7 @@ const props = defineProps<{
 }>();
 
 const getHistoriqueRota = (index: number) => {
-  const currentCultures = props.historique[index];
-  if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
-
-  let count = 1;
-
-  for (let i = index - 1; i >= 0; i--) {
-    const voisin = props.historique[i];
-    if (!voisin) break;
-
-    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-    if (match) {
-      count++;
-    } else {
-      break;
-    }
-  }
-  for (let i = index + 1; i < props.historique.length; i++) {
-    const voisin = props.historique[i];
-    if (!voisin) break;
-
-    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-    if (match) {
-      count++;
-    } else {
-      break;
-    }
-  }
-
-  return count;
+  return countRotationErrors(index, props.historique);
 };
 
 const isRotaErrors = computed(() => {

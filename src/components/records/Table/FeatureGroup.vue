@@ -224,6 +224,7 @@ import {
   getCultureIcon,
 } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
+import { countRotationErrors } from "@/utils/culture";
 
 const route = useRoute();
 const recordStore = useRecordStore();
@@ -324,36 +325,7 @@ function openCulturesModal(id) {
 }
 
 function isRota(feature) {
-  const index = 0;
-  if (!feature.properties.historique) return 0;
-  const currentCultures = feature.properties.historique[index];
-  if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
-
-  let count = 1;
-
-  for (let i = index - 1; i >= 0; i--) {
-    const voisin = feature.properties.historique[i];
-    if (!voisin) break;
-
-    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-    if (match) {
-      count++;
-    } else {
-      break;
-    }
-  }
-  for (let i = index + 1; i < feature.properties.historique.length; i++) {
-    const voisin = feature.properties.historique[i];
-    if (!voisin) break;
-
-    const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-    if (match) {
-      count++;
-    } else {
-      break;
-    }
-  }
-
+  const count = countRotationErrors(0, feature.properties.historique);
   return count >= 3 ? "rouge" : count > 1 ? "jaune" : null;
 }
 

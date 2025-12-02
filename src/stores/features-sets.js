@@ -7,6 +7,7 @@ import { usePermissions } from "@/stores/permissions.js";
 import { AnnotationTags, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab.js";
 
 import { featureName } from "@/utils/features.js";
+import { countRotationErrors } from "@/utils/culture";
 
 /**
  * @typedef {import('vue').ComputedRef} ComputedRef
@@ -264,37 +265,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             label: "Rotation à controler",
             errorMessage: "Une culture a été répétée 2 années de suite",
             select(f) {
-              const historique = f.properties.historique ?? [];
-              const index = 0;
-              const currentCultures = historique[index];
-              if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
-
-              let count = 1;
-
-              for (let i = index - 1; i >= 0; i--) {
-                const voisin = historique[i];
-                if (!voisin) break;
-
-                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-                if (match) {
-                  count++;
-                } else {
-                  break;
-                }
-              }
-              for (let i = index + 1; i < historique.length; i++) {
-                const voisin = historique[i];
-                if (!voisin) break;
-
-                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-                if (match) {
-                  count++;
-                } else {
-                  break;
-                }
-              }
-
-              return count === 2;
+              return countRotationErrors(0, f.properties.historique ?? []) === 2;
             },
           },
         ],
@@ -308,37 +279,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             label: "Rotation non conforme",
             errorMessage: "Une culture a été répétée 3 années de suite",
             select(f) {
-              const historique = f.properties.historique ?? [];
-              const index = 0;
-              const currentCultures = historique[index];
-              if (!currentCultures || currentCultures.cultures.length !== 1) return 0;
-
-              let count = 1;
-
-              for (let i = index - 1; i >= 0; i--) {
-                const voisin = historique[i];
-                if (!voisin) break;
-
-                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-                if (match) {
-                  count++;
-                } else {
-                  break;
-                }
-              }
-              for (let i = index + 1; i < historique.length; i++) {
-                const voisin = historique[i];
-                if (!voisin) break;
-
-                const match = voisin.cultures.some((c) => currentCultures.cultures.some((a) => c.CPF === a.CPF));
-                if (match) {
-                  count++;
-                } else {
-                  break;
-                }
-              }
-
-              return count >= 3;
+              return countRotationErrors(0, f.properties.historique ?? []) >= 3;
             },
           },
         ],
