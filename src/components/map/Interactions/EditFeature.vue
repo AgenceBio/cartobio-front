@@ -608,7 +608,7 @@ const startCorrection = () => {
       width: 4,
       lineDash: [8, 6],
     }),
-    fill: new Fill({ color: "rgba(247, 103, 239, 0.3)" }),
+    fill: new Fill({ color: "rgba(247, 103, 239, 0.5)" }),
     zIndex: 4,
   });
 
@@ -618,7 +618,7 @@ const startCorrection = () => {
       width: 4,
       lineDash: [8, 6],
     }),
-    fill: new Fill({ color: "rgba(166, 242, 250, 0.2)" }),
+    fill: new Fill({ color: "rgba(166, 242, 250, 0.5)" }),
     zIndex: 4,
   });
 
