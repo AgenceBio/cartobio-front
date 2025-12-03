@@ -213,10 +213,8 @@ export const useFeaturesStore = defineStore("features", () => {
       });
       if (feature) {
         hoveredId.value = feature.getId();
-        map.value.getTargetElement().style.cursor = "pointer";
       } else {
         hoveredId.value = null;
-        map.value.getTargetElement().style.cursor = "";
       }
     });
   }

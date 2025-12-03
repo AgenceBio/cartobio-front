@@ -426,7 +426,7 @@ const showHoverOverlay = (feature: Feature) => {
   if (currentHoveredFeature === feature) return;
 
   hideHoverOverlay();
-
+  getCursor(mapPrefs.value.currentMode);
   const element = createParcelleHoverOverlay(feature);
   const geometry = feature.getGeometry();
 
@@ -451,6 +451,7 @@ const showHoverOverlay = (feature: Feature) => {
 };
 
 const hideHoverOverlay = () => {
+  getCursor(mapPrefs.value.currentMode);
   if (hoverOverlay) {
     map.value.removeOverlay(hoverOverlay);
     hoverOverlay = null;
@@ -528,32 +529,44 @@ watch(
   },
 );
 
+const getCursor = (mode: string) => {
+  if (!props.interactive) currentCursor.value = "default";
+  else {
+    switch (mode) {
+      case "consult":
+        if (hoveredId.value) {
+          currentCursor.value = `pointer`;
+        } else {
+          currentCursor.value = `url("${editCursor}"), pointer`;
+        }
+        break;
+      case "draw":
+        currentCursor.value = `url("${drawCursor}"), pointer`;
+        break;
+      case "decouper":
+        currentCursor.value = `url("${cropCursor}"), pointer`;
+        break;
+      case "divide":
+        currentCursor.value = `url("${scissorsCursor}"), pointer`;
+        break;
+      case "edit":
+        if (hoveredId.value) {
+          currentCursor.value = `pointer`;
+        } else {
+          currentCursor.value = `url("${editCursor}"), pointer`;
+        }
+        break;
+      default:
+        currentCursor.value = "default";
+        break;
+    }
+  }
+};
+
 watch(
   () => mapPrefs.value.currentMode,
-  async (mode) => {
-    if (!props.interactive) currentCursor.value = "default";
-    else {
-      switch (mode) {
-        case "consult":
-          currentCursor.value = `url("${editCursor}"), pointer`;
-          break;
-        case "draw":
-          currentCursor.value = `url("${drawCursor}"), pointer`;
-          break;
-        case "decouper":
-          currentCursor.value = `url("${cropCursor}"), pointer`;
-          break;
-        case "divide":
-          currentCursor.value = `url("${scissorsCursor}"), pointer`;
-          break;
-        case "edit":
-          currentCursor.value = `url("${editCursor}"), pointer`;
-          break;
-        default:
-          currentCursor.value = "default";
-          break;
-      }
-    }
+  (mode) => {
+    getCursor(mode);
   },
   { immediate: true },
 );

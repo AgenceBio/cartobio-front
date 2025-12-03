@@ -428,6 +428,7 @@ onMounted(async () => {
   &.background-selected,
   &:hover,
   &[aria-current="location"] {
+    cursor: pointer;
     background-color: var(--background-alt-blue-france);
   }
 
