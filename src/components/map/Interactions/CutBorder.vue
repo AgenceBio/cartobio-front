@@ -491,7 +491,7 @@ const drawBorder = () => {
     previewBorderSource?.addFeature(res);
     hasBordure.value = true;
   } catch (e) {
-    errorMessage.value = "La découpe est impossible dû a la forme de la géométrie de la parcelle";
+    errorMessage.value = "La découpe est impossible dû à la forme de la géométrie de la parcelle";
     hasBordure.value = false;
     previewBorderSource?.clear();
   }

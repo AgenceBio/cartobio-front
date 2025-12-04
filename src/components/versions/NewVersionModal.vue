@@ -57,7 +57,7 @@ const handleSubmit = async () => {
 
 <template>
   <Modal large @close="$emit('close')" v-bind="$attrs" icon="fr-icon-add-line">
-    <template #title>Créer une nouvelle {{ props.version ? "version" : "controle" }}</template>
+    <template #title>Créer {{ props.version ? "une nouvelle version" : "un nouveau contrôle" }}</template>
     <p>
       Il existe plusieurs façons de créer {{ props.version ? "une nouvelle version" : " un nouveau contrôle" }} du
       parcellaire.
