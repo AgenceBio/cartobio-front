@@ -133,6 +133,14 @@ const parcelle1Area: Ref<string | null> = ref(null);
 const parcelle2Area: Ref<string | null> = ref(null);
 
 /*
+ * * Emits
+ */
+
+const emit = defineEmits<{
+  (e: "endDivide"): void;
+}>();
+
+/*
  * * Fonctions : Data
  */
 
@@ -185,6 +193,7 @@ const validateDivision = async () => {
   }
 
   loading.value = false;
+  emit("endDivide");
   mapPrefs.value.currentMode = "edit";
 };
 

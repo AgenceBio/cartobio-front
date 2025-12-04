@@ -39,6 +39,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        @endDivide="() => emit('selectFeature', null)"
       />
       <MergeFeatures
         v-else-if="mapPrefs.currentMode === 'fusionner'"
@@ -204,7 +205,7 @@ const isMobile = computed(() => windowWidth.value < 992);
  */
 const emit = defineEmits<{
   (e: "clickOnOverlay", value: number | string): void;
-  (e: "selectFeature", value: number | string): void;
+  (e: "selectFeature", value: number | string | null): void;
 }>();
 
 /*

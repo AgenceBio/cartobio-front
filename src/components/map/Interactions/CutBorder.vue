@@ -74,6 +74,12 @@
         </div>
       </div>
     </div>
+    <div class="pop-in-info error" role="alert" aria-live="assertive" v-if="errorMessage">
+      <div class="error-message">
+        <i class="ri-error-warning-line" aria-hidden="true"></i>
+        {{ errorMessage }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -152,9 +158,7 @@ const loading: Ref<boolean> = inject("loading", ref(false));
 const parcelle1Area: Ref<number | null> = ref(null);
 const parcelle2Area: Ref<number | null> = ref(null);
 
-/*
- * * Computed
- */
+const errorMessage: Ref<string | null> = ref(null);
 
 /*
  * * Constantes
@@ -388,93 +392,109 @@ const drawPoints = () => {
 };
 
 const drawBorder = () => {
-  if (!changeBorder) {
-    changeBorder = changeBorderSize();
-  }
-  if (currentOverlay) {
-    props.map.removeOverlay(currentOverlay);
-    currentOverlay = null;
-  }
-  previewBorderSource?.clear();
-  if (!targetFeature) return;
-  const polygonIn3857 = targetFeature.getGeometry()?.clone();
+  try {
+    errorMessage.value = null;
+    if (!changeBorder) {
+      changeBorder = changeBorderSize();
+    }
+    if (currentOverlay) {
+      props.map.removeOverlay(currentOverlay);
+      currentOverlay = null;
+    }
+    previewBorderSource?.clear();
+    if (!targetFeature) return;
+    const polygonIn3857 = targetFeature.getGeometry()?.clone();
 
-  if (!polygonIn3857) return;
+    if (!polygonIn3857) return;
 
-  polygonIn3857.setCoordinates(
-    polygonIn3857.getCoordinates().map((coord: number[][]) => {
-      return coord.map((point: number[]) => proj4("EPSG:4326", "EPSG:3857", point));
-    }),
-  );
+    polygonIn3857.setCoordinates(
+      polygonIn3857.getCoordinates().map((coord: number[][]) => {
+        return coord.map((point: number[]) => proj4("EPSG:4326", "EPSG:3857", point));
+      }),
+    );
 
-  const parser = new jsts.io.OL3Parser();
-  parser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection);
+    const parser = new jsts.io.OL3Parser();
+    parser.inject(
+      Point,
+      LineString,
+      LinearRing,
+      Polygon,
+      MultiPoint,
+      MultiLineString,
+      MultiPolygon,
+      GeometryCollection,
+    );
 
-  const parcelleJsts = parser.read(polygonIn3857);
-  const parcelleAggrandieJsts = parcelleJsts.buffer(0.01);
+    const parcelleJsts = parser.read(polygonIn3857);
+    const parcelleAggrandieJsts = parcelleJsts.buffer(0.01);
 
-  const parcelleSansBordureJsts = parcelleAggrandieJsts.buffer(-(distance.value + 0.01));
-  const allBordureJsts = parcelleAggrandieJsts.difference(parcelleSansBordureJsts);
+    const parcelleSansBordureJsts = parcelleAggrandieJsts.buffer(-(distance.value + 0.01));
+    const allBordureJsts = parcelleAggrandieJsts.difference(parcelleSansBordureJsts);
 
-  let bordureJsts;
-  if (allBorder.value) {
-    bordureJsts = allBordureJsts;
-  } else {
-    const parcelle = parser.write(parcelleSansBordureJsts);
-    let splittingLine;
-    try {
-      splittingLine = getSplittingLine(distance.value * 1.1, polygonIn3857, parcelle);
-    } catch (e) {
-      return;
+    let bordureJsts;
+    if (allBorder.value) {
+      bordureJsts = allBordureJsts;
+    } else {
+      const parcelle = parser.write(parcelleSansBordureJsts);
+      let splittingLine;
+      try {
+        splittingLine = getSplittingLine(distance.value * 1.1, polygonIn3857, parcelle);
+      } catch (e) {
+        return;
+      }
+
+      const lineJsts = parser.read(splittingLine);
+
+      const union = allBordureJsts.getExteriorRing().union(lineJsts);
+      const polygonizer = new jsts.operation.polygonize.Polygonizer();
+      polygonizer.add(union);
+      const polys = polygonizer.getPolygons();
+      bordureJsts = polys.array
+        .filter((poly) => poly.intersection(allBordureJsts).getArea() > 0)
+        [+isInverted.value].intersection(allBordureJsts);
     }
 
-    const lineJsts = parser.read(splittingLine);
+    const bordure = parser.write(bordureJsts);
+    bordure.setCoordinates(
+      bordure.getCoordinates().map((coord: number[][]) => {
+        return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
+      }),
+    );
 
-    const union = allBordureJsts.getExteriorRing().union(lineJsts);
-    const polygonizer = new jsts.operation.polygonize.Polygonizer();
-    polygonizer.add(union);
-    const polys = polygonizer.getPolygons();
-    bordureJsts = polys.array
-      .filter((poly) => poly.intersection(allBordureJsts).getArea() > 0)
-      [+isInverted.value].intersection(allBordureJsts);
+    const withoutBordure = parser.write(parcelleJsts.difference(bordureJsts));
+    withoutBordure.setCoordinates(
+      withoutBordure.getCoordinates().map((coord: number[][]) => {
+        return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
+      }),
+    );
+
+    const res = new Feature({
+      ...targetFeature.getProperties(),
+      geometry: bordure,
+    });
+
+    const featureWithoutBordure = new Feature({
+      ...targetFeature.getProperties(),
+      geometry: withoutBordure,
+    });
+
+    resSource?.clear();
+    resSource?.addFeature(featureWithoutBordure);
+    resSource?.addFeature(res);
+
+    const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
+    parcelle1Area.value = calculateArea(parcelle1Geometry as CartoBioFeature);
+
+    const parcelle2Geometry = new GeoJSON().writeFeatureObject(res, {});
+    parcelle2Area.value = calculateArea(parcelle2Geometry as CartoBioFeature);
+
+    previewBorderSource?.addFeature(res);
+    hasBordure.value = true;
+  } catch (e) {
+    errorMessage.value = "La découpe est impossible dû a la forme de la géométrie de la parcelle";
+    hasBordure.value = false;
+    previewBorderSource?.clear();
   }
-
-  const bordure = parser.write(bordureJsts);
-  bordure.setCoordinates(
-    bordure.getCoordinates().map((coord: number[][]) => {
-      return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
-    }),
-  );
-
-  const withoutBordure = parser.write(parcelleJsts.difference(bordureJsts));
-  withoutBordure.setCoordinates(
-    withoutBordure.getCoordinates().map((coord: number[][]) => {
-      return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
-    }),
-  );
-
-  const res = new Feature({
-    ...targetFeature.getProperties(),
-    geometry: bordure,
-  });
-
-  const featureWithoutBordure = new Feature({
-    ...targetFeature.getProperties(),
-    geometry: withoutBordure,
-  });
-
-  resSource?.clear();
-  resSource?.addFeature(featureWithoutBordure);
-  resSource?.addFeature(res);
-
-  const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
-  parcelle1Area.value = calculateArea(parcelle1Geometry as CartoBioFeature);
-
-  const parcelle2Geometry = new GeoJSON().writeFeatureObject(res, {});
-  parcelle2Area.value = calculateArea(parcelle2Geometry as CartoBioFeature);
-
-  previewBorderSource?.addFeature(res);
-  hasBordure.value = true;
 };
 
 const getSplittingLine = (projectionDistance: number, geometry: Geometry, buffer: Geometry) => {
@@ -734,6 +754,7 @@ const resetChoice = () => {
   hasBordure.value = false;
   parcelle1Area.value = 0;
   parcelle2Area.value = 0;
+  errorMessage.value = null;
 
   borderInteraction();
 };
@@ -908,5 +929,21 @@ button[data-tooltip]:hover::after {
   min-height: 0.5em;
   background-color: grey;
   opacity: 0.25;
+}
+
+.pop-in-info.error {
+  background: #fee;
+  border: 1px solid #c00;
+}
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c00;
+  font-weight: 500;
+}
+
+.error-message i {
+  font-size: 1.2em;
 }
 </style>

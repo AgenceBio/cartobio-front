@@ -12,6 +12,10 @@ import { inHa } from "@/utils/features.js";
 import State from "@/components/records/State.vue";
 import toast from "@/utils/toast.js";
 
+const props = defineProps({
+  version: Boolean,
+});
+
 const router = useRouter();
 const operatorStore = useOperatorStore();
 const recordStore = useRecordStore();
@@ -53,8 +57,11 @@ const handleSubmit = async () => {
 
 <template>
   <Modal large @close="$emit('close')" v-bind="$attrs" icon="fr-icon-add-line">
-    <template #title>Créer une nouvelle version</template>
-    <p>Il existe plusieurs façons de créer une nouvelle version du parcellaire.</p>
+    <template #title>Créer une nouvelle {{ props.version ? "version" : "controle" }}</template>
+    <p>
+      Il existe plusieurs façons de créer {{ props.version ? "une nouvelle version" : " un nouveau contrôle" }} du
+      parcellaire.
+    </p>
 
     <fieldset class="fr-fieldset" aria-labelledby="radio-versions">
       <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-versions-legend">
@@ -87,7 +94,7 @@ const handleSubmit = async () => {
         <div class="fr-radio-group">
           <input type="radio" id="duplicate" value="duplicate" v-model="selectedOption" />
           <label class="fr-label" for="duplicate">
-            Dupliquer une autre version
+            Dupliquer une version existante
             <span class="fr-hint-text"> Veuillez sélectionner la version à dupliquer </span>
           </label>
         </div>
