@@ -356,7 +356,7 @@ watch(
 );
 
 function clickOn(id, event) {
-  if (event.ctrlKey) {
+  if (event.ctrlKey || event.metaKey) {
     toggleSingleSelected(id);
   } else {
     toggleEditForm(id);
