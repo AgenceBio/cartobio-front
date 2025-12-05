@@ -206,6 +206,7 @@ const isMobile = computed(() => windowWidth.value < 992);
 const emit = defineEmits<{
   (e: "clickOnOverlay", value: number | string): void;
   (e: "selectFeature", value: number | string | null): void;
+  (e: "zoom:featureId", value: number | string | undefined): void;
 }>();
 
 /*
@@ -368,6 +369,11 @@ const generateConversionLevelOverlays = () => {
         id: feature.getId(),
         stopEvent: false,
         insertFirst: true,
+      });
+
+      element.addEventListener("click", (event) => {
+        event.stopPropagation();
+        return emit("zoom:featureId", feature.getId());
       });
 
       watch(
