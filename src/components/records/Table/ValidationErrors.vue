@@ -37,7 +37,7 @@
           </h4>
         </div>
         <button
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon-search-line fr-btn--icon-right"
+          class="fr-btn fr-btn--tertiary-no-outline"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
           @click="selectParcelles(ruleId)"
           style="flex-shrink: 0"
@@ -66,7 +66,7 @@
           </h4>
         </div>
         <button
-          class="fr-btn fr-btn--tertiary-no-outline fr-icon-search-line fr-btn--icon-right"
+          class="fr-btn fr-btn--tertiary-no-outline"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
           @click="selectParcelles(ruleId)"
           style="flex-shrink: 0"
@@ -75,49 +75,53 @@
         </button>
       </div>
 
-      <div v-if="record.record_id !== operatorStore.records?.[0]?.record_id" class="notification fr-p-3v fr-mb-2v">
+      <div
+        v-if="record.record_id !== operatorStore.records?.[0]?.record_id"
+        class="fr-text--sm notification fr-p-3v fr-mb-2v"
+      >
         <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
-          <h4 class="fr-text--md fr-mb-0">Cette version du parcellaire n'est pas la plus récente.</h4>
+          <h4 class="fr-text--sm fr-mb-0">Cette version du parcellaire n'est pas la plus récente.</h4>
         </div>
       </div>
 
-      <div v-if="showAgriPendingCertificationState()" class="notification fr-p-3v fr-mb-2v">
+      <div v-if="showAgriPendingCertificationState()" class="fr-text--sm notification fr-p-3v fr-mb-2v">
         <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
-          <h4 class="fr-text--md fr-mb-0">
+          <h4 class="fr-text--sm fr-mb-0">
             Votre parcellaire est en cours de certification, vous ne pouvez plus modifier les données.
           </h4>
         </div>
       </div>
-      <div v-if="showOCPendingCertificationState()" class="notification fr-p-3v fr-mb-2v">
+      <div v-if="showOCPendingCertificationState()" class="fr-text--sm notification fr-p-3v fr-mb-2v">
         <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
-          <h4 class="fr-text--md fr-mb-0">Le chargé de certification doit maintenant certifier le parcellaire.</h4>
+          <h4 class="fr-text--sm fr-mb-0">Le chargé de certification doit maintenant certifier le parcellaire.</h4>
         </div>
       </div>
-      <div v-if="showAgriCertifiedState()" class="notification fr-p-3v fr-mb-2v">
+      <div v-if="showAgriCertifiedState()" class="fr-text--sm notification fr-p-3v fr-mb-2v">
         <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
+            fr-text--sm
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
-          <h4 class="fr-text--md fr-mb-0">
+          <h4 class="fr-text--sm fr-mb-0">
             Votre parcellaire a été certifié, vous ne pouvez plus modifier les données.
           </h4>
         </div>
       </div>
-      <div v-if="showOCCertifiedState()" class="notification fr-p-3v fr-mb-2v">
+      <div v-if="showOCCertifiedState()" class="fr-text--sm notification fr-p-3v fr-mb-2v">
         <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
-          <h4 class="fr-text--md fr-mb-0">Ce parcellaire a été certifié, vous ne pouvez plus modifier les données.</h4>
+          <h4 class="fr-text--sm fr-mb-0">Ce parcellaire a été certifié, vous ne pouvez plus modifier les données.</h4>
         </div>
       </div>
     </div>

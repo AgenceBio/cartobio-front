@@ -66,7 +66,7 @@
 
     <p v-if="readonly" class="readonly-badge">Lecture seule</p>
 
-    <div class="fr-highlight flex fr-mt-1w">
+    <div class="fr-highlight fr-mt-1w">
       <div>
         <div class="fr-grid-row fr-grid-row--middle header">
           <ParcellaireState :record="record" />

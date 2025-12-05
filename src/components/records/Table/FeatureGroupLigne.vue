@@ -219,6 +219,7 @@ import {
   getCultureIcon,
 } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
+import { countRotationErrors } from "@/utils/culture";
 
 const route = useRoute();
 const recordStore = useRecordStore();

@@ -23,6 +23,8 @@ const autofocusedElement = ref();
 const selectedOption = ref(null);
 const selectedRecord = ref(null);
 
+const emit = defineEmits(["close"]);
+
 useFocus(autofocusedElement, { initialValue: true });
 
 const sortedRecords = computed(() => operatorStore.records);
@@ -51,6 +53,7 @@ const handleSubmit = async () => {
     const result = await recordStore.duplicate(selectedRecord.value.record_id);
     if (result) toast.success("La version a été dupliquée");
     emit("close");
+    await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${result.record_id}`);
   }
 };
 </script>
