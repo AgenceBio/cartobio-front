@@ -108,7 +108,6 @@
       <div v-if="showAgriCertifiedState()" class="fr-text--sm notification fr-p-3v fr-mb-2v">
         <div class="left-block">
           <p class="notifications-icon fr-mb-0 fr-px-1v">
-            fr-text--sm
             <span class="fr-icon fr-icon-notification-3-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
           </p>
           <h4 class="fr-text--sm fr-mb-0">
