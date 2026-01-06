@@ -709,32 +709,6 @@ const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 
-const exitEditMode = () => {
-  props.undoRedo.clear();
-  resetCorrection();
-
-  isModifying.value = false;
-  isCorrecting.value = false;
-
-  if (selectedFeatures) {
-    selectedFeatures.clear();
-  }
-
-  store.setSelectedIds([]);
-
-  if (modify) {
-    props.map.removeInteraction(modify);
-    modify = null;
-  }
-
-  if (correctionInteraction) {
-    props.map.removeInteraction(correctionInteraction);
-    correctionInteraction = null;
-  }
-
-  mapPrefs.value.currentMode = "edit";
-};
-
 /*
  * * Watchers
  */
