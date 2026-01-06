@@ -16,6 +16,7 @@ describe("roles", () => {
 
   it("should be able to perform Operateur actions", () => {
     userStore.roles = [ROLES.OPERATEUR];
+    userStore.user = { organismeCertificateur: { id: 2 } };
 
     expect(permissions.isAgri).toEqual(true);
     expect(permissions.canAddParcelle).toEqual(false);
@@ -43,6 +44,7 @@ describe("roles", () => {
 
   it("should be able to perform Certification actions", () => {
     userStore.roles = [ROLES.OC_CERTIF];
+    userStore.user = { organismeCertificateur: { id: 2 } };
 
     expect(permissions.isOc).toEqual(true);
     expect(permissions.canAddParcelle).toEqual(true);
@@ -81,6 +83,7 @@ describe("roles", () => {
 
   it("should be able to perform Auditeur actions", () => {
     userStore.roles = [ROLES.OC_AUDIT];
+    userStore.user = { organismeCertificateur: { id: 2 } };
 
     expect(permissions.isOc).toEqual(true);
     expect(permissions.canAddParcelle).toEqual(true);
@@ -111,6 +114,7 @@ describe("roles", () => {
 
   it("unknwon role cannot do anything", () => {
     userStore.roles = [ROLES.UNKNOWN];
+    userStore.user = { organismeCertificateur: { id: 2 } };
 
     expect(permissions.isAgri).toEqual(false);
     expect(permissions.isOc).toEqual(false);

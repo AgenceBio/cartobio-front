@@ -74,9 +74,9 @@ describe("Features Table", () => {
     });
 
     expect(wrapper.find("#mass-edit").exists()).toEqual(false);
-    await wrapper.findAll(".actions-parcelles")[0].find("input").trigger("click");
+    await wrapper.find("#radio-select-all").trigger("click");
 
-    expect(featuresStore.selectedIds).toEqual(["2", "4"]);
+    expect(featuresStore.selectedIds).toEqual(["1", "2", "3", "4"]);
     expect(wrapper.find("#mass-edit .menu-button").exists()).toEqual(true);
 
     await wrapper.find("#mass-edit .menu-button").trigger("click");

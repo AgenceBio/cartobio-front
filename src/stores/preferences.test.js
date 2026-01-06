@@ -15,6 +15,7 @@ describe("preferences/map", () => {
       rpg: false,
       currentMode: "consult",
       blockPlan: false,
+      hasUndo: false,
     });
   });
 

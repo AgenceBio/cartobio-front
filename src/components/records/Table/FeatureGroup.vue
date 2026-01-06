@@ -378,7 +378,7 @@ watch(
   { deep: true },
 );
 
-const haveToOpen = inject("openAll", null);
+const haveToOpen = inject("openAll", nullValue);
 
 watch(
   () => haveToOpen.value,

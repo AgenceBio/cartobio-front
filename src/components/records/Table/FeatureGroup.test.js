@@ -67,7 +67,7 @@ describe("FeatureGroup", () => {
     // hidden elements cannot be clicked…
     await wrapper.find(".groupe-parcelles").trigger("click");
 
-    const selectAllCheckbox = wrapper.find('.groupe-parcelles input[type="checkbox"]');
+    const selectAllCheckbox = wrapper.find('.groupe-parcelles  input[type="checkbox"]');
     await selectAllCheckbox.trigger("click");
     expect(featuresStore.selectedIds).toEqual(["4", "2"]);
 
@@ -77,7 +77,7 @@ describe("FeatureGroup", () => {
     // we close the header
     // then we click again on a single checkbox
     await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find('#parcelle-2 .parcelle-actions input[type="checkbox"]').trigger("click");
+    await wrapper.find('#parcelle-2  input[type="checkbox"]').trigger("click");
     expect(featuresStore.selectedIds).toEqual(["2"]);
     expect(wrapper.vm.open).toEqual(true);
   });
