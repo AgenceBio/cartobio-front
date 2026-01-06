@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="numberSelectedFeature === 1" class="pop-in-top" role="dialog" aria-labelledby="edit">
+    <div v-if="numberSelectedFeature === 1 && hasUndo" class="pop-in-top" role="dialog" aria-labelledby="edit">
       <div class="title fr-mr-2v">
-        <i class="ri-pen-nib-line" aria-hidden="true" />
+        <i class="ri-shape-line" aria-hidden="true" />
         <strong class="fr-ml-1v">Modifier</strong>
       </div>
       <button
@@ -96,6 +96,9 @@
             Valider la correction
           </button>
         </template>
+        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" aria-label="Retourner au mode editer">
+          <i class="fr-icon-close-line fr-icon--sm"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -704,6 +707,32 @@ const canCorrect = () => {
 
 const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
+};
+
+const exitEditMode = () => {
+  props.undoRedo.clear();
+  resetCorrection();
+
+  isModifying.value = false;
+  isCorrecting.value = false;
+
+  if (selectedFeatures) {
+    selectedFeatures.clear();
+  }
+
+  store.setSelectedIds([]);
+
+  if (modify) {
+    props.map.removeInteraction(modify);
+    modify = null;
+  }
+
+  if (correctionInteraction) {
+    props.map.removeInteraction(correctionInteraction);
+    correctionInteraction = null;
+  }
+
+  mapPrefs.value.currentMode = "edit";
 };
 
 /*

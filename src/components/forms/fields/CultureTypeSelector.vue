@@ -11,7 +11,7 @@
       type="text"
       :disabled="disabledInput"
       class="fr-input"
-      :value="fromCodeCpf(culture.CPF)?.libelle_code_cpf || ''"
+      :value="fromCodeCpf(culture.CPF)?.libelle_code_cpf"
     />
     <div v-else ref="autocompleteRef"></div>
 
@@ -239,6 +239,7 @@ onBeforeUnmount(() => {
 .aa-Item:hover {
   background-color: #ececfe;
 }
+
 .aa-Item[aria-selected="true"] {
   outline: 2px solid var(--border-active-blue-france);
 }
@@ -256,5 +257,9 @@ onBeforeUnmount(() => {
 
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
+}
+
+.aa-Autocomplete {
+  margin-top: 0.5rem;
 }
 </style>

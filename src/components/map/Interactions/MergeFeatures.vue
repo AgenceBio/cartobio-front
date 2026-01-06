@@ -16,7 +16,7 @@
         aria-label="Confirmer la fusion des parcelles"
         @click="showDetailsModal = true"
       >
-        Confirmer
+        Fusionner
       </button>
       <div class="fr-ml-2w vr" />
       <button

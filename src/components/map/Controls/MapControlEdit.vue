@@ -12,17 +12,6 @@
         <i class="ri-navigation-line" aria-hidden="true" />
       </button>
 
-      <button
-        class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode === 'draw' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        aria-label="Dessiner une nouvelle parcelle sur la carte"
-        v-tooltip="{ text: 'Dessiner une nouvelle parcelle sur la carte', position: 'left' }"
-        @click="handleAction('draw')"
-        :disabled="!permissions.canEditParcellaire || !online"
-      >
-        <i class="ri-pen-nib-line" aria-hidden="true" />
-      </button>
-
       <hr style="margin: 5px 0 -15px 0" />
 
       <button

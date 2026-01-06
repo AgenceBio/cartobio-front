@@ -481,6 +481,10 @@ const goToACertifier = () => {
     align-self: center;
   }
 }
+
+.fr-callout:hover {
+  background-color: var(--background-default-grey-hover) !important;
+}
 </style>
 
 <style>

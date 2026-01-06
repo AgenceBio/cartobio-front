@@ -37,7 +37,7 @@
           </h4>
         </div>
         <button
-          class="fr-btn fr-btn--tertiary-no-outline"
+          class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
           @click="selectParcelles(ruleId)"
           style="flex-shrink: 0"
@@ -66,7 +66,7 @@
           </h4>
         </div>
         <button
-          class="fr-btn fr-btn--tertiary-no-outline"
+          class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
           @click="selectParcelles(ruleId)"
           style="flex-shrink: 0"

@@ -2,11 +2,7 @@
   <div class="fr-input-group" :class="{ 'fr-input-group--error': hasErrors }">
     <label class="fr-label">Niveau de conversion</label>
 
-    <div
-      class="fr-radio-group fr-radio-rich fr-radio-group--sm fr-my-1w"
-      v-for="niveau in conversionLevels"
-      :key="niveau.value"
-    >
+    <div class="fr-radio-group fr-radio-group--sm fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
       <input
         type="radio"
         :id="'conversion-' + niveau.value + (modal ? '-modal' : '')"
@@ -16,13 +12,9 @@
         @change="emit('update:modelValue', niveau.value)"
         name="conversion_niveau"
       />
-      <label class="fr-label" :for="'conversion-' + niveau.value + (modal ? '-modal' : '')">
-        {{ niveau.label }}
+      <label class="fr-label label-inline" :for="'conversion-' + niveau.value + (modal ? '-modal' : '')">
+        <ConversionLevel :level="niveau" :noIcon="true" :labelSelector="true" class="fr-mr-1w" /> {{ niveau.label }}
       </label>
-
-      <div class="fr-radio-rich__pictogram">
-        <ConversionLevel :level="niveau" :noIcon="true" :labelSelector="true" />
-      </div>
     </div>
 
     <div v-for="[id, result] in errors" :key="id" class="fr-hint-text fr-error-text">{{ result.errorMessage }}.</div>
@@ -67,6 +59,11 @@ const hasErrors = computed(() => errors.value.size > 0);
   margin-bottom: 6px;
   background-color: #fff;
   min-width: 100%;
+}
+
+.label-inline {
+  display: flex;
+  flex-direction: initial !important;
 }
 
 .end-conversion {

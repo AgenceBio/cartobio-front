@@ -12,11 +12,12 @@
       </button>
     </div>
 
-    <div class="mode-choice" v-if="mapPrefs.currentMode === 'consult'">
+    <div class="mode-choice">
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         @click="emit('compare')"
         aria-label="Comparer les parcelles"
+        v-if="mapPrefs.currentMode === 'consult'"
         :disabled="!online"
       >
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
@@ -30,6 +31,27 @@
         Ajouter une parcelle
       </button>
     </div>
+
+    <div class="right-button">
+      <button
+        v-if="mapPrefs.currentMode === 'consult'"
+        class="fr-btn fr-btn--tertiary-no-outline"
+        @click="mapPrefs.currentMode = 'edit'"
+        aria-label="Passer en mode dessin"
+        :disabled="!permissions.canEditParcellaire || !online"
+      >
+        <i class="ri-pencil-line fr-mr-1w" aria-hidden="true" /> Ouvrir le mode d'édition
+      </button>
+      <button
+        v-else-if="mapPrefs.currentMode != 'consult' && !mapPrefs.hasUndo"
+        class="fr-btn fr-btn--tertiary-no-outline"
+        @click="mapPrefs.currentMode = 'consult'"
+        aria-label="Passer en mode dessin"
+        :disabled="!permissions.canEditParcellaire || !online"
+      >
+        <i class="ri-pencil-line fr-mr-1w" aria-hidden="true" /> Fermer le mode d'édition
+      </button>
+    </div>
   </div>
 </template>
 
@@ -37,7 +59,8 @@
 import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { useOnline } from "@vueuse/core";
-
+import { useFeaturesStore } from "@/stores/features";
+import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 
 const online = useOnline();
@@ -46,6 +69,7 @@ const online = useOnline();
  * * Stores
  */
 
+const store = useFeaturesStore();
 const preferences = usePreferences();
 const permissions = usePermissions();
 
@@ -58,6 +82,11 @@ const { map: mapPrefs } = storeToRefs(preferences);
 defineProps<{ fullScreenMap: boolean }>();
 
 /**
+ * * Refs
+ */
+const countSelected = ref<number>(store.selectedIds.length | 0);
+
+/**
  * * Emits
  */
 const emit = defineEmits<{
@@ -65,6 +94,17 @@ const emit = defineEmits<{
   (e: "compare"): void;
   (e: "openFullScreen"): void;
 }>();
+
+/**
+ * * Watchers
+ */
+
+watch(
+  () => store.selectedIds,
+  (newValue) => {
+    countSelected.value = newValue.length;
+  },
+);
 </script>
 
 <style scoped>
@@ -106,5 +146,23 @@ const emit = defineEmits<{
   width: 100%;
   z-index: 1;
   position: absolute;
+}
+
+.right-button {
+  background: #ffffff;
+  height: fit-content;
+  border-radius: 4px;
+
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
+}
+
+.right-button > button {
+  border-radius: 4px;
+  height: 44px;
+  justify-content: center;
 }
 </style>

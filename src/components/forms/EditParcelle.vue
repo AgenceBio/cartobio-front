@@ -23,7 +23,7 @@
             Saisir la certification
           </span>
         </div>
-        <div class="flex-space-between">
+        <div class="flex">
           <p class="fr-mt-1w fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</p>
           <em class="fr-mt-1w fr-hint-text" v-else>Nom de la parcelle</em>
           <button
@@ -289,20 +289,23 @@
       </form>
     </div>
     <div class="footer-controle fr-px-2w">
-      <div class="fr-toggle fr-toggle--label-left fr-my-2w">
+      <div
+        class="fr-checkbox-group fr-my-2w"
+        v-tooltip="{ text: 'Permet d\'annoter la parcelle comme vue', position: 'top' }"
+      >
         <input
+          name="checkbox-0"
+          id="checkbox-0"
           type="checkbox"
-          class="fr-toggle__input"
-          id="toggle"
-          aria-describedby="toggle-messages"
+          aria-describedby="checkbox-0-messages"
+          :aria-checked="estControlee"
           v-model="estControlee"
           @change="tagParcelle(featureId)"
-          role="switch"
-          :aria-checked="estControlee"
         />
-        <label class="fr-toggle__label" for="toggle">Marquer comme contrôlée</label>
-        <div class="fr-messages-group" id="toggle-messages" aria-live="polite"></div>
+        <label class="fr-label" for="checkbox-0">Vu</label>
+        <div class="fr-messages-group" id="checkbox-0-messages" aria-live="polite"></div>
       </div>
+
       <div class="fr-input-group fr-mt-1w">
         <button
           class="fr-btn"
@@ -625,5 +628,9 @@ nextTick(() => {
 
 .no-gras {
   font-weight: 400;
+}
+
+.flex {
+  display: flex;
 }
 </style>

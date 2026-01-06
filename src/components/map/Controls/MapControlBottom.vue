@@ -7,29 +7,6 @@
         {{ nbParcelles }} parcelle{{ nbParcelles > 1 ? "s" : "" }}
       </span>
     </div>
-    <div class="mode-choice" v-if="permissions.canEditParcellaire && !isMobile">
-      <button
-        type="button"
-        class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
-        :class="[mapPrefs.currentMode === 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        @click="mapPrefs.currentMode = 'consult'"
-        :disabled="!online"
-        :aria-pressed="mapPrefs.currentMode === 'consult'"
-      >
-        Consulter
-      </button>
-      <button
-        type="button"
-        class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode != 'consult' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
-        @click="mapPrefs.currentMode = 'edit'"
-        :disabled="!permissions.canEditParcellaire || !online"
-        :aria-pressed="mapPrefs.currentMode === 'edit'"
-      >
-        <i class="ri-shape-line fr-mr-2v" aria-hidden="true" />
-        Modifier
-      </button>
-    </div>
 
     <div class="attribution fr-text--xs">
       <a
@@ -73,15 +50,10 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, Ref, watch } from "vue";
 import type { Map as OlMap } from "ol";
-import { usePreferences } from "@/stores/preferences.js";
-import { storeToRefs } from "pinia";
 import { inHa, legalProjectionSurface } from "@/utils/features.js";
 import { useFeaturesStore } from "@/stores/features";
-import { usePermissions } from "@/stores/permissions.js";
-import { useOnline } from "@vueuse/core";
 
 import ScaleLine from "ol/control/ScaleLine.js";
-const online = useOnline();
 
 /**
  * * Refs
@@ -92,10 +64,6 @@ const map = inject<Ref<OlMap | null>>("map");
  * * Stores
  */
 
-const preferences = usePreferences();
-const permissions = usePermissions();
-
-const { map: mapPrefs } = storeToRefs(preferences);
 const featureStore = useFeaturesStore();
 
 /**

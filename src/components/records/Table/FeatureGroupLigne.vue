@@ -30,7 +30,14 @@
           }}
         </span>
         <div class="fr-checkbox-group fr-checkbox-group--sm">
-          <input type="checkbox" :id="'radio-' + featureGroup.key" :checked="allSelected" @click="toggleFeatureGroup" />
+          <input
+            ref="groupCheckbox"
+            type="checkbox"
+            :id="'radio-' + featureGroup.key"
+            :checked="allSelected"
+            @click="toggleFeatureGroup"
+          />
+
           <label
             class="fr-label"
             :for="'radio-' + featureGroup.key"
@@ -240,6 +247,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
+  "toggle",
   "edit:featureId",
   "edit-niveau-conversion:featureId",
   "edit-cultures:featureId",
@@ -252,7 +260,7 @@ const valueNull = ref(null);
 const scroll = inject("scrollToFeatureId", valueNull);
 
 const { selectedIds } = storeToRefs(featuresStore);
-const { toggleSingleSelected } = featuresStore;
+const { toggleSingleSelected, unselectAll } = featuresStore;
 
 const featureIds = computed(() => props.featureGroup.features.map(({ id }) => id));
 const openLigne = ref(
@@ -327,14 +335,52 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
   }
 });
 
+const haveToOpen = inject("openAll", null);
+
+watch(
+  () => haveToOpen.value,
+  (newState) => {
+    if (newState.shouldOpen !== null) {
+      open.value = newState.shouldOpen;
+      emit("toggle", newState.shouldOpen);
+    }
+  },
+  { deep: true },
+);
+
+watch(
+  () => open.value,
+  (newValue) => {
+    emit("toggle", newValue);
+  },
+);
+
 function clickOn(id, event) {
-  if (event.ctrlKey) {
+  if (event.ctrlKey || event.metaKey) {
     toggleSingleSelected(id);
+    if (selectedIds.value.length > 1) {
+      emit("edit:featureId", null);
+    }
   } else {
+    unselectAll();
+    toggleSingleSelected(id);
     toggleEditForm(id);
   }
 }
 
+const someSelected = computed(() => {
+  const selectedInGroup = featureIds.value.filter((id) => selectedIds.value.includes(id)).length;
+
+  return selectedInGroup > 0 && selectedInGroup < featureIds.value.length;
+});
+
+const groupCheckbox = ref(null);
+
+watch([allSelected, someSelected], () => {
+  if (groupCheckbox.value) {
+    groupCheckbox.value.indeterminate = someSelected.value;
+  }
+});
 onMounted(async () => {
   if (scroll.value != null && props.featureGroup.features.some((e) => e.id === scroll.value)) {
     open.value = true;
@@ -477,5 +523,15 @@ onMounted(async () => {
 
 .groupe-titre-on {
   background-color: var(--blue-france-925-125);
+}
+.fr-checkbox-group input[type="checkbox"]:indeterminate + label::before {
+  background-color: var(--background-active-blue-france);
+  border-color: var(--background-active-blue-france);
+
+  background-image: linear-gradient(to right, transparent 20%, white 20%, white 80%, transparent 80%);
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 2px;
 }
 </style>

@@ -3,6 +3,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from "vue";
 
+import { useFeaturesStore } from "@/stores/features.js";
+
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -11,7 +13,7 @@ import { Select } from "ol/interaction";
 
 // Utils Geom
 
-import { click } from "ol/events/condition";
+import { click, platformModifierKey } from "ol/events/condition";
 import { SelectEvent } from "ol/interaction/Select";
 
 /*
@@ -23,6 +25,12 @@ interface Props {
   vectorSource: VectorSource;
   vectorLayer: VectorLayer<VectorSource>;
 }
+
+/*
+ * * Stores
+ */
+
+const store = useFeaturesStore();
 
 /*
  * * Props
@@ -49,7 +57,8 @@ const emit = defineEmits<{
 onMounted(() => {
   selectInteraction = new Select({
     condition: click,
-    multi: false,
+    toggleCondition: platformModifierKey, // Ctrl / Cmd
+    multi: true,
     layers: [props.vectorLayer],
     style: new Style({
       fill: new Fill({ color: "rgba(88, 197, 207, 0.6)" }),
@@ -59,15 +68,23 @@ onMounted(() => {
   props.map.addInteraction(selectInteraction);
 
   selectInteraction.on("select", (e: SelectEvent) => {
-    const features = e.target.getFeatures().getArray();
+    const selected = e.target.getFeatures().getArray();
 
-    if (features.length === 1) {
-      props.map.getView().fit(features[0].getGeometry(), {
+    if (selected.length === 1) {
+      props.map.getView().fit(selected[0].getGeometry(), {
         duration: 1000,
-        padding: [50, 50, 50, 50],
-        maxZoom: 16,
+        padding: [250, 0, 0, 0],
       });
-      emit("selectFeature", features[0].getId());
+      store.unselectAll();
+      store.select(selected[0].getId());
+      emit("selectFeature", selected[0].getId());
+    } else if (selected.length > 1) {
+      store.unselectAll();
+      store.setSelectedIds(selected.map((f) => f.getId()));
+      emit("selectFeature", null);
+    } else {
+      store.unselectAll();
+      emit("selectFeature", null);
     }
   });
 });

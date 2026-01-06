@@ -92,24 +92,35 @@
       </button>
     </div>
   </div>
-  <div class="fr-grid-row total-parcelles fr-mr-5w fr-mt-2w">
-    <p class="fr-hint-text fr-text--md">
-      {{ features.length }} parcelles
-      {{
-        !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
-          ? "(" + inHa(legalProjectionSurface(features)) + " ha)"
-          : ""
-      }}
-    </p>
-    <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
-      <input type="checkbox" id="radio-select-all" :checked="allSelected" @click="toggleAllSelected" />
-      <label
-        class="fr-label"
-        for="radio-select-all"
-        aria-label="Sélectionner toutes les parcelles"
-        v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'top' }"
-      />
+  <div class="flex-space-between">
+    <div class="fr-grid-row total-parcelles fr-mr-5w fr-mt-2w">
+      <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
+        <input
+          ref="groupCheckbox"
+          type="checkbox"
+          id="radio-select-all"
+          :checked="allSelected"
+          @click="toggleAllSelected"
+        />
+        <label
+          class="fr-label"
+          for="radio-select-all"
+          aria-label="Sélectionner toutes les parcelles"
+          v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'top' }"
+        />
+      </div>
+      <p class="fr-hint-text fr-text--md">
+        {{ features.length }} parcelles
+        {{
+          !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
+            ? "(" + inHa(legalProjectionSurface(features)) + " ha)"
+            : ""
+        }}
+      </p>
     </div>
+    <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="openAll">
+      {{ hasExpandedGroups ? "Tout replier" : "Tout déplier" }}
+    </button>
   </div>
 
   <p v-if="!hasFeatures">Votre parcellaire est vide.</p>
@@ -119,6 +130,7 @@
       id="featureGroup1"
       :featureGroup="featureGroup"
       :key="featureGroup.key"
+      @toggle="(isExpanded) => handleGroupToggle(featureGroup.key, isExpanded)"
       @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
       @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
       @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
@@ -133,6 +145,7 @@
       id="featureGroup2"
       :featureGroup="featureGroup"
       :key="featureGroup.key + '-modal'"
+      @toggle="(isExpanded) => handleGroupToggle(featureGroup.key, isExpanded)"
       @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
       @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
       @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
@@ -174,7 +187,7 @@
   </p>
 </template>
 <script setup>
-import { computed, ref, watch, inject } from "vue";
+import { computed, ref, watch, inject, provide } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features.js";
@@ -232,6 +245,13 @@ const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
 
 const contentTopFeatures = ref(null);
+
+const openAllState = ref({
+  shouldOpen: null,
+  timestamp: 0,
+});
+provide("openAll", openAllState);
+const expandedGroupKeys = ref(new Set());
 
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
@@ -306,6 +326,46 @@ function scrollToTop() {
     element.scrollIntoView({ block: "start" });
   }
 }
+
+const hasExpandedGroups = computed(() => {
+  return expandedGroupKeys.value.size > 0;
+});
+
+function openAll() {
+  if (hasExpandedGroups.value) {
+    openAllState.value = {
+      shouldOpen: false,
+      timestamp: Date.now(),
+    };
+    expandedGroupKeys.value.clear();
+  } else {
+    openAllState.value = {
+      shouldOpen: true,
+      timestamp: Date.now(),
+    };
+    featureGroups.value.forEach((group) => {
+      expandedGroupKeys.value.add(group.key);
+    });
+  }
+}
+function handleGroupToggle(groupKey, isExpanded) {
+  if (isExpanded) {
+    expandedGroupKeys.value.add(groupKey);
+  } else {
+    expandedGroupKeys.value.delete(groupKey);
+  }
+}
+
+watch(featureGroups, () => {
+  const validKeys = new Set(featureGroups.value.map((g) => g.key));
+  expandedGroupKeys.value = new Set([...expandedGroupKeys.value].filter((key) => validKeys.has(key)));
+});
+
+const groupCheckbox = ref(null);
+
+watch(selectedFeatureIds, () => {
+  groupCheckbox.value.indeterminate = !allSelected.value && selectedFeatureIds.value.length > 0;
+});
 
 watch(userGroupingChoice, (newValue) => {
   if (newValue) {
@@ -421,9 +481,8 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
 }
 
 .total-parcelles {
-  justify-content: flex-end;
   gap: 10px;
-  padding: 0 10px;
+  padding: 0 10px 0 15px;
 }
 
 .text-truncate {
@@ -433,5 +492,20 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
   max-width: 100%;
   display: inline-block;
   vertical-align: bottom;
+}
+.fr-checkbox-group input[type="checkbox"]:indeterminate + label::before {
+  background-color: var(--background-active-blue-france);
+  border-color: var(--background-active-blue-france);
+
+  background-image: linear-gradient(to right, transparent 20%, white 20%, white 80%, transparent 80%);
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 2px;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

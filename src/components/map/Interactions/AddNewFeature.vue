@@ -189,6 +189,7 @@ import VectorTileLayer from "ol/layer/VectorTile";
 import VectorTileSource from "ol/source/VectorTile";
 import { FeatureCollection } from "@turf/helpers";
 import intersect from "@turf/intersect";
+import kinks from "@turf/kinks";
 import axios from "axios";
 import proj4 from "proj4";
 
@@ -226,7 +227,7 @@ const { map: mapPrefs } = storeToRefs(preferences);
 const showDetailsModal = ref(false);
 const feature = ref<Feature | null>(null);
 const correctedFeature = ref<Feature | null>(null);
-const mode = ref<"dessiner" | "cadastre" | "RPG">("dessiner");
+const mode = ref<"dessiner" | "cadastre" | "RPG" | null>(null);
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
@@ -601,6 +602,33 @@ const drawInteraction = (): void => {
     props.map.removeOverlay(tooltip);
     const geojsonFormat = new GeoJSON();
     const geojsonFeature = geojsonFormat.writeFeatureObject(newFeature);
+
+    try {
+      const kinksResult = kinks(geojsonFeature);
+
+      if (kinksResult.features.length > 0) {
+        errorDrawing.value = true;
+        invalidDrawing.value = false;
+
+        const previewFeature = geojsonFormat.readFeature(geojsonFeature) as Feature;
+        previewFeature.setStyle(errorStyle);
+        previewSource.addFeature(previewFeature);
+
+        feature.value = null;
+        return;
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de la géométrie:", error);
+      errorDrawing.value = true;
+
+      const previewFeature = geojsonFormat.readFeature(geojsonFeature) as Feature;
+      previewFeature.setStyle(errorStyle);
+      previewSource.addFeature(previewFeature);
+
+      feature.value = null;
+      return;
+    }
+
     geojsonFeature.properties = {};
     feature.value = geojsonFeature;
     feature.value.id = 1;
@@ -875,7 +903,17 @@ watch(
 
 onMounted(() => {
   props.map.addLayer(previewLayer);
+  if (mapPrefs.value.rpg === false && mapPrefs.value.cadastre === true) {
+    mode.value = "cadastre";
+  } else if (mapPrefs.value.rpg === true && mapPrefs.value.cadastre === false) {
+    mode.value = "RPG";
+  } else if (mapPrefs.value.rpg === true && mapPrefs.value.cadastre === true) {
+    mode.value = "cadastre";
+  } else {
+    mode.value = "dessiner";
+  }
 });
+
 onUnmounted(() => {
   store.unselectAll();
   mapPrefs.value.blockPlan = false;

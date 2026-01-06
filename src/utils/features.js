@@ -284,7 +284,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
-    label: "Année de début de conversion",
+    label: "Année de conversion",
     labelNoGroup: "Absence de date de début de conversion",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => (d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP),

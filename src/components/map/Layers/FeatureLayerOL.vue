@@ -536,6 +536,15 @@ watch(
   },
 );
 
+// watch(
+//   () => mapPrefs.value.currentMode,
+//   (newValue, oldValue) => {
+//     if (oldValue === "consult" && newValue !== "consult") {
+//       emit("selectFeature", null);
+//     }
+//   },
+// );
+
 const getCursor = (mode: string) => {
   if (!props.interactive) currentCursor.value = "default";
   else {
@@ -581,6 +590,11 @@ watch(
 watch(
   () => zoom.value,
   () => generateConversionLevelOverlays(),
+);
+
+watch(
+  () => hasUndo.value,
+  () => (mapPrefs.value.hasUndo = hasUndo.value),
 );
 
 watch(

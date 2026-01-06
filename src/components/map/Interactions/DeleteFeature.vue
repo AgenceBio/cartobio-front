@@ -13,7 +13,7 @@
       aria-label="Confirmer la suppression"
       @click="confirmer"
     >
-      Confirmer
+      Supprimer
     </button>
     <div class="vr" />
     <button
