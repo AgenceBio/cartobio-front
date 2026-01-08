@@ -92,6 +92,6 @@ a[aria-disabled] {
 }
 
 .btn--error {
-  color: var(--text-default-error);
+  color: var(--text-default-error) !important;
 }
 </style>

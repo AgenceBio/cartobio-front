@@ -1,12 +1,24 @@
 <template>
   <div class="flex" role="group" aria-label="Comparaison de deux cartes interactives">
-    <div ref="mapRef" aria-label="Carte gauche, première version" class="openlayers-container">
+    <div
+      ref="mapRef"
+      aria-label="Carte gauche, première version"
+      class="openlayers-container"
+      @mousemove="onMouseMove1"
+      @mouseleave="onMouseLeave1"
+    >
       <slot name="map1" v-if="map" />
     </div>
 
     <div class="separator"></div>
 
-    <div ref="mapRef2" class="openlayers-container" aria-label="Carte droite, seconde version">
+    <div
+      ref="mapRef2"
+      class="openlayers-container"
+      aria-label="Carte droite, seconde version"
+      @mousemove="onMouseMove2"
+      @mouseleave="onMouseLeave2"
+    >
       <slot name="map2" v-if="map2" />
     </div>
   </div>
@@ -87,6 +99,74 @@ onMounted(() => {
     });
   }
 });
+
+const onMouseMove1 = (event: MouseEvent): void => {
+  if (!map.value || !map2.value || !mapRef.value) return;
+
+  const rect = mapRef.value.getBoundingClientRect();
+  const pixel = [event.clientX - rect.left, event.clientY - rect.top];
+  const coordinate = map.value.getCoordinateFromPixel(pixel);
+
+  if (coordinate) {
+    const pixel2 = map2.value.getPixelFromCoordinate(coordinate);
+
+    if (pixel2) {
+      map2.value.dispatchEvent({
+        type: 'pointermove',
+        pixel: pixel2,
+        coordinate: coordinate,
+        originalEvent: event,
+        map: map2.value,
+        frameState: map2.value.frameState_
+      });
+    }
+  }
+};
+
+const onMouseMove2 = (event: MouseEvent): void => {
+  if (!map.value || !map2.value || !mapRef2.value) return;
+
+  const rect = mapRef2.value.getBoundingClientRect();
+  const pixel = [event.clientX - rect.left, event.clientY - rect.top];
+  const coordinate = map2.value.getCoordinateFromPixel(pixel);
+
+  if (coordinate) {
+    const pixel1 = map.value.getPixelFromCoordinate(coordinate);
+
+    if (pixel1) {
+      map.value.dispatchEvent({
+        type: 'pointermove',
+        pixel: pixel1,
+        coordinate: coordinate,
+        originalEvent: event,
+        map: map.value,
+        frameState: map.value.frameState_
+      });
+    }
+  }
+};
+
+const onMouseLeave1 = (): void => {
+  if (!map2.value) return;
+
+  map2.value.dispatchEvent({
+    type: 'pointerout',
+    pixel: [-1, -1],
+    coordinate: undefined,
+    map: map2.value
+  });
+};
+
+const onMouseLeave2 = (): void => {
+  if (!map.value) return;
+
+  map.value.dispatchEvent({
+    type: 'pointerout',
+    pixel: [-1, -1],
+    coordinate: undefined,
+    map: map.value
+  });
+};
 </script>
 
 <style>

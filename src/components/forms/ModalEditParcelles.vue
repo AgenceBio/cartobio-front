@@ -1,17 +1,19 @@
 <template>
   <Modal v-bind="$attrs" data-track-content data-content-name="Modale de modification multiple de la culture">
-    <template #title>Modification du type de culture</template>
+    <template #title>Modification groupée</template>
 
     <div class="fr-alert fr-alert--info fr-my-3w">
       <p>
-        Cette modification impactera <b>{{ selectedIds.length }} parcelles</b>.
+        Cette modification impactera <b>{{ selectedIds.length }} parcelle{{ selectedIds.length > 1 ? "s" : "" }}</b
+        >.
       </p>
     </div>
     <AccordionGroup>
       <AccordionSection title="Parcelles à modifier">
         <ul class="fr-mt-2w">
           <li v-for="f in selectedFeatures" :key="f.id">
-            {{ f.properties.nom ? f.properties.nom + " - " : "" }}
+            {{ f.properties.NOM ? f.properties.NOM : "" }}
+            {{ f.properties.NOM && (f.properties.NUMERO_I || f.properties.NUMERO_P) ? " - " : "" }}
             {{ f.properties.NUMERO_I ? " Ilot : " + f.properties.NUMERO_I : "" }}
             {{ f.properties.NUMERO_P ? " Parcelle : " + f.properties.NUMERO_P : "" }}
           </li>

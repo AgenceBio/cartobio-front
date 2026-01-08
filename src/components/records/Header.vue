@@ -176,7 +176,7 @@
           </div>
         </div>
         <p class="fr-text--sm fr-mb-0">
-          <b>Réalisé le {{ jjmmyyyy(record.audit_date) }}</b
+          <b>Réalisé le {{ jjmmyyyy(record.audit_date || record.created_at) }}</b
           ><br /><span
             class="fr-mt-1w"
             v-if="

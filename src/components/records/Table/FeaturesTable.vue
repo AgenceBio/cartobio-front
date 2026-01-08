@@ -272,10 +272,11 @@ async function handleSingleFeatureDeletion({ id, reason }) {
   statsPush(["trackEvent", "Parcelles", "Suppression individuelle (sauvegarde)"]);
 
   maybeDeletedFeatureId.value = null;
+  editedFeatureId.value = null;
 
   const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
   await featuresStore.deleteSingleFeature({ id, reason });
-  if (isOnline && loading) {
+  if (isOnline.value) {
     loading.value = true;
   } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 }
@@ -291,7 +292,7 @@ async function handleFeatureCollectionSubmit({ ids, patch }) {
     })),
   };
   await featuresStore.updateFeatureCollectionProperties(featureCollection);
-  if (isOnline && loading) {
+  if (isOnline.value) {
     loading.value = true;
   } else toast.success("Parcelles modifiées.");
 }
@@ -308,10 +309,12 @@ async function toggleFeaturesDelete() {
   deleteModalMultiple.value = !deleteModalMultiple.value;
 }
 async function handleMultipleDelete(reason) {
+  editedFeatureId.value = null;
+
   for (const featureId of featuresStore.selectedIds) {
     await featuresStore.deleteSingleFeature({ id: featureId, reason });
   }
-  if (isOnline && loading) {
+  if (isOnline.value) {
     loading.value = true;
   } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 

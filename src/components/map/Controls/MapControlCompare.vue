@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref, Ref } from "vue";
+import { inject, onMounted, onUnmounted, ref, Ref } from "vue";
 import type { Map as OlMap } from "ol";
 
 import ScaleLine from "ol/control/ScaleLine.js";
@@ -85,6 +85,9 @@ const deleteNb = ref(0);
 
 const diffOnMap = ref<boolean>(false);
 
+const addListener = ref(null);
+const removeListener = ref(null);
+
 /**
  * * Fonction
  */
@@ -107,9 +110,14 @@ const onLocate = () => {
 };
 
 const createScaleLine = () => {
+  if (!map?.value) return;
+
+  const scaleLineElement = document.getElementById("scale-line");
+  if (!scaleLineElement) return;
+
   const control = new ScaleLine({
     className: "ol-scale-line",
-    target: document.getElementById("scale-line"),
+    target: scaleLineElement,
     units: "metric",
     maxWidth: 100,
     minWidth: 100,
@@ -118,8 +126,13 @@ const createScaleLine = () => {
 };
 
 const updateFeatureCounts = (layer) => {
+  if (!layer) return;
+
   const source = layer.getSource();
+  if (!source) return;
+
   const features = source.getFeatures();
+  if (!features) return;
 
   modifiedNb.value = features.filter((f) => f.get("status") === "modified").length;
   addNb.value = features.filter((f) => f.get("status") === "added").length;
@@ -131,22 +144,35 @@ const updateFeatureCounts = (layer) => {
  */
 
 onMounted(() => {
+  if (!map?.value) return;
+
   createScaleLine();
-  if (map.value) {
-    map.value.getLayers().on("add", (e) => {
-      if (e.element.get("name") === "diffLayer") {
-        diffOnMap.value = true;
-        updateFeatureCounts(e.element);
-      }
-    });
-    map.value.getLayers().on("remove", (e) => {
-      if (e.element.get("name") === "diffLayer") {
-        diffOnMap.value = false;
-        modifiedNb.value = 0;
-        addNb.value = 0;
-        deleteNb.value = 0;
-      }
-    });
+
+  const layers = map.value.getLayers();
+
+  addListener.value = layers.on("add", (e) => {
+    if (e.element.get("name") === "diffLayer") {
+      diffOnMap.value = true;
+      updateFeatureCounts(e.element);
+    }
+  });
+
+  removeListener.value = layers.on("remove", (e) => {
+    if (e.element.get("name") === "diffLayer") {
+      diffOnMap.value = false;
+      modifiedNb.value = 0;
+      addNb.value = 0;
+      deleteNb.value = 0;
+    }
+  });
+});
+
+onUnmounted(() => {
+  if (addListener.value) {
+    addListener.value = null;
+  }
+  if (removeListener.value) {
+    removeListener.value = null;
   }
 });
 </script>

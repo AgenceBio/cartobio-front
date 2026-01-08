@@ -1,36 +1,38 @@
 <template>
-  <span
-    v-if="conversionLevel.value === LEVEL_MAYBE_AB || conversionLevel.value === LEVEL_UNKNOWN"
-    class="badge badge-a-modifier"
-  >
-    <template v-if="isOc">
-      <span class="fr-icon fr-icon-pencil-line fr-icon--sm"></span>
-      <p class="fr-mb-0 small-text">Certification</p>
-    </template>
-    <template v-else>
-      <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }}</p>
-      <small> à préciser par l'OC</small>
-    </template>
-  </span>
-  <div v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
-    <span v-if="!noIcon" class="fr-icon" :class="conversionLevel.icon"></span>
-    <div v-if="!labelSelector">
-      {{ conversionLevel.shortLabel }}
-    </div>
-    <div v-else>
-      {{ conversionLevel.labelSelector ?? conversionLevel.shortLabel }}
-    </div>
-    <time
-      class="fr-mb-0"
-      :datetime="conversionDate"
-      v-if="withDate && conversionDate && isAB"
-      :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`"
+  <div class="flex">
+    <span
+      v-if="conversionLevel.value === LEVEL_MAYBE_AB || conversionLevel.value === LEVEL_UNKNOWN"
+      class="badge badge-a-modifier"
     >
-      {{ dateFormat(conversionDate) }}
-    </time>
+      <template v-if="isOc">
+        <span class="fr-icon fr-icon-pencil-line fr-icon--sm"></span>
+        <p class="fr-mb-0 small-text">Certification</p>
+      </template>
+      <template v-else>
+        <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }}</p>
+        <small> à préciser par l'OC</small>
+      </template>
+    </span>
+    <div v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
+      <span v-if="!noIcon" class="fr-icon" :class="conversionLevel.icon"></span>
+      <div v-if="!labelSelector">
+        {{ conversionLevel.shortLabel }}
+      </div>
+      <div v-else>
+        {{ conversionLevel.labelSelector ?? conversionLevel.shortLabel }}
+      </div>
+      <time
+        class="fr-mb-0"
+        :datetime="conversionDate"
+        v-if="withDate && conversionDate && isAB"
+        :title="`Parcelle ${conversionLevel.shortLabel} engagée en bio le ${ddmmmmyyyy(conversionDate)}`"
+      >
+        {{ dateFormat(conversionDate) }}
+      </time>
+    </div>
     <div
-      v-else-if="withDate && !conversionDate && ['C1', 'C2', 'C3'].includes(conversionLevel.value)"
-      class="conversion-missing-date"
+      v-if="withDate && !conversionDate && ['C1', 'C2', 'C3'].includes(conversionLevel.value)"
+      class="conversion-missing-date fr-text--sm"
     >
       <span class="fr-icon fr-icon-calendar-line fr-icon--sm"></span>
       <span class="conversion-text">Conversion</span>
@@ -82,6 +84,12 @@ const isAB = computed(() => props.feature && isABLevel(props.feature.properties.
 </script>
 
 <style scoped>
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 time {
   border-left: 1px solid;
   padding-left: 5px;
@@ -144,10 +152,8 @@ time {
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.conversion-text {
+  margin-top: auto;
+  margin-bottom: auto;
   color: var(--text-default-error);
-  font-weight: 600;
 }
 </style>

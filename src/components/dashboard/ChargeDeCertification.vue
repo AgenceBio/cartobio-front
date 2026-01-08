@@ -54,6 +54,7 @@
       class="fr-callout certifiees fr-mb-0 callout-children"
       @click="goToCertifiees"
       aria-label="Accéder à la liste des opérateurs certifiés"
+      v-tooltip="{ text: 'Ouvrir la liste des exploitations certifiées', position: 'bottom' }"
     >
       <div class="callout-content">
         <div>
@@ -77,6 +78,7 @@
       class="fr-callout en-attentes fr-mb-0 callout-children"
       @click="goToEnAttentes"
       aria-label="Accéder à la liste des opérateurs contrôlés mais non certifiés"
+      v-tooltip="{ text: 'Ouvrir la liste des exploitations contrôlées non certifiées', position: 'bottom' }"
     >
       <div class="callout-content">
         <div>
@@ -101,6 +103,7 @@
         class="fr-callout non-auditees fr-mb-0 full-width"
         @click="goToNonAuditees"
         aria-label="Accéder à la liste des opérateurs non audités"
+        v-tooltip="{ text: 'Ouvrir la liste des exploitations non certifiées', position: 'bottom' }"
       >
         <div class="callout-content">
           <div>
@@ -138,6 +141,7 @@
       class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
       @click="goToACertifier"
       aria-label="Accéder à la liste des opérateurs à certifier"
+      v-tooltip="{ text: 'Afficher tous les parcellaires à certifier', position: 'top' }"
     >
       Voir tout
     </button>

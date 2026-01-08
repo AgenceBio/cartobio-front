@@ -290,7 +290,7 @@
     </div>
     <div class="footer-controle fr-px-2w">
       <div
-        class="fr-checkbox-group fr-my-2w"
+        class="fr-checkbox-group fr-checkbox-group--sm fr-my-2w"
         v-tooltip="{ text: 'Permet d\'annoter la parcelle comme vue', position: 'top' }"
       >
         <input
