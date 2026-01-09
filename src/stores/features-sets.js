@@ -4,7 +4,15 @@ import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePermissions } from "@/stores/permissions.js";
-import { AnnotationTags, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_MAYBE_AB, LEVEL_UNKNOWN } from "@/referentiels/ab.js";
+import {
+  AnnotationTags,
+  LEVEL_AB,
+  LEVEL_C1,
+  LEVEL_C2,
+  LEVEL_C3,
+  LEVEL_MAYBE_AB,
+  LEVEL_UNKNOWN,
+} from "@/referentiels/ab.js";
 
 import { featureName } from "@/utils/features.js";
 import { countRotationErrors } from "@/utils/culture";
@@ -199,7 +207,8 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             errorMessage: "Il manque une date de début de conversion",
             select(f) {
               return (
-                !f.properties.engagement_date && [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(f.properties.conversion_niveau)
+                !f.properties.engagement_date &&
+                [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(f.properties.conversion_niveau)
               );
             },
           },

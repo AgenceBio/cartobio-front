@@ -65,7 +65,7 @@ describe("SingleItemCertificationBodyForm", () => {
 
       // if AB, date field is not mandatory
       await form.find(`#conversion-${LEVEL_AB}`).setValue();
-      expect(form.find("#engagement_date").attributes()).not.toHaveProperty("required");
+      expect(form.find("#engagement_date").attributes()).toHaveProperty("required");
 
       // date field is mandatory otherwise
       await form.find(`#conversion-${LEVEL_C1}`).setValue();

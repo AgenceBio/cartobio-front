@@ -16,7 +16,7 @@
           class="fr-input"
           v-model="patch.engagement_date"
           name="engagement_date"
-          min="1985-01-01"
+          min="1900-01-01"
           :max="maxDate"
           ref="autofocusedElement"
           required
