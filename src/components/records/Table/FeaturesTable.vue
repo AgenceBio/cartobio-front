@@ -237,7 +237,7 @@ const emit = defineEmits([
   "change-tri",
 ]);
 
-const loading = inject("loading");
+const loading = inject("loading", ref(null));
 const isOnline = useOnline();
 
 const featuresStore = useFeaturesStore();

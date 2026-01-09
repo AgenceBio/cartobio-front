@@ -112,12 +112,12 @@ const onMouseMove1 = (event: MouseEvent): void => {
 
     if (pixel2) {
       map2.value.dispatchEvent({
-        type: 'pointermove',
+        type: "pointermove",
         pixel: pixel2,
         coordinate: coordinate,
         originalEvent: event,
         map: map2.value,
-        frameState: map2.value.frameState_
+        frameState: map2.value.frameState_,
       });
     }
   }
@@ -135,12 +135,12 @@ const onMouseMove2 = (event: MouseEvent): void => {
 
     if (pixel1) {
       map.value.dispatchEvent({
-        type: 'pointermove',
+        type: "pointermove",
         pixel: pixel1,
         coordinate: coordinate,
         originalEvent: event,
         map: map.value,
-        frameState: map.value.frameState_
+        frameState: map.value.frameState_,
       });
     }
   }
@@ -150,10 +150,10 @@ const onMouseLeave1 = (): void => {
   if (!map2.value) return;
 
   map2.value.dispatchEvent({
-    type: 'pointerout',
+    type: "pointerout",
     pixel: [-1, -1],
     coordinate: undefined,
-    map: map2.value
+    map: map2.value,
   });
 };
 
@@ -161,10 +161,10 @@ const onMouseLeave2 = (): void => {
   if (!map.value) return;
 
   map.value.dispatchEvent({
-    type: 'pointerout',
+    type: "pointerout",
     pixel: [-1, -1],
     coordinate: undefined,
-    map: map.value
+    map: map.value,
   });
 };
 </script>
