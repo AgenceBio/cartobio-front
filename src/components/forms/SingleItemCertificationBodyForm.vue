@@ -197,7 +197,6 @@ const patch = reactive({
   auditeur_notes: props.feature.properties.auditeur_notes || "",
 });
 
-
 const isAB = computed(() => isABLevel(patch.conversion_niveau));
 const maxDate = computed(() => toDateInputString(new Date()));
 const isEngagementDateRequired = computed(() =>
