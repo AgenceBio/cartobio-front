@@ -261,10 +261,10 @@ watch(
       patch.engagement_date = "1900-01-01";
     }
     if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
-      patch.engagement_date = "";
+      patch.engagement_date = undefined;
     }
     if (newValue === LEVEL_CONVENTIONAL) {
-      patch.engagement_date = "";
+      patch.engagement_date = undefined;
     }
   },
 );
