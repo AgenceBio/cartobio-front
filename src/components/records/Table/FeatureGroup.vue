@@ -183,7 +183,9 @@
           >
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
-          <p class="fr-mb-0 fr-text--sm text-grey" v-if="feature.properties.controlee">Vu.</p>
+          <p class="fr-mb-0 fr-text--sm text-grey" v-if="feature.properties.controlee">
+            Vu. <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line "></span>
+          </p>
           <p class="fr-mb-0 fr-text--sm text-grey">
             <span v-if="getTimeAgo(feature)" aria-hidden="true" class="fr-icon-refresh-line fr-icon--sm"></span>
             {{ getTimeAgo(feature) }}
