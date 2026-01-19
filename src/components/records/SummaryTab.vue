@@ -3,19 +3,16 @@
     <div class="fr-px-4v">
       <ValidationErrors @switchTab="emit('switch-tab')" />
     </div>
-    <hr class="fr-mt-4v" />
-
     <div class="fr-px-4v" v-if="record.certification_state != 'OPERATOR_DRAFT'">
       <NotesSection />
     </div>
-    <hr class="fr-mt-6v" v-if="record.certification_state != 'OPERATOR_DRAFT'" />
 
-    <div class="fr-grid-row fr-grid-row--middle space-between fr-px-4v">
-      <h3 class="fr-text--lg fr-mb-0">Parcelles par niveau de conversion</h3>
-      <div class="fr-grid-row fr-grid-row--middle infos-parcelles">
-        <p class="fr-mb-0">{{ features.length }} parcelles</p>
-        <p class="fr-mb-0" v-if="surface">{{ surface }}</p>
-      </div>
+    <div class="fr-grid-row fr-grid-row--middle space-between fr-mt-4w fr-px-4v">
+      <h3 class="fr-text--lead fr-mb-0">Parcelles par niveau de conversion</h3>
+    </div>
+    <div class="fr-grid-row fr-grid-row--middle infos-parcelles fr-px-4v">
+      <p class="fr-mb-0">{{ features.length }} parcelles</p>
+      <p class="fr-mb-0" v-if="surface">{{ surface }}</p>
     </div>
     <div class="carte-container fr-mt-6v">
       <div
@@ -33,7 +30,7 @@
             ></span>
             {{ getConversionLevel(group.key).labelSelector ?? getConversionLevel(group.key).shortLabel }}
           </p>
-          <p class="fr-mb-0 fr-text--bold">
+          <p class="fr-mb-0 fr-text--md">
             {{
               !isNaN(parseFloat(inHa(legalProjectionSurface(group.features))))
                 ? inHa(legalProjectionSurface(group.features)) + " ha"
@@ -41,8 +38,8 @@
             }}
           </p>
         </div>
-        <div class="fr-grid-row align-baseline">
-          <p class="fr-mb-0 fr-h2 fr-mr-2v">
+        <div class="fr-grid-row align-baseline color-card-parcelles">
+          <p class="fr-mb-0 fr-display--xs fr-mr-2v">
             {{ group.features.length }}
           </p>
           <p class="fr-mb-0">Parcelles</p>
@@ -163,5 +160,9 @@ async function selectFeatureGroup(group) {
 [class*="badge-Non rens."] {
   color: var(--text-default-error);
   background-color: var(--red-marianne-925-125);
+}
+
+.color-card-parcelles {
+  color: var(--light-decisions-text-text-title-blue-france, #000091);
 }
 </style>

@@ -2,7 +2,7 @@
   <ActionDropdown>
     <template #trigger="{}">
       <button
-        class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button"
+        class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line menu-button fr-my-1w"
         @click.stop.prevent="onTriggerClick"
       >
         {{ label }}
@@ -76,7 +76,6 @@ function onTriggerClick() {
 
 <style scoped>
 .menu-button {
-  margin-bottom: 0;
   box-shadow: none;
 }
 

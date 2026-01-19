@@ -34,34 +34,40 @@ const lengthMessage = computed(() => {
   return toreturn;
 });
 </script>
+
 <template>
   <div>
     <div
-      class="fr-grid-row fr-grid-row--middle notif-title"
-      :class="{ 'fr-pb-4v': open }"
+      class="fr-grid-row fr-px-4v fr-py-4v groupe-notes"
+      tabindex="0"
+      aria-expanded="open"
+      :aria-controls="`group-content-notes`"
+      :class="{ 'groupe-titre-on': open }"
       @click.stop="open = !open"
       @keydown.enter="open = !open"
     >
-      <h3 class="fr-text--lg fr-mb-0">Notes du contrôle</h3>
-      <div class="fr-grid-row icons">
+      <div class="fr-grid-row groupe-titre fr-mb-0">
+        <b class="fr-text--lg fr-mb-0 font-blue">Notes du contrôle</b>
+      </div>
+      <div class="fr-grid-row gap-10 actions-notes">
         <span aria-hidden="true" class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire">
           {{ lengthMessage }}
         </span>
-        <span v-if="!open" class="fr-icon fr-icon-add-line fr-icon--sm color-green" aria-hidden="true"></span>
-        <span v-else class="fr-icon fr-icon-subtract-line fr-icon--sm color-green" aria-hidden="true"></span>
+        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
       </div>
     </div>
-    <div :hidden="!open">
-      <figure v-if="permissions.isOc && record.audit_notes" class="fr-quote">
+
+    <div :hidden="!open" class="notes-content fr-mx-4v fr-mb-2v">
+      <figure v-if="permissions.isOc && record.audit_notes" class="fr-quote fr-my-3v fr-p-3v note-item">
         <figcaption>
-          <p class="fr-quote__author">Notes de fin de controle</p>
+          <p class="fr-quote__author">Notes de fin de contrôle</p>
         </figcaption>
         <blockquote>
           <p>{{ record.audit_notes }}</p>
         </blockquote>
       </figure>
 
-      <figure v-if="displayCallout" class="fr-quote">
+      <figure v-if="displayCallout" class="fr-quote fr-my-3v fr-p-3v note-item">
         <figcaption>
           <p class="fr-quote__author">Notes à destination de l'agriculteur</p>
         </figcaption>
@@ -73,55 +79,50 @@ const lengthMessage = computed(() => {
   </div>
 </template>
 
-<style>
-.notification {
-  border: 1px solid var(--blue-france-950-100);
+<style scoped>
+.groupe-notes {
+  gap: 12px;
   justify-content: space-between;
+  border-top: 1px solid var(--artwork-decorative-blue-france);
+  cursor: pointer;
+
+  .groupe-titre {
+    color: var(--light-decisions-text-text-action-high-blue-france, #000091);
+    gap: 7px;
+  }
+
+  .actions-notes {
+    align-content: center;
+  }
 }
 
-.left-block {
-  gap: 8px;
+.groupe-titre-on {
+  background-color: var(--blue-france-925-125);
 }
 
-.error-text {
-  text-transform: uppercase;
-  color: var(--text-default-error);
-  background-color: var(--red-marianne-925-125);
+.groupe-notes:hover {
+  background-color: var(--blue-france-925-125-hover);
 }
 
-.notifications-icon {
-  color: var(--blue-ecume-sun-247-moon-675);
-  background-color: var(--blue-ecume-925-125);
+.fr-icon[aria-checked="true"]::before {
+  transform: rotate(180deg);
 }
 
-.color-green {
-  color: var(--green-bourgeon-sun-425-moon-759);
+.gap-10 {
+  gap: 10px;
 }
 
-.bg-bourgeon {
-  background-color: var(--green-bourgeon-975-75);
-}
-
-.notif-title {
-  justify-content: space-between;
+.font-blue {
+  color: var(--light-decisions-text-text-action-high-blue-france, #000091);
 }
 
 .badge-commentaire {
   background-color: rgba(254, 236, 194, 1);
-  padding: 0px 6px;
+  padding: 2px 6px;
   border-radius: 4px;
 }
 
 .badge-commentaire::before {
-  margin-right: 3px;
-}
-
-.icons {
-  gap: 5px;
-  cursor: pointer;
-}
-
-.notif-title {
-  cursor: pointer;
+  margin-right: 5px;
 }
 </style>

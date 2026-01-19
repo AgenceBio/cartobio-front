@@ -1,3 +1,4 @@
+w
 <template>
   <div class="button-group">
     <div :class="[isEditParcelleOpen ? 'info-box-open' : 'info-box']" aria-live="polite">
@@ -25,13 +26,6 @@
 
     <div id="scale-line" class="scale-line"></div>
     <div class="group-button-right">
-      <button
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-        @click="onFullScreen"
-        :aria-label="isFullScreen ? 'Quitter plein écran' : 'Passer en plein écran'"
-      >
-        <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
-      </button>
       <div class="group-zoom">
         <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onZoomIn" aria-label="Zoomer">
           <span class="fr-icon-add-line fr-icon--sm"></span>
@@ -155,7 +149,7 @@ onMounted(() => {
 <style scoped>
 .button-group {
   position: absolute;
-  bottom: 0;
+  bottom: 1rem;
   z-index: 1;
   display: inline-flex;
 }

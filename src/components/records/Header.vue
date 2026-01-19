@@ -1,6 +1,10 @@
 <template>
   <header class="fr-mb-2w">
-    <div class="fr-grid-row fr-grid-row--middle header fr-py-1w" id="headerRecord">
+    <div
+      class="fr-grid-row fr-grid-row--middle header fr-py-1w sticky"
+      id="headerRecord"
+      style="position: sticky; top: 0px; background-color: white; z-index: 10"
+    >
       <div class="fr-grid-row fr-text--xs">
         <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0" @click="redirectToParcellaire()">
           <b>{{ operator.nom }}</b>
@@ -26,18 +30,32 @@
           </button>
         </template>
       </div>
-      <button
-        v-if="!isMobile && !noButtonFS"
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline button-fullscreen"
-        @click="emit('fullScreen')"
-        v-tooltip="tooltips.fullScreen"
-      >
-        <span :class="[isFullScreen ? 'ri-collapse-diagonal-line' : 'ri-expand-diagonal-line']"></span>
-      </button>
+      <fieldset class="fr-segmented fr-segmented--sm" v-if="modelOnglet === 'fullTab'">
+        <div class="fr-segmented__elements">
+          <div class="fr-segmented__element">
+            <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
+            <label class="fr-label" for="segmented-1-1">
+              <span class="ri-sidebar-unfold-line" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="fr-segmented__element">
+            <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
+            <label class="fr-label" for="segmented-1-2">
+              <span class="fr-icon-list-unordered fr-icon--sm" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="fr-segmented__element">
+            <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
+            <label class="fr-label" for="segmented-1-3">
+              <span class="fr-icon-road-map-line fr-icon--sm" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+      </fieldset>
     </div>
 
-    <div class="fr-grid-row fr-grid-row--middle header">
-      <div class="fr-grid-row">
+    <div class="header">
+      <div class="flex-space-between">
         <p class="fr-sr-only operator-name" :data-numerobio="operator.numeroBio">{{ operator.nom }}</p>
         <div v-tooltip="tooltips.selectVersion" class="seamless-select fr-grid-row">
           <b class="version-name fr-mr-2w">
@@ -60,150 +78,121 @@
             </option>
           </select>
         </div>
+        <div class="margin-left">
+          <span
+            class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
+            :class="{ 'fr-tag--disabled': record.certification_state !== 'CERTIFIED' }"
+            :disabled="record.certification_state !== 'CERTIFIED'"
+            @click="
+              () => {
+                if (record.certification_state === 'CERTIFIED') {
+                  attestationModal = true;
+                }
+              }
+            "
+          >
+            <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
+            Attestation
+          </span>
+          <span
+            v-if="storage.syncQueues[record.record_id]"
+            class="fr-my-auto fr-icon-refresh-line fr-icon--sm"
+            v-tooltip="tooltips.changeNotSync"
+            role="img"
+            aria-label="Changements non-synchronisés"
+          >
+          </span>
+          <span
+            v-else-if="storage.records[record.record_id]"
+            class="fr-my-auto fr-icon-cloud-line fr-icon--sm fr-ml-2v"
+            role="img"
+            v-tooltip="tooltips.changeSync"
+            aria-label="Prêt pour travailler hors ligne"
+          >
+          </span>
+
+          <ActionDropdown
+            with-icons
+            smallList
+            icon-class="ri-more-line fr-btn--sm actions-list"
+            icon-style="font-size: 1.2em; "
+            v-tooltip="tooltips.actionsParcellaire"
+          >
+            <li v-if="!disableActions && permissions.canEditVersion">
+              <button
+                class="fr-btn fr-btn--sm fr-icon-edit-line fr-btn--tertiary-no-outline edit-version-info"
+                @click="showEditVersionModal = true"
+                aria-label="Modifier la version du parcellaire"
+              >
+                Modifier les données de la version
+              </button>
+            </li>
+
+            <li class="">
+              <button
+                v-if="storage.syncQueues[record.record_id]"
+                type="button"
+                class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
+                disabled
+              >
+                Changements non-synchronisés
+              </button>
+              <button
+                v-else-if="storage.records[record.record_id]"
+                type="button"
+                class="fr-btn fr-btn--tertiary-no-outline fr-icon-cloud-close"
+                @click.stop.prevent="deleteDownloadModal = record.record_id"
+              >
+                Arrêter le mode hors connexion et vider le cache
+              </button>
+              <button
+                v-else
+                type="button"
+                class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-cloud-check"
+                :disabled="!isOnline || readonly"
+                @click.stop.prevent="tryDownloadRecord(record)"
+              >
+                Préparer pour travailler hors connexion
+              </button>
+            </li>
+
+            <li v-if="canDisplayHistory" class="">
+              <button
+                class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-time-line"
+                @click="historyModal = true"
+                aria-label="Afficher l'historique des modifications"
+              >
+                Historique général du parcellaire
+              </button>
+            </li>
+
+            <hr class="fr-mb-0 fr-pb-2w" />
+            <li class="fr-mt-0">
+              <span class="fr-text--sm fr-text-bold fr-ml-2w"> <b>Télécharger le parcellaire</b> </span>
+            </li>
+            <ExportActions
+              :operator="operator"
+              :collection="collection"
+              :record="record"
+              @close="exportModal = false"
+              :hasError="tags.filter((e) => e.errorMessage != undefined)"
+            />
+          </ActionDropdown>
+        </div>
         <br />
       </div>
     </div>
 
     <p v-if="readonly" class="readonly-badge">Lecture seule</p>
 
-    <div class="fr-highlight fr-mt-1w">
-      <div>
+    <div class="fr-mt-1w">
+      <div class="flex-space-between">
         <div class="fr-grid-row fr-grid-row--middle header">
           <ParcellaireState :record="record" />
-          <div class="fr-grid-row margin-left">
-            <span
-              class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
-              v-if="record.certification_state === 'CERTIFIED'"
-              @click="
-                () => {
-                  attestationModal = true;
-                }
-              "
-            >
-              <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>Attestation</span
-            >
-            <span
-              v-if="storage.syncQueues[record.record_id]"
-              class="fr-my-auto fr-icon-refresh-line fr-icon--sm"
-              v-tooltip="tooltips.changeNotSync"
-              role="img"
-              aria-label="Changements non-synchronisés"
-            >
-            </span>
-            <span
-              v-else-if="storage.records[record.record_id]"
-              class="fr-my-auto fr-icon-cloud-line fr-icon--sm fr-ml-2v"
-              role="img"
-              v-tooltip="tooltips.changeSync"
-              aria-label="Prêt pour travailler hors ligne"
-            >
-            </span>
-
-            <ActionDropdown
-              v-if="hasFeatures && !readonly"
-              with-icons
-              smallList
-              icon-class="fr-icon-download-line fr-btn--sm export-action"
-              v-tooltip="tooltips.exportActions"
-            >
-              <ExportActions
-                :operator="operator"
-                :collection="collection"
-                :record="record"
-                @close="exportModal = false"
-                :hasError="tags.filter((e) => e.errorMessage != undefined)"
-              />
-            </ActionDropdown>
-            <ActionDropdown
-              with-icons
-              smallList
-              icon-class="ri-more-2-line fr-btn--sm"
-              icon-style="font-size: 1.2em; "
-              v-tooltip="tooltips.actionsParcellaire"
-            >
-              <li v-if="!disableActions && permissions.canEditVersion">
-                <button
-                  class="fr-btn fr-btn--sm fr-icon-edit-line fr-btn--tertiary-no-outline edit-version-info"
-                  @click="showEditVersionModal = true"
-                  aria-label="Modifier la version du parcellaire"
-                >
-                  Modifier les données de la version
-                </button>
-              </li>
-              <li class="break">
-                <hr />
-              </li>
-              <li class="">
-                <button
-                  v-if="storage.syncQueues[record.record_id]"
-                  type="button"
-                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-refresh-line"
-                  disabled
-                >
-                  Changements non-synchronisés
-                </button>
-                <button
-                  v-else-if="storage.records[record.record_id]"
-                  type="button"
-                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-cloud-close"
-                  @click.stop.prevent="deleteDownloadModal = record.record_id"
-                >
-                  Arrêter le mode hors connexion et vider le cache
-                </button>
-                <button
-                  v-else
-                  type="button"
-                  class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-cloud-check"
-                  :disabled="!isOnline || readonly"
-                  @click.stop.prevent="tryDownloadRecord(record)"
-                >
-                  Préparer pour travailler hors connexion
-                </button>
-              </li>
-              <li class="break">
-                <hr />
-              </li>
-              <li v-if="canDisplayHistory" class="">
-                <button
-                  class="history-action fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-time-line"
-                  @click="historyModal = true"
-                  aria-label="Afficher l'historique des modifications"
-                >
-                  Historique général du parcellaire
-                </button>
-              </li>
-            </ActionDropdown>
-          </div>
         </div>
-        <p class="fr-text--sm fr-mb-0">
-          <b>Réalisé le {{ jjmmyyyy(record.audit_date || record.created_at) }}</b
-          ><br /><span
-            class="fr-mt-1w"
-            v-if="
-              (record?.audit_history ?? [])
-                .filter((d) => d.type === 'CertificationStateChange')
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .at(-1)?.user?.nom ||
-              (record?.audit_history ?? [])
-                .filter((d) => d.type === 'CertificationStateChange')
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .at(-1)?.user?.prenom
-            "
-          >
-            Par
-            {{
-              ((record?.audit_history ?? [])
-                .filter((d) => d.type === "CertificationStateChange")
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .at(-1)?.user?.nom ?? "") +
-              " " +
-              ((record?.audit_history ?? [])
-                .filter((d) => d.type === "CertificationStateChange")
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .at(-1)?.user?.prenom ?? "")
-            }}
-          </span>
-        </p>
+        <div class="fr-my-auto">
+          <ControlSegment v-model="tab" id="tab-top" />
+        </div>
       </div>
     </div>
   </header>
@@ -289,7 +278,8 @@ import ActionDropdown from "../widgets/ActionDropdown.vue";
 import ExportActions from "./ExportActions.vue";
 import toast from "@/utils/toast.js";
 import { useRouter } from "vue-router";
-import { jjmmyyyy } from "@/utils/dates";
+
+import ControlSegment from "@/components/records/ControlSegment.vue";
 
 const router = useRouter();
 
@@ -302,13 +292,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  stateTab: {
+    type: String,
+    required: true,
+  },
   noButtonFS: {
     type: Boolean,
     default: false,
   },
 });
 
-const emit = defineEmits(["fullScreen"]);
+const emit = defineEmits(["modeDisplay"]);
 
 const exportModal = ref(false);
 const historyModal = ref(false);
@@ -331,6 +325,8 @@ const isPdfLoading = ref(false);
 const isPdfGenerating = ref(false);
 const errorText = ref({});
 
+const tab = ref(props.stateTab);
+
 const { record } = recordStore;
 const { operator } = operatorStore;
 const featuresSets = useFeaturesSetsStore();
@@ -344,7 +340,7 @@ const versionMenu = ref(false);
 const versionMenuRef = ref(null);
 const showEditVersionModal = ref(false);
 
-const isFullScreen = ref(props.stateFS);
+const modelOnglet = ref(props.stateFS);
 
 const tooltips = {
   pin: { text: "Épingler le parcellaire", position: "top" },
@@ -454,10 +450,35 @@ function fetchHasAttestationProduction(record) {
   return false;
 }
 
+/*
+ * * Watchers
+ */
+
 watch(
   () => props.stateFS,
   (newValue) => {
-    isFullScreen.value = newValue;
+    modelOnglet.value = newValue;
+  },
+);
+
+watch(
+  () => modelOnglet.value,
+  (newValue) => {
+    emit("modeDisplay", newValue);
+  },
+);
+
+watch(
+  () => props.stateTab,
+  (newValue) => {
+    tab.value = newValue;
+  },
+);
+
+watch(
+  () => tab.value,
+  (newValue) => {
+    emit("changeTab", newValue);
   },
 );
 </script>
@@ -488,7 +509,7 @@ watch(
   background-repeat: no-repeat;
   justify-content: flex-end;
   font-size: 20px;
-  color: black;
+  color: var(--light-decisions-background-background-action-high-blue-france, #000091);
 
   & label {
     display: inline;
@@ -567,6 +588,17 @@ watch(
 
 .ri-more-2-line.fr-btn--sm {
   padding: 0.25rem 0.45rem;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.fr-tag--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 <style>

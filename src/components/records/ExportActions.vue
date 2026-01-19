@@ -9,9 +9,7 @@
       Télécharger au format .geojson
     </button>
   </li>
-  <li class="break">
-    <hr />
-  </li>
+
   <li v-if="exporter.toClipboard">
     <button
       class="fr-btn fr-btn--tertiary-no-outline"
@@ -22,9 +20,6 @@
     >
       Copier dans le presse-papiers
     </button>
-  </li>
-  <li class="break">
-    <hr />
   </li>
 
   <li v-if="exporter.toFileData">
@@ -37,9 +32,6 @@
     >
       Télécharger au format .{{ exporter.extension }}
     </button>
-  </li>
-  <li class="break">
-    <hr />
   </li>
 </template>
 

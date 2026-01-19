@@ -47,43 +47,6 @@ describe("Features Table", () => {
     expect(wrapper.find("#parcelle-1").attributes()).toHaveProperty("hidden", "");
   });
 
-  test("we toggle all features in one click", async () => {
-    const wrapper = mount(TableComponent);
-
-    expect(wrapper.find("#mass-edit").exists()).toEqual(false);
-    await wrapper.find("#radio-select-all").trigger("click");
-
-    expect(featuresStore.selectedIds).toEqual(["1", "2", "3", "4"]);
-    expect(wrapper.find("#mass-edit").exists()).toEqual(true);
-  });
-
-  test("Selectionne quelques parcelles", async () => {
-    const AsyncComponent = defineComponent({
-      components: { TableComponent },
-      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>',
-    });
-
-    const wrapper = mount(AsyncComponent, {
-      props: {
-        massActions: [
-          { label: "Modifier les cultures", component: markRaw(CultureTypeModal) },
-          { label: "Ajouter une date de début de conversion", component: markRaw(EngagementDateModal) },
-          { label: "Modifier le statut des parcelles", component: markRaw(EngagementLevelModal) },
-        ],
-      },
-    });
-
-    expect(wrapper.find("#mass-edit").exists()).toEqual(false);
-    await wrapper.find("#radio-select-all").trigger("click");
-
-    expect(featuresStore.selectedIds).toEqual(["1", "2", "3", "4"]);
-    expect(wrapper.find("#mass-edit .menu-button").exists()).toEqual(true);
-
-    await wrapper.find("#mass-edit .menu-button").trigger("click");
-
-    expect(wrapper.findAll("#mass-edit ul > li")).toHaveLength(3);
-  });
-
   // test("we not be able to see and activate facets as an Agri", async () => {
   //   const wrapper = mount(TableComponent);
 

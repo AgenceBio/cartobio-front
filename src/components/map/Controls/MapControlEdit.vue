@@ -111,8 +111,8 @@ const handleAction = (mode: string) => {
 <style scoped>
 .toolbar {
   position: absolute;
-  top: 25%;
-  right: 1rem;
+  top: 30%;
+  right: 0;
   z-index: 1000;
 }
 @media (height <= 800px) {
@@ -123,6 +123,7 @@ const handleAction = (mode: string) => {
 
 .toolbar-top {
   background: white;
+  border: 4px solid #a6f2fa;
   display: flex;
   justify-content: space-between;
   flex-direction: column;

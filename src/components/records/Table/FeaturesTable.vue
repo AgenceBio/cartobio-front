@@ -1,6 +1,16 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
   <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w" ref="contentTopFeatures">
+    <div class="seamless-select fr-col-12 fr-col-md-6">
+      <label for="plots-group-by">Regrouper par</label>
+      <div class="select-wrapper">
+        <b class="font-blue fr-mr-1v text-truncate">{{ groupingChoiceLabel }}</b>
+        <span class="arrow-icon"></span>
+        <select id="plots-group-by" v-model="userGroupingChoice">
+          <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
+        </select>
+      </div>
+    </div>
     <div class="fr-search-bar fr-pl-1v fr-col-12 fr-col-md-6" id="search" role="search">
       <p class="fr-sr-only" id="search-desc">Recherche soumis automatiquement lors de la saisie</p>
       <label class="fr-label" for="search-784-input">Rechercher une parcelle </label>
@@ -14,13 +24,6 @@
         aria-describedby="search-desc"
       />
       <button class="fr-btn" title="Rechercher">Rechercher une parcelle</button>
-    </div>
-    <div class="seamless-select fr-col-12 fr-col-md-6 fr-pl-1v fr-grid-row">
-      <label for="plots-group-by">Regrouper par </label>
-      <b class="font-blue fr-mr-2w text-truncate">{{ groupingChoiceLabel }}</b>
-      <select id="plots-group-by" v-model="userGroupingChoice">
-        <option :value="key" v-for="({ label }, key) in groupingChoices" :key="key">&nbsp;&nbsp;{{ label }}</option>
-      </select>
     </div>
   </div>
   <div class="fr-grid-row fr-grid-row--middle liste-filtre fr-mb-3v">
@@ -44,56 +47,8 @@
     </button>
   </div>
 
-  <div
-    v-if="selectedFeatureIds.length > 0"
-    role="status"
-    aria-live="polite"
-    class="fr-grid-row selection-multiple fr-mt-4v fr-mb-2v fr-py-2v"
-  >
-    <div class="fr-grid-row gap-10">
-      <button
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line"
-        aria-label="Désélectionner toutes les parcelles"
-        @click="unselectAll"
-        v-tooltip="{ text: 'Déselectionner les parcelles sélectionnées ', position: 'top' }"
-      ></button>
-      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
-        {{ selectedFeatureIds.length }} parcelle{{ selectedFeatureIds.length > 1 ? "s" : "" }} sélectionnée{{
-          selectedFeatureIds.length > 1 ? "s" : ""
-        }}
-      </p>
-      <p class="fr-mb-0 fr-grid-row fr-grid-row--middle">
-        <span
-          >{{
-            !isNaN(parseFloat(inHa(legalProjectionSurface(selectedFeatures))))
-              ? inHa(legalProjectionSurface(selectedFeatures)) + " ha"
-              : ""
-          }}
-        </span>
-      </p>
-    </div>
-    <div id="mass-edit">
-      <MassActionsSelector
-        v-if="massActions.length"
-        :actions="massActions"
-        label="Modifier"
-        @openModal="emit('edit:featureId', null)"
-        @submit="handleFeatureCollectionSubmit"
-      />
-      <button
-        v-if="massActions.length"
-        type="button"
-        @click.prevent="toggleFeaturesDelete()"
-        :disabled="!permissions.canDeleteFeature"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
-        v-tooltip="{ text: 'Supprimer les parcelles sélectionnées', position: 'top' }"
-      >
-        Supprimer la parcelle
-      </button>
-    </div>
-  </div>
   <div class="flex-space-between">
-    <div class="fr-grid-row total-parcelles fr-mr-5w fr-mt-2w">
+    <div class="fr-grid-row total-parcelles fr-mt-2w">
       <div class="fr-checkbox-group fr-checkbox-group--sm" v-if="hasFeatures">
         <input
           ref="groupCheckbox"
@@ -109,8 +64,8 @@
           v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'top' }"
         />
       </div>
-      <p class="fr-hint-text fr-text--md">
-        {{ features.length }} parcelles
+      <p class="fr-text--sm">
+        Séléctionner {{ features.length }} parcelles
         {{
           !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
             ? "(" + inHa(legalProjectionSurface(features)) + " ha)"
@@ -186,15 +141,14 @@
     </a>
   </p>
 </template>
+
 <script setup>
 import { computed, ref, watch, inject, provide } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
-import { usePermissions } from "@/stores/permissions.js";
 
-import MassActionsSelector from "@/components/records/Table/MassActionsSelector.vue";
 import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
 import DeleteModal from "@/components/forms/DeleteForm.vue";
 import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
@@ -242,7 +196,6 @@ const isOnline = useOnline();
 
 const featuresStore = useFeaturesStore();
 const featuresSets = useFeaturesSetsStore();
-const permissions = usePermissions();
 
 const contentTopFeatures = ref(null);
 
@@ -255,8 +208,8 @@ const expandedGroupKeys = ref(new Set());
 
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
-const { selectedIds: selectedFeatureIds, allSelected, selectedFeatures } = storeToRefs(featuresStore);
-const { toggleAllSelected, unselectAll } = featuresStore;
+const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore);
+const { toggleAllSelected } = featuresStore;
 
 const editedFeatureId = ref(null);
 const maybeDeletedFeatureId = ref(null);
@@ -279,22 +232,6 @@ async function handleSingleFeatureDeletion({ id, reason }) {
   if (isOnline.value) {
     loading.value = true;
   } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
-}
-
-async function handleFeatureCollectionSubmit({ ids, patch }) {
-  statsPush(["trackEvent", "Parcelles", "Modification multiple (sauvegarde)"]);
-  editedFeatureId.value = null;
-  const featureCollection = {
-    type: "FeatureCollection",
-    features: ids.map((id) => ({
-      id,
-      properties: { ...patch },
-    })),
-  };
-  await featuresStore.updateFeatureCollectionProperties(featureCollection);
-  if (isOnline.value) {
-    loading.value = true;
-  } else toast.success("Parcelles modifiées.");
 }
 
 function handleFilterClick(id) {
@@ -391,18 +328,40 @@ watch(userGroupingChoice, (newValue) => {
 
 <style scoped>
 .seamless-select {
+  display: flex;
+  flex-direction: column;
   gap: 5px;
-  position: relative;
-  padding-right: 1rem;
   font-weight: normal;
   font-size: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Direction=Bas'%3E%3Cpath id='Ic&%23195;&%23180;ne' fill-rule='evenodd' clip-rule='evenodd' d='M12 13.172L16.95 8.222L18.364 9.636L12 16L5.63599 9.636L7.04999 8.222L12 13.172Z' fill='%23000091'/%3E%3C/g%3E%3C/svg%3E%0A");
-  background-position: right bottom;
-  background-repeat: no-repeat;
-  justify-content: flex-end;
+  align-items: flex-start;
 
   & label {
     display: inline;
+    margin-bottom: 0;
+  }
+}
+
+.select-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  position: relative;
+  width: fit-content;
+  align-items: center;
+
+  & b {
+    margin-bottom: 0;
+  }
+
+  & .arrow-icon {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Direction=Bas'%3E%3Cpath id='Ic&%23195;&%23180;ne' fill-rule='evenodd' clip-rule='evenodd' d='M12 13.172L16.95 8.222L18.364 9.636L12 16L5.63599 9.636L7.04999 8.222L12 13.172Z' fill='%23000091'/%3E%3C/g%3E%3C/svg%3E%0A");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    flex-shrink: 0;
   }
 
   /* super hacky way to hide a select behind
@@ -415,6 +374,7 @@ watch(userGroupingChoice, (newValue) => {
     width: 100%;
     height: 100%;
     opacity: 0;
+    cursor: pointer;
   }
 }
 
@@ -485,7 +445,6 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
 
 .total-parcelles {
   gap: 10px;
-  padding: 0 10px 0 15px;
 }
 
 .text-truncate {
@@ -496,6 +455,7 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
   display: inline-block;
   vertical-align: bottom;
 }
+
 .fr-checkbox-group input[type="checkbox"]:indeterminate + label::before {
   background-color: var(--background-active-blue-france);
   border-color: var(--background-active-blue-france);

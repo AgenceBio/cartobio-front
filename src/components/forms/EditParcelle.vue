@@ -2,15 +2,23 @@
   <div class="global">
     <div class="fr-px-6v fr-py-6v content">
       <div class="fr-grid-row">
+        <p class="fr-h6 fr-mb-2v fr-my-auto">{{ featureName(feature, { explicitName: false }) }}</p>
         <button
-          class="end-right fr-btn fr-btn--tertiary-no-outline fr-icon-close-line fr-btn--icon-right fr-btn--sm"
+          class="end-right fr-btn fr-btn--tertiary-no-outline fr-icon-close-line fr-btn--icon-right"
           @click="handleClose"
           aria-label="Fermer la fiche de la parcelle"
-        >
-          Fermer
-        </button>
+        ></button>
       </div>
-      <div class="fr-mb-4v">
+      <div class="fr-mt-4v fr-pb-0">
+        <div class="flex">
+          <span class="fr-mt-1w fr-mb-0 fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</span>
+          <em class="fr-mt-1w fr-mb-0 fr-hint-text" v-else>Nom de la parcelle</em>
+          <button
+            @click="modalName = true"
+            class="fr-icon--sm fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
+            aria-label="Modifier le nom de la parcelle {{ feature.properties.NOM || '' }}"
+          ></button>
+        </div>
         <div class="fr-grid-row">
           <ConversionLevel
             v-if="feature.properties.conversion_niveau && feature.properties.conversion_niveau != ''"
@@ -23,23 +31,13 @@
             Saisir la certification
           </span>
         </div>
-        <div class="flex">
-          <p class="fr-mt-1w fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</p>
-          <em class="fr-mt-1w fr-hint-text" v-else>Nom de la parcelle</em>
-          <button
-            @click="modalName = true"
-            class="fr-icon--sm fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
-            aria-label="Modifier le nom de la parcelle {{ feature.properties.NOM || '' }}"
-          ></button>
-        </div>
-        <p class="fr-h4 fr-mb-2v fr-mt-0">{{ featureName(feature, { explicitName: false }) }}</p>
         <div class="fr-grid-row">
           <span class="fr-icon-map-pin-2-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
-          <p class="fr-mb-0">{{ feature.properties.COMMUNE }} {{ feature.properties.COMMUNE_LABEL }}</p>
+          <p class="fr-mb-0 fr-text--sm">{{ feature.properties.COMMUNE }} {{ feature.properties.COMMUNE_LABEL }}</p>
         </div>
-        <div class="fr-grid-row">
+        <div class="fr-grid-row fr-text--sm">
           <span class="ri-custom-size fr-mr-1v" aria-hidden="true"></span>
-          <p class="fr-mb-0">
+          <p class="fr-mb-0 fr-text--sm">
             {{
               !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
                 ? inHa(legalProjectionSurface(feature)) + " ha"

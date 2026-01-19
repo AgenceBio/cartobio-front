@@ -7,28 +7,6 @@
       :class="{ 'groupe-titre-on': openLigne }"
     >
       <div class="fr-grid-row groupe-titre fr-mb-0">
-        <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
-          <span v-if="isGroupedByCulture" :class="getCultureIcon(featureGroup.key)" class="fr-mr-1v"></span>
-          <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
-          <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v fr-mx-2v">
-            <span
-              class="fr-icon fr-icon--sm fr-icon-warning-line fr-py-0 icon-error"
-              :title="`${groupErrors} parcelles à amender`"
-              aria-hidden="true"
-            />
-            {{ groupErrors }}
-          </span>
-          <span class="label-group">{{ featureGroup.label }}</span>
-        </div>
-      </div>
-      <div class="fr-grid-row gap-10 actions-parcelles">
-        <span>
-          {{
-            !isNaN(parseFloat(inHa(featureGroup.surface)))
-              ? inHa(featureGroup.surface) + " ha"
-              : inHa(featureGroup.surface)
-          }}
-        </span>
         <div class="fr-checkbox-group fr-checkbox-group--sm">
           <input
             ref="groupCheckbox"
@@ -48,35 +26,85 @@
             "
           />
         </div>
+        <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
+          <span v-if="isGroupedByCulture" :class="getCultureIcon(featureGroup.key)" class="fr-mr-1v"></span>
+          <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
+          <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v fr-mx-2v">
+            <span
+              class="fr-icon fr-icon--sm fr-icon-warning-line fr-py-0 icon-error"
+              :title="`${groupErrors} parcelles à amender`"
+              aria-hidden="true"
+            />
+            {{ groupErrors }}
+          </span>
+          <span class="label-group">{{ featureGroup.label }}</span>
+        </div>
+      </div>
+      <div class="fr-grid-row gap-10 actions-parcelles">
+        <span class="font-blue">
+          {{
+            !isNaN(parseFloat(inHa(featureGroup.surface)))
+              ? inHa(featureGroup.surface) + " ha"
+              : inHa(featureGroup.surface)
+          }}
+        </span>
+
         <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="openLigne" aria-role="button" />
       </div>
     </div>
     <div
       class="fr-mb-2v fr-p-4v fr-mx-4v parcelle-ligne"
-      :class="{ 'fr-grid-row': openLigne, 'fr-mt-2v': index === 0 }"
+      :class="{ 'fr-grid-row': openLigne, 'fr-mt-2v': index === 0, 'carte-odd': index % 2 !== 0 }"
       :id="'parcelle-' + feature.id + '-ligne'"
       :hidden="!openLigne"
       v-for="(feature, index) in featureGroup.features"
       :key="feature.id"
       @click="(event) => clickOn(feature.id, event)"
     >
-      <div class="fr-col-2">
-        <h4
-          class="fr-text--lg fr-mb-0"
-          :class="{
-            'fr-icon fr-icon-checkbox-fill fr-icon fr-icon--md fr-icon--left controlee': feature.properties.controlee,
-          }"
-        >
-          {{ featureName(feature, { explicitName: false }) }}
-        </h4>
-        <p class="fr-hint-text" v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null">
-          {{ featureName(feature, { nameOnly: true }) }}
-        </p>
+      <div class="fr-col-3 parcelle-info-col">
+        <div class="fr-checkbox-group fr-checkbox-group--sm" @click.stop.prevent="handleClickChebox(feature.id)">
+          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" />
+          <label
+            class="fr-label"
+            :for="'radio-' + feature.id"
+            :aria-label="
+              selectedIds.includes(feature.id)
+                ? `Désélectionner ${featureName(feature)}`
+                : `Sélectionner ${featureName(feature)}`
+            "
+          />
+        </div>
+        <div class="parcelle-content">
+          <div class="parcelle-name-row">
+            <span>{{ featureName(feature, { explicitName: false }) }}</span>
+          </div>
+
+          <span
+            class="fr-hint-text"
+            v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
+          >
+            {{ featureName(feature, { nameOnly: true }) }}
+          </span>
+          <div class="flex">
+            <div
+              class="fr-mt-1v"
+              @click="openLigneNiveauConversionModal(feature.id)"
+              :class="{ clickable: permissions.canChangeConversionLevel }"
+            >
+              <ConversionLevel :feature="feature" with-date noIcon />
+            </div>
+            <span class="fr-text--xs text-grey-vu fr-ml-1v fr-mt-1v fr-mb-0" v-if="feature.properties.controlee">
+              <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span> Vu
+            </span>
+          </div>
+        </div>
       </div>
       <div class="fr-col-2" v-if="!isGroupedByCulture">
         <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-          Multiculture <span class="fr-sr-only"> : </span>
+          Multiculture
+          <span class="fr-sr-only"> : </span>
           <br />
+
           <small v-for="(culture, i) in feature.properties.cultures" :key="i">
             <span v-if="i">, </span> {{ cultureLabel(culture) }}
           </small>
@@ -95,7 +123,9 @@
         >
           Culture
         </button>
-        <p v-else class="fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</p>
+        <p v-else class="fr-mb-0">
+          {{ cultureLabel(feature.properties.cultures[0]) }}
+        </p>
       </div>
       <div class="fr-col-2" v-else>
         <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">Multiculture</p>
@@ -105,7 +135,7 @@
         <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
           Variété
         </small>
-        <em
+        <span
           v-if="
             !(
               feature.properties.cultures &&
@@ -113,9 +143,10 @@
               feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label)?.variete
             )
           "
+          class="fr-mt-1v"
         >
-          Non rens.
-        </em>
+          <small>Non rens.</small>
+        </span>
         <span v-else class="fr-mt-1v">
           {{ feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label).variete }}
         </span>
@@ -126,11 +157,11 @@
         </small>
         <template v-for="(culture, i) in feature.properties.cultures" :key="i">
           <span v-if="i" class="">, </span>
-          <em class="fr-mt-1v" v-if="!culture.variete">Non rens.</em>
+          <span class="fr-mt-1v" v-if="!culture.variete"><small>Non rens.</small></span>
           <span v-else class="fr-mt-1v">{{ culture.variete }}</span>
         </template>
       </div>
-      <div class="fr-col-1">
+      <div class="fr-col-2">
         <span>
           {{
             !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
@@ -139,22 +170,13 @@
           }}
         </span>
       </div>
-      <div class="fr-col-2">
-        <div
-          style="width: fit-content"
-          @click="openLigneNiveauConversionModal(feature.id)"
-          :class="{ clickable: permissions.canChangeConversionLevel }"
-        >
-          <ConversionLevel :feature="feature" with-date noIcon />
-        </div>
-      </div>
       <div class="fr-col-3 fr-grid-row last-row">
         <div class="fr-py-3v fr-px-2v">
           <span v-if="isRota(feature)" :class="isRota(feature)" class="fr-px-2v"
             ><i class="ri-exchange-funds-line"></i>ROTATION</span
           >
-          <span class="fr-text--sm text-grey fr-px-2v">
-            {{ getTimeAgo(feature) }}
+          <span class="fr-text--sm text-grey fr-px-2v" v-if="getTimeAgo(feature)">
+            Modifié {{ getTimeAgo(feature) }}
           </span>
           <span
             v-if="feature.properties.commentaires || feature.properties.auditeur_notes"
@@ -173,28 +195,6 @@
           >
             Supprimer la parcelle
           </button>
-        </div>
-        <div class="fr-py-3v">
-          <div class="fr-checkbox-group fr-checkbox-group--sm">
-            <input
-              type="checkbox"
-              :id="'radio-' + feature.id"
-              :checked="selectedIds.includes(feature.id)"
-              @click="
-                toggleSingleSelected(feature.id);
-                selectedIds.includes(feature.id) ? pressZoom(feature.id) : null;
-              "
-            />
-            <label
-              class="fr-label"
-              :for="'radio-' + feature.id"
-              :aria-label="
-                selectedIds.includes(feature.id)
-                  ? `Désélectionner ${featureName(feature)}`
-                  : `Sélectionner ${featureName(feature)}`
-              "
-            />
-          </div>
         </div>
       </div>
     </div>
@@ -296,8 +296,11 @@ function toggleDeleteForm(featureId) {
   return emit("delete:featureId", featureId);
 }
 
-function pressZoom(featureId) {
-  return emit("zoom:featureId", featureId);
+function handleClickChebox(featureIds) {
+  toggleSingleSelected(featureIds);
+  if (selectedIds.value.length > 1) {
+    emit("edit:featureId", null);
+  }
 }
 
 function toggleFeatureGroup() {
@@ -414,6 +417,7 @@ onMounted(async () => {
   border-top: 1px solid var(--artwork-decorative-blue-france);
 
   .groupe-titre {
+    color: var(--light-decisions-text-text-action-high-blue-france, #000091);
     gap: 7px;
   }
 
@@ -499,12 +503,18 @@ onMounted(async () => {
 }
 
 .parcelle-ligne {
-  border: 1px solid #ececfe;
+  border-bottom: 1px solid var(--light-decisions-artwork-artwork-decorative-blue-france, #ececfe);
   position: relative;
   align-items: center;
 
+  &.background-selected,
+  &[aria-current="location"] {
+    cursor: pointer;
+    background: var(--light-options-primary-color-975-active-blue-france-975-active, #cbcbfa);
+  }
+
   &:hover {
-    background-color: var(--background-alt-blue-france);
+    background: var(--light-options-primary-color-975-hover-blue-france-975-hover, #dcdcfc);
   }
 }
 
@@ -512,6 +522,10 @@ onMounted(async () => {
   display: flex;
   justify-content: flex-end;
   gap: 0;
+}
+
+.flex {
+  display: flex;
 }
 
 .label-group {
@@ -533,5 +547,45 @@ onMounted(async () => {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 2px;
+}
+
+.font-blue {
+  color: var(--light-decisions-text-text-action-high-blue-france, #000091);
+}
+
+.text-grey-vu {
+  display: flex;
+  padding: 2px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  width: fit-content;
+
+  border-radius: 12px;
+  background: var(--light-decisions-background-background-contrast-grey, #eee);
+}
+
+.carte-odd {
+  background-color: var(--background-alt-blue-france);
+}
+
+.text-grey {
+  color: var(--grey-625-425);
+}
+
+.parcelle-info-col {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.parcelle-content {
+  flex: 1;
+}
+
+.parcelle-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>

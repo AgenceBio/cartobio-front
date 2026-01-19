@@ -57,7 +57,7 @@
         <div v-show="activeTab === 1" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
           <ConversionLevelSelector v-model="patch.conversion_niveau" />
 
-          <div class="fr-input-group">
+          <div class="fr-input-group" v-if="isEngagementDateRequired">
             <label class="fr-label">Date de début de conversion</label>
             <input
               type="date"

@@ -155,7 +155,7 @@ describe("RecordHeader", () => {
       await flushPromises();
       expect(await wrapper.find(".readonly-badge").exists()).toBe(false);
 
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
       const modal = wrapper.getComponent(ExportActions);
@@ -164,7 +164,7 @@ describe("RecordHeader", () => {
     it("devrait avoir 3 actions si record non certifié", async () => {
       let wrapper = mount(AsyncComponent);
       await flushPromises();
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
       const modal = wrapper.getComponent(ExportActions);
@@ -173,7 +173,7 @@ describe("RecordHeader", () => {
     it("devrait avoir 4 actions si record certifié", async () => {
       let wrapper = mount(AsyncComponent);
       await flushPromises();
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
       const modal = wrapper.getComponent(ExportActions);
@@ -191,7 +191,7 @@ describe("RecordHeader", () => {
       axios.__createMock.get.mockResolvedValue({ data: { hasAttestationProduction: true } });
       let wrapper = mount(AsyncComponent);
       await flushPromises();
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
       const modal = wrapper.getComponent(ExportActions);

@@ -56,7 +56,7 @@
         :record-id="recordId"
       />
       <Teleport to=".toolbar">
-        <div class="toolbar-bottom">
+        <div class="toolbar-bottom" v-if="hasUndo || hasRedo">
           <button
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
             v-tooltip="{ text: 'Annuler la dernière modification', position: 'left' }"
@@ -663,7 +663,7 @@ watch(
 
     const extent = vectorSource.value?.getExtent();
     if (extent && !isNaN(extent[0]) && extent[0] !== Infinity) {
-      map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [50, 50, 50, 50], maxZoom: 18 });
+      map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [250, 0, 0, 0] });
     }
   },
   { deep: true },
@@ -698,7 +698,7 @@ onMounted(() => {
   }
 
   if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
-    map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [50, 50, 50, 50], maxZoom: 16 });
+    map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [250, 0, 0, 0] });
   }
 
   if (props.interactive) {
@@ -751,8 +751,9 @@ onUnmounted(() => {
 }
 
 .toolbar-bottom {
-  margin-top: 10px;
   background: white;
+  border: 4px solid #a6f2fa;
+  border-top: none;
   display: flex;
   justify-content: space-between;
   flex-direction: column;

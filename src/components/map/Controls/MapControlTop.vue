@@ -1,15 +1,28 @@
 <template>
   <div class="button-group">
-    <div class="left-button">
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline"
-        @click="emit('openFullScreen')"
-        aria-label="Ouvrir le mode plein écran"
-        :disabled="!online"
-      >
-        <span v-if="!fullScreenMap" class="ri-sidebar-fold-line" aria-hidden="true" />
-        <span v-else class="ri-sidebar-unfold-line" aria-hidden="true"> </span>
-      </button>
+    <div class="left-button" v-if="modelOnglet != 'fullTab'">
+      <fieldset class="fr-segmented fr-segmented--sm">
+        <div class="fr-segmented__elements">
+          <div class="fr-segmented__element">
+            <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
+            <label class="fr-label" for="segmented-1-1">
+              <span class="ri-sidebar-unfold-line" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="fr-segmented__element">
+            <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
+            <label class="fr-label" for="segmented-1-2">
+              <span class="fr-icon-list-unordered fr-icon--sm" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="fr-segmented__element">
+            <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
+            <label class="fr-label" for="segmented-1-3">
+              <span class="fr-icon-road-map-line fr-icon--sm" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+      </fieldset>
     </div>
 
     <div class="mode-choice">
@@ -35,21 +48,21 @@
     <div class="right-button">
       <button
         v-if="mapPrefs.currentMode === 'consult'"
-        class="fr-btn fr-btn--tertiary-no-outline"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
         @click="mapPrefs.currentMode = 'edit'"
         aria-label="Passer en mode dessin"
         :disabled="!permissions.canEditParcellaire || !online"
       >
-        <i class="ri-pencil-line fr-mr-1w" aria-hidden="true" /> Ouvrir le mode d'édition
+        <i class="ri-shape-line fr-mr-1w" aria-hidden="true" /> Mode dessin
       </button>
       <button
-        v-else-if="mapPrefs.currentMode != 'consult' && !mapPrefs.hasUndo"
-        class="fr-btn fr-btn--tertiary-no-outline"
+        v-else-if="mapPrefs.currentMode != 'consult'"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm blue-background"
         @click="mapPrefs.currentMode = 'consult'"
         aria-label="Passer en mode dessin"
         :disabled="!permissions.canEditParcellaire || !online"
       >
-        <i class="ri-pencil-line fr-mr-1w" aria-hidden="true" /> Fermer le mode d'édition
+        <i class="fr-icon-close-line fr-icon--sm fr-mr-1w" aria-hidden="true" /> Fermer le mode dessin
       </button>
     </div>
   </div>
@@ -79,12 +92,13 @@ const { map: mapPrefs } = storeToRefs(preferences);
  * *Props
  */
 
-defineProps<{ fullScreenMap: boolean }>();
+const props = defineProps<{ stateFS: "fullTab" | "split" | "fullMap" }>();
 
 /**
  * * Refs
  */
 const countSelected = ref<number>(store.selectedIds.length | 0);
+const modelOnglet = ref<"fullTab" | "split" | "fullMap">(props.stateFS);
 
 /**
  * * Emits
@@ -93,6 +107,7 @@ const emit = defineEmits<{
   (e: "addParcelle"): void;
   (e: "compare"): void;
   (e: "openFullScreen"): void;
+  (e: "modeDisplay", a: string): void;
 }>();
 
 /**
@@ -103,6 +118,20 @@ watch(
   () => store.selectedIds,
   (newValue) => {
     countSelected.value = newValue.length;
+  },
+);
+
+watch(
+  () => props.stateFS,
+  (newValue) => {
+    modelOnglet.value = newValue;
+  },
+);
+
+watch(
+  () => modelOnglet.value,
+  (newValue) => {
+    emit("modeDisplay", newValue);
   },
 );
 </script>
@@ -164,5 +193,9 @@ watch(
   border-radius: 4px;
   height: 44px;
   justify-content: center;
+}
+
+.blue-background {
+  background-color: #a6f2fa;
 }
 </style>

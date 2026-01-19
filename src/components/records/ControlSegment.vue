@@ -1,7 +1,7 @@
 <template>
   <fieldset
     role="list"
-    class="fr-segmented fr-pb-6v"
+    class="fr-segmented"
     :class="{ 'fr-unhidden-lg': model !== 'parcellaire' }"
     aria-labelledby="viewmode-switcher-heading"
   >
@@ -16,11 +16,15 @@
     <div class="fr-segmented__elements">
       <div class="fr-segmented__element" role="listitem">
         <input type="radio" :id="`${id}-synthese`" value="synthese" v-model="model" />
-        <label class="fr-label" :for="`${id}-synthese`">Synthèse</label>
+        <label class="fr-label" :for="`${id}-synthese`">
+          <span class="fr-icon-clipboard-line fr-mr-1v fr-icon--sm" aria-hidden="true"></span>Synthèse</label
+        >
       </div>
       <div class="fr-segmented__element" role="listitem">
         <input type="radio" :id="`${id}-liste`" value="liste-parcelles" v-model="model" />
-        <label class="fr-label" :for="`${id}-liste`">Liste des parcelles</label>
+        <label class="fr-label" :for="`${id}-liste`">
+          <span class="fr-icon-list-unordered fr-mr-1v fr-icon--sm" aria-hidden="true"></span>Parcelles</label
+        >
       </div>
     </div>
   </fieldset>

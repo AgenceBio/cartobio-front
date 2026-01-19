@@ -49,7 +49,7 @@
         </div>
       </div>
       <div class="fr-grid-row gap-10 actions-parcelles">
-        <span>
+        <span class="font-blue">
           {{
             !isNaN(parseFloat(inHa(featureGroup.surface)))
               ? inHa(featureGroup.surface) + " ha"
@@ -66,12 +66,14 @@
         'parcelle--is-new': feature.id === Number(route.query?.new),
         'background-selected': selectedIds.includes(feature.id),
         'fr-mt-2v': index === 0,
+        'carte-odd': index % 2 !== 0,
       }"
       :id="'parcelle-' + feature.id"
       :hidden="!open"
       v-for="(feature, index) in featureGroup.features"
       :key="feature.id"
       @mouseover="hoveredId = feature.id"
+      @mouseleave="hoveredId = null"
       :aria-current="feature.id === hoveredId ? 'location' : null"
       @click="(event) => clickOn(feature.id, event)"
     >
@@ -91,9 +93,12 @@
             />
           </div>
           <div v-if="isGroupedByCulture">
-            <h4 class="fr-text--lg fr-mb-0">
+            <div class="fr-mb-0 flex">
               {{ featureName(feature, { explicitName: false }) }}
-            </h4>
+              <p class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
+                Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+              </p>
+            </div>
             <p
               class="fr-hint-text"
               v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
@@ -104,11 +109,20 @@
           <div v-else>
             <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
               Multi-cultures <span class="fr-sr-only"> : </span>
+              <span class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
+                Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+              </span>
+
               <small v-for="(culture, i) in feature.properties.cultures" :key="i">
                 <span v-if="i" class="fr-sr-only">, </span> {{ cultureLabel(culture) }}
               </small>
             </p>
-            <h4 v-else class="fr-text--lg fr-mb-0">{{ cultureLabel(feature.properties.cultures[0]) }}</h4>
+            <div v-else class="fr-mb-0 flex">
+              {{ cultureLabel(feature.properties.cultures[0]) }}
+              <p class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
+                Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+              </p>
+            </div>
 
             <p class="fr-hint-text">{{ featureName(feature, { hint: true }) }}</p>
           </div>
@@ -146,7 +160,7 @@
           </p>
         </div>
       </div>
-      <div class="fr-grid-row fr-grid-row--middle parcelle-titre">
+      <div class="fr-grid-row fr-grid-row--middle parcelle-titre fr-ml-5v">
         <div
           v-if="
             (feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
@@ -183,13 +197,8 @@
           >
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
-          <p class="fr-mb-0 fr-text--sm text-grey" v-if="feature.properties.controlee">
-            Vu. <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
-          </p>
-          <p class="fr-mb-0 fr-text--sm text-grey">
-            <span v-if="getTimeAgo(feature)" aria-hidden="true" class="fr-icon-refresh-line fr-icon--sm"></span>
-            {{ getTimeAgo(feature) }}
-          </p>
+
+          <p class="fr-mb-0 fr-text--sm text-grey" v-if="getTimeAgo(feature)">Modifié {{ getTimeAgo(feature) }}</p>
           <button
             type="button"
             @click.prevent="toggleDeleteForm(feature.id)"
@@ -447,6 +456,8 @@ onMounted(async () => {
   border-top: 1px solid var(--artwork-decorative-blue-france);
 
   .groupe-titre {
+    color: var(--light-decisions-text-text-action-high-blue-france, #000091);
+
     gap: 7px;
   }
 
@@ -468,18 +479,25 @@ onMounted(async () => {
   gap: 10px;
 }
 
+.font-blue {
+  color: var(--light-decisions-text-text-action-high-blue-france, #000091);
+}
+
 .parcelle-carte {
-  border: 1px solid #ececfe;
+  border-bottom: 1px solid var(--light-decisions-artwork-artwork-decorative-blue-france, #ececfe);
 
   &.parcelle--is-new {
     background-color: var(--green-tilleul-verveine-975-75);
   }
 
   &.background-selected,
-  &:hover,
   &[aria-current="location"] {
     cursor: pointer;
-    background-color: var(--background-alt-blue-france);
+    background: var(--light-options-primary-color-975-active-blue-france-975-active, #cbcbfa);
+  }
+
+  &:hover {
+    background: var(--light-options-primary-color-975-hover-blue-france-975-hover, #dcdcfc);
   }
 
   .parcelle-titre {
@@ -496,6 +514,10 @@ onMounted(async () => {
     --hover-tint: var(--background-alt-blue-france-hover);
     --active-tint: var(--background-alt-blue-france-active);
   }
+}
+
+.carte-odd {
+  background-color: var(--background-alt-blue-france);
 }
 
 .text-grey {
@@ -644,5 +666,18 @@ onMounted(async () => {
 
 .flex {
   display: flex;
+}
+
+.text-grey-vu {
+  display: flex;
+  padding: 2px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  width: fit-content;
+  margin-left: 10px;
+
+  border-radius: 12px;
+  background: var(--light-decisions-background-background-contrast-grey, #eee);
 }
 </style>

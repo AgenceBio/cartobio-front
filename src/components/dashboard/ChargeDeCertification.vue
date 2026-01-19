@@ -378,6 +378,10 @@ const goToACertifier = () => {
   color: #37635f;
 }
 
+.fr-callout.certifiees:hover {
+  background: #c6e6e0 !important;
+}
+
 .fr-callout .fr-icon {
   padding: 0 0.2rem;
   border-radius: 4px;
@@ -391,6 +395,10 @@ const goToACertifier = () => {
 .fr-callout.en-attentes .fr-icon {
   color: #e5fbfd;
   background-color: #419ca4;
+}
+
+.fr-callout.en-attentes:hover {
+  background-color: #006a6f;
 }
 
 .fr-callout.non-auditees .fr-icon {
@@ -421,6 +429,11 @@ const goToACertifier = () => {
 .fr-callout.non-auditees .fr-h2 {
   color: #6e445a;
 }
+
+.fr-callout.non-auditees:hover {
+  background-color: #6e445a;
+}
+
 .header-a-certifier {
   display: flex;
   justify-content: space-between;
@@ -484,10 +497,6 @@ const goToACertifier = () => {
   .header-a-certifier > .fr-btn {
     align-self: center;
   }
-}
-
-.fr-callout:hover {
-  background-color: var(--background-default-grey-hover) !important;
 }
 </style>
 
