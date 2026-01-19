@@ -108,11 +108,6 @@ const onLocate = () => {
   emit("locate");
 };
 
-const onFullScreen = () => {
-  emit("fullscreen");
-  isFullScreen.value = !isFullScreen.value;
-};
-
 const createScaleLine = () => {
   const control = new ScaleLine({
     className: "ol-scale-line",
