@@ -698,7 +698,7 @@ onMounted(() => {
   }
 
   if (extent && !isNaN(extent[0]) && extent[0] != Infinity) {
-    map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [250, 0, 0, 0] });
+    map.value.getView().fit(extent, { padding: isMobile.value ? [15, 15, 15, 15] : [50, 50, 50, 50] });
   }
 
   if (props.interactive) {

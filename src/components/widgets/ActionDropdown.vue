@@ -135,7 +135,7 @@ watch(show, (value) => {
   height: 100%;
   width: 100vw;
   border: none;
-  z-index: var(--z-index-dropdown);
+  z-index: 1000000;
   background: var(--grey-50-1000-a375, rgba(22, 22, 22, 0.64));
   transition: background 0.3s;
   display: block;

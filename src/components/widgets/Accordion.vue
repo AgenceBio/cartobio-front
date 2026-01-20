@@ -9,42 +9,54 @@
         type="button"
         aria-label="Modifier les éléments sélectionnés"
       >
-        <div
-          :style="{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: '0',
-          }"
-        >
-          <span>{{ title }}</span>
-          <span
-            v-if="optionsSelected && (!Array.isArray(optionsSelected) || optionsSelected.length > 0)"
-            class="small-text"
+        <slot
+          v-if="$slots.title"
+          name="title"
+          :is-closed="isClosed"
+          :is-open="isOpen"
+          :is-expanding="isExpanding"
+
+        />
+        <template v-else>
+          <div
+            :style="{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '0',
+            }"
           >
-            {{
-              Array.isArray(optionsSelected)
-                ? optionsSelected.length > 1
-                  ? optionsSelected.length + " sélections"
-                  : "1 sélection"
-                : optionsSelected
-            }}
-            <template v-if="optionsSuffix"> | {{ optionsSuffix }}</template>
-          </span>
+            <span>{{ title }}</span>
+            <span
+              v-if="optionsSelected && (!Array.isArray(optionsSelected) || optionsSelected.length > 0)"
+              class="small-text"
+            >
+              {{
+                Array.isArray(optionsSelected)
+                  ? optionsSelected.length > 1
+                    ? optionsSelected.length + " sélections"
+                    : "1 sélection"
+                  : optionsSelected
+              }}
+              <template v-if="optionsSuffix"> | {{ optionsSuffix }}</template>
+            </span>
 
-          <span v-if="optionsCulture && isEdit" class="fr-hint-text culture-name">
-            <span :class="optionsCulture.icon ? optionsCulture.icon : ''" aria-hidden="true"></span>
-            {{ optionsCulture.name }}
-          </span>
+            <span v-if="optionsCulture && isEdit" class="fr-hint-text culture-name">
+              <span :class="optionsCulture.icon ? optionsCulture.icon : ''" aria-hidden="true"></span>
+              {{ optionsCulture.name }}
+            </span>
 
-          <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction && !isEdit">À préciser</span>
-        </div>
-        <div v-if="requiresAction && isEdit" class="badge-right">
-          <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
-            <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
-          </p>
-        </div>
+            <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction && !isEdit"
+              >À préciser</span
+            >
+          </div>
+          <div v-if="requiresAction && isEdit" class="badge-right">
+            <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
+              <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
+            </p>
+          </div>
+        </template>
       </button>
     </h3>
 
@@ -73,7 +85,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   optionsSelected: {
     type: [String, Array],
