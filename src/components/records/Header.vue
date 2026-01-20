@@ -330,7 +330,7 @@ const tab = ref(props.stateTab);
 const { record } = recordStore;
 const { operator } = operatorStore;
 const featuresSets = useFeaturesSetsStore();
-const { collection, hasFeatures } = storeToRefs(featuresStore);
+const { collection } = storeToRefs(featuresStore);
 const { map: mapPrefs } = storeToRefs(preferences);
 
 const { tags } = storeToRefs(featuresSets);
@@ -352,10 +352,6 @@ const tooltips = {
   changeSync: { text: "Prêt pour travailler hors ligne", position: "top" },
   changeNotSync: { text: "Changements non-synchronisés", position: "top" },
 };
-
-const windowWidth = ref(window.innerWidth);
-
-const isMobile = computed(() => windowWidth.value < 992);
 
 const readonly = computed(
   () => permissions.isOc && record.oc_id != null && record.oc_id !== userStore.user?.organismeCertificateur?.id,

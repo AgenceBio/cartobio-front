@@ -21,8 +21,8 @@ withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (e: "update:activeIndex", index: number): void;
-  (e: "action"): void;
+  (_: "update:activeIndex", index: number): void;
+  (_: "action"): void;
 }>();
 
 const onDotClick = (index: number) => {

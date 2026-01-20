@@ -16,9 +16,6 @@ import EditForm from "@/components/forms/SingleItemOperatorForm.vue";
 import TableComponent from "@/components/records/Table/FeaturesTable.vue";
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
-import CultureTypeModal from "@/components/forms/CultureTypeForm.vue";
-import EngagementDateModal from "@/components/forms/EngagementDateForm.vue";
-import EngagementLevelModal from "@/components/forms/EngagementLevelForm.vue";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const storageStore = useCartoBioStorage(pinia);

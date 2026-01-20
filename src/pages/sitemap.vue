@@ -70,7 +70,7 @@ meta:
               </a>
             </li>
             <li>
-              <a target="_blank" rel="noopener" :href="'mailto:support-cartobio@agencebio.org?subject=' + mailtoSubject"
+              <a target="_blank" rel="noopener" :href="'mailto:support-cartobio@agencebio.org?subject'"
                 >Nous contacter</a
               >
             </li>

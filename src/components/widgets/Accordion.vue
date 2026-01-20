@@ -9,14 +9,7 @@
         type="button"
         aria-label="Modifier les éléments sélectionnés"
       >
-        <slot
-          v-if="$slots.title"
-          name="title"
-          :is-closed="isClosed"
-          :is-open="isOpen"
-          :is-expanding="isExpanding"
-
-        />
+        <slot v-if="$slots.title" name="title" :is-closed="isClosed" :is-open="isOpen" :is-expanding="isExpanding" />
         <template v-else>
           <div
             :style="{
