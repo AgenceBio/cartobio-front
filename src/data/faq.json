@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "question": "Comment me connecter à CartoBio ?",
+      "answer": "<p>Pour vous connecter, vous devez utiliser les identifiants de votre compte Agence BIO (soit celui utilisé pour le portail de notification). Renseignez votre adresse courriel (utilisée lors de la première notification sur le portail de l'Agence BIO) ainsi que le mot de passe associé.</p>"
+    },
+    {
+      "question": "J’ai perdu mon mot de passe, que dois-je faire ?",
+      "answer": "<p>Votre identifiant est l'adresse courriel qui vous a servi lors de la première notification. Il suffit de vous connecter au site <a href='https://cartobio.agencebio.org/login' target='_blank'>Cartobio</a> et de sélectionner “Mot de passe oublié ?”. Renseigner votre adresse de courriel afin qu'un lien de redéfinition du mot de passe vous soit directement envoyé.</p>"
+    },
+    {
+      "question": "J'ai oublié mon identifiant, comment puis-je le récupérer ?",
+      "answer": "<p>Remplir le <a href='https://notification.agencebio.org/contact' target='_blank'>formulaire de contact disponible ici</a>  en indiquant vos informations nous permettant d’identifier votre entreprise (SIRET, raison sociale et adresse). Nous vous recontacterons pour vous le communiquer.</p>"
+    },
+    {
+      "question": "Je ne vois pas mon exploitation dans mon espace CartoBio, que puis-je faire ?",
+      "answer": "<p>Vérifier que votre courriel est bien rattaché à l’exploitation recherchée avec des accès validés (rubrique “Utilisateurs”). Sinon, ajouter l’adresse ou contacter le portail de notification.<br/>Si votre compte a bien les accès valides, vérifier que votre notification comprend bien l’activité de “Production”. Si ça n’est pas le cas, nous vous invitons à contacter votre organisme certificateur afin qu’il mette à jour votre dossier."
+    },
+    {
+      "question": "Comment importer mon parcellaire déclaré à la PAC ?",
+      "answer": "<p>Pour pouvoir importer votre dernière déclaration PAC, il faut d'abord récupérer le fichier sur <a href='https://www.telepac.agriculture.gouv.fr/telepac/auth/accueil.action' target='_blank'>Telepac</a>  en suivant la procédure décrite <a href='https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-de-la-declaration-pac' target='_blank'>ici dans le guide utilisateur</a> </p>"
+    },
+    {
+      "question": "Mon parcellaire est toujours en “contrôle terminé” ou “en attente de certification”, comment avoir mon attestation ?",
+      "answer": "<p>Votre parcellaire est en cours d'instruction auprès de votre organisme certificateur. Dès que ce dernier aura certifié votre parcellaire, l’attestation sera disponible. Pour plus d’information, vous pouvez directement les contacter.</p>"
+    },
+    {
+      "question": "Mon parcellaire est incomplet ou incorrect mais il a déjà été contrôlé, comment puis-je faire des modifications ?",
+      "answer": "<p>Un parcellaire contrôlé n’est modifiable que par l’organisme certificateur. Si vous constatez une erreur ou une information manquante, nous vous invitons à le contacter afin qu’il réalise les modifications nécessaires.</p>"
+    },
+    {
+      "question": "Les informations de mon exploitation ne sont pas à jour, comment puis-je les modifier ?",
+      "answer": "<p>Les informations de votre exploitation proviennent du portail de notification (lien). Vous pouvez les modifier depuis la page de votre notification.</p>"
+    },
+    {
+      "question": "Je n’arrive pas à télécharger mon attestation, que dois-je faire ?",
+      "answer": "<p>Pour les parcellaires de plus de 80 parcelles, la récupération de votre attestation n’est pas instantanée. Générez votre attestation, patientez quelques minutes puis cliquez sur le bouton “Télécharger l’attestation de production”.</p>"
+    }
+  ]
+}
