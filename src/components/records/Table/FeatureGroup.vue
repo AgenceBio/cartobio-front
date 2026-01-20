@@ -61,7 +61,7 @@
       </div>
     </div>
     <div
-      class="parcelle-carte fr-mb-2v fr-p-4v fr-mx-4v"
+      class="parcelle-carte fr-p-4v fr-mx-4v"
       :class="{
         'parcelle--is-new': feature.id === Number(route.query?.new),
         'background-selected': selectedIds.includes(feature.id),
