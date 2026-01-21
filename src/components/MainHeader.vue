@@ -808,4 +808,10 @@ fr .user-info strong {
   transition: margin-top 0.3s;
   margin-top: 0;
 }
+
+.fr-nav__list > *:first-child:nth-last-child(2) ~ *,
+.fr-nav__list > *:first-child:nth-last-child(3) ~ *,
+.fr-nav__list > *:first-child:nth-last-child(4) ~ * {
+  margin-left: 0;
+}
 </style>

@@ -99,7 +99,7 @@ export const useUserStore = defineStore("user", () => {
     if (isOc.value) {
       return "/certification/tableau-de-bord";
     } else if (isAgri.value) {
-      return "/exploitations/liste";
+      return "/exploitations";
     }
 
     return "/";
@@ -129,7 +129,7 @@ export const useUserStore = defineStore("user", () => {
     if (isOc.value) return "https://docs-cartobio.agencebio.org/organisme-certification";
     else if (isAgri.value) return "https://docs-cartobio.agencebio.org/agriculteurs.trices";
 
-    return "";
+    return "https://docs-cartobio.agencebio.org/cartobio-aide/";
   });
 
   function login(userToken) {

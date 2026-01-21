@@ -6,19 +6,31 @@
           <div class="fr-segmented__element">
             <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-1">
-              <span class="ri-sidebar-unfold-line" aria-hidden="true"></span>
+              <span
+                :class="{
+                  'ri-sidebar-unfold-fill fr-mx-1w': modelOnglet === 'split',
+                  'ri-sidebar-unfold-line fr-mx-1w': modelOnglet !== 'split',
+                }"
+                aria-hidden="true"
+              ></span>
             </label>
           </div>
           <div class="fr-segmented__element">
             <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-2">
-              <span class="fr-icon-list-unordered fr-icon--sm" aria-hidden="true"></span>
+              <span class="fr-icon-list-unordered fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
           <div class="fr-segmented__element">
             <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-3">
-              <span class="fr-icon-road-map-line fr-icon--sm" aria-hidden="true"></span>
+              <span
+                :class="{
+                  'fr-icon-road-map-fill fr-icon--sm fr-mx-1w': modelOnglet === 'fullMap',
+                  'fr-icon-road-map-line fr-icon--sm fr-mx-1w': modelOnglet !== 'fullMap',
+                }"
+                aria-hidden="true"
+              ></span>
             </label>
           </div>
         </div>
@@ -157,6 +169,7 @@ watch(
   background: #ffffff;
   height: fit-content;
   border-radius: 4px;
+  padding: 4px;
 
   position: absolute;
   top: 10px;

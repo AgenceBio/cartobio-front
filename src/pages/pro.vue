@@ -76,7 +76,7 @@ meta:
                 <h1 class="fr-h2 fr-h1-sm">Organisme de certification</h1>
 
                 <p class="fr-card__desc fr-text--lead">
-                  Partagez votre parcellaire avec votre organisme de certification sur CartoBio.
+                  Accéder et contrôler les parcellaires des exploitations directement sur Cartobio.
                 </p>
               </div>
               <div class="fr-card__footer">
@@ -113,10 +113,12 @@ meta:
 
           <ul class="list-marks">
             <li>
-              <strong>Passer plus de temps à valoriser vos pratiques</strong>
-              plutôt qu'à parler d'administratif.
+              <strong>Un parcellaire mis à jour</strong>
+              facilement dans CartoBio.
             </li>
-            <li><strong>Transmettez</strong> vos données automatiquement aux services numériques.</li>
+            <li>
+              <strong>L'attestation de certification</strong>directement disponible une fois le parcellaire certifié.
+            </li>
           </ul>
         </div>
 
@@ -124,7 +126,7 @@ meta:
           <h3>Moins de risque d'erreurs</h3>
 
           <ul class="list-marks">
-            <li>Coordonnez-vous avec votre Organisme de Certification.</li>
+            <li><strong>Visualiser</strong>les parcelles et accéder à leurs informations et à leurs évolutions</li>
             <li><strong>Partagez</strong> les données géographiques entre différents services.</li>
           </ul>
         </div>

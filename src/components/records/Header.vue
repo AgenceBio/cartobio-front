@@ -83,6 +83,7 @@
             class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
             :class="{ 'fr-tag--disabled': record.certification_state !== 'CERTIFIED' }"
             :disabled="record.certification_state !== 'CERTIFIED'"
+            v-tooltip="record.certification_state !== 'CERTIFIED' ? tooltips.disabledTag : {}"
             @click="
               () => {
                 if (record.certification_state === 'CERTIFIED') {
@@ -185,9 +186,9 @@
 
     <p v-if="readonly" class="readonly-badge">Lecture seule</p>
 
-    <div class="fr-mt-1w">
+    <div class="fr-mt-2w">
       <div class="flex-space-between">
-        <div class="fr-grid-row fr-grid-row--middle header">
+        <div class="fr-grid-row header">
           <ParcellaireState :record="record" />
         </div>
         <div class="fr-my-auto">
@@ -351,6 +352,10 @@ const tooltips = {
   fullScreen: { text: "Ouvrir le mode fullscreen", position: "bottom" },
   changeSync: { text: "Prêt pour travailler hors ligne", position: "top" },
   changeNotSync: { text: "Changements non-synchronisés", position: "top" },
+  disabledTag: {
+    text: "Non disponible car votre parcellaire n'a pas encore été certifié par votre OC.",
+    position: "bottom",
+  },
 };
 
 const readonly = computed(
@@ -594,7 +599,8 @@ watch(
 .fr-tag--disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none;
+  color: #929292;
+  background-color: #e5e5e5;
 }
 </style>
 <style>

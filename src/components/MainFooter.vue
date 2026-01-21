@@ -90,7 +90,12 @@
             <router-link class="fr-footer__bottom-link" to="/faq">FAQ</router-link>
           </li>
           <li class="fr-footer__bottom-item">
-            <a class="fr-footer__bottom-link" :href="'/testcartobio'" target="_blank">Aide</a>
+            <a
+              class="fr-footer__bottom-link"
+              :href="'https://docs-cartobio.agencebio.org/cartobio-aide/'"
+              target="_blank"
+              >Aide</a
+            >
           </li>
           <li class="fr-footer__bottom-item">
             <router-link class="fr-footer__bottom-link" to="/sitemap">Plan du site</router-link>
