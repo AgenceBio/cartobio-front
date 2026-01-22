@@ -8,6 +8,7 @@
           :total="slides.length - 1"
           :activeIndex="currentSlide - 1"
           @update:activeIndex="(e) => (currentSlide = e + 1)"
+          @explore="() => (currentSlide = currentSlide + 1)"
           @action="actionButton()"
         />
       </div>
@@ -23,7 +24,7 @@
               Passer la présentation
             </button>
           </div>
-          <div class="onboarding-actions-button-nav">
+          <div class="onboarding-actions-button-nav" v-if="currentSlide > 0">
             <button
               :disabled="currentSlide <= 0"
               class="fr-btn--secondary fr-btn--sm fr-icon-arrow-left-s-line"
@@ -59,7 +60,8 @@ const slides = [
     props: {
       imageSrc: slide1,
       title: "Une nouvelle navigation",
-      description: "Nisl eget suspendisse nunc pellentesque consectetur nunc.",
+      description:
+        "Passez facilement de votre espace au site grand public sans vous déconnecter ! <br/> Un accès rapide à toutes les pages de CartoBio. <br/> Une FAQ pour répondre à vos questions les plus fréquentes !",
     },
   },
   {
@@ -67,31 +69,17 @@ const slides = [
     props: {
       imageSrc: slide1,
       title: "La page exploitation",
-      description: "Nisl eget suspendisse nunc pellentesque consectetur nunc.",
+      description:
+        "<ul><li>Un rappel des informations de l'exploitation permettant de vérifier qu'il s'agit du bon dossier et que les données sont à jour</li><li>Un résumé du dernier contrôle donnant l'état de l'exploitation en un clin d'oeil</li><li>L'ensemble des parcellaires et contrôles réalisés pour retrouver l'historique</li>",
     },
   },
   {
     component: SlideComposable,
     props: {
       imageSrc: slide1,
-      title: "Un nouvel outil cartographique",
-      description: "Nisl eget suspendisse nunc pellentesque consectetur nunc.",
-    },
-  },
-  {
-    component: SlideComposable,
-    props: {
-      imageSrc: slide1,
-      title: "Modulez votre écran",
-      description: "Nisl eget suspendisse nunc pellentesque consectetur nunc.",
-    },
-  },
-  {
-    component: SlideComposable,
-    props: {
-      imageSrc: slide1,
-      title: "La fiche parcelle",
-      description: "Nisl eget suspendisse nunc pellentesque consectetur nunc.",
+      title: "Une refonte de l'espace cartopgraphique",
+      description:
+        "Pour gérer les parcellaires, modifier ou ajouter facilement des parcelles...<br/>Une vue synthèse pour faciliter vos contrôles<br/>La liste des parcelles revisitée ",
     },
   },
   {
@@ -99,7 +87,31 @@ const slides = [
     props: {
       imageSrc: slide1,
       title: "De nouveaux outils",
-      description: "Nisl eget suspendisse nunc pellentesque consectetur nunc.",
+      description: "Pour dessiner, ajouter une parcelle en un clic, modifier ou fusionner vos parcelles",
+    },
+  },
+  {
+    component: SlideComposable,
+    props: {
+      imageSrc: slide1,
+      title: "Comparaison de vos versions",
+      description: "Pour consulter en parallèle deux versions du parcellaire",
+    },
+  },
+  {
+    component: SlideComposable,
+    props: {
+      imageSrc: slide1,
+      title: "Modulation de votre écran",
+      description: "3 vues proposées : partagée tableau/carte, plein écran carto ou tableau ",
+    },
+  },
+  {
+    component: SlideComposable,
+    props: {
+      imageSrc: slide1,
+      title: "La fiche parcelle",
+      description: 'Nouveautés : Historique des cultures, marquer comme "vu"',
       button: {
         label: "C'est parti !",
       },

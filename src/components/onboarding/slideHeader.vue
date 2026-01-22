@@ -8,20 +8,25 @@
         </h1>
 
         <p class="fr-text--lg fr-mt-4w fr-mb-6w">
-          Nisl eget suspendisse nunc pellentesque consectetur nunc. Amet duis elit facilisis non eget arcu ullamcorper
-          amet nulla. Interdum gravida aenean phasellus at eu.
+          CartoBio évolue pour vous apporter plus de fonctionnalités et d'ergonomie afin de faciliter vos contrôles et
+          de gagner en efficacité ! Découvrez les améliorations apportées au module cartographique ainsi que la nouvelle
+          page exploitation.
         </p>
 
-        <a href="#" class="fr-btn fr-btn--primary"> Explorer </a>
+        <a href="#" class="fr-btn fr-btn--primary" @click.prevent="$emit('explore')"> Explorer </a>
       </div>
 
       <div class="fr-col-12 fr-col-md-6 fr-text--center">
         <img
           src="@/assets/onboarding/slide1.png"
-          alt="Aperçu de l’interface CartoBio"
+          alt="Aperçu de l'interface CartoBio"
           class="fr-responsive-img fr-radius--lg fr-shadow"
         />
       </div>
     </div>
   </section>
 </template>
+
+<script setup>
+defineEmits(['explore'])
+</script>

@@ -117,7 +117,7 @@
                         <strong class="header-top">Mon compte</strong>
                       </li>
                       <li class="fr-menu__item">
-                        <router-link to="/parametres" class="fr-nav__link" @click="closeMonEspace">
+                        <router-link :to="urlAccountNotifications" class="fr-nav__link" @click="closeMonEspace">
                           Paramètres du compte
                         </router-link>
                       </li>
@@ -186,9 +186,9 @@
                     >
                       <ul class="fr-menu__list">
                         <li class="fr-menu__item">
-                          <router-link to="/parametres" class="fr-nav__link" @click="closeMonEspace">
+                          <a :href="urlAccountNotifications" class="fr-nav__link" @click="closeMonEspace">
                             Paramètres du compte
-                          </router-link>
+                          </a>
                         </li>
                         <li class="fr-menu__item">
                           <router-link to="/logout" class="fr-nav__link" @click="closeMonEspace">
@@ -673,6 +673,7 @@ const ROLE_ICONS = new Map([
 ]);
 
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION);
+
 const { user, isLogged, roles, startPage, accueilPage, documentationPage } = storeToRefs(userStore);
 const roleIcon = computed(() => {
   for (const role of roles.value) {
@@ -694,6 +695,8 @@ const isOnExploitationsPage = computed(() => {
 const exploitationsMenuLabel = computed(() => {
   return isOc.value ? "Liste des exploitations" : "Mes exploitations";
 });
+
+
 </script>
 
 <style scoped>

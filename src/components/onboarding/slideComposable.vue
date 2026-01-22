@@ -49,9 +49,7 @@ const onButtonClick = () => {
           {{ title }}
         </h2>
 
-        <p class="fr-text--lg fr-mt-3w fr-mb-6w">
-          {{ description }}
-        </p>
+        <p class="fr-text--lg fr-mt-3w fr-mb-6w" v-html="description"></p>
 
         <template v-if="button">
           <button type="button" class="fr-btn fr-btn--primary" @click="onButtonClick">

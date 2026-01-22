@@ -30,6 +30,7 @@
           <span v-else-if="permissions.isOc" class="fr-badge fr-badge--warning fr-badge--sm">
             Saisir la certification
           </span>
+          <ConversionLevel v-else-if="!permissions.isOc" :level="LEVEL_MAYBE_AB" noIcon />
         </div>
         <div class="fr-grid-row">
           <span class="fr-icon-map-pin-2-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
@@ -369,6 +370,7 @@ import {
   LEVEL_C3,
   LEVEL_AB,
   LEVEL_CONVENTIONAL,
+  LEVEL_MAYBE_AB,
   isABLevel,
   getConversionLevel,
 } from "@/referentiels/ab.js";
