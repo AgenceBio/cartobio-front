@@ -695,8 +695,6 @@ const isOnExploitationsPage = computed(() => {
 const exploitationsMenuLabel = computed(() => {
   return isOc.value ? "Liste des exploitations" : "Mes exploitations";
 });
-
-
 </script>
 
 <style scoped>

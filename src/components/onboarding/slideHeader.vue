@@ -28,5 +28,5 @@
 </template>
 
 <script setup>
-defineEmits(['explore'])
+defineEmits(["explore"]);
 </script>
