@@ -156,7 +156,7 @@ const props = defineProps<Props>();
 const preferences = usePreferences();
 const store = useFeaturesStore();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 /*
  * * Refs
@@ -486,7 +486,7 @@ const saveModifiedFeature = async () => {
     loading.value = false;
     correctedParcellesId = [];
     isModifying.value = false;
-    mapPrefs.value.currentMode = "edit";
+    mapParams.value.currentMode = "edit";
     props.undoRedo.clear();
 
     return;

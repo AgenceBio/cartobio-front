@@ -218,7 +218,7 @@ const recordStore = useRecordStore();
 const store = useFeaturesStore();
 const preferences = usePreferences();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { layers: mapLayers, params: mapParams } = storeToRefs(preferences);
 
 /*
  * * Refs
@@ -672,7 +672,7 @@ const rpgInteraction = () => {
 
 const goToEdit = () => {
   loading.value = false;
-  mapPrefs.value.currentMode = "edit";
+  mapParams.value.currentMode = "edit";
 };
 
 const submitFeature = async (res: { id: string; properties: object }) => {
@@ -774,7 +774,7 @@ const addRpgFeatures = async () => {
 
 const quitDraw = () => {
   cancelDraw();
-  mapPrefs.value.currentMode = "consult";
+  mapParams.value.currentMode = "consult";
 };
 
 /*
@@ -793,8 +793,8 @@ watch(
   () => mode.value,
   () => {
     if (rpg === null && cadastre === null) {
-      rpg = mapPrefs.value.rpg;
-      cadastre = mapPrefs.value.cadastre;
+      rpg = mapLayers.value.rpg;
+      cadastre = mapLayers.value.cadastre;
     }
     store.unselectAll();
     selectedIds.value = [];
@@ -811,22 +811,22 @@ watch(
     switch (mode.value) {
       case "dessiner":
         drawInteraction();
-        mapPrefs.value.cadastre = false;
-        mapPrefs.value.rpg = false;
-        mapPrefs.value.blockPlan = false;
+        mapLayers.value.cadastre = false;
+        mapLayers.value.rpg = false;
+        mapParams.value.blockPlan = false;
         break;
       case "cadastre":
-        mapPrefs.value.cadastre = true;
-        mapPrefs.value.rpg = false;
-        mapPrefs.value.blockPlan = true;
+        mapLayers.value.cadastre = true;
+        mapLayers.value.rpg = false;
+        mapParams.value.blockPlan = true;
         nextTick(() => {
           cadastreInteraction();
         });
         break;
       case "RPG":
-        mapPrefs.value.cadastre = false;
-        mapPrefs.value.rpg = true;
-        mapPrefs.value.blockPlan = true;
+        mapLayers.value.cadastre = false;
+        mapLayers.value.rpg = true;
+        mapParams.value.blockPlan = true;
         nextTick(() => {
           rpgInteraction();
         });
@@ -903,11 +903,11 @@ watch(
 
 onMounted(() => {
   props.map.addLayer(previewLayer);
-  if (mapPrefs.value.rpg === false && mapPrefs.value.cadastre === true) {
+  if (mapLayers.value.rpg === false && mapLayers.value.cadastre === true) {
     mode.value = "cadastre";
-  } else if (mapPrefs.value.rpg === true && mapPrefs.value.cadastre === false) {
+  } else if (mapLayers.value.rpg === true && mapLayers.value.cadastre === false) {
     mode.value = "RPG";
-  } else if (mapPrefs.value.rpg === true && mapPrefs.value.cadastre === true) {
+  } else if (mapLayers.value.rpg === true && mapLayers.value.cadastre === true) {
     mode.value = "cadastre";
   } else {
     mode.value = "dessiner";
@@ -916,13 +916,13 @@ onMounted(() => {
 
 onUnmounted(() => {
   store.unselectAll();
-  mapPrefs.value.blockPlan = false;
+  mapParams.value.blockPlan = false;
   props.map.removeLayer(previewLayer);
   props.map.un("click", handleClickCadastre);
   props.map.un("click", handleClickRPG);
   if (cadastre !== null && rpg !== null) {
-    mapPrefs.value.cadastre = cadastre;
-    mapPrefs.value.rpg = rpg;
+    mapLayers.value.cadastre = cadastre;
+    mapLayers.value.rpg = rpg;
   }
 });
 </script>

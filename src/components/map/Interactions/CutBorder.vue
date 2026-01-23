@@ -52,7 +52,7 @@
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
         aria-label="Retourner au mode editer"
         v-else
-        @click="mapPrefs.currentMode = 'edit'"
+        @click="mapParams.currentMode = 'edit'"
       >
         <i class="fr-icon-close-line fr-icon--sm"></i>
       </button>
@@ -143,7 +143,7 @@ const props = defineProps<Props>();
 const preferences = usePreferences();
 const store = useFeaturesStore();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 /*
  * * Refs
@@ -721,7 +721,7 @@ const validateDivision = async () => {
     }
   }
   loading.value = false;
-  mapPrefs.value.currentMode = "edit";
+  mapParams.value.currentMode = "edit";
 };
 
 const resetChoice = () => {

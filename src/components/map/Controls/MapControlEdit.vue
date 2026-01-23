@@ -3,7 +3,7 @@
     <div class="toolbar-top" role="group" aria-label="Outils de gestion des parcelles">
       <button
         class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapParams.currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Activer le mode édition pour modifier les parcelles existantes"
         v-tooltip="{ text: 'Activer le mode édition pour modifier les parcelles existantes', position: 'left' }"
         @click="handleAction('edit')"
@@ -16,7 +16,7 @@
 
       <button
         class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapParams.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Découper le contour de la parcelle sélectionnée"
         v-tooltip="{ text: 'Découper le contour de la parcelle sélectionnée', position: 'left' }"
         @click="handleAction('decouper')"
@@ -27,7 +27,7 @@
 
       <button
         class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapParams.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Tracer une ligne pour couper la parcelle sélectionnée en deux"
         v-tooltip="{ text: 'Tracer une ligne pour couper la parcelle sélectionnée en deux', position: 'left' }"
         @click="handleAction('divide')"
@@ -38,7 +38,7 @@
 
       <button
         class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapParams.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Fusionner plusieurs parcelles sélectionnées en un seul"
         v-tooltip="{ text: 'Fusionner plusieurs parcelles sélectionnées en un seul', position: 'left' }"
         @click="handleAction('fusionner')"
@@ -49,7 +49,7 @@
 
       <button
         class="fr-btn fr-btn--sm"
-        :class="[mapPrefs.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
+        :class="[mapParams.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Supprimer la ou les parcelles sélectionnées"
         v-tooltip="{ text: 'Supprimer la ou les parcelles sélectionnées', position: 'left' }"
         @click="handleAction('delete')"
@@ -79,7 +79,7 @@ const store = useFeaturesStore();
 const preferences = usePreferences();
 const permissions = usePermissions();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 /**
  * * Refs
@@ -101,10 +101,10 @@ watch(
  * * Fonction
  */
 const handleAction = (mode: string) => {
-  if (mapPrefs.value.currentMode === mode) {
+  if (mapParams.value.currentMode === mode) {
     return;
   }
-  mapPrefs.value.currentMode = mode;
+  mapParams.value.currentMode = mode;
 };
 </script>
 

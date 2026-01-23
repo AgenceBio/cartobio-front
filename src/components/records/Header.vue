@@ -332,7 +332,7 @@ const { record } = recordStore;
 const { operator } = operatorStore;
 const featuresSets = useFeaturesSetsStore();
 const { collection } = storeToRefs(featuresStore);
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 const { tags } = storeToRefs(featuresSets);
 const canDisplayHistory = computed(() => Array.isArray(record.audit_history) && record.audit_history.length);
@@ -376,7 +376,7 @@ function unpin(numeroBio) {
 }
 
 async function redirectToRecord(recordTo) {
-  mapPrefs.value.currentMode = "consult";
+  mapParams.value.currentMode = "consult";
   await router.push(`/exploitations/${operatorStore.operator.numeroBio}/${recordTo}`);
 }
 

@@ -106,7 +106,7 @@ const props = defineProps<Props>();
 const preferences = usePreferences();
 const store = useFeaturesStore();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 /*
  * * Refs
@@ -266,7 +266,7 @@ const confirmer = async (e: {
       }
       showDetailsModal.value = false;
       loading.value = false;
-      mapPrefs.value.currentMode = "edit";
+      mapParams.value.currentMode = "edit";
     } finally {
       loading.value = false;
     }
@@ -274,7 +274,7 @@ const confirmer = async (e: {
 };
 
 const annuler = (): void => {
-  mapPrefs.value.currentMode = "edit";
+  mapParams.value.currentMode = "edit";
 };
 
 /*
@@ -287,7 +287,7 @@ const calculateArea = (feature: CartoBioFeature): string => {
 
 const goToEdit = () => {
   showDetailsModal.value = false;
-  mapPrefs.value.currentMode = "edit";
+  mapParams.value.currentMode = "edit";
 };
 
 const getUniformProperty = (features: Feature<Geometry>[], propName: string) => {

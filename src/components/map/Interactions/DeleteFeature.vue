@@ -72,7 +72,7 @@ const props = defineProps<Props>();
 const preferences = usePreferences();
 const store = useFeaturesStore();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 let deleteLayer: VectorLayer | null = null;
 
@@ -136,7 +136,7 @@ const deleteSelected = (): void => {
  */
 
 const handleMultipleDelete = async (reason: { code: string; details: string }): Promise<void> => {
-  if (numberSelectedFeature.value > 0 && mapPrefs.value.currentMode === "delete") {
+  if (numberSelectedFeature.value > 0 && mapParams.value.currentMode === "delete") {
     for (const featureId of store.selectedIds) {
       await store.deleteSingleFeature({ id: featureId, reason });
 
@@ -152,14 +152,14 @@ const handleMultipleDelete = async (reason: { code: string; details: string }): 
     }
 
     store.unselectAll([]);
-    mapPrefs.value.currentMode = "edit";
+    mapParams.value.currentMode = "edit";
 
     return;
   }
 };
 
 const annuler = (): void => {
-  mapPrefs.value.currentMode = "edit";
+  mapParams.value.currentMode = "edit";
 };
 
 async function confirmer() {
