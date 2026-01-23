@@ -1,6 +1,6 @@
 <template>
   <template v-if="vectorLayer && vectorSource">
-    <div v-if="mapPrefs.currentMode === 'consult'">
+    <div v-if="mapParams.currentMode === 'consult'">
       <ConsultFeature
         :map="map"
         :vector-layer="vectorLayer"
@@ -11,7 +11,7 @@
     </div>
     <div v-else>
       <EditFeature
-        v-if="mapPrefs.currentMode === 'edit'"
+        v-if="mapParams.currentMode === 'edit'"
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
@@ -20,21 +20,21 @@
         :hasUndo="hasUndo"
       />
       <AddNewFeature
-        v-else-if="mapPrefs.currentMode === 'draw'"
+        v-else-if="mapParams.currentMode === 'draw'"
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
       />
       <CutBorder
-        v-else-if="mapPrefs.currentMode === 'decouper'"
+        v-else-if="mapParams.currentMode === 'decouper'"
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
       />
       <DivideFeature
-        v-else-if="mapPrefs.currentMode === 'divide'"
+        v-else-if="mapParams.currentMode === 'divide'"
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
@@ -42,14 +42,14 @@
         @endDivide="() => emit('selectFeature', null)"
       />
       <MergeFeatures
-        v-else-if="mapPrefs.currentMode === 'fusionner'"
+        v-else-if="mapParams.currentMode === 'fusionner'"
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
       />
       <DeleteFeature
-        v-else-if="mapPrefs.currentMode === 'delete'"
+        v-else-if="mapParams.currentMode === 'delete'"
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
@@ -159,7 +159,7 @@ const store = useFeaturesStore();
 const recordStore = useRecordStore();
 
 const { hoveredId } = storeToRefs(store);
-const { map: mapPrefs } = storeToRefs(preferences);
+const { layers: mapLayers, params: mapParams } = storeToRefs(preferences);
 
 /*
  * * Injects
@@ -266,8 +266,8 @@ const getFeatureStyle = (feature: FeatureLike): Style => {
     stroke: new Stroke({ width: selected || hover ? 3 : 1, color: borderColor }),
     text: new Text({
       text: [text, "14px 'Marianne'", "\n", "", size, "bold 14px 'Marianne'", " ha", " 14px 'Marianne'"],
-      fill: new Fill({ color: mapPrefs.value.background === "plan" ? "#000000" : "#ffffff" }),
-      stroke: new Stroke({ width: 1, color: mapPrefs.value.background === "plan" ? "#ffffff" : "#000000" }),
+      fill: new Fill({ color: mapLayers.value.background === "plan" ? "#000000" : "#ffffff" }),
+      stroke: new Stroke({ width: 1, color: mapLayers.value.background === "plan" ? "#ffffff" : "#000000" }),
     }),
   });
 
@@ -376,7 +376,7 @@ const generateConversionLevelOverlays = () => {
       });
 
       watch(
-        [() => mapPrefs.value.currentMode, () => store.selectedIds],
+        [() => mapParams.value.currentMode, () => store.selectedIds],
         ([mode, selectedIds]) => {
           if (mode !== "consult" && mode !== "edit") {
             element.style.visibility = "hidden";
@@ -432,7 +432,7 @@ const showHoverOverlay = (feature: Feature) => {
   if (currentHoveredFeature === feature) return;
 
   hideHoverOverlay();
-  getCursor(mapPrefs.value.currentMode);
+  getCursor(mapParams.value.currentMode);
   const element = createParcelleHoverOverlay(feature);
   const geometry = feature.getGeometry();
 
@@ -457,7 +457,7 @@ const showHoverOverlay = (feature: Feature) => {
 };
 
 const hideHoverOverlay = () => {
-  getCursor(mapPrefs.value.currentMode);
+  getCursor(mapParams.value.currentMode);
   if (hoverOverlay) {
     map.value.removeOverlay(hoverOverlay);
     hoverOverlay = null;
@@ -474,8 +474,8 @@ const handlePointerMove = (e: MapBrowserEvent) => {
 
   if (
     props.interactive &&
-    (mapPrefs.value.currentMode === "consult" ||
-      (mapPrefs.value.currentMode === "edit" && store.selectedIds.length === 0))
+    (mapParams.value.currentMode === "consult" ||
+      (mapParams.value.currentMode === "edit" && store.selectedIds.length === 0))
   ) {
     const feature = map.value.forEachFeatureAtPixel(
       e.pixel,
@@ -504,22 +504,22 @@ const handlePointerLeave = () => {
  */
 
 watch(
-  () => mapPrefs.value.currentMode,
+  () => mapParams.value.currentMode,
   () => {
     if (
       store.selectedIds.length === 0 &&
-      mapPrefs.value.currentMode != "consult" &&
-      mapPrefs.value.currentMode != "edit" &&
-      mapPrefs.value.currentMode != "draw"
+      mapParams.value.currentMode != "consult" &&
+      mapParams.value.currentMode != "edit" &&
+      mapParams.value.currentMode != "draw"
     ) {
-      mapPrefs.value.currentMode = "edit";
+      mapParams.value.currentMode = "edit";
 
       return;
     }
     interactions.value.undoRedo.clear();
     if (!props.interactive) return;
     clearInteractions();
-    if (mapPrefs.value.currentMode === "consult") {
+    if (mapParams.value.currentMode === "consult") {
       store.unselect([]);
       const list = map.value.getOverlays().getArray();
       for (const overlay of list) {
@@ -536,7 +536,7 @@ watch(
 );
 
 // watch(
-//   () => mapPrefs.value.currentMode,
+//   () => mapParams.value.currentMode,
 //   (newValue, oldValue) => {
 //     if (oldValue === "consult" && newValue !== "consult") {
 //       emit("selectFeature", null);
@@ -579,7 +579,7 @@ const getCursor = (mode: string) => {
 };
 
 watch(
-  () => mapPrefs.value.currentMode,
+  () => mapParams.value.currentMode,
   (mode) => {
     getCursor(mode);
   },
@@ -593,7 +593,7 @@ watch(
 
 watch(
   () => hasUndo.value,
-  () => (mapPrefs.value.hasUndo = hasUndo.value),
+  () => (mapParams.value.hasUndo = hasUndo.value),
 );
 
 watch(
@@ -722,7 +722,7 @@ onMounted(() => {
   map.value.on("pointermove", handlePointerMove);
   map.value.getTargetElement().addEventListener("pointerleave", handlePointerLeave);
 
-  mapPrefs.value.currentMode = "consult";
+  mapParams.value.currentMode = "consult";
 });
 
 onUnmounted(() => {

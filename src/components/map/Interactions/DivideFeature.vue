@@ -25,7 +25,7 @@
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-close-line fr-icon--sm"
         v-else
-        @click="mapPrefs.currentMode = 'edit'"
+        @click="mapParams.currentMode = 'edit'"
         aria-label="Fermer la découpe"
       >
         Fermer
@@ -98,7 +98,7 @@ const props = defineProps<Props>();
 const preferences = usePreferences();
 const store = useFeaturesStore();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 // Refs division
 const hasDivision = ref<boolean>(false);
@@ -194,7 +194,7 @@ const validateDivision = async () => {
 
   loading.value = false;
   emit("endDivide");
-  mapPrefs.value.currentMode = "edit";
+  mapParams.value.currentMode = "edit";
 };
 
 const cancelDivision = () => {

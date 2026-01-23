@@ -42,7 +42,7 @@
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline coachmark3"
         @click="emit('compare')"
         aria-label="Comparer les parcelles"
-        v-if="mapPrefs.currentMode === 'consult'"
+        v-if="mapParams.currentMode === 'consult'"
         :disabled="!online"
       >
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
@@ -59,18 +59,18 @@
 
     <div class="right-button">
       <button
-        v-if="mapPrefs.currentMode === 'consult'"
+        v-if="mapParams.currentMode === 'consult'"
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm coachmark5"
-        @click="mapPrefs.currentMode = 'edit'"
+        @click="mapParams.currentMode = 'edit'"
         aria-label="Passer en mode dessin"
         :disabled="!permissions.canEditParcellaire || !online"
       >
         <i class="ri-shape-line fr-mr-1w" aria-hidden="true" /> Mode dessin
       </button>
       <button
-        v-else-if="mapPrefs.currentMode != 'consult'"
+        v-else-if="mapParams.currentMode != 'consult'"
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
-        @click="mapPrefs.currentMode = 'consult'"
+        @click="mapParams.currentMode = 'consult'"
         aria-label="Passer en mode dessin"
         :disabled="!permissions.canEditParcellaire || !online"
       >
@@ -98,7 +98,7 @@ const store = useFeaturesStore();
 const preferences = usePreferences();
 const permissions = usePermissions();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 /**
  * *Props

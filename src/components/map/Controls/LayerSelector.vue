@@ -112,7 +112,7 @@
           @click="$emit('update:classification', !classification)"
           :aria-label="`${!classification ? 'Activer' : 'Désactiver'} le calque RPG ${currentCampagne}`"
           :aria-pressed="classification"
-          :disabled="mapPrefs.blockPlan"
+          :disabled="mapParams.blockPlan"
         >
           <img src="@/assets/map/classification.jpg" alt="Fond RPG" />
           <span>
@@ -133,7 +133,7 @@
           @click="$emit('update:cadastre', !cadastre)"
           :aria-label="`${!cadastre ? 'Activer' : 'Désactiver'} le calque références cadastrales`"
           :aria-pressed="cadastre"
-          :disabled="mapPrefs.blockPlan"
+          :disabled="mapParams.blockPlan"
         >
           <img src="@/assets/map/cadastre.jpg" alt="Fond cadastre" />
           <span>Cadastre</span>
@@ -163,7 +163,7 @@ const { preloadedCampagne: currentCampagne } = useTélépac();
  */
 const preferences = usePreferences();
 
-const { map: mapPrefs } = storeToRefs(preferences);
+const { params: mapParams } = storeToRefs(preferences);
 
 /**
  * * Props
