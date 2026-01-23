@@ -35,7 +35,7 @@
           <div class="fr-segmented__element">
             <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-1">
-              <span class="ri-sidebar-unfold-line" aria-hidden="true"></span>
+              <span class="ri-layout-column-line" aria-hidden="true"></span>
             </label>
           </div>
           <div class="fr-segmented__element">

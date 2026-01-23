@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="toolbar coachmark6">
     <div class="toolbar-top" role="group" aria-label="Outils de gestion des parcelles">
       <button
         class="fr-btn fr-btn--sm"

@@ -118,7 +118,7 @@ const lengthMessage = computed(() => {
 
 .badge-commentaire {
   background-color: rgba(254, 236, 194, 1);
-  padding: 2px 6px;
+  padding: 0px 4px;
   border-radius: 4px;
 }
 

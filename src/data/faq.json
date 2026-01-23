@@ -21,6 +21,10 @@
       "answer": "<p>Pour pouvoir importer votre dernière déclaration PAC, il faut d'abord récupérer le fichier sur <a href='https://www.telepac.agriculture.gouv.fr/telepac/auth/accueil.action' target='_blank'>Telepac</a>  en suivant la procédure décrite <a href='https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire/import-de-la-declaration-pac' target='_blank'>ici dans le guide utilisateur</a> </p>"
     },
     {
+      "question": "Je ne fais pas de déclaration PAC, comment puis-je importer mon parcellaire ?",
+      "answer": "Vous pouvez importer votre parcellaire à l’aide d’un fichier issu de MesParcelles ou Geofolia, des données du nCVI ou encore d’un fichier géographique issu de Géoportail par exemple. <br/>Enfin, si vous n’avez pas de parcellaire numérisé, vous pouvez créer un parcellaire de zéro en ajoutant les parcelles depuis le cadastre ou le RPG ou encore en les dessinant.<br/>Vous trouverez plus de détails dans notre <a href='https://www.telepac.agriculture.gouv.fr/telepac/auth/accueil.action' target='_blank'>Telepac</a>  en suivant la procédure décrite <a href='https://docs-cartobio.agencebio.org/agriculteurs.trices/pas-a-pas/importer-mon-parcellaire#:~:text=PAS%2D%C3%80%2DPAS-,Importer%20mon%20parcellaire,-Une%20fois%20connect%C3%A9' target='_blank'>guide utilisateur</a> "
+    },
+    {
       "question": "Mon parcellaire est toujours en “contrôle terminé” ou “en attente de certification”, comment avoir mon attestation ?",
       "answer": "<p>Votre parcellaire est en cours d'instruction auprès de votre organisme certificateur. Dès que ce dernier aura certifié votre parcellaire, l’attestation sera disponible. Pour plus d’information, vous pouvez directement les contacter.</p>"
     },
@@ -30,7 +34,7 @@
     },
     {
       "question": "Les informations de mon exploitation ne sont pas à jour, comment puis-je les modifier ?",
-      "answer": "<p>Les informations de votre exploitation proviennent du portail de notification (lien). Vous pouvez les modifier depuis la page de votre notification.</p>"
+      "answer": "<p>Les informations de votre exploitation proviennent du <a href='https://notification.agencebio.org/homepage' target='_blank'>portail de notification</a>. Vous pouvez les modifier depuis la page de votre notification.</p>"
     },
     {
       "question": "Je n’arrive pas à télécharger mon attestation, que dois-je faire ?",

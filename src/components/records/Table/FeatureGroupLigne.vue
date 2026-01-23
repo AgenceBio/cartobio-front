@@ -175,7 +175,7 @@
           <span v-if="isRota(feature)" :class="isRota(feature)" class="fr-px-2v"
             ><i class="ri-exchange-funds-line"></i>ROTATION</span
           >
-          <span class="fr-text--sm text-grey fr-px-2v" v-if="getTimeAgo(feature)">
+          <span class="fr-text--xs text-grey fr-px-2v" v-if="getTimeAgo(feature)">
             Modifié {{ getTimeAgo(feature) }}
           </span>
           <span

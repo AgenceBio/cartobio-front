@@ -198,7 +198,7 @@
             {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
           </span>
 
-          <p class="fr-mb-0 fr-text--sm text-grey" v-if="getTimeAgo(feature)">Modifié {{ getTimeAgo(feature) }}</p>
+          <p class="fr-mb-0 fr-text--xs text-grey" v-if="getTimeAgo(feature)">Modifié {{ getTimeAgo(feature) }}</p>
           <button
             type="button"
             @click.prevent="toggleDeleteForm(feature.id)"

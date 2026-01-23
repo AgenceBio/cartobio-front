@@ -1,15 +1,15 @@
 <template>
   <div class="button-group">
     <div class="left-button" v-if="modelOnglet != 'fullTab'">
-      <fieldset class="fr-segmented fr-segmented--sm">
+      <fieldset class="fr-segmented fr-segmented--sm coachmark7">
         <div class="fr-segmented__elements">
           <div class="fr-segmented__element">
             <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-1">
               <span
                 :class="{
-                  'ri-sidebar-unfold-fill fr-mx-1w': modelOnglet === 'split',
-                  'ri-sidebar-unfold-line fr-mx-1w': modelOnglet !== 'split',
+                  'ri-layout-column-fill fr-mx-1w': modelOnglet === 'split',
+                  'ri-layout-column-line fr-mx-1w': modelOnglet !== 'split',
                 }"
                 aria-hidden="true"
               ></span>
@@ -39,7 +39,7 @@
 
     <div class="mode-choice">
       <button
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline coachmark3"
         @click="emit('compare')"
         aria-label="Comparer les parcelles"
         v-if="mapPrefs.currentMode === 'consult'"
@@ -48,7 +48,7 @@
         <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
       </button>
       <button
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left coachmark4"
         aria-label="Ajouter une nouvelle parcelle"
         :disabled="!permissions.canEditParcellaire || !online"
         @click="emit('addParcelle')"
@@ -60,7 +60,7 @@
     <div class="right-button">
       <button
         v-if="mapPrefs.currentMode === 'consult'"
-        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm coachmark5"
         @click="mapPrefs.currentMode = 'edit'"
         aria-label="Passer en mode dessin"
         :disabled="!permissions.canEditParcellaire || !online"
@@ -69,7 +69,7 @@
       </button>
       <button
         v-else-if="mapPrefs.currentMode != 'consult'"
-        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm blue-background"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
         @click="mapPrefs.currentMode = 'consult'"
         aria-label="Passer en mode dessin"
         :disabled="!permissions.canEditParcellaire || !online"

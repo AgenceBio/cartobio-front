@@ -713,15 +713,16 @@ export function getTimeAgo(feature) {
   const diffInMonths = Math.floor(diffInDays / 30);
 
   if (diffInMinutes < 1) {
-    return "À l'instant";
+    return "à l'instant";
   } else if (diffInMinutes < 60) {
-    return `Il y a ${diffInMinutes} min`;
+    return `
+    il y a ${diffInMinutes} min`;
   } else if (diffInHours < 24) {
-    return `Il y a ${diffInHours} h`;
+    return `il y a ${diffInHours} h`;
   } else if (diffInDays < 30) {
-    return `Il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
+    return `il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
   } else if (diffInMonths < 12) {
-    return `Il y a ${diffInMonths} mois`;
+    return `il y a ${diffInMonths} mois`;
   } else {
     const formattedDate = date.toLocaleDateString("fr-FR", {
       year: "numeric",

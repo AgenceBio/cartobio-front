@@ -71,10 +71,6 @@ onMounted(() => {
     const selected = e.target.getFeatures().getArray();
 
     if (selected.length === 1) {
-      props.map.getView().fit(selected[0].getGeometry(), {
-        duration: 1000,
-        padding: [250, 0, 0, 0],
-      });
       store.unselectAll();
       store.select(selected[0].getId());
       emit("selectFeature", selected[0].getId());

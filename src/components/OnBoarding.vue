@@ -46,7 +46,13 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import SlideHeader from "./onboarding/slideHeader.vue";
 import SlideComposable from "./onboarding/slideComposable.vue";
-import slide1 from "@/assets/onboarding/slide1.png";
+import comparaisonslide from "@/assets/onboarding/comparaisonslide.png";
+import slide2 from "@/assets/onboarding/slide2.png";
+import slide3 from "@/assets/onboarding/slide3.png";
+import slide4 from "@/assets/onboarding/slide4.png";
+import slide5 from "@/assets/onboarding/slide5.png";
+import slide6 from "@/assets/onboarding/slide6.png";
+import slide7 from "@/assets/onboarding/slide7.png";
 
 const showOnboarding = ref(false);
 const currentSlide = ref(0);
@@ -58,7 +64,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: slide2,
       title: "Une nouvelle navigation",
       description:
         "Passez facilement de votre espace au site grand public sans vous déconnecter ! <br/> Un accès rapide à toutes les pages de CartoBio. <br/> Une FAQ pour répondre à vos questions les plus fréquentes !",
@@ -67,7 +73,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: slide3,
       title: "La page exploitation",
       description:
         "<ul><li>Un rappel des informations de l'exploitation permettant de vérifier qu'il s'agit du bon dossier et que les données sont à jour</li><li>Un résumé du dernier contrôle donnant l'état de l'exploitation en un clin d'oeil</li><li>L'ensemble des parcellaires et contrôles réalisés pour retrouver l'historique</li>",
@@ -76,7 +82,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: slide4,
       title: "Une refonte de l'espace cartopgraphique",
       description:
         "Pour gérer les parcellaires, modifier ou ajouter facilement des parcelles...<br/>Une vue synthèse pour faciliter vos contrôles<br/>La liste des parcelles revisitée ",
@@ -85,7 +91,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: slide7,
       title: "De nouveaux outils",
       description: "Pour dessiner, ajouter une parcelle en un clic, modifier ou fusionner vos parcelles",
     },
@@ -93,7 +99,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: comparaisonslide,
       title: "Comparaison de vos versions",
       description: "Pour consulter en parallèle deux versions du parcellaire",
     },
@@ -101,7 +107,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: slide5,
       title: "Modulation de votre écran",
       description: "3 vues proposées : partagée tableau/carte, plein écran carto ou tableau ",
     },
@@ -109,7 +115,7 @@ const slides = [
   {
     component: SlideComposable,
     props: {
-      imageSrc: slide1,
+      imageSrc: slide6,
       title: "La fiche parcelle",
       description: 'Nouveautés : Historique des cultures, marquer comme "vu"',
       button: {

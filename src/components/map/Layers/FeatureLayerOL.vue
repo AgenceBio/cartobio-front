@@ -373,7 +373,6 @@ const generateConversionLevelOverlays = () => {
 
       element.addEventListener("click", (event) => {
         event.stopPropagation();
-        return emit("zoom:featureId", feature.getId());
       });
 
       watch(
