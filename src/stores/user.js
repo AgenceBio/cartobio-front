@@ -70,7 +70,7 @@ export function deriveRolesFromGroups(user) {
 }
 
 export const useUserStore = defineStore("user", () => {
-  const storageName = "cartobio.v2";
+  const storageName = "cartobio.v3";
   const token = ref("");
   /**
    * @type {ComputedRef<CartoBioUser|{}>}

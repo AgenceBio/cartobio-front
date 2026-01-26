@@ -3,7 +3,7 @@ name: Build and deploy (staging)
 on:
   push:
     branches:
-    - "v2"
+    - "v3"
     paths-ignore:
     - 'docs/**'
     - 'CHANGELOG.md'

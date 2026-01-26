@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-    - "v2.*"
+    - "v3.*"
     paths-ignore:
     - 'docs/**'
     - 'CHANGELOG.md'

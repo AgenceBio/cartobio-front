@@ -87,11 +87,11 @@ Chaque commit/push sur la branche `test` déploie en test : [Build and deploy (t
 
 ### Environnement de préproduction
 
-Chaque commit/push sur la branche `v2` déploie en préproduction : [Build and deploy (staging)](https://github.com/AgenceBio/cartobio-front/actions/workflows/staging.yml)
+Chaque commit/push sur la branche ~~`v2`~~ `v3` déploie en préproduction : [Build and deploy (staging)](https://github.com/AgenceBio/cartobio-front/actions/workflows/staging.yml)
 
 ### Environnement de production
 
-Chaque nouveau tag `v2.*` déploie en production : [Build and deploy (production)](https://github.com/AgenceBio/cartobio-front/actions/workflows/deploy.yml)
+Chaque nouveau tag ~~`v2.*`~~ `v3.*` déploie en production : [Build and deploy (production)](https://github.com/AgenceBio/cartobio-front/actions/workflows/deploy.yml)
 
 Pour créer un tag :
 
