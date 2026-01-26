@@ -53,11 +53,13 @@ import slide4 from "@/assets/onboarding/slide4.png";
 import slide5 from "@/assets/onboarding/slide5.png";
 import slide6 from "@/assets/onboarding/slide6.png";
 import slide7 from "@/assets/onboarding/slide7.png";
+import { useOnboardingStore } from "@/stores/onboarding.js";
 
-const showOnboarding = ref(false);
+const onboardingStore = useOnboardingStore();
+
+const showOnboarding = computed(() => onboardingStore.shouldShow);
+
 const currentSlide = ref(0);
-
-const STORAGE_KEY = "checkOnBoarding";
 
 const slides = [
   { component: SlideHeader },
@@ -130,13 +132,8 @@ const currentSlideValue = computed(() => {
 });
 
 onMounted(() => {
-  checkOnboardingStatus();
+  onboardingStore.checkStatus();
 });
-
-const checkOnboardingStatus = () => {
-  const value = localStorage.getItem(STORAGE_KEY);
-  showOnboarding.value = !(value === "true");
-};
 
 const nextSlide = () => {
   if (currentSlide.value < slides.length - 1) {
@@ -164,16 +161,11 @@ function handleKey(e) {
 }
 
 const skipOnboarding = () => {
-  showOnboarding.value = false;
-  saveOnboardingVersion();
+  onboardingStore.complete();
 };
 
 const actionButton = () => {
   skipOnboarding();
-};
-
-const saveOnboardingVersion = () => {
-  localStorage.setItem(STORAGE_KEY, "true");
 };
 </script>
 

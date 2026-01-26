@@ -117,9 +117,12 @@
                         <strong class="header-top">Mon compte</strong>
                       </li>
                       <li class="fr-menu__item">
-                        <router-link :to="urlAccountNotifications" class="fr-nav__link" @click="closeMonEspace">
+                        <button class="fr-nav__link" @click="resetTuto">Revoir le tutoriel</button>
+                      </li>
+                      <li class="fr-menu__item">
+                        <a :to="urlAccountNotifications" class="fr-nav__link" @click="closeMonEspace">
                           Paramètres du compte
-                        </router-link>
+                        </a>
                       </li>
                       <li class="fr-menu__item">
                         <router-link to="/logout" class="fr-nav__link" @click="closeDropdown">
@@ -185,6 +188,9 @@
                       id="navigation-espace"
                     >
                       <ul class="fr-menu__list">
+                        <li class="fr-menu__item">
+                          <button class="fr-nav__link" @click="resetTuto">Revoir le tutoriel</button>
+                        </li>
                         <li class="fr-menu__item">
                           <a :href="urlAccountNotifications" class="fr-nav__link" @click="closeMonEspace">
                             Paramètres du compte
@@ -551,7 +557,9 @@ import { storeToRefs } from "pinia";
 import { useOnline } from "@vueuse/core";
 import { useIsMobile } from "@/composables/useIsMobile";
 import { useOperatorStore } from "@/stores/operator.js";
+import { useOnboardingStore } from "@/stores/onboarding.js";
 
+const onboardingStore = useOnboardingStore();
 const operatorStore = useOperatorStore();
 const userStore = useUserStore();
 const router = useRouter();
@@ -653,6 +661,13 @@ const toggleDropdown = () => {
 
 const closeMonEspace = () => {
   isMonEspaceOpen.value = false;
+};
+
+const resetTuto = () => {
+  localStorage.setItem("COACHMARK_KEY_PARCELLAIRE", "false");
+  localStorage.setItem("COACHMARK_KEY_EXPLOITATION", "false");
+  onboardingStore.reset();
+  router.push("/");
 };
 
 const closeDropdown = () => {

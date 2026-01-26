@@ -65,7 +65,7 @@
         />
       </div>
       <p class="fr-text--sm">
-        Séléctionner {{ features.length }} parcelles
+        Sélectionner {{ features.length }} parcelles
         {{
           !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
             ? "(" + inHa(legalProjectionSurface(features)) + " ha)"

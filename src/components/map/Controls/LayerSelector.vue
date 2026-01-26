@@ -222,7 +222,7 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   margin: 10px;
   z-index: 1;
-  bottom: 1rem;
+  bottom: 0px;
 }
 
 .menu-toggle {

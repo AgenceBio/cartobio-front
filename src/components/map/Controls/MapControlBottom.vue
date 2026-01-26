@@ -144,7 +144,7 @@ onMounted(() => {
 <style scoped>
 .button-group {
   position: absolute;
-  bottom: 1rem;
+  bottom: 10px;
   z-index: 1;
   display: inline-flex;
 }
@@ -152,7 +152,7 @@ onMounted(() => {
 .group-button-right {
   position: relative;
   right: 0;
-  bottom: 10px;
+  bottom: 0px;
   width: fit-content;
 
   display: flex;
@@ -193,7 +193,7 @@ onMounted(() => {
   gap: 10px;
   height: fit-content;
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -214,8 +214,8 @@ onMounted(() => {
   flex-direction: column;
   font-size: 14px;
   position: absolute;
-  bottom: 10px;
-  left: 8rem;
+  bottom: 0px;
+  left: 7rem;
   font-weight: 500;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
 }
@@ -235,7 +235,7 @@ onMounted(() => {
 
 .group-button-right {
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   right: 10px;
   display: flex;
   gap: 10px;
@@ -256,13 +256,13 @@ i[class*=" ri"] {
 
 .scale-line {
   position: absolute;
-  bottom: 0px;
+  bottom: -10px;
   right: 10rem;
 }
 
 .ol-scale-line {
   position: relative;
-  bottom: 10px;
+  bottom: 0px;
   left: 0px;
 }
 
@@ -270,7 +270,7 @@ i[class*=" ri"] {
   position: absolute;
   display: flex;
   right: 160px;
-  bottom: 10px;
+  bottom: 0px;
   background-color: white;
   border-radius: 0px !important;
 }
@@ -279,7 +279,7 @@ i[class*=" ri"] {
   position: absolute;
   display: flex;
   right: 160px;
-  bottom: 10px;
+  bottom: 0px;
   background-color: white;
 }
 </style>

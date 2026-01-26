@@ -10,7 +10,7 @@
       </template>
       <template v-else>
         <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }}</p>
-        <small> à préciser par l'OC</small>
+        <p class="small-text">par l'OC</p>
       </template>
     </span>
     <div v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">

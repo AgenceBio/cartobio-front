@@ -90,29 +90,28 @@
         :key="culture.id"
         tabindex="-1"
       >
-        <p class="fr-h5">Culture</p>
-        <p>
+        <b class="fr-text-lg">Culture de la parcelle</b>
+
+        <p class="fr-mt-2w">
           <span :class="getCultureIcon(culture.CPF)"> </span>
           {{ fromCodeCpf(culture.CPF).libelle_code_cpf }}
         </p>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`variete-${culture.id}`">Variété</label>
-          <div class="fr-input-wrap">
-            {{ culture.variete ? culture.variete : "Non renseignée" }}
-          </div>
+          <label class="fr-label fr-hint-text" :for="`variete-${culture.id}`">Variété</label>
+          {{ culture.variete ? culture.variete : "Non renseignée" }}
         </div>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`superficie-${culture.id}`">
+          <label class="fr-label fr-hint-text" :for="`superficie-${culture.id}`">
             <span> <i class="ri-custom-size"></i></span> Surface
           </label>
           {{ culture.surface ? culture.surface : "Non renseignée" }}
         </div>
 
         <div class="fr-input-group">
-          <label class="fr-label" :for="`date_semis-${culture.id}`">
-            <span class="fr-icon-calendar-line"> </span> Date des semis
+          <label class="fr-label fr-hint-text" :for="`date_semis-${culture.id}`">
+            <span class="fr-icon-calendar-line fr-icon--sm"> </span> Date des semis
           </label>
           {{ culture.date_semis ? culture.date_semis : "Non renseignée" }}
         </div>
@@ -406,6 +405,8 @@ function removeCultureOld(cultureId) {
   margin-left: 0;
   margin-right: 0;
   border: 0;
+
+  background-color: white;
 }
 
 .horizontal-stack {

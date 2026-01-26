@@ -153,8 +153,21 @@
         <tbody>
           <tr v-for="record in sortedRecords" :key="record.id" @click="selectedRecord = record">
             <td class="blank-column">
-              <input type="radio" id="radio-inline" name="radio-inline" v-model="selectedRecord" :value="record" />
+              <div class="fr-radio-group fr-radio-group--sm">
+                <input
+                  type="radio"
+                  :id="`radio-${record.record_id}`"
+                  name="radio-inline"
+                  v-model="selectedRecord"
+                  :value="record"
+                  @click.stop
+                />
+                <label class="fr-label" :for="`radio-${record.record_id}`">
+                  {{ record.version_name }}
+                </label>
+              </div>
             </td>
+
             <td class="version-name">{{ record.version_name }}</td>
             <td class="audit-date">{{ record.audit_date ? dateFormat(record.audit_date) : "Non audité" }}</td>
             <td class="surface">{{ inHa(record.surface) }} ha</td>

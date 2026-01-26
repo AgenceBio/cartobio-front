@@ -175,15 +175,26 @@
           <span v-if="isRota(feature)" :class="isRota(feature)" class="fr-px-2v"
             ><i class="ri-exchange-funds-line"></i>ROTATION</span
           >
-          <span class="fr-text--xs text-grey fr-px-2v" v-if="getTimeAgo(feature)">
-            Modifié {{ getTimeAgo(feature) }}
-          </span>
           <span
-            v-if="feature.properties.commentaires || feature.properties.auditeur_notes"
+            v-if="feature.properties.commentaires || (feature.properties.auditeur_notes && permissions.isOc)"
             aria-hidden="true"
             class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire"
           >
-            {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
+            {{
+              [feature.properties.commentaire, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
+                (e) => e != null,
+              ).length
+            }}
+          </span>
+          <br
+            v-if="
+              feature.properties.commentaires ||
+              (feature.properties.auditeur_notes && permissions.isOc) ||
+              isRota(feature)
+            "
+          />
+          <span class="fr-text--xs text-grey fr-px-2v" v-if="getTimeAgo(feature)">
+            Modifié {{ getTimeAgo(feature) }}
           </span>
         </div>
         <div class="fr-py-2v fr-px-1v">

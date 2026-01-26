@@ -7,7 +7,7 @@
       </div>
       <button
         v-if="!isCorrecting"
-        class="fr-btn fr-icon-check-line fr-btn--icon-right"
+        class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
         :disabled="!hasUndo || corrections.length > 0"
         :aria-disabled="!hasUndo || corrections.length > 0"
         @click="saveModifiedFeature"
@@ -16,17 +16,17 @@
       </button>
       <button
         v-else-if="isCorrecting && corrections.length > 0"
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :disabled="corrections.length > 1"
         :aria-disabled="corrections.length > 1"
         @click="correct"
       >
         Valider la correction
       </button>
-      <button class="fr-btn fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
     </div>
     <div
-      class="pop-in-info"
+      class="pop-in-info fr-text--sm fr-text--bold"
       v-if="numberSelectedFeature > 0 && corrections.length < 1"
       role="status"
       aria-live="polite"
@@ -35,7 +35,7 @@
       {{ !isCorrecting && hasUndo ? "modifiée" : "sélectionnée" }}{{ numberSelectedFeature > 1 ? "s" : "" }}
       {{ globalHa }} ha
     </div>
-    <div class="pop-in-info" role="status" v-if="isCorrecting">
+    <div class="pop-in-info fr-text--sm fr-text--bold" role="status" v-if="isCorrecting">
       <div class="division-overlay">
         <div style="display: flex; align-items: center; gap: 8px">
           <span class="area-info blue"></span>
@@ -323,6 +323,10 @@ const modifyInteraction = () => {
     getHTML: createTooltipContent,
   });
   const select = createSelectInteraction(selectedFeatures);
+
+  if (selectedFeatures.getLength() === 1) {
+    initModifyInteraction(selectedFeatures, tooltip);
+  }
 
   select.on("select", (e) => {
     if (isModifying.value) return;

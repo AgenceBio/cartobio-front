@@ -737,7 +737,7 @@ onUnmounted(() => {
 <style scoped>
 :deep(.pop-in-top) {
   position: absolute;
-  top: 10px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
