@@ -73,6 +73,9 @@ export function legalProjectionSurface(feature) {
   if (feature.type === "FeatureCollection") {
     feature = feature.features;
   }
+  if (!Array.isArray(feature) && !feature.geometry) {
+    return NaN;
+  }
 
   if (Array.isArray(feature)) {
     return feature.reduce((total, f) => total + legalProjectionSurface(f), 0);
@@ -210,7 +213,7 @@ export function sortByAccessor(propertyAccessor, order = SORT.ASCENDING) {
   };
 }
 
-const NO_GROUP = "__nogroup__";
+export const NO_GROUP = "__nogroup__";
 export const PACNotationOptions = {
   ilotLabel: "",
   parcelleLabel: "",
@@ -221,7 +224,7 @@ export const PACNotationOptions = {
  */
 export const groupingChoices = {
   [GROUPE_COMMUNE]: {
-    label: "commune",
+    label: "Commune",
     labelNoGroup: "Commune inconnue",
     labelEtranger: "Parcelles à l'étranger",
     datapoint: (d) => d.properties.COMMUNE || NO_GROUP,
@@ -240,7 +243,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ILOT]: {
-    label: "îlot PAC",
+    label: "Îlot PAC",
     labelNoGroup: "Non précisé ou hors-PAC",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => ("NUMERO_I" in d.properties ? d.properties.NUMERO_I : NO_GROUP),
@@ -255,7 +258,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
-    label: "type de culture",
+    label: "Culture",
     labelNoGroup: "Absence de culture",
     labelUnknown: "Culture inconnue",
     /** @param {GeoJSONFeature} */
@@ -270,7 +273,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_NIVEAU_CONVERSION]: {
-    label: "niveau de conversion",
+    label: "Niveau de conversion",
     labelNoGroup: "Niveau de conversion inconnu",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => d.properties.conversion_niveau || NO_GROUP,
@@ -281,7 +284,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ANNEE_ENGAGEMENT]: {
-    label: "année de début de conversion",
+    label: "Année de conversion",
     labelNoGroup: "Absence de date de début de conversion",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => (d.properties.engagement_date ? new Date(d.properties.engagement_date).getFullYear() : NO_GROUP),
@@ -433,10 +436,32 @@ export function getFeatureById(features, id) {
  */
 export function featureName(
   feature,
-  { explicitName = true, ilotLabel = "îlot ", parcelleLabel = "parcelle ", separator = ", ", placeholder = "-" } = {},
+  {
+    explicitName = true,
+    ilotLabel = "îlot ",
+    parcelleLabel = "parcelle ",
+    separator = ", ",
+    placeholder = "-",
+    hint = false,
+    nameOnly = false,
+  } = {},
 ) {
   const NUMERO_I = parseInt(feature.properties.NUMERO_I, 10);
   const NUMERO_P = parseInt(feature.properties.NUMERO_P, 10);
+
+  if (nameOnly) {
+    return feature.properties.NOM ?? null;
+  }
+
+  if (hint) {
+    const ilot = Number.isNaN(NUMERO_I) ? "" : NUMERO_I;
+    const parcelle = Number.isNaN(NUMERO_P) ? "" : NUMERO_P;
+    const base = ilot && parcelle ? `${ilot}.${parcelle}` : ilot || parcelle || "";
+    if (base) {
+      return feature.properties.NOM ? `${base} (${feature.properties.NOM})` : base;
+    }
+    return feature.properties.NOM ?? placeholder;
+  }
 
   if (feature.properties.NOM || !Number.isNaN(NUMERO_I) || !Number.isNaN(NUMERO_P)) {
     const name = [
@@ -688,21 +713,66 @@ export function getTimeAgo(feature) {
   const diffInMonths = Math.floor(diffInDays / 30);
 
   if (diffInMinutes < 1) {
-    return "Modifié à l'instant";
+    return "à l'instant";
   } else if (diffInMinutes < 60) {
-    return `Modifié il y a ${diffInMinutes} min`;
+    return `
+    il y a ${diffInMinutes} min`;
   } else if (diffInHours < 24) {
-    return `Modifié il y a ${diffInHours} h`;
+    return `il y a ${diffInHours} h`;
   } else if (diffInDays < 30) {
-    return `Modifié il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
+    return `il y a ${diffInDays} jour${diffInDays > 1 ? "s" : ""}`;
   } else if (diffInMonths < 12) {
-    return `Modifié il y a ${diffInMonths} mois`;
+    return `il y a ${diffInMonths} mois`;
   } else {
     const formattedDate = date.toLocaleDateString("fr-FR", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-    return `Modifié le ${formattedDate}`;
+    return `Le ${formattedDate}`;
   }
+}
+
+/***
+ * @param {String} key
+ * @returns {String}
+ */
+export function getCultureIcon(key) {
+  if (key === NO_GROUP) {
+    return "";
+  }
+
+  const groupeCulture = fromCodeCpf(key)?.groupe;
+  if (!groupeCulture) {
+    return "";
+  }
+
+  const res = groupeCulture
+    .toLocaleLowerCase()
+    .replace(" ", "-")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (
+    [
+      "autres-surfaces",
+      "fruits",
+      "grandes-cultures",
+      "legumes",
+      "plantes-aromatiques",
+      "vignes",
+      "surfaces-fourrageres",
+    ].includes(res)
+  ) {
+    return (
+      "fr-icon-culture-" +
+      groupeCulture
+        .toLocaleLowerCase()
+        .replace(" ", "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    );
+  }
+
+  return "fr-icon-culture-autres-surfaces";
 }

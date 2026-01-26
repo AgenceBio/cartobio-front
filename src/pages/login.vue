@@ -97,7 +97,7 @@ onMounted(async () => {
     }
 
     if (store.isLogged) {
-      router.replace(route.query.returnto || store.startPage);
+      router.replace(route.query.returnto || store.accueilPage);
     }
   } finally {
     isVerifying.value = false;

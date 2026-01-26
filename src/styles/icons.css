@@ -1,0 +1,31 @@
+.fr-icon-geometry::before {
+  mask-image: url(@/assets/icon-geometry.svg);
+}
+
+.fr-icon-culture-autres-surfaces::before {
+  mask-image: url(@/assets/culture/autres.svg);
+}
+.fr-icon-culture-fruits::before {
+  mask-image: url(@/assets/culture/fruits.svg);
+}
+.fr-icon-culture-grandes-cultures::before {
+  mask-image: url(@/assets/culture/grandes-cultures.svg);
+}
+.fr-icon-culture-legumes::before {
+  mask-image: url(@/assets/culture/legumes.svg);
+}
+.fr-icon-culture-plantes-aromatiques::before {
+  mask-image: url(@/assets/culture/plantes-aromatiques.svg);
+}
+.fr-icon-culture-vignes::before {
+  mask-image: url(@/assets/culture/vignes.svg);
+}
+.fr-icon-culture-surfaces-fourrageres::before {
+  mask-image: url(@/assets/culture/surfaces-fourrageres.svg);
+}
+.fr-icon-cloud-check::before {
+  mask-image: url(@/assets/icon-check-cloud.svg);
+}
+.fr-icon-cloud-close::before {
+  mask-image: url(@/assets/icon-cloud-close.svg);
+}

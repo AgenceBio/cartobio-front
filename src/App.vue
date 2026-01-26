@@ -21,6 +21,7 @@
     </Suspense>
   </RouterView>
 
+  <OnBoarding />
   <MainFooter />
 </template>
 
@@ -31,6 +32,7 @@ import { computed } from "vue";
 
 import MainHeader from "@/components/MainHeader.vue";
 import MainFooter from "@/components/MainFooter.vue";
+import OnBoarding from "@/components/OnBoarding.vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 
 const route = useRoute();
@@ -46,6 +48,7 @@ useHead({ title, titleTemplate: "%s — CartoBio" });
 @import "@gouvfr/dsfr/dsfr.css";
 @import "@gouvfr/dsfr/utility/icons/icons.css";
 @import "@/styles/variables.css";
+@import "@/styles/icons.css";
 @import "remixicon/fonts/remixicon.css";
 
 a[aria-disabled] {
@@ -89,6 +92,6 @@ a[aria-disabled] {
 }
 
 .btn--error {
-  color: var(--text-default-error);
+  color: var(--text-default-error) !important;
 }
 </style>

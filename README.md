@@ -2,7 +2,7 @@
 
 > Application de suivi et de certificaton du parcellaire bio à destination des _opérateurs bio_ et des _organismes de certification_.
 
-Cette application implémente [la maquette Figma CartoBio](https://www.figma.com/file/RpE4QhlPyV0OSSYuk5vPno/Cartobio) ainsi que le [Système de Design de l'État](https://www.systeme-de-design.gouv.fr/) avec [Vue 3](https://vuejs.org/), [Vue Router](https://router.vuejs.org/), [Vue Pages](https://github.com/hannoeru/vite-plugin-pages), [Pinia](https://pinia.vuejs.org/) et [MapLibre](https://maplibre.org/) entre autres.
+Cette application implémente [la maquette Figma CartoBio](https://www.figma.com/file/RpE4QhlPyV0OSSYuk5vPno/Cartobio) ainsi que le [Système de Design de l'État](https://www.systeme-de-design.gouv.fr/) avec [Vue 3](https://vuejs.org/), [Vue Router](https://router.vuejs.org/), [Vue Pages](https://github.com/hannoeru/vite-plugin-pages), [Pinia](https://pinia.vuejs.org/) et [OpenLayers](https://openlayers.org/) entre autres.
 
 Les erreurs sont centralisées avec [Sentry](https://github.com/getsentry/sentry) et les mesures pour les statistiques d'utilisation avec [Matomo](https://github.com/matomo-org/matomo).
 

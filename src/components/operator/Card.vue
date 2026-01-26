@@ -28,6 +28,7 @@
               style="color: #000091"
               @click.stop="unpin(operator.numeroBio)"
               aria-label="Désépingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              v-tooltip="{ text: 'Désépingler l\'exploitation', position: 'bottom' }"
             ></button>
             <button
               v-else-if="!operatorDisabled[operator.numeroBio]"
@@ -35,6 +36,7 @@
               style="color: #000091"
               @click.stop="pin(operator.numeroBio)"
               aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              v-tooltip="{ text: 'Epingler l\'exploitation', position: 'bottom' }"
             ></button>
             <template v-if="operatorDisabled[operator.numeroBio]">
               <p class="fr-sr-only">Dossier inaccessible</p>
@@ -45,6 +47,7 @@
               class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm cursor-button"
               @click.stop="goToExploitations()"
               aria-label="Voir les détails de l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              v-tooltip="{ text: 'Ouvrir le dossier de l\'exploitation ', position: 'bottom' }"
             ></button>
             <p v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
               Le dossier n’est pas accessible

@@ -49,7 +49,9 @@ export const usePermissions = defineStore("permissions", () => {
     () =>
       (isOc.value || isAgri.value) &&
       operatorStore.operator.notifications?.etatCertification !== "ARRETEE" &&
-      operatorStore.operator.notifications?.etatCertification !== "RETIREE",
+      operatorStore.operator.notifications?.etatCertification !== "RETIREE" &&
+      (!isOc.value ||
+        operatorStore.operator.notifications?.organismeCertificateurId === userStore.user.organismeCertificateur.id),
   );
   const canEditVersion = canEditParcellaire;
 

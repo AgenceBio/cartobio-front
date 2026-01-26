@@ -9,21 +9,47 @@
         type="button"
         aria-label="Modifier les éléments sélectionnés"
       >
-        <div style="display: flex; flex-direction: column; align-items: flex-start">
-          <span>{{ title }}</span>
-          <span
-            v-if="optionsSelected && (!Array.isArray(optionsSelected) || optionsSelected.length > 0)"
-            class="small-text"
-            >{{
-              Array.isArray(optionsSelected)
-                ? optionsSelected.length > 1
-                  ? optionsSelected.length + " sélections"
-                  : "1 sélection"
-                : optionsSelected
-            }}<template v-if="optionsSuffix"> | {{ optionsSuffix }}</template></span
+        <slot v-if="$slots.title" name="title" :is-closed="isClosed" :is-open="isOpen" :is-expanding="isExpanding" />
+        <template v-else>
+          <div
+            :style="{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '0',
+            }"
           >
-          <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction">À préciser</span>
-        </div>
+            <span>{{ title }}</span>
+            <span
+              v-if="optionsSelected && (!Array.isArray(optionsSelected) || optionsSelected.length > 0)"
+              class="small-text"
+            >
+              {{
+                Array.isArray(optionsSelected)
+                  ? optionsSelected.length > 1
+                    ? optionsSelected.length + " sélections"
+                    : "1 sélection"
+                  : optionsSelected
+              }}
+              <template v-if="optionsSuffix"> | {{ optionsSuffix }}</template>
+            </span>
+
+            <span v-if="optionsCulture && isEdit" class="fr-hint-text culture-name">
+              <span :class="optionsCulture.icon ? optionsCulture.icon : ''" aria-hidden="true"></span>
+              {{ optionsCulture.name }}
+            </span>
+
+            <span class="fr-badge fr-badge--warning fr-badge--no-icon" v-if="requiresAction && !isEdit"
+              >À préciser</span
+            >
+          </div>
+          <div v-if="requiresAction && isEdit" class="badge-right">
+            <p class="error-text fr-mb-0 fr-px-1v fr-text--sm fr-text--bold">
+              <span class="fr-icon fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>1
+            </p>
+          </div>
+        </template>
       </button>
     </h3>
 
@@ -52,7 +78,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   optionsSelected: {
     type: [String, Array],
@@ -61,6 +87,15 @@ const props = defineProps({
   optionsSuffix: {
     type: [String, Number],
     required: false,
+  },
+  optionsCulture: {
+    required: false,
+    type: Object,
+  },
+  isEdit: {
+    required: false,
+    default: false,
+    type: Boolean,
   },
 });
 
@@ -100,14 +135,31 @@ if (activeAccordionId) {
 <style scoped>
 .fr-collapse--expanded {
   --collapse-max-height: none;
+  overflow: hidden;
 }
 
 .fr-accordion__btn {
-  gap: 1rem;
+  gap: 1px;
 
   span:first-child {
     flex: 1;
   }
+}
+
+.fr-accordion__btn {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.badge-right {
+  position: absolute;
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: fit-content;
 }
 
 .fr-collapsing {
@@ -117,5 +169,30 @@ if (activeAccordionId) {
 .small-text {
   color: grey;
   font-size: 12px;
+}
+
+.culture-name {
+  max-width: 30ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.badge-right {
+  margin-left: auto;
+  margin-right: 0px;
+}
+
+.error-text {
+  color: var(--warning-425-625);
+  border: 1px solid #ffbdb2;
+  background-color: var(--warning-950-100);
+  border-radius: 4px;
+}
+
+button:not(:disabled):hover {
+  background-color: var(--background-open-blue-france-hover);
 }
 </style>

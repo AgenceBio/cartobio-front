@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { defineComponent, markRaw } from "vue";
 import { createTestingPinia } from "@pinia/testing";
 import { flushPromises, mount } from "@vue/test-utils";
 
@@ -8,7 +7,6 @@ import { usePermissions } from "@/stores/permissions.js";
 
 import record from "@/utils/__fixtures__/record-with-features.json" assert { type: "json" };
 import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
-import EditForm from "@/components/forms/SingleItemOperatorForm.vue";
 import { getFeatureGroups, GROUPE_COMMUNE } from "@/utils/features.js";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
@@ -29,45 +27,47 @@ describe("FeatureGroup", () => {
 
   test("properly renders a group", async () => {
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null },
+      props: { featureGroup },
     });
 
-    await wrapper.find(".group-header").trigger("click");
+    await wrapper.find(".groupe-parcelles").trigger("click");
     expect(wrapper.vm.open).toEqual(true);
 
     // we should have a multi culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-2 .feature-precision").text()).toEqual("Multi-culture");
+    expect(wrapper.find("#parcelle-2 .parcelle-actions ").text()).toContain("Multiculture");
 
     // we should have a single culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("îlot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .parcelle-titre").text()).toContain("îlot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .parcelle-titre .badge.badge-AB").exists()).toEqual(true);
+    console.warn(wrapper.html());
   });
 
   test("non-culture grouping has different column name", async () => {
     const featureGroup = getFeatureGroups(record.parcelles, GROUPE_COMMUNE).at(0);
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null },
+      props: { featureGroup },
     });
-    await wrapper.find(".group-header").trigger("click");
+    await wrapper.find(".groupe-parcelles").trigger("click");
 
-    // we should have a multi culture name within the 3rd cellF
-    expect(wrapper.find("#parcelle-2 .culture-type").text()).toEqual("Multi-cultures : Ail, Pamplemousse et pomelo");
+    // we should have a multi culture name within the 3rd cell
+    expect(wrapper.find("#parcelle-2 .parcelle-actions ").text()).toContain("713,01");
 
     // we should have a single culture name within the 3rd cell
-    expect(wrapper.find("#parcelle-4 .culture-name").text()).toEqual("Ail");
-    expect(wrapper.find("#parcelle-4 .feature-precision").text()).toEqual("îlot 2, parcelle 1");
+    expect(wrapper.find("#parcelle-4 .parcelle-actions > p").text()).toContain("713,01");
+    expect(wrapper.find("#parcelle-4 .parcelle-titre ").text()).toContain("Ail");
   });
 
   test("toggles on and off all group items", async () => {
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null },
+      props: { featureGroup },
     });
 
     expect(wrapper.vm.selectedIds).toEqual([]);
 
     // hidden elements cannot be clicked…
-    await wrapper.find(".group-header").trigger("click");
+    await wrapper.find(".groupe-parcelles").trigger("click");
 
-    const selectAllCheckbox = wrapper.find('.group-header .single-checkbox input[type="checkbox"]');
+    const selectAllCheckbox = wrapper.find('.groupe-parcelles  input[type="checkbox"]');
     await selectAllCheckbox.trigger("click");
     expect(featuresStore.selectedIds).toEqual(["4", "2"]);
 
@@ -76,47 +76,36 @@ describe("FeatureGroup", () => {
 
     // we close the header
     // then we click again on a single checkbox
-    await wrapper.find(".group-header").trigger("click");
-    await wrapper.find('#parcelle-2 .single-checkbox input[type="checkbox"]').trigger("click");
+    await wrapper.find(".groupe-parcelles").trigger("click");
+    await wrapper.find('#parcelle-2  input[type="checkbox"]').trigger("click");
     expect(featuresStore.selectedIds).toEqual(["2"]);
     expect(wrapper.vm.open).toEqual(true);
   });
 
   test("we trigger an edit form", async () => {
-    const AsyncComponent = defineComponent({
-      components: { FeatureGroup },
-      template: '<Suspense><FeatureGroup v-bind="$attrs" /></Suspense>',
-    });
-
-    const wrapper = mount(AsyncComponent, {
-      props: { featureGroup, selectedIds: [], hoveredId: null, editForm: markRaw(EditForm) },
+    const wrapper = mount(FeatureGroup, {
+      props: { featureGroup },
     });
 
     const group = wrapper.getComponent(FeatureGroup);
-    await wrapper.find(".group-header").trigger("click");
-    await wrapper.find("#parcelle-2 td.actions button:first-child").trigger("click");
-
+    await wrapper.find(".groupe-parcelles").trigger("click");
+    await wrapper.find("#parcelle-2 .parcelle-actions").trigger("click");
     expect(group.emitted("edit:featureId")).toHaveProperty("0", ["2"]);
   });
 
   test("we trigger a delete form", async () => {
     const wrapper = mount(FeatureGroup, {
-      props: { featureGroup, selectedIds: [], hoveredId: null },
+      props: { featureGroup },
     });
 
-    await wrapper.find(".group-header").trigger("click");
-    await wrapper.find("#parcelle-2 .show-actions").trigger("click");
-
-    // menu is open
-    const menu = wrapper.find("#parcelle-2 .fr-menu");
-    expect(menu.exists()).toEqual(true);
+    await wrapper.find(".groupe-parcelles").trigger("click");
 
     // delete item is not active unless we have the permissions (after flushPromises/re-render)
-    expect(menu.find(".fr-icon-delete-line").attributes()).toHaveProperty("disabled");
+    expect(wrapper.find("#parcelle-2 .fr-icon-delete-line").attributes()).toHaveProperty("disabled");
     permissions.canDeleteFeature = true;
     await flushPromises();
-    expect(menu.find(".fr-icon-delete-line").attributes()).not.toHaveProperty("disabled");
-    await menu.find(".fr-icon-delete-line").trigger("click");
+    expect(wrapper.find("#parcelle-2 .fr-icon-delete-line").attributes()).not.toHaveProperty("disabled");
+    await wrapper.find("#parcelle-2 .fr-icon-delete-line").trigger("click");
     expect(wrapper.emitted("delete:featureId")).toHaveProperty("0", ["2"]);
   });
 });

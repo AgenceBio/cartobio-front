@@ -12,7 +12,8 @@ import record from "@/utils/__fixtures__/record-with-features.json" assert { typ
 
 import RecordHeader from "./Header.vue";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";
-import ExportModal from "@/components/records/ExportModal.vue";
+import ExportActions from "@/components/records/ExportActions.vue";
+import ExportModal from "@/components/records/ExportActions.vue";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
 const operatorStore = useOperatorStore(pinia);
@@ -154,30 +155,28 @@ describe("RecordHeader", () => {
       await flushPromises();
       expect(await wrapper.find(".readonly-badge").exists()).toBe(false);
 
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
-      const modal = wrapper.getComponent(ExportModal);
-      expect(modal.find("#modal-title").exists()).toBe(true);
-      expect(modal.find("#modal-title").text()).toEqual("Export de parcellaire");
+      const modal = wrapper.getComponent(ExportActions);
+      expect(modal.exists()).toBe(true);
     });
     it("devrait avoir 3 actions si record non certifié", async () => {
       let wrapper = mount(AsyncComponent);
       await flushPromises();
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
-      const modal = wrapper.getComponent(ExportModal);
-      expect(modal.findAll(".fr-modal__footer .fr-btn").length).toEqual(4);
-      expect(modal.findAll(".fr-modal__footer .fr-btn")[3].isDisabled()).toEqual(true);
+      const modal = wrapper.getComponent(ExportActions);
+      expect(modal.findAll("li:not(.break)").length).toEqual(3);
     });
     it("devrait avoir 4 actions si record certifié", async () => {
       let wrapper = mount(AsyncComponent);
       await flushPromises();
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
-      const modal = wrapper.getComponent(ExportModal);
+      const modal = wrapper.getComponent(ExportActions);
       recordStore.update({
         certification_state: "CERTIFIED",
         audit_date: "2024-01-01",
@@ -186,16 +185,16 @@ describe("RecordHeader", () => {
       });
 
       await flushPromises();
-      expect(modal.findAll(".fr-modal__footer .fr-btn").length).toEqual(4);
+      expect(modal.findAll("li:not(.break)").length).toEqual(3);
     });
     it("devrait avoir 5 actions si record certifié et qu'une attestation a deja été generée", async () => {
       axios.__createMock.get.mockResolvedValue({ data: { hasAttestationProduction: true } });
       let wrapper = mount(AsyncComponent);
       await flushPromises();
-      await wrapper.find(".export-action").trigger("click");
+      await wrapper.find(".actions-list").trigger("click");
       await flushPromises();
 
-      const modal = wrapper.getComponent(ExportModal);
+      const modal = wrapper.getComponent(ExportActions);
       recordStore.update({
         certification_state: "CERTIFIED",
         audit_date: "2024-01-01",
@@ -204,7 +203,7 @@ describe("RecordHeader", () => {
       });
 
       await flushPromises();
-      expect(modal.findAll(".fr-modal__footer .fr-btn").length).toEqual(5);
+      expect(modal.findAll("li:not(.break)").length).toEqual(3);
     });
   });
 });

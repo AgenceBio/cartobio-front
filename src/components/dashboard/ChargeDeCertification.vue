@@ -54,7 +54,9 @@
       class="fr-callout certifiees fr-mb-0 callout-children"
       @click="goToCertifiees"
       aria-label="Accéder à la liste des opérateurs certifiés"
+      v-tooltip="{ text: 'Ouvrir la liste des exploitations certifiées', position: 'bottom' }"
     >
+      <div class="callout-mask"></div>
       <div class="callout-content">
         <div>
           <div class="fr-hidden-md flex">
@@ -77,7 +79,9 @@
       class="fr-callout en-attentes fr-mb-0 callout-children"
       @click="goToEnAttentes"
       aria-label="Accéder à la liste des opérateurs contrôlés mais non certifiés"
+      v-tooltip="{ text: 'Ouvrir la liste des exploitations contrôlées non certifiées', position: 'bottom' }"
     >
+      <div class="callout-mask"></div>
       <div class="callout-content">
         <div>
           <div class="fr-hidden-md flex">
@@ -101,7 +105,9 @@
         class="fr-callout non-auditees fr-mb-0 full-width"
         @click="goToNonAuditees"
         aria-label="Accéder à la liste des opérateurs non audités"
+        v-tooltip="{ text: 'Ouvrir la liste des exploitations non certifiées', position: 'bottom' }"
       >
+        <div class="callout-mask"></div>
         <div class="callout-content">
           <div>
             <div class="fr-hidden-md flex">
@@ -138,6 +144,7 @@
       class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line green-link"
       @click="goToACertifier"
       aria-label="Accéder à la liste des opérateurs à certifier"
+      v-tooltip="{ text: 'Afficher tous les parcellaires à certifier', position: 'top' }"
     >
       Voir tout
     </button>
@@ -332,6 +339,8 @@ const goToACertifier = () => {
   align-items: end;
   justify-content: space-between;
   text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
 .departements-tag {
@@ -350,6 +359,46 @@ const goToACertifier = () => {
 .full-width {
   width: 100%;
 }
+
+.callout-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 0 56px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fr-callout {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.fr-callout:hover {
+  transform: translateY(-2px);
+}
+
+.fr-callout.certifiees:hover .callout-mask {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.fr-callout.en-attentes:hover .callout-mask {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.fr-callout.non-auditees:hover .callout-mask {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
 @media (min-width: 48em) {
   .callout-container .callout-children {
     width: 33%;
@@ -417,6 +466,7 @@ const goToACertifier = () => {
 .fr-callout.non-auditees .fr-h2 {
   color: #6e445a;
 }
+
 .header-a-certifier {
   display: flex;
   justify-content: space-between;
@@ -464,13 +514,6 @@ const goToACertifier = () => {
   .fr-callout {
     padding: 0.8rem;
   }
-  /* .callout-container {
-    flex-direction: column;
-  }
-  .callout-container > div,
-  .callout-container .fr-callout {
-    width: 100%;
-  } */
 
   .header-a-certifier {
     flex-direction: column;

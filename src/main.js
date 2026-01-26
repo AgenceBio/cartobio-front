@@ -7,6 +7,7 @@ import routes from "~pages";
 import Matomo from "vue-matomo";
 import Vue3Toastify, { toast as toastify } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import tooltip from "./tooltip.js";
 
 import App from "./App.vue";
 import { version } from "../package.json";
@@ -18,6 +19,7 @@ const { VUE_APP_MATOMO_SITE_ID: siteId = "58", VUE_APP_API_ENDPOINT } = import.m
 const { VUE_APP_SENTRY_DSN } = import.meta.env;
 
 const app = createApp(App);
+app.directive("tooltip", tooltip);
 const pinia = createPinia();
 const head = createHead();
 const router = createRouter({

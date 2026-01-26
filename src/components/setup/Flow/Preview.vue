@@ -16,16 +16,17 @@
     <form @submit.prevent="submitForm">
       <div :class="{ 'copy-data': !!operatorStore.records?.length }">
         <div>
-          <MapContainer
+          <MapContainerOL
             :controls="false"
             class="map map--preview"
             :options="{ interactive: false, hash: false, trackResize: false }"
             minInitialZoom="22"
             :bounds="mapBounds"
           >
-            <GeojsonLayer :style="baseStyle" name="base" />
-            <FeaturesLayer :data="featureCollection" />
-          </MapContainer>
+            <BaseLayer name="base" />
+
+            <FeaturesLayerOL :interactive="false" name="features" :data="featureCollection" :is-draw="false" />
+          </MapContainerOL>
           <div class="fr-mt-3w">
             <Spinner v-if="isLoading">Import en cours</Spinner>
             <p v-else-if="isOnCartobio">
@@ -176,16 +177,16 @@ import ReferenceCadastrale from "@/components/records/ReferenceCadastrale.vue";
 
 import { useOperatorStore } from "@/stores/operator.js";
 import { bounds, FeatureNotFoundError, inHa, legalProjectionSurface } from "@/utils/features.js";
-import baseStyle from "@/map-styles/base.json";
-import FeaturesLayer from "@/components/map/FeaturesLayer.vue";
-import MapContainer from "@/components/map/MapContainer.vue";
-import GeojsonLayer from "@/components/map/GeojsonLayer.vue";
 import { usePermissions } from "@/stores/permissions";
+
 import { CertificationState } from "@agencebio/cartobio-types";
 import Spinner from "@/components/widgets/Spinner.vue";
 import Modal from "@/components/widgets/Modal.vue";
 import State from "@/components/records/State.vue";
 import { dateFormat } from "@/utils/dates.js";
+import MapContainerOL from "@/components/map/MapContainerOL.vue";
+import BaseLayer from "@/components/map/Layers/BaseLayer.vue";
+import FeaturesLayerOL from "@/components/map/Layers/FeatureLayerOL.vue";
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env;
 

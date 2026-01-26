@@ -12,11 +12,23 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  icon: {
+  iconClass: {
     type: String,
     default: "fr-icon-more-fill",
   },
+  iconStyle: {
+    type: String,
+    default: "",
+  },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  smallList: {
+    type: Boolean,
+    default: false,
+  },
+  vertical: {
     type: Boolean,
     default: false,
   },
@@ -79,16 +91,23 @@ watch(show, (value) => {
         type="button"
         @click.stop.prevent="show = !show"
         class="fr-btn fr-btn--tertiary-no-outline show-actions"
-        :class="[props.icon]"
+        :class="props.iconClass"
+        :style="[props.iconStyle, props.vertical ? { transform: 'rotate(90deg)' } : {}]"
         :disabled="props.disabled"
         :aria-expanded="show"
-      >
-        Choix des actions
-      </button>
+        aria-label="Choix des actions"
+      ></button>
     </slot>
     <dialog class="menu-container" :open="show" tabindex="-1">
       <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
-        <ul class="fr-menu__list fr-btns-group" :class="{ 'fr-btns-group--icon-left': props.withIcons }">
+        <ul
+          class="fr-menu__list"
+          :class="{
+            'fr-btns-group--icon-left': props.withIcons,
+            'fr-btns-group--sm': props.smallList,
+            'fr-btns-group': !props.smallList,
+          }"
+        >
           <slot />
         </ul>
       </div>
@@ -116,7 +135,7 @@ watch(show, (value) => {
   height: 100%;
   width: 100vw;
   border: none;
-  z-index: var(--z-index-dropdown);
+  z-index: 1000000;
   background: var(--grey-50-1000-a375, rgba(22, 22, 22, 0.64));
   transition: background 0.3s;
   display: block;
@@ -168,6 +187,7 @@ watch(show, (value) => {
     --hover: var(--background-overlap-grey-hover);
     --active: var(--background-overlap-grey-active);
     box-shadow: inset 0 1px 0 0 var(--border-open-blue-france);
+    list-style-type: none;
   }
 
   :deep(li .fr-btn) {

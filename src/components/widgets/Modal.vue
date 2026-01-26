@@ -7,26 +7,39 @@
     open
     aria-modal="true"
   >
-    <div class="fr-container fr-container--fluid" :class="!large ? 'fr-container-md ' : 'fr-container-lg'">
-      <div class="fr-grid-row fr-grid-row--center">
-        <div ref="target" class="fr-col-12 fr-col-md-8" :class="!large ? 'fr-col-lg-6' : null">
+    <div
+      :class="[
+        !extraLarge ? (!large ? 'fr-container-md ' : 'fr-container-lg') : 'fr-px-6v',
+        !extraLarge ?? 'fr-container fr-container--fluid',
+      ]"
+    >
+      <div :class="[!extraLarge ? 'fr-grid-row fr-grid-row--center' : '']">
+        <div
+          ref="target"
+          :class="[!extraLarge ?? 'fr-col-12 fr-col-md-8', !large && !extraLarge ? 'fr-col-lg-6' : null]"
+        >
           <div class="fr-modal__body">
-            <div class="fr-modal__header">
-              <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
-                <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
-                <slot name="title" />
-              </h1>
+            <div class="fr-modal__header" v-if="!noHeader">
+              <template v-if="!slots.header">
+                <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
+                  <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
+                  <slot name="title" />
+                </h1>
 
-              <button
-                class="fr-btn--close fr-btn"
-                title="Fermer la fenêtre modale"
-                aria-controls="global-modal"
-                @click="emit('close')"
-                :disabled="lockClose"
-                v-if="!noCloseButton"
-              >
-                Fermer
-              </button>
+                <button
+                  class="fr-btn--close fr-btn"
+                  title="Fermer la fenêtre modale"
+                  aria-controls="global-modal"
+                  @click="emit('close')"
+                  :disabled="lockClose"
+                  v-if="!noCloseButton"
+                >
+                  Fermer
+                </button>
+              </template>
+              <template v-else>
+                <slot name="header" />
+              </template>
             </div>
             <div class="fr-modal__content">
               <slot name="default" v-bind="$attrs" />
@@ -41,10 +54,12 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, useSlots } from "vue";
 import { useHead } from "@unhead/vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useContentTracking } from "@/stats.js";
+
+const slots = useSlots();
 
 useContentTracking();
 
@@ -57,6 +72,14 @@ const props = defineProps({
     default: false,
   },
   large: {
+    type: Boolean,
+    default: false,
+  },
+  extraLarge: {
+    type: Boolean,
+    default: false,
+  },
+  noHeader: {
     type: Boolean,
     default: false,
   },

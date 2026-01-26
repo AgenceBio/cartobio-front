@@ -15,6 +15,7 @@ import {
 } from "@/referentiels/ab.js";
 
 import { featureName } from "@/utils/features.js";
+import { countRotationErrors } from "@/utils/culture";
 
 /**
  * @typedef {import('vue').ComputedRef} ComputedRef
@@ -32,6 +33,9 @@ export const RuleSet = {
   GEOMETRY_MISSING: "geometry-missing",
   ENGAGEMENT_DATE_MISSING: "engagement-date-missing",
   ANNOTATED: "annotation",
+  CULTURE_ROTATION: "rotation",
+  CULTURE_ROTATION_2: "rotation-2",
+  CULTURE_ROTATION_3: "rotation-3",
 };
 
 /**
@@ -261,6 +265,33 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             },
           },
         ],
+        [
+          RuleSet.CULTURE_ROTATION_2,
+          {
+            property: "rotation",
+            required: false,
+            rotation: true,
+            label: "Rotation à controler",
+            errorMessage: "Une culture a été répétée 2 années de suite",
+            select(f) {
+              return countRotationErrors(0, f.properties.historique ?? []) === 2;
+            },
+          },
+        ],
+
+        [
+          RuleSet.CULTURE_ROTATION_3,
+          {
+            property: "rotation",
+            required: false,
+            rotation: true,
+            label: "Rotation non conforme",
+            errorMessage: "Une culture a été répétée 3 années de suite",
+            select(f) {
+              return countRotationErrors(0, f.properties.historique ?? []) >= 3;
+            },
+          },
+        ],
       ]),
   );
 
@@ -271,7 +302,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
     () =>
       new Map(
         Array.from(definitions.value.entries())
-          .map(([id, { errorMessage, label, property, required, select }]) => {
+          .map(([id, { errorMessage, label, property, required, select, rotation }]) => {
             const featureIds = collectIds(allCandidate, select);
             return [
               id,
@@ -283,6 +314,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
                 label,
                 property,
                 required,
+                rotation,
               },
             ];
           })
@@ -295,6 +327,9 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
    */
   const required = computed(() => new Map(Array.from(sets.value.entries()).filter(([, { required }]) => required)));
 
+  const rotationErrors = computed(
+    () => new Map(Array.from(sets.value.entries()).filter(([, { rotation }]) => rotation)),
+  );
   /**
    * @type {ComputedRef<Map<String,SetResult>>}
    */
@@ -410,6 +445,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
     // where all lives
     sets,
     required, // sets filtered by requirement
+    rotationErrors, // sets filtered by rotation
     // computed
     hasRequiredSets,
     tags, // sets filtered by toggled elements

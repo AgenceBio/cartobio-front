@@ -1,7 +1,7 @@
 <template>
   <Modal @close="handleClose" v-bind="$attrs" data-track-content data-content-name="Modale de modification de parcelle">
     <form @submit.prevent="validate" id="single-feature-edit-form">
-      <div class="fr-card fr-p-2w fr-mb-3w">
+      <div class="fr-p-2w fr-mb-3w">
         <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
           <label class="fr-label" for="feature-nom">Nom de la parcelle</label>
           <span class="fr-hint-text fr-mb-1v">Exemple&nbsp;: Les charrons 2</span>
@@ -60,7 +60,6 @@
               >
             </div>
           </div>
-
           <CultureSelector
             :feature-id="feature.properties.id || feature.id"
             :cultures="patch.cultures"

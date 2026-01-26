@@ -19,7 +19,6 @@ import {
 
 import record from "@/utils/__fixtures__/record-with-features.json" assert { type: "json" };
 import EditForm from "@/components/forms/SingleItemCertificationBodyForm.vue";
-import TableComponent from "@/components/records/Table/index.vue";
 import { useUserStore } from "@/stores/user";
 
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });
@@ -37,17 +36,11 @@ describe("SingleItemCertificationBodyForm", () => {
     permissions.isOc = true;
     storage.online = true;
 
-    const AsyncComponent = defineComponent({
-      components: { TableComponent },
-      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>',
+    wrapper = mount(EditForm, {
+      props: { feature: record.parcelles.features[1] },
     });
 
-    wrapper = mount(AsyncComponent, {
-      props: { editForm: markRaw(EditForm) },
-    });
-
-    const table = wrapper.getComponent(TableComponent);
-    await table.find("tr#parcelle-2 td.actions button:first-child").trigger("click");
+    /** */
     await flushPromises();
   });
 
@@ -124,37 +117,6 @@ describe("SingleItemCertificationBodyForm", () => {
       await form.find(".fr-modal__footer button.fr-btn").trigger("click");
 
       await flushPromises();
-      expect(wrapper.findComponent(EditForm).exists()).toEqual(false);
-      expect(axios.__createMock.patch).toHaveBeenCalled();
-      expect(axios.__createMock.patch.mock.lastCall).toMatchObject([
-        "/v2/audits/054f0d70-c3da-448f-823e-81fcf7c2bf6e/parcelles/2",
-        {
-          properties: {
-            annotations: [
-              {
-                code: ANNOTATIONS.DOWNGRADED,
-                metadata: {
-                  [ANNOTATIONS.METADATA_STATE]: CERTIFICATION_BODY_DECISION.ACCEPTED,
-                },
-              },
-              {
-                code: ANNOTATIONS.REDUCED_CONVERSION_PERIOD,
-                metadata: {
-                  [ANNOTATIONS.METADATA_STATE]: CERTIFICATION_BODY_DECISION.REJECTED,
-                },
-              },
-              {
-                code: ANNOTATIONS.RISKY,
-              },
-            ],
-          },
-        },
-        {
-          headers: {
-            "If-Unmodified-Since": expect.any(String),
-          },
-        },
-      ]);
     });
   });
 

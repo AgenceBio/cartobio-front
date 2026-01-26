@@ -55,28 +55,14 @@ vi.mock("axios", async (importActual) => {
   };
 });
 
-vi.mock("maplibre-gl", () => ({
-  Map: vi.fn(() => ({
-    addControl: vi.fn(),
-    on: vi.fn(),
-    once: vi.fn(),
-    remove: vi.fn(),
-    setGlyphs: vi.fn(),
-    loadImage: vi.fn(),
-    addSource: vi.fn(),
-    addLayer: vi.fn(),
-    fitBounds: vi.fn(),
-    getLayer: vi.fn(),
-    getSource: vi.fn(),
-    getZoom: vi.fn(),
-    getStyle: vi.fn().mockImplementation(() => ({ layers: [] })),
-    isStyleLoaded: vi.fn().mockReturnValue(true),
-    setLayoutProperty: vi.fn(),
-    resize: vi.fn(),
-  })),
-  NavigationControl: vi.fn(),
-  ScaleControl: vi.fn(),
+const ResizeObserverMock = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
 }));
+
+// Stub the global ResizeObserver
+vi.stubGlobal("ResizeObserver", ResizeObserverMock);
 
 vi.stubGlobal("localStorage", {
   getItem: vi.fn(),

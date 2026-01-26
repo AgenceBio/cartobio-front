@@ -22,6 +22,10 @@
         "campagne": "2023",
         "pacage": "999999999",
         "source": "telepac"
+      },
+      "user": {
+        "nom": "teest",
+        "prenom": "test"
       }
     }
   ],

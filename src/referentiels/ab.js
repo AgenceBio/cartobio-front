@@ -17,7 +17,6 @@ export const certificationStatesLabels = {
     label: "Non renseigné",
     labelFilter: "Pas de parcellaire",
   },
-
   [CertificationState.OPERATOR_DRAFT]: {
     label: "Parcellaire importé",
     color: "fr-badge--info",
@@ -53,42 +52,53 @@ export const conversionLevels = [
   {
     value: LEVEL_UNKNOWN,
     label: "Niveau de conversion inconnu",
-    shortLabel: "Inconnue",
+    shortLabel: "Non rens.",
+    icon: "fr-icon-warning-line",
   },
   {
     value: LEVEL_CONVENTIONAL,
     label: "Conventionnel",
     shortLabel: "Conventionnel",
     is_selectable: true,
+    icon: "fr-icon-culture-legumes",
+    labelSelector: "Conv.",
   },
   {
     value: LEVEL_MAYBE_AB,
     label: "AB — niveau de conversion à préciser",
-    shortLabel: "AB",
+    shortLabel: "AB - à préciser",
   },
   {
     value: LEVEL_C1,
-    label: "C1 — Première année de conversion",
+    label: "Première année de conversion",
     shortLabel: "C1",
+    labelSelector: "C1",
     is_selectable: true,
+    icon: "fr-icon-culture-grandes-cultures",
   },
   {
     value: LEVEL_C2,
-    label: "C2 — Deuxième année de conversion",
+    label: "Deuxième année de conversion",
     shortLabel: "C2",
+    labelSelector: "C2",
     is_selectable: true,
+    icon: "fr-icon-culture-fruits",
   },
   {
     value: LEVEL_C3,
-    label: "C3 — Troisième année de conversion",
+    label: "Troisième année de conversion",
     shortLabel: "C3",
+    labelSelector: "C3",
     is_selectable: true,
+    icon: "fr-icon-culture-autres-surfaces",
   },
   {
     value: LEVEL_AB,
-    label: "AB — Agriculture biologique",
+    label: "BIO",
     shortLabel: "AB",
+    labelSelector: "BIO",
     is_selectable: true,
+    icon: "fr-icon-culture-legumes",
   },
 ];
 

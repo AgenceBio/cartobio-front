@@ -116,10 +116,13 @@ const computedClass = computed(() => {
   gap: 0.25rem;
   align-items: center;
   max-width: 100%;
+  height: fit-content;
 }
+
 .badge > .padding-left {
   padding-left: 1ch;
 }
+
 .badge > p {
   font-weight: 600;
   font-size: 12px;
@@ -127,6 +130,5 @@ const computedClass = computed(() => {
   text-transform: uppercase;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding: 2px 0;
 }
 </style>

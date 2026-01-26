@@ -48,8 +48,6 @@
       "url": "https://openmaptiles.geo.data.gouv.fr/data/france-vector.json"
     }
   },
-  "sprite": "https://openmaptiles.github.io/osm-bright-gl-style/sprite",
-  "glyphs": "https://openmaptiles.geo.data.gouv.fr/fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",

@@ -135,82 +135,86 @@ export const useFeaturesStore = defineStore("features", () => {
   }
 
   /**
+   * @param {string[]} ids
+   */
+  function setSelectedIds(ids) {
+    selectedIds.value = ids;
+  }
+
+  /**
    * @param  {...String} ids
    */
   function unselect(...ids) {
     selectedIds.value = selectedIds.value.filter((id) => ids.map(String).includes(String(id)) === false);
   }
 
-  function bindMaplibreFeatureState(map, source) {
-    watch(hoveredId, (id, previousId) => {
-      if (id) {
-        map.setFeatureState({ source, id }, { hover: true });
-      }
+  function unselectAll() {
+    selectedIds.value = [];
+  }
 
+  function bindFeatureState(map, layerId) {
+    const layer = map.value
+      .getLayers()
+      .getArray()
+      .find((l) => l.get("name") === layerId);
+    const source = layer?.getSource();
+    if (!source) return;
+
+    watch(hoveredId, (id, previousId) => {
       if (previousId) {
-        map.setFeatureState({ source, id: previousId }, { hover: false });
+        const feature = source.getFeatureById(previousId);
+        if (feature) feature.set("hover", false);
       }
+      if (id) {
+        const feature = source.getFeatureById(id);
+        if (feature) feature.set("hover", true);
+      }
+      layer.changed();
     });
 
     watch(
       () => selectedIds,
-      (currentIds) => {
-        currentIds.value.forEach((id) => {
-          map.setFeatureState({ source, id }, { selected: true });
+      (ids) => {
+        collection.value.features.forEach((feature) => {
+          const f = source.getFeatureById(feature.id);
+          if (f) f.set("selected", ids.value.includes(feature.id));
         });
-
-        collection.value.features.forEach(({ id }) => {
-          const { selected } = map.getFeatureState({ id, source });
-          if (selected && !currentIds.value.includes(id)) {
-            map.setFeatureState({ source, id }, { selected: false });
-          }
-        });
+        layer.changed();
       },
       { deep: true },
     );
 
     watch(activeId, (id, previousId) => {
-      if (id) {
-        map.setFeatureState({ source, id }, { selected: true });
-      }
-
       if (previousId) {
-        map.setFeatureState({ source, id: previousId }, { selected: false });
+        const feature = source.getFeatureById(previousId);
+        if (feature) feature.set("selected", false);
       }
-    });
-
-    map.on("styledata", () => {
-      if (map.getSource(source) === undefined) {
-        return;
+      if (id) {
+        const feature = source.getFeatureById(id);
+        if (feature) feature.set("selected", true);
       }
-
-      selectedIds.value.forEach((id) => {
-        map.setFeatureState({ source, id }, { selected: true });
-      });
+      layer.changed();
     });
   }
 
-  function bindMaplibreInteractions(map, layer) {
-    map.on("mousemove", layer, ({ features }) => {
-      if (features.length) {
-        hoveredId.value = features[0].id;
-        map.getCanvas().style.cursor = "pointer";
-      }
-    });
+  function bindFeatureInteraction(map, layerId) {
+    const layer = map.value
+      .getLayers()
+      .getArray()
+      .find((l) => l.get("name") === layerId);
+    const source = layer?.getSource();
 
-    map.on("mouseleave", layer, () => {
-      if (hoveredId.value) {
+    if (!source) return;
+
+    map.value.on("pointermove", (e) => {
+      if (e.dragging) return;
+      const feature = map.value.forEachFeatureAtPixel(e.pixel, (f, layerCandidate) => {
+        return layerCandidate === layer ? f : null;
+      });
+      if (feature) {
+        hoveredId.value = feature.getId();
+      } else {
         hoveredId.value = null;
-        map.getCanvas().style.cursor = "";
-      }
-    });
-
-    map.on("click", layer, ({ lngLat }) => {
-      const point = map.project(lngLat);
-      const features = map.queryRenderedFeatures(point, { layers: [layer] });
-
-      if (features.length) {
-        toggleSingleSelected(features[0].id);
       }
     });
   }
@@ -319,15 +323,17 @@ export const useFeaturesStore = defineStore("features", () => {
     selectedFeatures,
     // methods
     $reset,
-    bindMaplibreFeatureState,
-    bindMaplibreInteractions,
+    bindFeatureState,
+    bindFeatureInteraction,
     getFeatureById,
     select,
+    setSelectedIds,
     setAll,
     setCandidate,
     commitCandidate,
     toggleAllSelected,
     toggleSingleSelected,
+    unselectAll,
     unselect,
     updateSingleFeature,
     updateFeatureCollectionProperties,

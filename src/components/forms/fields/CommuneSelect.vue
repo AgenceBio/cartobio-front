@@ -1,6 +1,10 @@
 <template>
-  <div :style="style" :class="$props.class">
-    <div ref="autocompleteRef"></div>
+  <div :style="style" class="fr-search-bar fr-mb-1v" :class="$props.class">
+    <div class="wrapper">
+      <label class="fr-label" for="search">Saisissez le nom d'une commune</label>
+      <div class="input" ref="autocompleteRef"></div>
+      <button class="fr-btn button-search fr-mt-0" type="submit" title="Rechercher"></button>
+    </div>
   </div>
 </template>
 
@@ -38,6 +42,7 @@ onMounted(async () => {
   const { setQuery } = autocomplete({
     container: autocompleteRef.value,
     placeholder: "Saisissez le nom d’une commune",
+    id: "search",
     openOnFocus: true,
     classNames: {
       form: "fr-input",
@@ -63,7 +68,6 @@ onMounted(async () => {
                   autocomplete: 1,
                 },
               });
-              // autocomplete lib does not handle errors properly so we have to do it ourselves
             } catch (error) {
               if (
                 error.name === "AxiosError" &&
@@ -99,7 +103,7 @@ onMounted(async () => {
 });
 </script>
 
-<style>
+<style scoped>
 .aa-Panel {
   z-index: 2000;
 }
@@ -108,14 +112,21 @@ onMounted(async () => {
   background-color: var(--background-contrast-grey);
   border: none;
   border-radius: 0.25rem 0.25rem 0 0;
-  padding-right: 0;
+  padding-right: 0px;
+}
+
+.aa-Input {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .aa-Form:focus-within {
-  box-shadow: none;
+  box-shadow: inset 0 -2px 0 0 var(--border-action-high-blue-france);
   outline-offset: 2px;
   outline-width: 2px;
   outline-color: #0a76f6;
+  outline-style: solid;
 }
 
 .aa-PanelLayout {
@@ -129,6 +140,7 @@ onMounted(async () => {
 .aa-Item:hover {
   background-color: #ececfe;
 }
+
 .aa-Item[aria-selected="true"] {
   outline: 2px solid var(--border-active-blue-france);
 }
@@ -141,9 +153,40 @@ onMounted(async () => {
   --border-width: 2px;
   --aa-search-input-height: calc((0.5rem * 2) + 1.5rem - var(--border-width));
   align-items: flex-start;
-  margin-top: calc(var(--border-width) * -1); /* to counteract the align-items: center of the container */
+  margin-top: calc(var(--border-width) * -1);
+  /* to counteract the align-items: center of the container */
 }
+
+.aa-Input::placeholder {
+  color: #666666;
+}
+
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
+}
+
+.input {
+}
+
+.icon-btn {
+  padding: 0rem 0rem 0rem 0rem;
+}
+
+.button-search {
+  height: fit-content;
+  margin-bottom: 0px;
+  margin-top: auto;
+}
+
+.wrapper {
+  display: flex;
+}
+
+.aa-Item {
+  padding: 0.5rem 1.8em 0.5rem 1.8em;
+}
+
+:deep(.aa-SubmitButton) {
+  display: none !important;
 }
 </style>
