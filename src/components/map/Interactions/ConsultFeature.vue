@@ -74,7 +74,7 @@ watch(
       });
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 /**
@@ -105,13 +105,16 @@ onMounted(() => {
       },
       {
         layerFilter: (layer) => layer === props.vectorLayer,
-      }
+      },
     );
 
     if (clickedFeatures.length > 0) {
       const clickedFeature = clickedFeatures[0];
       const clickedId = clickedFeature.getId();
-      const isAlreadySelected = selectInteraction?.getFeatures().getArray().some(f => f.getId() === clickedId);
+      const isAlreadySelected = selectInteraction
+        ?.getFeatures()
+        .getArray()
+        .some((f) => f.getId() === clickedId);
 
       if (isAlreadySelected && selectInteraction?.getFeatures().getLength() === 1) {
         // Réémettre l'événement pour la feature déjà sélectionnée

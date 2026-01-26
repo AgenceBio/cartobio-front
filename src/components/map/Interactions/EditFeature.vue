@@ -23,7 +23,9 @@
       >
         Valider la correction
       </button>
-      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">
+        Annuler
+      </button>
     </div>
     <div
       class="pop-in-info fr-text--sm fr-text--bold"
