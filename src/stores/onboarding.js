@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { useUserStore } from "@/stores/user.js";
 
 export const useOnboardingStore = defineStore("onboarding", () => {
   const shouldShow = ref(false);
+  const userStore = useUserStore();
 
   const checkStatus = () => {
     const value = localStorage.getItem("checkOnBoarding");
-    shouldShow.value = !(value === "true");
-    // TODO : Uniquement quand on es connecté
+    shouldShow.value = !(value === "true") && userStore.isLogged;
   };
 
   const reset = () => {
