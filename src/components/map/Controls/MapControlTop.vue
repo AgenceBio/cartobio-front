@@ -1,7 +1,10 @@
 <template>
   <div class="button-group">
     <div class="left-button" v-if="modelOnglet != 'fullTab'">
-      <fieldset class="fr-segmented fr-segmented--sm coachmark7">
+      <fieldset
+        class="fr-segmented fr-segmented--sm coachmark7"
+        :class="{ 'vertical-layout': !isMobile && !isWide && isEditing }"
+      >
         <div class="fr-segmented__elements">
           <div class="fr-segmented__element">
             <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
@@ -45,15 +48,18 @@
         v-if="mapParams.currentMode === 'consult'"
         :disabled="!online"
       >
-        <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />Comparer
+        <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />
+        <span v-if="!isMobile && !isWide && isEditing"></span>
+        <span v-else> Comparer</span>
       </button>
       <button
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line fr-btn--icon-left coachmark4"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line coachmark4 fr-btn--icon-left"
         aria-label="Ajouter une nouvelle parcelle"
         :disabled="!permissions.canEditParcellaire || !online"
         @click="emit('addParcelle')"
       >
-        Ajouter une parcelle
+        <span v-if="!isMobile && !isWide && isEditing">Ajouter </span>
+        <span v-else>Ajouter une parcelle</span>
       </button>
     </div>
 
@@ -85,7 +91,7 @@ import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { useOnline } from "@vueuse/core";
 import { useFeaturesStore } from "@/stores/features";
-import { ref, watch } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 
 const online = useOnline();
@@ -104,13 +110,34 @@ const { params: mapParams } = storeToRefs(preferences);
  * *Props
  */
 
-const props = defineProps<{ stateFS: "fullTab" | "split" | "fullMap" }>();
+const props = defineProps<{ stateFS: "fullTab" | "split" | "fullMap"; isEditing: boolean }>();
 
 /**
  * * Refs
  */
+
+const windowWidth = ref(window.innerWidth);
+
 const countSelected = ref<number>(store.selectedIds.length | 0);
 const modelOnglet = ref<"fullTab" | "split" | "fullMap">(props.stateFS);
+
+const isMobile = computed(() => windowWidth.value < 992);
+const isWide = computed(() => windowWidth.value >= 1600);
+
+/**
+ * * Gestion du resposive
+ */
+const handleResize = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
+});
 
 /**
  * * Emits
@@ -182,6 +209,14 @@ watch(
   width: 44px;
   height: 44px;
   justify-content: center;
+}
+
+.left-button .vertical-layout .fr-segmented__elements {
+  flex-direction: column;
+}
+
+.left-button .vertical-layout .fr-segmented__element {
+  width: 100%;
 }
 
 .button-group {
