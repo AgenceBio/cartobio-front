@@ -211,4 +211,8 @@ const isOnExploitationsPage = computed((): boolean => {
 .footer-expanded {
   padding-top: 2rem;
 }
+
+.fr-footer {
+  position: relative;
+}
 </style>

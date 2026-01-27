@@ -343,6 +343,7 @@ const modifyInteraction = () => {
 
     if (selectedIds.length === 1) {
       initModifyInteraction(selectedFeatures, tooltip);
+      emit("selectFeature", selectedIds[0]);
     } else {
       if (modify) {
         props.map.removeInteraction(modify);
@@ -711,6 +712,13 @@ const canCorrect = () => {
 const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
+
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "selectFeature", value: number | string): void;
+}>();
 
 /*
  * * Watchers

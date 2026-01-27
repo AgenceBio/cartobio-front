@@ -1,5 +1,5 @@
 <template>
-  <header class="fr-mb-2w">
+  <header class="fr-mb-2w fr-px-4v">
     <div
       class="fr-grid-row fr-grid-row--middle header fr-py-1w sticky"
       id="headerRecord"
@@ -465,6 +465,7 @@ watch(
 watch(
   () => modelOnglet.value,
   (newValue) => {
+    console.log("Changement de header", modelOnglet.value);
     emit("modeDisplay", newValue);
   },
 );

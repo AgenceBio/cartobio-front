@@ -18,6 +18,7 @@
         :record-id="recordId"
         :undo-redo="interactions.undoRedo"
         :hasUndo="hasUndo"
+        @selectFeature="(e) => emit('selectFeature', e)"
       />
       <AddNewFeature
         v-else-if="mapParams.currentMode === 'draw'"

@@ -81,7 +81,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="fr-grid-row fr-py-8v banner" style="display: flex; justify-content: space-between; align-items: center">
+  <div
+    class="fr-grid-row fr-py-8v fr-px-4v banner"
+    style="display: flex; justify-content: space-between; align-items: center"
+  >
     <p style="margin: 0; text-align: left; padding: 4px 12px" class="fr-hint-text">Enregistré {{ timeAgo }}</p>
 
     <div>
