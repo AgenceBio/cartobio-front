@@ -1,5 +1,5 @@
 <template>
-  <Modal @close="handleClose" v-bind="$attrs" data-track-content data-content-name="Modale de modification de parcelle">
+  <Modal @close="handleClose" v-bind="$attrs" data-track-content :data-content-name="dataContentName">
     <form @submit.prevent="validate" id="single-feature-edit-form">
       <div class="fr-p-2w fr-mb-3w">
         <div class="fr-input-group" :class="{ 'fr-input-group--error': nameErrors.size }">
@@ -141,6 +141,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  dataContentName: {
+    type: String,
+    default: "Modale de modification de parcelle",
+  },
 });
 const emit = defineEmits(["submit", "close"]);
 
@@ -215,11 +219,8 @@ watch(
     if (newValue === LEVEL_AB && !patch.engagement_date) {
       patch.engagement_date = "1900-01-01";
     }
-    if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
-      patch.engagement_date = undefined;
-    }
-    if (newValue === LEVEL_CONVENTIONAL) {
-      patch.engagement_date = undefined;
+    if ((newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") || newValue === LEVEL_CONVENTIONAL) {
+      patch.engagement_date = "";
     }
   },
 );

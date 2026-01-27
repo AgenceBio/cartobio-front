@@ -141,7 +141,7 @@
       @close="goToEdit"
       @submit="submitFeature"
       icon="fr-icon-add-line"
-      data-content-name="Modale de confirmation d'ajout"
+      :data-content-name="'Modale de confirmation d\'ajout'"
       required-name
     >
       <template #title>Nouvelle parcelle</template>

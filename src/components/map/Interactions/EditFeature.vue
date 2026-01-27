@@ -324,7 +324,9 @@ const modifyInteraction = () => {
   const select = createSelectInteraction(selectedFeatures);
 
   if (selectedFeatures.getLength() === 1) {
-    initModifyInteraction(selectedFeatures, tooltip);
+    nextTick(() => {
+      initModifyInteraction(selectedFeatures, tooltip);
+    });
   }
 
   select.on("select", (e) => {

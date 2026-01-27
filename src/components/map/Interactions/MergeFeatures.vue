@@ -42,7 +42,7 @@
       @close="goToEdit"
       @submit="confirmer"
       icon="fr-icon-add-line"
-      data-content-name="Modale de confirmation d'ajout"
+      :data-content-name="'Modale de fusion des parcelles'"
       required-name
     >
       <template #title>Nouvelle parcelle</template>
@@ -333,7 +333,7 @@ onUnmounted(() => {
   width: 15px;
   height: 15px;
 
-  background: rgba(88, 197, 207, 0.5);
+  background: #174c5f;
   border: 2px dashed #60e0eb;
   display: inline-block;
 

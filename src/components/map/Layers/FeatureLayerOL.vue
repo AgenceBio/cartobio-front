@@ -55,6 +55,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        @selectFeature="(e) => emit('selectFeature', e)"
       />
       <Teleport to=".toolbar">
         <div class="toolbar-bottom" v-if="hasUndo || hasRedo">
