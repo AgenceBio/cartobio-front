@@ -61,7 +61,7 @@
           class="fr-label"
           for="radio-select-all"
           aria-label="Sélectionner toutes les parcelles"
-          v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'top' }"
+          v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'right' }"
         />
       </div>
       <p class="fr-text--sm">
@@ -309,6 +309,8 @@ const groupCheckbox = ref(null);
 watch(selectedFeatureIds, () => {
   if (selectedFeatureIds.value.length > 0) {
     groupCheckbox.value.indeterminate = !allSelected.value;
+  } else {
+    groupCheckbox.value.indeterminate = false;
   }
 });
 

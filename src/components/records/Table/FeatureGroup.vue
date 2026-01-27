@@ -30,7 +30,7 @@
               text: allSelected
                 ? `Désélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`
                 : `Sélectionner les parcelles ${featureGroup.label.toLocaleLowerCase()}`,
-              position: 'bottom',
+              position: 'right',
             }"
           />
         </div>
