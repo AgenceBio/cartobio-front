@@ -1,10 +1,6 @@
 <template>
-  <header class="fr-mb-2w fr-px-4v">
-    <div
-      class="fr-grid-row fr-grid-row--middle header fr-py-1w sticky"
-      id="headerRecord"
-      style="position: sticky; top: 0px; background-color: white; z-index: 10"
-    >
+  <header class="fr-mb-2w fr-pr-4v">
+    <div class="fr-grid-row fr-grid-row--middle header fr-py-1w sticky" id="headerRecord">
       <div class="fr-grid-row fr-text--xs">
         <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0" @click="redirectToParcellaire()">
           <b>{{ operator.nom }}</b>
@@ -32,22 +28,26 @@
       </div>
       <fieldset class="fr-segmented fr-segmented--sm" v-if="modelOnglet === 'fullTab'">
         <div class="fr-segmented__elements">
-          <div class="fr-segmented__element">
+          <div
+            class="fr-segmented__element"
+            aria-label="Vue partagée tableau / carte"
+            v-tooltip="{ text: 'Vue partagée tableau / carte' }"
+          >
             <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-1">
-              <span class="ri-layout-column-line" aria-hidden="true"></span>
+              <span class="ri-layout-column-line fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
-          <div class="fr-segmented__element">
+          <div class="fr-segmented__element" aria-label="Vue tableau" v-tooltip="{ text: 'Vue tableau' }">
             <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-2">
-              <span class="fr-icon-list-unordered fr-icon--sm" aria-hidden="true"></span>
+              <span class="fr-icon-list-unordered fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
-          <div class="fr-segmented__element">
+          <div class="fr-segmented__element" aria-label="Vue carte" v-tooltip="{ text: 'Vue carte' }">
             <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-3">
-              <span class="fr-icon-road-map-line fr-icon--sm" aria-hidden="true"></span>
+              <span class="fr-icon-road-map-line fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
         </div>

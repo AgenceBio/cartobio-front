@@ -1,6 +1,6 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-  <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w" ref="contentTopFeatures">
+  <div class="fr-grid-row fr-grid-row--middle fr-mb-5v fr-mr-2w" ref="contentTopFeatures">
     <div class="seamless-select fr-col-12 fr-col-md-6">
       <label for="plots-group-by">Regrouper par</label>
       <div class="select-wrapper">
@@ -435,7 +435,7 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
 }
 
 .liste-filtre {
-  gap: 20px;
+  gap: 10px;
 }
 
 .selection-multiple {

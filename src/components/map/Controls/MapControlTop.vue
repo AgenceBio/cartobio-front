@@ -6,7 +6,11 @@
         :class="{ 'vertical-layout': !isMobile && !isWide && isEditing }"
       >
         <div class="fr-segmented__elements">
-          <div class="fr-segmented__element">
+          <div
+            class="fr-segmented__element"
+            aria-label="Vue partagée tableau / carte"
+            v-tooltip="{ text: 'Vue partagée tableau / carte', position: 'right' }"
+          >
             <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-1">
               <span
@@ -18,13 +22,13 @@
               ></span>
             </label>
           </div>
-          <div class="fr-segmented__element">
+          <div class="fr-segmented__element" aria-label="Vue tableau" v-tooltip="{ text: 'Vue tableau' }">
             <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-2">
               <span class="fr-icon-list-unordered fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
-          <div class="fr-segmented__element">
+          <div class="fr-segmented__element" aria-label="Vue carte" v-tooltip="{ text: 'Vue carte' }">
             <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-3">
               <span
@@ -44,22 +48,33 @@
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline coachmark3"
         @click="emit('compare')"
-        aria-label="Comparer les parcelles"
+        aria-label="Comparer les versions"
+        v-tooltip="{ text: 'Comparer les versions' }"
         v-if="mapParams.currentMode === 'consult'"
         :disabled="!online"
       >
-        <i class="ri-arrow-left-right-line fr-mr-1w" aria-hidden="true" />
-        <span v-if="!isMobile && !isWide && isEditing"></span>
-        <span v-else> Comparer</span>
+        <i
+          class="ri-arrow-left-right-line"
+          :class="{
+            'fr-mr-1w': isWide || !isEditing || modelOnglet === 'fullMap',
+          }"
+          aria-hidden="true"
+        />
+        <template v-if="isWide || !isEditing || modelOnglet === 'fullMap'">Comparer</template>
       </button>
       <button
-        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line coachmark4 fr-btn--icon-left"
+        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line coachmark4"
+        :class="{
+          'fr-btn--icon-left': isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
+        }"
         aria-label="Ajouter une nouvelle parcelle"
+        v-tooltip="{ text: 'Ajouter une nouvelle parcelle' }"
         :disabled="!permissions.canEditParcellaire || !online"
         @click="emit('addParcelle')"
       >
-        <span v-if="!isMobile && !isWide && isEditing">Ajouter </span>
-        <span v-else>Ajouter une parcelle</span>
+        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
+          >Ajouter une parcelle</template
+        >
       </button>
     </div>
 
@@ -69,18 +84,40 @@
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm coachmark5"
         @click="mapParams.currentMode = 'edit'"
         aria-label="Passer en mode dessin"
+        v-tooltip="{ text: 'Passer en mode dessin' }"
         :disabled="!permissions.canEditParcellaire || !online"
       >
-        <i class="ri-shape-line fr-mr-1w" aria-hidden="true" /> Mode dessin
+        <i
+          class="ri-shape-line"
+          :class="{
+            'fr-mr-1w': isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
+          }"
+          aria-hidden="true"
+        />
+        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
+          >Mode dessin</template
+        >
+        <template v-else>Dessin</template>
       </button>
       <button
         v-else-if="mapParams.currentMode != 'consult'"
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
         @click="mapParams.currentMode = 'consult'"
-        aria-label="Passer en mode dessin"
+        aria-label="Fermer le mode dessin"
+        v-tooltip="{ text: 'Fermer le mode dessin' }"
         :disabled="!permissions.canEditParcellaire || !online"
       >
-        <i class="fr-icon-close-line fr-icon--sm fr-mr-1w" aria-hidden="true" /> Fermer le mode dessin
+        <i
+          class="fr-icon-close-line fr-icon--sm"
+          :class="{
+            'fr-mr-1w': isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
+          }"
+          aria-hidden="true"
+        />
+        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
+          >Fermer le mode dessin</template
+        >
+        <template v-else>Dessin</template>
       </button>
     </div>
   </div>
@@ -181,15 +218,16 @@ watch(
   padding: 6px;
   justify-content: space-between;
   border-radius: 4px;
-  gap: 10px;
   height: fit-content;
   position: absolute;
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 10px;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
+  button + button {
+    border-left: 1px solid var(--background-default-grey-active);
+  }
 }
 
 .left-button {
