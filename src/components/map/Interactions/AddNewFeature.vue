@@ -735,6 +735,7 @@ const addCadastreFeatures = async () => {
   selectedIds.value = [];
   previewSource.clear();
   loading.value = false;
+  goToEdit();
 };
 
 const addRpgFeatures = async () => {
@@ -770,6 +771,7 @@ const addRpgFeatures = async () => {
   selectedIds.value = [];
   previewSource.clear();
   loading.value = false;
+  goToEdit();
 };
 
 const quitDraw = () => {

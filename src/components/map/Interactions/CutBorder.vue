@@ -19,6 +19,7 @@
         data-tooltip="Inverser la séléction"
         aria-label="Inverser la séléction"
         @click="invertSelection"
+        :disabled="!hasBordure"
       >
         <i class="ri-arrow-left-right-line"></i>
       </button>

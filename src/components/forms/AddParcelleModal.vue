@@ -53,14 +53,31 @@
         </p>
       </div>
 
+      <div v-if="!permissions.isOc" class="fr-input-group fr-px-6v fr-mt-6v">
+        <label class="fr-label" for="feature-commentaires">
+          Vos notes
+          <span class="fr-hint-text">Elles seront visibles par votre organisme de certification.</span>
+        </label>
+        <textarea
+          class="fr-input"
+          aria-describedby="feature-commentaires-hint"
+          id="feature-commentaires"
+          name="commentaires"
+          v-model="patch.commentaires"
+        />
+        <span id="feature-commentaires-hint" class="fr-sr-only">
+          Ces notes sont visibles par votre organisme de certification.
+        </span>
+      </div>
+
       <AnnotationsSelector
-        v-if="permissions.canAddAnnotations"
+        v-else-if="permissions.canAddAnnotations"
         v-model="patch.annotations"
         :feature-id="feature.properties.id"
         :readonly="readonly || !permissions.canEditParcellaire"
       />
 
-      <div class="fr-input-group">
+      <div class="fr-input-group" v-if="permissions.isOc">
         <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
         <textarea
           :disabled="readonly || !permissions.canEditParcellaire"
@@ -199,10 +216,10 @@ watch(
       patch.engagement_date = "1900-01-01";
     }
     if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
-      patch.engagement_date = "";
+      patch.engagement_date = undefined;
     }
     if (newValue === LEVEL_CONVENTIONAL) {
-      patch.engagement_date = "";
+      patch.engagement_date = undefined;
     }
   },
 );

@@ -103,7 +103,7 @@ meta:
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-md-12">
-          <h2>Valorisez plus facilement votre production</h2>
+          <h2>Faites le suivi des parcelles sur un support cartographique</h2>
         </div>
       </div>
 
@@ -117,7 +117,7 @@ meta:
               facilement dans CartoBio.
             </li>
             <li>
-              <strong>L'attestation de certification</strong>directement disponible une fois le parcellaire certifié.
+              <strong>L'attestation de certification</strong> directement disponible une fois le parcellaire certifié.
             </li>
           </ul>
         </div>
@@ -126,7 +126,7 @@ meta:
           <h3>Moins de risque d'erreurs</h3>
 
           <ul class="list-marks">
-            <li><strong>Visualiser</strong>les parcelles et accéder à leurs informations et à leurs évolutions</li>
+            <li><strong>Visualiser</strong> les parcelles et accéder à leurs informations et à leurs évolutions</li>
             <li><strong>Partagez</strong> les données géographiques entre différents services.</li>
           </ul>
         </div>

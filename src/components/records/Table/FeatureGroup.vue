@@ -195,13 +195,17 @@
             aria-hidden="true"
             class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
           >
-            {{ [feature.properties.commentaire, feature.properties.auditeur_notes].filter((e) => e != null).length }}
+            {{
+              [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
+                (e) => e != null,
+              ).length
+            }}
           </span>
 
           <p class="fr-mb-0 fr-text--xs text-grey" v-if="getTimeAgo(feature)">Modifié {{ getTimeAgo(feature) }}</p>
           <button
             type="button"
-            @click.prevent="toggleDeleteForm(feature.id)"
+            @click.prevent.stop="toggleDeleteForm(feature.id)"
             :disabled="!permissions.canDeleteFeature"
             class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
             v-tooltip="tooltips.deleteParcelle"

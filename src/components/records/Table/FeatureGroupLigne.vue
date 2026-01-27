@@ -181,7 +181,7 @@
             class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire"
           >
             {{
-              [feature.properties.commentaire, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
+              [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
                 (e) => e != null,
               ).length
             }}
@@ -200,7 +200,7 @@
         <div class="fr-py-2v fr-px-1v">
           <button
             type="button"
-            @click.prevent="toggleDeleteForm(feature.id)"
+            @click.prevent.stop="toggleDeleteForm(feature.id)"
             :disabled="!permissions.canDeleteFeature"
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line btn--error"
           >

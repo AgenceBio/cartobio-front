@@ -98,9 +98,6 @@
             Valider la correction
           </button>
         </template>
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" aria-label="Retourner au mode editer">
-          <i class="fr-icon-close-line fr-icon--sm"></i>
-        </button>
       </div>
     </div>
   </div>

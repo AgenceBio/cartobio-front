@@ -85,7 +85,7 @@ const slides = [
     component: SlideComposable,
     props: {
       imageSrc: slide4,
-      title: "Une refonte de l'espace cartopgraphique",
+      title: "Une refonte de l'espace cartographique",
       description:
         "Pour gérer les parcellaires, modifier ou ajouter facilement des parcelles...<br/>Une vue synthèse pour faciliter vos contrôles<br/>La liste des parcelles revisitée ",
     },
@@ -188,7 +188,8 @@ const actionButton = () => {
   background: white;
   border-radius: 0.25rem;
   max-width: 80%;
-  width: 100%;
+  width: 1172px;
+  height: 741px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;

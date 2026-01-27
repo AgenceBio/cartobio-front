@@ -209,7 +209,7 @@ const expandedGroupKeys = ref(new Set());
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore);
-const { toggleAllSelected } = featuresStore;
+const { toggleAllSelected, unselect } = featuresStore;
 
 const editedFeatureId = ref(null);
 const maybeDeletedFeatureId = ref(null);
@@ -225,7 +225,9 @@ async function handleSingleFeatureDeletion({ id, reason }) {
   statsPush(["trackEvent", "Parcelles", "Suppression individuelle (sauvegarde)"]);
 
   maybeDeletedFeatureId.value = null;
-  editedFeatureId.value = null;
+  emit("edit:featureId", null);
+
+  unselect(id);
 
   const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
   await featuresStore.deleteSingleFeature({ id, reason });
@@ -251,11 +253,12 @@ async function handleMultipleDelete(reason) {
   for (const featureId of featuresStore.selectedIds) {
     await featuresStore.deleteSingleFeature({ id: featureId, reason });
   }
+  featuresStore.unselectAll([]);
+
   if (isOnline.value) {
     loading.value = true;
   } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 
-  featuresStore.unselectAll([]);
   toggleFeaturesDelete();
   return;
 }
@@ -304,7 +307,9 @@ watch(featureGroups, () => {
 const groupCheckbox = ref(null);
 
 watch(selectedFeatureIds, () => {
-  groupCheckbox.value.indeterminate = !allSelected.value && selectedFeatureIds.value.length > 0;
+  if (selectedFeatureIds.value.length > 0) {
+    groupCheckbox.value.indeterminate = !allSelected.value;
+  }
 });
 
 watch(userGroupingChoice, (newValue) => {

@@ -30,7 +30,7 @@
           <span v-else-if="permissions.isOc" class="fr-badge fr-badge--warning fr-badge--sm">
             Saisir la certification
           </span>
-          <ConversionLevel v-else-if="!permissions.isOc" :level="LEVEL_MAYBE_AB" noIcon />
+          <ConversionLevel v-else-if="!permissions.isOc" unknown noIcon />
         </div>
         <div class="fr-grid-row">
           <span class="fr-icon-map-pin-2-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
@@ -215,19 +215,19 @@
                     :max="maxDate"
                   />
                 </div>
-                <div class="fr-input-group" v-if="permissions.canAddAnnotations">
-                  <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
-                  <textarea
-                    :disabled="readonly || !permissions.canEditParcellaire"
-                    class="fr-input"
-                    id="auditeur_notes"
-                    name="auditeur_notes"
-                    v-model="patch.auditeur_notes"
-                  />
-                </div>
               </div>
             </AccordionSection>
           </AccordionGroup>
+          <div class="fr-input-group fr-mt-4w" v-if="permissions.canAddAnnotations">
+            <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
+            <textarea
+              :disabled="readonly || !permissions.canEditParcellaire"
+              class="fr-input"
+              id="auditeur_notes"
+              name="auditeur_notes"
+              v-model="patch.auditeur_notes"
+            />
+          </div>
         </template>
         <template v-else>
           <AccordionGroup>

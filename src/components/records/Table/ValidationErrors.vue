@@ -174,7 +174,7 @@ function showAgriPendingCertificationState() {
 }
 
 function showOCPendingCertificationState() {
-  return isOc.value && [CertificationState.PENDING_CERTIFICATION].includes(record.certification_state);
+  return userStore.isOcAudit && [CertificationState.PENDING_CERTIFICATION].includes(record.certification_state);
 }
 
 function showAgriCertifiedState() {
@@ -182,7 +182,7 @@ function showAgriCertifiedState() {
 }
 
 function showOCCertifiedState() {
-  return isOc.value && [CertificationState.CERTIFIED].includes(record.certification_state);
+  return userStore.isOcAudit && [CertificationState.CERTIFIED].includes(record.certification_state);
 }
 </script>
 

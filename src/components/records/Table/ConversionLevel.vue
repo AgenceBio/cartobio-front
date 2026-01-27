@@ -1,7 +1,10 @@
 <template>
   <div class="flex">
+    <span class="badge badge-a-modifier" v-if="props.unknown">
+      <p class="small-text fr-mb-0">Non rens. par l'OC</p>
+    </span>
     <span
-      v-if="conversionLevel.value === LEVEL_MAYBE_AB || conversionLevel.value === LEVEL_UNKNOWN"
+      v-else-if="conversionLevel.value === LEVEL_MAYBE_AB || conversionLevel.value === LEVEL_UNKNOWN"
       class="badge badge-a-modifier"
     >
       <template v-if="isOc">
@@ -10,7 +13,7 @@
       </template>
       <template v-else>
         <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }}</p>
-        <p class="small-text">par l'OC</p>
+        <p class="small-text fr-mb-0">par l'OC</p>
       </template>
     </span>
     <div v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
@@ -65,6 +68,10 @@ const props = defineProps({
     default: false,
   },
   labelSelector: {
+    type: Boolean,
+    default: false,
+  },
+  unknown: {
     type: Boolean,
     default: false,
   },

@@ -2,10 +2,10 @@
   <section class="fr-container">
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
       <div class="fr-col-12 fr-col-md-6">
-        <h1 class="fr-h1">
+        <div class="fr-display--md">
           Les nouveautés<br />
           sur CartoBio
-        </h1>
+        </div>
 
         <p class="fr-text--lg fr-mt-4w fr-mb-6w">
           CartoBio évolue pour vous apporter plus de fonctionnalités et d'ergonomie afin de faciliter vos contrôles et
