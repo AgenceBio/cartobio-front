@@ -205,7 +205,7 @@
                   </p>
                   <input
                     type="date"
-                    class="fr-input fr-input--error"
+                    class="fr-input"
                     v-model="patch.engagement_date"
                     name="engagement_date"
                     id="engagement_date"
