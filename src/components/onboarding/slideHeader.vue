@@ -20,7 +20,7 @@
         <img
           src="@/assets/onboarding/slide1.png"
           alt="Aperçu de l'interface CartoBio"
-          class="fr-responsive-img fr-radius--lg fr-shadow"
+          class="fr-responsive-img fr-radius--lg fr-shadow onboarding-image"
         />
       </div>
     </div>
@@ -30,3 +30,13 @@
 <script setup>
 defineEmits(["explore"]);
 </script>
+
+<style scoped>
+.onboarding-image {
+  max-width: 100%;
+  max-height: 70vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+</style>
