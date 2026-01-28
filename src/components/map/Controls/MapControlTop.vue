@@ -72,7 +72,8 @@
         :disabled="
           !permissions.canEditParcellaire ||
           !online ||
-          (mapParams.currentMode != 'edit' && mapParams.currentMode != 'consult')
+          (mapParams.currentMode != 'edit' && mapParams.currentMode != 'consult') ||
+          mapParams.hasUndo
         "
         @click="emit('addParcelle')"
       >
