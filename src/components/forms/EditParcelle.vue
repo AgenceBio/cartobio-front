@@ -232,6 +232,41 @@
         <template v-else>
           <AccordionGroup>
             <AccordionSection title="Culture" isEdit :optionsCulture="optionsCulture(feature)">
+              <div class="culture-group" v-if="feature.properties.CODE_CULTURE">
+                <div>
+                  <div class="fr-p-2w" v-if="feature.properties.CODE_CULTURE">
+                    <div class="import-pac fr-mt-3w">
+                      <span class="fr-label"
+                        >Culture de l'import PAC du {{ jjmmyyyy(feature.properties.createdAt) }}</span
+                      >
+                    </div>
+                    <div class="fr-hint-text">
+                      Code culture
+                      <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
+                      <template
+                        v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')"
+                      >
+                        : culture</template
+                      >
+                    </div>
+                    <div class="code-culture">
+                      {{ feature.properties.CODE_CULTURE }}
+                      <template v-if="feature.properties.CODE_PRECISION">
+                        - {{ feature.properties.CODE_PRECISION }}</template
+                      >
+                      <template
+                        v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')"
+                      >
+                        :
+                        {{
+                          getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "")
+                            .libelle
+                        }}</template
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
               <CultureSelector
                 :disabled-input="true"
                 :feature-id="feature.properties.id"
@@ -637,5 +672,13 @@ nextTick(() => {
 
 .flex {
   display: flex;
+}
+
+.culture-group {
+  margin-left: 0;
+  margin-right: 0;
+  border: 0;
+
+  background-color: white;
 }
 </style>
