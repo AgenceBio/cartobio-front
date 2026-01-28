@@ -41,7 +41,7 @@ const onButtonClick = () => {
       :class="imagePosition === 'right' ? 'fr-grid-row--reverse' : ''"
     >
       <div class="fr-col-12 fr-col-md-6 fr-text--center">
-        <img :src="imageSrc" :alt="imageAlt || ''" class="fr-responsive-img fr-radius--lg fr-shadow" />
+        <img :src="imageSrc" :alt="imageAlt || ''" class="fr-responsive-img fr-radius--lg fr-shadow onboarding-image" />
       </div>
 
       <div class="fr-col-12 fr-col-md-6">
@@ -121,5 +121,13 @@ const onButtonClick = () => {
   max-width: 100%;
   max-height: 100%;
   overflow: hidden;
+}
+
+.onboarding-image {
+  max-width: 100%;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 </style>
