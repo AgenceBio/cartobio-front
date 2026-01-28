@@ -842,7 +842,7 @@ onUnmounted(() => {
 
 .pop-in-info {
   position: absolute;
-  top: 115px;
+  top: 128px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
