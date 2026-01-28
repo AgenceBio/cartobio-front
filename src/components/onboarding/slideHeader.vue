@@ -9,7 +9,7 @@
 
         <p class="fr-text--lg fr-mt-4w fr-mb-6w">
           CartoBio évolue pour vous apporter plus de fonctionnalités et d'ergonomie afin de faciliter vos contrôles et
-          de gagner en efficacité ! Découvrer les améliorations apportées au module cartographique ainsi que la nouvelle
+          de gagner en efficacité ! Découvrir les améliorations apportées au module cartographique ainsi que la nouvelle
           page exploitation.
         </p>
 
