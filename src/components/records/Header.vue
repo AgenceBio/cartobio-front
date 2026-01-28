@@ -187,7 +187,7 @@
     <p v-if="readonly" class="readonly-badge">Lecture seule</p>
 
     <div class="fr-mt-2w">
-      <div class="flex-space-between">
+      <div class="flex-space-between state-segment">
         <div class="fr-grid-row header">
           <ParcellaireState :record="record" />
         </div>
@@ -602,6 +602,13 @@ watch(
   cursor: not-allowed;
   color: #929292;
   background-color: #e5e5e5;
+}
+@media (max-width: 991px) {
+  .state-segment {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 }
 </style>
 <style>

@@ -69,10 +69,10 @@
               ref="autofocusedElement"
             />
           </div>
-          <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
+          <!-- <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
             Une date est requise pour l'attestation de production, les parcelles sélectionnées actuellement seront
             automatiquement remplies par 01/01/1900.
-          </p>
+          </p> -->
         </div>
       </div>
     </form>
@@ -205,7 +205,7 @@ watch(
   () => patch.conversion_niveau,
   (newValue) => {
     if (newValue === LEVEL_AB && !patch.engagement_date) {
-      patch.engagement_date = "1900-01-01";
+      patch.engagement_date = "";
     }
     if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
       patch.engagement_date = undefined;

@@ -56,23 +56,27 @@
         <i
           class="ri-arrow-left-right-line"
           :class="{
-            'fr-mr-1w': isWide || !isEditing || modelOnglet === 'fullMap',
+            'fr-mr-1w': !isEditing || modelOnglet === 'fullMap',
           }"
           aria-hidden="true"
         />
-        <template v-if="isWide || !isEditing || modelOnglet === 'fullMap'">Comparer</template>
+        <template v-if="!isEditing || modelOnglet === 'fullMap'">Comparer</template>
       </button>
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line coachmark4"
         :class="{
-          'fr-btn--icon-left': isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
+          'fr-btn--icon-left': !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
         }"
         aria-label="Ajouter une nouvelle parcelle"
         v-tooltip="{ text: 'Ajouter une nouvelle parcelle' }"
-        :disabled="!permissions.canEditParcellaire || !online"
+        :disabled="
+          !permissions.canEditParcellaire ||
+          !online ||
+          (mapParams.currentMode != 'edit' && mapParams.currentMode != 'consult')
+        "
         @click="emit('addParcelle')"
       >
-        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
+        <template v-if="!isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
           >Ajouter une parcelle</template
         >
       </button>
@@ -90,11 +94,13 @@
         <i
           class="ri-shape-line"
           :class="{
-            'fr-mr-1w': isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
+            'fr-mr-1w':
+              (isWide && !isEditing) || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
           }"
           aria-hidden="true"
         />
-        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
+        <template
+          v-if="(isWide && !isEditing) || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
           >Mode dessin</template
         >
         <template v-else>Dessin</template>
@@ -105,7 +111,11 @@
         @click="mapParams.currentMode = 'consult'"
         aria-label="Fermer le mode dessin"
         v-tooltip="{ text: 'Fermer le mode dessin' }"
-        :disabled="!permissions.canEditParcellaire || !online"
+        :disabled="
+          !permissions.canEditParcellaire ||
+          !online ||
+          (mapParams.currentMode != 'edit' && mapParams.currentMode != 'consult')
+        "
       >
         <i
           class="fr-icon-close-line fr-icon--sm"

@@ -161,6 +161,13 @@ const parcelle2Area: Ref<number | null> = ref(null);
 
 const errorMessage: Ref<string | null> = ref(null);
 
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "endCut"): void;
+}>();
+
 /*
  * * Constantes
  */
@@ -705,6 +712,7 @@ const validateDivision = async () => {
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
+    emit("endCut");
     store.unselectAll();
     const newFeatures = result.parcelles.features.filter(
       (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),

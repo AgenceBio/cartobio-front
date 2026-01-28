@@ -33,6 +33,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        @endCut="() => emit('selectFeature', null)"
       />
       <DivideFeature
         v-else-if="mapParams.currentMode === 'divide'"
@@ -739,7 +740,7 @@ onUnmounted(() => {
 <style scoped>
 :deep(.pop-in-top) {
   position: absolute;
-  top: 14px;
+  top: 65px;
   left: 50%;
   transform: translateX(-50%);
   background: white;

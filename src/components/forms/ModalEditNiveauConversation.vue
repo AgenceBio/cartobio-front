@@ -26,12 +26,12 @@
         />
       </div>
 
-      <AnnotationsSelector
+      <!-- <AnnotationsSelector
         v-if="permissions.canAddAnnotations"
         v-model="patch.annotations"
         :feature-id="feature.properties.id"
         :readonly="!permissions.canEditParcellaire"
-      />
+      /> -->
 
       <div class="fr-input-group">
         <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>

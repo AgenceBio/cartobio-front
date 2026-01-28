@@ -70,12 +70,12 @@
         </span>
       </div>
 
-      <AnnotationsSelector
+      <!-- <AnnotationsSelector
         v-else-if="permissions.canAddAnnotations"
         v-model="patch.annotations"
         :feature-id="feature.properties.id"
         :readonly="readonly || !permissions.canEditParcellaire"
-      />
+      /> -->
 
       <div class="fr-input-group" v-if="permissions.isOc">
         <label class="fr-label" for="auditeur_notes">Vos notes de certification (facultatif)</label>
