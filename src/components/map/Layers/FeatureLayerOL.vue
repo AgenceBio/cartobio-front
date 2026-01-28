@@ -597,7 +597,7 @@ watch(
 watch(
   () => hasUndo.value,
   () => {
-    mapParams.value.hasUndo = hasUndo.value && mapParams.value.currentMode !== "consult";
+    mapParams.value.hasUndo = hasUndo.value;
   },
 );
 
@@ -617,6 +617,7 @@ watch(
     if (vectorSource.value) {
       vectorSource.value.clear();
       vectorSource.value.addFeatures(features.value as Feature[]);
+      interactions.value.undoRedo.clear();
     }
     map.value
       .getOverlays()
