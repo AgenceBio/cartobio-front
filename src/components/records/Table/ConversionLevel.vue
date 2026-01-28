@@ -12,8 +12,7 @@
         <p class="fr-mb-0 small-text">Certification</p>
       </template>
       <template v-else>
-        <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }}</p>
-        <p class="small-text fr-mb-0">par l'OC</p>
+        <p class="fr-mb-0 small-text">{{ conversionLevel.shortLabel }} par l'OC</p>
       </template>
     </span>
     <div v-else class="badge fr-mb-0" :class="`badge-${conversionLevel.value}`">
