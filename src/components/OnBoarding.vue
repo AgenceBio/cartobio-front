@@ -69,7 +69,7 @@ const slides = [
       imageSrc: slide2,
       title: "Une nouvelle navigation",
       description:
-        "Passez facilement de votre espace au site grand public sans vous déconnecter ! <br/> Un accès rapide à toutes les pages de CartoBio. <br/> Une FAQ pour répondre à vos questions les plus fréquentes !",
+        "Passer facilement de votre espace au site grand public sans vous déconnecter ! <br/> Un accès rapide à toutes les pages de CartoBio. <br/> Une FAQ pour répondre à vos questions les plus fréquentes !",
     },
   },
   {
