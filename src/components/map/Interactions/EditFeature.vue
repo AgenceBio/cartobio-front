@@ -347,6 +347,7 @@ const modifyInteraction = () => {
       initModifyInteraction(selectedFeatures, tooltip);
       emit("selectFeature", selectedIds[0]);
     } else {
+      emit("selectFeature", null);
       if (modify) {
         props.map.removeInteraction(modify);
         modify = null;
@@ -719,7 +720,7 @@ const calculateArea = (feature: CartoBioFeature): string => {
  * * Emits
  */
 const emit = defineEmits<{
-  (e: "selectFeature", value: number | string): void;
+  (e: "selectFeature", value: number | string | null): void;
 }>();
 
 /*
