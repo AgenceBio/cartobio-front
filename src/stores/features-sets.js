@@ -271,7 +271,7 @@ export const useFeaturesSetsStore = defineStore("features-sets", () => {
             property: "rotation",
             required: false,
             rotation: true,
-            label: "Rotation à controler",
+            label: "Rotation à contrôler",
             errorMessage: "Une culture a été répétée 2 années de suite",
             select(f) {
               return countRotationErrors(0, f.properties.historique ?? []) === 2;

@@ -41,9 +41,9 @@ const updateFieldFromModel = async (value) => {
 onMounted(async () => {
   const { setQuery } = autocomplete({
     container: autocompleteRef.value,
+    openOnFocus: true,
     placeholder: "Saisissez le nom d’une commune",
     id: "search",
-    openOnFocus: true,
     classNames: {
       form: "fr-input",
     },
@@ -105,7 +105,8 @@ onMounted(async () => {
 
 <style scoped>
 .aa-Panel {
-  z-index: 2000;
+  position: fixed !important;
+  z-index: 99999 !important;
 }
 
 .aa-Form {
@@ -127,10 +128,6 @@ onMounted(async () => {
   outline-width: 2px;
   outline-color: #0a76f6;
   outline-style: solid;
-}
-
-.aa-PanelLayout {
-  max-height: calc(100vh - 25rem);
 }
 
 .aa-Autocomplete {
@@ -188,5 +185,112 @@ onMounted(async () => {
 
 :deep(.aa-SubmitButton) {
   display: none !important;
+}
+</style>
+
+<style>
+.aa-Panel {
+  z-index: 2000;
+  margin-top: 0;
+}
+
+.aa-Form {
+  background-color: var(--background-alt-grey);
+  border: none;
+  border-radius: 0.25rem 0.25rem 0 0;
+  padding-right: 0;
+}
+
+.aa-Form:focus-within {
+  box-shadow: inset 0 -2px 0 0 var(--border-action-high-blue-france);
+  outline-offset: 2px;
+  outline-width: 2px;
+  outline-color: #0a76f6;
+  outline-style: solid;
+}
+
+.aa-Item:hover {
+  background-color: #ececfe;
+}
+.aa-Item[aria-selected="true"] {
+  outline: 2px solid var(--border-active-blue-france);
+}
+
+.aa-InputWrapperPrefix {
+  display: none;
+}
+
+.aa-InputWrapperSuffix {
+  --border-width: 2px;
+  --aa-search-input-height: calc((0.5rem * 2) + 1.5rem - var(--border-width));
+  align-items: flex-start;
+  margin-top: calc(var(--border-width) * -1);
+  /* to counteract the align-items: center of the container */
+}
+
+.aa-Input::placeholder {
+  color: #666666;
+}
+
+.aa-ClearButton {
+  border-radius: 0 0.25rem 0 0;
+}
+.flex {
+  display: flex;
+}
+
+.gap-6 {
+  gap: 6px;
+}
+
+.gap-24 {
+  gap: 24px;
+}
+
+.see-more-link {
+  flex: 1;
+  justify-content: center;
+}
+
+.aa-SourceFooter {
+  display: flex;
+  padding-top: 2rem;
+  border-top: #dddddd 1px solid;
+  margin: 1.25rem 1.8rem;
+}
+
+.aa-SourceHeader {
+  padding: 1.8rem 1.8rem 0.5rem 1.8rem;
+  margin: 0;
+}
+
+.aa-Item {
+  padding: 0.5rem 1.8em 0.5rem 1.8em;
+}
+
+.highlight {
+  background-color: #feebd0;
+}
+
+.aa-SourceNoResults {
+  padding: 0;
+}
+
+.underline,
+.underline .highlight {
+  background-image: var(--underline-img), var(--underline-img);
+  background-position:
+    var(--underline-x) 100%,
+    var(--underline-x) calc(100% - var(--underline-thickness));
+  background-repeat: no-repeat, no-repeat;
+  -webkit-transition: background-size 0s;
+  transition: background-size 0s;
+  background-size:
+    var(--underline-hover-width) calc(var(--underline-thickness) * 2),
+    var(--underline-idle-width) var(--underline-thickness);
+}
+
+.underline .highlight {
+  background-color: #feebd0;
 }
 </style>

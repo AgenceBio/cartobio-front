@@ -19,6 +19,7 @@
         data-tooltip="Inverser la séléction"
         aria-label="Inverser la séléction"
         @click="invertSelection"
+        :disabled="!hasBordure"
       >
         <i class="ri-arrow-left-right-line"></i>
       </button>
@@ -159,6 +160,13 @@ const parcelle1Area: Ref<number | null> = ref(null);
 const parcelle2Area: Ref<number | null> = ref(null);
 
 const errorMessage: Ref<string | null> = ref(null);
+
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "endCut"): void;
+}>();
 
 /*
  * * Constantes
@@ -704,6 +712,7 @@ const validateDivision = async () => {
   const result = await createFeaturesFromOther(props.recordId, modifiedFeatures, [selectdId]);
 
   if (result) {
+    emit("endCut");
     store.unselectAll();
     const newFeatures = result.parcelles.features.filter(
       (f: CartoBioFeature) => !store.all.map((f: CartoBioFeature) => f.id).some((pa: string) => pa === f.id),
@@ -833,7 +842,7 @@ onUnmounted(() => {
 
 .pop-in-info {
   position: absolute;
-  top: 75px;
+  top: 128px;
   left: 50%;
   transform: translateX(-50%);
   background: white;

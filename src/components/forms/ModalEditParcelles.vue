@@ -69,6 +69,10 @@
               ref="autofocusedElement"
             />
           </div>
+          <!-- <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
+            Une date est requise pour l'attestation de production, les parcelles sélectionnées actuellement seront
+            automatiquement remplies par 01/01/1900.
+          </p> -->
         </div>
       </div>
     </form>
@@ -94,12 +98,12 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref } from "vue";
+import { reactive, computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useFeaturesStore } from "@/stores/features.js";
 import { toDateInputString } from "@/utils/dates.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
-import { LEVEL_C1, LEVEL_C2, LEVEL_C3 } from "@/referentiels/ab.js";
+import { LEVEL_CONVENTIONAL, LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB } from "@/referentiels/ab.js";
 
 import Modal from "@/components/widgets/Modal.vue";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
@@ -142,7 +146,9 @@ const changes = computed(() => {
   return diff;
 });
 
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3, ""].includes(patch.conversion_niveau));
+const isEngagementDateRequired = computed(() =>
+  [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB, ""].includes(patch.conversion_niveau),
+);
 
 const selectedFeatures = computed(() => {
   const coll = store.collection;
@@ -194,6 +200,21 @@ const validate = () => {
 const resetPatch = () => {
   Object.assign(patch, initial);
 };
+
+watch(
+  () => patch.conversion_niveau,
+  (newValue) => {
+    if (newValue === LEVEL_AB && !patch.engagement_date) {
+      patch.engagement_date = "";
+    }
+    if (newValue != LEVEL_AB && patch.engagement_date === "1900-01-01") {
+      patch.engagement_date = undefined;
+    }
+    if (newValue === LEVEL_CONVENTIONAL) {
+      patch.engagement_date = undefined;
+    }
+  },
+);
 </script>
 
 <style scoped>

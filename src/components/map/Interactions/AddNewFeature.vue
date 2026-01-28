@@ -1,5 +1,5 @@
 <template>
-  <div class="pop-in-top">
+  <div class="pop-in-top" v-if="!showRPGModal && !showCadastreModal">
     <button
       class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
       :class="[mode === 'dessiner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
@@ -65,7 +65,7 @@
     ></button>
   </div>
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
-    <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer !</p>
+    <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer.</p>
     <button
       class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--tertiary-no-outline"
       aria-label="Annuler le dessin"
@@ -73,7 +73,7 @@
     ></button>
   </div>
   <div v-if="errorDrawing && !invalidDrawing" class="pop-in-top">
-    <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer !</p>
+    <p class="fr-mb-0" role="alert">Votre parcelle est invalide. Veuillez recommencer.</p>
     <button
       class="fr-btn fr-btn--sm fr-icon-close-line fr-btn--tertiary-no-outline"
       aria-label="Annuler le dessin"
@@ -89,11 +89,11 @@
       >
     </p>
     <button
-      class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+      class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
       aria-label="Ajouter les parcelles cadastrales"
       @click="addCadastreFeatures"
     >
-      Ajouter les parcelles cadastrales
+      Ajouter
     </button>
     <button
       class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
@@ -116,11 +116,11 @@
       >
     </p>
     <button
-      class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-check-line fr-btn--icon-right"
+      class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
       aria-label="Ajouter les parcelles RPG"
       @click="addRpgFeatures"
     >
-      Ajouter les parcelles RPG
+      Ajouter
     </button>
     <button
       class="fr-btn fr-icon-close-line fr-btn--sm fr-btn--tertiary-no-outline"
@@ -141,7 +141,7 @@
       @close="goToEdit"
       @submit="submitFeature"
       icon="fr-icon-add-line"
-      data-content-name="Modale de confirmation d'ajout"
+      :data-content-name="'Modale de confirmation d\'ajout'"
       required-name
     >
       <template #title>Nouvelle parcelle</template>
@@ -735,6 +735,7 @@ const addCadastreFeatures = async () => {
   selectedIds.value = [];
   previewSource.clear();
   loading.value = false;
+  goToEdit();
 };
 
 const addRpgFeatures = async () => {
@@ -770,6 +771,7 @@ const addRpgFeatures = async () => {
   selectedIds.value = [];
   previewSource.clear();
   loading.value = false;
+  goToEdit();
 };
 
 const quitDraw = () => {
@@ -938,7 +940,7 @@ onUnmounted(() => {
 
 .pop-in-info {
   position: absolute;
-  top: 75px;
+  top: 115px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -951,7 +953,7 @@ onUnmounted(() => {
 
 .pop-in-info-cadastre {
   position: absolute;
-  top: 75px;
+  top: 115px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -971,5 +973,10 @@ onUnmounted(() => {
   min-height: 0.5em;
   background-color: grey;
   opacity: 0.25;
+}
+</style>
+<style>
+.pop-in-info-cadastre .aa-Autocomplete {
+  margin-top: 0;
 }
 </style>

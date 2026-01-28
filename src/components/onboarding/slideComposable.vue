@@ -35,19 +35,19 @@ const onButtonClick = () => {
 </script>
 
 <template>
-  <section class="fr-container">
+  <section class="onboarding-slides">
     <div
       class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle"
       :class="imagePosition === 'right' ? 'fr-grid-row--reverse' : ''"
     >
       <div class="fr-col-12 fr-col-md-6 fr-text--center">
-        <img :src="imageSrc" :alt="imageAlt || ''" class="fr-responsive-img fr-radius--lg fr-shadow" />
+        <img :src="imageSrc" :alt="imageAlt || ''" class="fr-responsive-img fr-radius--lg fr-shadow onboarding-image" />
       </div>
 
       <div class="fr-col-12 fr-col-md-6">
-        <h2 class="fr-h2">
+        <div class="fr-display--md">
           {{ title }}
-        </h2>
+        </div>
 
         <p class="fr-text--lg fr-mt-3w fr-mb-6w" v-html="description"></p>
 
@@ -104,5 +104,30 @@ const onButtonClick = () => {
 .onboarding-dot:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+.onboarding-slides {
+  width: 100%;
+  height: 100%;
+}
+
+.onboarding-slides > div {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.onboarding-slides > div > div {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.onboarding-image {
+  max-width: 100%;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 </style>

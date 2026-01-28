@@ -117,7 +117,7 @@ const handleAction = (mode: string) => {
 }
 @media (height <= 800px) {
   .toolbar {
-    top: 5%;
+    top: 15%;
   }
 }
 

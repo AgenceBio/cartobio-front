@@ -1,7 +1,7 @@
 <template><p class="fr-sr-only">La carte est en mode consultation</p></template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, watch } from "vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 
@@ -10,6 +10,7 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { Style, Fill, Stroke } from "ol/style";
 import { Select } from "ol/interaction";
+import { Feature } from "ol";
 
 // Utils Geom
 
@@ -43,6 +44,7 @@ const props = defineProps<Props>();
  */
 
 let selectInteraction: Select | null = null;
+let isInternalUpdate = false;
 
 /**
  * * Emits
@@ -50,6 +52,30 @@ let selectInteraction: Select | null = null;
 const emit = defineEmits<{
   (e: "selectFeature", value: number | string): void;
 }>();
+
+/**
+ * * Watchers
+ */
+watch(
+  () => store.selectedIds,
+  (newSelectedIds) => {
+    if (!selectInteraction || isInternalUpdate) return;
+
+    // Clear current selection
+    selectInteraction.getFeatures().clear();
+
+    // Add features from store to selection
+    if (newSelectedIds && newSelectedIds.length > 0) {
+      newSelectedIds.forEach((id) => {
+        const feature = props.vectorSource.getFeatureById(id);
+        if (feature) {
+          selectInteraction.getFeatures().push(feature);
+        }
+      });
+    }
+  },
+  { deep: true },
+);
 
 /**
  * * States fonctions
@@ -67,7 +93,38 @@ onMounted(() => {
   });
   props.map.addInteraction(selectInteraction);
 
+  props.map.on("click", (evt) => {
+    const clickedFeatures: Feature[] = [];
+    props.map.forEachFeatureAtPixel(
+      evt.pixel,
+      (feature) => {
+        if (feature instanceof Feature) {
+          clickedFeatures.push(feature);
+        }
+        return false; // Continue à chercher d'autres features
+      },
+      {
+        layerFilter: (layer) => layer === props.vectorLayer,
+      },
+    );
+
+    if (clickedFeatures.length > 0) {
+      const clickedFeature = clickedFeatures[0];
+      const clickedId = clickedFeature.getId();
+      const isAlreadySelected = selectInteraction
+        ?.getFeatures()
+        .getArray()
+        .some((f) => f.getId() === clickedId);
+
+      if (isAlreadySelected && selectInteraction?.getFeatures().getLength() === 1) {
+        // Réémettre l'événement pour la feature déjà sélectionnée
+        emit("selectFeature", clickedId);
+      }
+    }
+  });
+
   selectInteraction.on("select", (e: SelectEvent) => {
+    isInternalUpdate = true;
     const selected = e.target.getFeatures().getArray();
 
     if (selected.length === 1) {
@@ -82,8 +139,22 @@ onMounted(() => {
       store.unselectAll();
       emit("selectFeature", null);
     }
+
+    setTimeout(() => {
+      isInternalUpdate = false;
+    }, 0);
   });
+
+  if (store.selectedIds && store.selectedIds.length > 0) {
+    store.selectedIds.forEach((id) => {
+      const feature = props.vectorSource.getFeatureById(id);
+      if (feature) {
+        selectInteraction.getFeatures().push(feature);
+      }
+    });
+  }
 });
+
 onUnmounted(() => {
   if (selectInteraction) {
     props.map.removeInteraction(selectInteraction);
@@ -92,7 +163,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-/** Pour afficher la tooltip par dessus les overlays */
 .openlayers-culture-overlay {
   z-index: 1;
 }

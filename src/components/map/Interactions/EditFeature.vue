@@ -7,7 +7,7 @@
       </div>
       <button
         v-if="!isCorrecting"
-        class="fr-btn fr-icon-check-line fr-btn--icon-right"
+        class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
         :disabled="!hasUndo || corrections.length > 0"
         :aria-disabled="!hasUndo || corrections.length > 0"
         @click="saveModifiedFeature"
@@ -16,17 +16,19 @@
       </button>
       <button
         v-else-if="isCorrecting && corrections.length > 0"
-        class="fr-btn"
+        class="fr-btn fr-btn--sm"
         :disabled="corrections.length > 1"
         :aria-disabled="corrections.length > 1"
         @click="correct"
       >
         Valider la correction
       </button>
-      <button class="fr-btn fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">Annuler</button>
+      <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" :disabled="!hasUndo" @click="resetEdit">
+        Annuler
+      </button>
     </div>
     <div
-      class="pop-in-info"
+      class="pop-in-info fr-text--sm fr-text--bold"
       v-if="numberSelectedFeature > 0 && corrections.length < 1"
       role="status"
       aria-live="polite"
@@ -35,7 +37,7 @@
       {{ !isCorrecting && hasUndo ? "modifiée" : "sélectionnée" }}{{ numberSelectedFeature > 1 ? "s" : "" }}
       {{ globalHa }} ha
     </div>
-    <div class="pop-in-info" role="status" v-if="isCorrecting">
+    <div class="pop-in-info fr-text--sm fr-text--bold" role="status" v-if="isCorrecting">
       <div class="division-overlay">
         <div style="display: flex; align-items: center; gap: 8px">
           <span class="area-info blue"></span>
@@ -96,9 +98,6 @@
             Valider la correction
           </button>
         </template>
-        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" aria-label="Retourner au mode editer">
-          <i class="fr-icon-close-line fr-icon--sm"></i>
-        </button>
       </div>
     </div>
   </div>
@@ -324,6 +323,12 @@ const modifyInteraction = () => {
   });
   const select = createSelectInteraction(selectedFeatures);
 
+  if (selectedFeatures.getLength() === 1) {
+    nextTick(() => {
+      initModifyInteraction(selectedFeatures, tooltip);
+    });
+  }
+
   select.on("select", (e) => {
     if (isModifying.value) return;
     e.deselected.forEach((feature) => {
@@ -340,7 +345,9 @@ const modifyInteraction = () => {
 
     if (selectedIds.length === 1) {
       initModifyInteraction(selectedFeatures, tooltip);
+      emit("selectFeature", selectedIds[0]);
     } else {
+      emit("selectFeature", null);
       if (modify) {
         props.map.removeInteraction(modify);
         modify = null;
@@ -709,6 +716,13 @@ const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
 
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "selectFeature", value: number | string | null): void;
+}>();
+
 /*
  * * Watchers
  */
@@ -757,7 +771,7 @@ onUnmounted(() => {
 
 .pop-in-info {
   position: absolute;
-  top: 75px;
+  top: 115px;
   left: 50%;
   transform: translateX(-50%);
   background: white;

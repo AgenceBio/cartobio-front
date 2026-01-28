@@ -53,11 +53,13 @@ import slide4 from "@/assets/onboarding/slide4.png";
 import slide5 from "@/assets/onboarding/slide5.png";
 import slide6 from "@/assets/onboarding/slide6.png";
 import slide7 from "@/assets/onboarding/slide7.png";
+import { useOnboardingStore } from "@/stores/onboarding.js";
 
-const showOnboarding = ref(false);
+const onboardingStore = useOnboardingStore();
+
+const showOnboarding = computed(() => onboardingStore.shouldShow);
+
 const currentSlide = ref(0);
-
-const STORAGE_KEY = "checkOnBoarding";
 
 const slides = [
   { component: SlideHeader },
@@ -67,7 +69,7 @@ const slides = [
       imageSrc: slide2,
       title: "Une nouvelle navigation",
       description:
-        "Passez facilement de votre espace au site grand public sans vous déconnecter ! <br/> Un accès rapide à toutes les pages de CartoBio. <br/> Une FAQ pour répondre à vos questions les plus fréquentes !",
+        "Passer facilement de votre espace au site grand public sans vous déconnecter ! <br/> Un accès rapide à toutes les pages de CartoBio. <br/> Une FAQ pour répondre à vos questions les plus fréquentes !",
     },
   },
   {
@@ -83,7 +85,7 @@ const slides = [
     component: SlideComposable,
     props: {
       imageSrc: slide4,
-      title: "Une refonte de l'espace cartopgraphique",
+      title: "Une refonte de l'espace cartographique",
       description:
         "Pour gérer les parcellaires, modifier ou ajouter facilement des parcelles...<br/>Une vue synthèse pour faciliter vos contrôles<br/>La liste des parcelles revisitée ",
     },
@@ -130,13 +132,8 @@ const currentSlideValue = computed(() => {
 });
 
 onMounted(() => {
-  checkOnboardingStatus();
+  onboardingStore.checkStatus();
 });
-
-const checkOnboardingStatus = () => {
-  const value = localStorage.getItem(STORAGE_KEY);
-  showOnboarding.value = !(value === "true");
-};
 
 const nextSlide = () => {
   if (currentSlide.value < slides.length - 1) {
@@ -164,16 +161,11 @@ function handleKey(e) {
 }
 
 const skipOnboarding = () => {
-  showOnboarding.value = false;
-  saveOnboardingVersion();
+  onboardingStore.complete();
 };
 
 const actionButton = () => {
   skipOnboarding();
-};
-
-const saveOnboardingVersion = () => {
-  localStorage.setItem(STORAGE_KEY, "true");
 };
 </script>
 
@@ -196,7 +188,8 @@ const saveOnboardingVersion = () => {
   background: white;
   border-radius: 0.25rem;
   max-width: 80%;
-  width: 100%;
+  width: 1172px;
+  height: 741px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;

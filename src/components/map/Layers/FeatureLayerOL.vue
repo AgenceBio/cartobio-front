@@ -18,6 +18,7 @@
         :record-id="recordId"
         :undo-redo="interactions.undoRedo"
         :hasUndo="hasUndo"
+        @selectFeature="(e) => emit('selectFeature', e)"
       />
       <AddNewFeature
         v-else-if="mapParams.currentMode === 'draw'"
@@ -32,6 +33,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        @endCut="() => emit('selectFeature', null)"
       />
       <DivideFeature
         v-else-if="mapParams.currentMode === 'divide'"
@@ -54,6 +56,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        @selectFeature="(e) => emit('selectFeature', e)"
       />
       <Teleport to=".toolbar">
         <div class="toolbar-bottom" v-if="hasUndo || hasRedo">
@@ -593,7 +596,9 @@ watch(
 
 watch(
   () => hasUndo.value,
-  () => (mapParams.value.hasUndo = hasUndo.value),
+  () => {
+    mapParams.value.hasUndo = hasUndo.value;
+  },
 );
 
 watch(
@@ -612,6 +617,7 @@ watch(
     if (vectorSource.value) {
       vectorSource.value.clear();
       vectorSource.value.addFeatures(features.value as Feature[]);
+      interactions.value.undoRedo.clear();
     }
     map.value
       .getOverlays()
@@ -737,7 +743,7 @@ onUnmounted(() => {
 <style scoped>
 :deep(.pop-in-top) {
   position: absolute;
-  top: 10px;
+  top: 65px;
   left: 50%;
   transform: translateX(-50%);
   background: white;

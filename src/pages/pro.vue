@@ -99,7 +99,7 @@ meta:
     </div>
   </div>
 
-  <div class="fr-container--fluid fr-py-6w background-alt">
+  <div class="fr-container--fluid fr-py-6w background-alt" v-if="currentMode === 'agri'">
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-md-12">
@@ -113,11 +113,44 @@ meta:
 
           <ul class="list-marks">
             <li>
+              <strong>Passer plus de temps à valoriser vos pratiques</strong>
+              plutôt qu'à parler d'administratif.
+            </li>
+            <li><strong>Transmettez</strong> vos données automatiquement aux services numériques.</li>
+          </ul>
+        </div>
+
+        <div class="fr-col-md-5 fr-col-offset-md-1">
+          <h3>Moins de risque d'erreurs</h3>
+
+          <ul class="list-marks">
+            <li>Coordonnez-vous avec votre Organisme de Certification.</li>
+            <li><strong>Partagez</strong> les données géographiques entre différents services.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-container--fluid fr-py-6w background-alt" v-else>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-12">
+          <h2>Faites le suivi des parcelles sur un support cartographique</h2>
+        </div>
+      </div>
+
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-md-5">
+          <h3>Moins de charges administratives</h3>
+
+          <ul class="list-marks">
+            <li>
               <strong>Un parcellaire mis à jour</strong>
               facilement dans CartoBio.
             </li>
             <li>
-              <strong>L'attestation de certification</strong>directement disponible une fois le parcellaire certifié.
+              <strong>L'attestation de certification</strong> directement disponible une fois le parcellaire certifié.
             </li>
           </ul>
         </div>
@@ -126,7 +159,7 @@ meta:
           <h3>Moins de risque d'erreurs</h3>
 
           <ul class="list-marks">
-            <li><strong>Visualiser</strong>les parcelles et accéder à leurs informations et à leurs évolutions</li>
+            <li><strong>Visualiser</strong> les parcelles et accéder à leurs informations et à leurs évolutions</li>
             <li><strong>Partagez</strong> les données géographiques entre différents services.</li>
           </ul>
         </div>

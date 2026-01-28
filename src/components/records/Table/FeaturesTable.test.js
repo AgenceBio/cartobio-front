@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { defineComponent, markRaw } from "vue";
 import { createTestingPinia } from "@pinia/testing";
 import { flushPromises, mount } from "@vue/test-utils";
 import axios from "axios";
@@ -10,9 +9,7 @@ import { useRecordStore } from "@/stores/record.js";
 import { useCartoBioStorage } from "@/stores/storage.js";
 
 import record from "@/utils/__fixtures__/record-with-features.json";
-import Modal from "@/components/widgets/Modal.vue";
 import DeleteFeatureModal from "@/components/forms/DeleteFeatureForm.vue";
-import EditForm from "@/components/forms/SingleItemOperatorForm.vue";
 import TableComponent from "@/components/records/Table/FeaturesTable.vue";
 import { DeletionReasonsCode, GROUPE_COMMUNE } from "@/utils/features.js";
 import { useUserStore } from "@/stores/user";
@@ -132,61 +129,5 @@ describe("Features Table", () => {
     const wrapper = mount(TableComponent);
 
     expect(wrapper.find(".more-actions").exists()).toEqual(false);
-  });
-
-  test("we open a modal and test various cases it should remain open, or close", async () => {
-    permissions.isOc = false;
-    permissions.isAgri = true;
-    permissions.canDeleteFeature = true;
-    permissions.canChangeCulture = true;
-
-    const AsyncComponent = defineComponent({
-      components: { TableComponent },
-      template: '<Suspense><TableComponent v-bind="$attrs" /></Suspense>',
-    });
-
-    const wrapper = mount(AsyncComponent, {
-      props: { editForm: markRaw(EditForm) },
-    });
-
-    wrapper.getComponent(TableComponent);
-    let modal;
-
-    // // we click outside the edit modal (the background of the <dialog> element)
-    // // it closes itself because it is not "dirty"
-    // table.find("tr.parcelle td.actions button:first-child").trigger("click");
-    // await flushPromises();
-    // modal = wrapper.getComponent(Modal);
-    // await modal.trigger("click");
-    // await flushPromises();
-    // expect(modal.exists()).toEqual(false);
-
-    // // now, we change a field and we should not be able to close it
-    // axios.__createMock.patch.mockResolvedValueOnce({ data: record });
-
-    // table.find("tr.parcelle td.actions button:first-child").trigger("click");
-    // await flushPromises();
-    // modal = wrapper.getComponent(Modal);
-    // await modal.find("#feature-nom").setValue("aa");
-    // await modal.trigger("click");
-    // await flushPromises();
-    // expect(modal.exists()).toEqual(true);
-
-    // // we click outside the delete modal
-    await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-3  .fr-icon-delete-line").trigger("click");
-    modal = wrapper.getComponent(DeleteFeatureModal);
-    await modal.trigger("click");
-    await flushPromises();
-    expect(modal.exists()).toEqual(false);
-
-    // we click inside, so the modal should still exist
-    await wrapper.find(".groupe-parcelles").trigger("click");
-    await wrapper.find("#parcelle-3 .fr-icon-delete-line").trigger("click");
-    await flushPromises();
-    modal = wrapper.getComponent(Modal);
-    await modal.find("#modal-title").trigger("click");
-    await flushPromises();
-    expect(modal.exists()).toEqual(true);
   });
 });

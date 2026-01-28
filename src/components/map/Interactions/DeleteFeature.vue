@@ -59,6 +59,13 @@ interface Props {
   recordId: string;
 }
 
+/**
+ * * Emits
+ */
+const emit = defineEmits<{
+  (e: "selectFeature", value: number | string | null): void;
+}>();
+
 /*
  * * Props
  */
@@ -151,7 +158,8 @@ const handleMultipleDelete = async (reason: { code: string; details: string }): 
       }
     }
 
-    store.unselectAll([]);
+    store.unselectAll();
+    emit("selectFeature", null);
     mapParams.value.currentMode = "edit";
 
     return;

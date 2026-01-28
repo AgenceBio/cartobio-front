@@ -57,6 +57,12 @@ const { direction, lengthY } = useSwipe(actionsMenuRef, {
   },
 });
 
+const handleMenuClick = (event) => {
+  if (event.target.closest("button, a")) {
+    show.value = false;
+  }
+};
+
 const cancelKeyStroke = onKeyStroke("Escape", () => (show.value = false));
 const cancelClickOutside = onClickOutside(actionsMenuRef, () => (show.value = false));
 
@@ -107,6 +113,7 @@ watch(show, (value) => {
             'fr-btns-group--sm': props.smallList,
             'fr-btns-group': !props.smallList,
           }"
+          @click="handleMenuClick"
         >
           <slot />
         </ul>
@@ -135,7 +142,7 @@ watch(show, (value) => {
   height: 100%;
   width: 100vw;
   border: none;
-  z-index: 1000000;
+  z-index: 999;
   background: var(--grey-50-1000-a375, rgba(22, 22, 22, 0.64));
   transition: background 0.3s;
   display: block;

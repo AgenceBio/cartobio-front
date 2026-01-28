@@ -1,5 +1,6 @@
 <template>
   <MainHeader />
+  <LoadingOverlay v-if="isRouteLoading" :fullScreen="true" :width="128" :height="128" :color="'#007bff'" />
 
   <RouterView v-slot="{ Component, route }">
     <Suspense>
@@ -34,6 +35,8 @@ import MainHeader from "@/components/MainHeader.vue";
 import MainFooter from "@/components/MainFooter.vue";
 import OnBoarding from "@/components/OnBoarding.vue";
 import Spinner from "@/components/widgets/Spinner.vue";
+import LoadingOverlay from "@/components/widgets/LoadingOverlay.vue";
+import { isRouteLoading } from "@/main.js";
 
 const route = useRoute();
 const title = computed(() => route.meta?.seo?.title);

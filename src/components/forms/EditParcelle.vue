@@ -1,6 +1,6 @@
 <template>
   <div class="global">
-    <div class="fr-px-6v fr-py-6v content">
+    <div ref="global" class="fr-px-6v fr-py-6v content">
       <div class="fr-grid-row">
         <p class="fr-h6 fr-mb-2v fr-my-auto">{{ featureName(feature, { explicitName: false }) }}</p>
         <button
@@ -30,7 +30,7 @@
           <span v-else-if="permissions.isOc" class="fr-badge fr-badge--warning fr-badge--sm">
             Saisir la certification
           </span>
-          <ConversionLevel v-else-if="!permissions.isOc" :level="LEVEL_MAYBE_AB" noIcon />
+          <ConversionLevel v-else-if="!permissions.isOc" unknown noIcon />
         </div>
         <div class="fr-grid-row">
           <span class="fr-icon-map-pin-2-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
@@ -215,23 +215,58 @@
                     :max="maxDate"
                   />
                 </div>
-                <div class="fr-input-group" v-if="permissions.canAddAnnotations">
-                  <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
-                  <textarea
-                    :disabled="readonly || !permissions.canEditParcellaire"
-                    class="fr-input"
-                    id="auditeur_notes"
-                    name="auditeur_notes"
-                    v-model="patch.auditeur_notes"
-                  />
-                </div>
               </div>
             </AccordionSection>
           </AccordionGroup>
+          <div class="fr-input-group fr-mt-4w" v-if="permissions.canAddAnnotations">
+            <label class="fr-label" for="auditeur_notes">Vos notes de certification </label>
+            <textarea
+              :disabled="readonly || !permissions.canEditParcellaire"
+              class="fr-input"
+              id="auditeur_notes"
+              name="auditeur_notes"
+              v-model="patch.auditeur_notes"
+            />
+          </div>
         </template>
         <template v-else>
           <AccordionGroup>
             <AccordionSection title="Culture" isEdit :optionsCulture="optionsCulture(feature)">
+              <div class="culture-group" v-if="feature.properties.CODE_CULTURE">
+                <div>
+                  <div class="fr-p-2w" v-if="feature.properties.CODE_CULTURE">
+                    <div class="import-pac fr-mt-3w">
+                      <span class="fr-label"
+                        >Culture de l'import PAC du {{ jjmmyyyy(feature.properties.createdAt) }}</span
+                      >
+                    </div>
+                    <div class="fr-hint-text">
+                      Code culture
+                      <template v-if="feature.properties.CODE_PRECISION"> - code précision</template>
+                      <template
+                        v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')"
+                      >
+                        : culture</template
+                      >
+                    </div>
+                    <div class="code-culture">
+                      {{ feature.properties.CODE_CULTURE }}
+                      <template v-if="feature.properties.CODE_PRECISION">
+                        - {{ feature.properties.CODE_PRECISION }}</template
+                      >
+                      <template
+                        v-if="getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? '')"
+                      >
+                        :
+                        {{
+                          getCulturePAC(feature.properties.CODE_CULTURE, feature.properties.CODE_PRECISION ?? "")
+                            .libelle
+                        }}</template
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
               <CultureSelector
                 :disabled-input="true"
                 :feature-id="feature.properties.id"
@@ -420,6 +455,8 @@ const featuresSet = useFeaturesSetsStore();
 const showCancelModal = ref(false);
 const autofocusedElement = ref();
 
+const global = ref(null);
+
 const estControlee = ref(props.feature.properties.controlee);
 
 const isAB = computed(() => isABLevel(patch.value.conversion_niveau));
@@ -469,13 +506,18 @@ watch(featureId, (newId, oldId) => {
 
     nextTick(() => {
       isInitializing.value = false;
+      if (global.value) {
+        global.value.scrollTop = 0;
+      }
     });
   }
 });
 
 const details = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.value.conversion_niveau));
+const isEngagementDateRequired = computed(() =>
+  [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.value.conversion_niveau),
+);
 
 const validate = () => {
   const set = featuresSet.byFeature(props.feature.id, true);
@@ -530,7 +572,7 @@ function optionsCulture(feature) {
     return { name: "Multiculture", icon: getCultureIcon(feature.properties.cultures[0].CPF) };
   if (feature.properties.cultures.length === 1 && feature.properties.cultures[0].CPF)
     return {
-      name: fromCodeCpf(feature.properties.cultures[0].CPF).libelle_code_cpf,
+      name: fromCodeCpf(feature.properties.cultures[0].CPF)?.libelle_code_cpf ?? "",
       icon: getCultureIcon(feature.properties.cultures[0].CPF),
     };
   else return null;
@@ -632,5 +674,13 @@ nextTick(() => {
 
 .flex {
   display: flex;
+}
+
+.culture-group {
+  margin-left: 0;
+  margin-right: 0;
+  border: 0;
+
+  background-color: white;
 }
 </style>

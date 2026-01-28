@@ -25,7 +25,7 @@ const open = ref(false);
 const displayCallout = computed(() => record.audit_demandes && isCertificationImmutable(record.certification_state));
 const lengthMessage = computed(() => {
   let toreturn = 0;
-  if (record.audit_notes) {
+  if (record.audit_notes && permissions.isOc) {
     toreturn++;
   }
   if (displayCallout.value) {

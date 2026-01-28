@@ -70,6 +70,7 @@
       <button
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-close-line"
         aria-label="Fermer la comparaison"
+        v-tooltip="{ text: 'Fermer le module de comparaison', position: 'left' }"
         @click="closeComparison"
       ></button>
     </div>

@@ -1,11 +1,11 @@
 <template>
-  <div class="openlayers-parcelle-tooltip fr-px-2w fr-py-2w">
+  <div class="openlayers-parcelle-tooltip fr-p-2w">
     <div class="not-flex">
       <div class="space-between">
         <b class="fr-text--sm fr-mb-0 name">{{ name }}</b>
         <p class="fr-hint-text fr-text--xs fr-mb-0">{{ area }} ha</p>
       </div>
-      <div class="align-center gap-3 fr-mt-1v">
+      <div class="align-center gap-3">
         <span class="fr-icon-map-pin-2-line fr-icon--sm fr-hint-text" aria-hidden="true"></span>
         <p class="fr-hint-text fr-mb-1v fr-text--xs">{{ codePostale }} {{ ville }}</p>
       </div>
@@ -15,11 +15,10 @@
       </div>
     </div>
 
-    <div v-if="conversionLevel" class="align-center fr-mt-3w">
+    <div v-if="conversionLevel" class="align-center fr-mt-2w">
       <ConversionLevel :level="getConversionLevel(conversionLevel)" :noIcon="true" labelSelector />
     </div>
     <div v-else-if="libelleCulture" class="red radius fr-mt-1v">
-      <span class="fr-icon-pencil-line fr-icon--sm fr-hint-text"> </span>
       <p class="fr-mb-0 fr-text--xs">Certification</p>
     </div>
     <div v-if="libelleCulture" class="align-center gap-1 fr-mt-1v">
@@ -27,7 +26,6 @@
       <p class="fr-mb-0 fr-hint-text fr-text--xs">{{ libelleCulture }}</p>
     </div>
     <div v-else-if="conversionLevel" class="red radius fr-mt-1v">
-      <span class="fr-icon-pencil-line fr-icon--sm fr-hint-text"> </span>
       <p class="fr-mb-0 fr-text--xs">Culture</p>
     </div>
 

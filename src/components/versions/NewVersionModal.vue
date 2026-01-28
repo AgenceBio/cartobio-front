@@ -46,7 +46,7 @@ async function createEmptyVersion() {
 
 const handleSubmit = async () => {
   if (selectedOption.value === "import") {
-    await router.push(`${operatorStore.operator.numeroBio}/import`);
+    await router.push(`/exploitations/${operatorStore.operator.numeroBio}/import`);
   } else if (selectedOption.value === "empty") {
     await createEmptyVersion();
   } else if (selectedOption.value === "duplicate" && selectedRecord.value) {
@@ -126,18 +126,21 @@ const handleSubmit = async () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="record in sortedRecords" :key="record.id" @click="selectedRecord = record">
+          <tr v-for="record in sortedRecords" :key="record.id" @click="selectedRecord = record" class="clickable-row">
             <td class="version-name">
               <div class="fr-radio-group fr-radio-group--sm">
                 <input
                   type="radio"
                   class="radio-button"
-                  id="radio-{{record.id}}"
+                  :id="`radio-${record.record_id}`"
                   name="radio-inline"
                   v-model="selectedRecord"
                   :value="record"
+                  @click.stop
                 />
-                <label class="fr-label" for="radio-{{record.id}}"> {{ record.version_name }} </label>
+                <label class="fr-label" :for="`radio-${record.record_id}`">
+                  {{ record.version_name }}
+                </label>
               </div>
             </td>
             <td class="audit-date">{{ record.audit_date ? jjmmyyyy(record.audit_date) : "Non audité" }}</td>
@@ -172,6 +175,11 @@ const handleSubmit = async () => {
   justify-content: space-between !important;
   align-items: center;
 }
+
+.clickable-row {
+  cursor: pointer;
+}
+
 tr:hover {
   background-color: var(--background-alt-blue-france-hover) !important;
 }

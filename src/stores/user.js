@@ -109,7 +109,7 @@ export const useUserStore = defineStore("user", () => {
     if (isOc.value) {
       return "/certification/exploitations";
     } else if (isAgri.value) {
-      return "/exploitations";
+      return "/exploitations/liste";
     }
 
     return "/";

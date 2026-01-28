@@ -1,6 +1,6 @@
 <template>
   <h2 class="fr-sr-only" id="parcellaire">Parcellaire</h2>
-  <div class="fr-grid-row fr-grid-row--middle fr-mt-2v fr-mb-5v fr-mr-2w" ref="contentTopFeatures">
+  <div class="fr-grid-row fr-grid-row--middle fr-mb-5v fr-mr-2w" ref="contentTopFeatures">
     <div class="seamless-select fr-col-12 fr-col-md-6">
       <label for="plots-group-by">Regrouper par</label>
       <div class="select-wrapper">
@@ -61,11 +61,11 @@
           class="fr-label"
           for="radio-select-all"
           aria-label="Sélectionner toutes les parcelles"
-          v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'top' }"
+          v-tooltip="{ text: 'Selectionner toutes les parcelles ', position: 'right' }"
         />
       </div>
       <p class="fr-text--sm">
-        Séléctionner {{ features.length }} parcelles
+        Sélectionner {{ features.length }} parcelles
         {{
           !isNaN(parseFloat(inHa(legalProjectionSurface(features))))
             ? "(" + inHa(legalProjectionSurface(features)) + " ha)"
@@ -209,7 +209,7 @@ const expandedGroupKeys = ref(new Set());
 const { hits: features, tags } = storeToRefs(featuresSets);
 const { hasFeatures } = storeToRefs(featuresStore);
 const { selectedIds: selectedFeatureIds, allSelected } = storeToRefs(featuresStore);
-const { toggleAllSelected } = featuresStore;
+const { toggleAllSelected, unselect } = featuresStore;
 
 const editedFeatureId = ref(null);
 const maybeDeletedFeatureId = ref(null);
@@ -225,7 +225,9 @@ async function handleSingleFeatureDeletion({ id, reason }) {
   statsPush(["trackEvent", "Parcelles", "Suppression individuelle (sauvegarde)"]);
 
   maybeDeletedFeatureId.value = null;
-  editedFeatureId.value = null;
+  emit("edit:featureId", null);
+
+  unselect(id);
 
   const deletedFeatureName = featureName(featuresStore.getFeatureById(id));
   await featuresStore.deleteSingleFeature({ id, reason });
@@ -251,11 +253,12 @@ async function handleMultipleDelete(reason) {
   for (const featureId of featuresStore.selectedIds) {
     await featuresStore.deleteSingleFeature({ id: featureId, reason });
   }
+  featuresStore.unselectAll([]);
+
   if (isOnline.value) {
     loading.value = true;
   } else toast.success(`Parcelle « ${deletedFeatureName} » supprimée.`);
 
-  featuresStore.unselectAll([]);
   toggleFeaturesDelete();
   return;
 }
@@ -304,7 +307,11 @@ watch(featureGroups, () => {
 const groupCheckbox = ref(null);
 
 watch(selectedFeatureIds, () => {
-  groupCheckbox.value.indeterminate = !allSelected.value && selectedFeatureIds.value.length > 0;
+  if (selectedFeatureIds.value.length > 0) {
+    groupCheckbox.value.indeterminate = !allSelected.value;
+  } else {
+    groupCheckbox.value.indeterminate = false;
+  }
 });
 
 watch(userGroupingChoice, (newValue) => {
@@ -430,7 +437,7 @@ input[type="button"].fr-tag[aria-pressed="true"]::after {
 }
 
 .liste-filtre {
-  gap: 20px;
+  gap: 10px;
 }
 
 .selection-multiple {
