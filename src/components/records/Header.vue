@@ -60,8 +60,8 @@
         <div v-tooltip="tooltips.selectVersion" class="seamless-select fr-grid-row">
           <b class="version-name fr-mr-2w">
             {{
-              record.version_name && record.version_name.length > 32 && modelOnglet != "fullTab"
-                ? record.version_name.slice(0, 32) + "…"
+              record.version_name && record.version_name.length > 28 && modelOnglet != "fullTab"
+                ? record.version_name.slice(0, 28) + "…"
                 : record.version_name
             }}
           </b>

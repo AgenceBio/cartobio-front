@@ -1,4 +1,4 @@
-import { createApp, h } from "vue";
+import { createApp, h, ref } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 import { createHead } from "@unhead/vue";
@@ -131,9 +131,17 @@ router.isReady().then(() => {
   window.head = head;
 });
 
+export const isRouteLoading = ref(false);
+let loadingTimeout = null;
+
 router.beforeEach(async (to) => {
   const { useRecordStore } = await import("@/stores/record.js");
   const recordStore = useRecordStore();
+
+  loadingTimeout = setTimeout(() => {
+    isRouteLoading.value = true;
+  }, 500);
+
   // Preload stores for checking permissions
   try {
     if (to.params.recordId) {
@@ -225,6 +233,8 @@ router.beforeEach(async (to) => {
 router.afterEach(async () => {
   const { useCartoBioStorage } = await import("@/stores/storage.js");
   const storage = useCartoBioStorage();
+  clearTimeout(loadingTimeout);
+  isRouteLoading.value = false;
   try {
     await storage.sync();
   } catch (error) {

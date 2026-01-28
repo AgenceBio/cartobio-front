@@ -349,13 +349,13 @@ watch(selectedIds, (selectedIds, prevSelectedIds) => {
   }
 });
 
-const haveToOpen = inject("openAll", null);
+const haveToOpen = inject("openAll", valueNull);
 
 watch(
   () => haveToOpen.value,
   (newState) => {
     if (newState.shouldOpen !== null) {
-      open.value = newState.shouldOpen;
+      openLigne.value = newState.shouldOpen;
       emit("toggle", newState.shouldOpen);
     }
   },
@@ -363,7 +363,7 @@ watch(
 );
 
 watch(
-  () => open.value,
+  () => openLigne.value,
   (newValue) => {
     emit("toggle", newValue);
   },

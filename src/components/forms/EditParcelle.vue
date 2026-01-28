@@ -1,6 +1,6 @@
 <template>
   <div class="global">
-    <div class="fr-px-6v fr-py-6v content">
+    <div ref="global" class="fr-px-6v fr-py-6v content">
       <div class="fr-grid-row">
         <p class="fr-h6 fr-mb-2v fr-my-auto">{{ featureName(feature, { explicitName: false }) }}</p>
         <button
@@ -420,6 +420,8 @@ const featuresSet = useFeaturesSetsStore();
 const showCancelModal = ref(false);
 const autofocusedElement = ref();
 
+const global = ref(null);
+
 const estControlee = ref(props.feature.properties.controlee);
 
 const isAB = computed(() => isABLevel(patch.value.conversion_niveau));
@@ -469,6 +471,9 @@ watch(featureId, (newId, oldId) => {
 
     nextTick(() => {
       isInitializing.value = false;
+      if (global.value) {
+        global.value.scrollTop = 0;
+      }
     });
   }
 });
