@@ -94,7 +94,7 @@
 
         <p class="fr-mt-2w">
           <span :class="getCultureIcon(culture.CPF)"> </span>
-          {{ fromCodeCpf(culture.CPF).libelle_code_cpf }}
+          {{ culture.CPF ? fromCodeCpf(culture.CPF)?.libelle_code_cpf : "Non renseignée" }}
         </p>
 
         <div class="fr-input-group">
