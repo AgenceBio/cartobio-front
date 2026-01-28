@@ -596,7 +596,9 @@ watch(
 
 watch(
   () => hasUndo.value,
-  () => (mapParams.value.hasUndo = hasUndo.value),
+  () => {
+    mapParams.value.hasUndo = hasUndo.value && mapParams.value.currentMode !== "consult";
+  },
 );
 
 watch(
