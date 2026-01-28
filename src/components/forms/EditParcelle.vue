@@ -205,7 +205,7 @@
                   </p>
                   <input
                     type="date"
-                    class="fr-input"
+                    class="fr-input fr-input--error"
                     v-model="patch.engagement_date"
                     name="engagement_date"
                     id="engagement_date"
@@ -515,7 +515,9 @@ watch(featureId, (newId, oldId) => {
 
 const details = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
-const isEngagementDateRequired = computed(() => [LEVEL_C1, LEVEL_C2, LEVEL_C3].includes(patch.value.conversion_niveau));
+const isEngagementDateRequired = computed(() =>
+  [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.value.conversion_niveau),
+);
 
 const validate = () => {
   const set = featuresSet.byFeature(props.feature.id, true);
