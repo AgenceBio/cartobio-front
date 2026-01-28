@@ -940,7 +940,7 @@ onUnmounted(() => {
 
 .pop-in-info {
   position: absolute;
-  top: 75px;
+  top: 115px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -953,7 +953,7 @@ onUnmounted(() => {
 
 .pop-in-info-cadastre {
   position: absolute;
-  top: 75px;
+  top: 115px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -973,5 +973,10 @@ onUnmounted(() => {
   min-height: 0.5em;
   background-color: grey;
   opacity: 0.25;
+}
+</style>
+<style>
+.pop-in-info-cadastre .aa-Autocomplete {
+  margin-top: 0;
 }
 </style>

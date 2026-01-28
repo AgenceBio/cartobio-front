@@ -258,8 +258,4 @@ onBeforeUnmount(() => {
 .aa-ClearButton {
   border-radius: 0 0.25rem 0 0;
 }
-
-.aa-Autocomplete {
-  margin-top: 0.5rem;
-}
 </style>
