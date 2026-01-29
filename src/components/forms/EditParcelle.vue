@@ -405,7 +405,6 @@ import {
   LEVEL_C3,
   LEVEL_AB,
   LEVEL_CONVENTIONAL,
-  LEVEL_MAYBE_AB,
   isABLevel,
   getConversionLevel,
 } from "@/referentiels/ab.js";

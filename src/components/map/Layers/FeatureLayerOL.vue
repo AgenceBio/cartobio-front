@@ -26,6 +26,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        :undo-redo="interactions.undoRedo"
       />
       <CutBorder
         v-else-if="mapParams.currentMode === 'decouper'"
@@ -598,6 +599,8 @@ watch(
 watch(
   () => hasUndo.value,
   () => {
+    console.trace();
+    console.log(interactions.value.undoRedo, hasUndo.value);
     mapParams.value.hasUndo = hasUndo.value;
   },
 );
