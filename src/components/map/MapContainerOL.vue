@@ -13,7 +13,7 @@ import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
 
 import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
-import { defaults as defaultInteractions, PinchZoom } from "ol/interaction";
+import { defaults as defaultInteractions } from "ol/interaction";
 import Control from "ol/control/Control";
 
 /**
@@ -50,7 +50,7 @@ const initMap = (): void => {
       zoom: 2,
       constrainResolution: true,
     }),
-    interactions: props.blocked ? [] : defaultInteractions({}).extend([new PinchZoom()]),
+    interactions: props.blocked ? [] : defaultInteractions({}),
     controls: props.blocked
       ? [new InfoButtonControl("https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte")]
       : [],
