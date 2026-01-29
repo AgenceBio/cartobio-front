@@ -174,7 +174,11 @@ function showAgriPendingCertificationState() {
 }
 
 function showOCPendingCertificationState() {
-  return userStore.isOcAudit && [CertificationState.PENDING_CERTIFICATION].includes(record.certification_state);
+  return (
+    userStore.isOcAudit &&
+    !userStore.isOcCertif &&
+    [CertificationState.PENDING_CERTIFICATION].includes(record.certification_state)
+  );
 }
 
 function showAgriCertifiedState() {
@@ -182,7 +186,9 @@ function showAgriCertifiedState() {
 }
 
 function showOCCertifiedState() {
-  return userStore.isOcAudit && [CertificationState.CERTIFIED].includes(record.certification_state);
+  return (
+    userStore.isOcAudit && !userStore.isOcCertif && [CertificationState.CERTIFIED].includes(record.certification_state)
+  );
 }
 </script>
 
