@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import SlideHeader from "./onboarding/slideHeader.vue";
 import SlideComposable from "./onboarding/slideComposable.vue";
 import comparaisonslide from "@/assets/onboarding/comparaisonslide.png";
@@ -54,8 +54,11 @@ import slide5 from "@/assets/onboarding/slide5.png";
 import slide6 from "@/assets/onboarding/slide6.png";
 import slide7 from "@/assets/onboarding/slide7.png";
 import { useOnboardingStore } from "@/stores/onboarding.js";
+import { useUserStore } from "@/stores/user.js";
+import { storeToRefs } from "pinia";
 
 const onboardingStore = useOnboardingStore();
+const { isLogged } = storeToRefs(useUserStore());
 
 const showOnboarding = computed(() => onboardingStore.shouldShow);
 
@@ -131,10 +134,13 @@ const currentSlideValue = computed(() => {
   return slides[currentSlide.value];
 });
 
-onMounted(() => {
-  onboardingStore.checkStatus();
-});
-
+watch(
+  isLogged,
+  () => {
+    onboardingStore.checkStatus();
+  },
+  { immediate: true },
+);
 const nextSlide = () => {
   if (currentSlide.value < slides.length - 1) {
     currentSlide.value++;
