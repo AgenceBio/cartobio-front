@@ -13,7 +13,7 @@ import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
 
 import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
-import { defaults as defaultInteractions, PinchZoom } from "ol/interaction";
+import { defaults as defaultInteractions } from "ol/interaction";
 import Control from "ol/control/Control";
 
 /**
