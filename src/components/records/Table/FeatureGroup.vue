@@ -197,7 +197,7 @@
           >
             {{
               [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
-                (e) => e != null,
+                (e) => e != null && e !== "",
               ).length
             }}
           </span>
