@@ -93,7 +93,7 @@ import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { Style, Text, Fill, Stroke } from "ol/style";
 import ModifyFeature from "ol-ext/interaction/ModifyFeature";
-import { Select, Draw, Interaction } from "ol/interaction";
+import { Select, Draw, Interaction, PinchZoom } from "ol/interaction";
 import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { DragPan, MouseWheelZoom, DoubleClickZoom } from "ol/interaction";
 
@@ -290,7 +290,8 @@ const clearInteractions = (): void => {
       !(interaction instanceof UndoRedo) &&
       !(interaction instanceof DragPan) &&
       !(interaction instanceof MouseWheelZoom) &&
-      !(interaction instanceof DoubleClickZoom)
+      !(interaction instanceof DoubleClickZoom) &&
+      !(interaction instanceof PinchZoom)
     ) {
       toRemove.push(interaction);
     }
