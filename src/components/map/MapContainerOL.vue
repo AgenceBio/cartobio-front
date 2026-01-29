@@ -105,6 +105,6 @@ onUpdated(() => {
 <style scoped>
 .openlayers-container {
   z-index: 0;
-  touch-action: none;
+  touch-action: auto;
 }
 </style>
