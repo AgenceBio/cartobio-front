@@ -138,6 +138,9 @@ router.beforeEach(async (to) => {
   const { useRecordStore } = await import("@/stores/record.js");
   const recordStore = useRecordStore();
 
+  if (loadingTimeout) {
+    clearTimeout(loadingTimeout);
+  }
   loadingTimeout = setTimeout(() => {
     isRouteLoading.value = true;
   }, 500);
@@ -233,7 +236,9 @@ router.beforeEach(async (to) => {
 router.afterEach(async () => {
   const { useCartoBioStorage } = await import("@/stores/storage.js");
   const storage = useCartoBioStorage();
-  clearTimeout(loadingTimeout);
+  if (loadingTimeout) {
+    clearTimeout(loadingTimeout);
+  }
   isRouteLoading.value = false;
   try {
     await storage.sync();
