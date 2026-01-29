@@ -50,7 +50,11 @@ const initMap = (): void => {
       zoom: 2,
       constrainResolution: true,
     }),
-    interactions: props.blocked ? [] : defaultInteractions(),
+    interactions: props.blocked
+      ? []
+      : defaultInteractions({
+          pinchZoom: true,
+        }),
     controls: props.blocked
       ? [new InfoButtonControl("https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte")]
       : [],
