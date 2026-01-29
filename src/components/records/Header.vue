@@ -610,6 +610,15 @@ watch(
     gap: 10px;
   }
 }
+
+.sticky {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  width: 100%;
+  z-index: 100;
+}
+
 </style>
 <style>
 .ri-more-2-line.fr-btn--sm {
