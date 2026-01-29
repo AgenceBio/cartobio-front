@@ -59,6 +59,7 @@
       </button>
     </div>
   </div>
+  <ChangeCartoModeModal v-if="targetMode" :target-mode="targetMode" @close="targetMode = null" />
 </template>
 
 <script setup lang="ts">
@@ -69,6 +70,7 @@ import { useFeaturesStore } from "@/stores/features";
 import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";
 import { useOnline } from "@vueuse/core";
+import ChangeCartoModeModal from "@/components/forms/ChangeCartoModeModal.vue";
 
 const online = useOnline();
 
@@ -85,6 +87,7 @@ const { params: mapParams } = storeToRefs(preferences);
  * * Refs
  */
 const countSelected = ref<number>(store.selectedIds.length | 0);
+const targetMode = ref<string | null>(null);
 
 /**
  * * Watchers
@@ -104,7 +107,11 @@ const handleAction = (mode: string) => {
   if (mapParams.value.currentMode === mode) {
     return;
   }
-  mapParams.value.currentMode = mode;
+  if (mapParams.value.hasUndo) {
+    targetMode.value = mode;
+  } else {
+    mapParams.value.currentMode = mode;
+  }
 };
 </script>
 
