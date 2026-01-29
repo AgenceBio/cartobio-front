@@ -180,7 +180,7 @@
             aria-hidden="true"
             class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire"
           >
-             {{
+            {{
               [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
                 (e) => e != null && e !== "",
               ).length
