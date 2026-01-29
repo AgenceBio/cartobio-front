@@ -742,6 +742,7 @@ onMounted(() => {
 });
 onUnmounted(() => {
   props.undoRedo.clear();
+  resetCorrection();
 });
 </script>
 

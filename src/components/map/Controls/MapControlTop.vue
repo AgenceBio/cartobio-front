@@ -69,12 +69,7 @@
         }"
         aria-label="Ajouter une nouvelle parcelle"
         v-tooltip="{ text: 'Ajouter une nouvelle parcelle' }"
-        :disabled="
-          !permissions.canEditParcellaire ||
-          !online ||
-          (mapParams.currentMode != 'edit' && mapParams.currentMode != 'consult') ||
-          mapParams.hasUndo
-        "
+        :disabled="!permissions.canEditParcellaire || !online"
         @click="emit('addParcelle')"
       >
         <template v-if="!isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
@@ -92,14 +87,7 @@
         v-tooltip="{ text: 'Passer en mode dessin' }"
         :disabled="!permissions.canEditParcellaire || !online"
       >
-        <i
-          class="ri-shape-line"
-          :class="{
-            'fr-mr-1w':
-              (isWide && !isEditing) || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
-          }"
-          aria-hidden="true"
-        />
+        <i class="ri-shape-line fr-mr-1w" aria-hidden="true" />
         <template
           v-if="(isWide && !isEditing) || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
           >Mode dessin</template
@@ -109,23 +97,12 @@
       <button
         v-else-if="mapParams.currentMode != 'consult'"
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
-        @click="mapParams.currentMode = 'consult'"
+        @click="handleAction('consult')"
         aria-label="Fermer le mode dessin"
         v-tooltip="{ text: 'Fermer le mode dessin' }"
-        :disabled="
-          !permissions.canEditParcellaire ||
-          !online ||
-          (mapParams.currentMode != 'edit' && mapParams.currentMode != 'consult') ||
-          mapParams.hasUndo
-        "
+        :disabled="!permissions.canEditParcellaire || !online"
       >
-        <i
-          class="fr-icon-close-line fr-icon--sm"
-          :class="{
-            'fr-mr-1w': isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
-          }"
-          aria-hidden="true"
-        />
+        <i class="fr-icon-close-line fr-icon--sm fr-mr-1w" aria-hidden="true" />
         <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
           >Fermer le mode dessin</template
         >
@@ -133,6 +110,7 @@
       </button>
     </div>
   </div>
+  <ChangeCartoModeModal v-if="targetMode" :target-mode="targetMode" @close="targetMode = null" />
 </template>
 
 <script setup lang="ts">
@@ -142,6 +120,7 @@ import { useOnline } from "@vueuse/core";
 import { useFeaturesStore } from "@/stores/features";
 import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
+import ChangeCartoModeModal from "@/components/forms/ChangeCartoModeModal.vue";
 
 const online = useOnline();
 
@@ -172,6 +151,7 @@ const modelOnglet = ref<"fullTab" | "split" | "fullMap">(props.stateFS);
 
 const isMobile = computed(() => windowWidth.value < 992);
 const isWide = computed(() => windowWidth.value >= 1600);
+const targetMode = ref<string | null>(null);
 
 /**
  * * Gestion du resposive
@@ -222,6 +202,20 @@ watch(
     emit("modeDisplay", newValue);
   },
 );
+
+/**
+ * Functions
+ */
+const handleAction = (mode: string) => {
+  if (mapParams.value.currentMode === mode) {
+    return;
+  }
+  if (mapParams.value.hasUndo) {
+    targetMode.value = mode;
+  } else {
+    mapParams.value.currentMode = mode;
+  }
+};
 </script>
 
 <style scoped>
