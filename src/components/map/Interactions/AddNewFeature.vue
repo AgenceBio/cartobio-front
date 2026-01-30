@@ -244,7 +244,7 @@ const selectedIds = ref<string[]>([]);
 let cadastre: boolean | null = null;
 let rpg: boolean | null = null;
 let currentDrawing: Feature | null = null;
-let snapFeatureRef = { current: null as Feature | null };
+const snapFeatureRef = { current: null as Feature | null };
 
 const showCadastreModal = ref(false);
 const showRPGModal = ref(false);
