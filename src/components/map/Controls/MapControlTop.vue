@@ -70,7 +70,7 @@
         aria-label="Ajouter une nouvelle parcelle"
         v-tooltip="{ text: 'Ajouter une nouvelle parcelle' }"
         :disabled="!permissions.canEditParcellaire || !online"
-        @click="emit('addParcelle')"
+        @click="handleAction('draw')"
       >
         <template v-if="!isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
           >Ajouter une parcelle</template
