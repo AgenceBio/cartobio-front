@@ -599,8 +599,6 @@ watch(
 watch(
   () => hasUndo.value,
   () => {
-    console.trace();
-    console.log(interactions.value.undoRedo, hasUndo.value);
     mapParams.value.hasUndo = hasUndo.value;
   },
 );
