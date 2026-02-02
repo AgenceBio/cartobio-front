@@ -284,6 +284,26 @@ const previewLayer = new VectorLayer({
   zIndex: 3,
 });
 
+const createTooltipContent = (feature: Feature) => {
+  const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
+  const element = document.createElement("div");
+
+  const app = createApp(NewParcelleTooltip, {
+    area,
+  });
+
+  app.mount(element);
+  return element.innerHTML;
+};
+
+const tooltip = new Tooltip({
+  className: "draw-tooltip",
+  closeBox: false,
+  positioning: "bottom-left",
+  offset: [10, -10],
+  getHTML: createTooltipContent,
+});
+
 /*
  * * Fonctions :  interactions
  */
@@ -345,18 +365,6 @@ const createStyles = () => {
 };
 
 const { styleDrawing, stylePointDrawing, snapStyle } = createStyles();
-
-const createTooltipContent = (feature: Feature) => {
-  const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
-  const element = document.createElement("div");
-
-  const app = createApp(NewParcelleTooltip, {
-    area,
-  });
-
-  app.mount(element);
-  return element.innerHTML;
-};
 
 const handleTracing = (
   e: MapBrowserEvent,
@@ -577,14 +585,6 @@ const drawInteraction = (): void => {
   });
 
   props.map.addInteraction(draw);
-
-  const tooltip = new Tooltip({
-    className: "draw-tooltip",
-    closeBox: false,
-    positioning: "bottom-left",
-    offset: [10, -10],
-    getHTML: createTooltipContent,
-  });
 
   draw.on("drawstart", (e: DrawEvent) => {
     tooltip.setFeature(e.feature);
@@ -810,6 +810,7 @@ watch(
     props.map.un("click", handleClickCadastre);
     props.map.un("click", handleClickRPG);
     props.map.un("pointermove", pointerMove);
+    props.map.removeOverlay(tooltip);
     invalidDrawing.value = false;
     errorDrawing.value = false;
 
@@ -920,6 +921,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  props.map.removeOverlay(tooltip);
   showDetailsModal.value = false;
   feature.value = null;
   store.unselectAll();
