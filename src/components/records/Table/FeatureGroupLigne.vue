@@ -178,7 +178,7 @@
           <span
             v-if="feature.properties.commentaires || (feature.properties.auditeur_notes && permissions.isOc)"
             aria-hidden="true"
-            class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-line fr-mb-0 badge-commentaire"
+            class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
           >
             {{
               [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
@@ -459,6 +459,7 @@ onMounted(async () => {
 
 .badge-commentaire {
   background-color: var(--blue-france-950-100);
+  color: var(--artwork-minor-blue-france);
   padding: 2px 6px;
   border-radius: 4px;
 }
