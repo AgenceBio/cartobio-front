@@ -173,7 +173,7 @@ import { useRecordStore } from "@/stores/record.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
+import { addParcelleVerif, submitNewParcelle } from "@/cartobio-api.js";
 
 import AddParcelleModal from "@/components/forms/AddParcelleModal.vue";
 import CommuneSelect from "@/components/forms/fields/CommuneSelect.vue";
@@ -191,7 +191,6 @@ import { FeatureCollection } from "@turf/helpers";
 import intersect from "@turf/intersect";
 import kinks from "@turf/kinks";
 import axios from "axios";
-import proj4 from "proj4";
 
 /*
  * * Interface
