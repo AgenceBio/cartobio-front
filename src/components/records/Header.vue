@@ -1,6 +1,6 @@
 <template>
   <header class="fr-mb-2w fr-pr-4v">
-    <div class="fr-grid-row fr-grid-row--middle header fr-py-1w sticky" id="headerRecord">
+    <div class="fr-grid-row fr-grid-row--middle header fr-py-1w" id="headerRecord">
       <div class="fr-grid-row fr-text--xs">
         <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0" @click="redirectToParcellaire()">
           <b>{{ operator.nom }}</b>
@@ -185,17 +185,6 @@
     </div>
 
     <p v-if="readonly" class="readonly-badge">Lecture seule</p>
-
-    <div class="fr-mt-2w">
-      <div class="flex-space-between state-segment">
-        <div class="fr-grid-row header">
-          <ParcellaireState :record="record" />
-        </div>
-        <div class="fr-my-auto">
-          <ControlSegment v-model="tab" id="tab-top" />
-        </div>
-      </div>
-    </div>
   </header>
 
   <Teleport to="body">
@@ -255,7 +244,6 @@
 import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 
-import ParcellaireState from "@/components/records/State.vue";
 import OperatorHistoryModal from "@/components/records/HistoryModal/index.vue";
 import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.vue";
 import FullStorageModal from "@/components/versions/FullStorageModal.vue";
@@ -279,8 +267,6 @@ import ActionDropdown from "../widgets/ActionDropdown.vue";
 import ExportActions from "./ExportActions.vue";
 import toast from "@/utils/toast.js";
 import { useRouter } from "vue-router";
-
-import ControlSegment from "@/components/records/ControlSegment.vue";
 
 const router = useRouter();
 
@@ -609,14 +595,6 @@ watch(
     align-items: center;
     gap: 10px;
   }
-}
-
-.sticky {
-  position: sticky;
-  top: 0;
-  background-color: white;
-  width: 100%;
-  z-index: 100;
 }
 </style>
 <style>
