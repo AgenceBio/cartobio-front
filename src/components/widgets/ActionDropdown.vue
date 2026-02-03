@@ -32,6 +32,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  alignLeft: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 onUpdated(() => {
@@ -105,7 +109,12 @@ watch(show, (value) => {
       ></button>
     </slot>
     <dialog class="menu-container" :open="show" tabindex="-1">
-      <div class="fr-menu" :class="{ '--fade-in': fadeIn }" ref="actionsMenuRef" :style="{ '--down': down }">
+      <div
+        class="fr-menu"
+        :class="{ '--fade-in': fadeIn, '--align-left': props.alignLeft }"
+        ref="actionsMenuRef"
+        :style="{ '--down': down }"
+      >
         <ul
           class="fr-menu__list"
           :class="{
@@ -182,6 +191,11 @@ watch(show, (value) => {
 
     &.--fade-in {
       bottom: auto;
+    }
+
+    &.--align-left {
+      left: 0;
+      right: auto;
     }
   }
 
