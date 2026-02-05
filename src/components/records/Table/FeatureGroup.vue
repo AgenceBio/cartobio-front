@@ -191,13 +191,13 @@
           <p class="fr-sr-only"></p>
           <span v-if="isRota(feature)" :class="isRota(feature)"><i class="ri-exchange-funds-line"></i>ROTATION</span>
           <span
-            v-if="feature.properties.commentaires || feature.properties.auditeur_notes"
+            v-if="feature.properties.commentaires || (permissions.isOc && feature.properties.auditeur_notes)"
             aria-hidden="true"
             class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
           >
             {{
               [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
-                (e) => e != null,
+                (e) => e != null && e !== "",
               ).length
             }}
           </span>

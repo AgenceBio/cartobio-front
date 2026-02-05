@@ -475,10 +475,10 @@ function createInitialPatch() {
   return {
     NOM: props.feature.properties.NOM || "",
     cultures: props.feature.properties.cultures.map((c) => ({ ...c, CPF: c.CPF || "" })),
-    commentaires: props.feature.properties.commentaires || "",
+    commentaires: props.feature.properties.commentaires || null,
     conversion_niveau: props.feature.properties.conversion_niveau || "",
     engagement_date: props.feature.properties.engagement_date || "",
-    auditeur_notes: props.feature.properties.auditeur_notes || "",
+    auditeur_notes: props.feature.properties.auditeur_notes || null,
   };
 }
 
