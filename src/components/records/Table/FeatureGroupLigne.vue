@@ -53,7 +53,7 @@
       </div>
     </div>
     <div
-      class="fr-mb-2v fr-p-4v fr-mx-4v parcelle-ligne"
+      class="fr-p-4v fr-mx-4v parcelle-ligne"
       :class="{ 'fr-grid-row': openLigne, 'fr-mt-2v': index === 0, 'carte-odd': index % 2 !== 0 }"
       :id="'parcelle-' + feature.id + '-ligne'"
       :hidden="!openLigne"
