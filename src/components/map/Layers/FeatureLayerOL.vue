@@ -26,6 +26,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :record-id="recordId"
+        :undo-redo="interactions.undoRedo"
       />
       <CutBorder
         v-else-if="mapParams.currentMode === 'decouper'"

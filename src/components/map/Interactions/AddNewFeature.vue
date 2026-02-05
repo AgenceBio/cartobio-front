@@ -181,6 +181,7 @@ import CadastreFieldModal from "@/components/forms/fields/CadastreFieldModal.vue
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw } from "ol/interaction";
 import Tooltip from "ol-ext/overlay/Tooltip";
+import UndoRedo from "ol-ext/interaction/UndoRedo";
 import { MultiPoint } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import NewParcelleTooltip from "../Overlays/NewParcelleTooltip.vue";
@@ -202,6 +203,7 @@ interface Props {
   vectorSource: VectorSource;
   vectorLayer: VectorLayer<VectorSource>;
   recordId: string;
+  undoRedo: UndoRedo;
 }
 
 /*
@@ -241,6 +243,8 @@ const selectedIds = ref<string[]>([]);
 
 let cadastre: boolean | null = null;
 let rpg: boolean | null = null;
+let currentDrawing: Feature | null = null;
+const snapFeatureRef = { current: null as Feature | null };
 
 const showCadastreModal = ref(false);
 const showRPGModal = ref(false);
@@ -278,6 +282,26 @@ const previewLayer = new VectorLayer({
   source: previewSource,
   style: previewStyle,
   zIndex: 3,
+});
+
+const createTooltipContent = (feature: Feature) => {
+  const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
+  const element = document.createElement("div");
+
+  const app = createApp(NewParcelleTooltip, {
+    area,
+  });
+
+  app.mount(element);
+  return element.innerHTML;
+};
+
+const tooltip = new Tooltip({
+  className: "draw-tooltip",
+  closeBox: false,
+  positioning: "bottom-left",
+  offset: [10, -10],
+  getHTML: createTooltipContent,
 });
 
 /*
@@ -340,17 +364,7 @@ const createStyles = () => {
   return { styleDrawing, stylePointDrawing, snapStyle };
 };
 
-const createTooltipContent = (feature: Feature) => {
-  const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
-  const element = document.createElement("div");
-
-  const app = createApp(NewParcelleTooltip, {
-    area,
-  });
-
-  app.mount(element);
-  return element.innerHTML;
-};
+const { styleDrawing, stylePointDrawing, snapStyle } = createStyles();
 
 const handleTracing = (
   e: MapBrowserEvent,
@@ -359,6 +373,7 @@ const handleTracing = (
   snapFeatureRef: { current: Feature | null },
 ) => {
   if (!currentDrawing) return;
+  mapParams.value.hasUndo = true;
 
   const coordinate = e.coordinate;
   const pixel = props.map.getPixelFromCoordinate(coordinate);
@@ -381,6 +396,7 @@ const handleTracing = (
       snapFeatureRef.current = new Feature({ geometry: targetGeom.clone() });
       snapFeatureRef.current.setStyle(snapStyle);
       props.vectorSource.addFeature(snapFeatureRef.current);
+      props.undoRedo.clear();
     }
   }
 };
@@ -547,11 +563,6 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
 };
 
 const drawInteraction = (): void => {
-  const { styleDrawing, stylePointDrawing, snapStyle } = createStyles();
-
-  let currentDrawing: Feature | null = null;
-  const snapFeatureRef = { current: null as Feature | null };
-
   draw = new Draw({
     type: "Polygon",
     style: [styleDrawing, stylePointDrawing],
@@ -575,14 +586,6 @@ const drawInteraction = (): void => {
 
   props.map.addInteraction(draw);
 
-  const tooltip = new Tooltip({
-    className: "draw-tooltip",
-    closeBox: false,
-    positioning: "bottom-left",
-    offset: [10, -10],
-    getHTML: createTooltipContent,
-  });
-
   draw.on("drawstart", (e: DrawEvent) => {
     tooltip.setFeature(e.feature);
     props.map.addOverlay(tooltip);
@@ -596,8 +599,6 @@ const drawInteraction = (): void => {
       props.vectorSource.removeFeature(snapFeatureRef.current);
       snapFeatureRef.current = null;
     }
-
-    currentDrawing = null;
 
     props.map.removeOverlay(tooltip);
     const geojsonFormat = new GeoJSON();
@@ -637,11 +638,12 @@ const drawInteraction = (): void => {
     feature.value.properties.cultures = [{ CPF: "", id: crypto.randomUUID() }];
   });
 
-  props.map.on("pointermove", (e: MapBrowserEvent) => {
-    handleTracing(e, currentDrawing, snapStyle, snapFeatureRef);
-  });
+  props.map.on("pointermove", pointerMove);
 };
-
+const pointerMove = (e: MapBrowserEvent) => {
+  handleTracing(e, currentDrawing, snapStyle, snapFeatureRef);
+  props.undoRedo.clear();
+};
 const cadastreInteraction = () => {
   sourceLayer =
     (props.map
@@ -807,6 +809,8 @@ watch(
     }
     props.map.un("click", handleClickCadastre);
     props.map.un("click", handleClickRPG);
+    props.map.un("pointermove", pointerMove);
+    props.map.removeOverlay(tooltip);
     invalidDrawing.value = false;
     errorDrawing.value = false;
 
@@ -917,15 +921,24 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  props.map.removeOverlay(tooltip);
+  showDetailsModal.value = false;
+  feature.value = null;
   store.unselectAll();
   mapParams.value.blockPlan = false;
   props.map.removeLayer(previewLayer);
   props.map.un("click", handleClickCadastre);
   props.map.un("click", handleClickRPG);
+  props.map.un("pointermove", pointerMove);
+  if (draw) {
+    props.map.removeInteraction(draw);
+  }
   if (cadastre !== null && rpg !== null) {
     mapLayers.value.cadastre = cadastre;
     mapLayers.value.rpg = rpg;
   }
+  mapParams.value.hasUndo = false;
+  props.undoRedo.clear();
 });
 </script>
 

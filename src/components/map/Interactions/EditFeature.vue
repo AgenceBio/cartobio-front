@@ -238,7 +238,7 @@ const resetEdit = () => {
   });
 };
 
-const resetCorrection = (resetModifiedFeature = true) => {
+const resetCorrection = (resetModifiedFeature = true, addPointStyle = true) => {
   correctionSource.clear();
   intersectionSource.clear();
   props.map.removeLayer(correctionLayer);
@@ -247,7 +247,7 @@ const resetCorrection = (resetModifiedFeature = true) => {
   isCorrecting.value = false;
   featureToKeepForCorrection.clear();
   const format = new GeoJSON();
-  const selectedIds = store.selectedIds as string[];
+  const selectedIds = selectedFeatures.getArray().map((feature: Feature) => feature.getId() as string | number);
   for (const id of [...correctedParcellesId, ...selectedIds]) {
     const feature = store.getFeatureById(id);
 
@@ -261,7 +261,7 @@ const resetCorrection = (resetModifiedFeature = true) => {
     }
     if (resetModifiedFeature === true || !selectedIds.includes(id)) {
       displayedFeature.setGeometry((format.readFeature(feature) as Feature).getGeometry());
-      if (selectedIds.includes(id)) {
+      if (selectedIds.includes(id) && addPointStyle) {
         displayedFeature.setStyle([getPolygonStyle(), getPointStyle()]);
         continue;
       }
@@ -742,6 +742,8 @@ onMounted(() => {
 });
 onUnmounted(() => {
   props.undoRedo.clear();
+
+  resetCorrection(true, false);
 });
 </script>
 
