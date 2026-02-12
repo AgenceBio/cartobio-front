@@ -2,7 +2,7 @@
   <div :style="style" class="fr-search-bar fr-mb-1v" :class="$props.class">
     <div class="wrapper">
       <label class="fr-label" for="search">Saisissez le nom d'une commune</label>
-      <div class="input" ref="autocompleteRef"></div>
+      <div class="autocomplete-input" ref="autocompleteRef"></div>
       <button class="fr-btn button-search fr-mt-0" type="submit" title="Rechercher"></button>
     </div>
   </div>
@@ -48,7 +48,7 @@ onMounted(async () => {
       form: "fr-input",
     },
     onReset() {
-      emit("update:modelValue", "");
+      emit("update:modelValue", null);
     },
     getSources() {
       return [
@@ -162,9 +162,6 @@ onMounted(async () => {
   border-radius: 0 0.25rem 0 0;
 }
 
-.input {
-}
-
 .icon-btn {
   padding: 0rem 0rem 0rem 0rem;
 }
@@ -185,6 +182,10 @@ onMounted(async () => {
 
 :deep(.aa-SubmitButton) {
   display: none !important;
+}
+
+.autocomplete-input {
+  width: 260px;
 }
 </style>
 
