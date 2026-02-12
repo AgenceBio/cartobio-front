@@ -108,17 +108,9 @@ import { Coordinate } from "ol/coordinate";
 import CircleStyle from "ol/style/Circle";
 import proj4 from "proj4";
 import {
-  Geometry,
-  GeometryCollection,
-  LinearRing,
   LineString,
-  MultiLineString,
-  MultiPoint,
-  MultiPolygon,
   Point,
-  Polygon,
 } from "ol/geom";
-import * as jsts from "jsts/dist/jsts.min";
 
 /*
  * * Interface
@@ -180,7 +172,6 @@ const resSource = new VectorSource();
 
 let dragStart: Translate | null = null;
 let dragEnd: Translate | null = null;
-const changeBorder: Translate | null = null;
 let currentOverlay: Overlay | null = null;
 let targetFeature: Feature | null = null;
 let previewClosestPointSource: VectorSource | null = null;
@@ -195,8 +186,6 @@ let closestPoint: Coordinate | undefined | null;
 let closestSegmentIndex = -1;
 let startBorderPoint: Coordinate | undefined | null;
 let endBorderPoint: Coordinate | undefined | null;
-let startSegmentIndex = -1;
-let endSegmentIndex = -1;
 const isInverted = ref(false);
 const allBorder = ref(false);
 let isDragging = false;
@@ -275,23 +264,19 @@ const borderInteraction = (): void => {
 
     if (!startBorderPoint) {
       startBorderPoint = closestPoint;
-      startSegmentIndex = closestSegmentIndex;
     } else if (!endBorderPoint) {
       props.map.un("pointermove", handlePointerMove);
       props.map.un("click", handleMapClick);
       endBorderPoint = closestPoint;
-      endSegmentIndex = closestSegmentIndex;
       closestPoint = null;
       if (previewStartPointLayer && !dragStart) {
         dragStart = dragPoint(previewStartPointLayer, (v: { point: Coordinate; segment: number }) => {
           startBorderPoint = v.point;
-          startSegmentIndex = v.segment;
         });
       }
       if (previewEndPointLayer && !dragEnd) {
         dragEnd = dragPoint(previewEndPointLayer, (v: { point: Coordinate; segment: number }) => {
           endBorderPoint = v.point;
-          endSegmentIndex = v.segment;
         });
       }
 
@@ -328,33 +313,7 @@ const dragPoint = (
   return translate;
 };
 
-function changeBorderSize() {
-  if (!previewBorderLayer) return null;
-  const translate = new Translate({
-    layers: [previewBorderLayer],
-  });
 
-  translate.on("translating", function (event) {
-    isDragging = true;
-
-    const coordinate = proj4("EPSG:4326", "EPSG:3857", event.coordinate);
-    const geometry = targetFeature?.getGeometry();
-    const tmpClosestPoint = geometry?.getClosestPoint(event.coordinate);
-    if (!tmpClosestPoint) return;
-    const closestPoint = proj4("EPSG:4326", "EPSG:3857", tmpClosestPoint);
-    const segment = new LineString([coordinate, closestPoint]);
-    distance.value = +segment.getLength().toFixed(2);
-    drawBorder();
-  });
-
-  // Écouter l'événement modifyend
-  translate.on("translateend", function () {
-    isDragging = false;
-  });
-
-  props.map.addInteraction(translate);
-  return translate;
-}
 const drawPoints = () => {
   if (!previewClosestPointSource || !previewStartPointSource || !previewEndPointSource) return;
   previewClosestPointSource.clear();
@@ -388,11 +347,9 @@ const drawPoints = () => {
     if (!isDragging && previewStartPointLayer && previewEndPointLayer) {
       dragStart = dragPoint(previewStartPointLayer, (v: { point: Coordinate; segment: number }) => {
         startBorderPoint = v.point;
-        startSegmentIndex = v.segment;
       });
       dragEnd = dragPoint(previewEndPointLayer, (v: { point: Coordinate; segment: number }) => {
         endBorderPoint = v.point;
-        endSegmentIndex = v.segment;
       });
     }
     drawBorder();
@@ -445,7 +402,7 @@ const drawBorder = async () => {
     resSource?.addFeature(featureWithoutBordure);
     resSource?.addFeature(bordureFeature);
 
-    previewBorderSource?.addFeature(featureWithoutBordure);
+    previewBorderSource?.addFeature(bordureFeature);
 
     parcelle1Area.value = calculateArea(new GeoJSON().writeFeatureObject(featureWithoutBordure, {}) as CartoBioFeature);
     parcelle2Area.value = calculateArea(new GeoJSON().writeFeatureObject(bordureFeature, {}) as CartoBioFeature);
@@ -622,8 +579,6 @@ const resetChoice = () => {
   closestSegmentIndex = -1;
   startBorderPoint = null;
   endBorderPoint = null;
-  startSegmentIndex = -1;
-  endSegmentIndex = -1;
   hasBordure.value = false;
   parcelle1Area.value = 0;
   parcelle2Area.value = 0;
