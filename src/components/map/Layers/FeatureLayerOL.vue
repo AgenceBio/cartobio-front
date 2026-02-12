@@ -561,7 +561,12 @@ const getCursor = (mode: string) => {
         }
         break;
       case "draw":
-        currentCursor.value = `url("${drawCursor}"), pointer`;
+        if ((mapLayers.value.cadastre || mapLayers.value.rpg) && mapParams.value.blockPlan) {
+          console.log("here");
+          currentCursor.value = `pointer`;
+        } else {
+          currentCursor.value = `url("${drawCursor}"), pointer`;
+        }
         break;
       case "decouper":
         currentCursor.value = `url("${cropCursor}"), pointer`;
@@ -587,6 +592,13 @@ watch(
   () => mapParams.value.currentMode,
   (mode) => {
     getCursor(mode);
+  },
+  { immediate: true },
+);
+watch(
+  () => mapParams.value.blockPlan,
+  () => {
+    getCursor(mapParams.value.currentMode);
   },
   { immediate: true },
 );
