@@ -1,5 +1,8 @@
 <template>
-  <div class="fr-input-group" :class="{ 'fr-input-group--error': hasErrors, 'fr-input-group': !needTitle }">
+  <div
+    class="fr-input-group culture-selector"
+    :class="{ 'fr-input-group--error': hasErrors, 'fr-input-group': !needTitle }"
+  >
     <label v-if="needTitle" class="fr-label" :for="`cpf-${culture.id}-input`">Culture</label>
 
     <div v-if="requirePrecision && fromCodeCpf(modelValue)" class="fr-hint-text">
@@ -232,7 +235,7 @@ onBeforeUnmount(() => {
   max-height: 20rem;
 }
 
-.aa-Autocomplete {
+.culture-selector .aa-Autocomplete {
   margin-top: 0.5rem;
 }
 
