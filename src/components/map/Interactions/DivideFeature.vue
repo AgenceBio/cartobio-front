@@ -66,7 +66,7 @@ import { unByKey } from "ol/Observable";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Draw, Modify, Select, Snap } from "ol/interaction";
-import { Fill, RegularShape, Stroke, Style, Circle } from "ol/style";
+import { Fill, RegularShape, Stroke, Style } from "ol/style";
 import { click } from "ol/events/condition";
 import { DrawEvent } from "ol/interaction/Draw";
 import { LinearRing, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from "ol/geom";
