@@ -325,10 +325,7 @@ const extendLineToIntersectPolygon = (lineGeom: LineString): LineString => {
     const segStartMeters = proj4("EPSG:4326", "EPSG:3857", segStart);
     const segEndMeters = proj4("EPSG:4326", "EPSG:3857", segEnd);
 
-    const farPointMeters: [number, number] = [
-      lastMeters[0] + dirX * 100000,
-      lastMeters[1] + dirY * 100000,
-    ];
+    const farPointMeters: [number, number] = [lastMeters[0] + dirX * 100000, lastMeters[1] + dirY * 100000];
 
     const intersection = getLineIntersection(lastMeters, farPointMeters, segStartMeters, segEndMeters);
 

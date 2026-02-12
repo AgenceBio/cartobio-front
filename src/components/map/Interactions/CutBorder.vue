@@ -107,10 +107,7 @@ import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Coordinate } from "ol/coordinate";
 import CircleStyle from "ol/style/Circle";
 import proj4 from "proj4";
-import {
-  LineString,
-  Point,
-} from "ol/geom";
+import { LineString, Point } from "ol/geom";
 
 /*
  * * Interface
@@ -312,7 +309,6 @@ const dragPoint = (
   props.map.addInteraction(translate);
   return translate;
 };
-
 
 const drawPoints = () => {
   if (!previewClosestPointSource || !previewStartPointSource || !previewEndPointSource) return;
