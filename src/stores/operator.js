@@ -152,7 +152,7 @@ export const useOperatorStore = defineStore("operator", () => {
       } catch (_e) {
         let msg;
         if (isAgri)
-          msg = "Le dossier n'est pas accessible. Veuillez vérifier vos droits d'accès sur le protail de notification";
+          msg = "Le dossier n'est pas accessible. Veuillez vérifier vos droits d'accès sur le portail de notification";
         const e = new Error(
           msg
             ? msg
