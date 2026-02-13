@@ -15,7 +15,6 @@ function date(record) {
   return new Date(record.certification_date_debut || record.audit_date || record.created_at);
 }
 
-
 export const useOperatorStore = defineStore("operator", () => {
   const storage = useCartoBioStorage();
   const { isAgri } = useUserStore();
@@ -151,10 +150,13 @@ export const useOperatorStore = defineStore("operator", () => {
       try {
         ({ operator: operatorData, records: recordsData, import: importData } = await getOperator(numeroBio));
       } catch (_e) {
-        let msg
-        if (isAgri) msg = "Le dossier n'est pas accessible. Veuillez vérifier vos droits d'accès sur le protail de notification"
+        let msg;
+        if (isAgri)
+          msg = "Le dossier n'est pas accessible. Veuillez vérifier vos droits d'accès sur le protail de notification";
         const e = new Error(
-          msg ? msg : "Le dossier n'est plus accessible pour votre organisme certificateur, veuillez vérifier sur le portail de notification",
+          msg
+            ? msg
+            : "Le dossier n'est plus accessible pour votre organisme certificateur, veuillez vérifier sur le portail de notification",
         );
         e.name = "OPERATOR_CHANGEMENT_OC";
         throw e;
@@ -163,7 +165,7 @@ export const useOperatorStore = defineStore("operator", () => {
       recordsData = recordsData.map((serverR) =>
         storage.syncQueues[serverR.record_id]
           ? storage.operators[numeroBio]?.records.find((storageR) => storageR.record_id === serverR.record_id) ||
-          serverR
+            serverR
           : serverR,
       );
     }
