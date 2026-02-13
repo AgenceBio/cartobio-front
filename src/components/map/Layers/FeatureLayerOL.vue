@@ -5,6 +5,7 @@
         :map="map"
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
+        :isCompare="isCompare"
         @selectFeature="(e) => emit('selectFeature', e)"
         v-if="interactive"
       />

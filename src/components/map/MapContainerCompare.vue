@@ -28,8 +28,7 @@
 import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
 import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
-import { Select } from "ol/interaction";
-import { click } from "ol/events/condition";
+import { defaults as defaultInteractions } from "ol/interaction";
 
 const mapRef = ref<HTMLElement | null>(null);
 const map = shallowRef<Map | null>(null);
@@ -48,13 +47,26 @@ const initMap = (): void => {
     zoom: 2,
     constrainResolution: true,
   });
-  map.value = new Map({ controls: [], view });
-  map2.value = new Map({ controls: [], view });
-
-  const select1 = new Select({ condition: click });
-  map.value.addInteraction(select1);
-  const select2 = new Select({ condition: click });
-  map2.value.addInteraction(select2);
+  map.value = new Map({
+    controls: [],
+    view,
+    interactions: defaultInteractions({
+      doubleClickZoom: true,
+      dragPan: true,
+      mouseWheelZoom: true,
+      pinchZoom: true,
+    }),
+  });
+  map2.value = new Map({
+    controls: [],
+    view,
+    interactions: defaultInteractions({
+      doubleClickZoom: true,
+      dragPan: true,
+      mouseWheelZoom: true,
+      pinchZoom: true,
+    }),
+  });
 };
 
 onMounted(() => {
