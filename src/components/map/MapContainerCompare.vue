@@ -82,7 +82,10 @@ let currentHoveredFeature1 = null;
 let currentHoveredFeature2 = null;
 
 const getLayer = (mapInstance: Map) => {
-  return mapInstance.getLayers().getArray().find((l) => l.get("name") === props.layerId) as VectorLayer<any>;
+  return mapInstance
+    .getLayers()
+    .getArray()
+    .find((l) => l.get("name") === props.layerId) as VectorLayer<any>;
 };
 
 const clearHover = () => {
@@ -105,12 +108,9 @@ const detectAndHighlight = (mapInstance: Map, pixel: number[]) => {
   const layer = getLayer(mapInstance);
   if (!layer) return null;
 
-  const feature = mapInstance.forEachFeatureAtPixel(
-    pixel,
-    (f, layerCandidate) => {
-      return layerCandidate === layer ? f : null;
-    }
-  );
+  const feature = mapInstance.forEachFeatureAtPixel(pixel, (f, layerCandidate) => {
+    return layerCandidate === layer ? f : null;
+  });
 
   return feature;
 };
