@@ -247,12 +247,16 @@ const getFeatureStyle = (feature: FeatureLike): Style => {
   const selected = feature.get("selected");
   const hover = feature.get("hover");
   const type = feature.get("TYPE");
+  const onhoverCompare = feature.get("onhovered-compare");
 
   let fillColor = "rgba(166, 242, 250, 0.2)";
   let borderColor = "rgba(96, 224, 235, 1)";
   if (selected) {
     fillColor = "rgba(88, 197, 207, 0.6)";
     borderColor = "rgba(65, 156, 164, 1)";
+  } else if (onhoverCompare) {
+    fillColor = "rgba(166, 242, 250, 0.5)";
+    borderColor = "rgba(76, 180, 189, 1)";
   } else if (hover) {
     fillColor = "rgba(166, 242, 250, 0.5)";
     borderColor = "rgba(76, 180, 189, 1)";
@@ -267,9 +271,9 @@ const getFeatureStyle = (feature: FeatureLike): Style => {
   }
 
   const styleText = new Style({
-    zIndex: selected || hover ? 4 : 3,
+    zIndex: selected || hover || onhoverCompare ? 4 : 3,
     fill: new Fill({ color: fillColor, fillRule: "evenodd" }),
-    stroke: new Stroke({ width: selected || hover ? 3 : 1, color: borderColor }),
+    stroke: new Stroke({ width: selected || hover || onhoverCompare ? 3 : 1, color: borderColor }),
     text: new Text({
       text: [text, "14px 'Marianne'", "\n", "", size, "bold 14px 'Marianne'", " ha", " 14px 'Marianne'"],
       fill: new Fill({ color: mapLayers.value.background === "plan" ? "#000000" : "#ffffff" }),
