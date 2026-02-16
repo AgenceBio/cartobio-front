@@ -406,7 +406,7 @@ watch(
       groupCheckbox.value.checked = allSelected.value;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onMounted(async () => {
