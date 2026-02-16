@@ -361,11 +361,24 @@ const someSelected = computed(() => {
 
 const groupCheckbox = ref(null);
 
-watch([allSelected, someSelected], () => {
+watch([allSelected, someSelected], async () => {
+  await nextTick();
   if (groupCheckbox.value) {
     groupCheckbox.value.indeterminate = someSelected.value;
   }
 });
+
+watch(
+  featureIds,
+  async () => {
+    await nextTick();
+    if (groupCheckbox.value) {
+      groupCheckbox.value.indeterminate = someSelected.value;
+      groupCheckbox.value.checked = allSelected.value;
+    }
+  },
+  { immediate: true },
+);
 
 watch(selectedIds, (selectedIds, prevSelectedIds) => {
   const newItems = featureIds.value.filter((id) => {

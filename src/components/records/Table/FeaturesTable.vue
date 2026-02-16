@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, inject, provide } from "vue";
+import { computed, ref, watch, inject, provide, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useFeaturesStore } from "@/stores/features.js";
@@ -306,13 +306,32 @@ watch(featureGroups, () => {
 
 const groupCheckbox = ref(null);
 
-watch(selectedFeatureIds, () => {
-  if (selectedFeatureIds.value.length > 0) {
-    groupCheckbox.value.indeterminate = !allSelected.value;
-  } else {
-    groupCheckbox.value.indeterminate = false;
+watch(selectedFeatureIds, async () => {
+  await nextTick();
+  if (groupCheckbox.value) {
+    if (selectedFeatureIds.value.length > 0) {
+      groupCheckbox.value.indeterminate = !allSelected.value;
+    } else {
+      groupCheckbox.value.indeterminate = false;
+    }
   }
 });
+
+watch(
+  [userGroupingChoice, featureGroups],
+  async () => {
+    await nextTick();
+    if (groupCheckbox.value) {
+      groupCheckbox.value.checked = allSelected.value;
+      if (selectedFeatureIds.value.length > 0) {
+        groupCheckbox.value.indeterminate = !allSelected.value;
+      } else {
+        groupCheckbox.value.indeterminate = false;
+      }
+    }
+  },
+  { deep: true },
+);
 
 watch(userGroupingChoice, (newValue) => {
   if (newValue) {
