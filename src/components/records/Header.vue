@@ -261,6 +261,7 @@ import { usePermissions } from "@/stores/permissions.js";
 import { useUserStore } from "@/stores/user";
 import { useOnline } from "@vueuse/core";
 import { useCartoBioStorage } from "@/stores/storage.js";
+import Spinner from "@/components/widgets/Spinner.vue";
 
 import { pinOperator, unpinOperator, getPDFData, getHasAttestationProduction } from "@/cartobio-api";
 import ActionDropdown from "../widgets/ActionDropdown.vue";
@@ -595,6 +596,21 @@ watch(
     align-items: center;
     gap: 10px;
   }
+}
+
+.button-export :deep(.spin) {
+  height: 25px;
+  line-height: 25px;
+  padding-left: 23px;
+}
+
+.button-export :deep(.spin::before) {
+  border: solid 4px var(--background-alt-grey-hover);
+  border-bottom-color: var(--background-action-high-blue-france);
+  height: 20px;
+  width: 20px;
+  top: 10px;
+  left: 5px;
 }
 </style>
 <style>
