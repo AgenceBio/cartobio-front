@@ -24,33 +24,46 @@
           <div class="actions-button">
             <button
               v-if="isEpingle"
+              type="button"
               class="fr-m-1w ri-pushpin-fill"
               style="color: #000091"
               @click.stop="unpin(operator.numeroBio)"
-              aria-label="Désépingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              :aria-label="`Désépingler l'exploitation ${operator.nom || operator.denomationCourante}`"
               v-tooltip="{ text: 'Désépingler l\'exploitation', position: 'bottom' }"
             ></button>
             <button
               v-else-if="!operatorDisabled[operator.numeroBio]"
+              type="button"
               class="fr-m-1w ri-pushpin-line"
               style="color: #000091"
               @click.stop="pin(operator.numeroBio)"
-              aria-label="Épingler l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              :aria-label="`Épingler l'exploitation ${operator.nom || operator.denomationCourante}`"
               v-tooltip="{ text: 'Epingler l\'exploitation', position: 'bottom' }"
             ></button>
             <template v-if="operatorDisabled[operator.numeroBio]">
               <p class="fr-sr-only">Dossier inaccessible</p>
-              <span class="fr-ml-1w fr-icon-lock-line fr-icon--sm" aria-hidden="true"></span>
+              <span
+                class="fr-ml-1w fr-icon-lock-line fr-icon--sm"
+                aria-hidden="true"
+                :aria-describedby="tooltip.operatorId == operator.id ? `tooltip-disabled-${operator.id}` : undefined"
+              ></span>
             </template>
             <button
               v-else
+              type="button"
               class="fr-ml-1w fr-icon-arrow-right-line fr-icon--sm cursor-button"
-              @click.stop="goToExploitations()"
-              aria-label="Voir les détails de l'exploitation {{ operator.nom || operator.denomationCourante }}"
+              @click.stop="goToExploitations(operator)"
+              :aria-label="`Voir les détails de l'exploitation ${operator.nom || operator.denomationCourante}`"
               v-tooltip="{ text: 'Ouvrir le dossier de l\'exploitation ', position: 'bottom' }"
             ></button>
-            <p v-if="tooltip.operatorId == operator.id" class="tooltip-text" role="tooltip">
-              Le dossier n’est pas accessible
+            <p
+              v-if="tooltip.operatorId == operator.id"
+              :id="`tooltip-disabled-${operator.id}`"
+              class="tooltip-text"
+              role="tooltip"
+              aria-live="polite"
+            >
+              Le dossier n'est pas accessible
             </p>
           </div>
         </div>
@@ -89,10 +102,15 @@
             <span class="fr-icon-award-line fr-icon--sm lastcertified" aria-hidden="true"></span>
             <p class="lastcertifieddate fr-mb-0 fr-text--sm">{{ operator.lastcertifieddate ?? "-" }}</p>
           </div>
-          <div class="error-icon" v-if="operator.otherParcellaire">
-            <p class="fr-sr-only">Informations sur la dernière version de parcellaire</p>
-            <span>!</span>
-            <div class="tooltip">
+          <button
+            v-if="operator.otherParcellaire"
+            type="button"
+            class="error-icon"
+            :aria-describedby="`tooltip-parcellaire-${operator.numeroBio}`"
+          >
+            <span aria-hidden="true">!</span>
+            <span class="fr-sr-only">Nouvelle version de parcellaire disponible, voir les détails</span>
+            <div class="tooltip" role="tooltip" :id="`tooltip-parcellaire-${operator.numeroBio}`">
               <p v-if="certificationState == 'CERTIFIED'" class="fr-text--sm">
                 Une nouvelle version a été créée après la certification <br />de {{ operator.version_name }}
               </p>
@@ -135,21 +153,21 @@
                 </span>
               </span>
             </div>
-          </div>
+          </button>
         </div>
       </div>
       <div class="center" v-else>
         <p v-if="getStatus(operator) === 'NON ENGAGEE'">
-          L’exploitation n’est pas encore gérée par {{ organismeOc?.nom || "votre OC" }}. Pour accéder au dossier sur
-          CartoBio, la notification doit d’abord être validée sur le portail de notification par un chargé de
+          L'exploitation n'est pas encore gérée par {{ organismeOc?.nom || "votre OC" }}. Pour accéder au dossier sur
+          CartoBio, la notification doit d'abord être validée sur le portail de notification par un chargé de
           certification.
         </p>
         <p v-if="getStatus(operator) === 'ARRETEE' && operatorDisabled[operator.numeroBio]">
-          L’exploitation n’est plus gérée par {{ organismeOc?.nom || "votre OC" }} et aucune version de parcellaire de
+          L'exploitation n'est plus gérée par {{ organismeOc?.nom || "votre OC" }} et aucune version de parcellaire de
           cette exploitation ne concerne votre organisme certificateur.
         </p>
         <p v-else-if="getStatus(operator) === 'ARRETEE'">
-          L’exploitation n’est plus gérée par {{ organismeOc?.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
+          L'exploitation n'est plus gérée par {{ organismeOc?.nom || "votre OC" }}. Vous pouvez tout de même accéder aux
           versions de parcellaire initiées par votre organisme certificateur.
         </p>
       </div>
@@ -159,8 +177,9 @@
         v-if="!certificationState && !operatorDisabled[operator.numeroBio] && getStatus(operator) !== 'ARRETEE'"
       >
         <button
+          type="button"
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline fr-pl-0 button-footer"
-          @click.stop="goToExploitations"
+          @click.stop="goToExploitations(operator)"
         >
           Créer un parcellaire
         </button>
@@ -218,6 +237,7 @@
         "
       >
         <button
+          type="button"
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline button-footer"
           @click.stop="goToSpecificVersion"
           :aria-label="`Consulter la version ${operator.version_name}`"
@@ -234,6 +254,7 @@
         "
       >
         <button
+          type="button"
           class="fr-text--sm fr-btn fr-icon-arrow-right-up-line fr-btn--icon-right fr-btn--tertiary-no-outline button-footer"
           @click.stop="goToSpecificVersion"
           :aria-label="`Consulter la version ${operator.version_name}`"
@@ -400,6 +421,14 @@ function hideTooltip() {
   font-size: 14px;
   font-weight: bold;
   color: white;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.error-icon:focus-visible {
+  outline: 2px solid #000091;
+  outline-offset: 2px;
 }
 
 .tooltip {
@@ -438,6 +467,7 @@ function hideTooltip() {
 }
 
 .error-icon:focus .tooltip,
+.error-icon:focus-visible .tooltip,
 .error-icon:active .tooltip {
   opacity: 1;
   visibility: visible;
@@ -608,7 +638,7 @@ function hideTooltip() {
 }
 
 .text-gray {
-  color: gray;
+  color: var(--text-mention-grey);
 }
 
 .fr-card > .fr-card__footer {
