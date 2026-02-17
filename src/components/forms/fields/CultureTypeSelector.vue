@@ -117,6 +117,11 @@ const createAutocomplete = () => {
 
   autocompleteProps.value = autocomplete({
     container: autocompleteRef.value,
+    translations: {
+      detachedCancelButtonText: "Annuler",
+      submitButtonTitle: "Rechercher",
+      clearButtonTitle: "Effacer",
+    },
     placeholder: props.placeholder,
     openOnFocus: true,
     id: `cpf-${props.culture.id}`,
