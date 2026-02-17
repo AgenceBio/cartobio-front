@@ -55,6 +55,11 @@ watch(
 onMounted(async () => {
   const { setQuery } = autocomplete({
     container: autocompleteRef.value,
+    translations: {
+      detachedCancelButtonText: "Annuler",
+      submitButtonTitle: "Rechercher",
+      clearButtonTitle: "Effacer",
+    },
     openOnFocus: true,
     placeholder: "Saisissez le nom d’une commune",
     id: "search",

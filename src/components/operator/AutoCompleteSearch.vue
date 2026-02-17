@@ -70,6 +70,8 @@ onMounted(() => {
     container: autocompleteRef.value,
     translations: {
       detachedCancelButtonText: "Annuler",
+      submitButtonTitle: "Rechercher",
+      clearButtonTitle: "Effacer",
     },
     placeholder: props.placeholder ? props.placeholder : "Rechercher par nom, SIRET, n° Bio ou n° client",
     openOnFocus: true,
