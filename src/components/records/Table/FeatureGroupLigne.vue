@@ -390,11 +390,25 @@ const someSelected = computed(() => {
 
 const groupCheckbox = ref(null);
 
-watch([allSelected, someSelected], () => {
+watch([allSelected, someSelected], async () => {
+  await nextTick();
   if (groupCheckbox.value) {
     groupCheckbox.value.indeterminate = someSelected.value;
   }
 });
+
+watch(
+  featureIds,
+  async () => {
+    await nextTick();
+    if (groupCheckbox.value) {
+      groupCheckbox.value.indeterminate = someSelected.value;
+      groupCheckbox.value.checked = allSelected.value;
+    }
+  },
+  { immediate: true },
+);
+
 onMounted(async () => {
   if (scroll.value != null && props.featureGroup.features.some((e) => e.id === scroll.value)) {
     open.value = true;
