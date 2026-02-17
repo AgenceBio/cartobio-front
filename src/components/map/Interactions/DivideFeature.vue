@@ -65,7 +65,7 @@ import { createFeaturesFromOther } from "@/cartobio-api.js";
 import { unByKey } from "ol/Observable";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
-import { Draw, Modify, Select } from "ol/interaction";
+import { Draw, Modify, Select, Snap } from "ol/interaction";
 import { Fill, RegularShape, Stroke, Style } from "ol/style";
 import { click } from "ol/events/condition";
 import { DrawEvent } from "ol/interaction/Draw";
@@ -73,6 +73,9 @@ import { LinearRing, LineString, MultiLineString, MultiPoint, MultiPolygon, Poin
 import * as jsts from "jsts/dist/jsts.min";
 import BaseEvent from "ol/events/Event";
 import { EventsKey } from "ol/events";
+import { Coordinate } from "ol/coordinate";
+
+import proj4 from "proj4";
 
 /*
  * * Interface
@@ -115,15 +118,21 @@ let targetFeature: Feature | null = null;
 
 let modifyInteraction: Modify | null = null;
 let selectInteraction: Select | null = null;
+let snapInteraction: Snap | null = null;
 let currentOverlay: Overlay | null = null;
 let previewLayer: VectorLayer<VectorSource> | null = null;
 let drawingLineSource: VectorSource | null = null;
 let drawingLineLayer: VectorLayer<VectorSource> | null = null;
+let snapIndicatorLayer: VectorLayer<VectorSource> | null = null;
+let snapIndicatorSource: VectorSource | null = null;
 let clickCount = 0;
 const previewSource = new VectorSource();
 
 let geomListenerKey: EventsKey | null = null;
 let sourceListenerKey: EventsKey | null = null;
+let pointerMoveKey: EventsKey | null = null;
+
+const SNAP_TOLERANCE = 15; // pixels
 
 /*
  * * Refs
@@ -200,6 +209,8 @@ const validateDivision = async () => {
 const cancelDivision = () => {
   clickCount = 0;
   hasDivision.value = false;
+  parcelle1Area.value = null;
+  parcelle2Area.value = null;
   resSource.clear();
   previewSource.clear();
 
@@ -209,6 +220,10 @@ const cancelDivision = () => {
 
   if (drawingLineLayer) {
     props.map.removeLayer(drawingLineLayer);
+  }
+
+  if (snapIndicatorLayer) {
+    props.map.removeLayer(snapIndicatorLayer);
   }
 
   if (currentOverlay) {
@@ -223,7 +238,171 @@ const cancelDivision = () => {
     props.map.removeInteraction(selectInteraction);
   }
 
+  if (snapInteraction) {
+    props.map.removeInteraction(snapInteraction);
+  }
+
+  if (pointerMoveKey) {
+    unByKey(pointerMoveKey);
+    pointerMoveKey = null;
+  }
+
   divideInteraction();
+};
+
+const findClosestPointOnBoundary = (coordinate: Coordinate): Coordinate | null => {
+  if (!targetFeature) return null;
+
+  const polygon = targetFeature.getGeometry() as Polygon;
+  if (!polygon) return null;
+
+  const coordinates = polygon.getCoordinates()[0];
+  let minDistance = Infinity;
+  let closestPoint: Coordinate | null = null;
+
+  for (let i = 0; i < coordinates.length - 1; i++) {
+    const start = coordinates[i];
+    const end = coordinates[i + 1];
+
+    const pointOnSegment = getClosestPointOnSegment(coordinate, start, end);
+    const distance = getDistance(coordinate, pointOnSegment);
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestPoint = pointOnSegment;
+    }
+  }
+
+  return closestPoint;
+};
+
+const getClosestPointOnSegment = (point: Coordinate, start: Coordinate, end: Coordinate): Coordinate => {
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+
+  if (dx === 0 && dy === 0) return start;
+
+  const t = Math.max(0, Math.min(1, ((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / (dx * dx + dy * dy)));
+
+  return [start[0] + t * dx, start[1] + t * dy];
+};
+
+const getDistance = (p1: Coordinate, p2: Coordinate): number => {
+  const dx = p2[0] - p1[0];
+  const dy = p2[1] - p1[1];
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+const extendLineToIntersectPolygon = (lineGeom: LineString): LineString => {
+  const coords = lineGeom.getCoordinates();
+  if (coords.length < 2 || !targetFeature) return lineGeom;
+
+  const polygon = targetFeature.getGeometry() as Polygon;
+  if (!polygon) return lineGeom;
+
+  const prev = coords[coords.length - 2];
+  const last = coords[coords.length - 1];
+
+  const prevMeters = proj4("EPSG:4326", "EPSG:3857", prev);
+  const lastMeters = proj4("EPSG:4326", "EPSG:3857", last);
+
+  const dx = lastMeters[0] - prevMeters[0];
+  const dy = lastMeters[1] - prevMeters[1];
+  const length = Math.sqrt(dx * dx + dy * dy);
+  if (length === 0) return lineGeom;
+
+  const dirX = dx / length;
+  const dirY = dy / length;
+
+  const polygonCoords = polygon.getCoordinates()[0];
+  let closestIntersection: Coordinate | null = null;
+  let minDistance = Infinity;
+
+  for (let i = 0; i < polygonCoords.length - 1; i++) {
+    const segStart = polygonCoords[i];
+    const segEnd = polygonCoords[i + 1];
+
+    const segStartMeters = proj4("EPSG:4326", "EPSG:3857", segStart);
+    const segEndMeters = proj4("EPSG:4326", "EPSG:3857", segEnd);
+
+    const farPointMeters: [number, number] = [lastMeters[0] + dirX * 100000, lastMeters[1] + dirY * 100000];
+
+    const intersection = getLineIntersection(lastMeters, farPointMeters, segStartMeters, segEndMeters);
+
+    if (intersection) {
+      const dist = Math.sqrt(
+        Math.pow(intersection[0] - lastMeters[0], 2) + Math.pow(intersection[1] - lastMeters[1], 2),
+      );
+
+      if (dist < minDistance && dist > 0.1) {
+        minDistance = dist;
+        closestIntersection = intersection;
+      }
+    }
+  }
+
+  if (closestIntersection) {
+    const extensionAfterIntersection = 0.01;
+    const finalPointMeters: [number, number] = [
+      closestIntersection[0] + dirX * extensionAfterIntersection,
+      closestIntersection[1] + dirY * extensionAfterIntersection,
+    ];
+    const finalPoint4326 = proj4("EPSG:3857", "EPSG:4326", finalPointMeters);
+    return new LineString([...coords, finalPoint4326]);
+  }
+
+  const extensionAfterIntersection = 0.01;
+  const extendedEndMeters: [number, number] = [
+    lastMeters[0] + dirX * extensionAfterIntersection,
+    lastMeters[1] + dirY * extensionAfterIntersection,
+  ];
+  const extendedEnd4326 = proj4("EPSG:3857", "EPSG:4326", extendedEndMeters);
+  return new LineString([...coords, extendedEnd4326]);
+};
+
+const getLineIntersection = (
+  p1: [number, number],
+  p2: [number, number],
+  p3: [number, number],
+  p4: [number, number],
+): [number, number] | null => {
+  const x1 = p1[0],
+    y1 = p1[1];
+  const x2 = p2[0],
+    y2 = p2[1];
+  const x3 = p3[0],
+    y3 = p3[1];
+  const x4 = p4[0],
+    y4 = p4[1];
+
+  const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+  if (Math.abs(denom) < 1e-10) return null;
+
+  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+  if (u >= 0 && u <= 1 && t > 0) {
+    return [x1 + t * (x2 - x1), y1 + t * (y2 - y1)];
+  }
+
+  return null;
+};
+
+const isNearBoundary = (coordinate: Coordinate): boolean => {
+  if (!targetFeature) return false;
+
+  const pixel = props.map.getPixelFromCoordinate(coordinate);
+  const closestPoint = findClosestPointOnBoundary(coordinate);
+
+  if (closestPoint) {
+    const closestPixel = props.map.getPixelFromCoordinate(closestPoint);
+    const pixelDistance = Math.sqrt(Math.pow(pixel[0] - closestPixel[0], 2) + Math.pow(pixel[1] - closestPixel[1], 2));
+
+    return pixelDistance <= SNAP_TOLERANCE;
+  }
+
+  return false;
 };
 
 const divideInteraction = (): void => {
@@ -234,7 +413,6 @@ const divideInteraction = (): void => {
       points: 4,
       radius: 7,
     }),
-
     zIndex: 6,
   });
 
@@ -260,6 +438,12 @@ const divideInteraction = (): void => {
     zIndex: 6,
   });
 
+  snapIndicatorSource = new VectorSource();
+  snapIndicatorLayer = new VectorLayer({
+    source: snapIndicatorSource,
+    zIndex: 10,
+  });
+
   const draw = new Draw({
     type: "LineString",
     source: drawingLineSource,
@@ -271,7 +455,47 @@ const divideInteraction = (): void => {
 
   props.map.addLayer(previewLayer);
   props.map.addLayer(drawingLineLayer);
+  props.map.addLayer(snapIndicatorLayer);
   props.map.addInteraction(draw);
+
+  if (targetFeature) {
+    const snapSource = new VectorSource();
+    snapSource.addFeature(targetFeature);
+
+    snapInteraction = new Snap({
+      source: snapSource,
+      pixelTolerance: SNAP_TOLERANCE,
+      edge: true,
+      vertex: true,
+    });
+
+    props.map.addInteraction(snapInteraction);
+  }
+
+  pointerMoveKey = props.map.on("pointermove", (evt: MapBrowserEvent<any>) => {
+    if (!snapIndicatorSource) return;
+
+    snapIndicatorSource.clear();
+
+    const coordinate = evt.coordinate;
+    const pixel = props.map.getPixelFromCoordinate(coordinate);
+
+    const closestPoint = findClosestPointOnBoundary(coordinate);
+
+    if (closestPoint) {
+      const closestPixel = props.map.getPixelFromCoordinate(closestPoint);
+      const pixelDistance = Math.sqrt(
+        Math.pow(pixel[0] - closestPixel[0], 2) + Math.pow(pixel[1] - closestPixel[1], 2),
+      );
+
+      if (pixelDistance <= SNAP_TOLERANCE) {
+        const snapFeature = new Feature({
+          geometry: new Point(closestPoint),
+        });
+        snapIndicatorSource.addFeature(snapFeature);
+      }
+    }
+  });
 
   modifyInteraction = new Modify({
     source: drawingLineSource,
@@ -284,12 +508,19 @@ const divideInteraction = (): void => {
     style: modifyStyle,
   });
 
-  const handleMapClick = (evt: MapBrowserEvent) => {
+  const handleMapClick = (evt: MapBrowserEvent<any>) => {
     if (!targetFeature) return;
 
     const coordinate = evt.coordinate;
-
     const isInsidePolygon = targetFeature.getGeometry()?.intersectsCoordinate(coordinate);
+
+    if (isNearBoundary(coordinate)) {
+      clickCount++;
+      if (clickCount >= 2) {
+        draw.finishDrawing();
+      }
+      return;
+    }
 
     if (!isInsidePolygon) {
       clickCount++;
@@ -303,16 +534,27 @@ const divideInteraction = (): void => {
 
   draw.on("drawstart", (e: DrawEvent) => {
     cleanupPreview(previewSource);
+    clickCount = 0;
 
     e.feature.getGeometry()?.on("change", (evt: BaseEvent) => {
-      updatePreview(evt.target, previewSource);
+      const lineGeom = evt.target as LineString;
+      const extendedLine = extendLineToIntersectPolygon(lineGeom);
+      updatePreview(extendedLine, previewSource);
     });
   });
 
   draw.on("drawend", () => {
     props.map.un("click", handleMapClick);
-
     props.map.removeInteraction(draw);
+
+    const lineFeature = drawingLineSource?.getFeatures()[0];
+    if (lineFeature) {
+      const lineGeom = lineFeature.getGeometry() as LineString;
+      const extendedLine = extendLineToIntersectPolygon(lineGeom);
+      lineFeature.setGeometry(extendedLine);
+      currentGeom.value = extendedLine;
+      updatePreview(extendedLine, previewSource);
+    }
 
     if (selectInteraction) {
       props.map.addInteraction(selectInteraction);
@@ -323,9 +565,11 @@ const divideInteraction = (): void => {
       modifyInteraction.on("modifyend", () => {
         const lineFeature = drawingLineSource?.getFeatures()[0];
         if (lineFeature && lineFeature.getGeometry()) {
-          currentGeom.value = lineFeature.getGeometry() as LineString;
-
-          updatePreview(lineFeature.getGeometry() as LineString, previewSource);
+          const lineGeom = lineFeature.getGeometry() as LineString;
+          const extendedLine = extendLineToIntersectPolygon(lineGeom);
+          lineFeature.setGeometry(extendedLine);
+          currentGeom.value = extendedLine;
+          updatePreview(extendedLine, previewSource);
         }
       });
     }
@@ -434,10 +678,21 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
           newPolygons.push(newFeature);
         });
         hasDivision.value = true;
+      } else {
+        hasDivision.value = false;
+        parcelle1Area.value = null;
+        parcelle2Area.value = null;
       }
     } catch (error) {
       console.warn("Erreur lors du découpage:", error);
+      hasDivision.value = false;
+      parcelle1Area.value = null;
+      parcelle2Area.value = null;
     }
+  } else {
+    hasDivision.value = false;
+    parcelle1Area.value = null;
+    parcelle2Area.value = null;
   }
 
   if (newPolygons.length === 2) {
@@ -472,15 +727,19 @@ const attachPreviewListeners = () => {
   const geom = lineFeature.getGeometry() as LineString;
 
   geomListenerKey = geom.on("change", (evt: BaseEvent) => {
-    currentGeom.value = evt.target as LineString;
-    updatePreview(currentGeom.value, previewSource);
+    const lineGeom = evt.target as LineString;
+    const extendedLine = extendLineToIntersectPolygon(lineGeom);
+    currentGeom.value = extendedLine;
+    updatePreview(extendedLine, previewSource);
   });
 
   sourceListenerKey = drawingLineSource.on("change", () => {
     const f = drawingLineSource?.getFeatures()[0];
     if (f && f.getGeometry()) {
-      currentGeom.value = f.getGeometry() as LineString;
-      updatePreview(currentGeom.value, previewSource);
+      const lineGeom = f.getGeometry() as LineString;
+      const extendedLine = extendLineToIntersectPolygon(lineGeom);
+      currentGeom.value = extendedLine;
+      updatePreview(extendedLine, previewSource);
     }
   });
 };
@@ -501,6 +760,7 @@ const cleanupPreview = (previewSource: VectorSource): void => {
 const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
 };
+
 const getTargetFeature = (): Feature | null => {
   const features = new GeoJSON().readFeatures(store.collection, {});
 
@@ -535,7 +795,6 @@ watch(
  */
 onMounted(() => {
   targetFeature = getTargetFeature();
-
   divideInteraction();
 });
 
@@ -548,15 +807,25 @@ onUnmounted(() => {
     props.map.removeLayer(drawingLineLayer);
   }
 
-  if (drawingLineLayer) {
-    props.map.removeLayer(drawingLineLayer);
+  if (snapIndicatorLayer) {
+    props.map.removeLayer(snapIndicatorLayer);
   }
 
   if (currentOverlay) {
     props.map.removeOverlay(currentOverlay);
   }
+
+  if (snapInteraction) {
+    props.map.removeInteraction(snapInteraction);
+  }
+
+  if (pointerMoveKey) {
+    unByKey(pointerMoveKey);
+    pointerMoveKey = null;
+  }
 });
 </script>
+
 <style scoped>
 :deep(button[class^="ri"]),
 :deep(button[class*=" ri"]) {
