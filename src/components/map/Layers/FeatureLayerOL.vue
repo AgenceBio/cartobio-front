@@ -124,6 +124,7 @@ import drawCursor from "@/assets/logos-edit/pen-nib-line.svg";
 import cropCursor from "@/assets/logos-edit/crop-line.svg";
 import scissorsCursor from "@/assets/logos-edit/scissors-cut-line.svg";
 import editCursor from "@/assets/logos-edit/edit.svg";
+import addCursor from "@/assets/logos-edit/add.svg";
 
 /*
  * * Interface
@@ -561,7 +562,11 @@ const getCursor = (mode: string) => {
         }
         break;
       case "draw":
-        currentCursor.value = `url("${drawCursor}"), pointer`;
+        if ((mapLayers.value.cadastre || mapLayers.value.rpg) && mapParams.value.blockPlan) {
+          currentCursor.value = `url("${addCursor}"), pointer`;
+        } else {
+          currentCursor.value = `url("${drawCursor}"), pointer`;
+        }
         break;
       case "decouper":
         currentCursor.value = `url("${cropCursor}"), pointer`;
@@ -587,6 +592,13 @@ watch(
   () => mapParams.value.currentMode,
   (mode) => {
     getCursor(mode);
+  },
+  { immediate: true },
+);
+watch(
+  () => mapParams.value.blockPlan,
+  () => {
+    getCursor(mapParams.value.currentMode);
   },
   { immediate: true },
 );
