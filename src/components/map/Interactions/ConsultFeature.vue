@@ -12,8 +12,6 @@ import { Style, Fill, Stroke } from "ol/style";
 import { Select } from "ol/interaction";
 import { Feature } from "ol";
 
-// Utils Geom
-
 import { click, platformModifierKey } from "ol/events/condition";
 import { SelectEvent } from "ol/interaction/Select";
 
@@ -25,6 +23,7 @@ interface Props {
   map: Map;
   vectorSource: VectorSource;
   vectorLayer: VectorLayer<VectorSource>;
+  isCompare?: boolean;
 }
 
 /*
@@ -37,7 +36,9 @@ const store = useFeaturesStore();
  * * Props
  */
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  isCompare: false,
+});
 
 /*
  * * Refs
@@ -59,12 +60,10 @@ const emit = defineEmits<{
 watch(
   () => store.selectedIds,
   (newSelectedIds) => {
-    if (!selectInteraction || isInternalUpdate) return;
+    if (!selectInteraction || isInternalUpdate || props.isCompare) return;
 
-    // Clear current selection
     selectInteraction.getFeatures().clear();
 
-    // Add features from store to selection
     if (newSelectedIds && newSelectedIds.length > 0) {
       newSelectedIds.forEach((id) => {
         const feature = props.vectorSource.getFeatureById(id);
@@ -81,6 +80,8 @@ watch(
  * * States fonctions
  */
 onMounted(() => {
+  if (props.isCompare) return;
+
   selectInteraction = new Select({
     condition: click,
     toggleCondition: platformModifierKey, // Ctrl / Cmd
@@ -101,7 +102,7 @@ onMounted(() => {
         if (feature instanceof Feature) {
           clickedFeatures.push(feature);
         }
-        return false; // Continue à chercher d'autres features
+        return false;
       },
       {
         layerFilter: (layer) => layer === props.vectorLayer,
@@ -117,7 +118,6 @@ onMounted(() => {
         .some((f) => f.getId() === clickedId);
 
       if (isAlreadySelected && selectInteraction?.getFeatures().getLength() === 1) {
-        // Réémettre l'événement pour la feature déjà sélectionnée
         emit("selectFeature", clickedId);
       }
     }

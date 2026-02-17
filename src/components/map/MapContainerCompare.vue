@@ -28,13 +28,25 @@
 import { ref, onMounted, provide, shallowRef, onUpdated } from "vue";
 import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
-import { Select } from "ol/interaction";
-import { click } from "ol/events/condition";
+import { defaults as defaultInteractions } from "ol/interaction";
+
+import VectorLayer from "ol/layer/Vector";
+
+interface Props {
+  layerId?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  layerId: "plan-features-layer",
+});
 
 const mapRef = ref<HTMLElement | null>(null);
 const map = shallowRef<Map | null>(null);
 const mapRef2 = ref<HTMLElement | null>(null);
 const map2 = shallowRef<Map | null>(null);
+
+let currentHoveredFeature1 = null;
+let currentHoveredFeature2 = null;
 
 provide("map", map);
 provide("map2", map2);
@@ -48,13 +60,26 @@ const initMap = (): void => {
     zoom: 2,
     constrainResolution: true,
   });
-  map.value = new Map({ controls: [], view });
-  map2.value = new Map({ controls: [], view });
-
-  const select1 = new Select({ condition: click });
-  map.value.addInteraction(select1);
-  const select2 = new Select({ condition: click });
-  map2.value.addInteraction(select2);
+  map.value = new Map({
+    controls: [],
+    view,
+    interactions: defaultInteractions({
+      doubleClickZoom: true,
+      dragPan: true,
+      mouseWheelZoom: true,
+      pinchZoom: true,
+    }),
+  });
+  map2.value = new Map({
+    controls: [],
+    view,
+    interactions: defaultInteractions({
+      doubleClickZoom: true,
+      dragPan: true,
+      mouseWheelZoom: true,
+      pinchZoom: true,
+    }),
+  });
 };
 
 onMounted(() => {
@@ -100,13 +125,44 @@ onMounted(() => {
   }
 });
 
+const getLayer = (mapInstance: Map) => {
+  return mapInstance
+    .getLayers()
+    .getArray()
+    .find((l) => l.get("name") === props.layerId) as VectorLayer<any>;
+};
+
+const detectAndHighlight = (mapInstance: Map, pixel: number[]) => {
+  const layer = getLayer(mapInstance);
+  if (!layer) return null;
+
+  const feature = mapInstance.forEachFeatureAtPixel(pixel, (f, layerCandidate) => {
+    return layerCandidate === layer ? f : null;
+  });
+
+  return feature;
+};
+
+const clearHoverState = () => {
+  if (currentHoveredFeature1) {
+    currentHoveredFeature1.set("onhovered-compare", false);
+    currentHoveredFeature1 = null;
+  }
+  if (currentHoveredFeature2) {
+    currentHoveredFeature2.set("onhovered-compare", false);
+    currentHoveredFeature2 = null;
+  }
+};
+
 const onMouseMove1 = (event: MouseEvent): void => {
   if (!map.value || !map2.value || !mapRef.value) return;
 
   const rect = mapRef.value.getBoundingClientRect();
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
   const coordinate = map.value.getCoordinateFromPixel(pixel);
+  const feature1 = detectAndHighlight(map.value, pixel);
 
+  let feature2 = null;
   if (coordinate) {
     const pixel2 = map2.value.getPixelFromCoordinate(coordinate);
 
@@ -119,8 +175,28 @@ const onMouseMove1 = (event: MouseEvent): void => {
         map: map2.value,
         frameState: map2.value.frameState_,
       });
+      feature2 = detectAndHighlight(map2.value, pixel2);
     }
   }
+
+  // Enlever l'état des anciennes features si on a changé de feature
+  if (feature1 !== currentHoveredFeature1 || feature2 !== currentHoveredFeature2) {
+    clearHoverState();
+  }
+
+  if (feature1) {
+    feature1.set("onhovered-compare", true);
+    currentHoveredFeature1 = feature1;
+  }
+  if (feature2) {
+    feature2.set("onhovered-compare", true);
+    currentHoveredFeature2 = feature2;
+  }
+
+  const layer1 = getLayer(map.value);
+  const layer2 = getLayer(map2.value);
+  layer1?.changed();
+  layer2?.changed();
 };
 
 const onMouseMove2 = (event: MouseEvent): void => {
@@ -129,6 +205,9 @@ const onMouseMove2 = (event: MouseEvent): void => {
   const rect = mapRef2.value.getBoundingClientRect();
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
   const coordinate = map2.value.getCoordinateFromPixel(pixel);
+  const feature2 = detectAndHighlight(map2.value, pixel);
+
+  let feature1 = null;
 
   if (coordinate) {
     const pixel1 = map.value.getPixelFromCoordinate(coordinate);
@@ -142,12 +221,33 @@ const onMouseMove2 = (event: MouseEvent): void => {
         map: map.value,
         frameState: map.value.frameState_,
       });
+      feature1 = detectAndHighlight(map.value, pixel1);
     }
   }
+
+  if (feature1 !== currentHoveredFeature1 || feature2 !== currentHoveredFeature2) {
+    clearHoverState();
+  }
+
+  if (feature1) {
+    feature1.set("onhovered-compare", true);
+    currentHoveredFeature1 = feature1;
+  }
+  if (feature2) {
+    feature2.set("onhovered-compare", true);
+    currentHoveredFeature2 = feature2;
+  }
+
+  const layer1 = getLayer(map.value);
+  const layer2 = getLayer(map2.value);
+  layer1?.changed();
+  layer2?.changed();
 };
 
 const onMouseLeave1 = (): void => {
   if (!map2.value) return;
+
+  clearHoverState();
 
   map2.value.dispatchEvent({
     type: "pointerout",
@@ -155,10 +255,17 @@ const onMouseLeave1 = (): void => {
     coordinate: undefined,
     map: map2.value,
   });
+
+  const layer1 = getLayer(map.value);
+  const layer2 = getLayer(map2.value);
+  layer1?.changed();
+  layer2?.changed();
 };
 
 const onMouseLeave2 = (): void => {
   if (!map.value) return;
+
+  clearHoverState();
 
   map.value.dispatchEvent({
     type: "pointerout",
@@ -166,6 +273,11 @@ const onMouseLeave2 = (): void => {
     coordinate: undefined,
     map: map.value,
   });
+
+  const layer1 = getLayer(map.value);
+  const layer2 = getLayer(map2.value);
+  layer1?.changed();
+  layer2?.changed();
 };
 </script>
 
