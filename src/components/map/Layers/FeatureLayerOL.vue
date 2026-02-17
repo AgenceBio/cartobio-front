@@ -756,6 +756,7 @@ onUnmounted(() => {
   hideHoverOverlay();
   map.value.un("pointermove", handlePointerMove);
   map.value.getTargetElement().removeEventListener("pointerleave", handlePointerLeave);
+  mapParams.value.hasUndo = false;
 });
 </script>
 
