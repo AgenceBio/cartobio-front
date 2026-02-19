@@ -134,6 +134,8 @@ let pointerMoveKey: EventsKey | null = null;
 
 const SNAP_TOLERANCE = 15; // pixels
 
+const neighborStyles: Record<string, any> = {};
+
 /*
  * * Refs
  */
@@ -306,58 +308,87 @@ const extendLineToIntersectPolygon = (lineGeom: LineString): LineString => {
   const prevMeters = proj4("EPSG:4326", "EPSG:3857", prev);
   const lastMeters = proj4("EPSG:4326", "EPSG:3857", last);
 
-  const dx = lastMeters[0] - prevMeters[0];
-  const dy = lastMeters[1] - prevMeters[1];
-  const length = Math.sqrt(dx * dx + dy * dy);
-  if (length === 0) return lineGeom;
+  const dxEnd = lastMeters[0] - prevMeters[0];
+  const dyEnd = lastMeters[1] - prevMeters[1];
+  const lenEnd = Math.sqrt(dxEnd * dxEnd + dyEnd * dyEnd);
 
-  const dirX = dx / length;
-  const dirY = dy / length;
+  const second = coords[1];
+  const first = coords[0];
+
+  const secondMeters = proj4("EPSG:4326", "EPSG:3857", second);
+  const firstMeters = proj4("EPSG:4326", "EPSG:3857", first);
+
+  const dxStart = firstMeters[0] - secondMeters[0];
+  const dyStart = firstMeters[1] - secondMeters[1];
+  const lenStart = Math.sqrt(dxStart * dxStart + dyStart * dyStart);
 
   const polygonCoords = polygon.getCoordinates()[0];
-  let closestIntersection: Coordinate | null = null;
-  let minDistance = Infinity;
+  const extensionAfterIntersection = 0.01;
 
-  for (let i = 0; i < polygonCoords.length - 1; i++) {
-    const segStart = polygonCoords[i];
-    const segEnd = polygonCoords[i + 1];
+  const findClosestIntersection = (
+    originMeters: number[],
+    dirX: number,
+    dirY: number,
+  ): Coordinate | null => {
+    let closestIntersection: Coordinate | null = null;
+    let minDistance = Infinity;
 
-    const segStartMeters = proj4("EPSG:4326", "EPSG:3857", segStart);
-    const segEndMeters = proj4("EPSG:4326", "EPSG:3857", segEnd);
+    for (let i = 0; i < polygonCoords.length - 1; i++) {
+      const segStartMeters = proj4("EPSG:4326", "EPSG:3857", polygonCoords[i]);
+      const segEndMeters = proj4("EPSG:4326", "EPSG:3857", polygonCoords[i + 1]);
 
-    const farPointMeters: [number, number] = [lastMeters[0] + dirX * 100000, lastMeters[1] + dirY * 100000];
+      const farPoint: [number, number] = [
+        originMeters[0] + dirX * 100000,
+        originMeters[1] + dirY * 100000,
+      ];
 
-    const intersection = getLineIntersection(lastMeters, farPointMeters, segStartMeters, segEndMeters);
-
-    if (intersection) {
-      const dist = Math.sqrt(
-        Math.pow(intersection[0] - lastMeters[0], 2) + Math.pow(intersection[1] - lastMeters[1], 2),
+      const intersection = getLineIntersection(
+        originMeters as [number, number],
+        farPoint,
+        segStartMeters as [number, number],
+        segEndMeters as [number, number],
       );
 
-      if (dist < minDistance && dist > 0.1) {
-        minDistance = dist;
-        closestIntersection = intersection;
+      if (intersection) {
+        const dist = Math.sqrt(
+          Math.pow(intersection[0] - originMeters[0], 2) + Math.pow(intersection[1] - originMeters[1], 2),
+        );
+        if (dist < minDistance && dist > 0.1) {
+          minDistance = dist;
+          closestIntersection = intersection;
+        }
       }
     }
-  }
 
-  if (closestIntersection) {
-    const extensionAfterIntersection = 0.01;
-    const finalPointMeters: [number, number] = [
-      closestIntersection[0] + dirX * extensionAfterIntersection,
-      closestIntersection[1] + dirY * extensionAfterIntersection,
+    return closestIntersection;
+  };
+
+  const buildExtendedPoint = (
+    originMeters: number[],
+    dirX: number,
+    dirY: number,
+  ): Coordinate => {
+    const intersection = findClosestIntersection(originMeters, dirX, dirY);
+    if (intersection) {
+      const finalMeters: [number, number] = [
+        intersection[0] + dirX * extensionAfterIntersection,
+        intersection[1] + dirY * extensionAfterIntersection,
+      ];
+      return proj4("EPSG:3857", "EPSG:4326", finalMeters);
+    }
+    const fallbackMeters: [number, number] = [
+      originMeters[0] + dirX * extensionAfterIntersection,
+      originMeters[1] + dirY * extensionAfterIntersection,
     ];
-    const finalPoint4326 = proj4("EPSG:3857", "EPSG:4326", finalPointMeters);
-    return new LineString([...coords, finalPoint4326]);
-  }
+    return proj4("EPSG:3857", "EPSG:4326", fallbackMeters);
+  };
 
-  const extensionAfterIntersection = 0.01;
-  const extendedEndMeters: [number, number] = [
-    lastMeters[0] + dirX * extensionAfterIntersection,
-    lastMeters[1] + dirY * extensionAfterIntersection,
-  ];
-  const extendedEnd4326 = proj4("EPSG:3857", "EPSG:4326", extendedEndMeters);
-  return new LineString([...coords, extendedEnd4326]);
+  if (lenEnd === 0 || lenStart === 0) return lineGeom;
+
+  const extendedEnd = buildExtendedPoint(lastMeters, dxEnd / lenEnd, dyEnd / lenEnd);
+  const extendedStart = buildExtendedPoint(firstMeters, dxStart / lenStart, dyStart / lenStart);
+
+  return new LineString([extendedStart, ...coords.slice(1, -1), extendedEnd]);
 };
 
 const getLineIntersection = (
@@ -777,6 +808,31 @@ const getTargetFeature = (): Feature | null => {
   return null;
 };
 
+const applyDivideStyle = () => {
+  const grayStyle = new Style({
+    stroke: new Stroke({ color: "rgba(150, 150, 150, 0.35)", width: 1 }),
+    fill: new Fill({ color: "rgba(200, 200, 200, 0.1)" }),
+  });
+
+  props.vectorSource.getFeatures().forEach((feature) => {
+    const fid = String(feature.getId() ?? feature.get("id") ?? "");
+    if (fid && fid !== String(store.selectedIds[0])) {
+      neighborStyles[fid] = feature.getStyle();
+      feature.setStyle(grayStyle);
+    }
+  });
+};
+
+const restoreFeatureStyles = () => {
+  props.vectorSource.getFeatures().forEach((feature) => {
+    const fid = String(feature.getId() ?? feature.get("id") ?? "");
+    if (fid && Object.prototype.hasOwnProperty.call(neighborStyles, fid)) {
+      feature.setStyle(neighborStyles[fid]);
+      delete neighborStyles[fid];
+    }
+  });
+};
+
 /*
  * * Watchers
  */
@@ -795,10 +851,14 @@ watch(
  */
 onMounted(() => {
   targetFeature = getTargetFeature();
+
+  applyDivideStyle();
   divideInteraction();
 });
 
 onUnmounted(() => {
+  restoreFeatureStyles();
+
   if (previewLayer) {
     props.map.removeLayer(previewLayer);
   }
