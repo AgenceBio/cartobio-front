@@ -485,16 +485,13 @@ const zoomCommune = (e) => {
 
 const addParcelleCadastraleModal = (e) => {
   if (!e) return;
-
   const format = new GeoJSON();
   const previewFeature = format.readFeature(e) as Feature;
-
   if (!previewFeature) return;
   const properties = e.properties || {};
   const parcelleId =
     properties.id ||
     `${properties.prefixe === "000" ? "" : properties.prefixe}${properties.section}${properties.numero}`;
-
   if (selectedIds.value.includes(parcelleId)) {
     const feature = previewSource.getFeatureById(parcelleId);
     if (feature) {
@@ -505,8 +502,12 @@ const addParcelleCadastraleModal = (e) => {
     previewFeature.setId(parcelleId);
     previewSource.addFeature(previewFeature);
     selectedIds.value.push(parcelleId);
-  }
 
+    const extent = previewFeature.getGeometry()?.getExtent();
+    if (extent) {
+      props.map.getView().fit(extent, { duration: 500, maxZoom: 18 });
+    }
+  }
   showCadastreModal.value = selectedIds.value.length > 0;
 };
 

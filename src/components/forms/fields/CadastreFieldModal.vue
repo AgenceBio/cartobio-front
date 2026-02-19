@@ -88,7 +88,7 @@
           <button class="fr-btn" @click="$emit('close')" ref="autofocusedElement">Annuler</button>
         </li>
         <li>
-          <button class="fr-btn fr-btn--secondary" @click="addParcelleCadastrale()">Ajouter la parcelle</button>
+          <button class="fr-btn fr-btn--secondary" @click="addParcelleCadastrale()">Sélectionner la parcelle</button>
         </li>
       </ul>
     </template>
@@ -188,7 +188,7 @@ const isError = computed(() => !!searchError.value || props.formError);
 // Exposed values
 const inputReference = computed(() =>
   toString({
-    commune: props.commune ?? communeRef.value,
+    commune: communeRef.value,
     prefix: cleanInput(prefix.value),
     section: cleanInput(section.value),
     number: cleanInput(number.value),
@@ -232,7 +232,6 @@ const searchReference = async (event) => {
   } finally {
     isFetchingGeometry.value = false;
   }
-  console.log(featureCollection.features.at(0).properties);
   if (featureCollection.features.length) {
     searchError.value = "";
     feature.value = {
@@ -276,4 +275,11 @@ watch([prefix, section, number], () => {
 
   isFetchingGeometry.value = false;
 });
+
+watch(
+  () => props.commune,
+  (val) => {
+    communeRef.value = val || null;
+  },
+);
 </script>
