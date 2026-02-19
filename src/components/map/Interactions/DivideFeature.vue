@@ -325,11 +325,7 @@ const extendLineToIntersectPolygon = (lineGeom: LineString): LineString => {
   const polygonCoords = polygon.getCoordinates()[0];
   const extensionAfterIntersection = 0.01;
 
-  const findClosestIntersection = (
-    originMeters: number[],
-    dirX: number,
-    dirY: number,
-  ): Coordinate | null => {
+  const findClosestIntersection = (originMeters: number[], dirX: number, dirY: number): Coordinate | null => {
     let closestIntersection: Coordinate | null = null;
     let minDistance = Infinity;
 
@@ -337,10 +333,7 @@ const extendLineToIntersectPolygon = (lineGeom: LineString): LineString => {
       const segStartMeters = proj4("EPSG:4326", "EPSG:3857", polygonCoords[i]);
       const segEndMeters = proj4("EPSG:4326", "EPSG:3857", polygonCoords[i + 1]);
 
-      const farPoint: [number, number] = [
-        originMeters[0] + dirX * 100000,
-        originMeters[1] + dirY * 100000,
-      ];
+      const farPoint: [number, number] = [originMeters[0] + dirX * 100000, originMeters[1] + dirY * 100000];
 
       const intersection = getLineIntersection(
         originMeters as [number, number],
@@ -363,11 +356,7 @@ const extendLineToIntersectPolygon = (lineGeom: LineString): LineString => {
     return closestIntersection;
   };
 
-  const buildExtendedPoint = (
-    originMeters: number[],
-    dirX: number,
-    dirY: number,
-  ): Coordinate => {
+  const buildExtendedPoint = (originMeters: number[], dirX: number, dirY: number): Coordinate => {
     const intersection = findClosestIntersection(originMeters, dirX, dirY);
     if (intersection) {
       const finalMeters: [number, number] = [
