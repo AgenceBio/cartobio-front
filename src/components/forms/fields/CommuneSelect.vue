@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { Fragment, h, onMounted, ref, render } from "vue";
+import { Fragment, h, onMounted, ref, render, watch } from "vue";
 import { autocomplete } from "@algolia/autocomplete-js";
 import "@algolia/autocomplete-theme-classic";
 import axios, { AxiosError } from "axios";
@@ -37,6 +37,20 @@ const updateFieldFromModel = async (value) => {
     throw e;
   }
 };
+
+watch(
+  () => props.modelValue,
+  async (value) => {
+    if (!setQueryRef.value) {
+      return;
+    }
+    if (!value) {
+      setQueryRef.value("");
+      return;
+    }
+    await updateFieldFromModel(value);
+  },
+);
 
 onMounted(async () => {
   const { setQuery } = autocomplete({
