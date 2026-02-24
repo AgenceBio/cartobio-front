@@ -241,6 +241,7 @@ const searchReference = async (event) => {
         prefixe: featureCollection.features.at(0).properties.districtcode,
         section: cleanPrefix(featureCollection.features.at(0).properties.section),
         numero: cleanPrefix(featureCollection.features.at(0).properties.number),
+        commune: communeRef.value,
       },
     };
   } else {
