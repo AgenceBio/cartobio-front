@@ -695,41 +695,30 @@ watch(
   { deep: true },
 );
 
-watch(
-  () => props.zoomIn,
-  (featureId) => {
-    if (!featureId) return;
-
-    setTimeout(() => {
-      const feature = features.value.find((f) => f.getId() == featureId);
-      if (!feature) return;
-
-      const featureExtent = feature.getGeometry()?.getExtent();
-      if (!featureExtent || isNaN(featureExtent[0]) || featureExtent[0] === Infinity) return;
-
-      const view = map.value.getView();
-      const viewExtent = view.calculateExtent(map.value.getSize());
-
-      if (!intersects(viewExtent, featureExtent)) {
-        const currentCenter = view.getCenter();
-
-        let dx = 0;
-        let dy = 0;
-
-        if (featureExtent[0] < viewExtent[0]) dx = featureExtent[0] - viewExtent[0];
-        else if (featureExtent[2] > viewExtent[2]) dx = featureExtent[2] - viewExtent[2];
-
-        if (featureExtent[1] < viewExtent[1]) dy = featureExtent[1] - viewExtent[1];
-        else if (featureExtent[3] > viewExtent[3]) dy = featureExtent[3] - viewExtent[3];
-
-        view.animate({
-          center: [currentCenter[0] + dx, currentCenter[1] + dy],
-          duration: 800,
-        });
-      }
-    }, 300);
-  },
-);
+watch([() => props.zoomIn, () => mapParams.value.currentMode], ([featureId], [_]) => {
+  if (!featureId) return;
+  setTimeout(() => {
+    const feature = features.value.find((f) => f.getId() == featureId);
+    if (!feature) return;
+    const featureExtent = feature.getGeometry()?.getExtent();
+    if (!featureExtent || isNaN(featureExtent[0]) || featureExtent[0] === Infinity) return;
+    const view = map.value.getView();
+    const viewExtent = view.calculateExtent(map.value.getSize());
+    if (!intersects(viewExtent, featureExtent)) {
+      const currentCenter = view.getCenter();
+      let dx = 0;
+      let dy = 0;
+      if (featureExtent[0] < viewExtent[0]) dx = featureExtent[0] - viewExtent[0];
+      else if (featureExtent[2] > viewExtent[2]) dx = featureExtent[2] - viewExtent[2];
+      if (featureExtent[1] < viewExtent[1]) dy = featureExtent[1] - viewExtent[1];
+      else if (featureExtent[3] > viewExtent[3]) dy = featureExtent[3] - viewExtent[3];
+      view.animate({
+        center: [currentCenter[0] + dx, currentCenter[1] + dy],
+        duration: 800,
+      });
+    }
+  }, 500);
+});
 
 /**
  * * States fonctions
