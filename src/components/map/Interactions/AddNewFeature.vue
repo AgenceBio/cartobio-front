@@ -507,7 +507,7 @@ const addParcelleCadastraleModal = (e) => {
       props.map.getView().fit(extent, { duration: 500, maxZoom: 18 });
     }
   }
-  selectedCommune.value = null;
+  selectedCommune.value = "";
   showCadastreModal.value = selectedIds.value.length > 0;
 };
 
