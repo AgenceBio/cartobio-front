@@ -509,7 +509,7 @@ const addParcelleCadastraleModal = (e) => {
     }
   }
   if (previewFeature.getProperties().commune != selectedCommune.value) {
-    selectedCommune.value = "";
+    selectedCommune.value = null;
   }
   showCadastreModal.value = selectedIds.value.length > 0;
 };
