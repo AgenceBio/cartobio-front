@@ -139,6 +139,10 @@ const SNAP_TOLERANCE = 15; // pixels
 
 const neighborStyles: Record<string, any> = {};
 
+let snapHighlightSource: VectorSource | null = null;
+let snapHighlightLayer: VectorLayer<VectorSource> | null = null;
+let isSnapActive = false;
+
 /*
  * * Refs
  */
@@ -254,7 +258,36 @@ const cancelDivision = () => {
     pointerMoveKey = null;
   }
 
+  removeSnapHighlight();
   divideInteraction();
+};
+
+/*
+ * * Fonctions : Snap highlight
+ */
+
+const initSnapHighlightLayer = () => {
+  snapHighlightSource = new VectorSource();
+  snapHighlightLayer = new VectorLayer({
+    source: snapHighlightSource,
+    style: new Style({
+      stroke: new Stroke({ color: "rgba(255, 215, 0, 1)", width: 3 }),
+    }),
+    zIndex: 11,
+  });
+  props.map.addLayer(snapHighlightLayer);
+};
+
+const showSnapHighlight = () => {
+  if (!snapHighlightSource || !targetFeature || isSnapActive) return;
+  const highlightFeature = new Feature({ geometry: targetFeature.getGeometry() });
+  snapHighlightSource.addFeature(highlightFeature);
+  isSnapActive = true;
+};
+
+const removeSnapHighlight = () => {
+  snapHighlightSource?.clear();
+  isSnapActive = false;
 };
 
 const findClosestPointOnBoundary = (coordinate: Coordinate): Coordinate | null => {
@@ -518,6 +551,10 @@ const divideInteraction = (): void => {
           geometry: new Point(closestPoint),
         });
         snapIndicatorSource.addFeature(snapFeature);
+
+        showSnapHighlight();
+      } else {
+        removeSnapHighlight();
       }
     }
   });
@@ -843,6 +880,14 @@ const restoreFeatureStyles = () => {
       delete neighborStyles[fid];
     }
   });
+
+  removeSnapHighlight();
+
+  if (snapHighlightLayer) {
+    props.map.removeLayer(snapHighlightLayer);
+    snapHighlightLayer = null;
+    snapHighlightSource = null;
+  }
 };
 
 /*
@@ -865,6 +910,7 @@ onMounted(() => {
   targetFeature = getTargetFeature();
 
   applyDivideStyle();
+  initSnapHighlightLayer();
   divideInteraction();
 });
 
