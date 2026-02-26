@@ -514,9 +514,7 @@ const movePoint = (event: MapBrowserEvent) => {
 
   const pixel = props.map.getPixelFromCoordinate(coordinate);
   const closestPixel = props.map.getPixelFromCoordinate(closestPoint);
-  const pixelDistance = Math.sqrt(
-    Math.pow(pixel[0] - closestPixel[0], 2) + Math.pow(pixel[1] - closestPixel[1], 2),
-  );
+  const pixelDistance = Math.sqrt(Math.pow(pixel[0] - closestPixel[0], 2) + Math.pow(pixel[1] - closestPixel[1], 2));
 
   if (pixelDistance <= SNAP_TOLERANCE) {
     showSnapHighlight();
