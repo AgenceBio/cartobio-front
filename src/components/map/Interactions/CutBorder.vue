@@ -163,6 +163,14 @@ const emit = defineEmits<{
 
 const resSource = new VectorSource();
 
+const SNAP_TOLERANCE = 15;
+
+const neighborStyles: Record<string, any> = {};
+
+let snapHighlightSource: VectorSource | null = null;
+let snapHighlightLayer: VectorLayer<VectorSource> | null = null;
+let isSnapActive = false;
+
 /*
  * * Fonctions :  interactions
  */
@@ -189,6 +197,34 @@ let isDragging = false;
 
 let handleMapClick: () => void;
 let handlePointerMove: (e: MapBrowserEvent) => void;
+
+/*
+ * * Fonctions : Snap highlight
+ */
+
+const initSnapHighlightLayer = () => {
+  snapHighlightSource = new VectorSource();
+  snapHighlightLayer = new VectorLayer({
+    source: snapHighlightSource,
+    style: new Style({
+      stroke: new Stroke({ color: "rgba(255, 215, 0, 1)", width: 3 }),
+    }),
+    zIndex: 11,
+  });
+  props.map.addLayer(snapHighlightLayer);
+};
+
+const showSnapHighlight = () => {
+  if (!snapHighlightSource || !targetFeature || isSnapActive) return;
+  const highlightFeature = new Feature({ geometry: targetFeature.getGeometry() });
+  snapHighlightSource.addFeature(highlightFeature);
+  isSnapActive = true;
+};
+
+const removeSnapHighlight = () => {
+  snapHighlightSource?.clear();
+  isSnapActive = false;
+};
 
 const borderInteraction = (): void => {
   if (!targetFeature) return;
@@ -476,6 +512,18 @@ const movePoint = (event: MapBrowserEvent) => {
   previewStartPointSource.clear();
   previewEndPointSource.clear();
 
+  const pixel = props.map.getPixelFromCoordinate(coordinate);
+  const closestPixel = props.map.getPixelFromCoordinate(closestPoint);
+  const pixelDistance = Math.sqrt(
+    Math.pow(pixel[0] - closestPixel[0], 2) + Math.pow(pixel[1] - closestPixel[1], 2),
+  );
+
+  if (pixelDistance <= SNAP_TOLERANCE) {
+    showSnapHighlight();
+  } else {
+    removeSnapHighlight();
+  }
+
   drawPoints();
 
   const coordinates = geometry?.getCoordinates()[0];
@@ -580,6 +628,7 @@ const resetChoice = () => {
   parcelle2Area.value = 0;
   errorMessage.value = null;
 
+  removeSnapHighlight();
   borderInteraction();
 };
 
@@ -603,14 +652,51 @@ const getTargetFeature = (): Feature | null => {
   return null;
 };
 
+const applyBorderStyle = () => {
+  const grayStyle = new Style({
+    stroke: new Stroke({ color: "rgba(150, 150, 150, 0.35)", width: 1 }),
+    fill: new Fill({ color: "rgba(200, 200, 200, 0.1)" }),
+  });
+
+  props.vectorSource.getFeatures().forEach((feature) => {
+    const fid = String(feature.getId() ?? feature.get("id") ?? "");
+    if (fid && fid !== String(store.selectedIds[0])) {
+      neighborStyles[fid] = feature.getStyle();
+      feature.setStyle(grayStyle);
+    }
+  });
+};
+
+const restoreFeatureStyles = () => {
+  props.vectorSource.getFeatures().forEach((feature) => {
+    const fid = String(feature.getId() ?? feature.get("id") ?? "");
+    if (fid && Object.prototype.hasOwnProperty.call(neighborStyles, fid)) {
+      feature.setStyle(neighborStyles[fid]);
+      delete neighborStyles[fid];
+    }
+  });
+
+  removeSnapHighlight();
+
+  if (snapHighlightLayer) {
+    props.map.removeLayer(snapHighlightLayer);
+    snapHighlightLayer = null;
+    snapHighlightSource = null;
+  }
+};
+
 /**
  * * States fonctions
  */
 onMounted(() => {
   targetFeature = getTargetFeature();
+  applyBorderStyle();
+  initSnapHighlightLayer();
   borderInteraction();
 });
 onUnmounted(() => {
+  restoreFeatureStyles();
+
   if (previewClosestPointLayer) {
     props.map.removeLayer(previewClosestPointLayer);
   }
