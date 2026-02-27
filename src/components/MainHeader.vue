@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="fr-skiplinks">
-      <nav role="navigation" aria-label="Accès rapide" class="fr-container">
+      <nav aria-label="Accès rapide" class="fr-container">
         <ul class="fr-skiplinks__list">
           <li>
             <a class="fr-link" href="#header">En-tête</a>
@@ -135,9 +135,8 @@
                 </div>
               </div>
 
-              <!-- Header hors page exploitations -->
               <div class="fr-header__tools-links" v-else>
-                <ul class="fr-btns-group" id="header-navigation" role="navigation">
+                <ul class="fr-btns-group" id="header-navigation">
                   <li class="tool-grandpublic" v-if="isLogged">
                     <router-link
                       class="fr-btn fr-mr-1w fr-icon--sm fr-icon-arrow-left-line"
@@ -165,7 +164,6 @@
                   </li>
                   <li
                     class="tool-username"
-                    aria-hidden="true"
                     v-if="isLogged"
                     @focusout="handleFocusOut($event, closeMonEspace)"
                   >
@@ -214,7 +212,6 @@
                     <router-link
                       to="/login"
                       class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
-                      aria-role="button"
                     >
                       Me connecter
                     </router-link>
@@ -241,7 +238,7 @@
           >
             Fermer
           </button>
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+          <nav class="fr-nav" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item" v-if="isLogged">
                 <router-link
@@ -294,7 +291,6 @@
                 <router-link
                   v-else
                   to="/login"
-                  aria-role="button"
                   class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill"
                 >
                   Me connecter
@@ -353,14 +349,14 @@
         "
       >
         <div class="fr-container">
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+          <nav class="fr-nav" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
                 <router-link to="/" class="fr-nav__link"> Accueil </router-link>
               </li>
               <li class="fr-nav__item" @focusout="handleFocusOut($event, () => (isOpenCartoBio = false))">
                 <button
-                  id="navigation-01"
+                  id="btn-navigation-cartobio"
                   :aria-expanded="isOpenCartoBio"
                   aria-controls="navigation-01"
                   type="button"
@@ -394,7 +390,7 @@
               </li>
               <li class="fr-nav__item" @focusout="handleFocusOut($event, () => (isOpenHelp = false))">
                 <button
-                  id="navigation-02"
+                  id="btn-navigation-aide"
                   :aria-expanded="isOpenHelp"
                   aria-controls="navigation-02"
                   type="button"
@@ -436,7 +432,7 @@
         class="fr-container"
         v-if="isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*'))"
       >
-        <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
+        <nav class="fr-nav" id="header-navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
               <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Accueil</router-link>
@@ -455,7 +451,7 @@
               <button
                 id="navigation-oc-help"
                 :aria-expanded="isOpenHelpOc"
-                aria-controls="navigation-oc-help"
+                aria-controls="panel-navigation-oc-help"
                 type="button"
                 class="fr-nav__btn"
                 @click="toggleHelpOc"
@@ -465,7 +461,7 @@
               </button>
               <div
                 class="fr-collapse fr-menu"
-                id="navigation-oc-help"
+                id="panel-navigation-oc-help"
                 :class="{ 'fr-collapse--expanded': isOpenHelpOc }"
               >
                 <ul class="fr-menu__list">
@@ -497,7 +493,7 @@
         class="fr-container"
         v-if="isAgri && !isMobile && (isActive('/exploitations/*') || isActive('/exploitations'))"
       >
-        <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
+        <nav class="fr-nav" id="header-navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
               <router-link to="/exploitations" class="fr-nav__link">Accueil</router-link>
@@ -514,7 +510,7 @@
               <button
                 id="navigation-agri-help"
                 :aria-expanded="isOpenHelpAgri"
-                aria-controls="navigation-agri-help"
+                aria-controls="panel-navigation-agri-help"
                 type="button"
                 class="fr-nav__btn"
                 @click="toggleHelpAgri"
@@ -524,7 +520,7 @@
               </button>
               <div
                 class="fr-collapse fr-menu"
-                id="navigation-agri-help"
+                id="panel-navigation-agri-help"
                 :class="{ 'fr-collapse--expanded': isOpenHelpAgri }"
               >
                 <ul class="fr-menu__list">
