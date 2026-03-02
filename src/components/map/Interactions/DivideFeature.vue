@@ -7,7 +7,7 @@
       </div>
       <button
         class="fr-btn fr-btn--sm fr-icon-check-line fr-btn--icon-right"
-        :disabled="!hasDivision"
+        :disabled="!hasDivision || !isDrawingComplete"
         @click="validateDivision"
       >
         Découper
@@ -105,7 +105,10 @@ const { params: mapParams } = storeToRefs(preferences);
 
 // Refs division
 const hasDivision = ref<boolean>(false);
+const isDrawingComplete = ref<boolean>(false);
 const currentGeom = ref<LineString | null>(null);
+
+let drawingInProgress = false;
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
@@ -135,6 +138,10 @@ let pointerMoveKey: EventsKey | null = null;
 const SNAP_TOLERANCE = 15; // pixels
 
 const neighborStyles: Record<string, any> = {};
+
+let snapHighlightSource: VectorSource | null = null;
+let snapHighlightLayer: VectorLayer<VectorSource> | null = null;
+let isSnapActive = false;
 
 /*
  * * Refs
@@ -211,6 +218,8 @@ const validateDivision = async () => {
 const cancelDivision = () => {
   clickCount = 0;
   hasDivision.value = false;
+  isDrawingComplete.value = false;
+  drawingInProgress = false;
   parcelle1Area.value = null;
   parcelle2Area.value = null;
   resSource.clear();
@@ -249,7 +258,36 @@ const cancelDivision = () => {
     pointerMoveKey = null;
   }
 
+  removeSnapHighlight();
   divideInteraction();
+};
+
+/*
+ * * Fonctions : Snap highlight
+ */
+
+const initSnapHighlightLayer = () => {
+  snapHighlightSource = new VectorSource();
+  snapHighlightLayer = new VectorLayer({
+    source: snapHighlightSource,
+    style: new Style({
+      stroke: new Stroke({ color: "rgba(255, 215, 0, 1)", width: 3 }),
+    }),
+    zIndex: 11,
+  });
+  props.map.addLayer(snapHighlightLayer);
+};
+
+const showSnapHighlight = () => {
+  if (!snapHighlightSource || !targetFeature || isSnapActive) return;
+  const highlightFeature = new Feature({ geometry: targetFeature.getGeometry() });
+  snapHighlightSource.addFeature(highlightFeature);
+  isSnapActive = true;
+};
+
+const removeSnapHighlight = () => {
+  snapHighlightSource?.clear();
+  isSnapActive = false;
 };
 
 const findClosestPointOnBoundary = (coordinate: Coordinate): Coordinate | null => {
@@ -513,6 +551,10 @@ const divideInteraction = (): void => {
           geometry: new Point(closestPoint),
         });
         snapIndicatorSource.addFeature(snapFeature);
+
+        showSnapHighlight();
+      } else {
+        removeSnapHighlight();
       }
     }
   });
@@ -555,6 +597,8 @@ const divideInteraction = (): void => {
   draw.on("drawstart", (e: DrawEvent) => {
     cleanupPreview(previewSource);
     clickCount = 0;
+    isDrawingComplete.value = false;
+    drawingInProgress = true;
 
     e.feature.getGeometry()?.on("change", (evt: BaseEvent) => {
       const lineGeom = evt.target as LineString;
@@ -563,11 +607,13 @@ const divideInteraction = (): void => {
     });
   });
 
-  draw.on("drawend", () => {
+  draw.on("drawend", (e: DrawEvent) => {
     props.map.un("click", handleMapClick);
     props.map.removeInteraction(draw);
+    isDrawingComplete.value = true;
+    drawingInProgress = false;
 
-    const lineFeature = drawingLineSource?.getFeatures()[0];
+    const lineFeature = e.feature;
     if (lineFeature) {
       const lineGeom = lineFeature.getGeometry() as LineString;
       const extendedLine = extendLineToIntersectPolygon(lineGeom);
@@ -607,6 +653,20 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
   if (currentOverlay) {
     props.map.removeOverlay(currentOverlay);
     currentOverlay = null;
+  }
+
+  if (!drawingInProgress) {
+    const extendedLinePreviewStyle = new Style({
+      stroke: new Stroke({
+        color: "rgba(247, 103, 239, 0.85)",
+        width: 2,
+        lineDash: [6, 8],
+      }),
+      zIndex: 5,
+    });
+    const extendedLineFeature = new Feature({ geometry: lineGeom });
+    extendedLineFeature.setStyle(extendedLinePreviewStyle);
+    previewSource.addFeature(extendedLineFeature);
   }
 
   const parser = new jsts.io.OL3Parser();
@@ -820,6 +880,14 @@ const restoreFeatureStyles = () => {
       delete neighborStyles[fid];
     }
   });
+
+  removeSnapHighlight();
+
+  if (snapHighlightLayer) {
+    props.map.removeLayer(snapHighlightLayer);
+    snapHighlightLayer = null;
+    snapHighlightSource = null;
+  }
 };
 
 /*
@@ -842,6 +910,7 @@ onMounted(() => {
   targetFeature = getTargetFeature();
 
   applyDivideStyle();
+  initSnapHighlightLayer();
   divideInteraction();
 });
 
