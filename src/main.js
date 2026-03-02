@@ -180,6 +180,10 @@ router.beforeEach(async (to) => {
     }
 
     if (error?.response?.status === 401 && userStore.isLogged) {
+      const unsubscribe = router.afterEach(() => {
+        unsubscribe();
+        toast.error("Vous n'avez pas les droits pour accéder à cette page.");
+      });
       return { path: "/login", replace: true };
     }
 
@@ -212,10 +216,6 @@ router.beforeEach(async (to) => {
     const path = userStore.isOc || userStore.isAgri ? "/pro" : "/";
     await userStore.logout();
     return { path };
-  }
-
-  if (to.path === "/login" && userStore.isLogged) {
-    return { path: userStore.startPage, replace: true };
   }
 
   if (to.meta.requiresAuth && !userStore.isLogged) {
