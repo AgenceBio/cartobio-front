@@ -155,7 +155,6 @@ export const useOperatorStore = defineStore("operator", () => {
         throw e;
       }
 
-
       recordsData = recordsData.map((serverR) =>
         storage.syncQueues[serverR.record_id]
           ? storage.operators[numeroBio]?.records.find((storageR) => storageR.record_id === serverR.record_id) ||
