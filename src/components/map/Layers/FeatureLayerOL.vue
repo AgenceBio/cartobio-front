@@ -695,7 +695,7 @@ watch(
   { deep: true },
 );
 
-watch([() => props.zoomIn, () => mapParams.value.currentMode], ([featureId], [_]) => {
+watch([() => props.zoomIn, () => mapParams.value.currentMode], ([featureId]) => {
   if (!featureId) return;
   setTimeout(() => {
     const feature = features.value.find((f) => f.getId() == featureId);
