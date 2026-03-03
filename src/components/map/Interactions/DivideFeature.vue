@@ -15,10 +15,9 @@
       <div class="vr" />
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-        :disabled="!hasDivision"
-        :aria-disabled="!hasDivision"
+        :disabled="!hasDivision && !isDrawingComplete && !drawingInProgress"
         @click="cancelDivision"
-        v-if="hasDivision"
+        v-if="hasDivision || isDrawingComplete || drawingInProgress"
       >
         Annuler
       </button>
@@ -108,7 +107,7 @@ const hasDivision = ref<boolean>(false);
 const isDrawingComplete = ref<boolean>(false);
 const currentGeom = ref<LineString | null>(null);
 
-let drawingInProgress = false;
+const drawingInProgress = ref<boolean>(false);
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
@@ -134,6 +133,9 @@ const previewSource = new VectorSource();
 let geomListenerKey: EventsKey | null = null;
 let sourceListenerKey: EventsKey | null = null;
 let pointerMoveKey: EventsKey | null = null;
+
+let drawInteraction: Draw | null = null;
+let currentMapClickHandler: ((evt: MapBrowserEvent<any>) => void) | null = null;
 
 const SNAP_TOLERANCE = 15; // pixels
 
@@ -219,11 +221,21 @@ const cancelDivision = () => {
   clickCount = 0;
   hasDivision.value = false;
   isDrawingComplete.value = false;
-  drawingInProgress = false;
+  drawingInProgress.value = false;
   parcelle1Area.value = null;
   parcelle2Area.value = null;
   resSource.clear();
   previewSource.clear();
+
+  if (currentMapClickHandler) {
+    props.map.un("click", currentMapClickHandler);
+    currentMapClickHandler = null;
+  }
+
+  if (drawInteraction) {
+    props.map.removeInteraction(drawInteraction);
+    drawInteraction = null;
+  }
 
   if (previewLayer) {
     props.map.removeLayer(previewLayer);
@@ -509,6 +521,8 @@ const divideInteraction = (): void => {
     style: [lineStyle],
   });
 
+  drawInteraction = draw;
+
   clickCount = 0;
 
   props.map.addLayer(previewLayer);
@@ -547,11 +561,6 @@ const divideInteraction = (): void => {
       );
 
       if (pixelDistance <= SNAP_TOLERANCE) {
-        const snapFeature = new Feature({
-          geometry: new Point(closestPoint),
-        });
-        snapIndicatorSource.addFeature(snapFeature);
-
         showSnapHighlight();
       } else {
         removeSnapHighlight();
@@ -592,13 +601,14 @@ const divideInteraction = (): void => {
     }
   };
 
+  currentMapClickHandler = handleMapClick;
   props.map.on("click", handleMapClick);
 
   draw.on("drawstart", (e: DrawEvent) => {
     cleanupPreview(previewSource);
     clickCount = 0;
     isDrawingComplete.value = false;
-    drawingInProgress = true;
+    drawingInProgress.value = true;
 
     e.feature.getGeometry()?.on("change", (evt: BaseEvent) => {
       const lineGeom = evt.target as LineString;
@@ -609,9 +619,11 @@ const divideInteraction = (): void => {
 
   draw.on("drawend", (e: DrawEvent) => {
     props.map.un("click", handleMapClick);
+    currentMapClickHandler = null;
     props.map.removeInteraction(draw);
+    drawInteraction = null;
     isDrawingComplete.value = true;
-    drawingInProgress = false;
+    drawingInProgress.value = false;
 
     const lineFeature = e.feature;
     if (lineFeature) {
@@ -655,7 +667,7 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
     currentOverlay = null;
   }
 
-  if (!drawingInProgress) {
+  if (!drawingInProgress.value) {
     const extendedLinePreviewStyle = new Style({
       stroke: new Stroke({
         color: "rgba(247, 103, 239, 0.85)",
