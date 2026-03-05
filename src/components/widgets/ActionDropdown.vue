@@ -68,13 +68,22 @@ const handleMenuClick = (event) => {
   }
 };
 
-const cancelKeyStroke = onKeyStroke("Escape", () => {
-  show.value = false;
-});
+function handleMenuTabKey(event) {
+  if (event.key !== "Tab" || event.shiftKey) return;
 
-const cancelClickOutside = onClickOutside(actionsMenuRef, () => {
-  show.value = false;
-});
+  const focusables = Array.from(
+    actionsMenuRef.value?.querySelectorAll('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])') ?? [],
+  );
+
+  if (!focusables.length) return;
+
+  if (document.activeElement === focusables[focusables.length - 1]) {
+    show.value = false;
+  }
+}
+
+const cancelKeyStroke = onKeyStroke("Escape", () => (show.value = false));
+const cancelClickOutside = onClickOutside(actionsMenuRef, () => (show.value = false));
 
 onBeforeUnmount(() => {
   cancelClickOutside();
@@ -118,6 +127,7 @@ useHead(() => ({
             'fr-btns-group': !props.smallList,
           }"
           @click="handleMenuClick"
+          @keydown="handleMenuTabKey"
         >
           <slot />
         </ul>

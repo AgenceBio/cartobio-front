@@ -2,24 +2,30 @@
   <header class="fr-mb-2w fr-pr-4v">
     <div class="fr-grid-row fr-grid-row--middle header fr-py-1w" id="headerRecord">
       <div class="fr-grid-row fr-text--xs">
-        <p class="exploit-name fr-text--sm fr-my-auto fr-pb-0" @click="redirectToParcellaire()">
+        <button
+          type="button"
+          class="exploit-name fr-btn fr-btn--tertiary-no-outline fr-text--sm fr-my-auto fr-pb-0"
+          @click="redirectToParcellaire()"
+        >
           <b>{{ operator.nom }}</b>
-        </p>
+        </button>
         <template v-if="permissions.isOc">
           <button
             v-if="operatorStore.operator.epingle"
+            type="button"
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
             @click="unpin(operatorStore.operator.numeroBio)"
-            aria-label="Désepingler le parcellaire"
+            aria-label="Désépingler le parcellaire"
             v-tooltip="tooltips.unpin"
           >
             <i class="ri-pushpin-fill" aria-hidden="true" />
           </button>
           <button
             v-else
+            type="button"
             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-0"
             @click="pin(operatorStore.operator.numeroBio)"
-            aria-label="Epingler le parcellaire"
+            aria-label="Épingler le parcellaire"
             v-tooltip="tooltips.pin"
           >
             <i class="ri-pushpin-line" aria-hidden="true" />
@@ -27,25 +33,43 @@
         </template>
       </div>
       <fieldset class="fr-segmented fr-segmented--sm" v-if="modelOnglet === 'fullTab'">
+        <legend class="fr-sr-only">Mode d'affichage</legend>
         <div class="fr-segmented__elements">
-          <div
-            class="fr-segmented__element"
-            aria-label="Vue partagée tableau / carte"
-            v-tooltip="{ text: 'Vue partagée tableau / carte' }"
-          >
-            <input type="radio" id="segmented-1-1" name="segmented-1" value="split" v-model="modelOnglet" />
+          <div class="fr-segmented__element" v-tooltip="{ text: 'Vue partagée tableau / carte' }">
+            <input
+              type="radio"
+              id="segmented-1-1"
+              name="segmented-1"
+              value="split"
+              v-model="modelOnglet"
+              aria-label="Vue partagée tableau / carte"
+            />
             <label class="fr-label" for="segmented-1-1">
               <span class="ri-layout-column-line fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
-          <div class="fr-segmented__element" aria-label="Vue tableau" v-tooltip="{ text: 'Vue tableau' }">
-            <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
+          <div class="fr-segmented__element" v-tooltip="{ text: 'Vue tableau' }">
+            <input
+              value="fullTab"
+              type="radio"
+              id="segmented-1-2"
+              name="segmented-1"
+              v-model="modelOnglet"
+              aria-label="Vue tableau"
+            />
             <label class="fr-label" for="segmented-1-2">
               <span class="fr-icon-list-unordered fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
-          <div class="fr-segmented__element" aria-label="Vue carte" v-tooltip="{ text: 'Vue carte' }">
-            <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
+          <div class="fr-segmented__element" v-tooltip="{ text: 'Vue carte' }">
+            <input
+              type="radio"
+              id="segmented-1-3"
+              name="segmented-1"
+              value="fullMap"
+              v-model="modelOnglet"
+              aria-label="Vue carte"
+            />
             <label class="fr-label" for="segmented-1-3">
               <span class="fr-icon-road-map-line fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
@@ -65,7 +89,7 @@
                 : record.version_name
             }}
           </b>
-
+          <label for="select-version" class="fr-sr-only">Sélectionner une version de parcellaire</label>
           <select
             class="version-name fr-ml-2w"
             name="select-version"
@@ -79,17 +103,13 @@
           </select>
         </div>
         <div class="margin-left">
-          <span
+          <button
+            type="button"
             class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
             :class="{ 'fr-tag--disabled': record.certification_state !== 'CERTIFIED' }"
             :disabled="record.certification_state !== 'CERTIFIED'"
-            v-tooltip="{
-              text:
-                record.certification_state === 'CERTIFIED'
-                  ? 'Télécharger votre attestation du parcellaire'
-                  : 'Non disponible car votre parcellaire n\'a pas encore été certifié par votre OC.',
-              position: 'top',
-            }"
+            :aria-disabled="record.certification_state !== 'CERTIFIED'"
+            v-tooltip="record.certification_state !== 'CERTIFIED' ? tooltips.disabledTag : {}"
             @click="
               () => {
                 if (record.certification_state === 'CERTIFIED') {
@@ -100,7 +120,7 @@
           >
             <span class="fr-icon-file-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
             Attestation
-          </span>
+          </button>
           <span
             v-if="storage.syncQueues[record.record_id]"
             class="fr-my-auto fr-icon-refresh-line fr-icon--sm"
@@ -294,7 +314,7 @@ const modelOnglet = ref(props.stateFS);
 
 const tooltips = {
   pin: { text: "Épingler le parcellaire", position: "top" },
-  unpin: { text: "Désepingler le parcellaire", position: "top" },
+  unpin: { text: "Désépingler le parcellaire", position: "top" },
   selectVersion: { text: "Sélectionner une version de parcellaire", position: "bottom" },
   exportActions: { text: "Ouvrir le menu d'export", position: "top" },
   actionsParcellaire: { text: "Ouvrir le menu du parcellaire", position: "top" },
@@ -438,6 +458,11 @@ watch(
 .exploit-name {
   color: #161616;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
 }
 
 .attestation-tag {
