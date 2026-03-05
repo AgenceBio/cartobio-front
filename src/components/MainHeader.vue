@@ -162,11 +162,7 @@
                       Carte grand public
                     </a>
                   </li>
-                  <li
-                    class="tool-username"
-                    v-if="isLogged"
-                    @focusout="handleFocusOut($event, closeMonEspace)"
-                  >
+                  <li class="tool-username" v-if="isLogged" @focusout="handleFocusOut($event, closeMonEspace)">
                     <button
                       @click="toggleMonEspace"
                       :class="['fr-btn', 'fr-mr-1w', 'fr-btn--tertiary', roleIcon, 'fr-mb-0']"
@@ -209,10 +205,7 @@
                     </div>
                   </li>
                   <li v-if="!isLogged">
-                    <router-link
-                      to="/login"
-                      class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
-                    >
+                    <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left">
                       Me connecter
                     </router-link>
                   </li>
@@ -238,7 +231,7 @@
           >
             Fermer
           </button>
-          <nav class="fr-nav" aria-label="Menu principal">
+          <nav class="fr-nav" aria-label="Menu principal" role="navigation">
             <ul class="fr-nav__list">
               <li class="fr-nav__item" v-if="isLogged">
                 <router-link
@@ -288,11 +281,7 @@
                 >
                   Déconnexion
                 </router-link>
-                <router-link
-                  v-else
-                  to="/login"
-                  class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill"
-                >
+                <router-link v-else to="/login" class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill">
                   Me connecter
                 </router-link>
               </li>

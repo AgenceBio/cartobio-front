@@ -3,11 +3,13 @@
     <div
       class="fr-grid-row fr-px-4v fr-py-4v groupe-parcelles"
       tabindex="0"
-      aria-expanded="open"
-      aria-controls="group-content-{{ featureGroup.key }}"
+      role="button"
+      :aria-expanded="open"
+      :aria-controls="`group-content-${featureGroup.key}`"
       :class="{ 'groupe-titre-on': open }"
       @click.stop="open = !open"
       @keydown.enter="open = !open"
+      @keydown.space.prevent="open = !open"
     >
       <div class="fr-grid-row groupe-titre fr-mb-0">
         <div class="fr-checkbox-group fr-checkbox-group--sm">
@@ -17,6 +19,7 @@
             :id="'radio-' + featureGroup.key"
             :checked="allSelected"
             @click="toggleFeatureGroup"
+            @keydown.space.stop
           />
           <label
             class="fr-label"
@@ -35,9 +38,14 @@
           />
         </div>
         <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
-          <span v-if="isGroupedByCulture" :class="getCultureIcon(featureGroup.key)" class="fr-mr-1v"></span>
-          <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
+          <span
+            v-if="isGroupedByCulture"
+            :class="getCultureIcon(featureGroup.key)"
+            class="fr-mr-1v"
+            aria-hidden="true"
+          ></span>
           <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v fr-mx-2v fr-text--sm">
+            <span class="fr-sr-only">{{ groupErrors }} parcelles à amender</span>
             <span
               class="fr-icon fr-icon--sm fr-icon-warning-line fr-py-0 icon-error"
               :title="`${groupErrors} parcelles à amender`"
@@ -56,162 +64,178 @@
               : inHa(featureGroup.surface)
           }}
         </span>
-
-        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
+        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :class="{ 'arrow-open': open }" aria-hidden="true" />
       </div>
     </div>
-    <div
-      class="parcelle-carte fr-p-4v fr-mx-4v"
-      :class="{
-        'parcelle--is-new': feature.id === Number(route.query?.new),
-        'background-selected': selectedIds.includes(feature.id),
-        'fr-mt-2v': index === 0,
-        'carte-odd': index % 2 !== 0,
-      }"
-      :id="'parcelle-' + feature.id"
-      :hidden="!open"
-      v-for="(feature, index) in featureGroup.features"
-      :key="feature.id"
-      @mouseover="hoveredId = feature.id"
-      @mouseleave="hoveredId = null"
-      :aria-current="feature.id === hoveredId ? 'location' : null"
-      @click="(event) => clickOn(feature.id, event)"
-    >
-      <div class="parcelle-titre fr-mb-1v">
-        <div class="flex">
-          <div class="fr-checkbox-group fr-checkbox-group--sm" @click.stop.prevent="handleClickChebox(feature.id)">
-            <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" />
-            <label
-              class="fr-label"
-              :for="'radio-' + feature.id"
-              :aria-label="
-                selectedIds.includes(feature.id)
-                  ? `Désélectionner ${featureName(feature)}`
-                  : `Sélectionner ${featureName(feature)}`
-              "
-              v-tooltip="selectedIds.includes(feature.id) ? tooltips.unselectP : tooltips.selectP"
-            />
-          </div>
-          <div v-if="isGroupedByCulture">
-            <div class="fr-mb-0 flex">
-              {{ featureName(feature, { explicitName: false }) }}
-              <p class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
-                Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
-              </p>
-            </div>
-            <p
-              class="fr-hint-text"
-              v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
+    <div :id="`group-content-${featureGroup.key}`">
+      <div
+        class="parcelle-carte fr-p-4v fr-mx-4v"
+        :class="{
+          'parcelle--is-new': feature.id === Number(route.query?.new),
+          'background-selected': selectedIds.includes(feature.id),
+          'fr-mt-2v': index === 0,
+          'carte-odd': index % 2 !== 0,
+        }"
+        :id="'parcelle-' + feature.id"
+        :hidden="!open"
+        v-for="(feature, index) in featureGroup.features"
+        :key="feature.id"
+        @mouseover="hoveredId = feature.id"
+        @mouseleave="hoveredId = null"
+        :aria-current="feature.id === hoveredId ? 'location' : null"
+        role="button"
+        tabindex="0"
+        :aria-label="featureName(feature)"
+        @click="(event) => clickOn(feature.id, event)"
+        @keydown.enter="(event) => clickOn(feature.id, event)"
+        @keydown.space.prevent="(event) => clickOn(feature.id, event)"
+      >
+        <div class="parcelle-titre fr-mb-1v">
+          <div class="flex">
+            <div
+              class="fr-checkbox-group fr-checkbox-group--sm"
+              @click.stop.prevent="handleClickChebox(feature.id)"
+              @keydown.space.stop.prevent="handleClickChebox(feature.id)"
             >
-              {{ featureName(feature, { nameOnly: true }) }}
-            </p>
-          </div>
-          <div v-else>
-            <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-              Multi-cultures <span class="fr-sr-only"> : </span>
-              <span class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
-                Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
-              </span>
-
-              <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-                <span v-if="i" class="fr-sr-only">, </span> {{ cultureLabel(culture) }}
-              </small>
-            </p>
-            <div v-else class="fr-mb-0 flex">
-              {{ cultureLabel(feature.properties.cultures[0]) }}
-              <p class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
-                Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+              <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" />
+              <label
+                class="fr-label"
+                :for="'radio-' + feature.id"
+                :aria-label="
+                  selectedIds.includes(feature.id)
+                    ? `Désélectionner ${featureName(feature)}`
+                    : `Sélectionner ${featureName(feature)}`
+                "
+                v-tooltip="selectedIds.includes(feature.id) ? tooltips.unselectP : tooltips.selectP"
+              />
+            </div>
+            <div v-if="isGroupedByCulture">
+              <div class="fr-mb-0 flex">
+                {{ featureName(feature, { explicitName: false }) }}
+                <p class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
+                  Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+                </p>
+              </div>
+              <p
+                class="fr-hint-text"
+                v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
+              >
+                {{ featureName(feature, { nameOnly: true }) }}
               </p>
             </div>
+            <div v-else>
+              <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
+                Multi-cultures <span class="fr-sr-only"> : </span>
+                <span class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
+                  Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+                </span>
 
-            <p class="fr-hint-text">{{ featureName(feature, { hint: true }) }}</p>
+                <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+                  <span v-if="i" class="fr-sr-only">, </span> {{ cultureLabel(culture) }}
+                </small>
+              </p>
+              <div v-else class="fr-mb-0 flex">
+                {{ cultureLabel(feature.properties.cultures[0]) }}
+                <p class="fr-mb-0 fr-text--sm text-grey-vu" v-if="feature.properties.controlee">
+                  Vu <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span>
+                </p>
+              </div>
+
+              <p class="fr-hint-text">{{ featureName(feature, { hint: true }) }}</p>
+            </div>
+          </div>
+          <div class="parcelle-actions">
+            <template v-if="isGroupedByCulture">
+              <small v-if="feature.properties.cultures.length > 1">Multiculture</small>
+              <button
+                v-else-if="
+                  permissions.canChangeCulture &&
+                  feature.properties.cultures.length === 1 &&
+                  (feature.properties.cultures[0].CPF === undefined ||
+                    feature.properties.cultures[0].CPF === '' ||
+                    !feature.properties.cultures) &&
+                  !(
+                    feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
+                    feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
+                    feature.properties.conversion_niveau === '' ||
+                    feature.properties.conversion_niveau === null
+                  )
+                "
+                class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+                @click.stop.prevent="openCulturesModal(feature.id)"
+                v-tooltip="tooltips.modifCul"
+              >
+                Culture
+              </button>
+            </template>
+            <p class="fr-mb-0">
+              {{
+                !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+                  ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
+                  : inHa(legalProjectionSurface(feature))
+              }}
+            </p>
           </div>
         </div>
-        <div class="parcelle-actions">
-          <template v-if="isGroupedByCulture">
-            <small v-if="feature.properties.cultures.length > 1">Multiculture</small>
+        <div class="fr-grid-row fr-grid-row--middle parcelle-titre fr-ml-5v">
+          <div
+            v-if="
+              (feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
+                feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
+                feature.properties.conversion_niveau === '' ||
+                feature.properties.conversion_niveau === null) &&
+              (feature.properties.cultures[0].CPF === undefined || feature.properties.cultures[0].CPF === '') &&
+              feature.properties.cultures.length === 1
+            "
+          >
             <button
-              v-else-if="
-                permissions.canChangeCulture &&
-                feature.properties.cultures.length === 1 &&
-                (feature.properties.cultures[0].CPF === undefined ||
-                  feature.properties.cultures[0].CPF === '' ||
-                  !feature.properties.cultures) &&
-                !(
-                  feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
-                  feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
-                  feature.properties.conversion_niveau === '' ||
-                  feature.properties.conversion_niveau === null
-                )
-              "
               class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
-              @click.stop.prevent="openCulturesModal(feature.id)"
-              v-tooltip="tooltips.modifCul"
+              @click.stop.prevent="toggleEditForm(feature.id)"
+              v-tooltip="tooltips.complete"
             >
-              Culture
+              Compléter
             </button>
-          </template>
-          <p class="fr-mb-0">
-            {{
-              !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
-                ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
-                : inHa(legalProjectionSurface(feature))
-            }}
-          </p>
-        </div>
-      </div>
-      <div class="fr-grid-row fr-grid-row--middle parcelle-titre fr-ml-5v">
-        <div
-          v-if="
-            (feature.properties.conversion_niveau === LEVEL_MAYBE_AB ||
-              feature.properties.conversion_niveau === LEVEL_UNKNOWN ||
-              feature.properties.conversion_niveau === '' ||
-              feature.properties.conversion_niveau === null) &&
-            (feature.properties.cultures[0].CPF === undefined || feature.properties.cultures[0].CPF === '') &&
-            feature.properties.cultures.length === 1
-          "
-        >
+          </div>
           <button
-            class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
-            @click.stop.prevent="toggleEditForm(feature.id)"
-            v-tooltip="tooltips.complete"
-          >
-            Compléter
-          </button>
-        </div>
-        <div
-          @click.stop.prevent="openNiveauConversionModal(feature.id)"
-          :class="{ clickable: permissions.canChangeConversionLevel }"
-          v-else
-          v-tooltip="tooltips.modifConv"
-        >
-          <ConversionLevel noIcon with-date :feature="feature" labelSelector />
-        </div>
-        <div class="fr-grid-row fr-grid-row--middle gap-10">
-          <p class="fr-sr-only"></p>
-          <span v-if="isRota(feature)" :class="isRota(feature)"><i class="ri-exchange-funds-line"></i>ROTATION</span>
-          <span
-            v-if="feature.properties.commentaires || (permissions.isOc && feature.properties.auditeur_notes)"
-            aria-hidden="true"
-            class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
-          >
-            {{
-              [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
-                (e) => e != null && e !== "",
-              ).length
-            }}
-          </span>
-
-          <p class="fr-mb-0 fr-text--xs text-grey" v-if="getTimeAgo(feature)">Modifié {{ getTimeAgo(feature) }}</p>
-          <button
+            v-else
             type="button"
-            @click.prevent.stop="toggleDeleteForm(feature.id)"
-            :disabled="!permissions.canDeleteFeature"
-            class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line btn--error fr-btn--sm"
-            v-tooltip="tooltips.deleteParcelle"
+            class="conversion-level-btn"
+            :class="{ clickable: permissions.canChangeConversionLevel }"
+            :disabled="!permissions.canChangeConversionLevel"
+            @click.stop.prevent="openNiveauConversionModal(feature.id)"
+            v-tooltip="tooltips.modifConv"
           >
-            Supprimer la parcelle
+            <ConversionLevel noIcon with-date :feature="feature" labelSelector />
           </button>
+          <div class="fr-grid-row fr-grid-row--middle gap-10">
+            <span v-if="isRota(feature)" :class="isRota(feature)">
+              <i class="ri-exchange-funds-line" aria-hidden="true"></i>ROTATION
+            </span>
+            <span
+              v-if="feature.properties.commentaires || (permissions.isOc && feature.properties.auditeur_notes)"
+              role="img"
+              :aria-label="`${[feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter((e) => e != null && e !== '').length} commentaire(s)`"
+              class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
+            >
+              <span aria-hidden="true">{{
+                [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
+                  (e) => e != null && e !== "",
+                ).length
+              }}</span>
+            </span>
+
+            <p class="fr-mb-0 fr-text--xs text-grey" v-if="getTimeAgo(feature)">Modifié {{ getTimeAgo(feature) }}</p>
+            <button
+              type="button"
+              @click.prevent.stop="toggleDeleteForm(feature.id)"
+              :disabled="!permissions.canDeleteFeature"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-line fr-btn--sm"
+              :class="{ 'btn--error': permissions.canDeleteFeature }"
+              v-tooltip="tooltips.deleteParcelle"
+            >
+              Supprimer la parcelle
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -450,7 +474,7 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-.fr-icon[aria-checked="true"]::before {
+.fr-icon.arrow-open::before {
   transform: rotate(180deg);
 }
 
@@ -683,5 +707,18 @@ onMounted(async () => {
 
   border-radius: 12px;
   background: var(--light-decisions-background-background-contrast-grey, #eee);
+}
+
+.conversion-level-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.conversion-level-btn:disabled {
+  cursor: default;
 }
 </style>

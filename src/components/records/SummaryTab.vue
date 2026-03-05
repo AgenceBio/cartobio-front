@@ -3,6 +3,7 @@
     <div class="fr-px-4v">
       <ValidationErrors @switchTab="emit('switch-tab')" />
     </div>
+
     <div class="fr-px-4v" v-if="record.certification_state != 'OPERATOR_DRAFT'">
       <NotesSection />
     </div>
@@ -10,16 +11,22 @@
     <div class="fr-grid-row fr-grid-row--middle space-between fr-mt-4w fr-px-4v">
       <h3 class="fr-text--lead fr-mb-0">Parcelles par niveau de conversion</h3>
     </div>
+
     <div class="fr-grid-row fr-grid-row--middle infos-parcelles fr-px-4v">
       <p class="fr-mb-0">{{ features.length }} parcelles</p>
       <p class="fr-mb-0" v-if="surface">{{ surface }}</p>
     </div>
+
     <div class="carte-container fr-mt-6v">
       <div
         v-for="group in featureGroups"
         :key="group.key"
         class="carte-niveau-conv fr-p-4v"
+        tabindex="0"
+        role="button"
         @click="selectFeatureGroup(group)"
+        @keydown.enter.prevent="selectFeatureGroup(group)"
+        @keydown.space.prevent="selectFeatureGroup(group)"
       >
         <div class="fr-grid-row fr-grid-row--middle space-between fr-mb-6v">
           <p class="fr-mb-0 badge fr-py-1v fr-px-3v" :class="`badge-${getConversionLevel(group.key).shortLabel}`">
@@ -28,8 +35,10 @@
               class="fr-icon--sm"
               :class="getConversionLevel(group.key).icon"
             ></span>
+
             {{ getConversionLevel(group.key).labelSelector ?? getConversionLevel(group.key).shortLabel }}
           </p>
+
           <p class="fr-mb-0 fr-text--md">
             {{
               !isNaN(parseFloat(inHa(legalProjectionSurface(group.features))))
@@ -38,6 +47,7 @@
             }}
           </p>
         </div>
+
         <div class="fr-grid-row align-baseline color-card-parcelles">
           <p class="fr-mb-0 fr-display--xs fr-mr-2v">
             {{ group.features.length }}
@@ -65,7 +75,6 @@ const featuresStore = useFeaturesStore();
 const recordStore = useRecordStore();
 
 const { record } = recordStore;
-// TODO : Passer en Ref afin d'avoir l'update en temps réel
 const { all: features } = storeToRefs(featuresStore);
 
 const featureGroups = computed(() => getFeatureGroups({ features: features.value }, GROUPE_NIVEAU_CONVERSION, null));
