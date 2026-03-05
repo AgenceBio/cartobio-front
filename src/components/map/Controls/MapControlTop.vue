@@ -4,10 +4,14 @@
       <fieldset
         class="fr-segmented fr-segmented--sm coachmark7"
         :class="{ 'vertical-layout': !isMobile && !isWide && isEditing }"
+        role="radiogroup"
+        aria-label="Choix de la vue du parcellaire"
       >
         <div class="fr-segmented__elements">
           <div
             class="fr-segmented__element"
+            role="radio"
+            :aria-checked="modelOnglet === 'split'"
             aria-label="Vue partagée tableau / carte"
             v-tooltip="{ text: 'Vue partagée tableau / carte', position: 'right' }"
           >
@@ -22,13 +26,27 @@
               ></span>
             </label>
           </div>
-          <div class="fr-segmented__element" aria-label="Vue tableau" v-tooltip="{ text: 'Vue tableau' }">
+
+          <div
+            class="fr-segmented__element"
+            role="radio"
+            :aria-checked="modelOnglet === 'fullTab'"
+            aria-label="Vue tableau"
+            v-tooltip="{ text: 'Vue tableau' }"
+          >
             <input value="fullTab" type="radio" id="segmented-1-2" name="segmented-1" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-2">
               <span class="fr-icon-list-unordered fr-icon--sm fr-mx-1w" aria-hidden="true"></span>
             </label>
           </div>
-          <div class="fr-segmented__element" aria-label="Vue carte" v-tooltip="{ text: 'Vue carte' }">
+
+          <div
+            class="fr-segmented__element"
+            role="radio"
+            :aria-checked="modelOnglet === 'fullMap'"
+            aria-label="Vue carte"
+            v-tooltip="{ text: 'Vue carte' }"
+          >
             <input type="radio" id="segmented-1-3" name="segmented-1" value="fullMap" v-model="modelOnglet" />
             <label class="fr-label" for="segmented-1-3">
               <span
@@ -55,26 +73,23 @@
       >
         <i
           class="ri-arrow-left-right-line"
-          :class="{
-            'fr-mr-1w': !isEditing || modelOnglet === 'fullMap',
-          }"
+          :class="{ 'fr-mr-1w': !isEditing || modelOnglet === 'fullMap' }"
           aria-hidden="true"
         />
         <template v-if="!isEditing || modelOnglet === 'fullMap'">Comparer</template>
       </button>
+
       <button
         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-add-line coachmark4"
-        :class="{
-          'fr-btn--icon-left': !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap',
-        }"
+        :class="{ 'fr-btn--icon-left': !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap' }"
         aria-label="Ajouter une nouvelle parcelle"
         v-tooltip="{ text: 'Ajouter une nouvelle parcelle' }"
         :disabled="!permissions.canEditParcellaire || !online"
         @click="handleAction('draw')"
       >
-        <template v-if="!isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
-          >Ajouter une parcelle</template
-        >
+        <template v-if="!isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'">
+          Ajouter une parcelle
+        </template>
       </button>
     </div>
 
@@ -90,10 +105,12 @@
         <i class="ri-shape-line fr-mr-1w" aria-hidden="true" />
         <template
           v-if="(isWide && !isEditing) || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
-          >Mode dessin</template
         >
+          Mode dessin
+        </template>
         <template v-else>Dessin</template>
       </button>
+
       <button
         v-else-if="mapParams.currentMode != 'consult'"
         class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
@@ -103,16 +120,16 @@
         :disabled="!permissions.canEditParcellaire || !online"
       >
         <i class="fr-icon-close-line fr-icon--sm fr-mr-1w" aria-hidden="true" />
-        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'"
-          >Fermer le mode dessin</template
-        >
+        <template v-if="isWide || !isEditing || mapParams.currentMode != 'consult' || modelOnglet === 'fullMap'">
+          Fermer le mode dessin
+        </template>
         <template v-else>Dessin</template>
       </button>
     </div>
   </div>
+
   <ChangeCartoModeModal v-if="targetMode" :target-mode="targetMode" @close="targetMode = null" />
 </template>
-
 <script setup lang="ts">
 import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";

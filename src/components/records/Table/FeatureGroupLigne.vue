@@ -2,8 +2,13 @@
   <div>
     <div
       class="fr-grid-row fr-px-4v fr-py-4v groupe-parcelles"
+      tabindex="0"
+      role="button"
+      :aria-expanded="openLigne"
+      :aria-controls="`group-content-${featureGroup.key}`"
       @click.stop="openLigne = !openLigne"
       @keydown.enter="openLigne = !openLigne"
+      @keydown.space.prevent="openLigne = !openLigne"
       :class="{ 'groupe-titre-on': openLigne }"
     >
       <div class="fr-grid-row groupe-titre fr-mb-0">
@@ -27,9 +32,14 @@
           />
         </div>
         <div class="fr-text fr-text--regular fr-mb-0 fr-grid-row fr-grid-row--middle">
-          <span v-if="isGroupedByCulture" :class="getCultureIcon(featureGroup.key)" class="fr-mr-1v"></span>
-          <p class="fr-sr-only">{{ groupErrors }} parcelles à amender</p>
+          <span
+            v-if="isGroupedByCulture"
+            :class="getCultureIcon(featureGroup.key)"
+            class="fr-mr-1v"
+            aria-hidden="true"
+          ></span>
           <span v-if="groupErrors" class="erreurs fr-grid-row fr-grid-row--middle fr-px-1v fr-mx-2v">
+            <span class="fr-sr-only">{{ groupErrors }} parcelles à amender</span>
             <span
               class="fr-icon fr-icon--sm fr-icon-warning-line fr-py-0 icon-error"
               :title="`${groupErrors} parcelles à amender`"
@@ -48,164 +58,178 @@
               : inHa(featureGroup.surface)
           }}
         </span>
-
-        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="openLigne" aria-role="button" />
+        <span
+          class="fr-icon fr-icon-arrow-down-s-line font-blue"
+          :class="{ 'arrow-open': openLigne }"
+          aria-hidden="true"
+        />
       </div>
     </div>
-    <div
-      class="fr-p-4v fr-mx-4v parcelle-ligne"
-      :class="{ 'fr-grid-row': openLigne, 'fr-mt-2v': index === 0, 'carte-odd': index % 2 !== 0 }"
-      :id="'parcelle-' + feature.id + '-ligne'"
-      :hidden="!openLigne"
-      v-for="(feature, index) in featureGroup.features"
-      :key="feature.id"
-      @click="(event) => clickOn(feature.id, event)"
-    >
-      <div class="fr-col-3 parcelle-info-col">
-        <div class="fr-checkbox-group fr-checkbox-group--sm" @click.stop.prevent="handleClickChebox(feature.id)">
-          <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" />
-          <label
-            class="fr-label"
-            :for="'radio-' + feature.id"
-            :aria-label="
-              selectedIds.includes(feature.id)
-                ? `Désélectionner ${featureName(feature)}`
-                : `Sélectionner ${featureName(feature)}`
-            "
-          />
-        </div>
-        <div class="parcelle-content">
-          <div class="parcelle-name-row">
-            <span>{{ featureName(feature, { explicitName: false }) }}</span>
+    <div :id="`group-content-${featureGroup.key}`">
+      <div
+        class="fr-p-4v fr-mx-4v parcelle-ligne"
+        :class="{ 'fr-grid-row': openLigne, 'fr-mt-2v': index === 0, 'carte-odd': index % 2 !== 0 }"
+        :id="'parcelle-' + feature.id + '-ligne'"
+        :hidden="!openLigne"
+        v-for="(feature, index) in featureGroup.features"
+        :key="feature.id"
+        role="button"
+        tabindex="0"
+        :aria-label="featureName(feature)"
+        @click="(event) => clickOn(feature.id, event)"
+        @keydown.enter="(event) => clickOn(feature.id, event)"
+        @keydown.space.prevent="(event) => clickOn(feature.id, event)"
+      >
+        <div class="fr-col-3 parcelle-info-col">
+          <div class="fr-checkbox-group fr-checkbox-group--sm" @click.stop.prevent="handleClickChebox(feature.id)">
+            <input type="checkbox" :id="'radio-' + feature.id" :checked="selectedIds.includes(feature.id)" />
+            <label
+              class="fr-label"
+              :for="'radio-' + feature.id"
+              :aria-label="
+                selectedIds.includes(feature.id)
+                  ? `Désélectionner ${featureName(feature)}`
+                  : `Sélectionner ${featureName(feature)}`
+              "
+            />
           </div>
-
-          <span
-            class="fr-hint-text"
-            v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
-          >
-            {{ featureName(feature, { nameOnly: true }) }}
-          </span>
-          <div class="flex">
-            <div
-              class="fr-mt-1v"
-              @click="openLigneNiveauConversionModal(feature.id)"
-              :class="{ clickable: permissions.canChangeConversionLevel }"
-            >
-              <ConversionLevel :feature="feature" with-date noIcon />
+          <div class="parcelle-content">
+            <div class="parcelle-name-row">
+              <span>{{ featureName(feature, { explicitName: false }) }}</span>
             </div>
-            <span class="fr-text--xs text-grey-vu fr-ml-1v fr-mt-1v fr-mb-0" v-if="feature.properties.controlee">
-              <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span> Vu
+
+            <span
+              class="fr-hint-text"
+              v-if="featureName(feature, { nameOnly: true }) && feature.properties.NUMERO_I != null"
+            >
+              {{ featureName(feature, { nameOnly: true }) }}
             </span>
+            <div class="flex">
+              <button
+                type="button"
+                class="conversion-level-btn fr-mt-1v"
+                :class="{ clickable: permissions.canChangeConversionLevel }"
+                :disabled="!permissions.canChangeConversionLevel"
+                @click.stop.prevent="openLigneNiveauConversionModal(feature.id)"
+              >
+                <ConversionLevel :feature="feature" with-date noIcon />
+              </button>
+              <span class="fr-text--xs text-grey-vu fr-ml-1v fr-mt-1v fr-mb-0" v-if="feature.properties.controlee">
+                <span aria-hidden="true" class="fr-icon--sm fr-icon-check-line"></span> Vu
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="fr-col-2" v-if="!isGroupedByCulture">
-        <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
-          Multiculture
-          <span class="fr-sr-only"> : </span>
-          <br />
+        <div class="fr-col-2" v-if="!isGroupedByCulture">
+          <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">
+            Multiculture
+            <span class="fr-sr-only"> : </span>
+            <br />
 
-          <small v-for="(culture, i) in feature.properties.cultures" :key="i">
-            <span v-if="i">, </span> {{ cultureLabel(culture) }}
+            <small v-for="(culture, i) in feature.properties.cultures" :key="i">
+              <span v-if="i">, </span> {{ cultureLabel(culture) }}
+            </small>
+          </p>
+          <button
+            v-else-if="
+              permissions.canChangeCulture &&
+              (!feature.properties.cultures ||
+                feature.properties.cultures.length === 0 ||
+                (feature.properties.cultures &&
+                  feature.properties.cultures.length === 1 &&
+                  (feature.properties.cultures[0].CPF === '' || feature.properties.cultures[0].CPF === undefined)))
+            "
+            class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
+            @click.stop.prevent="openLigneCulturesModal(feature.id)"
+          >
+            Culture
+          </button>
+          <p v-else class="fr-mb-0">
+            {{ cultureLabel(feature.properties.cultures[0]) }}
+          </p>
+        </div>
+        <div class="fr-col-2" v-else>
+          <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">Multiculture</p>
+          <p class="fr-my-auto" v-else>-</p>
+        </div>
+        <div v-if="isGroupedByCulture" style="position: relative" class="fr-col-2">
+          <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
+            Variété
           </small>
-        </p>
-        <button
-          v-else-if="
-            permissions.canChangeCulture &&
-            (!feature.properties.cultures ||
-              feature.properties.cultures.length === 0 ||
-              (feature.properties.cultures &&
-                feature.properties.cultures.length === 1 &&
-                (feature.properties.cultures[0].CPF === '' || feature.properties.cultures[0].CPF === undefined)))
-          "
-          class="red radius fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-pencil-line"
-          @click.stop.prevent="openLigneCulturesModal(feature.id)"
-        >
-          Culture
-        </button>
-        <p v-else class="fr-mb-0">
-          {{ cultureLabel(feature.properties.cultures[0]) }}
-        </p>
-      </div>
-      <div class="fr-col-2" v-else>
-        <p v-if="feature.properties.cultures.length > 1" class="fr-mb-0">Multiculture</p>
-        <p class="fr-my-auto" v-else>-</p>
-      </div>
-      <div v-if="isGroupedByCulture" style="position: relative" class="fr-col-2">
-        <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
-          Variété
-        </small>
-        <span
-          v-if="
-            !(
-              feature.properties.cultures &&
-              feature.properties.cultures.length > 0 &&
-              feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label)?.variete
-            )
-          "
-          class="fr-mt-1v"
-        >
-          <small>Non rens.</small>
-        </span>
-        <span v-else class="fr-mt-1v">
-          {{ feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label).variete }}
-        </span>
-      </div>
-      <div v-else style="position: relative" class="fr-col-2">
-        <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
-          Variété
-        </small>
-        <template v-for="(culture, i) in feature.properties.cultures" :key="i">
-          <span v-if="i" class="">, </span>
-          <span class="fr-mt-1v" v-if="!culture.variete"><small>Non rens.</small></span>
-          <span v-else class="fr-mt-1v">{{ culture.variete }}</span>
-        </template>
-      </div>
-      <div class="fr-col-2">
-        <span>
-          {{
-            !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
-              ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
-              : inHa(legalProjectionSurface(feature))
-          }}
-        </span>
-      </div>
-      <div class="fr-col-3 fr-grid-row last-row">
-        <div class="fr-py-3v fr-px-2v">
-          <span v-if="isRota(feature)" :class="isRota(feature)" class="fr-px-2v"
-            ><i class="ri-exchange-funds-line"></i>ROTATION</span
-          >
           <span
-            v-if="feature.properties.commentaires || (feature.properties.auditeur_notes && permissions.isOc)"
-            aria-hidden="true"
-            class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
+            v-if="
+              !(
+                feature.properties.cultures &&
+                feature.properties.cultures.length > 0 &&
+                feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label)?.variete
+              )
+            "
+            class="fr-mt-1v"
           >
+            <small>Non rens.</small>
+          </span>
+          <span v-else class="fr-mt-1v">
+            {{ feature.properties.cultures.find((e) => cultureLabel(e) === featureGroup.label).variete }}
+          </span>
+        </div>
+        <div v-else style="position: relative" class="fr-col-2">
+          <small style="position: absolute; top: -10px; left: 0; font-size: 0.625rem; color: #666; line-height: 1">
+            Variété
+          </small>
+          <template v-for="(culture, i) in feature.properties.cultures" :key="i">
+            <span v-if="i" class="">, </span>
+            <span class="fr-mt-1v" v-if="!culture.variete"><small>Non rens.</small></span>
+            <span v-else class="fr-mt-1v">{{ culture.variete }}</span>
+          </template>
+        </div>
+        <div class="fr-col-2">
+          <span>
             {{
-              [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
-                (e) => e != null && e !== "",
-              ).length
+              !isNaN(parseFloat(inHa(legalProjectionSurface(feature))))
+                ? inHa(legalProjectionSurface(feature)) + "&nbsp;ha"
+                : inHa(legalProjectionSurface(feature))
             }}
           </span>
-          <br
-            v-if="
-              feature.properties.commentaires ||
-              (feature.properties.auditeur_notes && permissions.isOc) ||
-              isRota(feature)
-            "
-          />
-          <span class="fr-text--xs text-grey fr-px-2v" v-if="getTimeAgo(feature)">
-            Modifié {{ getTimeAgo(feature) }}
-          </span>
         </div>
-        <div class="fr-py-2v fr-px-1v">
-          <button
-            type="button"
-            @click.prevent.stop="toggleDeleteForm(feature.id)"
-            :disabled="!permissions.canDeleteFeature"
-            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line btn--error"
-          >
-            Supprimer la parcelle
-          </button>
+        <div class="fr-col-3 fr-grid-row last-row">
+          <div class="fr-py-3v fr-px-2v">
+            <span v-if="isRota(feature)" :class="isRota(feature)" class="fr-px-2v">
+              <i class="ri-exchange-funds-line" aria-hidden="true"></i>ROTATION
+            </span>
+            <span
+              v-if="feature.properties.commentaires || (feature.properties.auditeur_notes && permissions.isOc)"
+              role="img"
+              :aria-label="`${[feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter((e) => e != null && e !== '').length} commentaire(s)`"
+              class="fr-icon fr-icon--sm fr-text--bold fr-icon-quote-fill fr-mb-0 badge-commentaire"
+            >
+              <span aria-hidden="true">{{
+                [feature.properties.commentaires, permissions.isOc ? feature.properties.auditeur_notes : null].filter(
+                  (e) => e != null && e !== "",
+                ).length
+              }}</span>
+            </span>
+            <br
+              v-if="
+                feature.properties.commentaires ||
+                (feature.properties.auditeur_notes && permissions.isOc) ||
+                isRota(feature)
+              "
+            />
+            <span class="fr-text--xs text-grey fr-px-2v" v-if="getTimeAgo(feature)">
+              Modifié {{ getTimeAgo(feature) }}
+            </span>
+          </div>
+          <div class="fr-py-2v fr-px-1v">
+            <button
+              type="button"
+              @click.prevent.stop="toggleDeleteForm(feature.id)"
+              :disabled="!permissions.canDeleteFeature"
+              :class="{ 'btn--error': permissions.canDeleteFeature }"
+              class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
+            >
+              Supprimer la parcelle
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -411,7 +435,7 @@ watch(
 
 onMounted(async () => {
   if (scroll.value != null && props.featureGroup.features.some((e) => e.id === scroll.value)) {
-    open.value = true;
+    openLigne.value = true;
     await nextTick();
     if (document.getElementById("parcelle-" + scroll.value)) {
       const element = document.getElementById("parcelle-" + scroll.value);
@@ -432,7 +456,7 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-.fr-icon[aria-checked="true"]::before {
+.fr-icon.arrow-open::before {
   transform: rotate(180deg);
 }
 
@@ -613,5 +637,18 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.conversion-level-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.conversion-level-btn:disabled {
+  cursor: default;
 }
 </style>
