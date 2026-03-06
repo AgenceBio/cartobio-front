@@ -146,6 +146,7 @@ export const useRecordStore = defineStore("record", () => {
             ...p,
             properties: {
               ...p.properties,
+              historique: undefined,
               cultures: p.properties.cultures.map((c) => ({
                 ...c,
                 id: c.id && uuidRegex.test(c.id) ? c.id : crypto.randomUUID(),
