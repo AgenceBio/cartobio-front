@@ -47,6 +47,19 @@ export async function searchOperators({ input, page, filter, limit = 7 }) {
 
 /**
  * @param {string} input
+ * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
+ */
+export async function searchOperatorsAdmin({ input, page, filter, limit = 7 }) {
+  const { data } = await apiClient.post(
+    `/v2/certification/adminsearch`,
+    { input, page, filter, limit },
+    { timeout: 60000 },
+  );
+  return data;
+}
+
+/**
+ * @param {string} input
  * @returns {Promise<any[]>}
  */
 export async function getForAutocomplete(search) {
