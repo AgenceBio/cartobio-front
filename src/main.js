@@ -157,8 +157,9 @@ router.beforeEach(async (to) => {
     }
   } catch (error) {
     if (
-      error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
-      error?.response?.data?.code === "INVALID_CREDENTIALS"
+      (error?.response?.data?.code === "EXPIRED_CREDENTIALS" ||
+        error?.response?.data?.code === "INVALID_CREDENTIALS") &&
+      userStore.isLogged
     ) {
       userStore.logout();
       return { path: "login", replace: true };
@@ -170,12 +171,26 @@ router.beforeEach(async (to) => {
     }
 
     if (error?.response?.status === 403) {
-      toast.error("Vous n'avez pas les droits pour accéder à cette page.");
-      return { path: userStore.startPage, replace: true };
+      // permet d'avoir le toast post redirection
+      const unsubscribe = router.afterEach(() => {
+        unsubscribe();
+        toast.error("Vous n'avez pas les droits pour accéder à cette page.");
+      });
+      return userStore.startPage;
     }
 
-    if (error?.response?.status === 401) {
+    if (error?.response?.status === 401 && userStore.isLogged) {
+      const unsubscribe = router.afterEach(() => {
+        unsubscribe();
+        toast.error("Vous n'avez pas les droits pour accéder à cette page.");
+      });
       return { path: "/login", replace: true };
+    }
+
+    if (error?.response?.status === 401 && !userStore.isLogged) {
+      window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login?returnto=${to.fullPath}`;
+
+      return false;
     }
 
     if (

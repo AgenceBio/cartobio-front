@@ -406,3 +406,18 @@ export async function getGeometryEquals(oldRecordId, newRecordId) {
   const data = await apiClient.post(`/v2/geometry/geometryEquals`, { payload: { old: oldRecordId, new: newRecordId } });
   return data;
 }
+
+export async function getCutBorder(geometry, distance, allBorder, isInverted, startBorderPoint, endBorderPoint) {
+  const payload = {
+    geometry,
+    distance,
+    allBorder,
+    isInverted,
+    startBorderPoint,
+    endBorderPoint,
+  };
+
+  const response = await apiClient.post("/v3/geometry/border-cut", payload);
+
+  return response;
+}
