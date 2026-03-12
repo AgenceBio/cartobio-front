@@ -219,7 +219,8 @@ router.beforeEach(async (to) => {
   }
 
   if (to.path === "/login" && userStore.isLogged) {
-    return { path: userStore.startPage, replace: true };
+    const returnTo = to.query.returnto;
+    return { path: returnTo || userStore.startPage, replace: true };
   }
   if (to.meta.requiresAuth && !userStore.isLogged) {
     return { path: "/login", replace: true };
