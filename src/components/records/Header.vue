@@ -197,46 +197,8 @@
       :record-id="deleteDownloadModal"
       @close="deleteDownloadModal = null"
     />
-    <Modal @close="attestationModal = false" v-if="attestationModal">
-      <template #title> Attestation de production </template>
-      <div>
-        <p>Générez votre attestation de production, cela peut prendre quelques minutes.</p>
-        <p>Restez sur cette page ou revenez ultérieurement.</p>
-      </div>
-      <template #footer>
-        <div class="fr-btns-group fr-btns-group--icon-left" role="group" aria-label="Actions d'export">
-          <button
-            type="button"
-            @click="exportAttestationPdf(record)"
-            class="fr-btn fr-btn--secondary button-export fr-btn--icon-left"
-            :class="{ 'fr-icon-download-line': !isPdfLoading }"
-            :disabled="
-              record.certification_state !== 'CERTIFIED' ||
-              isPdfLoading ||
-              errorText[record.record_id] ||
-              isPdfGenerating
-            "
-          >
-            <Spinner v-if="isPdfLoading"> </Spinner>
-            <template v-if="fetchHasAttestationProduction(record)">Télécharger l'attestation de production</template>
-            <template v-else>Générer l'attestation de production</template>
-          </button>
-          <p v-if="errorText[record.record_id]" class="fr-px-1w fr-text--sm fr-text--sm fr-error-text fr-mt-0">
-            {{ errorText[record.record_id] }}
-          </p>
-          <button
-            class="fr-btn fr-btn--secondary fr-icon-refresh-line fr-btn--icon-left"
-            @click="() => exportAttestationPdf(record, true)"
-            data-content-piece="Export PDF"
-            aria-label="Re-générer l'attestation de production au format PDF"
-            title="Générer une nouvelle attestation pour mettre à jour mes informations"
-            :disabled="!fetchHasAttestationProduction(record) || isPdfLoading"
-          >
-            Re-générer l'attestation
-          </button>
-        </div>
-      </template>
-    </Modal>
+
+    <AttestationModal v-if="attestationModal" :record="record" @close="attestationModal = false" />
   </Teleport>
 </template>
 
@@ -249,7 +211,7 @@ import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.v
 import FullStorageModal from "@/components/versions/FullStorageModal.vue";
 import DeleteDownloadModal from "@/components/versions/DeleteDownloadModal.vue";
 import { usePreferences } from "@/stores/preferences.js";
-import Modal from "@/components/widgets/Modal.vue";
+import AttestationModal from '@/components/records/AttestationModal.vue'
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useOperatorStore } from "@/stores/operator.js";
@@ -261,7 +223,6 @@ import { usePermissions } from "@/stores/permissions.js";
 import { useUserStore } from "@/stores/user";
 import { useOnline } from "@vueuse/core";
 import { useCartoBioStorage } from "@/stores/storage.js";
-import Spinner from "@/components/widgets/Spinner.vue";
 
 import { pinOperator, unpinOperator, getPDFData, getHasAttestationProduction } from "@/cartobio-api";
 import ActionDropdown from "../widgets/ActionDropdown.vue";
