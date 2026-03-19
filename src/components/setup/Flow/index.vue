@@ -212,6 +212,7 @@ async function handlePreviewConfirmation(importPrevious, recordId) {
     });
     if (versionName.value !== null) await hideNotif(numeroBio);
   } catch (_e) {
+    if (_e.response.data.code === "INVALID_API_REQUEST") warnings.value.push(_e.response.data.message);
     isLoading.value = false;
     return;
   }
