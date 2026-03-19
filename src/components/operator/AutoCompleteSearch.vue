@@ -88,7 +88,7 @@ onMounted(() => {
 
     getSources({ query }) {
       userInput.value = query;
-      if (isAdmin.value) return []
+      if (isAdmin.value) return [];
       if (query.length < 3) {
         data.value = null;
         return [];
