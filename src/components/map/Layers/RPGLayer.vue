@@ -10,6 +10,7 @@ import { Style, Stroke, Fill } from "ol/style";
 import { FeatureLike } from "ol/Feature";
 import { Map as OlMap } from "ol";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
+import { fromCodePacStrict } from "@agencebio/rosetta-cultures";
 
 /**
  * * Props
@@ -40,6 +41,19 @@ let rpgLayer: VectorLayer<VectorSource> | null = null;
 
 const MAX_RESOLUTION = 42;
 
+const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
+  "Grandes Cultures": { fill: "#ffe082", stroke: "#ffb300" },
+  "Surfaces fourragères": { fill: "#a5d6a7", stroke: "#43a047" },
+  "Légumes": { fill: "#ff8a65", stroke: "#e53935" },
+  "Fruits": { fill: "#ffb74d", stroke: "#f57c00" },
+  "Viticulture": { fill: "#f48fb1", stroke: "#e91e63" },
+  "Plantes à parfums, aromatiques et médicinales et plantes à boissons": { fill: "#80deea", stroke: "#00acc1" },
+  "Autres surfaces": { fill: "#b39ddb", stroke: "#5e35b1" },
+};
+
+const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
+const COLOR_BIO = { fill: "#9fe3d2", stroke: "#54cdaf" };
+
 /**
  * * Fonctions
  */
@@ -48,48 +62,17 @@ function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   const bio = feature.get("bio") || feature.get("BIO");
   const codeCulture = feature.get("code_cultu") || feature.get("CODE_CULTU");
 
-  let fillColor = "#ffd6a4";
-  if (bio === 1 || bio === "1" || bio === true) {
-    fillColor = "#9fe3d2";
-  } else if (
-    ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"].includes(codeCulture)
-  ) {
-    fillColor = "#fff1bd";
-  }
+  let colors = COLOR_DEFAULT;
 
-  let strokeColor = "#ffc177";
   if (bio === 1 || bio === "1" || bio === true) {
-    strokeColor = "#54cdaf";
-  } else if (
-    [
-      "GFP",
-      "PTR",
-      "BOP",
-      "BRH",
-      "BRO",
-      "CAE",
-      "CEE",
-      "CRA",
-      "DTY",
-      "FET",
-      "FLO",
-      "J5M",
-      "J6P",
-      "J6S",
-      "JNO",
-      "MLG",
-      "PAT",
-      "PCL",
-      "PRL",
-      "PPH",
-      "RGA",
-      "ROS",
-      "SPH",
-      "SPL",
-      "XFE",
-    ].includes(codeCulture)
-  ) {
-    strokeColor = "#ffe586";
+    colors = COLOR_BIO;
+  } else {
+    console.log(codeCulture);
+    const culture = fromCodePacStrict(codeCulture);
+    console.log(culture?.groupe || "")
+    if (culture?.groupe && COLOR_BY_GROUP[culture.groupe]) {
+      colors = COLOR_BY_GROUP[culture.groupe];
+    }
   }
 
   let lineWidth = 0;
@@ -100,9 +83,9 @@ function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   }
 
   return new Style({
-    fill: new Fill({ color: fillColor }),
+    fill: new Fill({ color: colors.fill }),
     stroke: new Stroke({
-      color: strokeColor,
+      color: colors.stroke,
       width: lineWidth,
     }),
   });
