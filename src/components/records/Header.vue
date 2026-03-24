@@ -346,7 +346,11 @@ const tooltips = {
 };
 
 const readonly = computed(
-  () => permissions.isOc && record.oc_id != null && record.oc_id !== userStore.user?.organismeCertificateur?.id,
+  () =>
+    permissions.isOc &&
+    record.oc_id != null &&
+    record.oc_id !== userStore.user?.organismeCertificateur?.id &&
+    !userStore.isAdmin,
 );
 onClickOutside(versionMenuRef, ({ target }) => {
   if (!target.classList.contains("show-versions")) {
