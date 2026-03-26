@@ -695,9 +695,14 @@ watch(
   { deep: true },
 );
 
+const zoomTimeout = ref(null);
+
 watch([() => props.zoomIn, () => mapParams.value.currentMode], ([featureId]) => {
   if (!featureId) return;
-  setTimeout(() => {
+
+  clearTimeout(zoomTimeout.value);
+
+  zoomTimeout.value = setTimeout(() => {
     const feature = features.value.find((f) => f.getId() == featureId);
     if (!feature) return;
     const featureExtent = feature.getGeometry()?.getExtent();
@@ -717,7 +722,7 @@ watch([() => props.zoomIn, () => mapParams.value.currentMode], ([featureId]) => 
         duration: 800,
       });
     }
-  }, 500);
+  }, 1000);
 });
 
 /**
