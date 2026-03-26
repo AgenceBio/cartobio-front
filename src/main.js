@@ -218,6 +218,10 @@ router.beforeEach(async (to) => {
     return { path };
   }
 
+  if (to.path === "/login" && userStore.isLogged) {
+    const returnTo = to.query.returnto;
+    return { path: returnTo || userStore.startPage, replace: true };
+  }
   if (to.meta.requiresAuth && !userStore.isLogged) {
     return { path: "/login", replace: true };
   }
@@ -231,6 +235,10 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiredRoles && !to.meta.requiredRoles.some((role) => userStore.roles.includes(role))) {
     return { path: "/login" };
+  }
+
+  if (to.meta.forbiddenRoles && to.meta.forbiddenRoles.some((role) => userStore.roles.includes(role))) {
+    return { path: userStore.accueilPage };
   }
 
   if (to.meta.requiredPermissions) {
