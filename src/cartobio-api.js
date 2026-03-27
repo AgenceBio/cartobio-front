@@ -395,6 +395,6 @@ export async function getGeometryEquals(oldRecordId, newRecordId) {
 }
 
 export async function logoutApi() {
-  const data = await apiClient.post(`/auth/logout`);
+  const data = await apiClient.post(`/auth-provider/logout`);
   return data;
 }
