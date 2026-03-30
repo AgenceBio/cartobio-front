@@ -136,9 +136,9 @@ export const useUserStore = defineStore("user", () => {
     token.value = userToken;
   }
 
-  function logout() {
-    logoutApi();
+  async function logout() {
     token.value = null;
+    return await logoutApi();
   }
 
   function enablePersistance() {
