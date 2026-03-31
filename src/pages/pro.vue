@@ -150,7 +150,7 @@ meta:
               facilement dans CartoBio.
             </li>
             <li>
-              <strong>L'attestation de certification</strong> directement disponible une fois le parcellaire certifié.
+              <strong>L'attestation de production</strong> directement disponible une fois le parcellaire certifié.
             </li>
           </ul>
         </div>
