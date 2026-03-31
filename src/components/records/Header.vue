@@ -83,7 +83,13 @@
             class="fr-tag fr-tag--sm tag-attestation fr-my-auto"
             :class="{ 'fr-tag--disabled': record.certification_state !== 'CERTIFIED' }"
             :disabled="record.certification_state !== 'CERTIFIED'"
-            v-tooltip="record.certification_state !== 'CERTIFIED' ? tooltips.disabledTag : {}"
+            v-tooltip="{
+              text:
+                record.certification_state === 'CERTIFIED'
+                  ? 'Télécharger votre attestation de production'
+                  : 'Non disponible car votre parcellaire n\'a pas encore été certifié par votre OC.',
+              position: 'top',
+            }"
             @click="
               () => {
                 if (record.certification_state === 'CERTIFIED') {
