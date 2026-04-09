@@ -427,6 +427,16 @@ const drawBorder = async () => {
     const featureWithoutBordure = new GeoJSON().readFeature(result.parcelleSansBordure);
     const bordureFeature = new GeoJSON().readFeature(result.bordure);
 
+    if (
+      featureWithoutBordure.getGeometry()?.getType() === "MultiPolygon" ||
+      bordureFeature.getGeometry()?.getType() === "MultiPolygon"
+    ) {
+      errorMessage.value = "La découpe génère un multi-polygone, veuillez ajuster vos points de découpe ou la largeur de la bordure";
+      hasBordure.value = false;
+      previewBorderSource?.clear();
+      return;
+    }
+
     featureWithoutBordure.setProperties({ ...targetProperties });
     bordureFeature.setProperties({ ...targetProperties });
 
