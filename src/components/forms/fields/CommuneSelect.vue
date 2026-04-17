@@ -12,7 +12,6 @@
 import { Fragment, h, onMounted, ref, render, watch } from "vue";
 import { autocomplete } from "@algolia/autocomplete-js";
 import "@algolia/autocomplete-theme-classic";
-import axios, { AxiosError } from "axios";
 import toast from "@/utils/toast.js";
 
 const autocompleteRef = ref(null);
@@ -22,18 +21,22 @@ const emit = defineEmits(["update:modelValue", "feature"]);
 const setQueryRef = ref(null);
 
 const updateFieldFromModel = async (value) => {
-  if (!value) {
-    return;
-  }
+  if (!value) return;
 
   try {
-    const response = await axios.get(`https://geo.api.gouv.fr/communes/${value}`);
-    setQueryRef.value(`${response.data.nom} (${response.data.codeDepartement})`);
-  } catch (e) {
-    if (e.response.status === 404) {
-      setQueryRef.value("");
+    const response = await fetch(`https://geo.api.gouv.fr/communes/${value}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        setQueryRef.value("");
+        return;
+      }
+      throw new Error(`HTTP ${response.status}`);
     }
 
+    const data = await response.json();
+    setQueryRef.value(`${data.nom} (${data.codeDepartement})`);
+  } catch (e) {
     throw e;
   }
 };
@@ -69,32 +72,33 @@ onMounted(async () => {
         {
           sourceId: "ban",
           async getItems({ query }) {
-            if (query.length < 3) {
-              return [];
-            }
+            if (query.length < 3) return [];
 
-            let response;
             try {
-              response = await axios.get("https://api-adresse.data.gouv.fr/search/", {
-                params: {
-                  q: query,
-                  type: "municipality",
-                  autocomplete: 1,
-                },
+              const params = new URLSearchParams({
+                q: query,
+                type: "municipality",
+                autocomplete: "1",
               });
+
+              const response = await fetch(`https://api-adresse.data.gouv.fr/search/?${params.toString()}`);
+
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+              }
+
+              const data = await response.json();
+
+              return data.features.sort((a, b) => b.properties.score - a.properties.score);
             } catch (error) {
-              if (
-                error.name === "AxiosError" &&
-                [AxiosError.ETIMEDOUT, AxiosError.ECONNABORTED, AxiosError.ERR_NETWORK].includes(error.code)
-              ) {
+              if (error.name === "TypeError") {
+                // fetch network error
                 toast.error("Une erreur de réseau est survenue. Vérifiez votre connexion internet.");
                 return [];
               } else {
                 throw error;
               }
             }
-
-            return response.data.features.sort((a, b) => a.properties.score < b.properties.score);
           },
           templates: {
             item({ item, html }) {

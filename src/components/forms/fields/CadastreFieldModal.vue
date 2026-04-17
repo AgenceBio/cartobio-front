@@ -142,7 +142,6 @@
 </style>
 
 <script setup>
-import axios from "axios";
 
 import { computed, ref, watch } from "vue";
 import { cleanInput, isValidReference, toString } from "../../../utils/cadastre.js";
@@ -216,14 +215,26 @@ const searchReference = async (event) => {
   cadastreRequestController.value = new AbortController();
 
   let featureCollection;
+
   try {
-    // @see https://geoservices.ign.fr/documentation/services/services-geoplateforme/geocodage
-    ({ data: featureCollection } = await axios.get("https://data.geopf.fr/geocodage/search", {
-      params: { q: inputReference.value, index: "parcel", limit: 1, returntruegeometry: true },
+    const params = new URLSearchParams({
+      q: inputReference.value,
+      index: "parcel",
+      limit: "1",
+      returntruegeometry: "true",
+    });
+
+    const response = await fetch(`https://data.geopf.fr/geocodage/search?${params.toString()}`, {
       signal: cadastreRequestController.value.signal,
-    }));
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    featureCollection = await response.json();
   } catch (error) {
-    if (error.name === "CanceledError") {
+    if (error.name === "AbortError") {
       return;
     }
 

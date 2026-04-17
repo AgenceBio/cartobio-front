@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
 
 /**
@@ -11,7 +9,76 @@ const { VUE_APP_API_ENDPOINT: baseURL } = import.meta.env;
  * @typedef {import('@agencebio/cartobio-types').CartoBioFeatureCollection} CartoBioFeatureCollection
  */
 
-export const apiClient = axios.create({ baseURL, timeout: 20000 });
+export const createApiClient = (baseURL, defaultTimeout = 20000) => {
+  let userToken = null;
+
+  const setAuthorization = (token) => {
+    userToken = token || null;
+  };
+
+  const request = async (method, url, data, config = {}) => {
+    const timeout = config.timeout ?? defaultTimeout;
+    const controller = new AbortController();
+    const signal = config.signal;
+
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    const combinedSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
+
+    const isFormData = data instanceof FormData;
+
+    try {
+      const res = await fetch(`${baseURL}${url}`, {
+        method,
+        signal: combinedSignal,
+        headers: {
+          ...(data && !isFormData ? { "Content-Type": "application/json" } : {}),
+          ...(userToken ? { Authorization: `Bearer ${userToken}` } : {}),
+          ...(config.headers || {}),
+        },
+        body: data ? (isFormData ? data : JSON.stringify(data)) : undefined,
+      });
+
+      const contentType = res.headers.get("content-type");
+
+      let responseData;
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await res.json();
+      } else {
+        responseData = await res.text();
+      }
+
+      if (!res.ok) {
+        throw {
+          message: responseData,
+          status: res.status,
+          data: responseData,
+        };
+      }
+
+      return {
+        data: responseData,
+        status: res.status,
+        headers: res.headers,
+        original: res,
+      };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
+
+  return {
+    get: (url, config) => request("GET", url, null, config),
+    post: (url, data, config) => request("POST", url, data, config),
+    put: (url, data, config) => request("PUT", url, data, config),
+    patch: (url, data, config) => request("PATCH", url, data, config),
+    delete: (url, config) => request("DELETE", url, null, config),
+
+    setAuthorization,
+  };
+};
+
+export const apiClient = createApiClient(baseURL, 20000);
 
 /**
  *
@@ -264,9 +331,9 @@ export async function exchangeNotificationToken(token) {
 
 export function setAuthorization(userToken) {
   if (userToken) {
-    apiClient.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
+    apiClient.setAuthorization(`${userToken}`);
   } else {
-    delete apiClient.defaults.headers.common["Authorization"];
+    apiClient.setAuthorization("");
   }
 }
 

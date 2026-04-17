@@ -5,7 +5,6 @@ import { reproject } from "reproject";
 import proj4 from "proj4";
 import { polygonArea } from "geometric";
 import union from "@turf/union";
-import axios from "axios";
 import { feature, featureCollection } from "@turf/helpers";
 import { parseReference } from "@/utils/cadastre.js";
 import bbox from "@turf/bbox";
@@ -619,14 +618,20 @@ export function merge(features) {
  * @returns {Promise<{ geometry: Geometry, feature: Feature }>}
  */
 async function fetchCadastreGeometry(q, baseFeature) {
-  const { data } = await axios.get("https://data.geopf.fr/geocodage/search", {
-    params: {
-      q,
-      index: "parcel",
-      limit: 1,
-      returntruegeometry: true,
-    },
+  const params = new URLSearchParams({
+    q,
+    index: "parcel",
+    limit: "1",
+    returntruegeometry: "true",
   });
+
+  const response = await fetch(`https://data.geopf.fr/geocodage/search?${params.toString()}`);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
 
   /** @type {IgnFeature=} */
   const cadastreFeature = data.features.at(0);
@@ -640,6 +645,7 @@ async function fetchCadastreGeometry(q, baseFeature) {
   if (!geometry) {
     throw new FeatureWithoutGeometryError(q);
   }
+
   return {
     geometry,
     feature: feature(

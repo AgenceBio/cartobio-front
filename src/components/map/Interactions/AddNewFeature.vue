@@ -191,7 +191,6 @@ import VectorTileSource from "ol/source/VectorTile";
 import { FeatureCollection } from "@turf/helpers";
 import intersect from "@turf/intersect";
 import kinks from "@turf/kinks";
-import axios from "axios";
 import proj4 from "proj4";
 
 /*
@@ -424,18 +423,22 @@ const handleClickCadastre = async (e: MapBrowserEvent) => {
       return;
     }
     let featureCollection: FeatureCollection;
+
     try {
-      // @see https://geoservices.ign.fr/documentation/services/services-geoplateforme/geocodage
-      featureCollection = (
-        await axios.get("https://data.geopf.fr/geocodage/search", {
-          params: {
-            q: properties.id,
-            index: "parcel",
-            limit: 1,
-            returntruegeometry: true,
-          },
-        })
-      ).data;
+      const params = new URLSearchParams({
+        q: properties.id,
+        index: "parcel",
+        limit: "1",
+        returntruegeometry: "true",
+      });
+
+      const response = await fetch(`https://data.geopf.fr/geocodage/search?${params.toString()}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      featureCollection = await response.json();
     } catch (error) {
       console.error("Failed to fetch geometry for ref", properties, error);
       return;
