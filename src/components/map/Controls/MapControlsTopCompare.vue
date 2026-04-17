@@ -1,6 +1,6 @@
 <template>
   <div class="button-group">
-    <div class="mode-choice" v-if="!isCompare">
+    <div class="mode-choice" :class="{ 'left-mc': isEditing }" v-if="!isCompare">
       <b class="fr-ml-1w">{{ record?.version_name }}</b>
       <p class="fr-text--xs cec">{{ permissions.isOc ? "Contrôle en cours" : "Consultation en cours" }}</p>
       <p
@@ -13,7 +13,7 @@
       </p>
     </div>
 
-    <div class="mode-choice" v-else>
+    <div class="mode-choice" :class="{ 'left-mc': isEditing }" v-else>
       <div class="fr-select-group fr-mb-0w fr-p-0w">
         <select
           class="fr-select fr-text--sm"
@@ -96,6 +96,7 @@ const props = defineProps<{
   fullScreenMap: boolean;
   isCompare?: boolean;
   selectedRecord?: any;
+  isEditing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -233,6 +234,10 @@ const closeComparison = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 56px;
   font-size: 12px;
+}
+
+.left-mc {
+  left:10% !important;
 }
 
 .fr-select-group {
