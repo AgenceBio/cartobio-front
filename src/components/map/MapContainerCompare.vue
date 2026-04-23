@@ -221,7 +221,6 @@ const onMapClick1 = (event: MouseEvent): void => {
   if (!feature) return;
 
   const id = feature.getId() ?? feature.get("id");
-  console.log(id);
   if (id !== undefined && id !== null) {
     emit("parcel-click", id);
   }

@@ -3,31 +3,36 @@
     <div :class="[props.isCompare ? 'info-box-left' : 'info-box-right']">
       <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap" aria-live="polite">
         <div class="legend" v-if="openList === null">
-          <div class="legend-item" @click="toggleList('added')">
+          <div
+            class="legend-item"
+            @click="toggleList('added')"
+            @mouseenter="onHoverList('added')"
+            @mouseleave="onLeaveList()"
+          >
             <span class="legend-color added"></span>
             Ajoutées
             <span class="nb-class">{{ addNb }}</span>
 
-            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFilter('added')">
+            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType('added')">
               <span class="ri-focus-3-line"></span>
             </button>
           </div>
 
-          <div class="legend-item">
+          <div class="legend-item" @mouseenter="onHoverList('modified')" @mouseleave="onLeaveList()">
             <span class="legend-color modified" @click="toggleList('modified')"></span>
             Modifiées
             <span class="nb-class">{{ modifiedNb }}</span>
 
-            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFilter('modified')">
+            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType('modified')">
               <span class="ri-focus-3-line"></span>
             </button>
           </div>
 
-          <div class="legend-item">
+          <div class="legend-item" @mouseenter="onHoverList('deleted')" @mouseleave="onLeaveList()">
             <span class="legend-color removed" @click="toggleList('deleted')"></span>
             Supprimées
             <span class="nb-class">{{ deleteNb }}</span>
-            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFilter('deleted')">
+            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType('deleted')">
               <span class="ri-focus-3-line"></span>
             </button>
           </div>
@@ -45,14 +50,21 @@
               <span class="legend-color added"></span>
               Ajoutées
               <span class="nb-class-sublist">{{ addNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
             <div class="submenu-list">
               <ul>
-                <li v-for="f in addedFeatures" :key="f.getId()" class="submenu-item" @click="zoomToFeature(f)">
-                  {{ "Parcelle TODO" }}
+                <li
+                  v-for="f in addedFeatures"
+                  :key="f.getId()"
+                  class="submenu-item"
+                  @click="onClickFeature(f)"
+                  @mouseenter="onHoverItem(f)"
+                  @mouseleave="onLeaveItem"
+                >
+                  {{ f.get("label") }}
                 </li>
               </ul>
             </div>
@@ -69,14 +81,21 @@
               <span class="legend-color modified"></span>
               Modifiées
               <span class="nb-class-sublist">{{ modifiedNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
             <div class="submenu-list">
               <ul>
-                <li v-for="f in modifiedFeatures" :key="f.getId()" class="submenu-item" @click="zoomToFeature(f)">
-                  {{ "Parcelle TODO" }}
+                <li
+                  v-for="f in modifiedFeatures"
+                  :key="f.getId()"
+                  class="submenu-item"
+                  @click="onClickFeature(f)"
+                  @mouseenter="onHoverItem(f)"
+                  @mouseleave="onLeaveItem"
+                >
+                  {{ f.get("label") }}
                 </li>
               </ul>
             </div>
@@ -93,14 +112,21 @@
               <span class="legend-color removed"></span>
               Supprimées
               <span class="nb-class-sublist">{{ deleteNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onLocate">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
             <div class="submenu-list">
               <ul>
-                <li v-for="f in deletedFeatures" :key="f.getId()" class="submenu-item" @click="zoomToFeature(f)">
-                  {{ "Parcelle TODO" }}
+                <li
+                  v-for="f in deletedFeatures"
+                  :key="f.getId()"
+                  class="submenu-item"
+                  @click="onClickFeature(f)"
+                  @mouseenter="onHoverItem(f)"
+                  @mouseleave="onLeaveItem"
+                >
+                  {{ f.get("label") }}
                 </li>
               </ul>
             </div>
@@ -109,12 +135,13 @@
       </div>
 
       <hr v-if="diffOnMap" />
-
-      <span><i class="ri-custom-size" /> {{ sizeParcelles }} ha</span>
-      <span>
-        <i class="ri-collage-line" />
-        {{ nbParcelles }} parcelle{{ nbParcelles > 1 ? "s" : "" }}
-      </span>
+      <div class="status-parcelles" :style="{ paddingTop: !diffOnMap ? '24px' : '0px' }">
+        <span><i class="ri-custom-size" /> {{ sizeParcelles }} ha</span>
+        <span>
+          <i class="ri-collage-line" />
+          {{ nbParcelles }} parcelle{{ nbParcelles > 1 ? "s" : "" }}
+        </span>
+      </div>
     </div>
 
     <div class="attribution fr-text--xs" v-if="isCompare">
@@ -145,6 +172,7 @@
 import { inject, onMounted, onUnmounted, ref, Ref } from "vue";
 import type { Map as OlMap } from "ol";
 import ScaleLine from "ol/control/ScaleLine.js";
+import { Style, Fill, Stroke } from "ol/style";
 
 const props = defineProps<{
   isCompare?: boolean;
@@ -158,6 +186,7 @@ if (!map) throw new Error("Pas de map disponible");
 
 const emit = defineEmits<{
   (e: "locate"): void;
+  (e: "select", feature: any): void;
 }>();
 
 const modifiedNb = ref(0);
@@ -175,6 +204,9 @@ const deletedFeatures = ref<any[]>([]);
 const addListener = ref(null);
 const removeListener = ref(null);
 
+const lanFeaturesMap = ref<Map<string, any>>(new Map());
+const lastHoveredListFeature = ref<any>(null);
+
 const onZoomIn = () => {
   if (!map?.value) return;
   const view = map.value.getView();
@@ -189,37 +221,11 @@ const onZoomOut = () => {
 
 const onLocate = () => emit("locate");
 
-const onFilter = (type: "added" | "modified" | "deleted") => {
-  if (!diffLayer.value) return;
-
-  const source = diffLayer.value.getSource();
-  const features = source.getFeatures();
-
-  features.forEach((f) => {
-    const status = f.get("status");
-    f.setStyle(
-      status === type
-        ? undefined // style normal
-        : () => null, // cache la feature
-    );
-  });
-};
-
-const resetFilter = () => {
-  if (!diffLayer.value) return;
-  diffLayer.value
-    .getSource()
-    .getFeatures()
-    .forEach((f) => {
-      f.setStyle(undefined);
-    });
-};
-
 const toggleList = (type: string) => {
   openList.value = openList.value === type ? null : type;
 };
 
-const zoomToFeature = (feature) => {
+const zoomToFeature = (feature: any) => {
   if (!map?.value) return;
   const extent = feature.getGeometry()?.getExtent();
   if (!extent) return;
@@ -229,6 +235,223 @@ const zoomToFeature = (feature) => {
     padding: [50, 50, 50, 50],
     maxZoom: 18,
   });
+};
+
+const computeLabels = () => {
+  const features = diffLayer.value?.getSource()?.getFeatures() || [];
+
+  features.forEach((f: any) => {
+    const lanFeature = getUnderlyingLanFeature(f);
+
+    let label = "Parcelle";
+
+    if (lanFeature) {
+      const ilot = lanFeature.get("NUMERO_I");
+      const parcelle = lanFeature.get("NUMERO_P");
+
+      if (ilot || parcelle) {
+        label = `Ilot ${ilot ?? "?"} Parcelle ${parcelle ?? "?"}`;
+      } else {
+        label = lanFeature.get("NOM") || label;
+      }
+    }
+
+    f.set("label", label);
+  });
+};
+
+const onFocusType = (status: string | null = null) => {
+  if (!map?.value) return;
+
+  const featuresMap: Record<string, any[]> = {
+    added: addedFeatures.value,
+    modified: modifiedFeatures.value,
+    deleted: deletedFeatures.value,
+  };
+
+  const features = featuresMap[status ?? openList.value] || [];
+  if (!features.length) return;
+
+  const extents = features.map((f) => f.getGeometry()?.getExtent()).filter(Boolean);
+  if (!extents.length) return;
+
+  const combined = extents.reduce(
+    (acc, ext) => [
+      Math.min(acc[0], ext[0]),
+      Math.min(acc[1], ext[1]),
+      Math.max(acc[2], ext[2]),
+      Math.max(acc[3], ext[3]),
+    ],
+    [Infinity, Infinity, -Infinity, -Infinity],
+  );
+
+  map.value.getView().fit(combined, {
+    duration: 500,
+    padding: [50, 50, 50, 50],
+    maxZoom: 18,
+  });
+};
+
+function makeHatchPattern(
+  lineWidth = 1,
+  spacing = 10,
+  lineColor = "rgba(207,207,207,1)",
+  bg = "rgba(246,246,246,0.3)",
+): CanvasPattern | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = spacing * 2;
+  canvas.height = spacing;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+
+  ctx.moveTo(canvas.width + spacing / 2, -spacing / 2);
+  ctx.lineTo(-spacing / 2, canvas.height + spacing / 2);
+
+  ctx.moveTo(spacing / 2, -spacing / 2);
+  ctx.lineTo(-canvas.width + spacing / 2, canvas.height + spacing / 2);
+
+  ctx.moveTo(canvas.width * 1.5 + spacing / 2, -spacing / 2);
+  ctx.lineTo(canvas.width / 2 + spacing / 2, canvas.height + spacing / 2);
+
+  ctx.stroke();
+
+  return ctx.createPattern(canvas, "repeat");
+}
+
+function getStyle(type: "added" | "deleted" | "modified") {
+  switch (type) {
+    case "added":
+      return new Style({
+        fill: new Fill({ color: "rgba(251, 184, 246, 0.3)" }),
+        stroke: new Stroke({ color: "rgba(247, 103, 239, 1)", width: 1 }),
+      });
+
+    case "deleted":
+      return new Style({
+        stroke: new Stroke({
+          color: "rgba(207, 207, 207, 1)",
+          width: 1,
+        }),
+        fill: new Fill({
+          color: makeHatchPattern(),
+        }),
+      });
+
+    case "modified":
+      return new Style({
+        fill: new Fill({ color: "rgba(255,165,0,0.3)" }),
+        stroke: new Stroke({ color: "orange", width: 1, lineDash: [2, 4] }),
+      });
+
+    default:
+      return undefined;
+  }
+}
+
+function getStyleAccentue(type: "added" | "deleted" | "modified") {
+  switch (type) {
+    case "added":
+      return new Style({
+        fill: new Fill({ color: "rgba(251, 184, 246, 0.6)" }), // + opaque
+        stroke: new Stroke({ color: "rgba(247, 103, 239, 1)", width: 2 }),
+      });
+
+    case "deleted":
+      return new Style({
+        stroke: new Stroke({
+          color: "rgba(160, 160, 160, 1)",
+          width: 2,
+        }),
+        fill: new Fill({
+          color: makeHatchPattern(),
+        }),
+      });
+
+    case "modified":
+      return new Style({
+        fill: new Fill({ color: "rgba(255,165,0,0.55)" }), // + opaque
+        stroke: new Stroke({
+          color: "orange",
+          width: 2,
+          lineDash: [2, 4],
+        }),
+      });
+
+    default:
+      return undefined;
+  }
+}
+
+const onHoverList = (type: "added" | "deleted" | "modified") => {
+  if (!diffLayer.value) return;
+
+  const features = diffLayer.value.getSource().getFeatures();
+
+  features.forEach((f: any) => {
+    const status = f.get("status");
+
+    if (status === type) {
+      f.setStyle(getStyleAccentue(status));
+    } else {
+      f.setStyle(
+        new Style({
+          fill: new Fill({ color: "rgba(0,0,0,0.05)" }),
+          stroke: new Stroke({ color: "rgba(0,0,0,0.1)", width: 1 }),
+        }),
+      );
+    }
+  });
+};
+
+const onLeaveList = () => {
+  if (!diffLayer.value) return;
+  diffLayer.value
+    .getSource()
+    .getFeatures()
+    .forEach((f: any) => {
+      const status = f.get("status");
+      f.setStyle(getStyle(status));
+    });
+};
+
+const onHoverItem = (feature: any) => {
+  if (!diffLayer.value) return;
+  diffLayer.value
+    .getSource()
+    .getFeatures()
+    .forEach((f: any) => {
+      f.setStyle(f !== feature ? getStyle(f.get("status")) : getStyleAccentue(f.get("status")));
+    });
+  emit("select", feature);
+};
+
+const onLeaveItem = () => {
+  if (!diffLayer.value) return;
+  diffLayer.value
+    .getSource()
+    .getFeatures()
+    .forEach((f: any) => f.setStyle(getStyle(f.get("status"))));
+  lastHoveredListFeature.value = null;
+};
+
+const onClickFeature = (feature: any) => {
+  zoomToFeature(feature);
+  if (!props.isCompare) {
+    emit("selectList", feature);
+  } else {
+    if (lastHoveredListFeature.value && lastHoveredListFeature.value !== feature) {
+      lastHoveredListFeature.value.setStyle(undefined);
+    }
+    lastHoveredListFeature.value = feature;
+    feature.setStyle(getStyle(feature.get("status")));
+  }
 };
 
 const createScaleLine = () => {
@@ -245,7 +468,7 @@ const createScaleLine = () => {
   );
 };
 
-const updateFeatureCounts = (layer) => {
+const updateFeatureCounts = (layer: any) => {
   const features = layer?.getSource()?.getFeatures() || [];
 
   addedFeatures.value = features.filter((f) => f.get("status") === "added");
@@ -257,10 +480,28 @@ const updateFeatureCounts = (layer) => {
   deleteNb.value = deletedFeatures.value.length;
 };
 
+const initLanLayer = () => {
+  if (!map?.value) return;
+  const lanLayer = map.value
+    .getLayers()
+    .getArray()
+    .find((l) => l.get("name") === "plan-features-layer");
+  if (!lanLayer) return;
+
+  const source = (lanLayer as any).getSource();
+  const loadFeatures = () => {
+    lanFeaturesMap.value = new Map(source.getFeatures().map((f: any) => [String(f.getId()), f]));
+  };
+
+  loadFeatures();
+  source.on("change", loadFeatures);
+};
+
 onMounted(() => {
   if (!map?.value) return;
 
   createScaleLine();
+  initLanLayer();
 
   const layers = map.value.getLayers();
 
@@ -270,6 +511,11 @@ onMounted(() => {
       diffLayer.value = e.element;
 
       updateFeatureCounts(e.element);
+      computeLabels();
+    }
+
+    if (e.element.get("name") === "plan-features-layer") {
+      initLanLayer();
     }
   });
 
@@ -287,6 +533,36 @@ onUnmounted(() => {
   addListener.value = null;
   removeListener.value = null;
 });
+
+const getUnderlyingLanFeature = (diffFeature: any) => {
+  if (!map?.value) return null;
+
+  const geom = diffFeature?.getGeometry?.();
+  if (!geom) return null;
+
+  const coord = geom.getFirstCoordinate?.();
+  if (!coord) return null;
+
+  const pixel = map.value.getPixelFromCoordinate(coord);
+
+  let found: any = null;
+
+  map.value.forEachFeatureAtPixel(
+    pixel,
+    (feature, layer) => {
+      if (layer?.get("name") === "plan-features-layer") {
+        found = feature;
+        return true;
+      }
+      return false;
+    },
+    {
+      hitTolerance: 3,
+    },
+  );
+
+  return found;
+};
 </script>
 
 <style scoped>
@@ -358,7 +634,6 @@ onUnmounted(() => {
   bottom: 1rem;
   left: 1rem;
   font-weight: 500;
-  padding: 24px;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
@@ -372,7 +647,6 @@ onUnmounted(() => {
   bottom: 1rem;
   right: 1.5rem;
   font-weight: 500;
-  padding: 24px;
   border-radius: 6px;
   display: flex;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
@@ -470,23 +744,35 @@ i[class*=" ri"] {
   z-index: 10000;
   max-width: 200px;
 }
+
 .legend {
-  gap: 1rem;
+  padding: 12px 24px 0px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
+
+hr {
+  margin: 0px 12px;
+}
+
 .legend-item {
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
+
 .legend-color {
   width: 14px;
   height: 14px;
   border: 1px solid #000;
 }
+
 .legend-color.added {
   background: rgba(251, 184, 246, 1);
   border-color: rgba(247, 103, 239, 1);
 }
+
 .legend-color.removed {
   background-color: rgba(246, 246, 246, 0.3);
   background-image: repeating-linear-gradient(
@@ -566,10 +852,6 @@ i[class*=" ri"] {
   display: flex;
   align-items: center;
   gap: 3px;
-  margin-left: -24px;
-  margin-right: -24px;
-  margin-top: -24px;
-  width: calc(100% + 48px);
   padding: 8px 0px;
   align-self: stretch;
   gap: 0.4rem;
@@ -585,11 +867,6 @@ i[class*=" ri"] {
   margin: 0;
 }
 
-.submenu-item {
-  margin-left: -12px;
-  margin-right: -12px;
-}
-
 .submenu-list ul li:nth-child(odd) {
   background: var(--light-options-primary-color-975-active-blue-france-975-active, #cbcbfa);
 }
@@ -598,10 +875,16 @@ i[class*=" ri"] {
   background: var(--light-decisions-background-background-alt-blue-france, #f5f5fe);
 }
 
-.submenu-list  {
+.submenu-list {
   max-height: 105px;
   overflow-x: visible;
 
   overflow-y: scroll;
+}
+
+.status-parcelles {
+  padding: 0px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
 }
 </style>
