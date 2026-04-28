@@ -1,6 +1,7 @@
 <route lang="yaml">
 meta:
   requiredRoles: ["certif", "audit"]
+  forbiddenRoles: ["admin"]
   skipLinks:
     Recherche: "#search"
   seo:
@@ -73,6 +74,7 @@ function seeAll() {
 .header-exploitations {
   background: #e3fdeb;
 }
+
 .white-background {
   background-color: white;
   z-index: 10;
@@ -87,6 +89,7 @@ function seeAll() {
   background: #e3fdeb;
   z-index: -1;
 }
+
 span[aria-selected="true"] {
   font-weight: bold;
 }
@@ -99,6 +102,7 @@ span[aria-selected="true"] {
   display: flex;
   justify-content: space-between;
 }
+
 .green-link {
   color: #18753c;
 }
@@ -118,6 +122,7 @@ span[aria-selected="true"] {
   .title-search {
     justify-content: center;
   }
+
   .fr-collapse .fr-collapse--expanded::before {
     content: none;
   }

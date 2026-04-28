@@ -238,6 +238,10 @@ router.beforeEach(async (to) => {
     return { path: "/login" };
   }
 
+  if (to.meta.forbiddenRoles && to.meta.forbiddenRoles.some((role) => userStore.roles.includes(role))) {
+    return { path: userStore.accueilPage };
+  }
+
   if (to.meta.requiredPermissions) {
     const { usePermissions } = await import("@/stores/permissions.js");
     const permissions = usePermissions();
