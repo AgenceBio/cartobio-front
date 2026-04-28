@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import * as Sentry from "@sentry/vue";
 import { computed, ref, watch, watchEffect } from "vue";
-import { setAuthorization } from "@/cartobio-api";
+import { setAuthorization, logoutApi } from "@/cartobio-api";
 import { CUSTOM_DIMENSION_ROLE, setCustomDimension } from "@/stats.js";
 
 /**
@@ -136,8 +136,9 @@ export const useUserStore = defineStore("user", () => {
     token.value = userToken;
   }
 
-  function logout() {
+  async function logout() {
     token.value = null;
+    return await logoutApi();
   }
 
   function enablePersistance() {
