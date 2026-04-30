@@ -570,7 +570,8 @@ function hideTooltip() {
 
 .fr-card:not(.disabled-tooltip) {
   border-radius: 0px;
-  background-image: linear-gradient(0deg, #dee5fd, #dee5fd), linear-gradient(0deg, #dee5fd, #dee5fd),
+  background-image:
+    linear-gradient(0deg, #dee5fd, #dee5fd), linear-gradient(0deg, #dee5fd, #dee5fd),
     linear-gradient(0deg, #dee5fd, #dee5fd), linear-gradient(0deg, #dee5fd, #dee5fd) !important;
 }
 
