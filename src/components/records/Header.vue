@@ -217,7 +217,7 @@ import DeleteParcellaireModal from "@/components/records/DeleteParcelaireModal.v
 import FullStorageModal from "@/components/versions/FullStorageModal.vue";
 import DeleteDownloadModal from "@/components/versions/DeleteDownloadModal.vue";
 import { usePreferences } from "@/stores/preferences.js";
-import AttestationModal from '@/components/records/AttestationModal.vue'
+import AttestationModal from "@/components/records/AttestationModal.vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 import { useOperatorStore } from "@/stores/operator.js";
