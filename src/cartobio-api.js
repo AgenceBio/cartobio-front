@@ -47,6 +47,19 @@ export async function searchOperators({ input, page, filter, limit = 7 }) {
 
 /**
  * @param {string} input
+ * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
+ */
+export async function searchOperatorsAdmin({ input, page, filter, limit = 7 }) {
+  const { data } = await apiClient.post(
+    `/v2/certification/adminsearch`,
+    { input, page, filter, limit },
+    { timeout: 60000 },
+  );
+  return data;
+}
+
+/**
+ * @param {string} input
  * @returns {Promise<any[]>}
  */
 export async function getForAutocomplete(search) {
@@ -407,4 +420,9 @@ export async function getCutBorder(geometry, distance, allBorder, isInverted, st
   const response = await apiClient.post("/v3/geometry/border-cut", payload);
 
   return response;
+}
+
+export async function logoutApi() {
+  const data = await apiClient.post(`/auth-provider/logout`);
+  return data;
 }

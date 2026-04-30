@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import * as Sentry from "@sentry/vue";
 import { computed, ref, watch, watchEffect } from "vue";
-import { setAuthorization } from "@/cartobio-api";
+import { setAuthorization, logoutApi } from "@/cartobio-api";
 import { CUSTOM_DIMENSION_ROLE, setCustomDimension } from "@/stats.js";
 
 /**
@@ -27,7 +27,7 @@ const rolesMap = {
   OC: [ROLES.OC_CERTIF],
   // Depuis 09/2023
   "Chargé de certification": [ROLES.OC_CERTIF],
-  Admin: [ROLES.ADMIN],
+  Admin: [ROLES.ADMIN, ROLES.OC_CERTIF, ROLES.OC_AUDIT],
 };
 
 export function parseJwt(token) {
@@ -96,7 +96,9 @@ export const useUserStore = defineStore("user", () => {
   });
 
   const accueilPage = computed(() => {
-    if (isOc.value) {
+    if (isAdmin.value) {
+      return "/certification/exploitations";
+    } else if (isOc.value) {
       return "/certification/tableau-de-bord";
     } else if (isAgri.value) {
       return "/exploitations";
@@ -136,8 +138,9 @@ export const useUserStore = defineStore("user", () => {
     token.value = userToken;
   }
 
-  function logout() {
+  async function logout() {
     token.value = null;
+    return await logoutApi();
   }
 
   function enablePersistance() {

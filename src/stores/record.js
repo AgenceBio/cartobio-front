@@ -136,37 +136,41 @@ export const useRecordStore = defineStore("record", () => {
     const recordSummary = operatorStore.records.find((record) => record.record_id === id);
     const record = await getRecord(id);
     const isMulti = record.parcelles.features.find((e) => e.geometry.type === "MultiPolygon");
-
-    if (!isMulti) {
-      const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
-        version_name: `Copie de ${record.version_name}`,
-        parcelles: {
-          ...record.parcelles,
-          features: record.parcelles.features.map((p) => ({
-            ...p,
-            properties: {
-              ...p.properties,
-              cultures: p.properties.cultures.map((c) => ({
-                ...c,
-                id: c.id && uuidRegex.test(c.id) ? c.id : crypto.randomUUID(),
-              })),
-            },
-          })),
-        },
-        metadata: {
-          provenance: window.location.host,
-          source: "Copie de version existante",
-          copy_of: record.record_id,
-        },
-      });
-      operatorStore.records?.unshift({
-        ...newRecord,
-        parcelles: recordSummary.parcelles,
-        surface: recordSummary.surface,
-      });
-      return newRecord;
+    try {
+      if (!isMulti) {
+        const newRecord = await createOperatorRecord(operatorStore.operator.numeroBio, {
+          version_name: `Copie de ${record.version_name}`,
+          parcelles: {
+            ...record.parcelles,
+            features: record.parcelles.features.map((p) => ({
+              ...p,
+              properties: {
+                ...p.properties,
+                cultures: p.properties.cultures.map((c) => ({
+                  ...c,
+                  id: c.id && uuidRegex.test(c.id) ? c.id : crypto.randomUUID(),
+                })),
+              },
+            })),
+          },
+          metadata: {
+            provenance: window.location.host,
+            source: "Copie de version existante",
+            copy_of: record.record_id,
+          },
+        });
+        operatorStore.records?.unshift({
+          ...newRecord,
+          parcelles: recordSummary.parcelles,
+          surface: recordSummary.surface,
+        });
+        return newRecord;
+      }
+      toast.error("La version n'a pas pu être dupliquée du fait d'une géometrie incorrecte");
+    } catch (e) {
+      if (e.response.data.code === "INVALID_API_REQUEST") toast.error(e.response.data.message);
+      else throw e;
     }
-    toast.error("La version n'a pas pu être dupliquée du fait d'une géometrie incorrecte");
   }
 
   /**
