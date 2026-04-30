@@ -63,7 +63,6 @@ async function exportAttestationPdf(typeObj, force = false) {
     return;
   }
 
-console.log(typeObj)
   try {
     isPdfLoading.value[typeObj.type] = true;
     errorText.value[typeObj.type] = null;
@@ -98,7 +97,7 @@ console.log(typeObj)
     if (error.code === "ERR_CANCELED") {
       return;
     }
-    console.log(error)
+    console.log(error);
     errorText.value[typeObj.type] =
       error.response?.data?.message ?? "Erreur lors du téléchargement. Réessayez plus tard.";
   } finally {
