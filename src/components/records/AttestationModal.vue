@@ -15,15 +15,15 @@ const emit = defineEmits(["close"]);
 
 const ATTESTATION_OPTIONS = [
   {
-    label: "Attestation de production PAC",
+    label: "Attestation du parcellaire PAC",
     description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle",
     type: "pac",
     labelpdf: "pac",
   },
   {
-    label: "Fichier ZIP : Attestation de production PAC + liste des parcelles",
+    label: "Fichier ZIP : Attestation du parcellaire PAC + liste des parcelles",
     description:
-      "Fichier zippé contenant l'attestation de production PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles",
+      "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles",
     type: "zip",
     labelpdf: "PAC",
   },
@@ -108,7 +108,7 @@ async function exportAttestationPdf(typeObj, force = false) {
 
 <template>
   <Modal @close="emit('close')">
-    <template #title> Attestation de production </template>
+    <template #title> Attestation du parcellaire </template>
 
     <div v-if="isLoading" class="attestation-loading">
       <Spinner />
