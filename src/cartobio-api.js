@@ -47,6 +47,19 @@ export async function searchOperators({ input, page, filter, limit = 7 }) {
 
 /**
  * @param {string} input
+ * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
+ */
+export async function searchOperatorsAdmin({ input, page, filter, limit = 7 }) {
+  const { data } = await apiClient.post(
+    `/v2/certification/adminsearch`,
+    { input, page, filter, limit },
+    { timeout: 60000 },
+  );
+  return data;
+}
+
+/**
+ * @param {string} input
  * @returns {Promise<any[]>}
  */
 export async function getForAutocomplete(search) {
@@ -396,5 +409,25 @@ export async function getRPG(rpgData) {
 
 export async function getGeometryEquals(oldRecordId, newRecordId) {
   const data = await apiClient.post(`/v2/geometry/geometryEquals`, { payload: { old: oldRecordId, new: newRecordId } });
+  return data;
+}
+
+export async function getCutBorder(geometry, distance, allBorder, isInverted, startBorderPoint, endBorderPoint) {
+  const payload = {
+    geometry,
+    distance,
+    allBorder,
+    isInverted,
+    startBorderPoint,
+    endBorderPoint,
+  };
+
+  const response = await apiClient.post("/v3/geometry/border-cut", payload);
+
+  return response;
+}
+
+export async function logoutApi() {
+  const data = await apiClient.post(`/auth-provider/logout`);
   return data;
 }

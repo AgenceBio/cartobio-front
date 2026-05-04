@@ -11,10 +11,12 @@ export const usePermissions = defineStore("permissions", () => {
   const operatorStore = useOperatorStore();
 
   // proxy the values so as they can be overriden by unit tests
-  const isOc = computed(() => userStore.isOc);
+  const isOc = computed(() => userStore.isOc || userStore.isAdmin);
   const isAgri = computed(() => userStore.isAgri);
 
   function canEditRecord(record) {
+    if (userStore.isAdmin) return true;
+
     if (isOc.value && (record.oc_id === null || record.oc_id === userStore.user?.organismeCertificateur?.id)) {
       if (record.certification_state !== CertificationState.CERTIFIED || canCertify.value) {
         return true;
@@ -47,11 +49,13 @@ export const usePermissions = defineStore("permissions", () => {
 
   const canCreateVersion = computed(
     () =>
-      (isOc.value || isAgri.value) &&
-      operatorStore.operator.notifications?.etatCertification !== "ARRETEE" &&
-      operatorStore.operator.notifications?.etatCertification !== "RETIREE" &&
-      (!isOc.value ||
-        operatorStore.operator.notifications?.organismeCertificateurId === userStore.user.organismeCertificateur.id),
+      ((isOc.value || isAgri.value) &&
+        operatorStore.operator.notifications?.etatCertification !== "ARRETEE" &&
+        operatorStore.operator.notifications?.etatCertification !== "RETIREE" &&
+        (!isOc.value ||
+          operatorStore.operator.notifications?.organismeCertificateurId ===
+            userStore.user.organismeCertificateur?.id)) ||
+      userStore.isAdmin,
   );
   const canEditVersion = canEditParcellaire;
 

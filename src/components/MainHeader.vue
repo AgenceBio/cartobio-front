@@ -92,7 +92,7 @@
                     :class="{ 'fr-collapse--expanded': dropdownIsOpen }"
                   >
                     <ul class="fr-menu__list">
-                      <li class="fr-menu__item">
+                      <li class="fr-menu__item" v-if="!isAdmin">
                         <router-link :to="accueilPage" class="fr-nav__link" @click="closeMonEspace">
                           Accueil
                         </router-link>
@@ -351,7 +351,7 @@
           <nav class="fr-nav" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <router-link to="/" class="fr-nav__link"> Accueil </router-link>
+                <router-link v-if="!isAdmin" to="/" class="fr-nav__link"> Accueil </router-link>
               </li>
               <li class="fr-nav__item">
                 <button
@@ -433,7 +433,7 @@
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
-            <li class="fr-nav__item">
+            <li class="fr-nav__item" v-if="!isAdmin">
               <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Accueil</router-link>
             </li>
             <li class="fr-nav__item">
@@ -700,6 +700,7 @@ const roleIcon = computed(() => {
 
 const menuIsOpen = ref(false);
 
+const isAdmin = computed(() => userStore.isAdmin);
 const isOc = computed(() => userStore.isOc);
 const isAgri = computed(() => userStore.isAgri);
 
