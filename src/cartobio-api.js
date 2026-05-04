@@ -374,11 +374,14 @@ export async function getDataXLSX(payload) {
  * @param {object} signal - Signal de la requete Axios
  * @returns {Promise<string>} -Base64 du fichier pdf
  */
-export async function getPDFData(numeroBio, record_id, signal = null, force = false) {
-  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}&force_refresh=${force}`, {
-    timeout: 600000,
-    signal,
-  });
+export async function getPDFData(numeroBio, record_id, type, force = false, signal = null) {
+  const data = await apiClient.get(
+    `/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}&force_refresh=${force}&pac=${type === "pac"}&zip=${type === "zip"}`,
+    {
+      timeout: 600000,
+      signal,
+    },
+  );
   return data;
 }
 
@@ -386,8 +389,10 @@ export async function hideNotif(numeroBio) {
   await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
 }
 
-export async function getHasAttestationProduction(recordId) {
-  const { data } = await apiClient.get(`/v2/audits/${recordId}/has-attestation-production`);
+export async function getHasAttestationProduction(recordId, type) {
+  const { data } = await apiClient.get(
+    `/v2/audits/${recordId}/has-attestation-production?pac=${type === "pac" || type === "zip"}`,
+  );
 
   return data;
 }
