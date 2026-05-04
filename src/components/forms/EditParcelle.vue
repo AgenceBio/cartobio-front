@@ -216,7 +216,7 @@
                     >Date de début de conversion <span v-if="!isEngagementDateRequired"></span
                   ></label>
                   <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
-                    Une date est requise pour l'attestation de production, si vous ne la connaissez pas ou ne souhaitez
+                    Une date est requise pour l'attestation du parcellaire, si vous ne la connaissez pas ou ne souhaitez
                     pas la mettre, celle-ci sera automatiquement remplie par 01/01/1900.
                   </p>
                   <input

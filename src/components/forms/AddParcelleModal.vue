@@ -48,8 +48,8 @@
           :max="maxDate"
         />
         <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
-          Une date est requise pour l'attestation de production, les parcelles sélectionnées actuellement n'ayant pas de
-          date de conversion seront automatiquement remplies par 01/01/1900.
+          Une date est requise pour l'attestation du parcellaire, les parcelles sélectionnées actuellement n'ayant pas
+          de date de conversion seront automatiquement remplies par 01/01/1900.
         </p>
       </div>
 
