@@ -120,22 +120,24 @@ async function exportAttestationPdf(typeObj, force = false) {
       </p>
       <p>Cela peut prendre quelques minutes, restez sur cette page ou revenez ultérieurement.</p>
 
-      <div class="fr-radio-group">
-        <div v-for="option in ATTESTATION_OPTIONS" :key="option.type">
-          <input
-            :id="`attestation-${option.type}`"
-            type="radio"
-            name="attestation-type"
-            :value="option"
-            v-model="selectedType"
-            class="attestation-option-radio"
-          />
-          <label class="fr-label" :for="`attestation-${option.type}`">
-            {{ option.label }}
-            <span class="fr-hint-text">{{ option.description }}</span>
-          </label>
+      <fieldset class="fr-fieldset" id="options-form">
+        <div class="fr-fieldset__element" v-for="option in ATTESTATION_OPTIONS" :key="option.type">
+          <div class="fr-radio-group fr-radio-group--sm">
+            <input
+              :id="`attestation-${option.type}`"
+              type="radio"
+              name="attestation-type"
+              :value="option"
+              v-model="selectedType"
+              class="attestation-option-radio"
+            />
+            <label class="fr-label" :for="`attestation-${option.type}`">
+              {{ option.label }}
+              <span class="fr-hint-text">{{ option.description }}</span>
+            </label>
+          </div>
         </div>
-      </div>
+      </fieldset>
       <p v-if="errorText[selectedType.type]" class="fr-px-1w fr-text--sm fr-error-text fr-mt-1w">
         {{ errorText[selectedType.type] }}
       </p>
@@ -192,13 +194,11 @@ async function exportAttestationPdf(typeObj, force = false) {
 .attestation-option {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
   padding: 0.75rem 1rem;
   cursor: pointer;
 }
 
 .attestation-option-radio {
-  margin-top: 0.2rem;
   flex-shrink: 0;
 }
 
