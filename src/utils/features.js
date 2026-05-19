@@ -245,11 +245,14 @@ export const groupingChoices = {
   [GROUPE_ILOT]: {
     label: "Îlot PAC ou hors PAC",
     labelNoGroup: "Non précisé ou hors-PAC",
+    labelEnAttente: "En attente déclaration PAC",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => ("NUMERO_I" in d.properties ? d.properties.NUMERO_I : NO_GROUP),
     groupLabelFn({ featureSample: d }) {
       if (d.properties.NUMERO_I) {
         return `Îlot ${d.properties.NUMERO_I}`;
+      } else if (d.properties.attente_pac) {
+        return this.labelEnAttente;
       } else {
         return this.labelNoGroup;
       }
