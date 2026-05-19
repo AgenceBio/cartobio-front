@@ -9,7 +9,7 @@
           aria-label="Fermer la fiche de la parcelle"
         ></button>
       </div>
-      <div class="fr-hint-text" v-if="feature.properties.attente_pac">En attente de déclaration PAC</div>
+      <em class="fr-hint-text" v-if="feature.properties.attente_pac">En attente de déclaration PAC</em>
       <div class="fr-mt-4v fr-pb-0">
         <div class="flex">
           <span class="fr-mt-1w fr-mb-0 fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</span>
@@ -47,7 +47,7 @@
             }}
           </p>
         </div>
-        <div class="fr-grid-row fr-text--sm fr-mt-1w">
+        <div class="fr-grid-row fr-text--sm fr-mt-1w" v-if="!(feature.properties.NUMERO_I && feature.properties.NUMERO_P)">
           <div class="fr-checkbox-group fr-checkbox-group--sm">
             <input
               name="checkbox"

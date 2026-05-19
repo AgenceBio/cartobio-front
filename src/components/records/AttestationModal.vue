@@ -3,6 +3,9 @@ import { ref, onMounted } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { getPDFData, getHasAttestationProduction } from "@/cartobio-api.js";
 import Modal from "@/components/widgets/Modal.vue";
+import { useFeaturesStore } from "@/stores/features.js";
+
+const featuresStore = useFeaturesStore();
 
 const props = defineProps({
   record: {
@@ -16,22 +19,25 @@ const emit = defineEmits(["close"]);
 const ATTESTATION_OPTIONS = [
   {
     label: "Attestation du parcellaire PAC",
-    description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle",
+    description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle.",
     type: "pac",
     labelpdf: "pac",
+    active: featuresStore.hasPac,
   },
   {
     label: "Fichier ZIP : Attestation du parcellaire PAC + liste des parcelles",
     description:
-      "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles",
+      "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles.",
     type: "zip",
     labelpdf: "PAC",
+    active: featuresStore.hasPac,
   },
   {
     label: "Liste complète des parcelles de l'exploitation",
     description: "Liste des parcelles contrôlées de l'exploitation.",
     type: "complet",
     labelpdf: "liste_complete",
+    active: true,
   },
 ];
 
@@ -40,7 +46,7 @@ const isPdfGenerating = ref(false);
 const errorText = ref({ complet: null, pac: null, zip: null });
 const hasAttestationProduction = ref({ complet: null, pac: null, zip: null });
 const isLoading = ref(true);
-const selectedType = ref(ATTESTATION_OPTIONS[0]);
+const selectedType = ref(featuresStore.hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
 
 onMounted(async () => {
   if (props.record.certification_state !== "CERTIFIED") {
@@ -93,6 +99,8 @@ async function exportAttestationPdf(typeObj, force = false) {
     a.remove();
 
     window.URL.revokeObjectURL(url);
+    const res = await getHasAttestationProduction(props.record.record_id, typeObj.type);
+    hasAttestationProduction.value[typeObj.type] = res.hasAttestationProduction;
   } catch (error) {
     if (error.code === "ERR_CANCELED") {
       return;
@@ -129,6 +137,7 @@ async function exportAttestationPdf(typeObj, force = false) {
               name="attestation-type"
               :value="option"
               v-model="selectedType"
+              :disabled="!option.active"
               class="attestation-option-radio"
             />
             <label class="fr-label" :for="`attestation-${option.type}`">
