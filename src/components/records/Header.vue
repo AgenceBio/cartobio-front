@@ -284,7 +284,6 @@ const tab = ref(props.stateTab);
 
 const { record } = recordStore;
 const { operator } = operatorStore;
-console.log(featuresStore)
 const featuresSets = useFeaturesSetsStore();
 const { collection } = storeToRefs(featuresStore);
 const { params: mapParams } = storeToRefs(preferences);
