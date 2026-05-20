@@ -243,7 +243,7 @@ export const groupingChoices = {
     sortFeaturesFn: sortByAccessor((f) => featureName(f, PACNotationOptions), SORT.ASCENDING),
   },
   [GROUPE_ILOT]: {
-    label: "Îlot PAC",
+    label: "Îlot PAC ou hors PAC",
     labelNoGroup: "Non précisé ou hors-PAC",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => ("NUMERO_I" in d.properties ? d.properties.NUMERO_I : NO_GROUP),
