@@ -23,7 +23,7 @@
             <li><img src="@/assets/logos-oc/bureau-veritas.png" alt="Logo Bureau Veritas" class="logo" /></li>
             <li><img src="@/assets/logos-oc/certis.png" alt="Logo Certis" class="logo" /></li>
             <li><img src="@/assets/logos-oc/alpes-controles.png" alt="Logo Alpes Contrôles" class="logo" /></li>
-            <li><img src="@/assets/logos-oc/qualisud.png" alt="Logo Qualisud" class="logo" /></li>
+            <li><img src="@/assets/logos-oc/qualisud.jpg" alt="Logo Qualisud" class="logo" /></li>
             <li><img src="@/assets/logos-oc/ocacia.png" alt="Logo Ocacia" class="logo" /></li>
             <li><img src="@/assets/logos-oc/food-chain-id.png" alt="Food Chain ID" class="logo" /></li>
           </ul>
