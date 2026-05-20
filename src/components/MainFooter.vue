@@ -215,4 +215,8 @@ const isOnExploitationsPage = computed((): boolean => {
 .fr-footer {
   position: relative;
 }
+
+button {
+  z-index: 9999;
+}
 </style>
