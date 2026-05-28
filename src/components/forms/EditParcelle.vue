@@ -484,7 +484,6 @@ function createInitialPatch() {
 const patch = ref(createInitialPatch());
 const details = ref(featureDetails(props.feature));
 
-
 const initialPatchState = ref(JSON.stringify(createInitialPatch()));
 
 const hasRealChanges = computed(() => {
@@ -504,7 +503,7 @@ watch(featureId, (newId, oldId) => {
     initialPatchState.value = JSON.stringify(newPatch);
 
     featuresSet.setCandidate([]);
-    details.value = featureDetails(props.feature)
+    details.value = featureDetails(props.feature);
 
     nextTick(() => {
       isInitializing.value = false;
