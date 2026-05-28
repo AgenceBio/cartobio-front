@@ -482,6 +482,8 @@ function createInitialPatch() {
 }
 
 const patch = ref(createInitialPatch());
+const details = ref(featureDetails(props.feature));
+
 
 const initialPatchState = ref(JSON.stringify(createInitialPatch()));
 
@@ -502,6 +504,7 @@ watch(featureId, (newId, oldId) => {
     initialPatchState.value = JSON.stringify(newPatch);
 
     featuresSet.setCandidate([]);
+    details.value = featureDetails(props.feature)
 
     nextTick(() => {
       isInitializing.value = false;
@@ -512,7 +515,6 @@ watch(featureId, (newId, oldId) => {
   }
 });
 
-const details = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
 const isEngagementDateRequired = computed(() =>
   [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.value.conversion_niveau),
