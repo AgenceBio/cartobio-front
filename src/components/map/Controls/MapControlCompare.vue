@@ -2,39 +2,72 @@
   <div class="button-group" :class="{ 'editing-bg': isEditing }">
     <div :class="[props.isCompare ? 'info-box-left' : 'info-box-right']">
       <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap" aria-live="polite">
-        <div class="legend" v-if="openList === null">
+        <div class="legend fr-mt-3w" v-if="openList === null">
           <div
             class="legend-item"
             @click="toggleList('added')"
             @mouseenter="onHoverList('added')"
             @mouseleave="onLeaveList()"
           >
-            <span class="legend-color added"></span>
-            Ajoutées
-            <span class="nb-class">{{ addNb }}</span>
-
-            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType('added')">
-              <span class="ri-focus-3-line"></span>
-            </button>
+            <div>
+              <span class="legend-color added"></span>
+              <span class="fr-ml-1w">Ajoutées</span>
+            </div>
+            <div>
+              <span :class="{ 'nb-class': addNb === 0, 'nb-class-more': addNb > 0 }">{{ addNb }}</span>
+              <button
+                class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                :disabled="addNb === 0"
+                @click.prevent.stop="onFocusType('added')"
+              >
+                <span class="ri-focus-3-line"></span>
+              </button>
+            </div>
           </div>
 
-          <div class="legend-item" @mouseenter="onHoverList('modified')" @mouseleave="onLeaveList()">
-            <span class="legend-color modified" @click="toggleList('modified')"></span>
-            Modifiées
-            <span class="nb-class">{{ modifiedNb }}</span>
+          <div
+            class="legend-item"
+            @click="toggleList('modified')"
+            @mouseenter="onHoverList('modified')"
+            @mouseleave="onLeaveList()"
+          >
+            <div>
+              <span class="legend-color modified" @click="toggleList('modified')"></span>
+              <span class="fr-ml-1w">Modifiées</span>
+            </div>
+            <div>
+              <span :class="{ 'nb-class': modifiedNb === 0, 'nb-class-more': modifiedNb > 0 }"> {{ modifiedNb }}</span>
 
-            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType('modified')">
-              <span class="ri-focus-3-line"></span>
-            </button>
+              <button
+                class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                :disabled="modifiedNb === 0"
+                @click.prevent.stop="onFocusType('modified')"
+              >
+                <span class="ri-focus-3-line"></span>
+              </button>
+            </div>
           </div>
 
-          <div class="legend-item" @mouseenter="onHoverList('deleted')" @mouseleave="onLeaveList()">
-            <span class="legend-color removed" @click="toggleList('deleted')"></span>
-            Supprimées
-            <span class="nb-class">{{ deleteNb }}</span>
-            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType('deleted')">
-              <span class="ri-focus-3-line"></span>
-            </button>
+          <div
+            class="legend-item"
+            @click="toggleList('deleted')"
+            @mouseenter="onHoverList('deleted')"
+            @mouseleave="onLeaveList()"
+          >
+            <div>
+              <span class="legend-color removed" @click="toggleList('deleted')"></span>
+              <span class="fr-ml-1w">Supprimées</span>
+            </div>
+            <div>
+              <span :class="{ 'nb-class': deleteNb === 0, 'nb-class-more': deleteNb > 0 }">{{ deleteNb }}</span>
+              <button
+                class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                :disabled="deleteNb === 0"
+                @click.prevent.stop="onFocusType('deleted')"
+              >
+                <span class="ri-focus-3-line"></span>
+              </button>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -743,6 +776,7 @@ i[class*=" ri"] {
   font-size: 0.85rem;
   z-index: 10000;
   max-width: 200px;
+  margin-bottom: 8px;
 }
 
 .legend {
@@ -760,6 +794,19 @@ hr {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  justify-content: space-between;
+  font-size: 12px;
+  width: 100%;
+}
+
+.legend-item > div {
+  display: flex;
+  align-items: center;
+}
+
+.legend-item:hover {
+  background-color: var(--light-options-primary-color-975-hover-blue-france-975-hover, #dcdcfc);
+  cursor: pointer;
 }
 
 .legend-color {
@@ -822,6 +869,23 @@ hr {
 
   background: var(--light-decisions-background-background-action-low-blue-france-active, #adadf9);
   border-radius: 12px;
+}
+
+.nb-class-more {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 8px;
+  gap: 2px;
+
+  width: 24px;
+  color: var (--light-decisions-text-text-action-high-blue-france, #000091);
+
+  height: 24px;
+
+  border-radius: 12px;
+  background: var(--light-decisions-background-background-action-low-blue-france, #e3e3fd);
 }
 
 .editing-bg {

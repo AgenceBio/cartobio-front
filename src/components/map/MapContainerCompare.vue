@@ -19,6 +19,7 @@
       aria-label="Carte droite, seconde version"
       @mousemove="onMouseMove2"
       @mouseleave="onMouseLeave2"
+      @click="onMapClick2"
     >
       <slot name="map2" v-if="map2" />
     </div>
@@ -34,6 +35,7 @@ import { getCenter } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 
 import VectorLayer from "ol/layer/Vector";
+import { FeatureLike } from "ol/Feature";
 
 interface Props {
   layerId?: string;
@@ -46,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: "parcel-click", payload: { id: string | number }): void;
+  (e: "parcel-compare-click", feature: FeatureLike): void;
 }>();
 
 const mapRef = ref<HTMLElement | null>(null);
@@ -274,6 +277,30 @@ const onMouseMove1 = (event: MouseEvent): void => {
   layer2?.changed();
 };
 
+const onMapClick2 = (event: MouseEvent): void => {
+  if (!map2.value || !mapRef2.value) return;
+
+  const geoJson = new GeoJSON();
+
+  const rect = mapRef2.value.getBoundingClientRect();
+  const pixel = [event.clientX - rect.left, event.clientY - rect.top];
+
+  if (!map2.value) return;
+
+  const coordinate = map.value.getCoordinateFromPixel(pixel);
+  if (!coordinate) return;
+
+  const pixel2 = map2.value.getPixelFromCoordinate(coordinate);
+  if (!pixel2) return;
+
+  const feature2 = detectAndHighlight(map2.value, pixel2);
+  if (!feature2) return;
+
+  const featureObj = geoJson.writeFeatureObject(feature2) as CartoBioFeature;
+
+  emit("parcel-compare-click", featureObj);
+};
+
 const onMouseMove2 = (event: MouseEvent): void => {
   if (!map.value || !map2.value || !mapRef2.value) return;
 
@@ -370,6 +397,7 @@ const onMouseLeave2 = (): void => {
   z-index: 0;
   height: 80vh;
   flex: 1;
+  position: relative;
 }
 
 .flex {
