@@ -15,6 +15,7 @@ on:
     - '*.md'
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     environment: production
@@ -23,7 +24,8 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-
+    - run: node -v
+    - run: cat .nvmrc
     - name: Assign env variables to a .env file
       run: env | grep VUE_APP > .env.local
       env:
