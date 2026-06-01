@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, createApp, watch, Ref, inject, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, computed, createApp, watch, Ref, inject, nextTick, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 
 import { Collection, Map } from "ol";
@@ -744,6 +744,14 @@ onUnmounted(() => {
   props.undoRedo.clear();
 
   resetCorrection(true, false);
+});
+
+watchEffect(() => {
+  console.log("BAR CHECK", {
+    selected: numberSelectedFeature.value,
+    hasUndo: props.hasUndo,
+    store: store.selectedIds,
+  });
 });
 </script>
 
