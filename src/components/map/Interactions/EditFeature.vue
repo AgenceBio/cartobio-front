@@ -114,7 +114,7 @@ import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { Style, Fill, Stroke, RegularShape } from "ol/style";
 import { Select, Modify } from "ol/interaction";
-import UndoRedo from "ol-ext/interaction/UndoRedo";
+import "ol-ext/interaction/UndoRedo";
 import Tooltip from "ol-ext/overlay/Tooltip";
 import FillPattern from "ol-ext/style/FillPattern";
 
