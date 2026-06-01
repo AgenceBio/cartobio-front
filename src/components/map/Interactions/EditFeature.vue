@@ -310,6 +310,7 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
     props.map.removeOverlay(tooltip);
     selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
     initModifyInteraction(selectedFeatures, tooltip);
+    console.log("UNDO STACK modifyend", props.undoRedo.getStack?.());
   });
 };
 const modifyInteraction = () => {
@@ -742,7 +743,6 @@ onMounted(() => {
 });
 onUnmounted(() => {
   props.undoRedo.clear();
-
   resetCorrection(true, false);
 });
 
