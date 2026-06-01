@@ -281,7 +281,9 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
     modify = null;
   }
 
-  tooltip.setFeature(selectedFeatures.getArray()[0]);
+  nextTick(() => {
+    tooltip.element.style.display = "none";
+  });
   modify = new Modify({
     features: selectedFeatures,
     style: [
@@ -303,15 +305,17 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
       resetCorrection(false);
     }
     isModifying.value = true;
-    props.map.addOverlay(tooltip);
+    tooltip.setFeature(selectedFeatures.getArray()[0]);
+
+    tooltip.element.style.display = "";
   });
 
   modify.on("modifyend", () => {
-    props.map.removeOverlay(tooltip);
+    tooltip.element.style.display = "none";
     selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
-    initModifyInteraction(selectedFeatures, tooltip);
   });
 };
+
 const modifyInteraction = () => {
   selectedFeatures = new Collection<Feature>();
   tooltip = new Tooltip({
@@ -323,6 +327,10 @@ const modifyInteraction = () => {
   });
   const select = createSelectInteraction(selectedFeatures);
 
+  props.map.addOverlay(tooltip);
+  nextTick(() => {
+    if (tooltip.element) tooltip.element.style.display = "none";
+  });
   if (selectedFeatures.getLength() === 1) {
     nextTick(() => {
       initModifyInteraction(selectedFeatures, tooltip);
@@ -821,5 +829,13 @@ onUnmounted(() => {
   flex: none;
   order: 0;
   flex-grow: 0;
+}
+
+:deep(.draw-tooltip) {
+  display: none;
+}
+
+:deep(.draw-tooltip.visible) {
+  display: block;
 }
 </style>
