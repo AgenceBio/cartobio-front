@@ -746,12 +746,11 @@ onUnmounted(() => {
   resetCorrection(true, false);
 });
 
-
 watchEffect(() => {
   console.log("BAR CHECK", {
     selected: numberSelectedFeature.value,
     hasUndo: props.hasUndo,
-    store: store.selectedIds
+    store: store.selectedIds,
   });
 });
 </script>
