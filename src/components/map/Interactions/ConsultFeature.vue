@@ -1,7 +1,7 @@
 <template><p class="fr-sr-only">La carte est en mode consultation</p></template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from "vue";
+import { onMounted, onUnmounted, watch, nextTick } from "vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 
@@ -140,9 +140,9 @@ onMounted(() => {
       emit("selectFeature", null);
     }
 
-    setTimeout(() => {
+    nextTick(() => {
       isInternalUpdate = false;
-    }, 0);
+    });
   });
 
   if (store.selectedIds && store.selectedIds.length > 0) {
