@@ -740,6 +740,7 @@ watch(
  */
 onMounted(() => {
   modifyInteraction();
+  props.map.addInteraction(props.undoRedo);
 });
 onUnmounted(() => {
   props.undoRedo.clear();
