@@ -38,7 +38,7 @@
     },
     {
       "question": "Je n’arrive pas à télécharger mon attestation, que dois-je faire ?",
-      "answer": "<p>Pour les parcellaires de plus de 80 parcelles, la récupération de votre attestation n’est pas instantanée. Générez votre attestation, patientez quelques minutes puis cliquez sur le bouton “Télécharger l’attestation de production”.</p>"
+      "answer": "<p>Pour les parcellaires de plus de 80 parcelles, la récupération de votre attestation n’est pas instantanée. Générez votre attestation, patientez quelques minutes puis cliquez sur le bouton “Télécharger l’attestation du parcellaire”.</p>"
     }
   ]
 }
