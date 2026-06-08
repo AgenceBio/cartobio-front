@@ -122,6 +122,11 @@ async function exportAttestationPdf(typeObj, force = false) {
       <Spinner />
     </div>
     <div v-else>
+      <div v-if="isPdfGenerating" class="fr-alert fr-alert--info fr-mb-1w">
+        <h3 class="fr-alert__title">Votre PDF est en cours de génération</h3>
+
+        <p>Le pdf sera bientôt disponible, nous vous invitons à revenir dans quelques minutes.</p>
+      </div>
       <p>
         Votre attestation est disponible sous plusieurs formats. Sélectionnez le format souhaité puis générez votre
         attestation.
@@ -177,7 +182,7 @@ async function exportAttestationPdf(typeObj, force = false) {
           data-content-piece="Export PDF"
           :aria-label="`Re-générer ${ATTESTATION_OPTIONS.find((o) => o.type === selectedType.type)?.label.toLowerCase()} au format PDF`"
           :title="`Générer une nouvelle attestation pour mettre à jour mes informations`"
-          :disabled="!hasAttestationProduction[selectedType.type] || isPdfLoading[selectedType.type]"
+          :disabled="!hasAttestationProduction[selectedType.type] || isPdfLoading[selectedType.type] || isPdfGenerating"
         >
           Re-générer
         </button>

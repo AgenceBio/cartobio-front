@@ -86,7 +86,7 @@
             v-tooltip="{
               text:
                 record.certification_state === 'CERTIFIED'
-                  ? 'Télécharger votre attestation de production'
+                  ? 'Télécharger votre attestation du parcellaire'
                   : 'Non disponible car votre parcellaire n\'a pas encore été certifié par votre OC.',
               position: 'top',
             }"
