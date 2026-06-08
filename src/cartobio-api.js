@@ -432,17 +432,3 @@ export async function logoutApi() {
   return data;
 }
 
-export async function getCutBorder(geometry, distance, allBorder, isInverted, startBorderPoint, endBorderPoint) {
-  const payload = {
-    geometry,
-    distance,
-    allBorder,
-    isInverted,
-    startBorderPoint,
-    endBorderPoint,
-  };
-
-  const response = await apiClient.post("/v3/geometry/border-cut", payload);
-
-  return response;
-}
