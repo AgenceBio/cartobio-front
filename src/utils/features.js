@@ -253,7 +253,7 @@ export const groupingChoices = {
       return d.properties.attente_pac ? "attente_pac" : NO_GROUP;
     },
     groupLabelFn({ featureSample: d, groupingKey }) {
-      if (d.properties.NUMERO_I) {
+      if (d.properties.NUMERO_I && d.properties.NUMERO_I !== "0") {
         return `Îlot ${d.properties.NUMERO_I}`;
       } else if (groupingKey === "attente_pac") {
         return this.labelEnAttente;
