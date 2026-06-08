@@ -431,7 +431,8 @@ const drawBorder = async () => {
       featureWithoutBordure.getGeometry()?.getType() === "MultiPolygon" ||
       bordureFeature.getGeometry()?.getType() === "MultiPolygon"
     ) {
-      errorMessage.value = "La découpe génère un multi-polygone, veuillez ajuster vos points de découpe ou la largeur de la bordure";
+      errorMessage.value =
+        "La découpe génère un multi-polygone, veuillez ajuster vos points de découpe ou la largeur de la bordure";
       hasBordure.value = false;
       previewBorderSource?.clear();
       return;
