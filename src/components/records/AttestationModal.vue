@@ -3,9 +3,6 @@ import { ref, onMounted } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { getPDFData, getHasAttestationProduction } from "@/cartobio-api.js";
 import Modal from "@/components/widgets/Modal.vue";
-import { useFeaturesStore } from "@/stores/features.js";
-
-const featuresStore = useFeaturesStore();
 
 const props = defineProps({
   record: {
@@ -13,6 +10,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const hasPac = props.record.geojson.features.some((f) => f.properties?.attente_pac === true);
 
 const emit = defineEmits(["close"]);
 
@@ -22,7 +21,7 @@ const ATTESTATION_OPTIONS = [
     description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle.",
     type: "pac",
     labelpdf: "pac",
-    active: featuresStore.hasPac,
+    active: hasPac,
   },
   {
     label: "Fichier ZIP : Attestation du parcellaire PAC + liste des parcelles",
@@ -30,7 +29,7 @@ const ATTESTATION_OPTIONS = [
       "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles.",
     type: "zip",
     labelpdf: "PAC",
-    active: featuresStore.hasPac,
+    active: hasPac,
   },
   {
     label: "Liste complète des parcelles de l'exploitation",
@@ -46,7 +45,7 @@ const isPdfGenerating = ref(false);
 const errorText = ref({ complet: null, pac: null, zip: null });
 const hasAttestationProduction = ref({ complet: null, pac: null, zip: null });
 const isLoading = ref(true);
-const selectedType = ref(featuresStore.hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
+const selectedType = ref(hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
 
 onMounted(async () => {
   if (props.record.certification_state !== "CERTIFIED") {
