@@ -3,6 +3,9 @@ import { ref, onMounted } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { getPDFData, getHasAttestationProduction } from "@/cartobio-api.js";
 import Modal from "@/components/widgets/Modal.vue";
+import { useFeaturesStore } from "@/stores/features.js";
+
+const featuresStore = useFeaturesStore();
 
 const props = defineProps({
   record: {
@@ -11,7 +14,9 @@ const props = defineProps({
   },
 });
 
-const hasPac = props.record.geojson.features.some((f) => f.properties?.attente_pac === true);
+const hasPac = props.record.geojson
+  ? props.record.geojson.features.some((f) => f.properties?.attente_pac === true)
+  : featuresStore.hasPac;
 
 const emit = defineEmits(["close"]);
 
