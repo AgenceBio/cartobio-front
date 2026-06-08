@@ -49,7 +49,7 @@
         </div>
         <div
           class="fr-grid-row fr-text--sm fr-mt-1w"
-          v-if="!(feature.properties.NUMERO_I && feature.properties.NUMERO_P)"
+          v-if="!(feature.properties.NUMERO_I && feature.properties.NUMERO_P) || feature.properties.NUMERO_I === '0'"
         >
           <div class="fr-checkbox-group fr-checkbox-group--sm">
             <input
