@@ -871,8 +871,8 @@ const getTargetFeature = (): Feature | null => {
 
 const applyDivideStyle = () => {
   const grayStyle = new Style({
-    stroke: new Stroke({ color: "rgba(150, 150, 150, 0.35)", width: 1 }),
-    fill: new Fill({ color: "rgba(200, 200, 200, 0.1)" }),
+    stroke: new Stroke({ color: "rgba(80, 80, 80, 0.8)", width: 1 }),
+    fill: new Fill({ color: "rgba(100, 100, 100, 0.6)" }),
   });
 
   props.vectorSource.getFeatures().forEach((feature) => {
