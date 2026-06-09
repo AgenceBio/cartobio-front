@@ -37,8 +37,8 @@ const ATTESTATION_OPTIONS = [
     active: hasPac,
   },
   {
-    label: "Liste complète des parcelles de l'exploitation",
-    description: "Liste des parcelles contrôlées de l'exploitation.",
+    label: "Liste des parcelles de l'exploitation",
+    description: "Liste des parcelles contrôlées de l'exploitation sans détail.",
     type: "complet",
     labelpdf: "liste_complete",
     active: true,
