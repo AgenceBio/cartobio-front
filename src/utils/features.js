@@ -265,8 +265,8 @@ export const groupingChoices = {
       const key = g.features.at(0)?.properties?.NUMERO_I;
       if (!key || key === "0") {
         const groupingKey = g.key;
-        if (groupingKey === "attente_pac") return Infinity - 1;
-        return Infinity;
+        if (groupingKey === "attente_pac") return Number.MAX_SAFE_INTEGER - 1;
+        return Number.MAX_SAFE_INTEGER;
       }
       return parseInt(key, 10);
     }, SORT.ASCENDING),
