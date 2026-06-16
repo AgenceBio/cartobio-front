@@ -124,7 +124,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
-import { click, platformModifierKey } from "ol/events/condition";
+import { click, platformModifierKey, altKeyOnly } from "ol/events/condition";
 import { MultiPoint } from "ol/geom";
 import EditParcelleTooltip from "../Overlays/EditParcelleTooltip.vue";
 import intersect from "@turf/intersect";
@@ -286,6 +286,7 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   });
   modify = new Modify({
     features: selectedFeatures,
+    deleteCondition: altKeyOnly,
     style: [
       getPolygonStyle(),
       new Style({
