@@ -760,7 +760,7 @@ export function getCultureIcon(key) {
       "grandes-cultures",
       "legumes",
       "plantes-aromatiques",
-      "vignes",
+      "viticulture",
       "surfaces-fourrageres",
     ].includes(res)
   ) {
@@ -776,3 +776,4 @@ export function getCultureIcon(key) {
 
   return "fr-icon-culture-autres-surfaces";
 }
+
