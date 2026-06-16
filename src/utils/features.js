@@ -261,7 +261,15 @@ export const groupingChoices = {
         return this.labelNoGroup;
       }
     },
-    sortFn: sortByAccessor((g) => parseInt(g.features.at(0)?.properties?.NUMERO_I, 10) || Infinity, SORT.ASCENDING),
+    sortFn: sortByAccessor((g) => {
+      const key = g.features.at(0)?.properties?.NUMERO_I;
+      if (!key || key === "0") {
+        const groupingKey = g.key;
+        if (groupingKey === "attente_pac") return Infinity - 1;
+        return Infinity;
+      }
+      return parseInt(key, 10);
+    }, SORT.ASCENDING),
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {
