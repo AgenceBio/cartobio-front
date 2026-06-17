@@ -40,7 +40,7 @@ const ATTESTATION_OPTIONS = [
     label: "Liste des parcelles de l'exploitation",
     description: "Liste des parcelles contrôlées de l'exploitation sans détail.",
     type: "complet",
-    labelpdf: "liste_complete",
+    labelpdf: "liste",
     active: true,
   },
 ];
