@@ -204,7 +204,6 @@ export const useOperatorStore = defineStore("operator", () => {
       apiClient.get(`/v2/operator/${numeroBio}/records`),
       apiClient.get(`/v2/operator/${numeroBio}/importData`),
     ]);
-
     // Update storage if requested or if already present
     if (store || storage.operators[numeroBio]) {
       storage.operatorsStorage = {
