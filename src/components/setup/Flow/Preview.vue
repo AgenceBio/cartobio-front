@@ -251,7 +251,9 @@ const sortedRecords = computed(
           return recordA.certification_state === CertificationState.AUDITED ? -1 : 1;
         }
       }
-      return new Date(recordB.created_at) - new Date(recordA.created_at);
+      const dateA = recordA.audit_date ?? recordA.created_at;
+      const dateB = recordB.audit_date ?? recordB.created_at;
+      return new Date(dateB) - new Date(dateA);
     }) || [],
 );
 

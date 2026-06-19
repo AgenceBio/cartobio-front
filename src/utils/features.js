@@ -245,16 +245,31 @@ export const groupingChoices = {
   [GROUPE_ILOT]: {
     label: "Îlot PAC ou hors PAC",
     labelNoGroup: "Non précisé ou hors-PAC",
+    labelEnAttente: "En attente déclaration PAC",
     /** @param {GeoJSONFeature} */
-    datapoint: (d) => ("NUMERO_I" in d.properties ? d.properties.NUMERO_I : NO_GROUP),
-    groupLabelFn({ featureSample: d }) {
-      if (d.properties.NUMERO_I) {
+    datapoint: (d) => {
+      if ("NUMERO_I" in d.properties && d.properties.NUMERO_I != null && d.properties.NUMERO_I !== "0")
+        return d.properties.NUMERO_I;
+      return d.properties.attente_pac ? "attente_pac" : NO_GROUP;
+    },
+    groupLabelFn({ featureSample: d, groupingKey }) {
+      if (d.properties.NUMERO_I && d.properties.NUMERO_I !== "0") {
         return `Îlot ${d.properties.NUMERO_I}`;
+      } else if (groupingKey === "attente_pac") {
+        return this.labelEnAttente;
       } else {
         return this.labelNoGroup;
       }
     },
-    sortFn: sortByAccessor((g) => parseInt(g.features.at(0)?.properties?.NUMERO_I, 10) || Infinity, SORT.ASCENDING),
+    sortFn: sortByAccessor((g) => {
+      const key = g.features.at(0)?.properties?.NUMERO_I;
+      if (!key || key === "0") {
+        const groupingKey = g.key;
+        if (groupingKey === "attente_pac") return Number.MAX_SAFE_INTEGER - 1;
+        return Number.MAX_SAFE_INTEGER;
+      }
+      return parseInt(key, 10);
+    }, SORT.ASCENDING),
     sortFeaturesFn: sortByAccessor((f) => parseInt(f.properties?.NUMERO_P, 10) || Infinity, SORT.ASCENDING),
   },
   [GROUPE_CULTURE]: {

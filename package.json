@@ -20,7 +20,7 @@
     "prettier:check": "prettier --check \"**/*.{vue,ts,tsx,js,md,json,css,yaml}\""
   },
   "engines": {
-    "node": "^20.0.0"
+    "node": "^24.0.0"
   },
   "dependencies": {
     "@agencebio/rosetta-cultures": "^2.5.0",

@@ -66,6 +66,15 @@ export const useFeaturesStore = defineStore("features", () => {
   const hasFeatures = computed(() => collection.value.features.length > 0);
 
   /**
+   * @type {ComputedRef<Boolean>}
+   */
+  const hasPac = computed(() =>
+    collection.value.features.some(
+      (p) => p.properties.attente_pac || (p?.properties.NUMERO_P != null && p?.properties.NUMERO_I != null),
+    ),
+  );
+
+  /**
    * @type {ComputedRef<CartoBioFeature[]>}
    */
   const allSelected = computed(() => {
@@ -319,6 +328,7 @@ export const useFeaturesStore = defineStore("features", () => {
     collection,
     hasFeatures,
     hoveredFeature,
+    hasPac,
     isDirty,
     selectedFeatures,
     // methods

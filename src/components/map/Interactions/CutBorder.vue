@@ -101,24 +101,13 @@ import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { createFeaturesFromOther } from "@/cartobio-api.js";
+import { createFeaturesFromOther, getCutBorder } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Coordinate } from "ol/coordinate";
 import CircleStyle from "ol/style/Circle";
 import proj4 from "proj4";
-import {
-  Geometry,
-  GeometryCollection,
-  LinearRing,
-  LineString,
-  MultiLineString,
-  MultiPoint,
-  MultiPolygon,
-  Point,
-  Polygon,
-} from "ol/geom";
-import * as jsts from "jsts/dist/jsts.min";
+import { LineString, Point } from "ol/geom";
 
 /*
  * * Interface
@@ -174,13 +163,20 @@ const emit = defineEmits<{
 
 const resSource = new VectorSource();
 
+const SNAP_TOLERANCE = 15;
+
+const neighborStyles: Record<string, any> = {};
+
+let snapHighlightSource: VectorSource | null = null;
+let snapHighlightLayer: VectorLayer<VectorSource> | null = null;
+let isSnapActive = false;
+
 /*
  * * Fonctions :  interactions
  */
 
 let dragStart: Translate | null = null;
 let dragEnd: Translate | null = null;
-let changeBorder: Translate | null = null;
 let currentOverlay: Overlay | null = null;
 let targetFeature: Feature | null = null;
 let previewClosestPointSource: VectorSource | null = null;
@@ -195,14 +191,40 @@ let closestPoint: Coordinate | undefined | null;
 let closestSegmentIndex = -1;
 let startBorderPoint: Coordinate | undefined | null;
 let endBorderPoint: Coordinate | undefined | null;
-let startSegmentIndex = -1;
-let endSegmentIndex = -1;
 const isInverted = ref(false);
 const allBorder = ref(false);
 let isDragging = false;
 
 let handleMapClick: () => void;
 let handlePointerMove: (e: MapBrowserEvent) => void;
+
+/*
+ * * Fonctions : Snap highlight
+ */
+
+const initSnapHighlightLayer = () => {
+  snapHighlightSource = new VectorSource();
+  snapHighlightLayer = new VectorLayer({
+    source: snapHighlightSource,
+    style: new Style({
+      stroke: new Stroke({ color: "rgba(255, 215, 0, 1)", width: 3 }),
+    }),
+    zIndex: 11,
+  });
+  props.map.addLayer(snapHighlightLayer);
+};
+
+const showSnapHighlight = () => {
+  if (!snapHighlightSource || !targetFeature || isSnapActive) return;
+  const highlightFeature = new Feature({ geometry: targetFeature.getGeometry() });
+  snapHighlightSource.addFeature(highlightFeature);
+  isSnapActive = true;
+};
+
+const removeSnapHighlight = () => {
+  snapHighlightSource?.clear();
+  isSnapActive = false;
+};
 
 const borderInteraction = (): void => {
   if (!targetFeature) return;
@@ -275,23 +297,19 @@ const borderInteraction = (): void => {
 
     if (!startBorderPoint) {
       startBorderPoint = closestPoint;
-      startSegmentIndex = closestSegmentIndex;
     } else if (!endBorderPoint) {
       props.map.un("pointermove", handlePointerMove);
       props.map.un("click", handleMapClick);
       endBorderPoint = closestPoint;
-      endSegmentIndex = closestSegmentIndex;
       closestPoint = null;
       if (previewStartPointLayer && !dragStart) {
         dragStart = dragPoint(previewStartPointLayer, (v: { point: Coordinate; segment: number }) => {
           startBorderPoint = v.point;
-          startSegmentIndex = v.segment;
         });
       }
       if (previewEndPointLayer && !dragEnd) {
         dragEnd = dragPoint(previewEndPointLayer, (v: { point: Coordinate; segment: number }) => {
           endBorderPoint = v.point;
-          endSegmentIndex = v.segment;
         });
       }
 
@@ -328,33 +346,6 @@ const dragPoint = (
   return translate;
 };
 
-function changeBorderSize() {
-  if (!previewBorderLayer) return null;
-  const translate = new Translate({
-    layers: [previewBorderLayer],
-  });
-
-  translate.on("translating", function (event) {
-    isDragging = true;
-
-    const coordinate = proj4("EPSG:4326", "EPSG:3857", event.coordinate);
-    const geometry = targetFeature?.getGeometry();
-    const tmpClosestPoint = geometry?.getClosestPoint(event.coordinate);
-    if (!tmpClosestPoint) return;
-    const closestPoint = proj4("EPSG:4326", "EPSG:3857", tmpClosestPoint);
-    const segment = new LineString([coordinate, closestPoint]);
-    distance.value = +segment.getLength().toFixed(2);
-    drawBorder();
-  });
-
-  // Écouter l'événement modifyend
-  translate.on("translateend", function () {
-    isDragging = false;
-  });
-
-  props.map.addInteraction(translate);
-  return translate;
-}
 const drawPoints = () => {
   if (!previewClosestPointSource || !previewStartPointSource || !previewEndPointSource) return;
   previewClosestPointSource.clear();
@@ -388,191 +379,83 @@ const drawPoints = () => {
     if (!isDragging && previewStartPointLayer && previewEndPointLayer) {
       dragStart = dragPoint(previewStartPointLayer, (v: { point: Coordinate; segment: number }) => {
         startBorderPoint = v.point;
-        startSegmentIndex = v.segment;
       });
       dragEnd = dragPoint(previewEndPointLayer, (v: { point: Coordinate; segment: number }) => {
         endBorderPoint = v.point;
-        endSegmentIndex = v.segment;
       });
     }
     drawBorder();
   }
 };
 
-const drawBorder = () => {
+const drawBorder = async () => {
   try {
     errorMessage.value = null;
-    if (!changeBorder) {
-      changeBorder = changeBorderSize();
-    }
-    if (currentOverlay) {
-      props.map.removeOverlay(currentOverlay);
-      currentOverlay = null;
-    }
-    previewBorderSource?.clear();
+
     if (!targetFeature) return;
-    const polygonIn3857 = targetFeature.getGeometry()?.clone();
-
-    if (!polygonIn3857) return;
-
-    polygonIn3857.setCoordinates(
-      polygonIn3857.getCoordinates().map((coord: number[][]) => {
-        return coord.map((point: number[]) => proj4("EPSG:4326", "EPSG:3857", point));
-      }),
-    );
-
-    const parser = new jsts.io.OL3Parser();
-    parser.inject(
-      Point,
-      LineString,
-      LinearRing,
-      Polygon,
-      MultiPoint,
-      MultiLineString,
-      MultiPolygon,
-      GeometryCollection,
-    );
-
-    const parcelleJsts = parser.read(polygonIn3857);
-    const parcelleAggrandieJsts = parcelleJsts.buffer(0.01);
-
-    const parcelleSansBordureJsts = parcelleAggrandieJsts.buffer(-(distance.value + 0.01));
-    const allBordureJsts = parcelleAggrandieJsts.difference(parcelleSansBordureJsts);
-
-    let bordureJsts;
-    if (allBorder.value) {
-      bordureJsts = allBordureJsts;
-    } else {
-      const parcelle = parser.write(parcelleSansBordureJsts);
-      let splittingLine;
-      try {
-        splittingLine = getSplittingLine(distance.value * 1.1, polygonIn3857, parcelle);
-      } catch (e) {
-        return;
-      }
-
-      const lineJsts = parser.read(splittingLine);
-
-      const union = allBordureJsts.getExteriorRing().union(lineJsts);
-      const polygonizer = new jsts.operation.polygonize.Polygonizer();
-      polygonizer.add(union);
-      const polys = polygonizer.getPolygons();
-      bordureJsts = polys.array
-        .filter((poly) => poly.intersection(allBordureJsts).getArea() > 0)
-        [+isInverted.value].intersection(allBordureJsts);
+    if (distance.value < 0.1) {
+      errorMessage.value = "Impossible de mettre une distance de 0";
+      return;
     }
 
-    const bordure = parser.write(bordureJsts);
-    bordure.setCoordinates(
-      bordure.getCoordinates().map((coord: number[][]) => {
-        return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
-      }),
+    const geometry = new GeoJSON().writeGeometryObject(targetFeature.getGeometry());
+
+    const startBorderPointTab = startBorderPoint ? [startBorderPoint[0], startBorderPoint[1]] : undefined;
+    const endBorderPointTab = endBorderPoint ? [endBorderPoint[0], endBorderPoint[1]] : undefined;
+
+    const response = await getCutBorder(
+      geometry,
+      distance.value,
+      allBorder.value,
+      isInverted.value,
+      startBorderPointTab,
+      endBorderPointTab,
     );
 
-    const withoutBordure = parser.write(parcelleJsts.difference(bordureJsts));
-    withoutBordure.setCoordinates(
-      withoutBordure.getCoordinates().map((coord: number[][]) => {
-        return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
-      }),
-    );
+    if (response.status !== 200) {
+      const error = await response.json();
+      throw new Error(error.error);
+    }
 
-    const res = new Feature({
-      ...targetFeature.getProperties(),
-      geometry: bordure,
-    });
+    const result = response.data;
 
-    const featureWithoutBordure = new Feature({
-      ...targetFeature.getProperties(),
-      geometry: withoutBordure,
-    });
+    const targetProperties = targetFeature.getProperties();
+    delete targetProperties.geometry;
+
+    previewBorderSource?.clear();
+
+    const featureWithoutBordure = new GeoJSON().readFeature(result.parcelleSansBordure);
+    const bordureFeature = new GeoJSON().readFeature(result.bordure);
+
+    if (
+      featureWithoutBordure.getGeometry()?.getType() === "MultiPolygon" ||
+      bordureFeature.getGeometry()?.getType() === "MultiPolygon"
+    ) {
+      errorMessage.value =
+        "La découpe génère un multi-polygone, veuillez ajuster vos points de découpe ou la largeur de la bordure";
+      hasBordure.value = false;
+      previewBorderSource?.clear();
+      return;
+    }
+
+    featureWithoutBordure.setProperties({ ...targetProperties });
+    bordureFeature.setProperties({ ...targetProperties });
 
     resSource?.clear();
     resSource?.addFeature(featureWithoutBordure);
-    resSource?.addFeature(res);
+    resSource?.addFeature(bordureFeature);
 
-    const parcelle1Geometry = new GeoJSON().writeFeatureObject(featureWithoutBordure, {});
-    parcelle1Area.value = calculateArea(parcelle1Geometry as CartoBioFeature);
+    previewBorderSource?.addFeature(bordureFeature);
 
-    const parcelle2Geometry = new GeoJSON().writeFeatureObject(res, {});
-    parcelle2Area.value = calculateArea(parcelle2Geometry as CartoBioFeature);
+    parcelle1Area.value = calculateArea(new GeoJSON().writeFeatureObject(featureWithoutBordure, {}) as CartoBioFeature);
+    parcelle2Area.value = calculateArea(new GeoJSON().writeFeatureObject(bordureFeature, {}) as CartoBioFeature);
 
-    previewBorderSource?.addFeature(res);
     hasBordure.value = true;
   } catch (e) {
-    errorMessage.value = "La découpe est impossible dû à la forme de la géométrie de la parcelle";
+    errorMessage.value = e.message || "La découpe est impossible dû à la forme de la géométrie de la parcelle";
     hasBordure.value = false;
     previewBorderSource?.clear();
   }
-};
-
-const getSplittingLine = (projectionDistance: number, geometry: Geometry, buffer: Geometry) => {
-  const polygon = geometry.getCoordinates()[0];
-  if (startSegmentIndex == -1 || endSegmentIndex == -1 || !startBorderPoint || !endBorderPoint || !targetFeature)
-    return null;
-
-  const startPoint = proj4("EPSG:4326", "EPSG:3857", [startBorderPoint[0], startBorderPoint[1]]);
-  const endPoint = proj4("EPSG:4326", "EPSG:3857", [endBorderPoint[0], endBorderPoint[1]]);
-  const startSlope = calculateSlope(
-    polygon[startSegmentIndex],
-    polygon[(startSegmentIndex + 1) % (polygon.length - 1)],
-  );
-  const endSlope = calculateSlope(polygon[endSegmentIndex], polygon[(endSegmentIndex + 1) % (polygon.length - 1)]);
-
-  // Calculer les points A et B
-  let pointA = calculateDestinationPoint(startPoint, projectionDistance, startSlope);
-  let extendedStartPoint = calculateDestinationPoint(startPoint, -1, startSlope);
-  if (!isPointInPolygon(pointA, geometry)) {
-    pointA = calculateDestinationPoint(startPoint, -projectionDistance, startSlope);
-    extendedStartPoint = calculateDestinationPoint(startPoint, 1, startSlope);
-  }
-
-  if (!isPointInPolygon(pointA, geometry)) {
-    throw new Error("Bordure plus grande que la parcelle");
-  }
-
-  let pointB = calculateDestinationPoint(endPoint, projectionDistance, endSlope);
-  let extendedEndPoint = calculateDestinationPoint(endPoint, -1, endSlope);
-  if (!isPointInPolygon(pointB, geometry)) {
-    pointB = calculateDestinationPoint(endPoint, -projectionDistance, endSlope);
-    extendedEndPoint = calculateDestinationPoint(endPoint, 1, endSlope);
-  }
-
-  if (!isPointInPolygon(pointB, geometry)) {
-    throw new Error("Bordure plus grande que la parcelle");
-  }
-
-  const points = [];
-  for (let i = startSegmentIndex; i % (polygon.length - 1) != endSegmentIndex % (polygon.length - 1); i++) {
-    let startPoint = polygon[i % (polygon.length - 1)];
-    const nextPoint =
-      i + 1 === endSegmentIndex ? calculateMidpoint(startPoint, endPoint) : polygon[(i + 1) % (polygon.length - 1)];
-
-    if (i === startSegmentIndex) {
-      startPoint = calculateMidpoint(nextPoint, startPoint);
-    }
-
-    const slope = calculateSlope(startPoint, nextPoint);
-    let tmpPoint = calculateDestinationPoint(startPoint, projectionDistance * 5, slope);
-    if (!isPointInPolygon(tmpPoint, buffer)) {
-      tmpPoint = calculateDestinationPoint(startPoint, -projectionDistance * 5, slope);
-    }
-
-    if (isPointInPolygon(tmpPoint, buffer)) {
-      points.push(tmpPoint);
-    }
-    tmpPoint = calculateDestinationPoint(nextPoint, projectionDistance * 5, slope);
-    if (!isPointInPolygon(tmpPoint, buffer)) {
-      tmpPoint = calculateDestinationPoint(nextPoint, -projectionDistance * 5, slope);
-    }
-
-    if (isPointInPolygon(tmpPoint, buffer)) {
-      points.push(tmpPoint);
-    }
-  }
-
-  const lineCoordinates = [extendedStartPoint, startPoint, pointA, ...points, pointB, endPoint, extendedEndPoint];
-
-  return new LineString(lineCoordinates);
 };
 
 /*
@@ -581,26 +464,6 @@ const getSplittingLine = (projectionDistance: number, geometry: Geometry, buffer
 
 const calculateArea = (feature: CartoBioFeature): string => {
   return inHa(legalProjectionSurface(feature));
-};
-
-const calculateSlope = (startPoint: Coordinate, endPoint: Coordinate) => {
-  const slope = (endPoint[1] - startPoint[1]) / (endPoint[0] - startPoint[0]);
-
-  return -1 / slope;
-};
-
-const calculateDestinationPoint = (startPoint: Coordinate, distance: number, slope: number) => {
-  const x = startPoint[0] + distance / Math.sqrt(1 + slope * slope);
-  const y = startPoint[1] + slope * (x - startPoint[0]);
-  return [x, y];
-};
-
-const calculateMidpoint = (pointA: number[], pointB: number[]) => {
-  return [(pointA[0] + pointB[0]) / 2, (pointA[1] + pointB[1]) / 2];
-};
-
-const isPointInPolygon = (point: Coordinate, geom: Geometry) => {
-  return geom.intersectsCoordinate(point);
 };
 
 const squaredDistance = (point1: Coordinate, point2: Coordinate) => {
@@ -660,6 +523,16 @@ const movePoint = (event: MapBrowserEvent) => {
   previewStartPointSource.clear();
   previewEndPointSource.clear();
 
+  const pixel = props.map.getPixelFromCoordinate(coordinate);
+  const closestPixel = props.map.getPixelFromCoordinate(closestPoint);
+  const pixelDistance = Math.sqrt(Math.pow(pixel[0] - closestPixel[0], 2) + Math.pow(pixel[1] - closestPixel[1], 2));
+
+  if (pixelDistance <= SNAP_TOLERANCE) {
+    showSnapHighlight();
+  } else {
+    removeSnapHighlight();
+  }
+
   drawPoints();
 
   const coordinates = geometry?.getCoordinates()[0];
@@ -695,8 +568,9 @@ const validateDivision = async () => {
 
   features.forEach((feature, index) => {
     const featureClone = feature.clone();
-    const featureObj = geoJson.writeFeatureObject(featureClone) as CartoBioFeature;
+    const featureObj = geoJson.writeFeatureObject(featureClone, {}) as CartoBioFeature;
 
+    console.log(featureObj);
     if (baseNom) {
       featureObj.properties.NOM = `${baseNom}.${index + 1}`;
     } else if (baseNumero) {
@@ -758,13 +632,12 @@ const resetChoice = () => {
   closestSegmentIndex = -1;
   startBorderPoint = null;
   endBorderPoint = null;
-  startSegmentIndex = -1;
-  endSegmentIndex = -1;
   hasBordure.value = false;
   parcelle1Area.value = 0;
   parcelle2Area.value = 0;
   errorMessage.value = null;
 
+  removeSnapHighlight();
   borderInteraction();
 };
 
@@ -788,14 +661,51 @@ const getTargetFeature = (): Feature | null => {
   return null;
 };
 
+const applyBorderStyle = () => {
+  const grayStyle = new Style({
+    fill: new Fill({ color: "rgba(166, 242, 250, 0.5)" }),
+    stroke: new Stroke({ width: 3, color: "rgba(76, 180, 189, 1)" }),
+  });
+
+  props.vectorSource.getFeatures().forEach((feature) => {
+    const fid = String(feature.getId() ?? feature.get("id") ?? "");
+    if (fid && fid !== String(store.selectedIds[0])) {
+      neighborStyles[fid] = feature.getStyle();
+      feature.setStyle(grayStyle);
+    }
+  });
+};
+
+const restoreFeatureStyles = () => {
+  props.vectorSource.getFeatures().forEach((feature) => {
+    const fid = String(feature.getId() ?? feature.get("id") ?? "");
+    if (fid && Object.prototype.hasOwnProperty.call(neighborStyles, fid)) {
+      feature.setStyle(neighborStyles[fid]);
+      delete neighborStyles[fid];
+    }
+  });
+
+  removeSnapHighlight();
+
+  if (snapHighlightLayer) {
+    props.map.removeLayer(snapHighlightLayer);
+    snapHighlightLayer = null;
+    snapHighlightSource = null;
+  }
+};
+
 /**
  * * States fonctions
  */
 onMounted(() => {
   targetFeature = getTargetFeature();
+  applyBorderStyle();
+  initSnapHighlightLayer();
   borderInteraction();
 });
 onUnmounted(() => {
+  restoreFeatureStyles();
+
   if (previewClosestPointLayer) {
     props.map.removeLayer(previewClosestPointLayer);
   }
