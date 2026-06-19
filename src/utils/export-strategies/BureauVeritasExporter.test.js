@@ -34,7 +34,7 @@ describe("BureauVeritasExporter", () => {
       ["PV", "", "[ERREUR] culture inconnue (01.19.99)", "", "", "Ilots : 3.1", 0.753054443359375, "ha", "", ""],
       [
         "",
-        "Surfaces fourragères",
+        "Prairies et surfaces fourragères",
         "Luzerne",
         "1125",
         "",
@@ -46,7 +46,7 @@ describe("BureauVeritasExporter", () => {
       ],
       [
         "",
-        "Surfaces fourragères",
+        "Prairies et surfaces fourragères",
         "Luzerne",
         "1125",
         "",
@@ -58,7 +58,7 @@ describe("BureauVeritasExporter", () => {
       ],
       [
         "",
-        "Surfaces fourragères",
+        "Prairies et surfaces fourragères",
         "Trèfle",
         "1124",
         "4 feuilles",
@@ -70,7 +70,7 @@ describe("BureauVeritasExporter", () => {
       ],
       [
         "",
-        "Surfaces fourragères",
+        "Prairies et surfaces fourragères",
         "Trèfle",
         "1124",
         "4 feuilles",
