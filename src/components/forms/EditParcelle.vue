@@ -488,11 +488,10 @@ useFocus(autofocusedElement, { initialValue: true });
 function requiresAction(properties) {
   return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
 }
-
 function createInitialPatch() {
   return {
     NOM: props.feature.properties.NOM || "",
-    cultures: props.feature.properties.cultures.map((c) => ({ ...c, CPF: c.CPF || "" })),
+    cultures: props.feature.properties.cultures.map((c) => ({ ...c, CPF: c.CPF || undefined })),
     commentaires: props.feature.properties.commentaires || null,
     conversion_niveau: props.feature.properties.conversion_niveau || "",
     engagement_date: props.feature.properties.engagement_date || "",
