@@ -776,4 +776,3 @@ export function getCultureIcon(key) {
 
   return "fr-icon-culture-autres-surfaces";
 }
-
