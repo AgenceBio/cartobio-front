@@ -14,7 +14,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.record.geojson.features);
 const hasPac = props.record.geojson
   ? props.record.geojson.features.some((f) => f.properties?.attente_pac === true || f.properties?.numero_ilot !== null)
   : featuresStore.hasPac;
