@@ -9,6 +9,7 @@
           aria-label="Fermer la fiche de la parcelle"
         ></button>
       </div>
+      <em class="fr-hint-text" v-if="feature.properties.attente_pac">En attente de déclaration PAC</em>
       <div class="fr-mt-4v fr-pb-0">
         <div class="flex">
           <span class="fr-mt-1w fr-mb-0 fr-text--sm" v-if="feature.properties.NOM">{{ feature.properties.NOM }}</span>
@@ -45,6 +46,24 @@
                 : ""
             }}
           </p>
+        </div>
+        <div
+          class="fr-grid-row fr-text--sm fr-mt-1w"
+          v-if="!(feature.properties.NUMERO_I && feature.properties.NUMERO_P)"
+        >
+          <div class="fr-checkbox-group fr-checkbox-group--sm">
+            <input
+              name="checkbox"
+              id="checkbox-0"
+              type="checkbox"
+              aria-describedby="checkbox-0-messages"
+              v-model="patch.attente_pac"
+            />
+            <label class="fr-label" for="checkbox-0">
+              En attente déclaration PAC <span class="fr-hint-text">Fera l'objet de la prochaine déclaration PAC</span>
+            </label>
+            <div class="fr-messages-group" id="checkbox-0-messages" aria-live="polite"></div>
+          </div>
         </div>
       </div>
       <form @submit.prevent="validate" id="single-feature-edit-form">
@@ -200,7 +219,7 @@
                     >Date de début de conversion <span v-if="!isEngagementDateRequired"></span
                   ></label>
                   <p class="fr-hint-text" v-if="patch.conversion_niveau === LEVEL_AB">
-                    Une date est requise pour l'attestation de production, si vous ne la connaissez pas ou ne souhaitez
+                    Une date est requise pour l'attestation du parcellaire, si vous ne la connaissez pas ou ne souhaitez
                     pas la mettre, celle-ci sera automatiquement remplie par 01/01/1900.
                   </p>
                   <input
@@ -478,6 +497,7 @@ function createInitialPatch() {
     conversion_niveau: props.feature.properties.conversion_niveau || "",
     engagement_date: props.feature.properties.engagement_date || "",
     auditeur_notes: props.feature.properties.auditeur_notes || null,
+    attente_pac: props.feature.properties.attente_pac || false,
   };
 }
 

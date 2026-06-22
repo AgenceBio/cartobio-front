@@ -100,6 +100,8 @@
         </template>
       </div>
     </div>
+
+    <div ref="vertexTooltipEl" class="vertex-tooltip">Alt + Clic pour supprimer</div>
   </div>
 </template>
 
@@ -107,7 +109,7 @@
 import { ref, onMounted, onUnmounted, computed, createApp, watch, Ref, inject, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 
-import { Collection, Map } from "ol";
+import { Collection, Map, Overlay } from "ol";
 import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -124,7 +126,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
-import { click, platformModifierKey } from "ol/events/condition";
+import { click, platformModifierKey, altKeyOnly } from "ol/events/condition";
 import { MultiPoint } from "ol/geom";
 import EditParcelleTooltip from "../Overlays/EditParcelleTooltip.vue";
 import intersect from "@turf/intersect";
@@ -148,6 +150,7 @@ interface Props {
  */
 
 const props = defineProps<Props>();
+
 /*
  * * Stores
  */
@@ -173,12 +176,15 @@ const corrections = ref<
 
 const parcelle1Area = ref<string | null>(null);
 const parcelle2Area = ref<string | null>(null);
+const vertexTooltipEl = ref<HTMLElement | null>(null);
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
 let modify: Modify | null = null;
 let selectedFeatures: Collection<Feature>;
 let tooltip: Tooltip;
+let vertexTooltipOverlay: Overlay | null = null;
+let pointerMoveHandler: ((e: any) => void) | null = null;
 
 /**
  * Corrections
@@ -274,6 +280,25 @@ const resetCorrection = (resetModifiedFeature = true, addPointStyle = true) => {
   }
 };
 
+const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
+  for (const feature of selectedFeatures.getArray()) {
+    const geom = feature.getGeometry() as any;
+    if (!geom) continue;
+    const coords: number[][][] = geom.getCoordinates();
+    if (!coords) continue;
+    for (const ring of coords) {
+      for (const coord of ring) {
+        const vertexPixel = props.map.getPixelFromCoordinate(coord);
+        if (!vertexPixel) continue;
+        const dx = pixel[0] - vertexPixel[0];
+        const dy = pixel[1] - vertexPixel[1];
+        if (Math.sqrt(dx * dx + dy * dy) <= hitTolerance) return true;
+      }
+    }
+  }
+  return false;
+};
+
 // Une seule action par modify pour faire fonctionner le undo redo
 const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: Tooltip) => {
   if (modify) {
@@ -281,16 +306,26 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
     modify = null;
   }
 
-  tooltip.setFeature(selectedFeatures.getArray()[0]);
+  if (pointerMoveHandler) {
+    props.map.un("pointermove", pointerMoveHandler);
+    pointerMoveHandler = null;
+  }
+
+  nextTick(() => {
+    tooltip.element.style.display = "none";
+  });
+
   modify = new Modify({
     features: selectedFeatures,
+    deleteCondition: altKeyOnly,
     style: [
       getPolygonStyle(),
       new Style({
         image: new RegularShape({
           fill: new Fill({ color: "white" }),
+          stroke: new Stroke({ color: "#b8a000", width: 1.5 }),
           points: 4,
-          radius: 7,
+          radius: 8,
         }),
       }),
     ],
@@ -298,20 +333,35 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
 
   props.map.addInteraction(modify);
 
+  pointerMoveHandler = (e) => {
+    if (!vertexTooltipOverlay) return;
+    const geom = selectedFeatures.getArray()[0]?.getGeometry() as any;
+    const coordsCount = geom?.getCoordinates()?.[0]?.length ?? 0;
+    if (isNearVertex(e.pixel) && getComputedStyle(tooltip.element).display === "none" && coordsCount > 4) {
+      vertexTooltipOverlay.setPosition(props.map.getCoordinateFromPixel(e.pixel));
+    } else {
+      vertexTooltipOverlay.setPosition(undefined);
+    }
+  };
+
+  props.map.on("pointermove", pointerMoveHandler);
+
   modify.on("modifystart", () => {
     if (corrections.value.length > 0) {
       resetCorrection(false);
     }
     isModifying.value = true;
-    props.map.addOverlay(tooltip);
+    tooltip.setFeature(selectedFeatures.getArray()[0]);
+
+    tooltip.element.style.display = "";
   });
 
   modify.on("modifyend", () => {
-    props.map.removeOverlay(tooltip);
+    tooltip.element.style.display = "none";
     selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
-    initModifyInteraction(selectedFeatures, tooltip);
   });
 };
+
 const modifyInteraction = () => {
   selectedFeatures = new Collection<Feature>();
   tooltip = new Tooltip({
@@ -322,6 +372,23 @@ const modifyInteraction = () => {
     getHTML: createTooltipContent,
   });
   const select = createSelectInteraction(selectedFeatures);
+
+  props.map.addOverlay(tooltip);
+
+  nextTick(() => {
+    if (tooltip.element) tooltip.element.style.display = "none";
+
+    if (vertexTooltipEl.value) {
+      vertexTooltipOverlay = new Overlay({
+        element: vertexTooltipEl.value,
+        positioning: "bottom-center",
+        className: "draw-tooltip",
+        offset: [0, -14],
+        stopEvent: false,
+      });
+      props.map.addOverlay(vertexTooltipOverlay);
+    }
+  });
 
   if (selectedFeatures.getLength() === 1) {
     nextTick(() => {
@@ -743,6 +810,13 @@ onMounted(() => {
 onUnmounted(() => {
   props.undoRedo.clear();
 
+  if (pointerMoveHandler) {
+    props.map.un("pointermove", pointerMoveHandler);
+  }
+  if (vertexTooltipOverlay) {
+    props.map.removeOverlay(vertexTooltipOverlay);
+  }
+
   resetCorrection(true, false);
 });
 </script>
@@ -821,5 +895,22 @@ onUnmounted(() => {
   flex: none;
   order: 0;
   flex-grow: 0;
+}
+
+:deep(.draw-tooltip) {
+  display: none;
+}
+
+:deep(.draw-tooltip.visible) {
+  display: block;
+}
+
+.vertex-tooltip {
+  background: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  border-radius: 4px;
 }
 </style>
