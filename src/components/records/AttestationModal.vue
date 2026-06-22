@@ -14,6 +14,10 @@ const props = defineProps({
   },
 });
 
+const hasPac = props.record.geojson
+  ? props.record.geojson.features.some((f) => f.properties?.attente_pac === true || f.properties?.numero_ilot !== null)
+  : featuresStore.hasPac;
+
 const emit = defineEmits(["close"]);
 
 const ATTESTATION_OPTIONS = [
@@ -22,7 +26,7 @@ const ATTESTATION_OPTIONS = [
     description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle.",
     type: "pac",
     labelpdf: "pac",
-    active: featuresStore.hasPac,
+    active: hasPac,
   },
   {
     label: "Fichier ZIP : Attestation du parcellaire PAC + liste des parcelles",
@@ -30,13 +34,13 @@ const ATTESTATION_OPTIONS = [
       "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles.",
     type: "zip",
     labelpdf: "PAC",
-    active: featuresStore.hasPac,
+    active: hasPac,
   },
   {
-    label: "Liste complète des parcelles de l'exploitation",
-    description: "Liste des parcelles contrôlées de l'exploitation.",
+    label: "Liste des parcelles de l'exploitation",
+    description: "Liste des parcelles contrôlées de l'exploitation sans détail.",
     type: "complet",
-    labelpdf: "liste_complete",
+    labelpdf: "liste",
     active: true,
   },
 ];
@@ -46,7 +50,7 @@ const isPdfGenerating = ref(false);
 const errorText = ref({ complet: null, pac: null, zip: null });
 const hasAttestationProduction = ref({ complet: null, pac: null, zip: null });
 const isLoading = ref(true);
-const selectedType = ref(featuresStore.hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
+const selectedType = ref(hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
 
 onMounted(async () => {
   if (props.record.certification_state !== "CERTIFIED") {
@@ -122,6 +126,11 @@ async function exportAttestationPdf(typeObj, force = false) {
       <Spinner />
     </div>
     <div v-else>
+      <div v-if="isPdfGenerating" class="fr-alert fr-alert--info fr-mb-1w">
+        <h3 class="fr-alert__title">Votre PDF est en cours de génération</h3>
+
+        <p>Le pdf sera bientôt disponible, nous vous invitons à revenir dans quelques minutes.</p>
+      </div>
       <p>
         Votre attestation est disponible sous plusieurs formats. Sélectionnez le format souhaité puis générez votre
         attestation.
@@ -177,7 +186,7 @@ async function exportAttestationPdf(typeObj, force = false) {
           data-content-piece="Export PDF"
           :aria-label="`Re-générer ${ATTESTATION_OPTIONS.find((o) => o.type === selectedType.type)?.label.toLowerCase()} au format PDF`"
           :title="`Générer une nouvelle attestation pour mettre à jour mes informations`"
-          :disabled="!hasAttestationProduction[selectedType.type] || isPdfLoading[selectedType.type]"
+          :disabled="!hasAttestationProduction[selectedType.type] || isPdfLoading[selectedType.type] || isPdfGenerating"
         >
           Re-générer
         </button>
