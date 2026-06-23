@@ -181,8 +181,9 @@ const vertexTooltipEl = ref<HTMLElement | null>(null);
 const loading: Ref<boolean> = inject("loading", ref(false));
 
 let modify: Modify | null = null;
+let select: Select | null = null;
 let selectedFeatures: Collection<Feature>;
-let tooltip: Tooltip;
+let tooltip: Tooltip | null = null;
 let vertexTooltipOverlay: Overlay | null = null;
 let pointerMoveHandler: ((e: any) => void) | null = null;
 
@@ -240,7 +241,7 @@ const resetEdit = () => {
 
   resetCorrection();
   nextTick(() => {
-    initModifyInteraction(selectedFeatures, tooltip);
+    initModifyInteraction(selectedFeatures, tooltip as Tooltip);
   });
 };
 
@@ -299,7 +300,6 @@ const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
   return false;
 };
 
-// Une seule action par modify pour faire fonctionner le undo redo
 const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: Tooltip) => {
   if (modify) {
     props.map.removeInteraction(modify);
@@ -371,12 +371,12 @@ const modifyInteraction = () => {
     offset: [10, -10],
     getHTML: createTooltipContent,
   });
-  const select = createSelectInteraction(selectedFeatures);
+  select = createSelectInteraction(selectedFeatures);
 
   props.map.addOverlay(tooltip);
 
   nextTick(() => {
-    if (tooltip.element) tooltip.element.style.display = "none";
+    if (tooltip?.element) tooltip.element.style.display = "none";
 
     if (vertexTooltipEl.value) {
       vertexTooltipOverlay = new Overlay({
@@ -392,7 +392,7 @@ const modifyInteraction = () => {
 
   if (selectedFeatures.getLength() === 1) {
     nextTick(() => {
-      initModifyInteraction(selectedFeatures, tooltip);
+      initModifyInteraction(selectedFeatures, tooltip as Tooltip);
     });
   }
 
@@ -411,7 +411,7 @@ const modifyInteraction = () => {
     store.setSelectedIds(selectedIds);
 
     if (selectedIds.length === 1) {
-      initModifyInteraction(selectedFeatures, tooltip);
+      initModifyInteraction(selectedFeatures, tooltip as Tooltip);
       emit("selectFeature", selectedIds[0]);
     } else {
       emit("selectFeature", null);
@@ -436,6 +436,39 @@ const modifyInteraction = () => {
     resetCorrection(false);
     selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
   });
+};
+
+const teardownModifyInteraction = () => {
+  if (modify) {
+    props.map.removeInteraction(modify);
+    modify = null;
+  }
+
+  if (select) {
+    props.map.removeInteraction(select);
+    select = null;
+  }
+
+  if (pointerMoveHandler) {
+    props.map.un("pointermove", pointerMoveHandler);
+    pointerMoveHandler = null;
+  }
+
+  if (vertexTooltipOverlay) {
+    props.map.removeOverlay(vertexTooltipOverlay);
+    vertexTooltipOverlay = null;
+  }
+
+  if (tooltip) {
+    tooltip.setFeature();
+    props.map.removeOverlay(tooltip);
+    tooltip = null;
+  }
+};
+
+const rebuildModifyInteraction = () => {
+  teardownModifyInteraction();
+  modifyInteraction();
 };
 
 const getPolygonStyle = (): Style => {
@@ -499,6 +532,8 @@ const createSelectInteraction = (selectedFeatures: Collection<Feature>): Select 
 };
 
 const createTooltipContent = (feature: Feature) => {
+  if (!feature) return "";
+
   const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
 
   const element = document.createElement("div");
@@ -550,18 +585,16 @@ const saveModifiedFeature = async () => {
 
     if (result) {
       store.setAll(result.parcelles.features);
-      nextTick(() => {
-        props.undoRedo.clear();
-        store.setSelectedIds([]);
-        selectedFeatures.clear();
-        initModifyInteraction(selectedFeatures, tooltip);
-      });
+      props.undoRedo.clear();
+      correctedParcellesId = [];
+      isModifying.value = false;
+      mapParams.value.currentMode = "edit";
+
+      await nextTick();
+      store.setSelectedIds([]);
+      rebuildModifyInteraction();
     }
     loading.value = false;
-    correctedParcellesId = [];
-    isModifying.value = false;
-    mapParams.value.currentMode = "edit";
-    props.undoRedo.clear();
 
     return;
   }
@@ -810,12 +843,7 @@ onMounted(() => {
 onUnmounted(() => {
   props.undoRedo.clear();
 
-  if (pointerMoveHandler) {
-    props.map.un("pointermove", pointerMoveHandler);
-  }
-  if (vertexTooltipOverlay) {
-    props.map.removeOverlay(vertexTooltipOverlay);
-  }
+  teardownModifyInteraction();
 
   resetCorrection(true, false);
 });
