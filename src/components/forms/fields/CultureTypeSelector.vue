@@ -87,7 +87,14 @@ const choices = computed(() => {
     a.libelle_code_cpf.localeCompare(b.libelle_code_cpf),
   );
 
-  if (!requirePrecision.value || !feature.value.properties.CODE_CULTURE || showMore.value) return selectableCpf;
+  if (
+    !requirePrecision.value ||
+    feature.value == undefined ||
+    !feature.value.properties.CODE_CULTURE ||
+    showMore.value
+  ) {
+    return selectableCpf;
+  }
 
   const selectableFromPac = fromCodePacAll(
     feature.value.properties.CODE_CULTURE,
