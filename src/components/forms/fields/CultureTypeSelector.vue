@@ -171,7 +171,6 @@ const createAutocomplete = () => {
           onSelect: function (event) {
             if (event.item.code === "showMore") {
               showMore.value = true;
-              event.setQuery("");
               event.setIsOpen(true);
               return nextTick(() => {
                 event.refresh();
