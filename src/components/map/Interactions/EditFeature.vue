@@ -186,6 +186,7 @@ let selectedFeatures: Collection<Feature>;
 let tooltip: Tooltip | null = null;
 let vertexTooltipOverlay: Overlay | null = null;
 let pointerMoveHandler: ((e: any) => void) | null = null;
+let singleClickHandler: ((e: any) => void) | null = null;
 
 /**
  * Corrections
@@ -356,6 +357,11 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
     pointerMoveHandler = null;
   }
 
+  if (singleClickHandler) {
+    props.map.un("singleclick", singleClickHandler);
+    singleClickHandler = null;
+  }
+
   nextTick(() => {
     tooltip.element.style.display = "none";
   });
@@ -377,7 +383,9 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   });
 
   props.map.addInteraction(modify);
-  props.map.on("singleclick", handleInteriorVertexDelete);
+
+  singleClickHandler = handleInteriorVertexDelete;
+  props.map.on("singleclick", singleClickHandler);
 
   pointerMoveHandler = (e) => {
     if (!vertexTooltipOverlay) return;
@@ -498,6 +506,11 @@ const teardownModifyInteraction = () => {
   if (pointerMoveHandler) {
     props.map.un("pointermove", pointerMoveHandler);
     pointerMoveHandler = null;
+  }
+
+  if (singleClickHandler) {
+    props.map.un("singleclick", singleClickHandler);
+    singleClickHandler = null;
   }
 
   if (vertexTooltipOverlay) {
