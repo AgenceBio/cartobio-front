@@ -10,7 +10,7 @@ import { Style, Stroke, Fill } from "ol/style";
 import { FeatureLike } from "ol/Feature";
 import { Map as OlMap } from "ol";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
-import { fromCodePacStrict } from "@agencebio/rosetta-cultures";
+import * as XLSX from "xlsx";
 
 /**
  * * Props
@@ -41,18 +41,42 @@ let rpgLayer: VectorLayer<VectorSource> | null = null;
 
 const MAX_RESOLUTION = 42;
 
+const CHEMIN_FICHIER = "/src/data/culture_rpg.xlsx";
+const COLONNE_CODE = 0;
+const COLONNE_RESULTAT = 3;
+const NB_LIGNES_ENTETE = 1;
+
 const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
   "Grandes Cultures": { fill: "#ffe082", stroke: "#ffb300" },
-  "Surfaces fourragères": { fill: "#a5d6a7", stroke: "#43a047" },
-  "Légumes": { fill: "#ff8a65", stroke: "#e53935" },
-  "Fruits": { fill: "#ffb74d", stroke: "#f57c00" },
-  "Viticulture": { fill: "#f48fb1", stroke: "#e91e63" },
+  "Prairies et surfaces fourragères": { fill: "#a5d6a7", stroke: "#43a047" },
+  Légumes: { fill: "#ff8a65", stroke: "#e53935" },
+  Fruits: { fill: "#ffb74d", stroke: "#f57c00" },
+  Vignes: { fill: "#f48fb1", stroke: "#e91e63" },
   "Plantes à parfums, aromatiques et médicinales et plantes à boissons": { fill: "#80deea", stroke: "#00acc1" },
-  "Autres surfaces": { fill: "#b39ddb", stroke: "#5e35b1" },
+  Autres: { fill: "#b39ddb", stroke: "#5e35b1" },
 };
 
 const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
 const COLOR_BIO = { fill: "#9fe3d2", stroke: "#54cdaf" };
+
+
+let lignesXlsx: any[] | null = null;
+let chargementXlsx: Promise<any[]> | null = null;
+
+async function chargerLignesXlsx() {
+  if (lignesXlsx) return lignesXlsx;
+  if (!chargementXlsx) {
+    chargementXlsx = fetch(CHEMIN_FICHIER)
+      .then((reponse) => reponse.arrayBuffer())
+      .then((arrayBuffer) => {
+        const classeur = XLSX.read(arrayBuffer, { type: "array" });
+        const premiereFeuille = classeur.Sheets[classeur.SheetNames[0]];
+        lignesXlsx = XLSX.utils.sheet_to_json(premiereFeuille, { header: 1 }).slice(NB_LIGNES_ENTETE);
+        return lignesXlsx;
+      });
+  }
+  return chargementXlsx
+}
 
 /**
  * * Fonctions
@@ -60,6 +84,7 @@ const COLOR_BIO = { fill: "#9fe3d2", stroke: "#54cdaf" };
 
 function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   const bio = feature.get("bio") || feature.get("BIO");
+
   const codeCulture = feature.get("code_cultu") || feature.get("CODE_CULTU");
 
   let colors = COLOR_DEFAULT;
@@ -67,11 +92,9 @@ function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   if (bio === 1 || bio === "1" || bio === true) {
     colors = COLOR_BIO;
   } else {
-    console.log(codeCulture);
-    const culture = fromCodePacStrict(codeCulture);
-    console.log(culture?.groupe || "")
-    if (culture?.groupe && COLOR_BY_GROUP[culture.groupe]) {
-      colors = COLOR_BY_GROUP[culture.groupe];
+    const group = getFromCsvGroup(codeCulture);
+    if (group) {
+      colors = COLOR_BY_GROUP[group];
     }
   }
 
@@ -91,11 +114,20 @@ function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   });
 }
 
+function getFromCsvGroup(codeCulture: string) {
+  if (!lignesXlsx) return null;
+  const ligneTrouvee = lignesXlsx.find((ligne) => String(ligne[COLONNE_CODE]) === String(codeCulture));
+
+  return ligneTrouvee ? ligneTrouvee[COLONNE_RESULTAT] : null;
+}
+
 /**
  * * States fonctions
  */
 
-onMounted(() => {
+onMounted(async () => {
+  await chargerLignesXlsx();
+
   rpgLayer = new VectorLayer({
     zIndex: 1,
     maxResolution: MAX_RESOLUTION,
