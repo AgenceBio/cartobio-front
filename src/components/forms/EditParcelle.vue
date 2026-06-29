@@ -54,15 +54,15 @@
           <div class="fr-checkbox-group fr-checkbox-group--sm">
             <input
               name="checkbox"
-              id="checkbox-0"
+              id="checkbox-pac"
               type="checkbox"
-              aria-describedby="checkbox-0-messages"
+              aria-describedby="checkbox-pac-messages"
               v-model="patch.attente_pac"
             />
-            <label class="fr-label" for="checkbox-0">
+            <label class="fr-label" for="checkbox-pac">
               En attente déclaration PAC <span class="fr-hint-text">Fera l'objet de la prochaine déclaration PAC</span>
             </label>
-            <div class="fr-messages-group" id="checkbox-0-messages" aria-live="polite"></div>
+            <div class="fr-messages-group" id="checkbox-pac-messages" aria-live="polite"></div>
           </div>
         </div>
       </div>
