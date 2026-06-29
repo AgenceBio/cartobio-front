@@ -248,8 +248,7 @@ export const groupingChoices = {
     labelEnAttente: "En attente déclaration PAC",
     /** @param {GeoJSONFeature} */
     datapoint: (d) => {
-      if (d.properties.NUMERO_I && d.properties.NUMERO_I !== "0")
-        return d.properties.NUMERO_I;
+      if (d.properties.NUMERO_I && d.properties.NUMERO_I !== "0") return d.properties.NUMERO_I;
       return d.properties.attente_pac ? "attente_pac" : NO_GROUP;
     },
     groupLabelFn({ featureSample: d, groupingKey }) {
