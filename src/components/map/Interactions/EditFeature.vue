@@ -186,6 +186,7 @@ let selectedFeatures: Collection<Feature>;
 let tooltip: Tooltip | null = null;
 let vertexTooltipOverlay: Overlay | null = null;
 let pointerMoveHandler: ((e: any) => void) | null = null;
+let singleClickHandler: ((e: any) => void) | null = null;
 
 /**
  * Corrections
@@ -300,6 +301,51 @@ const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
   return false;
 };
 
+const removeInteriorVertex = (feature: Feature, ringIndex: number, coordIndex: number) => {
+  const geom = feature.getGeometry() as any;
+  const coords: number[][][] = geom.getCoordinates();
+  const ring = coords[ringIndex];
+
+  const isClosingPoint = coordIndex === 0 || coordIndex === ring.length - 1;
+  const updatedRing = isClosingPoint
+    ? ring.slice(1, -1).concat([ring[1]])
+    : ring.slice(0, coordIndex).concat(ring.slice(coordIndex + 1));
+
+  const cleanedCoords =
+    updatedRing.length <= 3
+      ? coords.filter((_, index) => index !== ringIndex)
+      : coords.map((r, index) => (index === ringIndex ? updatedRing : r));
+
+  geom.setCoordinates(cleanedCoords);
+};
+
+const handleInteriorVertexDelete = (event: any) => {
+  if (!altKeyOnly(event)) return;
+
+  const feature = selectedFeatures.getArray()[0];
+  if (!feature) return;
+
+  const geom = feature.getGeometry() as any;
+  if (!geom || geom.getType() !== "Polygon") return;
+
+  const coords: number[][][] = geom.getCoordinates();
+  const pixel = event.pixel;
+
+  for (let ringIndex = 1; ringIndex < coords.length; ringIndex++) {
+    for (let coordIndex = 0; coordIndex < coords[ringIndex].length; coordIndex++) {
+      const vertexPixel = props.map.getPixelFromCoordinate(coords[ringIndex][coordIndex]);
+      if (!vertexPixel) continue;
+      const dx = pixel[0] - vertexPixel[0];
+      const dy = pixel[1] - vertexPixel[1];
+      if (Math.sqrt(dx * dx + dy * dy) <= 8) {
+        removeInteriorVertex(feature, ringIndex, coordIndex);
+        feature.setStyle([getPolygonStyle(), getPointStyle()]);
+        return;
+      }
+    }
+  }
+};
+
 const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: Tooltip) => {
   if (modify) {
     props.map.removeInteraction(modify);
@@ -309,6 +355,11 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   if (pointerMoveHandler) {
     props.map.un("pointermove", pointerMoveHandler);
     pointerMoveHandler = null;
+  }
+
+  if (singleClickHandler) {
+    props.map.un("singleclick", singleClickHandler);
+    singleClickHandler = null;
   }
 
   nextTick(() => {
@@ -332,6 +383,9 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   });
 
   props.map.addInteraction(modify);
+
+  singleClickHandler = handleInteriorVertexDelete;
+  props.map.on("singleclick", singleClickHandler);
 
   pointerMoveHandler = (e) => {
     if (!vertexTooltipOverlay) return;
@@ -452,6 +506,11 @@ const teardownModifyInteraction = () => {
   if (pointerMoveHandler) {
     props.map.un("pointermove", pointerMoveHandler);
     pointerMoveHandler = null;
+  }
+
+  if (singleClickHandler) {
+    props.map.un("singleclick", singleClickHandler);
+    singleClickHandler = null;
   }
 
   if (vertexTooltipOverlay) {
