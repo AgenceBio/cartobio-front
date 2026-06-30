@@ -20,6 +20,8 @@
 <script setup>
 import { computed, Fragment, h, onBeforeUnmount, onMounted, ref, render, watch } from "vue";
 import { useOnline } from "@vueuse/core";
+import { storeToRefs } from "pinia";
+import { useUserStore } from "@/stores/user.js";
 import { useRouter } from "vue-router";
 import { getForAutocomplete } from "@/cartobio-api";
 
@@ -49,6 +51,7 @@ const props = defineProps({
   },
 });
 
+const userStore = useUserStore();
 const isOnline = useOnline();
 const userInput = ref();
 const router = useRouter();
@@ -58,6 +61,8 @@ const data = ref(null);
 const length = ref(0);
 const autocompleteElement = ref(null);
 const emit = defineEmits(["search"]);
+const { isAdmin } = storeToRefs(userStore);
+
 const getValue = computed(() => props.initialValue);
 
 onMounted(() => {
@@ -83,6 +88,7 @@ onMounted(() => {
 
     getSources({ query }) {
       userInput.value = query;
+      if (isAdmin.value) return [];
       if (query.length < 3) {
         data.value = null;
         return [];

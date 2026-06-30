@@ -16,7 +16,7 @@
         tabindex="-1"
       >
         <AsyncCultureTypeSelector
-          :key="culture.CPF"
+          :key="culture.id"
           :disabled-input="disabledInput"
           :feature-id="featureId"
           :culture="culture"

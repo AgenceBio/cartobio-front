@@ -100,6 +100,8 @@
         </template>
       </div>
     </div>
+
+    <div ref="vertexTooltipEl" class="vertex-tooltip">Alt + Clic pour supprimer</div>
   </div>
 </template>
 
@@ -107,7 +109,7 @@
 import { ref, onMounted, onUnmounted, computed, createApp, watch, Ref, inject, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 
-import { Collection, Map } from "ol";
+import { Collection, Map, Overlay } from "ol";
 import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -124,7 +126,7 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
-import { click, platformModifierKey } from "ol/events/condition";
+import { click, platformModifierKey, altKeyOnly } from "ol/events/condition";
 import { MultiPoint } from "ol/geom";
 import EditParcelleTooltip from "../Overlays/EditParcelleTooltip.vue";
 import intersect from "@turf/intersect";
@@ -148,6 +150,7 @@ interface Props {
  */
 
 const props = defineProps<Props>();
+
 /*
  * * Stores
  */
@@ -173,12 +176,17 @@ const corrections = ref<
 
 const parcelle1Area = ref<string | null>(null);
 const parcelle2Area = ref<string | null>(null);
+const vertexTooltipEl = ref<HTMLElement | null>(null);
 
 const loading: Ref<boolean> = inject("loading", ref(false));
 
 let modify: Modify | null = null;
+let select: Select | null = null;
 let selectedFeatures: Collection<Feature>;
-let tooltip: Tooltip;
+let tooltip: Tooltip | null = null;
+let vertexTooltipOverlay: Overlay | null = null;
+let pointerMoveHandler: ((e: any) => void) | null = null;
+let singleClickHandler: ((e: any) => void) | null = null;
 
 /**
  * Corrections
@@ -234,7 +242,7 @@ const resetEdit = () => {
 
   resetCorrection();
   nextTick(() => {
-    initModifyInteraction(selectedFeatures, tooltip);
+    initModifyInteraction(selectedFeatures, tooltip as Tooltip);
   });
 };
 
@@ -274,23 +282,101 @@ const resetCorrection = (resetModifiedFeature = true, addPointStyle = true) => {
   }
 };
 
-// Une seule action par modify pour faire fonctionner le undo redo
+const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
+  for (const feature of selectedFeatures.getArray()) {
+    const geom = feature.getGeometry() as any;
+    if (!geom) continue;
+    const coords: number[][][] = geom.getCoordinates();
+    if (!coords) continue;
+    for (const ring of coords) {
+      for (const coord of ring) {
+        const vertexPixel = props.map.getPixelFromCoordinate(coord);
+        if (!vertexPixel) continue;
+        const dx = pixel[0] - vertexPixel[0];
+        const dy = pixel[1] - vertexPixel[1];
+        if (Math.sqrt(dx * dx + dy * dy) <= hitTolerance) return true;
+      }
+    }
+  }
+  return false;
+};
+
+const removeInteriorVertex = (feature: Feature, ringIndex: number, coordIndex: number) => {
+  const geom = feature.getGeometry() as any;
+  const coords: number[][][] = geom.getCoordinates();
+  const ring = coords[ringIndex];
+
+  const isClosingPoint = coordIndex === 0 || coordIndex === ring.length - 1;
+  const updatedRing = isClosingPoint
+    ? ring.slice(1, -1).concat([ring[1]])
+    : ring.slice(0, coordIndex).concat(ring.slice(coordIndex + 1));
+
+  const cleanedCoords =
+    updatedRing.length <= 3
+      ? coords.filter((_, index) => index !== ringIndex)
+      : coords.map((r, index) => (index === ringIndex ? updatedRing : r));
+
+  geom.setCoordinates(cleanedCoords);
+};
+
+const handleInteriorVertexDelete = (event: any) => {
+  if (!altKeyOnly(event)) return;
+
+  const feature = selectedFeatures.getArray()[0];
+  if (!feature) return;
+
+  const geom = feature.getGeometry() as any;
+  if (!geom || geom.getType() !== "Polygon") return;
+
+  const coords: number[][][] = geom.getCoordinates();
+  const pixel = event.pixel;
+
+  for (let ringIndex = 1; ringIndex < coords.length; ringIndex++) {
+    for (let coordIndex = 0; coordIndex < coords[ringIndex].length; coordIndex++) {
+      const vertexPixel = props.map.getPixelFromCoordinate(coords[ringIndex][coordIndex]);
+      if (!vertexPixel) continue;
+      const dx = pixel[0] - vertexPixel[0];
+      const dy = pixel[1] - vertexPixel[1];
+      if (Math.sqrt(dx * dx + dy * dy) <= 8) {
+        removeInteriorVertex(feature, ringIndex, coordIndex);
+        feature.setStyle([getPolygonStyle(), getPointStyle()]);
+        return;
+      }
+    }
+  }
+};
+
 const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: Tooltip) => {
   if (modify) {
     props.map.removeInteraction(modify);
     modify = null;
   }
 
-  tooltip.setFeature(selectedFeatures.getArray()[0]);
+  if (pointerMoveHandler) {
+    props.map.un("pointermove", pointerMoveHandler);
+    pointerMoveHandler = null;
+  }
+
+  if (singleClickHandler) {
+    props.map.un("singleclick", singleClickHandler);
+    singleClickHandler = null;
+  }
+
+  nextTick(() => {
+    tooltip.element.style.display = "none";
+  });
+
   modify = new Modify({
     features: selectedFeatures,
+    deleteCondition: altKeyOnly,
     style: [
       getPolygonStyle(),
       new Style({
         image: new RegularShape({
           fill: new Fill({ color: "white" }),
+          stroke: new Stroke({ color: "#b8a000", width: 1.5 }),
           points: 4,
-          radius: 7,
+          radius: 8,
         }),
       }),
     ],
@@ -298,20 +384,38 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
 
   props.map.addInteraction(modify);
 
+  singleClickHandler = handleInteriorVertexDelete;
+  props.map.on("singleclick", singleClickHandler);
+
+  pointerMoveHandler = (e) => {
+    if (!vertexTooltipOverlay) return;
+    const geom = selectedFeatures.getArray()[0]?.getGeometry() as any;
+    const coordsCount = geom?.getCoordinates()?.[0]?.length ?? 0;
+    if (isNearVertex(e.pixel) && getComputedStyle(tooltip.element).display === "none" && coordsCount > 4) {
+      vertexTooltipOverlay.setPosition(props.map.getCoordinateFromPixel(e.pixel));
+    } else {
+      vertexTooltipOverlay.setPosition(undefined);
+    }
+  };
+
+  props.map.on("pointermove", pointerMoveHandler);
+
   modify.on("modifystart", () => {
     if (corrections.value.length > 0) {
       resetCorrection(false);
     }
     isModifying.value = true;
-    props.map.addOverlay(tooltip);
+    tooltip.setFeature(selectedFeatures.getArray()[0]);
+
+    tooltip.element.style.display = "";
   });
 
   modify.on("modifyend", () => {
-    props.map.removeOverlay(tooltip);
+    tooltip.element.style.display = "none";
     selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
-    initModifyInteraction(selectedFeatures, tooltip);
   });
 };
+
 const modifyInteraction = () => {
   selectedFeatures = new Collection<Feature>();
   tooltip = new Tooltip({
@@ -321,11 +425,28 @@ const modifyInteraction = () => {
     offset: [10, -10],
     getHTML: createTooltipContent,
   });
-  const select = createSelectInteraction(selectedFeatures);
+  select = createSelectInteraction(selectedFeatures);
+
+  props.map.addOverlay(tooltip);
+
+  nextTick(() => {
+    if (tooltip?.element) tooltip.element.style.display = "none";
+
+    if (vertexTooltipEl.value) {
+      vertexTooltipOverlay = new Overlay({
+        element: vertexTooltipEl.value,
+        positioning: "bottom-center",
+        className: "draw-tooltip",
+        offset: [0, -14],
+        stopEvent: false,
+      });
+      props.map.addOverlay(vertexTooltipOverlay);
+    }
+  });
 
   if (selectedFeatures.getLength() === 1) {
     nextTick(() => {
-      initModifyInteraction(selectedFeatures, tooltip);
+      initModifyInteraction(selectedFeatures, tooltip as Tooltip);
     });
   }
 
@@ -344,7 +465,7 @@ const modifyInteraction = () => {
     store.setSelectedIds(selectedIds);
 
     if (selectedIds.length === 1) {
-      initModifyInteraction(selectedFeatures, tooltip);
+      initModifyInteraction(selectedFeatures, tooltip as Tooltip);
       emit("selectFeature", selectedIds[0]);
     } else {
       emit("selectFeature", null);
@@ -369,6 +490,44 @@ const modifyInteraction = () => {
     resetCorrection(false);
     selectedFeatures.forEach((f) => f.setStyle([getPolygonStyle(), getPointStyle()]));
   });
+};
+
+const teardownModifyInteraction = () => {
+  if (modify) {
+    props.map.removeInteraction(modify);
+    modify = null;
+  }
+
+  if (select) {
+    props.map.removeInteraction(select);
+    select = null;
+  }
+
+  if (pointerMoveHandler) {
+    props.map.un("pointermove", pointerMoveHandler);
+    pointerMoveHandler = null;
+  }
+
+  if (singleClickHandler) {
+    props.map.un("singleclick", singleClickHandler);
+    singleClickHandler = null;
+  }
+
+  if (vertexTooltipOverlay) {
+    props.map.removeOverlay(vertexTooltipOverlay);
+    vertexTooltipOverlay = null;
+  }
+
+  if (tooltip) {
+    tooltip.setFeature();
+    props.map.removeOverlay(tooltip);
+    tooltip = null;
+  }
+};
+
+const rebuildModifyInteraction = () => {
+  teardownModifyInteraction();
+  modifyInteraction();
 };
 
 const getPolygonStyle = (): Style => {
@@ -432,6 +591,8 @@ const createSelectInteraction = (selectedFeatures: Collection<Feature>): Select 
 };
 
 const createTooltipContent = (feature: Feature) => {
+  if (!feature) return "";
+
   const area = calculateArea(new GeoJSON().writeFeatureObject(feature, {}) as CartoBioFeature);
 
   const element = document.createElement("div");
@@ -483,18 +644,16 @@ const saveModifiedFeature = async () => {
 
     if (result) {
       store.setAll(result.parcelles.features);
-      nextTick(() => {
-        props.undoRedo.clear();
-        store.setSelectedIds([]);
-        selectedFeatures.clear();
-        initModifyInteraction(selectedFeatures, tooltip);
-      });
+      props.undoRedo.clear();
+      correctedParcellesId = [];
+      isModifying.value = false;
+      mapParams.value.currentMode = "edit";
+
+      await nextTick();
+      store.setSelectedIds([]);
+      rebuildModifyInteraction();
     }
     loading.value = false;
-    correctedParcellesId = [];
-    isModifying.value = false;
-    mapParams.value.currentMode = "edit";
-    props.undoRedo.clear();
 
     return;
   }
@@ -743,6 +902,8 @@ onMounted(() => {
 onUnmounted(() => {
   props.undoRedo.clear();
 
+  teardownModifyInteraction();
+
   resetCorrection(true, false);
 });
 </script>
@@ -821,5 +982,22 @@ onUnmounted(() => {
   flex: none;
   order: 0;
   flex-grow: 0;
+}
+
+:deep(.draw-tooltip) {
+  display: none;
+}
+
+:deep(.draw-tooltip.visible) {
+  display: block;
+}
+
+.vertex-tooltip {
+  background: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  border-radius: 4px;
 }
 </style>

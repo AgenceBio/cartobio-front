@@ -47,6 +47,19 @@ export async function searchOperators({ input, page, filter, limit = 7 }) {
 
 /**
  * @param {string} input
+ * @returns {Promise<AgenceBioNormalizedOperatorWithRecord[]>}
+ */
+export async function searchOperatorsAdmin({ input, page, filter, limit = 7 }) {
+  const { data } = await apiClient.post(
+    `/v2/certification/adminsearch`,
+    { input, page, filter, limit },
+    { timeout: 60000 },
+  );
+  return data;
+}
+
+/**
+ * @param {string} input
  * @returns {Promise<any[]>}
  */
 export async function getForAutocomplete(search) {
@@ -361,11 +374,14 @@ export async function getDataXLSX(payload) {
  * @param {object} signal - Signal de la requete Axios
  * @returns {Promise<string>} -Base64 du fichier pdf
  */
-export async function getPDFData(numeroBio, record_id, signal = null, force = false) {
-  const data = await apiClient.get(`/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}&force_refresh=${force}`, {
-    timeout: 600000,
-    signal,
-  });
+export async function getPDFData(numeroBio, record_id, type, force = false, signal = null) {
+  const data = await apiClient.get(
+    `/v2/pdf/${numeroBio}/${record_id}?${new Date().getTime()}&force_refresh=${force}&pac=${type === "pac"}&zip=${type === "zip"}`,
+    {
+      timeout: 600000,
+      signal,
+    },
+  );
   return data;
 }
 
@@ -373,8 +389,10 @@ export async function hideNotif(numeroBio) {
   await apiClient.patch(`/v2/operator/${numeroBio}/hideNotif`);
 }
 
-export async function getHasAttestationProduction(recordId) {
-  const { data } = await apiClient.get(`/v2/audits/${recordId}/has-attestation-production`);
+export async function getHasAttestationProduction(recordId, type) {
+  const { data } = await apiClient.get(
+    `/v2/audits/${recordId}/has-attestation-production?pac=${type === "pac" || type === "zip"}`,
+  );
 
   return data;
 }
@@ -391,5 +409,25 @@ export async function getRPG(rpgData) {
 
 export async function getGeometryEquals(oldRecordId, newRecordId) {
   const data = await apiClient.post(`/v2/geometry/geometryEquals`, { payload: { old: oldRecordId, new: newRecordId } });
+  return data;
+}
+
+export async function getCutBorder(geometry, distance, allBorder, isInverted, startBorderPoint, endBorderPoint) {
+  const payload = {
+    geometry,
+    distance,
+    allBorder,
+    isInverted,
+    startBorderPoint,
+    endBorderPoint,
+  };
+
+  const response = await apiClient.post("/v3/geometry/border-cut", payload);
+
+  return response;
+}
+
+export async function logoutApi() {
+  const data = await apiClient.post(`/auth-provider/logout`);
   return data;
 }

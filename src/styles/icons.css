@@ -17,8 +17,8 @@
 .fr-icon-culture-plantes-aromatiques::before {
   mask-image: url(@/assets/culture/plantes-aromatiques.svg);
 }
-.fr-icon-culture-vignes::before {
-  mask-image: url(@/assets/culture/vignes.svg);
+.fr-icon-culture-viticulture::before {
+  mask-image: url(@/assets/culture/viticulture.svg);
 }
 .fr-icon-culture-surfaces-fourrageres::before {
   mask-image: url(@/assets/culture/surfaces-fourrageres.svg);

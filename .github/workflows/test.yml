@@ -36,8 +36,8 @@ jobs:
           VUE_APP_ENVIRONMENT: test
           VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
           VUE_APP_GIT_COMMIT_SHA: ${{ github.sha }}
-          VUE_APP_DATEIMPORT: "12/06/2025"
-          VUE_APP_NOTIFICATIONS_API: "https://preprod-notification.agencebio.org:444"
+          VUE_APP_DATEIMPORT: "17/06/2026"
+          VUE_APP_NOTIFICATIONS_API: "https://preprod-back.agencebio.org"
 
       - run: |
           npm ci

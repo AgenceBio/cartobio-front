@@ -87,7 +87,14 @@ const choices = computed(() => {
     a.libelle_code_cpf.localeCompare(b.libelle_code_cpf),
   );
 
-  if (!requirePrecision.value || !feature.value.properties.CODE_CULTURE || showMore.value) return selectableCpf;
+  if (
+    !requirePrecision.value ||
+    feature.value == undefined ||
+    !feature.value.properties.CODE_CULTURE ||
+    showMore.value
+  ) {
+    return selectableCpf;
+  }
 
   const selectableFromPac = fromCodePacAll(
     feature.value.properties.CODE_CULTURE,
@@ -99,9 +106,11 @@ const choices = computed(() => {
   return selectableFromPac.length ? selectableFromPac : selectableCpf;
 });
 
-const requirePrecision = computed(
-  () => (props.modelValue && !fromCodeCpf(props.modelValue)?.is_selectable) || props.modelValue === undefined,
-);
+const requirePrecision = computed(() => {
+  if (!props.modelValue) return true;
+
+  return !fromCodeCpf(props.modelValue)?.is_selectable;
+});
 
 const createAutocomplete = () => {
   if (!autocompleteRef.value || autocompleteProps.value) return;
@@ -162,7 +171,6 @@ const createAutocomplete = () => {
           onSelect: function (event) {
             if (event.item.code === "showMore") {
               showMore.value = true;
-              event.setQuery("");
               event.setIsOpen(true);
               return nextTick(() => {
                 event.refresh();

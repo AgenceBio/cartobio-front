@@ -1,6 +1,6 @@
 {
   "name": "@agencebio/cartobio-front",
-  "version": "3.2.0",
+  "version": "3.4.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,10 +20,10 @@
     "prettier:check": "prettier --check \"**/*.{vue,ts,tsx,js,md,json,css,yaml}\""
   },
   "engines": {
-    "node": "^20.0.0"
+    "node": "^24.0.0"
   },
   "dependencies": {
-    "@agencebio/rosetta-cultures": "^2.4.0",
+    "@agencebio/rosetta-cultures": "^2.6.0",
     "@algolia/autocomplete-js": "^1.8.3",
     "@algolia/autocomplete-theme-classic": "^1.8.3",
     "@gouvfr/dsfr": "^1.13.0",
