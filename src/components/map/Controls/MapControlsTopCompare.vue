@@ -221,7 +221,7 @@ const closeComparison = () => {
 
 <style scoped>
 .button-group {
-    width: 100%;
+  width: 100%;
   left: 0;
   z-index: 1;
   position: absolute;
@@ -251,7 +251,7 @@ const closeComparison = () => {
 
 .fr-select-group {
   position: relative;
-  margin-top:25px;
+  margin-top: 25px;
   flex: 1;
 }
 

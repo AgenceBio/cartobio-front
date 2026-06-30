@@ -16,7 +16,7 @@
           <em class="fr-mt-1w fr-mb-0 fr-hint-text" v-else>Nom de la parcelle</em>
           <button
             @click="modalName = true"
-            v-if='!isFeatureCompare'
+            v-if="!isFeatureCompare"
             class="fr-icon--sm fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
             aria-label="Modifier le nom de la parcelle {{ feature.properties.NOM || '' }}"
           ></button>
@@ -200,7 +200,10 @@
               Ces notes sont visibles par votre organisme de certification.
             </span>
           </div>
-          <AccordionGroup v-if="permissions.isOc && permissions.canEditParcellaire && !isFeatureCompare" :constraint-toggle="!open">
+          <AccordionGroup
+            v-if="permissions.isOc && permissions.canEditParcellaire && !isFeatureCompare"
+            :constraint-toggle="!open"
+          >
             <AccordionSection
               title="Certification"
               :optionsCulture="{ name: getConversionLevel(patch.conversion_niveau).labelSelector }"
@@ -491,7 +494,7 @@ const isInitializing = ref(true);
 useFocus(autofocusedElement, { initialValue: true });
 
 function requiresAction(properties) {
-  if(props.isFeatureCompare) return false
+  if (props.isFeatureCompare) return false;
   return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
 }
 function createInitialPatch() {
