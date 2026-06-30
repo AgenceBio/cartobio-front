@@ -1,8 +1,12 @@
 <template>
   <div class="fr-input-group" :class="{ 'fr-input-group--error': hasErrors }">
     <label class="fr-label">Niveau de conversion</label>
-
-    <div class="fr-radio-group fr-radio-group--sm fr-my-1w" v-for="niveau in conversionLevels" :key="niveau.value">
+    <div
+      class="fr-radio-group fr-radio-group--sm fr-my-1w"
+      @click.capture="readonly && $event.preventDefault()"
+      v-for="niveau in conversionLevels"
+      :key="niveau.value"
+    >
       <input
         type="radio"
         :id="'conversion-' + niveau.value + (modal ? '-modal' : '')"
@@ -10,7 +14,7 @@
         :disabled="readonly"
         :checked="niveau.value === modelValue"
         @change="emit('update:modelValue', niveau.value)"
-        name="conversion_niveau"
+        :name="`conversion_niveau_${featureId}_${modal || readonly ? 'modal' : 'default'}`"
       />
       <label class="fr-label label-inline" :for="'conversion-' + niveau.value + (modal ? '-modal' : '')">
         <ConversionLevel :level="niveau" :noIcon="true" :labelSelector="true" class="fr-mr-1w" /> {{ niveau.label }}
