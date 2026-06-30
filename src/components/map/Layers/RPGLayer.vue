@@ -59,7 +59,6 @@ const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
 const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
 const COLOR_BIO = { fill: "#9fe3d2", stroke: "#54cdaf" };
 
-
 let lignesXlsx: any[] | null = null;
 let chargementXlsx: Promise<any[]> | null = null;
 
@@ -75,7 +74,7 @@ async function chargerLignesXlsx() {
         return lignesXlsx;
       });
   }
-  return chargementXlsx
+  return chargementXlsx;
 }
 
 /**
