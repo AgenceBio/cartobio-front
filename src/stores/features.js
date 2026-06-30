@@ -70,7 +70,12 @@ export const useFeaturesStore = defineStore("features", () => {
    */
   const hasPac = computed(() =>
     collection.value.features.some(
-      (p) => p.properties.attente_pac || (p?.properties.NUMERO_P != null && p?.properties.NUMERO_I != null && p.properties.NUMERO_I !== '0' && p.properties.NUMERO_I !== ''),
+      (p) =>
+        p.properties.attente_pac ||
+        (p?.properties.NUMERO_P != null &&
+          p?.properties.NUMERO_I != null &&
+          p.properties.NUMERO_I !== "0" &&
+          p.properties.NUMERO_I !== ""),
     ),
   );
 
