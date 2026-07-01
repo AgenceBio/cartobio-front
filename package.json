@@ -29,7 +29,7 @@
     "@gouvfr/dsfr": "^1.13.0",
     "@sentry/vue": "^8.33.1",
     "@turf/bbox": "^6.5.0",
-    "@turf/bbox-polygon": "^6.5.0",
+    "@turf/bbox-polygon": "^7.3.5",
     "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/intersect": "^6.5.0",
