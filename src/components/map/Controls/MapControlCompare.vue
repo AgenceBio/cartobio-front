@@ -2,7 +2,7 @@
   <div class="button-group" :class="{ 'editing-bg': isEditing }">
     <div :class="[props.isCompare ? 'info-box-left' : 'info-box-right']">
       <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap" aria-live="polite">
-        <div class="legend fr-mt-3w" v-if="openList === null">
+        <div class="legend" v-if="openList === null">
           <div
             class="legend-item"
             @click="toggleList('added')"
@@ -667,7 +667,7 @@ const getUnderlyingLanFeature = (diffFeature: any) => {
   bottom: 1rem;
   left: 1rem;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -680,7 +680,7 @@ const getUnderlyingLanFeature = (diffFeature: any) => {
   bottom: 1rem;
   right: 1.5rem;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 18, 0.16);
   overflow: visible;
@@ -796,7 +796,10 @@ hr {
   gap: 0.4rem;
   justify-content: space-between;
   font-size: 12px;
-  width: 100%;
+  width: calc(100% + 16px);
+  margin: 0 -8px;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
 .legend-item > div {
@@ -809,18 +812,35 @@ hr {
   cursor: pointer;
 }
 
+.fr-btn--tertiary-no-outline:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  transition: background-color 0.2s ease;
+}
+
 .legend-color {
+  position: relative;
   width: 14px;
   height: 14px;
   border: 1px solid #000;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .legend-color.added {
-  background: rgba(251, 184, 246, 1);
+  background-color: rgba(251, 184, 246, 1);
   border-color: rgba(247, 103, 239, 1);
 }
 
 .legend-color.removed {
+  border: 2px dashed rgba(246, 246, 246, 0.3);
+  border-radius: 4px;
+}
+
+.legend-color.removed::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background-color: rgba(246, 246, 246, 0.3);
   background-image: repeating-linear-gradient(
     -45deg,
@@ -829,14 +849,19 @@ hr {
     transparent 1px,
     transparent 4px
   );
-  border: 2px dashed rgba(246, 246, 246, 0.3);
   border-radius: 4px;
 }
 
 .legend-color.modified {
-  background: rgba(255, 165, 0, 0.3);
   border-color: orange;
   border-style: dashed;
+}
+
+.legend-color.modified::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 165, 0, 0.3);
 }
 
 .nb-class {
@@ -904,12 +929,12 @@ hr {
 }
 
 .submenu-item {
-  padding: 4px 8px;
+  padding: 4px 8px 4px 20px;
   cursor: pointer;
 }
 
 .submenu-item:hover {
-  background: #f0f0f0;
+  background: var(--light-options-primary-color-975-hover-blue-france-975-hover, #dcdcfc);
 }
 
 .title-submenu {
@@ -932,7 +957,7 @@ hr {
 }
 
 .submenu-list ul li:nth-child(odd) {
-  background: var(--light-options-primary-color-975-active-blue-france-975-active, #cbcbfa);
+  background: #ffffff;
 }
 
 .submenu-list ul li:nth-child(even) {
