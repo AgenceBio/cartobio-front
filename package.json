@@ -67,7 +67,7 @@
     "autoprefixer": "^10.4.2",
     "eslint": "^8.6.0",
     "jsdom": "^24.0.0",
-    "postcss-preset-env": "^8.3.2",
+    "postcss-preset-env": "^11.3.2",
     "prettier": "^3.3.3",
     "typescript": "^5.0.4",
     "vite": "^6.4.2",
