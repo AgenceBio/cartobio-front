@@ -56,6 +56,8 @@ const map = shallowRef<Map | null>(null);
 const mapRef2 = ref<HTMLElement | null>(null);
 const map2 = shallowRef<Map | null>(null);
 
+const HIT_TOLERANCE = 5;
+
 let currentHoveredFeature1 = null;
 let currentHoveredFeature2 = null;
 
@@ -147,9 +149,13 @@ const detectAndHighlight = (mapInstance: Map, pixel: number[]) => {
   const layer = getLayer(mapInstance);
   if (!layer) return null;
 
-  const feature = mapInstance.forEachFeatureAtPixel(pixel, (f, layerCandidate) => {
-    return layerCandidate === layer ? f : null;
-  });
+  const feature = mapInstance.forEachFeatureAtPixel(
+    pixel,
+    (f, layerCandidate) => {
+      return layerCandidate === layer ? f : null;
+    },
+    { hitTolerance: HIT_TOLERANCE },
+  );
 
   return feature;
 };
@@ -285,15 +291,7 @@ const onMapClick2 = (event: MouseEvent): void => {
   const rect = mapRef2.value.getBoundingClientRect();
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
 
-  if (!map2.value) return;
-
-  const coordinate = map.value.getCoordinateFromPixel(pixel);
-  if (!coordinate) return;
-
-  const pixel2 = map2.value.getPixelFromCoordinate(coordinate);
-  if (!pixel2) return;
-
-  const feature2 = detectAndHighlight(map2.value, pixel2);
+  const feature2 = detectAndHighlight(map2.value, pixel);
   if (!feature2) return;
 
   const featureObj = geoJson.writeFeatureObject(feature2) as CartoBioFeature;
