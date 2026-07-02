@@ -15,7 +15,13 @@ const props = defineProps({
 });
 
 const hasPac = props.record.geojson
-  ? props.record.geojson.features.some((f) => f.properties?.attente_pac === true || f.properties?.numero_ilot !== null)
+  ? props.record.geojson.features.some(
+      (f) =>
+        f.properties?.attente_pac === true ||
+        f.properties?.numero_ilot !== null ||
+        f.properties?.numero_ilot !== "0" ||
+        f.properties?.numero_ilot !== "",
+    )
   : featuresStore.hasPac;
 
 const emit = defineEmits(["close"]);
