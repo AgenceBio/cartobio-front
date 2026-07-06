@@ -714,7 +714,7 @@ const getUnderlyingLanFeature = (diffFeature: any) => {
 .info-box-open {
   background: #ffffff;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   font-size: 14px;
@@ -799,7 +799,6 @@ hr {
   width: calc(100% + 16px);
   margin: 0 -8px;
   padding: 4px 8px;
-  border-radius: 4px;
 }
 
 .legend-item > div {
@@ -952,8 +951,12 @@ hr {
 
 .submenu-list ul {
   list-style: none;
-  padding: 0;
+  padding: 0px 10px;
   margin: 0;
+}
+
+.submenu-list ul li:hover {
+  background: var(--light-options-primary-color-975-hover-blue-france-975-hover, #dcdcfc) !important;
 }
 
 .submenu-list ul li:nth-child(odd) {
