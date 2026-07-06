@@ -11,7 +11,7 @@ import { FeatureLike } from "ol/Feature";
 import { Map as OlMap } from "ol";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
 import * as XLSX from "xlsx";
-import cheminFichierXlsx from "@/data/culture_rpg.xlsx";
+import cheminFichierXlsx from "@/data/culture_rpg.xlsx?url";
 
 /**
  * * Props
