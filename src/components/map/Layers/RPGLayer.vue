@@ -13,7 +13,6 @@ import { bbox as bboxStrategy } from "ol/loadingstrategy";
 import * as XLSX from "xlsx";
 import cheminFichierXlsx from "@/data/culture_rpg.xlsx";
 
-
 /**
  * * Props
  */
