@@ -36,6 +36,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  noWrap: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 onUpdated(() => {
@@ -121,6 +125,7 @@ watch(show, (value) => {
             'fr-btns-group--icon-left': props.withIcons,
             'fr-btns-group--sm': props.smallList,
             'fr-btns-group': !props.smallList,
+            '--no-wrap': props.noWrap,
           }"
           @click="handleMenuClick"
         >
@@ -209,6 +214,12 @@ watch(show, (value) => {
     --active: var(--background-overlap-grey-active);
     box-shadow: inset 0 1px 0 0 var(--border-open-blue-france);
     list-style-type: none;
+
+    &.--no-wrap {
+      :deep(li .fr-btn) {
+        white-space: nowrap;
+      }
+    }
   }
 
   :deep(li .fr-btn) {

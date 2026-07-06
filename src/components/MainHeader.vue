@@ -344,6 +344,7 @@
           (!isActive('/certification/*') &&
             !isActive('/exploitations/*') &&
             !isActive('/exploitations') &&
+            !isActive('/tableau-de-bord') &&
             !isOnExploitationsPage)
         "
       >
@@ -429,7 +430,11 @@
       <!-- Header Organisme certificateur -->
       <div
         class="fr-container"
-        v-if="isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*'))"
+        v-if="
+          isOc &&
+          !isMobile &&
+          (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/tableau-de-bord'))
+        "
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
@@ -444,6 +449,14 @@
                   isActive('/exploitations/*') || isActive('/certification/exploitations') ? 'page' : undefined
                 "
                 >Liste des exploitations</router-link
+              >
+            </li>
+            <li class="fr-nav__item">
+              <router-link
+                to="/tableau-de-bord"
+                class="fr-nav__link"
+                :aria-current="isActive('/tableau-de-bord') ? 'page' : undefined"
+                >Tableau de bord</router-link
               >
             </li>
             <li class="fr-nav__item">

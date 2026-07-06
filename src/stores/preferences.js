@@ -19,6 +19,8 @@ export const usePreferences = defineStore("preferences", () => {
     mergeDefaults: true,
   });
 
+  const unit = useStorageAsync("cartobio/preferences/unit", "week", localStorage);
+
   const params = ref(defaultParams());
 
   function $reset() {
@@ -27,10 +29,9 @@ export const usePreferences = defineStore("preferences", () => {
   }
 
   return {
-    // domains
     layers,
+    unit,
     params,
-    // utility
     $reset,
   };
 });
