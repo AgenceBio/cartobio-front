@@ -11,6 +11,8 @@ import { FeatureLike } from "ol/Feature";
 import { Map as OlMap } from "ol";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
 import * as XLSX from "xlsx";
+import cheminFichierXlsx from "@/data/culture_rpg.xlsx";
+
 
 /**
  * * Props
@@ -41,7 +43,6 @@ let rpgLayer: VectorLayer<VectorSource> | null = null;
 
 const MAX_RESOLUTION = 42;
 
-const CHEMIN_FICHIER = "/src/data/culture_rpg.xlsx";
 const COLONNE_CODE = 0;
 const COLONNE_RESULTAT = 3;
 const NB_LIGNES_ENTETE = 1;
@@ -65,7 +66,7 @@ let chargementXlsx: Promise<any[]> | null = null;
 async function chargerLignesXlsx() {
   if (lignesXlsx) return lignesXlsx;
   if (!chargementXlsx) {
-    chargementXlsx = fetch(CHEMIN_FICHIER)
+    chargementXlsx = fetch(cheminFichierXlsx)
       .then((reponse) => reponse.arrayBuffer())
       .then((arrayBuffer) => {
         const classeur = XLSX.read(arrayBuffer, { type: "array" });
