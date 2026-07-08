@@ -1,7 +1,7 @@
 import { beforeEach, vi } from "vitest";
 import { createRouter, createWebHistory } from "vue-router";
 import { config } from "@vue/test-utils";
-import { createHead } from "@unhead/vue";
+import { createHead } from "@unhead/vue/client";
 import { createPinia, setActivePinia } from "pinia";
 import routes from "~pages";
 import record from "@/utils/__fixtures__/record-with-features.json";
@@ -16,7 +16,7 @@ const head = createHead();
 const router = createRouter({ routes, history: createWebHistory() });
 
 config.global.plugins = [head, router];
-
+config.warnHandler = () => {};
 vi.mock("axios", async (importActual) => {
   const axios = await importActual();
   const createMock = {
@@ -63,6 +63,15 @@ const ResizeObserverMock = vi.fn(() => ({
 
 // Stub the global ResizeObserver
 vi.stubGlobal("ResizeObserver", ResizeObserverMock);
+
+class IntersectionObserverMock {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+
+// Stub the global IntersectionObserver
+vi.stubGlobal("IntersectionObserver", IntersectionObserverMock);
 
 vi.stubGlobal("localStorage", {
   getItem: vi.fn(),
