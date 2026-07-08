@@ -588,7 +588,7 @@ watch(
 const maintenance: Ref<boolean> = ref(false);
 const checkStatus = async () => {
   try {
-    const response = await fetch("/status.txt");
+    const response = await fetch("/status.txt", { cache: "no-store" });
     maintenance.value = !(await response.text()).startsWith("OK");
   } catch (error) {
     maintenance.value = false;
