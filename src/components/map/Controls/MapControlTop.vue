@@ -51,7 +51,7 @@
         aria-label="Comparer les versions"
         v-tooltip="{ text: 'Comparer les versions' }"
         v-if="mapParams.currentMode === 'consult'"
-        :disabled="!online"
+        :disabled="!online || !needCompareButton"
       >
         <i
           class="ri-arrow-left-right-line"
@@ -116,6 +116,7 @@
 <script setup lang="ts">
 import { usePreferences } from "@/stores/preferences.js";
 import { usePermissions } from "@/stores/permissions.js";
+import { useOperatorStore } from "@/stores/operator.js";
 import { useOnline } from "@vueuse/core";
 import { useFeaturesStore } from "@/stores/features";
 import { ref, watch, computed, onMounted, onUnmounted } from "vue";
@@ -131,6 +132,7 @@ const online = useOnline();
 const store = useFeaturesStore();
 const preferences = usePreferences();
 const permissions = usePermissions();
+const operatorStore = useOperatorStore();
 
 const { params: mapParams } = storeToRefs(preferences);
 
@@ -152,6 +154,10 @@ const modelOnglet = ref<"fullTab" | "split" | "fullMap">(props.stateFS);
 const isMobile = computed(() => windowWidth.value < 992);
 const isWide = computed(() => windowWidth.value >= 1600);
 const targetMode = ref<string | null>(null);
+
+const needCompareButton = ref<boolean>(
+  operatorStore.recordsByYearAll ? operatorStore.recordsByYearAll.flatMap((item) => item.records).length > 1 : false,
+);
 
 /**
  * * Gestion du resposive
