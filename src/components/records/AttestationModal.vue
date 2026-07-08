@@ -14,14 +14,18 @@ const props = defineProps({
   },
 });
 
-const hasPac = props.record.geojson
-  ? props.record.geojson.features.some(
-      (f) =>
-        f.properties?.attente_pac === true ||
-        f.properties?.numero_ilot !== null ||
-        f.properties?.numero_ilot !== "0" ||
-        f.properties?.numero_ilot !== "",
-    )
+const isParcelleIdentifiee = (properties) => {
+  const hasNumero =
+    (properties?.numero_ilot && properties.numero_ilot !== "0") ||
+    (properties?.numero_parcelle && properties.numero_parcelle !== "0");
+  const hasNom = !!properties?.nom;
+  const hasReferenceCadastrale = !!properties?.reference_cadastrale;
+
+  return hasNumero || hasNom || hasReferenceCadastrale;
+};
+
+const canEditAttestation = props.record.geojson
+  ? props.record.geojson.features.every((f) => isParcelleIdentifiee(f.properties))
   : featuresStore.hasPac;
 
 const emit = defineEmits(["close"]);
@@ -32,7 +36,7 @@ const ATTESTATION_OPTIONS = [
     description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle.",
     type: "pac",
     labelpdf: "pac",
-    active: hasPac,
+    active: canEditAttestation,
   },
   {
     label: "Fichier ZIP : Attestation du parcellaire PAC + liste des parcelles",
@@ -40,7 +44,7 @@ const ATTESTATION_OPTIONS = [
       "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles.",
     type: "zip",
     labelpdf: "PAC",
-    active: hasPac,
+    active: canEditAttestation,
   },
   {
     label: "Liste des parcelles de l'exploitation",
