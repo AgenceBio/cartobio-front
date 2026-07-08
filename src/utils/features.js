@@ -82,7 +82,7 @@ export function legalProjectionSurface(feature) {
   }
 
   const area = (Object.entries(RegionBounds).find(([, bounds]) => {
-    return intersect(feature, bboxPolygon(bounds));
+    return intersect(featureCollection([feature, bboxPolygon(bounds)]));
   }) || ["metropole"])[0];
 
   // Si on a un cas avec des multipolygones, on prends le premier pour le calcul
@@ -600,7 +600,7 @@ export function diff(feature, featureCollection) {
       return null;
     }
 
-    if (!intersect(reducedFeature, target)) {
+    if (!intersect(featureCollection([reducedFeature, target]))) {
       return reducedFeature;
     }
 

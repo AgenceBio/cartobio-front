@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onUpdated, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onUpdated, ref } from "vue";
 import { onClickOutside, onKeyStroke, useSwipe } from "@vueuse/core";
 import { useHead } from "@unhead/vue";
 
@@ -45,6 +45,7 @@ onUpdated(() => {
 });
 
 const down = ref("16px");
+
 const { direction, lengthY } = useSwipe(actionsMenuRef, {
   onSwipe: () => {
     if (direction.value === "DOWN" && lengthY.value < 0) {
@@ -67,31 +68,25 @@ const handleMenuClick = (event) => {
   }
 };
 
-const cancelKeyStroke = onKeyStroke("Escape", () => (show.value = false));
-const cancelClickOutside = onClickOutside(actionsMenuRef, () => (show.value = false));
+const cancelKeyStroke = onKeyStroke("Escape", () => {
+  show.value = false;
+});
+
+const cancelClickOutside = onClickOutside(actionsMenuRef, () => {
+  show.value = false;
+});
 
 onBeforeUnmount(() => {
   cancelClickOutside();
   cancelKeyStroke();
 });
 
-watch(show, (value) => {
-  if (value && !window.matchMedia("(min-width: 580px)").matches) {
-    useHead({
-      htmlAttrs: {
-        style: "overflow: hidden;",
-        tagDuplicateStrategy: "replace",
-      },
-    });
-  } else {
-    useHead({
-      htmlAttrs: {
-        style: "",
-        tagDuplicateStrategy: "replace",
-      },
-    });
-  }
-});
+useHead(() => ({
+  htmlAttrs: {
+    style: show.value && !window.matchMedia("(min-width: 580px)").matches ? "overflow: hidden;" : "",
+    tagDuplicateStrategy: "replace",
+  },
+}));
 </script>
 
 <template>
