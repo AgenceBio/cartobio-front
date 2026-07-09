@@ -60,7 +60,7 @@ const isPdfGenerating = ref(false);
 const errorText = ref({ complet: null, pac: null, zip: null });
 const hasAttestationProduction = ref({ complet: null, pac: null, zip: null });
 const isLoading = ref(true);
-const selectedType = ref(hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
+const selectedType = ref(canEditAttestation ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
 
 onMounted(async () => {
   if (props.record.certification_state !== "CERTIFIED") {
