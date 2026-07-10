@@ -1,7 +1,7 @@
 import { createApp, h, ref } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
-import { createHead } from "@unhead/vue";
+import { createHead } from "@unhead/vue/client";
 import * as Sentry from "@sentry/vue";
 import routes from "~pages";
 import Matomo from "vue-matomo";
