@@ -61,7 +61,7 @@
     "@testing-library/vue": "^8.0.1",
     "@vitejs/plugin-legacy": "^6.1.1",
     "@vitejs/plugin-vue": "^5.2.3",
-    "@vitest/coverage-istanbul": "^3.1.2",
+    "@vitest/coverage-istanbul": "^4.1.10",
     "@vue/eslint-config-typescript": "^11.0.3",
     "@vue/test-utils": "^2.3.2",
     "autoprefixer": "^10.4.2",
@@ -73,7 +73,7 @@
     "vite": "^6.4.2",
     "vite-plugin-pages": "^0.32.5",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.1.2"
+    "vitest": "^4.1.10"
   },
   "eslintConfig": {
     "root": true,
