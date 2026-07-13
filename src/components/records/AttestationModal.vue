@@ -14,18 +14,19 @@ const props = defineProps({
   },
 });
 
-const isParcelleIdentifiee = (properties) => {
+const hasPac = (properties) => {
   const hasNumero =
-    (properties?.numero_ilot && properties.numero_ilot !== "0") ||
-    (properties?.numero_parcelle && properties.numero_parcelle !== "0");
-  const hasNom = !!properties?.nom;
-  const hasReferenceCadastrale = !!properties?.reference_cadastrale;
+    (!!properties.numero_ilot && properties.numero_ilot !== "0") ||
+    (!!properties.numero_parcelle && properties.numero_parcelle !== "0");
 
-  return hasNumero || hasNom || hasReferenceCadastrale;
+  console.log(hasNumero, properties.attente_pac);
+  console.log(properties);
+
+  return hasNumero || properties.attente_pac;
 };
 
 const canEditAttestation = props.record.geojson
-  ? props.record.geojson.features.every((f) => isParcelleIdentifiee(f.properties))
+  ? props.record.geojson.features.some((f) => hasPac(f.properties))
   : featuresStore.hasPac;
 
 const emit = defineEmits(["close"]);
