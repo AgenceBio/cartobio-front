@@ -37,7 +37,7 @@
     "@turf/union": "^6.5.0",
     "@unhead/vue": "^1.0.6",
     "@vueuse/core": "^9.6.0",
-    "axios": "^1.16.0",
+    "axios": "^1.18.1",
     "driver.js": "^1.4.0",
     "fuse.js": "^6.6.2",
     "geometric": "^2.5.4",
