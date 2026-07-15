@@ -62,7 +62,7 @@
     "@vitejs/plugin-legacy": "^6.1.1",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vitest/coverage-istanbul": "^3.1.2",
-    "@vue/eslint-config-typescript": "^11.0.3",
+    "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.3.2",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.6.0",
