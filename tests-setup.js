@@ -141,4 +141,3 @@ vi.spyOn(global, "navigator", "get").mockImplementation(() => ({
 beforeEach(() => {
   vi.clearAllMocks();
 });
-lg;
