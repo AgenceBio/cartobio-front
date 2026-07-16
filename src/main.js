@@ -214,7 +214,6 @@ router.beforeEach(async (to) => {
   }
 
   if (to.path === "/logout") {
-    const path = userStore.isOc || userStore.isAgri ? "/pro" : "/";
     const logouturl = await userStore.logout();
     window.location.href = logouturl.data.logoutUrl;
     return false;

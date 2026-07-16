@@ -230,7 +230,7 @@ import { useUserStore } from "@/stores/user";
 import { useOnline } from "@vueuse/core";
 import { useCartoBioStorage } from "@/stores/storage.js";
 
-import { pinOperator, unpinOperator, getPDFData, getHasAttestationProduction } from "@/cartobio-api";
+import { pinOperator, unpinOperator } from "@/cartobio-api";
 import ActionDropdown from "../widgets/ActionDropdown.vue";
 import ExportActions from "./ExportActions.vue";
 import toast from "@/utils/toast.js";
@@ -275,11 +275,6 @@ const storage = useCartoBioStorage();
 const preferences = usePreferences();
 
 const attestationModal = ref(false);
-const hasAttestationProduction = ref({});
-const isPdfLoading = ref(false);
-const isPdfGenerating = ref(false);
-const errorText = ref({});
-
 const tab = ref(props.stateTab);
 
 const { record } = recordStore;
@@ -356,58 +351,6 @@ async function tryDownloadRecord(record) {
 const sortedRecords = computed(() => operatorStore.records);
 
 const selectedRecord = ref(record.record_id);
-
-async function exportAttestationPdf(record, force = false) {
-  if (record.certification_state !== "CERTIFIED" || isPdfLoading.value) {
-    return;
-  }
-
-  try {
-    isPdfLoading.value = true;
-    const response = await getPDFData(record.numerobio, record.record_id, null, force);
-    if (response.status === 204) {
-      isPdfGenerating.value = true;
-      return;
-    }
-    const linkSource = `data:application/pdf;base64,${response.data}`;
-    const a = document.createElement("a");
-    a.href = linkSource;
-    a.download = `cartobio_attestation_${record.annee_reference_controle}_${record.numerobio}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(linkSource);
-    hasAttestationProduction.value[record.record_id] = true;
-  } catch (error) {
-    if (error.code === "ERR_CANCELED") {
-      isPdfLoading.value = false;
-      return;
-    }
-
-    if (error.response?.data?.message) {
-      errorText.value[record.record_id] = error.response.data.message;
-    }
-    throw new Error("Erreur lors du téléchargement du PDF: Réessayez plus tard");
-  } finally {
-    isPdfLoading.value = false;
-  }
-}
-
-function fetchHasAttestationProduction(record) {
-  if (record.certification_state !== "CERTIFIED") {
-    return false;
-  }
-  if (hasAttestationProduction.value[record.record_id] != undefined) {
-    return hasAttestationProduction.value[record.record_id];
-  }
-
-  hasAttestationProduction.value[record.record_id] = false;
-
-  getHasAttestationProduction(record.record_id).then((res) => {
-    hasAttestationProduction.value[record.record_id] = res.hasAttestationProduction;
-  });
-  return false;
-}
 
 /*
  * * Watchers

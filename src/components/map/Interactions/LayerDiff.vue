@@ -31,7 +31,7 @@ async function fetchDiff(recordIdOld: string, recordIdNew: string) {
   }
 }
 
-function renderDiff(geojson: any) {
+function renderDiff(geojson) {
   if (diffLayer.value) {
     map1?.value?.removeLayer(diffLayer.value);
     map2?.value?.removeLayer(diffLayer.value);

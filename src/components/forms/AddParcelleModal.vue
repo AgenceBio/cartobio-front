@@ -119,7 +119,7 @@ import { usePermissions } from "@/stores/permissions.js";
 import { toDateInputString } from "@/utils/dates.js";
 
 import Modal from "@/components/widgets/Modal.vue";
-import AnnotationsSelector from "@/components/forms/fields/AnnotationsSelector.vue";
+// import AnnotationsSelector from "@/components/forms/fields/AnnotationsSelector.vue";
 import CultureSelector from "@/components/forms/fields/CultureSelector.vue";
 import ConversionLevelSelector from "@/components/forms/fields/ConversionLevelSelector.vue";
 import CancelModal from "@/components/forms/CancelModal.vue";

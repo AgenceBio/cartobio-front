@@ -866,7 +866,7 @@ watch(
 
     errorDrawing.value = true;
     if (data.corrections && data.corrections.length > 0) {
-      let feature = null; // = format.readFeature(newFeature) as Feature;
+      let feature; // = format.readFeature(newFeature) as Feature;
 
       if (data.corrections.length === 1) {
         feature = format.readFeature(data.corrections[0].new_minus_intersection) as Feature;

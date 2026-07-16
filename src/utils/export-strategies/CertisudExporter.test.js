@@ -3,7 +3,7 @@ import { usePermissions } from "@/stores/permissions.js";
 import { createTestingPinia } from "@pinia/testing";
 
 import Exporter from "./CertisudExporter.js";
-import record from "@/utils/__fixtures__/record-for-exports.json" assert { type: "json" };
+import record from "@/utils/__fixtures__/record-for-exports.json" with { type: "json" };
 
 const pinia = createTestingPinia({ createSpy: vi.fn });
 const permissions = usePermissions(pinia);

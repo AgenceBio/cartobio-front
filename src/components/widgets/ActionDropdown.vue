@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onUpdated, ref } from "vue";
+import { onBeforeUnmount, onUpdated, ref } from "vue";
 import { onClickOutside, onKeyStroke, useSwipe } from "@vueuse/core";
 import { useHead } from "@unhead/vue";
 

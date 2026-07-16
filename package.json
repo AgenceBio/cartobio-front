@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@agencebio/cartobio-types": "^1.9.0",
+    "@eslint/js": "^10.0.1",
     "@pinia/testing": "^1.0.3",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-legacy": "^8.1.0",
@@ -65,62 +66,18 @@
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.4.11",
     "autoprefixer": "^10.5.2",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
+    "eslint-plugin-vue": "^10.9.2",
+    "globals": "^17.7.0",
     "jsdom": "^29.1.1",
     "postcss-preset-env": "^11.3.2",
     "prettier": "^3.9.4",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.64.0",
     "vite": "^8.1.3",
     "vite-plugin-pages": "^0.33.3",
     "vite-plugin-pwa": "^1.3.0",
     "vitest": "^4.1.9"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:vue/vue3-essential",
-      "@vue/eslint-config-typescript/recommended"
-    ],
-    "ignorePatterns": [
-      "src/stores/storage.test.js",
-      "src/stores/record.test.js",
-      "src/utils/export-strategies/*.test.js",
-      "src/components/records/Table/FeatureGroup.test.js",
-      "src/components/forms/SingleItem*.test.js",
-      "src/components/setup/Flow/index.test.js",
-      "src/components/records/Table/index.test.js",
-      "src/components/records/Header.test.js",
-      "src/pages/certification/exploitations/index.test.js",
-      "src/pages/exploitations/\\[numeroBio\\]/index.test.js"
-    ],
-    "rules": {
-      "no-unused-vars": "warn",
-      "vue/multi-word-component-names": "off",
-      "vue/no-mutating-props": "warn",
-      "vue/no-multiple-template-root": "off",
-      "vue/no-undef-properties": "warn",
-      "vue/script-setup-uses-vars": "error"
-    },
-    "overrides": [
-      {
-        "files": [
-          "src/components/map/**"
-        ],
-        "rules": {
-          "no-unused-vars": "off",
-          "@typescript-eslint/no-unused-vars": "error",
-          "no-unexpected-multiline": "off"
-        }
-      }
-    ],
-    "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
-    }
   },
   "postcss": {
     "plugins": {

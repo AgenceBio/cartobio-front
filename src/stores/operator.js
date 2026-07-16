@@ -3,7 +3,6 @@ import { computed, ref, watch } from "vue";
 import { CUSTOM_DIMENSION_DEPARTEMENT, deleteCustomDimension, setCustomDimension } from "@/stats.js";
 import { apiClient } from "@/cartobio-api.js";
 import { useCartoBioStorage } from "@/stores/storage.js";
-import { useUserStore } from "@/stores/user.js";
 /**
  * @typedef {import('@vue/reactivity').Ref} Ref
  * @typedef {import('@vue/reactivity').UnwrapRef} UnwrapRef
@@ -17,7 +16,6 @@ function date(record) {
 
 export const useOperatorStore = defineStore("operator", () => {
   const storage = useCartoBioStorage();
-  const { isAgri } = useUserStore();
 
   /**
    * @typedef {import('@agencebio/cartobio-types').AgenceBioNormalizedOperator}

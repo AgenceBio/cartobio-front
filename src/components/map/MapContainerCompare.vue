@@ -30,8 +30,6 @@ import { Map, View } from "ol";
 import { useGeographic } from "ol/proj";
 import { defaults as defaultInteractions } from "ol/interaction";
 
-import VectorLayer from "ol/layer/Vector";
-
 interface Props {
   layerId?: string;
 }
@@ -129,7 +127,7 @@ const getLayer = (mapInstance: Map) => {
   return mapInstance
     .getLayers()
     .getArray()
-    .find((l) => l.get("name") === props.layerId) as VectorLayer<any>;
+    .find((l) => l.get("name") === props.layerId);
 };
 
 const detectAndHighlight = (mapInstance: Map, pixel: number[]) => {
