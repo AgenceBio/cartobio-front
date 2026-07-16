@@ -34,9 +34,11 @@ import { defaults as defaultInteractions } from "ol/interaction";
 import { getCenter } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 
+import Feature, { FeatureLike } from "ol/Feature";
+
 interface Props {
   layerId?: string;
-  ft?: any;
+  ft?: Feature;
 }
 
 const props = withDefaults(defineProps<Props>(), {
