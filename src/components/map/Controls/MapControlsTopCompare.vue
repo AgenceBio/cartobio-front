@@ -2,14 +2,15 @@
   <div class="button-group">
     <div class="mode-choice" v-if="!isCompare">
       <b class="fr-ml-1w">{{ record?.version_name }}</b>
-      <p class="fr-text--xs cec">{{ permissions.isOc ? "Contrôle en cours" : "Consultation en cours" }}</p>
+
+      <p class="fr-text--xs cec">{{ permissions.isOc ? "En contrôle" : "En consultation" }}</p>
       <p
         class="fr-text--xs version-recente fr-pr-0w fr-mr-0w"
         v-if="diffOnMap === 'map1'"
         role="status"
         aria-live="polite"
       >
-        Version + récente
+        + récente
       </p>
     </div>
 
@@ -63,7 +64,7 @@
         role="status"
         aria-live="polite"
       >
-        Version + récente
+        + récente
       </p>
       <div class="vr" />
 
@@ -97,6 +98,7 @@ const props = defineProps<{
   isCompare?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selectedRecord?: any;
+  isEditing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -219,25 +221,38 @@ const closeComparison = () => {
 </script>
 
 <style scoped>
+.button-group {
+  width: 100%;
+  left: 0;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 10px;
+  pointer-events: none;
+}
+
 .mode-choice {
   background: #ffffff;
   padding: 12px;
   border-radius: 4px;
-  position: absolute;
-  top: 10px;
-  left: 30%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  min-width: 300px;
+  min-width: min(300px, 100%);
+  max-width: calc(100% - 20px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 56px;
   font-size: 12px;
+  pointer-events: auto;
 }
 
 .fr-select-group {
   position: relative;
+  margin-top: 25px;
   flex: 1;
 }
 
@@ -306,18 +321,7 @@ const closeComparison = () => {
   border-radius: 12px;
   font-size: 0.75rem;
   margin: auto;
-}
-
-.button-group {
-  width: 50%;
-  z-index: 1;
-  top: 0;
-  position: absolute;
-}
-
-.fr-select-group:not(:last-child),
-.fr-input-group:not(:last-child) {
-  margin-bottom: 0rem;
+  white-space: nowrap;
 }
 
 .version-recente {
@@ -325,32 +329,8 @@ const closeComparison = () => {
   align-items: center;
   font-size: 0.75rem;
   margin: auto;
-
   background: #8bf8e7;
   border-radius: 12px;
-}
-
-@media (max-width: 768px) {
-  .mode-choice {
-    left: 10px;
-    right: 10px;
-    width: auto;
-    min-width: auto;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-    justify-content: flex-start;
-  }
-
-  .fr-select {
-    min-width: auto;
-    width: 100%;
-  }
-
-  .fr-btn {
-    align-self: stretch;
-    justify-content: center;
-  }
 }
 
 .vr {
@@ -360,5 +340,25 @@ const closeComparison = () => {
   min-height: 0.5em;
   background-color: grey;
   opacity: 0.25;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .mode-choice {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 8px;
+  }
+
+  .fr-select-group {
+    width: 100%;
+  }
+
+  .cec,
+  .version-recente {
+    font-size: 0.65rem;
+    padding: 2px 5px;
+  }
 }
 </style>

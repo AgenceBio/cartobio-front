@@ -14,14 +14,16 @@ const props = defineProps({
   },
 });
 
-const hasPac = props.record.geojson
-  ? props.record.geojson.features.some(
-      (f) =>
-        f.properties?.attente_pac === true ||
-        f.properties?.numero_ilot !== null ||
-        f.properties?.numero_ilot !== "0" ||
-        f.properties?.numero_ilot !== "",
-    )
+const hasPac = (properties) => {
+  const hasNumero =
+    (!!properties.numero_ilot && properties.numero_ilot !== "0") ||
+    (!!properties.numero_parcelle && properties.numero_parcelle !== "0");
+
+  return hasNumero || properties.attente_pac;
+};
+
+const canEditAttestation = props.record.geojson
+  ? props.record.geojson.features.some((f) => hasPac(f.properties))
   : featuresStore.hasPac;
 
 const emit = defineEmits(["close"]);
@@ -32,7 +34,7 @@ const ATTESTATION_OPTIONS = [
     description: "Liste des parcelles déclarées à la PAC avec le détail par parcelle.",
     type: "pac",
     labelpdf: "pac",
-    active: hasPac,
+    active: canEditAttestation,
   },
   {
     label: "Fichier ZIP : Attestation du parcellaire PAC + liste des parcelles",
@@ -40,7 +42,7 @@ const ATTESTATION_OPTIONS = [
       "Fichier zippé contenant l'attestation du parcellaire PAC avec le détail par parcelle ainsi qu'une version allégée avec uniquement la liste des parcelles.",
     type: "zip",
     labelpdf: "PAC",
-    active: hasPac,
+    active: canEditAttestation,
   },
   {
     label: "Liste des parcelles de l'exploitation",
@@ -56,7 +58,7 @@ const isPdfGenerating = ref(false);
 const errorText = ref({ complet: null, pac: null, zip: null });
 const hasAttestationProduction = ref({ complet: null, pac: null, zip: null });
 const isLoading = ref(true);
-const selectedType = ref(hasPac ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
+const selectedType = ref(canEditAttestation ? ATTESTATION_OPTIONS[0] : ATTESTATION_OPTIONS[2]);
 
 onMounted(async () => {
   if (props.record.certification_state !== "CERTIFIED") {
