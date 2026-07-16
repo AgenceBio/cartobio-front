@@ -16,6 +16,7 @@
           <em class="fr-mt-1w fr-mb-0 fr-hint-text" v-else>Nom de la parcelle</em>
           <button
             @click="modalName = true"
+            v-if="!isFeatureCompare"
             class="fr-icon--sm fr-btn--sm fr-btn fr-btn--tertiary-no-outline fr-icon-edit-line"
             aria-label="Modifier le nom de la parcelle {{ feature.properties.NOM || '' }}"
           ></button>
@@ -90,7 +91,7 @@
             <p class="fr-quote__author">Notes de l'exploitant‧e</p>
           </figcaption>
         </figure>
-        <template v-if="permissions.canEditParcellaire">
+        <template v-if="permissions.canEditParcellaire && !isFeatureCompare">
           <AccordionGroup v-if="permissions.isOc">
             <AccordionSection
               title="Culture"
@@ -199,7 +200,10 @@
               Ces notes sont visibles par votre organisme de certification.
             </span>
           </div>
-          <AccordionGroup v-if="permissions.isOc && permissions.canEditParcellaire" :constraint-toggle="!open">
+          <AccordionGroup
+            v-if="permissions.isOc && permissions.canEditParcellaire && !isFeatureCompare"
+            :constraint-toggle="!open"
+          >
             <AccordionSection
               title="Certification"
               :optionsCulture="{ name: getConversionLevel(patch.conversion_niveau).labelSelector }"
@@ -305,7 +309,7 @@
             >
               <ConversionLevelSelector
                 :feature-id="feature.properties.id || feature.id"
-                :readonly="!permissions.canChangeConversionLevel || readonly"
+                :readonly="!permissions.canChangeConversionLevel || readonly || isFeatureCompare"
                 v-model="patch.conversion_niveau"
               />
 
@@ -341,7 +345,7 @@
         <TimelineHistorique class="fr-mt-1w" :historique="feature.properties.historique" />
       </form>
     </div>
-    <div class="footer-controle fr-px-2w">
+    <div class="footer-controle fr-px-2w" v-if="!isFeatureCompare">
       <div
         class="fr-checkbox-group fr-checkbox-group--sm fr-my-2w"
         v-tooltip="{ text: 'Permet d\'annoter la parcelle comme vue', position: 'top' }"
@@ -465,6 +469,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isFeatureCompare: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["submit", "close", "controlee", "non-controlee"]);
@@ -486,6 +494,7 @@ const isInitializing = ref(true);
 useFocus(autofocusedElement, { initialValue: true });
 
 function requiresAction(properties) {
+  if (props.isFeatureCompare) return false;
   return properties.some((property) => featuresSet.byFeatureProperty(props.feature.id, property, true).size > 0);
 }
 function createInitialPatch() {
@@ -521,8 +530,7 @@ watch(featureId, (newId, oldId) => {
     patch.value = newPatch;
     initialPatchState.value = JSON.stringify(newPatch);
 
-    featuresSet.setCandidate([]);
-    details.value = featureDetails(props.feature);
+    if (!props.isFeatureCompare) featuresSet.setCandidate([]);
 
     nextTick(() => {
       isInitializing.value = false;
@@ -533,6 +541,7 @@ watch(featureId, (newId, oldId) => {
   }
 });
 
+details.value = featureDetails(props.feature);
 const nameErrors = computed(() => featuresSet.byFeatureProperty(props.feature.id, "name"));
 const isEngagementDateRequired = computed(() =>
   [LEVEL_C1, LEVEL_C2, LEVEL_C3, LEVEL_AB].includes(patch.value.conversion_niveau),
@@ -602,7 +611,7 @@ onBeforeUnmount(() => featuresSet.setCandidate([]));
 watch(
   patch,
   (properties) => {
-    if (!isInitializing.value) {
+    if (!isInitializing.value && !props.isFeatureCompare) {
       featuresSet.setCandidate([
         {
           id: props.feature.id,
