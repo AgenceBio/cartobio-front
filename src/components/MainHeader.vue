@@ -574,6 +574,7 @@ const isOpenHelpAgri: Ref<boolean> = ref<boolean>(false);
 const isMonEspaceOpen: Ref<boolean> = ref<boolean>(false);
 const dropdownIsOpen: Ref<boolean> = ref<boolean>(false);
 const collapseUserMenu = ref<HTMLElement | null>(null);
+const urlAccountNotifications = ref<string | null>(null);
 
 const operator = ref(null);
 
@@ -590,7 +591,7 @@ const checkStatus = async () => {
   try {
     const response = await fetch("/status.txt", { cache: "no-store" });
     maintenance.value = !(await response.text()).startsWith("OK");
-  } catch (error) {
+  } catch {
     maintenance.value = false;
   }
 };

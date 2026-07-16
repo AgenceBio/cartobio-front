@@ -104,7 +104,6 @@ vi.stubGlobal("localStorage", {
   clear: vi.fn(),
 });
 
-
 vi.mock("@vueuse/core", async (importActual) => {
   const vueuse = await importActual();
 

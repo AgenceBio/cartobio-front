@@ -7,8 +7,8 @@ import { useRecordStore } from "@/stores/record.js";
 import { useUserStore } from "@/stores/user.js";
 import axios from "axios";
 
-import operator from "@/utils/__fixtures__/operator.json" assert { type: "json" };
-import record from "@/utils/__fixtures__/record-with-features.json" assert { type: "json" };
+import operator from "@/utils/__fixtures__/operator.json" with { type: "json" };
+import record from "@/utils/__fixtures__/record-with-features.json" with { type: "json" };
 
 import RecordHeader from "./Header.vue";
 import EditVersionModal from "@/components/forms/EditVersionForm.vue";

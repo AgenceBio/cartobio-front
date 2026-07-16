@@ -139,7 +139,6 @@ const recordStore = useRecordStore();
 const featuresSet = useFeaturesSetsStore();
 const userStore = useUserStore();
 
-const isOc = computed(() => userStore.isOc);
 const isAgri = computed(() => userStore.isAgri);
 
 const { record } = recordStore;

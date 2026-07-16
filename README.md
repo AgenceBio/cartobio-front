@@ -87,7 +87,7 @@ Chaque commit/push sur la branche `test` déploie en test : [Build and deploy (t
 
 ### Environnement de préproduction
 
-Chaque commit/push sur la branche  `v3` déploie en préproduction : [Build and deploy (staging)](https://github.com/AgenceBio/cartobio-front/actions/workflows/staging.yml)
+Chaque commit/push sur la branche `v3` déploie en préproduction : [Build and deploy (staging)](https://github.com/AgenceBio/cartobio-front/actions/workflows/staging.yml)
 
 ### Environnement de production
 
