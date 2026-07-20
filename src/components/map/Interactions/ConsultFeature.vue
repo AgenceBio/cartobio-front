@@ -25,6 +25,7 @@ interface Props {
   vectorSource: VectorSource;
   vectorLayer: VectorLayer<VectorSource>;
   isCompare?: boolean;
+  noSelect?: boolean;
 }
 
 /*
@@ -39,6 +40,7 @@ const store = useFeaturesStore();
 
 const props = withDefaults(defineProps<Props>(), {
   isCompare: false,
+  noSelect: false,
 });
 
 /*
@@ -115,6 +117,7 @@ const handleMapClick = (evt: MapBrowserEvent) => {
  */
 onMounted(() => {
   if (props.isCompare) return;
+  if (props.noSelect) return;
 
   selectInteraction = new Select({
     condition: click,
