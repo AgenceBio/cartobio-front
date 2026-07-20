@@ -477,7 +477,7 @@ const onLeaveItem = () => {
 const onClickFeature = (feature: any) => {
   zoomToFeature(feature);
   if (!props.isCompare) {
-    emit("selectList", feature);
+    emit("selectList", feature.getProperties().new_id);
   } else {
     if (lastHoveredListFeature.value && lastHoveredListFeature.value !== feature) {
       lastHoveredListFeature.value.setStyle(undefined);
