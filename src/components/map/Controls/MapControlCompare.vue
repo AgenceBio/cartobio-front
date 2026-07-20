@@ -1,5 +1,5 @@
 <template>
-  <div class="button-group" :class="{ 'editing-bg': isEditing }">
+  <div class="button-group" :class="{ 'editing-bg': isEditing }" @mousemove.stop>
     <div :class="[props.isCompare ? 'info-box-left' : 'info-box-right']">
       <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap" aria-live="polite">
         <div class="legend" v-if="openList === null">
@@ -55,7 +55,7 @@
             @mouseleave="onLeaveList()"
           >
             <div>
-              <span class="legend-color removed" @click="toggleList('deleted')"></span>
+              <span class="legend-color removed"></span>
               <span class="fr-ml-1w">Supprimées</span>
             </div>
             <div>
@@ -798,7 +798,7 @@ hr {
   font-size: 12px;
   width: calc(100% + 16px);
   margin: 0 -8px;
-  padding: 4px 8px;
+  padding: 2px;
 }
 
 .legend-item > div {
