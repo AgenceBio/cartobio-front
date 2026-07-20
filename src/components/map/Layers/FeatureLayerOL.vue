@@ -530,7 +530,10 @@ watch(
       return;
     }
     interactions.value.undoRedo.clear();
-    if (!props.interactive) return;
+    if (!props.interactive) {
+      clearInteractions();
+      return;
+    }
     clearInteractions();
     if (mapParams.value.currentMode === "consult") {
       store.unselect([]);
