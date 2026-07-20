@@ -5,7 +5,7 @@
         <div class="legend" v-if="openList === null">
           <div
             class="legend-item"
-            @click="toggleList('added')"
+            @click.prevent.stop="toggleList('added')"
             @mouseenter="onHoverList('added')"
             @mouseleave="onLeaveList()"
           >
@@ -27,12 +27,12 @@
 
           <div
             class="legend-item"
-            @click="toggleList('modified')"
+            @click.prevent.stop="toggleList('modified')"
             @mouseenter="onHoverList('modified')"
             @mouseleave="onLeaveList()"
           >
             <div>
-              <span class="legend-color modified" @click="toggleList('modified')"></span>
+              <span class="legend-color modified" @click.prevent.stop="toggleList('modified')"></span>
               <span class="fr-ml-1w">Modifiées</span>
             </div>
             <div>
@@ -50,7 +50,7 @@
 
           <div
             class="legend-item"
-            @click="toggleList('deleted')"
+            @click.prevent.stop="toggleList('deleted')"
             @mouseenter="onHoverList('deleted')"
             @mouseleave="onLeaveList()"
           >
@@ -74,7 +74,7 @@
           <div v-if="openList === 'added'" class="submenu">
             <div class="title-submenu">
               <button
-                @click="openList = null"
+                @click.prevent.stop="openList = null"
                 type="button"
                 class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
               >
@@ -83,7 +83,7 @@
               <span class="legend-color added"></span>
               Ajoutées
               <span class="nb-class-sublist">{{ addNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
@@ -93,7 +93,7 @@
                   v-for="f in addedFeatures"
                   :key="f.getId()"
                   class="submenu-item"
-                  @click="onClickFeature(f)"
+                  @click.prevent.stop="onClickFeature(f)"
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
@@ -105,7 +105,7 @@
           <div v-if="openList === 'modified'" class="submenu">
             <div class="title-submenu">
               <button
-                @click="openList = null"
+                @click.prevent.stop="openList = null"
                 type="button"
                 class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
               >
@@ -114,7 +114,7 @@
               <span class="legend-color modified"></span>
               Modifiées
               <span class="nb-class-sublist">{{ modifiedNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
@@ -124,7 +124,7 @@
                   v-for="f in modifiedFeatures"
                   :key="f.getId()"
                   class="submenu-item"
-                  @click="onClickFeature(f)"
+                  @click.prevent.stop="onClickFeature(f)"
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
@@ -145,7 +145,7 @@
               <span class="legend-color removed"></span>
               Supprimées
               <span class="nb-class-sublist">{{ deleteNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
@@ -155,7 +155,7 @@
                   v-for="f in deletedFeatures"
                   :key="f.getId()"
                   class="submenu-item"
-                  @click="onClickFeature(f)"
+                  @click.prevent.stop="onClickFeature(f)"
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
