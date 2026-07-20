@@ -60,6 +60,7 @@ const HIT_TOLERANCE = 5;
 
 let currentHoveredFeature1 = null;
 let currentHoveredFeature2 = null;
+let selectedFeature1 = null;
 let selectedCompareFeature = null;
 
 provide("map", map);
@@ -228,10 +229,20 @@ const onMapClick1 = (event: MouseEvent): void => {
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
   const feature = detectAndHighlight(map.value, pixel);
 
+  if (selectedFeature1 && selectedFeature1 !== feature) {
+    selectedFeature1.set("selected", false);
+  }
+
   if (!feature) {
+    selectedFeature1 = null;
+    getLayer(map.value)?.changed();
     emit("parcel-click", null);
     return;
   }
+
+  feature.set("selected", true);
+  selectedFeature1 = feature;
+  getLayer(map.value)?.changed();
 
   const id = feature.getId() ?? feature.get("id");
   emit("parcel-click", id ?? null);
