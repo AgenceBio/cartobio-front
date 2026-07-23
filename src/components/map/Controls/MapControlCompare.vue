@@ -97,7 +97,7 @@
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
-                  {{ f.get("label") }}
+                  {{ f.getProperties().label }}
                 </li>
               </ul>
             </div>
@@ -128,7 +128,7 @@
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
-                  {{ f.get("label") }}
+                  {{ f.getProperties().label }}
                 </li>
               </ul>
             </div>
@@ -159,7 +159,7 @@
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
-                  {{ f.get("label") }}
+                  <em> Ex. {{ f.getProperties().label }}</em>
                 </li>
               </ul>
             </div>
@@ -267,29 +267,6 @@ const zoomToFeature = (feature: any) => {
     duration: 500,
     padding: [50, 50, 50, 50],
     maxZoom: 18,
-  });
-};
-
-const computeLabels = () => {
-  const features = diffLayer.value?.getSource()?.getFeatures() || [];
-
-  features.forEach((f: any) => {
-    const lanFeature = getUnderlyingLanFeature(f);
-
-    let label = "Parcelle";
-
-    if (lanFeature) {
-      const ilot = lanFeature.get("NUMERO_I");
-      const parcelle = lanFeature.get("NUMERO_P");
-
-      if (ilot || parcelle) {
-        label = `Ilot ${ilot ?? "?"} Parcelle ${parcelle ?? "?"}`;
-      } else {
-        label = lanFeature.get("NOM") || label;
-      }
-    }
-
-    f.set("label", label);
   });
 };
 
@@ -544,7 +521,6 @@ onMounted(() => {
       diffLayer.value = e.element;
 
       updateFeatureCounts(e.element);
-      computeLabels();
     }
 
     if (e.element.get("name") === "plan-features-layer") {
@@ -566,36 +542,6 @@ onUnmounted(() => {
   addListener.value = null;
   removeListener.value = null;
 });
-
-const getUnderlyingLanFeature = (diffFeature: any) => {
-  if (!map?.value) return null;
-
-  const geom = diffFeature?.getGeometry?.();
-  if (!geom) return null;
-
-  const coord = geom.getFirstCoordinate?.();
-  if (!coord) return null;
-
-  const pixel = map.value.getPixelFromCoordinate(coord);
-
-  let found: any = null;
-
-  map.value.forEachFeatureAtPixel(
-    pixel,
-    (feature, layer) => {
-      if (layer?.get("name") === "plan-features-layer") {
-        found = feature;
-        return true;
-      }
-      return false;
-    },
-    {
-      hitTolerance: 3,
-    },
-  );
-
-  return found;
-};
 </script>
 
 <style scoped>

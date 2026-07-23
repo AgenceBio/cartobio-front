@@ -387,9 +387,9 @@ const generateConversionLevelOverlays = () => {
         insertFirst: true,
       });
 
-      element.addEventListener("click", (event) => {
-        event.stopPropagation();
-      });
+      // element.addEventListener("click", (event) => {
+      //   event.stopPropagation();
+      // });
 
       watch(
         [() => mapParams.value.currentMode, () => store.selectedIds],
