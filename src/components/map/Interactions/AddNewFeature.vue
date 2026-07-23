@@ -666,10 +666,6 @@ const rpgInteraction = () => {
       .getArray()
       .find((l) => l.get("name") === "plan-rpg-layer") as VectorTileLayer) ?? null;
 
-  if (!sourceLayer) {
-    return;
-  }
-
   props.map.on("click", handleClickRPG);
 };
 
