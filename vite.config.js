@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
 
     build: {
       sourcemap: true,
-      cssMinify : 'esbuild',
+      cssMinify: "esbuild",
       rolldownOptions: {
         output: {
           manualChunks(id) {
