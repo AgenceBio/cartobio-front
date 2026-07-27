@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
 
     build: {
       ...libConfig,
-      cssMinify: 'esbuild',
+      cssMinify: "esbuild",
       outDir: resolve(join(__dirname, "dist", "notification-webcomponent")),
       emptyOutDir: true,
 
