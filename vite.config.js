@@ -20,15 +20,25 @@ export default defineConfig(({ mode }) => {
 
     build: {
       sourcemap: true,
-      rollupOptions: {
+      cssMinify: "esbuild",
+      rolldownOptions: {
         output: {
-          manualChunks: {
-            xlsx: ["xlsx"],
-            "rosetta-cultures": ["@agencebio/rosetta-cultures"],
-            "cartobio-types": ["@agencebio/cartobio-types"],
-            framework: ["vue", "vue-router", "@vueuse/core", "axios"],
-            sentry: ["@sentry/vue"],
-            proj4: ["proj4"],
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("xlsx")) return "xlsx";
+              if (id.includes("@agencebio/rosetta-cultures")) return "rosetta-cultures";
+              if (id.includes("@agencebio/cartobio-types")) return "cartobio-types";
+              if (
+                id.includes("vue-router") ||
+                id.includes("@vueuse/core") ||
+                id.includes("axios") ||
+                id.includes(`${sep}vue${sep}`)
+              ) {
+                return "framework";
+              }
+              if (id.includes("@sentry/vue")) return "sentry";
+              if (id.includes("proj4")) return "proj4";
+            }
           },
         },
       },
@@ -56,6 +66,7 @@ export default defineConfig(({ mode }) => {
         manifest: false,
         includeAssets: ["*.woff2", "*.png", "*.svg", "*.jpg"],
         workbox: {
+          globPatterns: ["**/*.{js,css,html,woff2,png,svg,jpg,ico}"],
           maximumFileSizeToCacheInBytes: 5000000,
           navigateFallbackDenylist: [/^\/api/, /^\/status\.txt/],
         },

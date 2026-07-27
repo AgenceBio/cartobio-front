@@ -8,7 +8,8 @@ const libConfig = {
   lib: {
     entry: resolve(join(__dirname, "widget", "main.js")),
     name: "NotificationCartobio",
-    fileName: (format) => `notification-cartobio.${format}.js`,
+    fileName: () => "notification-cartobio.js",
+    formats: ["iife"],
   },
 };
 
@@ -25,17 +26,16 @@ export default defineConfig(({ mode }) => {
     plugins: [vue()],
 
     build: {
-      ...resolvedConfig.build,
+      ...libConfig,
+      cssMinify: "esbuild",
+      outDir: resolve(join(__dirname, "dist", "notification-webcomponent")),
+      emptyOutDir: true,
+
       rollupOptions: {
-        ...resolvedConfig.build.rollupOptions,
         output: {
-          manualChunks: null,
+          inlineDynamicImports: true,
         },
       },
-
-      emptyOutDir: mode === "lib",
-      outDir: resolve(join(__dirname, "dist", "notification-webcomponent")),
-      ...(mode === "lib" ? libConfig : {}),
     },
   };
 });
