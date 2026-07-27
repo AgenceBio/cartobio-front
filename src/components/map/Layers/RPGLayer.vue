@@ -53,7 +53,7 @@ const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
   Fruits: { fill: "#ffb74d80", stroke: "#f57c00" },
   Vignes: { fill: "#f48fb180", stroke: "#e91e63" },
   "Plantes à parfums, aromatiques et médicinales et plantes à boissons": { fill: "#80deea80", stroke: "#00acc1" },
-  Autres: { fill: "#b39ddb80", stroke: "#5e35b1" },
+  Autres: { fill: "#4374CB80", stroke: "#2C4E9B" },
 };
 
 const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
