@@ -34,12 +34,11 @@ import { defaults as defaultInteractions } from "ol/interaction";
 import { getCenter } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 
-import VectorLayer from "ol/layer/Vector";
-import { FeatureLike } from "ol/Feature";
+import Feature, { FeatureLike } from "ol/Feature";
 
 interface Props {
   layerId?: string;
-  ft?: any;
+  ft?: Feature;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -144,7 +143,7 @@ const getLayer = (mapInstance: Map) => {
   return mapInstance
     .getLayers()
     .getArray()
-    .find((l) => l.get("name") === props.layerId) as VectorLayer<any>;
+    .find((l) => l.get("name") === props.layerId);
 };
 
 const detectAndHighlight = (mapInstance: Map, pixel: number[]) => {

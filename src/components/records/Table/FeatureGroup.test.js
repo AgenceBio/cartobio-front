@@ -5,7 +5,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePermissions } from "@/stores/permissions.js";
 
-import record from "@/utils/__fixtures__/record-with-features.json" assert { type: "json" };
+import record from "@/utils/__fixtures__/record-with-features.json" with { type: "json" };
 import FeatureGroup from "@/components/records/Table/FeatureGroup.vue";
 import { getFeatureGroups, GROUPE_COMMUNE } from "@/utils/features.js";
 

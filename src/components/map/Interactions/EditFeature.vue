@@ -185,8 +185,8 @@ let select: Select | null = null;
 let selectedFeatures: Collection<Feature>;
 let tooltip: Tooltip | null = null;
 let vertexTooltipOverlay: Overlay | null = null;
-let pointerMoveHandler: ((e: any) => void) | null = null;
-let singleClickHandler: ((e: any) => void) | null = null;
+let pointerMoveHandler: ((e) => void) | null = null;
+let singleClickHandler: ((e) => void) | null = null;
 
 /**
  * Corrections
@@ -284,7 +284,7 @@ const resetCorrection = (resetModifiedFeature = true, addPointStyle = true) => {
 
 const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
   for (const feature of selectedFeatures.getArray()) {
-    const geom = feature.getGeometry() as any;
+    const geom = feature.getGeometry();
     if (!geom) continue;
     const coords: number[][][] = geom.getCoordinates();
     if (!coords) continue;
@@ -302,7 +302,7 @@ const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
 };
 
 const removeInteriorVertex = (feature: Feature, ringIndex: number, coordIndex: number) => {
-  const geom = feature.getGeometry() as any;
+  const geom = feature.getGeometry();
   const coords: number[][][] = geom.getCoordinates();
   const ring = coords[ringIndex];
 
@@ -319,13 +319,13 @@ const removeInteriorVertex = (feature: Feature, ringIndex: number, coordIndex: n
   geom.setCoordinates(cleanedCoords);
 };
 
-const handleInteriorVertexDelete = (event: any) => {
+const handleInteriorVertexDelete = (event) => {
   if (!altKeyOnly(event)) return;
 
   const feature = selectedFeatures.getArray()[0];
   if (!feature) return;
 
-  const geom = feature.getGeometry() as any;
+  const geom = feature.getGeometry();
   if (!geom || geom.getType() !== "Polygon") return;
 
   const coords: number[][][] = geom.getCoordinates();
@@ -389,7 +389,7 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
 
   pointerMoveHandler = (e) => {
     if (!vertexTooltipOverlay) return;
-    const geom = selectedFeatures.getArray()[0]?.getGeometry() as any;
+    const geom = selectedFeatures.getArray()[0]?.getGeometry();
     const coordsCount = geom?.getCoordinates()?.[0]?.length ?? 0;
     if (isNearVertex(e.pixel) && getComputedStyle(tooltip.element).display === "none" && coordsCount > 4) {
       vertexTooltipOverlay.setPosition(props.map.getCoordinateFromPixel(e.pixel));
@@ -610,14 +610,13 @@ const createTooltipContent = (feature: Feature) => {
  */
 
 const saveModifiedFeature = async () => {
-  let modifiedFeature: CartoBioFeature | null = null;
   const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
   const feature = props.vectorSource.getFeatureById(selectdId);
 
   if (!feature) return;
 
-  modifiedFeature = geoJson.writeFeatureObject(feature.clone()) as CartoBioFeature;
+  const modifiedFeature = geoJson.writeFeatureObject(feature.clone()) as CartoBioFeature;
   modifiedFeature.id = selectdId;
 
   if (!modifiedFeature) return;

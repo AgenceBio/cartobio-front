@@ -49,7 +49,7 @@
 import { ref, onMounted, onUnmounted, watch, Ref, inject } from "vue";
 import { storeToRefs } from "pinia";
 
-import { Map, MapBrowserEvent, Overlay } from "ol";
+import { Map, Overlay } from "ol";
 import { Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -135,11 +135,11 @@ let sourceListenerKey: EventsKey | null = null;
 let pointerMoveKey: EventsKey | null = null;
 
 let drawInteraction: Draw | null = null;
-let currentMapClickHandler: ((evt: MapBrowserEvent<any>) => void) | null = null;
+let currentMapClickHandler: ((evt) => void) | null = null;
 
 const SNAP_TOLERANCE = 15; // pixels
 
-const neighborStyles: Record<string, any> = {};
+const neighborStyles = {};
 
 let snapHighlightSource: VectorSource | null = null;
 let snapHighlightLayer: VectorLayer<VectorSource> | null = null;
@@ -544,7 +544,7 @@ const divideInteraction = (): void => {
     props.map.addInteraction(snapInteraction);
   }
 
-  pointerMoveKey = props.map.on("pointermove", (evt: MapBrowserEvent<any>) => {
+  pointerMoveKey = props.map.on("pointermove", (evt) => {
     if (!snapIndicatorSource) return;
 
     snapIndicatorSource.clear();
@@ -579,7 +579,7 @@ const divideInteraction = (): void => {
     style: modifyStyle,
   });
 
-  const handleMapClick = (evt: MapBrowserEvent<any>) => {
+  const handleMapClick = (evt) => {
     if (!targetFeature) return;
 
     const coordinate = evt.coordinate;
@@ -695,9 +695,12 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
 
   if (lineJsts.intersects(polyJsts)) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const parts: any[] = [];
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (typeof (polyJsts as any).split === "function") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const splitGeom = (polyJsts as any).split(lineJsts);
         const num = splitGeom.getNumGeometries ? splitGeom.getNumGeometries() : 0;
         for (let i = 0; i < num; i++) {
@@ -724,6 +727,7 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
               }
             }
           } else if (Array.isArray(polys.array)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             polys.array.forEach((g: any) => {
               if (g.getArea && g.getArea() > 0 && polyJsts.contains(g.getInteriorPoint())) {
                 parts.push(g);
@@ -759,6 +763,7 @@ const updatePreview = (lineGeom: LineString, previewSource: VectorSource): void 
         });
 
         resSource.clear();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         parts.forEach((geom: any, index: number) => {
           const olGeom = parser.write(geom);
           const newFeature = new Feature({

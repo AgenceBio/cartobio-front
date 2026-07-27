@@ -138,7 +138,7 @@ onMounted(async () => {
     isLoading.value = true;
     await checkGeofoliaAccountStatus(operator.numeroBio);
     hasCloudAccount.value = true;
-  } catch (error) {
+  } catch {
     hasCloudAccount.value = false;
   } finally {
     isLoading.value = false;

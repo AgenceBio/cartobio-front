@@ -96,13 +96,14 @@ const { record } = storeToRefs(recordStore);
 const props = defineProps<{
   fullScreenMap: boolean;
   isCompare?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selectedRecord?: any;
   isEditing?: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "addParcelle"): void;
-  (e: "changeCompare", payload: { data: any; record_id: string }): void;
+  (e: "changeCompare", payload: { data; record_id: string }): void;
   (e: "closeComparaison"): void;
 }>();
 const map1 = inject<Ref<Map | null>>("map");

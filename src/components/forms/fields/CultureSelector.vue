@@ -290,7 +290,7 @@ function openMulticultureModal() {
 }
 
 function closeMulticultureModal() {
-  let updatedCultures = [];
+  let updatedCultures;
 
   if (isMulticulture.value) {
     updatedCultures = multiCultureTab.value.filter((c) => c.CPF || c.variete || c.surface || c.date_semis);

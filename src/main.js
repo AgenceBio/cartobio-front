@@ -1,7 +1,7 @@
 import { createApp, h, ref } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
-import { createHead } from "@unhead/vue";
+import { createHead } from "@unhead/vue/client";
 import * as Sentry from "@sentry/vue";
 import routes from "~pages";
 import Matomo from "vue-matomo";
@@ -91,6 +91,7 @@ app
     trackerUrl: "https://matomo.agencebio.org/matomo.php",
     trackerScriptUrl: "https://matomo.agencebio.org/matomo.js",
     trackSiteSearch: (to) => (to.path === "/certification/exploitations" && to.query.search) || null,
+    preInitActions: [["setExcludedQueryParams", ["token"]]],
   });
 
 // this is sync because we need to know the user role before rendering the app
@@ -213,7 +214,6 @@ router.beforeEach(async (to) => {
   }
 
   if (to.path === "/logout") {
-    const path = userStore.isOc || userStore.isAgri ? "/pro" : "/";
     const logouturl = await userStore.logout();
     window.location.href = logouturl.data.logoutUrl;
     return false;
