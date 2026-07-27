@@ -6,6 +6,7 @@
         :vector-layer="vectorLayer"
         :vector-source="vectorSource"
         :isCompare="isCompare"
+        :noSelect="noSelect"
         @selectFeature="(e) => emit('selectFeature', e)"
         v-if="interactive"
       />
@@ -138,6 +139,7 @@ interface Props {
   recordId: string;
   data?: CartoBioFeatureCollection;
   isCompare?: boolean;
+  noSelect?: boolean;
   zoomIn?: string | number;
 }
 
@@ -156,6 +158,7 @@ interface Interactions {
 const props = withDefaults(defineProps<Props>(), {
   name: "parcellaire-operateur",
   interactive: false,
+  noSelect: false,
 });
 
 /*
@@ -384,9 +387,9 @@ const generateConversionLevelOverlays = () => {
         insertFirst: true,
       });
 
-      element.addEventListener("click", (event) => {
-        event.stopPropagation();
-      });
+      // element.addEventListener("click", (event) => {
+      //   event.stopPropagation();
+      // });
 
       watch(
         [() => mapParams.value.currentMode, () => store.selectedIds],
@@ -530,7 +533,10 @@ watch(
       return;
     }
     interactions.value.undoRedo.clear();
-    if (!props.interactive) return;
+    if (!props.interactive) {
+      clearInteractions();
+      return;
+    }
     clearInteractions();
     if (mapParams.value.currentMode === "consult") {
       store.unselect([]);

@@ -295,6 +295,9 @@ const closeComparison = () => {
   color: var(--text-default-grey);
   background-color: var(--background-default-grey);
   font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fr-select option.navigation-option {
@@ -322,6 +325,7 @@ const closeComparison = () => {
   font-size: 0.75rem;
   margin: auto;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .version-recente {
@@ -331,6 +335,7 @@ const closeComparison = () => {
   margin: auto;
   background: #8bf8e7;
   border-radius: 12px;
+  white-space: nowrap;
 }
 
 .vr {
@@ -360,5 +365,13 @@ const closeComparison = () => {
     font-size: 0.65rem;
     padding: 2px 5px;
   }
+}
+
+.mode-choice b {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
 }
 </style>

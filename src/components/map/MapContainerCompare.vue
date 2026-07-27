@@ -59,6 +59,8 @@ const HIT_TOLERANCE = 5;
 
 let currentHoveredFeature1 = null;
 let currentHoveredFeature2 = null;
+let selectedFeature1 = null;
+let selectedCompareFeature = null;
 
 provide("map", map);
 provide("map2", map2);
@@ -226,12 +228,23 @@ const onMapClick1 = (event: MouseEvent): void => {
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
   const feature = detectAndHighlight(map.value, pixel);
 
-  if (!feature) return;
+  if (selectedFeature1 && selectedFeature1 !== feature) {
+    selectedFeature1.set("selected", false);
+  }
+
+  if (!feature) {
+    selectedFeature1 = null;
+    getLayer(map.value)?.changed();
+    emit("parcel-click", null);
+    return;
+  }
+
+  feature.set("selected", true);
+  selectedFeature1 = feature;
+  getLayer(map.value)?.changed();
 
   const id = feature.getId() ?? feature.get("id");
-  if (id !== undefined && id !== null) {
-    emit("parcel-click", id);
-  }
+  emit("parcel-click", id ?? null);
 };
 
 const onMouseMove1 = (event: MouseEvent): void => {
@@ -259,7 +272,6 @@ const onMouseMove1 = (event: MouseEvent): void => {
     }
   }
 
-  // Enlever l'état des anciennes features si on a changé de feature
   if (feature1 !== currentHoveredFeature1) {
     clearHoverFeature1();
   }
@@ -291,7 +303,21 @@ const onMapClick2 = (event: MouseEvent): void => {
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
 
   const feature2 = detectAndHighlight(map2.value, pixel);
-  if (!feature2) return;
+
+  if (selectedCompareFeature && selectedCompareFeature !== feature2) {
+    selectedCompareFeature.set("selected", false);
+  }
+
+  if (!feature2) {
+    selectedCompareFeature = null;
+    getLayer(map2.value)?.changed();
+    emit("parcel-compare-click", null);
+    return;
+  }
+
+  feature2.set("selected", true);
+  selectedCompareFeature = feature2;
+  getLayer(map2.value)?.changed();
 
   const featureObj = geoJson.writeFeatureObject(feature2) as CartoBioFeature;
 
@@ -303,6 +329,7 @@ const onMouseMove2 = (event: MouseEvent): void => {
 
   const rect = mapRef2.value.getBoundingClientRect();
   const pixel = [event.clientX - rect.left, event.clientY - rect.top];
+  if (pixel.length === 0) return;
   const coordinate = map2.value.getCoordinateFromPixel(pixel);
   const feature2 = props.ft ? currentHoveredFeature2 : detectAndHighlight(map2.value, pixel);
 

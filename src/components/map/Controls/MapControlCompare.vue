@@ -1,11 +1,11 @@
 <template>
-  <div class="button-group" :class="{ 'editing-bg': isEditing }">
+  <div class="button-group" :class="{ 'editing-bg': isEditing }" @mousemove.stop>
     <div :class="[props.isCompare ? 'info-box-left' : 'info-box-right']">
       <div class="geometric-diff-viewer fr-mb-2w" v-if="diffOnMap" aria-live="polite">
         <div class="legend" v-if="openList === null">
           <div
             class="legend-item"
-            @click="toggleList('added')"
+            @click.prevent.stop="toggleList('added')"
             @mouseenter="onHoverList('added')"
             @mouseleave="onLeaveList()"
           >
@@ -27,12 +27,12 @@
 
           <div
             class="legend-item"
-            @click="toggleList('modified')"
+            @click.prevent.stop="toggleList('modified')"
             @mouseenter="onHoverList('modified')"
             @mouseleave="onLeaveList()"
           >
             <div>
-              <span class="legend-color modified" @click="toggleList('modified')"></span>
+              <span class="legend-color modified" @click.prevent.stop="toggleList('modified')"></span>
               <span class="fr-ml-1w">Modifiées</span>
             </div>
             <div>
@@ -50,12 +50,12 @@
 
           <div
             class="legend-item"
-            @click="toggleList('deleted')"
+            @click.prevent.stop="toggleList('deleted')"
             @mouseenter="onHoverList('deleted')"
             @mouseleave="onLeaveList()"
           >
             <div>
-              <span class="legend-color removed" @click="toggleList('deleted')"></span>
+              <span class="legend-color removed"></span>
               <span class="fr-ml-1w">Supprimées</span>
             </div>
             <div>
@@ -74,7 +74,7 @@
           <div v-if="openList === 'added'" class="submenu">
             <div class="title-submenu">
               <button
-                @click="openList = null"
+                @click.prevent.stop="openList = null"
                 type="button"
                 class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
               >
@@ -83,7 +83,7 @@
               <span class="legend-color added"></span>
               Ajoutées
               <span class="nb-class-sublist">{{ addNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
@@ -93,11 +93,11 @@
                   v-for="f in addedFeatures"
                   :key="f.getId()"
                   class="submenu-item"
-                  @click="onClickFeature(f)"
+                  @click.prevent.stop="onClickFeature(f)"
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
-                  {{ f.get("label") }}
+                  {{ f.getProperties().label }}
                 </li>
               </ul>
             </div>
@@ -105,7 +105,7 @@
           <div v-if="openList === 'modified'" class="submenu">
             <div class="title-submenu">
               <button
-                @click="openList = null"
+                @click.prevent.stop="openList = null"
                 type="button"
                 class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
               >
@@ -114,7 +114,7 @@
               <span class="legend-color modified"></span>
               Modifiées
               <span class="nb-class-sublist">{{ modifiedNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
@@ -124,11 +124,11 @@
                   v-for="f in modifiedFeatures"
                   :key="f.getId()"
                   class="submenu-item"
-                  @click="onClickFeature(f)"
+                  @click.prevent.stop="onClickFeature(f)"
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
-                  {{ f.get("label") }}
+                  {{ f.getProperties().label }}
                 </li>
               </ul>
             </div>
@@ -145,7 +145,7 @@
               <span class="legend-color removed"></span>
               Supprimées
               <span class="nb-class-sublist">{{ deleteNb }}</span>
-              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click="onFocusType()">
+              <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline" @click.prevent.stop="onFocusType()">
                 <span class="ri-focus-3-line"></span>
               </button>
             </div>
@@ -155,11 +155,11 @@
                   v-for="f in deletedFeatures"
                   :key="f.getId()"
                   class="submenu-item"
-                  @click="onClickFeature(f)"
+                  @click.prevent.stop="onClickFeature(f)"
                   @mouseenter="onHoverItem(f)"
                   @mouseleave="onLeaveItem"
                 >
-                  {{ f.get("label") }}
+                  <em> Ex. {{ f.getProperties().label }}</em>
                 </li>
               </ul>
             </div>
@@ -267,29 +267,6 @@ const zoomToFeature = (feature) => {
     duration: 500,
     padding: [50, 50, 50, 50],
     maxZoom: 18,
-  });
-};
-
-const computeLabels = () => {
-  const features = diffLayer.value?.getSource()?.getFeatures() || [];
-
-  features.forEach((f) => {
-    const lanFeature = getUnderlyingLanFeature(f);
-
-    let label = "Parcelle";
-
-    if (lanFeature) {
-      const ilot = lanFeature.get("NUMERO_I");
-      const parcelle = lanFeature.get("NUMERO_P");
-
-      if (ilot || parcelle) {
-        label = `Ilot ${ilot ?? "?"} Parcelle ${parcelle ?? "?"}`;
-      } else {
-        label = lanFeature.get("NOM") || label;
-      }
-    }
-
-    f.set("label", label);
   });
 };
 
@@ -477,7 +454,7 @@ const onLeaveItem = () => {
 const onClickFeature = (feature) => {
   zoomToFeature(feature);
   if (!props.isCompare) {
-    emit("selectList", feature);
+    emit("selectList", feature.getProperties().new_id);
   } else {
     if (lastHoveredListFeature.value && lastHoveredListFeature.value !== feature) {
       lastHoveredListFeature.value.setStyle(undefined);
@@ -544,7 +521,6 @@ onMounted(() => {
       diffLayer.value = e.element;
 
       updateFeatureCounts(e.element);
-      computeLabels();
     }
 
     if (e.element.get("name") === "plan-features-layer") {
@@ -566,36 +542,6 @@ onUnmounted(() => {
   addListener.value = null;
   removeListener.value = null;
 });
-
-const getUnderlyingLanFeature = (diffFeature) => {
-  if (!map?.value) return null;
-
-  const geom = diffFeature?.getGeometry?.();
-  if (!geom) return null;
-
-  const coord = geom.getFirstCoordinate?.();
-  if (!coord) return null;
-
-  const pixel = map.value.getPixelFromCoordinate(coord);
-
-  let found = null;
-
-  map.value.forEachFeatureAtPixel(
-    pixel,
-    (feature, layer) => {
-      if (layer?.get("name") === "plan-features-layer") {
-        found = feature;
-        return true;
-      }
-      return false;
-    },
-    {
-      hitTolerance: 3,
-    },
-  );
-
-  return found;
-};
 </script>
 
 <style scoped>
@@ -798,7 +744,7 @@ hr {
   font-size: 12px;
   width: calc(100% + 16px);
   margin: 0 -8px;
-  padding: 4px 8px;
+  padding: 2px;
 }
 
 .legend-item > div {
