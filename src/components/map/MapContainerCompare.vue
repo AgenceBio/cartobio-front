@@ -185,8 +185,26 @@ watch(
   () => props.ft,
   (feature) => {
     if (!map2.value) return;
+
+    if (selectedFeature1) {
+      selectedFeature1.set("selected", false);
+      selectedFeature1 = null;
+      getLayer(map.value)?.changed();
+    }
+
+    if (selectedCompareFeature) {
+      selectedCompareFeature.set("selected", false);
+      selectedCompareFeature = null;
+    }
+
     if (!feature) {
       clearHoverFeature2();
+
+      if (selectedCompareFeature) {
+        selectedCompareFeature.set("selected", false);
+        selectedCompareFeature = null;
+      }
+
       const layer2 = getLayer(map2.value);
       layer2?.changed();
       return;
@@ -215,6 +233,11 @@ watch(
     if (feature2) {
       feature2.set("onhovered-compare", true);
       currentHoveredFeature2 = feature2;
+    }
+
+    if (feature2) {
+      feature2.set("selected", true);
+      selectedCompareFeature = feature2;
     }
 
     const layer2 = getLayer(map2.value);
