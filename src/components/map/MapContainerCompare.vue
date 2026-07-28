@@ -185,7 +185,7 @@ watch(
   (feature) => {
     if (!map2.value) return;
 
-    if (selectedFeature1?.getId() !== feature.id) {
+    if (selectedFeature1?.getId() !== feature?.id) {
       selectedFeature1?.set("selected", false);
       selectedFeature1 = null;
 
