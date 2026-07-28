@@ -514,9 +514,22 @@ const details = ref(featureDetails(props.feature));
 
 const initialPatchState = ref(JSON.stringify(createInitialPatch()));
 
+const compareObjects = (obj1, obj2) => {
+  const obj1Keys = Object.keys(obj1),
+    obj2Keys = Object.keys(obj2);
+
+  if (obj1Keys.length !== obj2Keys.length) return false;
+
+  for (const key of obj1Keys) {
+    if (obj1[key] !== obj2[key] && !isNaN(obj1[key]) && !isNaN(obj2[key])) {
+      return false;
+    }
+  }
+  return true;
+};
+
 const hasRealChanges = computed(() => {
-  const currentState = JSON.stringify(patch.value);
-  return currentState !== initialPatchState.value;
+  return !compareObjects(JSON.parse(JSON.stringify(patch.value)), JSON.parse(initialPatchState.value));
 });
 
 const featureId = computed(() => props.feature.id);
