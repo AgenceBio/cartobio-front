@@ -186,10 +186,21 @@ watch(
   (feature) => {
     if (!map2.value) return;
 
-    if (selectedFeature1) {
-      selectedFeature1.set("selected", false);
+    if (selectedFeature1?.getId() !== feature.id) {
+      selectedFeature1?.set("selected", false);
       selectedFeature1 = null;
-      getLayer(map.value)?.changed();
+
+      const layer = getLayer(map.value);
+      const source = layer?.getSource();
+
+      const featureToSelect = source?.getFeatures().find((f) => f.getId() === feature.id);
+
+      if (featureToSelect) {
+        featureToSelect.set("selected", true);
+        selectedFeature1 = featureToSelect;
+      }
+
+      layer?.changed();
     }
 
     if (selectedCompareFeature) {
