@@ -185,7 +185,7 @@ watch(
   () => props.ft,
   (feature) => {
     if (!map2.value) return;
-
+    if (!feature) return;
     if (selectedFeature1?.getId() !== feature?.id) {
       selectedFeature1?.set("selected", false);
       selectedFeature1 = null;
@@ -193,7 +193,7 @@ watch(
       const layer = getLayer(map.value);
       const source = layer?.getSource();
 
-      const featureToSelect = source?.getFeatures().find((f) => f.getId() === feature.id);
+      const featureToSelect = source?.getFeatures().find((f) => f.getId() === feature?.id);
 
       if (featureToSelect) {
         featureToSelect.set("selected", true);
