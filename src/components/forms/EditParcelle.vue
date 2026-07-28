@@ -521,12 +521,7 @@ const compareObjects = (obj1, obj2) => {
   if (obj1Keys.length !== obj2Keys.length) return false;
 
   for (const key of obj1Keys) {
-    const val1 = obj1[key],
-      val2 = obj2[key];
-
-    if (typeof val1 === "object" && val1 !== null && typeof val2 === "object" && val2 !== null) {
-      if (!compareObjects(val1, val2)) return false;
-    } else if (val1 !== val2 && !isNaN(val1) && !isNaN(val2)) {
+    if (obj1[key] !== obj2[key] && !isNaN(obj1[key]) && !isNaN(obj2[key])) {
       return false;
     }
   }
