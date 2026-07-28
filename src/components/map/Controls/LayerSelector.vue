@@ -1,6 +1,7 @@
 <template>
   <div class="container olgl-ctrl" ref="layersMenuRef">
     <button
+      type="button"
       class="menu-toggle"
       :class="{
         'menu-toggle--satellite': fond === 'satellite',
@@ -8,7 +9,9 @@
         'menu-toggle--mobile': isMobile,
       }"
       @click="showMenu = !showMenu"
-      :aria-label="isMobile ? 'Afficher le menu des calques' : undefined"
+      :aria-expanded="showMenu"
+      aria-controls="layers-menu-dialog"
+      :aria-label="isMobile ? 'Afficher le menu des calques' : 'Calques'"
     >
       <span v-if="!isMobile" class="fr-icon--sm fr-mb-1v" aria-hidden="true"> Calques </span>
       <span v-else class="fr-icon-layers-line" aria-hidden="true"></span>
@@ -16,14 +19,16 @@
 
     <dialog
       aria-labelledby="map-layers-title"
-      role="dialog"
+      id="layers-menu-dialog"
       class="menu"
       :class="{ 'menu--mobile': isMobile }"
       :open="showMenu"
+      @keydown.tab="handleTabKey"
     >
-      <h5 id="map-layers-title" class="fr-mb-2w">Calques</h5>
+      <h2 id="map-layers-title" class="fr-h5 fr-mb-2w">Calques</h2>
 
       <button
+        type="button"
         class="close-button fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-right fr-icon-close-line"
         @click="showMenu = false"
         aria-label="Fermer le menu des calques"
@@ -31,9 +36,10 @@
         Fermer
       </button>
 
-      <h6 class="fr-my-2w fr-text--md">Fonds de carte</h6>
+      <h3 class="fr-h6 fr-my-2w">Fonds de carte</h3>
       <div v-if="isMobile" class="menu-entries-mobile">
         <button
+          type="button"
           class="menu-entry-mobile"
           :class="{ active: fond === 'plan' }"
           @click="$emit('update:fond', 'plan')"
@@ -44,6 +50,7 @@
           <span>Plan</span>
         </button>
         <button
+          type="button"
           class="menu-entry-mobile"
           :class="{ active: fond === 'satellite' }"
           @click="$emit('update:fond', 'satellite')"
@@ -57,6 +64,7 @@
 
       <div v-else>
         <button
+          type="button"
           class="menu-entry"
           :class="{ active: fond === 'plan' }"
           @click="$emit('update:fond', 'plan')"
@@ -67,6 +75,7 @@
           <span>Plan</span>
         </button>
         <button
+          type="button"
           class="menu-entry"
           :class="{ active: fond === 'satellite' }"
           @click="$emit('update:fond', 'satellite')"
@@ -80,10 +89,11 @@
 
       <hr class="fr-mt-3w fr-pb-2w" />
 
-      <h6 class="fr-mb-2w fr-text--md">Calques</h6>
+      <h3 class="fr-h6 fr-mb-2w">Calques</h3>
 
       <div v-if="isMobile" class="menu-entries-mobile">
         <button
+          type="button"
           class="menu-entry-mobile"
           :class="{ active: classification }"
           @click="$emit('update:classification', !classification)"
@@ -94,6 +104,7 @@
           <span> <abbr title="Registre Parcellaire Graphique">RPG</abbr> {{ currentCampagne }} </span>
         </button>
         <button
+          type="button"
           class="menu-entry-mobile"
           :class="{ active: cadastre }"
           @click="$emit('update:cadastre', !cadastre)"
@@ -107,6 +118,7 @@
 
       <div v-else>
         <button
+          type="button"
           class="menu-entry"
           :class="{ active: classification }"
           @click="$emit('update:classification', !classification)"
@@ -128,6 +140,7 @@
           </span>
         </button>
         <button
+          type="button"
           class="menu-entry"
           :class="{ active: cadastre }"
           @click="$emit('update:cadastre', !cadastre)"
@@ -200,6 +213,34 @@ defineEmits(["update:fond", "update:classification", "update:cadastre"]);
 
 const cancelKeyStroke = onKeyStroke("Escape", () => (showMenu.value = false));
 const cancelClickOutside = onClickOutside(layersMenuRef, () => (showMenu.value = false));
+
+function handleTabKey(event: KeyboardEvent) {
+  const dialog = layersMenuRef.value?.querySelector("dialog");
+  if (!dialog) return;
+
+  const focusables = Array.from(
+    dialog.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((el) => !el.closest("[aria-hidden='true']"));
+
+  if (!focusables.length) return;
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+
+  if (event.shiftKey) {
+    if (document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    }
+  } else {
+    if (document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+}
 
 /**
  * * States fonctions

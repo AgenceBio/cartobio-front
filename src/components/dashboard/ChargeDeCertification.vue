@@ -1,20 +1,24 @@
 <template>
   <div class="filter fr-mb-2w charge-certification">
-    <button
-      title="Afficher la liste des départements"
-      class="fr-btn fr-btn--secondary fr-icon fr-icon-edit-line fr-btn--icon-right"
-      @click="departementShown = true"
-    >
-      Départements
-    </button>
-    <div class="fr-menu" ref="departementSelect">
-      <div class="fr-menu__list" :class="{ 'fr-hidden': !departementShown }">
-        <DepartementFilter
-          v-if="userDepartements != undefined"
-          v-model="selectedDepartements"
-          :initial-value="userDepartements"
-          @update:modelValue="persistDepartements()"
-        />
+    <div @focusout="handleFocusOut($event, () => (departementShown = false))">
+      <button
+        title="Afficher la liste des départements"
+        class="fr-btn fr-btn--secondary fr-icon fr-icon-edit-line fr-btn--icon-right"
+        :aria-expanded="departementShown"
+        aria-controls="departement-menu"
+        @click="departementShown = !departementShown"
+      >
+        Départements
+      </button>
+      <div class="fr-menu" ref="departementSelect" id="departement-menu">
+        <div class="fr-menu__list" :class="{ 'fr-hidden': !departementShown }">
+          <DepartementFilter
+            v-if="userDepartements != undefined"
+            v-model="selectedDepartements"
+            :initial-value="userDepartements"
+            @update:modelValue="persistDepartements()"
+          />
+        </div>
       </div>
     </div>
     <div class="flex">
@@ -173,7 +177,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { getDashboardSummary, searchOperators } from "@/cartobio-api";
 import DepartementFilter from "../operator/DepartementFilter.vue";
@@ -210,7 +214,25 @@ onMounted(async () => {
     loadSummary();
     loadOperators();
   }
+  document.addEventListener("keydown", handleKeyDown);
 });
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeyDown);
+});
+
+function handleKeyDown(event) {
+  if (event.key === "Escape") {
+    departementShown.value = false;
+  }
+}
+
+function handleFocusOut(event, closeFn) {
+  const container = event.currentTarget;
+  if (!container.contains(event.relatedTarget)) {
+    closeFn();
+  }
+}
 
 async function loadOperators() {
   const res = await searchOperators({

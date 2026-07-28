@@ -3,25 +3,29 @@
     <div
       class="fr-grid-row fr-px-4v fr-py-4v groupe-notifications"
       tabindex="0"
-      aria-expanded="open"
-      :aria-controls="`group-content-notifications`"
+      role="button"
+      :aria-expanded="open"
+      aria-controls="group-content-notifications"
       :class="{ 'groupe-titre-on': open }"
       @click.stop="open = !open"
-      @keydown.enter="open = !open"
+      @keydown.enter.prevent="open = !open"
+      @keydown.space.prevent="open = !open"
     >
       <div class="fr-grid-row groupe-titre">
         <b class="fr-text--lg font-blue fr-mb-0">Notifications</b>
       </div>
+
       <div class="fr-grid-row gap-10 actions-notifications">
         <span class="color-green fr-mb-0 bg-bourgeon fr-px-1v fr-text--sm fr-text--bold count">
           <span class="fr-icon fr-icon-notification-3-line fr-icon--sm color-green" aria-hidden="true"></span>
           {{ countNotif }}
         </span>
-        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" aria-role="button" />
+
+        <span class="fr-icon fr-icon-arrow-down-s-line font-blue" :aria-checked="open" />
       </div>
     </div>
 
-    <div :hidden="!open" class="notifications-content fr-mx-4v fr-mb-2v">
+    <div id="group-content-notifications" :hidden="!open" class="notifications-content fr-mx-4v fr-mb-2v">
       <div
         v-for="[ruleId, result] in featuresSet.required"
         :key="ruleId"
@@ -36,6 +40,7 @@
             {{ result.label }}
           </h4>
         </div>
+
         <button
           class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
@@ -59,6 +64,7 @@
             {{ result.label }}
           </h4>
         </div>
+
         <button
           class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
           :aria-label="`${result.errorMessage} pour ${result.count} parcelle${result.count > 1 ? 's' : ''}`"
@@ -122,7 +128,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { computed, ref } from "vue";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";

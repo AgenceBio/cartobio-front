@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="fr-skiplinks">
-      <nav role="navigation" aria-label="Accès rapide" class="fr-container">
+      <nav aria-label="Accès rapide" class="fr-container">
         <ul class="fr-skiplinks__list">
           <li>
             <a class="fr-link" href="#header">En-tête</a>
@@ -75,7 +75,7 @@
                 >
                   Retour vers {{ operator ? operator.nom : "" }}</router-link
                 >
-                <div class="dropdown-menu-container">
+                <div class="dropdown-menu-container" @focusout="handleFocusOut($event, closeDropdown)">
                   <button
                     class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-menu-2-fill"
                     @click="toggleDropdown"
@@ -135,9 +135,8 @@
                 </div>
               </div>
 
-              <!-- Header hors page exploitations -->
               <div class="fr-header__tools-links" v-else>
-                <ul class="fr-btns-group" id="header-navigation" role="navigation">
+                <ul class="fr-btns-group" id="header-navigation">
                   <li class="tool-grandpublic" v-if="isLogged">
                     <router-link
                       class="fr-btn fr-mr-1w fr-icon--sm fr-icon-arrow-left-line"
@@ -163,7 +162,7 @@
                       Carte grand public
                     </a>
                   </li>
-                  <li class="tool-username" aria-hidden="true" v-if="isLogged">
+                  <li class="tool-username" v-if="isLogged" @focusout="handleFocusOut($event, closeMonEspace)">
                     <button
                       @click="toggleMonEspace"
                       :class="['fr-btn', 'fr-mr-1w', 'fr-btn--tertiary', roleIcon, 'fr-mb-0']"
@@ -206,11 +205,7 @@
                     </div>
                   </li>
                   <li v-if="!isLogged">
-                    <router-link
-                      to="/login"
-                      class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left"
-                      aria-role="button"
-                    >
+                    <router-link to="/login" class="fr-btn fr-icon-account-circle-fill fr-btn--icon-left">
                       Me connecter
                     </router-link>
                   </li>
@@ -236,7 +231,7 @@
           >
             Fermer
           </button>
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+          <nav class="fr-nav" aria-label="Menu principal" role="navigation">
             <ul class="fr-nav__list">
               <li class="fr-nav__item" v-if="isLogged">
                 <router-link
@@ -286,12 +281,7 @@
                 >
                   Déconnexion
                 </router-link>
-                <router-link
-                  v-else
-                  to="/login"
-                  aria-role="button"
-                  class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill"
-                >
+                <router-link v-else to="/login" class="fr-nav__link fr-btn--icon-left fr-icon-account-circle-fill">
                   Me connecter
                 </router-link>
               </li>
@@ -348,14 +338,14 @@
         "
       >
         <div class="fr-container">
-          <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+          <nav class="fr-nav" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
                 <router-link v-if="!isAdmin" to="/" class="fr-nav__link"> Accueil </router-link>
               </li>
-              <li class="fr-nav__item">
+              <li class="fr-nav__item" @focusout="handleFocusOut($event, () => (isOpenCartoBio = false))">
                 <button
-                  id="navigation-01"
+                  id="btn-navigation-cartobio"
                   :aria-expanded="isOpenCartoBio"
                   aria-controls="navigation-01"
                   type="button"
@@ -387,9 +377,9 @@
               <li class="fr-nav__item">
                 <router-link to="/pro" class="fr-nav__link"> Professionnels </router-link>
               </li>
-              <li class="fr-nav__item">
+              <li class="fr-nav__item" @focusout="handleFocusOut($event, () => (isOpenHelp = false))">
                 <button
-                  id="navigation-02"
+                  id="btn-navigation-aide"
                   :aria-expanded="isOpenHelp"
                   aria-controls="navigation-02"
                   type="button"
@@ -431,7 +421,7 @@
         class="fr-container"
         v-if="isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*'))"
       >
-        <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
+        <nav class="fr-nav" id="header-navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item" v-if="!isAdmin">
               <router-link to="/certification/tableau-de-bord" class="fr-nav__link">Accueil</router-link>
@@ -446,11 +436,11 @@
                 >Liste des exploitations</router-link
               >
             </li>
-            <li class="fr-nav__item">
+            <li class="fr-nav__item" @focusout="handleFocusOut($event, () => (isOpenHelpOc = false))">
               <button
                 id="navigation-oc-help"
                 :aria-expanded="isOpenHelpOc"
-                aria-controls="navigation-oc-help"
+                aria-controls="panel-navigation-oc-help"
                 type="button"
                 class="fr-nav__btn"
                 @click="toggleHelpOc"
@@ -460,7 +450,7 @@
               </button>
               <div
                 class="fr-collapse fr-menu"
-                id="navigation-oc-help"
+                id="panel-navigation-oc-help"
                 :class="{ 'fr-collapse--expanded': isOpenHelpOc }"
               >
                 <ul class="fr-menu__list">
@@ -492,7 +482,7 @@
         class="fr-container"
         v-if="isAgri && !isMobile && (isActive('/exploitations/*') || isActive('/exploitations'))"
       >
-        <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
+        <nav class="fr-nav" id="header-navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
             <li class="fr-nav__item">
               <router-link to="/exploitations" class="fr-nav__link">Accueil</router-link>
@@ -505,11 +495,11 @@
                 >Mes exploitations</router-link
               >
             </li>
-            <li class="fr-nav__item">
+            <li class="fr-nav__item" @focusout="handleFocusOut($event, () => (isOpenHelpAgri = false))">
               <button
                 id="navigation-agri-help"
                 :aria-expanded="isOpenHelpAgri"
-                aria-controls="navigation-agri-help"
+                aria-controls="panel-navigation-agri-help"
                 type="button"
                 class="fr-nav__btn"
                 @click="toggleHelpAgri"
@@ -519,7 +509,7 @@
               </button>
               <div
                 class="fr-collapse fr-menu"
-                id="navigation-agri-help"
+                id="panel-navigation-agri-help"
                 :class="{ 'fr-collapse--expanded': isOpenHelpAgri }"
               >
                 <ul class="fr-menu__list">
@@ -550,7 +540,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, Ref, watch } from "vue";
+import { computed, ref, Ref, watch, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore, ROLES } from "@/stores/user.js";
 import { storeToRefs } from "pinia";
@@ -623,6 +613,27 @@ const closeAllMenus = () => {
   isMonEspaceOpen.value = false;
   dropdownIsOpen.value = false;
 };
+
+function handleFocusOut(event: FocusEvent, closeFn: () => void) {
+  const container = event.currentTarget as HTMLElement;
+  if (!container.contains(event.relatedTarget as Node)) {
+    closeFn();
+  }
+}
+
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === "Escape") {
+    closeAllMenus();
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("keydown", handleKeyDown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeyDown);
+});
 
 const toggleCartoBio = () => {
   const wasOpen = isOpenCartoBio.value;

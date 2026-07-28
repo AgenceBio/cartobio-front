@@ -5,8 +5,11 @@
         class="fr-btn fr-btn--sm"
         :class="[mapParams.currentMode === 'edit' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Activer le mode édition pour modifier les parcelles existantes"
+        :aria-pressed="mapParams.currentMode === 'edit'"
         v-tooltip="{ text: 'Activer le mode édition pour modifier les parcelles existantes', position: 'left' }"
         @click="handleAction('edit')"
+        @keydown.enter.prevent="handleAction('edit')"
+        @keydown.space.prevent="handleAction('edit')"
         :disabled="!online"
       >
         <i class="ri-navigation-line" aria-hidden="true" />
@@ -18,8 +21,11 @@
         class="fr-btn fr-btn--sm"
         :class="[mapParams.currentMode === 'decouper' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Découper le contour de la parcelle sélectionnée"
+        :aria-pressed="mapParams.currentMode === 'decouper'"
         v-tooltip="{ text: 'Découper le contour de la parcelle sélectionnée', position: 'left' }"
         @click="handleAction('decouper')"
+        @keydown.enter.prevent="handleAction('decouper')"
+        @keydown.space.prevent="handleAction('decouper')"
         :disabled="countSelected != 1 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-crop-line" aria-hidden="true" />
@@ -29,8 +35,11 @@
         class="fr-btn fr-btn--sm"
         :class="[mapParams.currentMode === 'divide' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Tracer une ligne pour couper la parcelle sélectionnée en deux"
+        :aria-pressed="mapParams.currentMode === 'divide'"
         v-tooltip="{ text: 'Tracer une ligne pour couper la parcelle sélectionnée en deux', position: 'left' }"
         @click="handleAction('divide')"
+        @keydown.enter.prevent="handleAction('divide')"
+        @keydown.space.prevent="handleAction('divide')"
         :disabled="countSelected != 1 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-scissors-cut-line" aria-hidden="true" />
@@ -40,8 +49,11 @@
         class="fr-btn fr-btn--sm"
         :class="[mapParams.currentMode === 'fusionner' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Fusionner plusieurs parcelles sélectionnées en un seul"
+        :aria-pressed="mapParams.currentMode === 'fusionner'"
         v-tooltip="{ text: 'Fusionner plusieurs parcelles sélectionnées en un seul', position: 'left' }"
         @click="handleAction('fusionner')"
+        @keydown.enter.prevent="handleAction('fusionner')"
+        @keydown.space.prevent="handleAction('fusionner')"
         :disabled="countSelected < 2 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-merge-cells-horizontal" aria-hidden="true" />
@@ -51,17 +63,20 @@
         class="fr-btn fr-btn--sm"
         :class="[mapParams.currentMode === 'delete' ? 'fr-btn--secondary' : 'fr-btn--tertiary-no-outline']"
         aria-label="Supprimer la ou les parcelles sélectionnées"
+        :aria-pressed="mapParams.currentMode === 'delete'"
         v-tooltip="{ text: 'Supprimer la ou les parcelles sélectionnées', position: 'left' }"
         @click="handleAction('delete')"
+        @keydown.enter.prevent="handleAction('delete')"
+        @keydown.space.prevent="handleAction('delete')"
         :disabled="countSelected < 1 || !permissions.canEditParcellaire || !online"
       >
         <i class="ri-delete-bin-line" aria-hidden="true" />
       </button>
     </div>
   </div>
+
   <ChangeCartoModeModal v-if="targetMode" :target-mode="targetMode" @close="targetMode = null" />
 </template>
-
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
