@@ -3,12 +3,15 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, inject, Ref } from "vue";
-import VectorTileLayer from "ol/layer/VectorTile";
-import VectorTileSource from "ol/source/VectorTile";
-import MVT from "ol/format/MVT";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import GeoJSON from "ol/format/GeoJSON";
 import { Style, Stroke, Fill } from "ol/style";
 import { FeatureLike } from "ol/Feature";
 import { Map as OlMap } from "ol";
+import { bbox as bboxStrategy } from "ol/loadingstrategy";
+import * as XLSX from "xlsx";
+import cheminFichierXlsx from "@/data/culture_rpg.xlsx?url";
 
 /**
  * * Props
@@ -31,7 +34,7 @@ if (!map) {
  * * Refs
  */
 
-let rpgLayer: VectorTileLayer | null = null;
+let rpgLayer: VectorLayer<VectorSource> | null = null;
 
 /**
  * * Constantes
@@ -39,59 +42,59 @@ let rpgLayer: VectorTileLayer | null = null;
 
 const MAX_RESOLUTION = 42;
 
+const COLONNE_CODE = 0;
+const COLONNE_RESULTAT = 3;
+const NB_LIGNES_ENTETE = 1;
+
+const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
+  "Grandes Cultures": { fill: "#ffe08280", stroke: "#ffb300" },
+  "Prairies et surfaces fourragères": { fill: "#a5d6a780", stroke: "#43a047" },
+  Légumes: { fill: "#ff8a6580", stroke: "#e53935" },
+  Fruits: { fill: "#ffb74d80", stroke: "#f57c00" },
+  Vignes: { fill: "#f48fb180", stroke: "#e91e63" },
+  "Plantes à parfums, aromatiques et médicinales et plantes à boissons": { fill: "#4994A980", stroke: "#00acc1" },
+  Autres: { fill: "#4374CB80", stroke: "#2C4E9B" },
+};
+
+const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
+const COLOR_BIO = { fill: "#9fe3d2", stroke: "#54cdaf" };
+
+let lignesXlsx: any[] | null = null;
+let chargementXlsx: Promise<any[]> | null = null;
+
+async function chargerLignesXlsx() {
+  if (lignesXlsx) return lignesXlsx;
+  if (!chargementXlsx) {
+    chargementXlsx = fetch(cheminFichierXlsx)
+      .then((reponse) => reponse.arrayBuffer())
+      .then((arrayBuffer) => {
+        const classeur = XLSX.read(arrayBuffer, { type: "array" });
+        const premiereFeuille = classeur.Sheets[classeur.SheetNames[0]];
+        lignesXlsx = XLSX.utils.sheet_to_json(premiereFeuille, { header: 1 }).slice(NB_LIGNES_ENTETE);
+        return lignesXlsx;
+      });
+  }
+  return chargementXlsx;
+}
+
 /**
  * * Fonctions
  */
 
 function styleFunction(feature: FeatureLike, resolution: number): Style | void {
-  const layerName = feature.get("layer");
-  if (layerName !== "rpg2023") return;
+  const bio = feature.get("bio") || feature.get("BIO");
 
-  const BIO = feature.get("BIO");
-  const CODE_CULTU = feature.get("CODE_CULTU");
+  const codeCulture = feature.get("code_cultu") || feature.get("CODE_CULTU");
 
-  let fillColor = "#ffd6a4";
-  if (BIO === 1) {
-    fillColor = "#9fe3d2";
-  } else if (
-    ["J5M", "J6S", "J6P", "JNO", "PRL", "PPH", "SPL", "SPH", "BOP", "CAE", "CEE", "ROS"].includes(CODE_CULTU)
-  ) {
-    fillColor = "#fff1bd";
-  }
+  let colors = COLOR_DEFAULT;
 
-  let strokeColor = "#ffc177";
-  if (BIO === 1) {
-    strokeColor = "#54cdaf";
-  } else if (
-    [
-      "GFP",
-      "PTR",
-      "BOP",
-      "BRH",
-      "BRO",
-      "CAE",
-      "CEE",
-      "CRA",
-      "DTY",
-      "FET",
-      "FLO",
-      "J5M",
-      "J6P",
-      "J6S",
-      "JNO",
-      "MLG",
-      "PAT",
-      "PCL",
-      "PRL",
-      "PPH",
-      "RGA",
-      "ROS",
-      "SPH",
-      "SPL",
-      "XFE",
-    ].includes(CODE_CULTU)
-  ) {
-    strokeColor = "#ffe586";
+  if (bio === 1 || bio === "1" || bio === true) {
+    colors = COLOR_BIO;
+  } else {
+    const group = getFromCsvGroup(codeCulture);
+    if (group) {
+      colors = COLOR_BY_GROUP[group];
+    }
   }
 
   let lineWidth = 0;
@@ -102,28 +105,55 @@ function styleFunction(feature: FeatureLike, resolution: number): Style | void {
   }
 
   return new Style({
-    fill: new Fill({ color: fillColor }),
+    fill: new Fill({ color: colors.fill }),
     stroke: new Stroke({
-      color: strokeColor,
+      color: colors.stroke,
       width: lineWidth,
     }),
   });
+}
+
+function getFromCsvGroup(codeCulture: string) {
+  if (!lignesXlsx) return null;
+  const ligneTrouvee = lignesXlsx.find((ligne) => String(ligne[COLONNE_CODE]) === String(codeCulture));
+
+  return ligneTrouvee ? ligneTrouvee[COLONNE_RESULTAT] : null;
 }
 
 /**
  * * States fonctions
  */
 
-onMounted(() => {
-  rpgLayer = new VectorTileLayer({
-    declutter: true,
+onMounted(async () => {
+  await chargerLignesXlsx();
+
+  rpgLayer = new VectorLayer({
     zIndex: 1,
     maxResolution: MAX_RESOLUTION,
-    source: new VectorTileSource({
-      format: new MVT(),
-      url: "https://cartobio.agencebio.org/tiles/rpg-2023/{z}/{x}/{y}.pbf",
-      minZoom: 10,
-      maxZoom: 14,
+    source: new VectorSource({
+      format: new GeoJSON(),
+      url: "https://data.geopf.fr/wfs/ows",
+      loader: function (extent, resolution, projection) {
+        const url =
+          "https://data.geopf.fr/wfs/ows?" +
+          new URLSearchParams({
+            SERVICE: "WFS",
+            VERSION: "2.0.0",
+            REQUEST: "GetFeature",
+            TYPENAME: "RPG.2024:parcelles_graphiques",
+            OUTPUTFORMAT: "application/json",
+            SRSNAME: projection.getCode(),
+            BBOX: extent.join(",") + "," + projection.getCode(),
+          });
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const features = new GeoJSON().readFeatures(data);
+            this.addFeatures(features);
+          });
+      },
+      strategy: bboxStrategy,
     }),
     style: styleFunction,
   });
