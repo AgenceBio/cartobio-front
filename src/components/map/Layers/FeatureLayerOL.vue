@@ -640,6 +640,7 @@ watch(
 watch(
   () => store.collection.features,
   () => {
+    if (props.data) return;
     features.value = new GeoJSON().readFeatures(store.collection);
     if (vectorSource.value) {
       vectorSource.value.clear();
