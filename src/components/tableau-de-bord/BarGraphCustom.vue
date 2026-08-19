@@ -232,7 +232,6 @@ const buildChart = () => {
 
                 item.text = label;
 
-                // La pastille de légende garde la couleur pleine (pas la version transparente)
                 const isComparison = item.datasetIndex < comparisonDatasetCount;
                 const serieIndex = isComparison ? item.datasetIndex : item.datasetIndex - comparisonDatasetCount;
                 const serie = isComparison ? props.comparisonSeries[serieIndex] : props.series[serieIndex];
