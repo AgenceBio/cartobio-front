@@ -934,6 +934,8 @@ onMounted(async () => {
                         :series="bilanBarSeries"
                         :comparison-series="compareBarSeries"
                         @segment-click="onBarSegmentClick"
+                        :label-period="currentPeriodLabel"
+                        :label-period-compare="compareRangeLabel"
                       />
                     </template>
                     <div v-else class="bilan-empty">Aucune donnée</div>

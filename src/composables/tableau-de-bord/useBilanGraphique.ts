@@ -198,6 +198,7 @@ const compareBarHasData = computed(() =>
     return label.charAt(0).toUpperCase() + label.slice(1);
   });
 
+
   const compareRangeLabel = computed(() => {
     if (!compareRange.value) return "";
     const { from, to } = compareRange.value;

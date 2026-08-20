@@ -23,6 +23,8 @@ interface Props {
   comparisonSeries?: Serie[];
   unitTooltip?: string;
   month?: string;
+  labelPeriod?: string;
+  labelPeriodCompare?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -114,8 +116,19 @@ const externalTooltipHandler = (context: { chart: Chart; tooltip: TooltipModel<C
 
   const realLabel = props.month ? `${props.categories[dataPoint.dataIndex]} — ${props.month}` : dataPoint.label;
 
+  const hasComparison = props.comparisonSeries.length > 0;
+  const isComparisonDataset = dataPoint.datasetIndex < props.comparisonSeries.length;
+
+  let label = realLabel;
+
+  if (hasComparison) {
+    label = (isComparisonDataset ? props.labelPeriodCompare : props.labelPeriod) || realLabel;
+  }
+
+  const serieName = (dataPoint.dataset.label ?? "").replace(/^Comparaison — /, "");
+
   el.innerHTML = `
-    ${realLabel} - ${dataPoint.dataset.label} :
+    ${label} - ${serieName} :
     ${dataPoint.formattedValue}${props.unitTooltip}
   `;
 
