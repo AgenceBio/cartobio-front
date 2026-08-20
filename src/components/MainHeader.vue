@@ -29,7 +29,7 @@
               <div class="fr-header__brand-top">
                 <div class="fr-header__operator">
                   <img
-                    src="@/assets/header.png"
+                    src="@/assets/header.svg"
                     class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
                     alt="Logo de l'Agence Bio"
                   />
