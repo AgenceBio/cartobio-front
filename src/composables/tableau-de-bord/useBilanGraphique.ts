@@ -194,7 +194,7 @@ const compareBarHasData = computed(() =>
         getWeek(date) === getWeek(now) && date.getFullYear() === now.getFullYear();
       return isCurrentWeek ? "Cette semaine" : `Semaine ${getWeek(date)}`;
     }
-    const label = formatPeriodLabel(unit.value, date);
+    const label = formatPeriodLabel(unit.value, date, false);
     return label.charAt(0).toUpperCase() + label.slice(1);
   });
 

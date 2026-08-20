@@ -53,10 +53,38 @@ export function useTelechargements() {
     downloadXlsx(rows, filename, sheetName);
   }
 
-  function downloadCanvasPng(container: HTMLElement | null, filename: string) {
+  function downloadCanvasPng(
+    container: HTMLElement | null,
+    filename: string,
+    legend?: { label: string; color: string }[],
+  ) {
     const canvas = container?.querySelector("canvas");
     if (!(canvas instanceof HTMLCanvasElement)) return;
-    canvas.toBlob((blob) => {
+
+    const legendHeight = legend?.length ? legend.length * 24 + 12 : 0;
+    const output = document.createElement("canvas");
+    output.width = canvas.width;
+    output.height = canvas.height + legendHeight;
+    const context = output.getContext("2d");
+    if (!context) return;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, output.width, output.height);
+    context.drawImage(canvas, 0, 0);
+
+    if (legend?.length) {
+      context.font = "14px Arial, sans-serif";
+      context.textBaseline = "middle";
+      legend.forEach((entry, i) => {
+        const y = canvas.height + 12 + i * 24;
+        context.fillStyle = entry.color;
+        context.fillRect(0, y + 5, 14, 14);
+        context.fillStyle = "#161616";
+        context.fillText(entry.label, 22, y + 12);
+      });
+    }
+
+    output.toBlob((blob) => {
       if (blob) downloadBlob(blob, filename);
     }, "image/png");
   }
@@ -66,6 +94,7 @@ export function useTelechargements() {
     currentContainer: HTMLElement | null,
     compareLabel: string,
     currentLabel: string,
+    legend?: { label: string; color: string }[],
   ) {
     const compareCanvas = compareContainer?.querySelector("canvas");
     const currentCanvas = currentContainer?.querySelector("canvas");
@@ -73,9 +102,10 @@ export function useTelechargements() {
 
     const padding = 32;
     const titleHeight = 48;
+    const legendHeight = legend?.length ? legend.length * 24 + 12 : 0;
     const output = document.createElement("canvas");
     output.width = compareCanvas.width + currentCanvas.width + padding * 3;
-    output.height = Math.max(compareCanvas.height, currentCanvas.height) + titleHeight + padding * 2;
+    output.height = Math.max(compareCanvas.height, currentCanvas.height) + titleHeight + padding * 2 + legendHeight;
     const context = output.getContext("2d");
     if (!context) return;
 
@@ -87,6 +117,20 @@ export function useTelechargements() {
     context.fillText(currentLabel, compareCanvas.width + padding * 2, padding);
     context.drawImage(compareCanvas, padding, titleHeight + padding);
     context.drawImage(currentCanvas, compareCanvas.width + padding * 2, titleHeight + padding);
+
+    if (legend?.length) {
+      context.font = "14px Arial, sans-serif";
+      context.textBaseline = "middle";
+      const legendY = output.height - legendHeight;
+      legend.forEach((entry, i) => {
+        const y = legendY + i * 24;
+        context.fillStyle = entry.color;
+        context.fillRect(padding, y + 5, 14, 14);
+        context.fillStyle = "#161616";
+        context.fillText(entry.label, padding + 22, y + 12);
+      });
+    }
+
     output.toBlob((blob) => {
       if (blob) downloadBlob(blob, "comparaison-bilan-envois.png");
     }, "image/png");

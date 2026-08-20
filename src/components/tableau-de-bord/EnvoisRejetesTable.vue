@@ -36,7 +36,7 @@ const labelTriDate = computed(() =>
 </script>
 
 <template>
-  <div class="fr-table">
+  <div class="fr-table fr-table--no-caption">
     <div class="fr-table__wrapper">
       <div class="fr-table__container">
         <div class="fr-table__content">

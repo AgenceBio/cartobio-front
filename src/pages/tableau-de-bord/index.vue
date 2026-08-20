@@ -18,7 +18,7 @@ import {
   fetchPalmaresAnomaliesGrouped,
   fetchRepetitions,
 } from "@/api/endpoints/tableau-de-bord.api";
-import { getErrorMessage } from "@/utils/error-api.utils";
+import { getErrorColor, getErrorMessage } from "@/utils/error-api.utils";
 import PieChartCustom from "@/components/tableau-de-bord/PieChartCustom.vue";
 import BarGraphCustom from "@/components/tableau-de-bord/BarGraphCustom.vue";
 import DatePicker from "@/components/tableau-de-bord/DatePicker.vue";
@@ -54,7 +54,6 @@ import {
   currentMonthRange,
 } from "@/utils/date.formatters";
 import type {
-  Unit,
   ResumeKpi,
   CompareKpi,
   AnomalieCode,
@@ -65,6 +64,8 @@ import type {
   ChartRow,
   ChangePeriodPayload,
 } from "@/types/tableau-de-bord";
+import Spinner from "@/components/widgets/Spinner.vue";
+
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/user";
 import { getDashboardSummary } from "@/cartobio-api";
@@ -345,7 +346,7 @@ async function onBilanTableDownload(action: string) {
 
 async function onRejectsTableDownload(action: string) {
   if (action === "png") {
-    downloadCanvasPng(palmaresAnomaliesRef.value, "palmares-rejets.png");
+    downloadCanvasPng(palmaresAnomaliesRef.value, "palmares-rejets.png", palmaresLegend.value);
     return;
   }
   if (action === "json") {
@@ -385,6 +386,15 @@ async function onRejectsTableDownload(action: string) {
   }
 }
 
+const legendEntries = computed(() => bilanChartX.value.map((label, i) => ({ label, color: bilanPieColors.value[i] })));
+const palmaresLegend = computed(() =>
+  [...(palmaresAnomalies.value ?? [])]
+    .sort((a, b) => b.count - a.count)
+    .map((anomalie, index) => ({
+      label: `N°${index + 1} — ${getErrorMessage(anomalie.code, "short")}`,
+      color: getErrorColor(anomalie.code),
+    })),
+);
 async function onBilanChartDownload(action: string) {
   if (action === "png") {
     if (bilanChartType.value === "bar") {
@@ -397,9 +407,10 @@ async function onBilanChartDownload(action: string) {
         bilanChartCurrentRef.value,
         compareRangeLabel.value,
         currentPeriodLabel.value,
+        legendEntries.value,
       );
     } else {
-      downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png");
+      downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png", legendEntries.value);
     }
     return;
   }
@@ -525,13 +536,16 @@ onMounted(async () => {
       <div class="fr-container fr-py-6w">
         <div class="fr-grid-row" v-if="avancement">
           <JaugeAvancement
-            class="fr-col-4 fr-mb-4w"
+            class="fr-col-12 fr-mb-4w"
             :title="'Avancement des certifications ' + new Date().getFullYear()"
             label="Envoyés et validés"
             :info-text="'Certifications envoyées et validées depuis le 1er janvier ' + new Date().getFullYear()"
             :value="avancement.countCertifiees"
             :max="avancement.countCertifiees + avancement.countEnAttentes + avancement.countNonAuditees"
           />
+        </div>
+        <div v-else>
+          <Spinner>Chargement des données sur l'avancement des certifications</Spinner>
         </div>
         <!-- Alertes de répétitions -->
         <AlertesBanniere
@@ -555,6 +569,7 @@ onMounted(async () => {
               <div class="parcellaire-bloc-envoye">
                 <p class="fr-text--xl fr-mb-1w">
                   Parcellaires envoyés
+                  <br />
                   {{ formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase() }}
                 </p>
                 <p class="fr-mb-0 global-envoie">{{ resumeKpi.totalEnvoyes ?? "—" }}</p>
@@ -583,7 +598,7 @@ onMounted(async () => {
             </div>
             <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
               <StatsCard
-                :title="`Anomalie la plus fréquente ${formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase()}`"
+                :title="`Anomalie la plus fréquente \n ${formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase()}`"
                 :value="getErrorMessage(resumeKpi.anomaliePlusFrequente?.code, 'short') ?? '—'"
                 variant="warning"
               />

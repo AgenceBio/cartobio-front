@@ -20,7 +20,7 @@ export function getWeek(date: Date): number {
   return 1 + Math.round((firstThursday - d.getTime()) / (7 * 24 * 3600 * 1000));
 }
 
-export function formatPeriodLabel(unit: Unit, date: Date): string {
+export function formatPeriodLabel(unit: Unit, date: Date, long: Boolean = true): string {
   const now = new Date();
   switch (unit) {
     case "day":
@@ -37,7 +37,8 @@ export function formatPeriodLabel(unit: Unit, date: Date): string {
       if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
         return "ce mois";
       }
-      return "en " + date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+      if (long) return "en " + date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+      else return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
     case "year":
       return date.getFullYear() === now.getFullYear() ? "cette année" : String(date.getFullYear());
   }

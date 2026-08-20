@@ -37,8 +37,7 @@ const ariaValueText = computed(
         v-if="infoText"
         type="button"
         class="jauge-info fr-icon-information-line"
-        :title="infoText"
-        :aria-label="`Informations : ${title}`"
+        v-tooltip="{ text: infoText, position: 'top' }"
       />
     </p>
 
@@ -117,22 +116,21 @@ const ariaValueText = computed(
 }
 
 .jauge-label {
-  font-size: 0.875rem;
+  font-size: 14px;
   white-space: nowrap;
 }
 
 .jauge-badge {
   flex-shrink: 0;
-  padding: 0.25rem 0.75rem;
+  padding: 2px 10px;
   background: var(--background-default-grey);
   color: var(--text-action-high-blue-france);
   border-radius: 1rem;
-  font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 .jauge-total {
-  font-size: 1.5rem;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-action-high-blue-france);
 }
