@@ -338,7 +338,14 @@ const handleInteriorVertexDelete = (event) => {
       const dx = pixel[0] - vertexPixel[0];
       const dy = pixel[1] - vertexPixel[1];
       if (Math.sqrt(dx * dx + dy * dy) <= 8) {
+        const before = geom.getCoordinates();
         removeInteriorVertex(feature, ringIndex, coordIndex);
+        const after = geom.getCoordinates();
+
+        props.undoRedo.push("removevertex", { feature, before, after });
+
+        isModifying.value = true;
+
         feature.setStyle([getPolygonStyle(), getPointStyle()]);
         return;
       }
@@ -420,6 +427,12 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
 };
 
 const modifyInteraction = () => {
+  props.undoRedo.define(
+    "removevertex",
+    (prop) => prop.feature.getGeometry().setCoordinates(prop.before),
+    (prop) => prop.feature.getGeometry().setCoordinates(prop.after),
+  );
+
   selectedFeatures = new Collection<Feature>();
   tooltip = new Tooltip({
     className: "draw-tooltip",
