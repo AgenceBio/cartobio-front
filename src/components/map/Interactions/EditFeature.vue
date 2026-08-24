@@ -126,11 +126,11 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
-import { click, platformModifierKey, altKeyOnly } from "ol/events/condition";
+import { click, platformModifierKey, altKeyOnly, singleClick } from "ol/events/condition";
 import { MultiPoint } from "ol/geom";
 import EditParcelleTooltip from "../Overlays/EditParcelleTooltip.vue";
 import intersect from "@turf/intersect";
-import { MultiPolygon, Polygon } from "@turf/helpers";
+import { featureCollection, MultiPolygon, Polygon, feature as turfFeature } from "@turf/helpers";
 
 /*
  * * Interface
@@ -363,12 +363,12 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   }
 
   nextTick(() => {
-    tooltip.element.style.display = "none";
+    if (tooltip?.element) tooltip.element.style.display = "none";
   });
 
   modify = new Modify({
     features: selectedFeatures,
-    deleteCondition: altKeyOnly,
+    deleteCondition: (e) => altKeyOnly(e) && singleClick(e),
     style: [
       getPolygonStyle(),
       new Style({
@@ -405,9 +405,12 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
       resetCorrection(false);
     }
     isModifying.value = true;
-    tooltip.setFeature(selectedFeatures.getArray()[0]);
-
-    tooltip.element.style.display = "";
+    if (tooltip?.setFeature) {
+      tooltip.setFeature(selectedFeatures.getArray()[0]);
+    }
+    if (tooltip?.element) {
+      tooltip.element.style.display = "";
+    }
   });
 
   modify.on("modifyend", () => {
@@ -726,11 +729,19 @@ const selectToCorrect = (
   }
 
   originalOverlappedFeature.setGeometry(overlappedFeature.getGeometry());
-  const newGeometry = intersect(
-    correction.new_minus_intersection,
-    format.writeFeatureObject(originalModifiedFeature) as CartoBioFeature,
-  );
+  const modifiedGeomObj = format.writeFeatureObject(originalModifiedFeature) as CartoBioFeature;
 
+  if (!modifiedGeomObj?.geometry || !correction.new_minus_intersection) {
+    console.error("Géométries invalides pour intersect", { modifiedGeomObj, correction });
+    return;
+  }
+
+  const newGeometry = intersect(
+    featureCollection<Polygon | MultiPolygon>([
+      turfFeature(correction.new_minus_intersection),
+      turfFeature(modifiedGeomObj.geometry as Polygon | MultiPolygon),
+    ]),
+  );
   if (!newGeometry) {
     return;
   }
