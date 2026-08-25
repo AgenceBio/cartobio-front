@@ -47,13 +47,13 @@ const COLONNE_RESULTAT = 3;
 const NB_LIGNES_ENTETE = 1;
 
 const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
-  "Grandes Cultures": { fill: "#ffe082", stroke: "#ffb300" },
-  "Prairies et surfaces fourragères": { fill: "#a5d6a7", stroke: "#43a047" },
-  Légumes: { fill: "#ff8a65", stroke: "#e53935" },
-  Fruits: { fill: "#ffb74d", stroke: "#f57c00" },
-  Vignes: { fill: "#f48fb1", stroke: "#e91e63" },
-  "Plantes à parfums, aromatiques et médicinales et plantes à boissons": { fill: "#80deea", stroke: "#00acc1" },
-  Autres: { fill: "#b39ddb", stroke: "#5e35b1" },
+  "Grandes Cultures": { fill: "#ffe08280", stroke: "#ffb300" },
+  "Prairies et surfaces fourragères": { fill: "#a5d6a780", stroke: "#43a047" },
+  Légumes: { fill: "#ff8a6580", stroke: "#e53935" },
+  Fruits: { fill: "#ffb74d80", stroke: "#f57c00" },
+  Vignes: { fill: "#f48fb180", stroke: "#e91e63" },
+  "Plantes à parfums, aromatiques et médicinales et plantes à boissons": { fill: "#4994A980", stroke: "#00acc1" },
+  Autres: { fill: "#4374CB80", stroke: "#2C4E9B" },
 };
 
 const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
