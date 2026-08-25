@@ -79,7 +79,7 @@ export default class BaseExporter {
     let data;
     try {
       data = this.toCSV();
-    } catch (e) {
+    } catch {
       toast.error("Une erreur est survenue. Nous avons été informés et résoudrons ceci au plus vite.");
     }
     return navigator.clipboard.writeText(data);

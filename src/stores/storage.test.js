@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestingPinia } from "@pinia/testing";
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
-import record from "@/utils/__fixtures__/record-with-features.json" assert { type: "json" };
+import record from "@/utils/__fixtures__/record-with-features.json" with { type: "json" };
 import axios from "axios";
 import axios, { AxiosError } from "axios";
 const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false });

@@ -203,7 +203,7 @@
 
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, ref, Ref } from "vue";
-import type { Map as OlMap } from "ol";
+import type { Feature, Map as OlMap } from "ol";
 import ScaleLine from "ol/control/ScaleLine.js";
 import { Style, Fill, Stroke } from "ol/style";
 
@@ -219,7 +219,7 @@ if (!map) throw new Error("Pas de map disponible");
 
 const emit = defineEmits<{
   (e: "locate"): void;
-  (e: "select", feature: any): void;
+  (e: "select", feature: Feature): void;
 }>();
 
 const modifiedNb = ref(0);
@@ -227,18 +227,18 @@ const addNb = ref(0);
 const deleteNb = ref(0);
 
 const diffOnMap = ref(false);
-const diffLayer = ref<any>(null);
+const diffLayer = ref(null);
 const openList = ref<string | null>(null);
 
-const addedFeatures = ref<any[]>([]);
-const modifiedFeatures = ref<any[]>([]);
-const deletedFeatures = ref<any[]>([]);
+const addedFeatures = ref([]);
+const modifiedFeatures = ref([]);
+const deletedFeatures = ref([]);
 
 const addListener = ref(null);
 const removeListener = ref(null);
 
-const lanFeaturesMap = ref<Map<string, any>>(new Map());
-const lastHoveredListFeature = ref<any>(null);
+const lanFeaturesMap = ref(new Map());
+const lastHoveredListFeature = ref(null);
 
 const onZoomIn = () => {
   if (!map?.value) return;
@@ -258,7 +258,7 @@ const toggleList = (type: string) => {
   openList.value = openList.value === type ? null : type;
 };
 
-const zoomToFeature = (feature: any) => {
+const zoomToFeature = (feature) => {
   if (!map?.value) return;
   const extent = feature.getGeometry()?.getExtent();
   if (!extent) return;
@@ -273,7 +273,7 @@ const zoomToFeature = (feature: any) => {
 const onFocusType = (status: string | null = null) => {
   if (!map?.value) return;
 
-  const featuresMap: Record<string, any[]> = {
+  const featuresMap = {
     added: addedFeatures.value,
     modified: modifiedFeatures.value,
     deleted: deletedFeatures.value,
@@ -404,7 +404,7 @@ const onHoverList = (type: "added" | "deleted" | "modified") => {
 
   const features = diffLayer.value.getSource().getFeatures();
 
-  features.forEach((f: any) => {
+  features.forEach((f) => {
     const status = f.get("status");
 
     if (status === type) {
@@ -425,18 +425,18 @@ const onLeaveList = () => {
   diffLayer.value
     .getSource()
     .getFeatures()
-    .forEach((f: any) => {
+    .forEach((f) => {
       const status = f.get("status");
       f.setStyle(getStyle(status));
     });
 };
 
-const onHoverItem = (feature: any) => {
+const onHoverItem = (feature) => {
   if (!diffLayer.value) return;
   diffLayer.value
     .getSource()
     .getFeatures()
-    .forEach((f: any) => {
+    .forEach((f) => {
       f.setStyle(f !== feature ? getStyle(f.get("status")) : getStyleAccentue(f.get("status")));
     });
   emit("select", feature);
@@ -447,11 +447,11 @@ const onLeaveItem = () => {
   diffLayer.value
     .getSource()
     .getFeatures()
-    .forEach((f: any) => f.setStyle(getStyle(f.get("status"))));
+    .forEach((f) => f.setStyle(getStyle(f.get("status"))));
   lastHoveredListFeature.value = null;
 };
 
-const onClickFeature = (feature: any) => {
+const onClickFeature = (feature) => {
   zoomToFeature(feature);
   if (!props.isCompare) {
     emit("selectList", feature.getProperties().new_id);
@@ -478,7 +478,7 @@ const createScaleLine = () => {
   );
 };
 
-const updateFeatureCounts = (layer: any) => {
+const updateFeatureCounts = (layer) => {
   const features = layer?.getSource()?.getFeatures() || [];
 
   addedFeatures.value = features.filter((f) => f.get("status") === "added");
@@ -498,9 +498,9 @@ const initLanLayer = () => {
     .find((l) => l.get("name") === "plan-features-layer");
   if (!lanLayer) return;
 
-  const source = (lanLayer as any).getSource();
+  const source = lanLayer.getSource();
   const loadFeatures = () => {
-    lanFeaturesMap.value = new Map(source.getFeatures().map((f: any) => [String(f.getId()), f]));
+    lanFeaturesMap.value = new Map(source.getFeatures().map((f) => [String(f.getId()), f]));
   };
 
   loadFeatures();

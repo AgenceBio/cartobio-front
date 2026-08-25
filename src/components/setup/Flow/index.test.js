@@ -10,7 +10,7 @@ import ActionFromSource from "@/components/setup/actions/FromSource.vue";
 import FlowMultiSources from "@/components/setup/MultiSources/index.vue";
 import CviComponent from "@/components/setup/MultiSources/sources/Cvi.vue";
 
-import operator from "@/utils/__fixtures__/operator.json" assert { type: "json" };
+import operator from "@/utils/__fixtures__/operator.json" with { type: "json" };
 import { sources } from "@/referentiels/imports.js";
 
 const pinia = createTestingPinia({ createSpy: vi.fn });

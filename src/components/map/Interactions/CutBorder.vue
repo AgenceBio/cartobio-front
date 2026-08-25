@@ -165,7 +165,7 @@ const resSource = new VectorSource();
 
 const SNAP_TOLERANCE = 15;
 
-const neighborStyles: Record<string, any> = {};
+const neighborStyles = {};
 
 let snapHighlightSource: VectorSource | null = null;
 let snapHighlightLayer: VectorLayer<VectorSource> | null = null;

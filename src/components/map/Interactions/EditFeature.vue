@@ -126,11 +126,11 @@ import { legalProjectionSurface, inHa } from "@/utils/features.js";
 import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
-import { click, platformModifierKey, altKeyOnly } from "ol/events/condition";
+import { click, platformModifierKey, altKeyOnly, singleClick } from "ol/events/condition";
 import { MultiPoint } from "ol/geom";
 import EditParcelleTooltip from "../Overlays/EditParcelleTooltip.vue";
 import intersect from "@turf/intersect";
-import { MultiPolygon, Polygon } from "@turf/helpers";
+import { featureCollection, MultiPolygon, Polygon, feature as turfFeature } from "@turf/helpers";
 
 /*
  * * Interface
@@ -185,8 +185,8 @@ let select: Select | null = null;
 let selectedFeatures: Collection<Feature>;
 let tooltip: Tooltip | null = null;
 let vertexTooltipOverlay: Overlay | null = null;
-let pointerMoveHandler: ((e: any) => void) | null = null;
-let singleClickHandler: ((e: any) => void) | null = null;
+let pointerMoveHandler: ((e) => void) | null = null;
+let singleClickHandler: ((e) => void) | null = null;
 
 /**
  * Corrections
@@ -284,7 +284,7 @@ const resetCorrection = (resetModifiedFeature = true, addPointStyle = true) => {
 
 const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
   for (const feature of selectedFeatures.getArray()) {
-    const geom = feature.getGeometry() as any;
+    const geom = feature.getGeometry();
     if (!geom) continue;
     const coords: number[][][] = geom.getCoordinates();
     if (!coords) continue;
@@ -302,7 +302,7 @@ const isNearVertex = (pixel: number[], hitTolerance = 8): boolean => {
 };
 
 const removeInteriorVertex = (feature: Feature, ringIndex: number, coordIndex: number) => {
-  const geom = feature.getGeometry() as any;
+  const geom = feature.getGeometry();
   const coords: number[][][] = geom.getCoordinates();
   const ring = coords[ringIndex];
 
@@ -319,13 +319,13 @@ const removeInteriorVertex = (feature: Feature, ringIndex: number, coordIndex: n
   geom.setCoordinates(cleanedCoords);
 };
 
-const handleInteriorVertexDelete = (event: any) => {
+const handleInteriorVertexDelete = (event) => {
   if (!altKeyOnly(event)) return;
 
   const feature = selectedFeatures.getArray()[0];
   if (!feature) return;
 
-  const geom = feature.getGeometry() as any;
+  const geom = feature.getGeometry();
   if (!geom || geom.getType() !== "Polygon") return;
 
   const coords: number[][][] = geom.getCoordinates();
@@ -338,7 +338,14 @@ const handleInteriorVertexDelete = (event: any) => {
       const dx = pixel[0] - vertexPixel[0];
       const dy = pixel[1] - vertexPixel[1];
       if (Math.sqrt(dx * dx + dy * dy) <= 8) {
+        const before = geom.getCoordinates();
         removeInteriorVertex(feature, ringIndex, coordIndex);
+        const after = geom.getCoordinates();
+
+        props.undoRedo.push("removevertex", { feature, before, after });
+
+        isModifying.value = true;
+
         feature.setStyle([getPolygonStyle(), getPointStyle()]);
         return;
       }
@@ -363,12 +370,12 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
   }
 
   nextTick(() => {
-    tooltip.element.style.display = "none";
+    if (tooltip?.element) tooltip.element.style.display = "none";
   });
 
   modify = new Modify({
     features: selectedFeatures,
-    deleteCondition: altKeyOnly,
+    deleteCondition: (e) => altKeyOnly(e) && singleClick(e),
     style: [
       getPolygonStyle(),
       new Style({
@@ -389,7 +396,7 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
 
   pointerMoveHandler = (e) => {
     if (!vertexTooltipOverlay) return;
-    const geom = selectedFeatures.getArray()[0]?.getGeometry() as any;
+    const geom = selectedFeatures.getArray()[0]?.getGeometry();
     const coordsCount = geom?.getCoordinates()?.[0]?.length ?? 0;
     if (isNearVertex(e.pixel) && getComputedStyle(tooltip.element).display === "none" && coordsCount > 4) {
       vertexTooltipOverlay.setPosition(props.map.getCoordinateFromPixel(e.pixel));
@@ -405,9 +412,12 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
       resetCorrection(false);
     }
     isModifying.value = true;
-    tooltip.setFeature(selectedFeatures.getArray()[0]);
-
-    tooltip.element.style.display = "";
+    if (tooltip?.setFeature) {
+      tooltip.setFeature(selectedFeatures.getArray()[0]);
+    }
+    if (tooltip?.element) {
+      tooltip.element.style.display = "";
+    }
   });
 
   modify.on("modifyend", () => {
@@ -417,6 +427,12 @@ const initModifyInteraction = (selectedFeatures: Collection<Feature>, tooltip: T
 };
 
 const modifyInteraction = () => {
+  props.undoRedo.define(
+    "removevertex",
+    (prop) => prop.feature.getGeometry().setCoordinates(prop.before),
+    (prop) => prop.feature.getGeometry().setCoordinates(prop.after),
+  );
+
   selectedFeatures = new Collection<Feature>();
   tooltip = new Tooltip({
     className: "draw-tooltip",
@@ -610,14 +626,13 @@ const createTooltipContent = (feature: Feature) => {
  */
 
 const saveModifiedFeature = async () => {
-  let modifiedFeature: CartoBioFeature | null = null;
   const selectdId = store.selectedIds[0];
   const geoJson = new GeoJSON();
   const feature = props.vectorSource.getFeatureById(selectdId);
 
   if (!feature) return;
 
-  modifiedFeature = geoJson.writeFeatureObject(feature.clone()) as CartoBioFeature;
+  const modifiedFeature = geoJson.writeFeatureObject(feature.clone()) as CartoBioFeature;
   modifiedFeature.id = selectdId;
 
   if (!modifiedFeature) return;
@@ -727,11 +742,19 @@ const selectToCorrect = (
   }
 
   originalOverlappedFeature.setGeometry(overlappedFeature.getGeometry());
-  const newGeometry = intersect(
-    correction.new_minus_intersection,
-    format.writeFeatureObject(originalModifiedFeature) as CartoBioFeature,
-  );
+  const modifiedGeomObj = format.writeFeatureObject(originalModifiedFeature) as CartoBioFeature;
 
+  if (!modifiedGeomObj?.geometry || !correction.new_minus_intersection) {
+    console.error("Géométries invalides pour intersect", { modifiedGeomObj, correction });
+    return;
+  }
+
+  const newGeometry = intersect(
+    featureCollection<Polygon | MultiPolygon>([
+      turfFeature(correction.new_minus_intersection),
+      turfFeature(modifiedGeomObj.geometry as Polygon | MultiPolygon),
+    ]),
+  );
   if (!newGeometry) {
     return;
   }
