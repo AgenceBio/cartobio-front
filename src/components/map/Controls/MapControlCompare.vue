@@ -270,29 +270,6 @@ const zoomToFeature = (feature) => {
   });
 };
 
-const computeLabels = () => {
-  const features = diffLayer.value?.getSource()?.getFeatures() || [];
-
-  features.forEach((f) => {
-    const lanFeature = getUnderlyingLanFeature(f);
-
-    let label = "Parcelle";
-
-    if (lanFeature) {
-      const ilot = lanFeature.get("NUMERO_I");
-      const parcelle = lanFeature.get("NUMERO_P");
-
-      if (ilot || parcelle) {
-        label = `Ilot ${ilot ?? "?"} Parcelle ${parcelle ?? "?"}`;
-      } else {
-        label = lanFeature.get("NOM") || label;
-      }
-    }
-
-    f.set("label", label);
-  });
-};
-
 const onFocusType = (status: string | null = null) => {
   if (!map?.value) return;
 
@@ -565,36 +542,6 @@ onUnmounted(() => {
   addListener.value = null;
   removeListener.value = null;
 });
-
-const getUnderlyingLanFeature = (diffFeature) => {
-  if (!map?.value) return null;
-
-  const geom = diffFeature?.getGeometry?.();
-  if (!geom) return null;
-
-  const coord = geom.getFirstCoordinate?.();
-  if (!coord) return null;
-
-  const pixel = map.value.getPixelFromCoordinate(coord);
-
-  let found = null;
-
-  map.value.forEachFeatureAtPixel(
-    pixel,
-    (feature, layer) => {
-      if (layer?.get("name") === "plan-features-layer") {
-        found = feature;
-        return true;
-      }
-      return false;
-    },
-    {
-      hitTolerance: 3,
-    },
-  );
-
-  return found;
-};
 </script>
 
 <style scoped>
