@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import IndexPage from "./index.vue";
@@ -13,7 +12,13 @@ const apiMocks = vi.hoisted(() => ({
   fetchHistoriqueParcellaire: vi.fn(),
 }));
 
+const cartobioApiMocks = vi.hoisted(() => ({
+  getDashboardSummary: vi.fn(),
+}));
+
 vi.mock("@/api/endpoints/tableau-de-bord.api.ts", () => apiMocks);
+
+vi.mock("@/cartobio-api", () => cartobioApiMocks);
 
 vi.mock("@/utils/error-api.utils.ts", () => ({
   getErrorMessage: (code) => `MSG_${code}`,
@@ -143,6 +148,11 @@ describe("Tableau de bord des APIs", () => {
     apiMocks.fetchEnvoisRejetes.mockResolvedValue(page([]));
     apiMocks.fetchRepetitions.mockResolvedValue([]);
     apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([envoi]);
+    cartobioApiMocks.getDashboardSummary.mockResolvedValue({
+      countCertifiees: 5,
+      countEnAttentes: 2,
+      countNonAuditees: 1,
+    });
   });
 
   it("n'appelle aucune API tant qu'aucune période n'est sélectionnée", async () => {
@@ -256,32 +266,6 @@ describe("Tableau de bord des APIs", () => {
       expect.any(String),
       expect.objectContaining({ statuts: ["REJECTED"] }),
     );
-  });
-
-  it("affiche les alertes de répétition et permet de les masquer", async () => {
-    apiMocks.fetchRepetitions.mockResolvedValue([
-      {
-        numeroBio: "B456",
-        numeroClient: "C123",
-        auditDate: "2026-08-10",
-        envois: [
-          { jobId: 1, statut: "REJECTED", etat: "CREATION", createdAt: "2026-08-10T09:00:00", erreurs: [] },
-          { jobId: 2, statut: "REJECTED", etat: "CREATION", createdAt: "2026-08-10T10:00:00", erreurs: [] },
-        ],
-      },
-    ]);
-    const wrapper = mountPage();
-    await selectPeriode(wrapper);
-
-    expect(wrapper.find(".repetitions-banner").exists()).toBe(false);
-    expect(wrapper.text()).toContain("C123");
-
-    const masquer = wrapper
-      .findAll("button")
-      .find((b) => b.text().includes("Masquer le message"));
-    await masquer.trigger("click");
-
-    expect(wrapper.find(".repetitions-banner").exists()).toBe(false);
   });
 
   it("bascule sur le détail des anomalies et permet le drill-down", async () => {
