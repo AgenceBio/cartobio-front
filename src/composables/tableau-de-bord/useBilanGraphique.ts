@@ -171,11 +171,11 @@ const bilanHasData = computed(() =>
 );
 
 const bilanBarHasData = computed(() =>
-  (bilanBarSeries.value ?? []).some((s: any) => (s.data ?? []).some((v: number) => v > 0))
+  (bilanBarSeries.value ?? []).some((s) => (s.data ?? []).some((v: number) => v > 0))
 );
 
 const compareBarHasData = computed(() =>
-  (compareBarSeries.value ?? []).some((s: any) => (s.data ?? []).some((v: number) => v > 0))
+  (compareBarSeries.value ?? []).some((s) => (s.data ?? []).some((v: number) => v > 0))
 );
 
   const compareRange = computed<DateRange | null>(() => {

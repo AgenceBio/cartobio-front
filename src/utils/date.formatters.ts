@@ -20,7 +20,7 @@ export function getWeek(date: Date): number {
   return 1 + Math.round((firstThursday - d.getTime()) / (7 * 24 * 3600 * 1000));
 }
 
-export function formatPeriodLabel(unit: Unit, date: Date, long: Boolean = true): string {
+export function formatPeriodLabel(unit: Unit, date: Date, long: boolean = true): string {
   const now = new Date();
   switch (unit) {
     case "day":
