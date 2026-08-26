@@ -14,6 +14,7 @@ import { Feature } from "ol";
 
 import { click, platformModifierKey } from "ol/events/condition";
 import { SelectEvent } from "ol/interaction/Select";
+import { MapBrowserEvent } from "ol";
 
 /*
  * * Interface
@@ -24,6 +25,7 @@ interface Props {
   vectorSource: VectorSource;
   vectorLayer: VectorLayer<VectorSource>;
   isCompare?: boolean;
+  noSelect?: boolean;
 }
 
 /*
@@ -38,6 +40,7 @@ const store = useFeaturesStore();
 
 const props = withDefaults(defineProps<Props>(), {
   isCompare: false,
+  noSelect: false,
 });
 
 /*
@@ -76,11 +79,45 @@ watch(
   { deep: true },
 );
 
+/*
+ * * Fonctions
+ */
+
+const handleMapClick = (evt: MapBrowserEvent) => {
+  const clickedFeatures: Feature[] = [];
+  props.map.forEachFeatureAtPixel(
+    evt.pixel,
+    (feature) => {
+      if (feature instanceof Feature) {
+        clickedFeatures.push(feature);
+      }
+      return false;
+    },
+    {
+      layerFilter: (layer) => layer === props.vectorLayer,
+    },
+  );
+
+  if (clickedFeatures.length > 0) {
+    const clickedFeature = clickedFeatures[0];
+    const clickedId = clickedFeature.getId();
+    const isAlreadySelected = selectInteraction
+      ?.getFeatures()
+      .getArray()
+      .some((f) => f.getId() === clickedId);
+
+    if (isAlreadySelected && selectInteraction?.getFeatures().getLength() === 1) {
+      emit("selectFeature", clickedId);
+    }
+  }
+};
+
 /**
  * * States fonctions
  */
 onMounted(() => {
   if (props.isCompare) return;
+  if (props.noSelect) return;
 
   selectInteraction = new Select({
     condition: click,
@@ -94,34 +131,7 @@ onMounted(() => {
   });
   props.map.addInteraction(selectInteraction);
 
-  props.map.on("click", (evt) => {
-    const clickedFeatures: Feature[] = [];
-    props.map.forEachFeatureAtPixel(
-      evt.pixel,
-      (feature) => {
-        if (feature instanceof Feature) {
-          clickedFeatures.push(feature);
-        }
-        return false;
-      },
-      {
-        layerFilter: (layer) => layer === props.vectorLayer,
-      },
-    );
-
-    if (clickedFeatures.length > 0) {
-      const clickedFeature = clickedFeatures[0];
-      const clickedId = clickedFeature.getId();
-      const isAlreadySelected = selectInteraction
-        ?.getFeatures()
-        .getArray()
-        .some((f) => f.getId() === clickedId);
-
-      if (isAlreadySelected && selectInteraction?.getFeatures().getLength() === 1) {
-        emit("selectFeature", clickedId);
-      }
-    }
-  });
+  props.map.on("click", handleMapClick);
 
   selectInteraction.on("select", (e: SelectEvent) => {
     isInternalUpdate = true;
@@ -156,6 +166,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  props.map.un("click", handleMapClick);
+
   if (selectInteraction) {
     props.map.removeInteraction(selectInteraction);
   }

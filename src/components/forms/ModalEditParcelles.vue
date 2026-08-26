@@ -134,6 +134,7 @@ const maxDate = computed(() => toDateInputString(new Date()));
 
 const changes = computed(() => {
   const diff = {};
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   if (JSON.stringify(patch.cultures.map(({ id, ...rest }) => rest)) !== JSON.stringify(initial.cultures)) {
     diff.cultures = patch.cultures;
   }

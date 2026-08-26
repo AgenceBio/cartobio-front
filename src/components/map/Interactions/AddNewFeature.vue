@@ -173,7 +173,7 @@ import { useRecordStore } from "@/stores/record.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { addParcelleVerif, submitNewParcelle, getRPG } from "@/cartobio-api.js";
+import { addParcelleVerif, submitNewParcelle } from "@/cartobio-api.js";
 
 import AddParcelleModal from "@/components/forms/AddParcelleModal.vue";
 import CommuneSelect from "@/components/forms/fields/CommuneSelect.vue";
@@ -192,7 +192,6 @@ import { FeatureCollection } from "@turf/helpers";
 import intersect from "@turf/intersect";
 import kinks from "@turf/kinks";
 import axios from "axios";
-import proj4 from "proj4";
 
 /*
  * * Interface
@@ -515,7 +514,11 @@ const addParcelleCadastraleModal = (e) => {
 };
 
 const handleClickRPG = async (e: MapBrowserEvent) => {
-  const features = await sourceLayer?.getFeatures(e.pixel);
+  const map = e.map;
+
+  const features = map.getFeaturesAtPixel(e.pixel, {
+    layerFilter: (layer) => layer.get("name") === "plan-rpg-layer",
+  });
 
   if (!features || features.length === 0) {
     return;
@@ -527,42 +530,36 @@ const handleClickRPG = async (e: MapBrowserEvent) => {
     if (!flatGeometry) {
       return;
     }
-    const data = (
-      await getRPG({
-        extent: flatGeometry.getExtent(),
-        surface: rpgFeature.getProperties().SURF_ADM,
-        codeCulture: rpgFeature.getProperties().CODE_CULTU,
-      })
-    ).data;
 
-    const newFeature = new GeoJSON().readFeature(data.geom) as Feature;
+    const featureId = rpgFeature.getId() || rpgFeature.getProperties().fid;
 
-    if (selectedIds.value.includes(data.fid)) {
-      const feature = previewSource.getFeatureById(data.fid);
-
+    if (selectedIds.value.includes(featureId)) {
+      const feature = previewSource.getFeatureById(featureId);
       if (feature) {
         previewSource.removeFeature(feature);
       }
-      selectedIds.value = selectedIds.value.filter((s) => s != data.fid);
-
-      return;
-    }
-
-    const geometry = newFeature.getGeometry();
-    geometry.setCoordinates(
-      geometry.getCoordinates().map((coord: number[][]) => {
-        return coord.map((point: number[]) => proj4("EPSG:3857", "EPSG:4326", point));
-      }),
-    );
-    newFeature.setId(data.fid);
-    newFeature.setStyle(previewStyle);
-    previewSource.addFeature(newFeature);
-    selectedIds.value.push(data.fid);
-    if (selectedIds.value.length > 0) {
-      showRPGModal.value = true;
+      selectedIds.value = selectedIds.value.filter((s) => s != featureId);
     } else {
-      showRPGModal.value = false;
+      const geoJsonFormat = new GeoJSON();
+
+      const geoJsonFeature = geoJsonFormat.writeFeatureObject(rpgFeature, {
+        dataProjection: "EPSG:4326",
+        featureProjection: "EPSG:3857",
+      });
+
+      const newFeature = geoJsonFormat.readFeature(geoJsonFeature, {
+        dataProjection: "EPSG:4326",
+        featureProjection: "EPSG:3857",
+      }) as Feature;
+
+      newFeature.setId(featureId);
+      newFeature.setStyle(previewStyle);
+
+      previewSource.addFeature(newFeature);
+      selectedIds.value.push(featureId);
     }
+
+    showRPGModal.value = selectedIds.value.length > 0;
   }
 };
 
@@ -669,10 +666,6 @@ const rpgInteraction = () => {
       .getArray()
       .find((l) => l.get("name") === "plan-rpg-layer") as VectorTileLayer) ?? null;
 
-  if (!sourceLayer) {
-    return;
-  }
-
   props.map.on("click", handleClickRPG);
 };
 
@@ -750,10 +743,16 @@ const addRpgFeatures = async () => {
 
   for (const f of previewSource.getFeatures()) {
     const featureObj = format.writeFeatureObject(f);
+    featureObj.id = crypto.randomUUID();
     featureObj.properties = {
       NOM: `Parcelle RPG`,
       cultures: [{ CPF: "", id: crypto.randomUUID() }],
     };
+
+    if (featureObj.geometry.type === "MultiPolygon") {
+      featureObj.geometry.coordinates = featureObj.geometry.coordinates[0];
+      featureObj.geometry.type = "Polygon";
+    }
 
     const result = await submitNewParcelle(props.recordId, featureObj);
 
@@ -866,7 +865,7 @@ watch(
 
     errorDrawing.value = true;
     if (data.corrections && data.corrections.length > 0) {
-      let feature = null; // = format.readFeature(newFeature) as Feature;
+      let feature; // = format.readFeature(newFeature) as Feature;
 
       if (data.corrections.length === 1) {
         feature = format.readFeature(data.corrections[0].new_minus_intersection) as Feature;

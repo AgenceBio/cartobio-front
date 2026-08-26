@@ -10,9 +10,9 @@ Les erreurs sont centralisées avec [Sentry](https://github.com/getsentry/sentry
 
 ### Outils nécessaires
 
-- `node` 20
+- `node` 24
 
-On pourra utiliser `nvm` pour faciliter la gestion de différentes versions de node (cf. [`.nvmrc`](.nvmrc)) :
+On utilisera `nvm` pour faciliter la gestion de différentes versions de node (cf. [`.nvmrc`](.nvmrc)) :
 
 ```sh
 nvm install && nvm use
@@ -87,11 +87,11 @@ Chaque commit/push sur la branche `test` déploie en test : [Build and deploy (t
 
 ### Environnement de préproduction
 
-Chaque commit/push sur la branche ~~`v2`~~ `v3` déploie en préproduction : [Build and deploy (staging)](https://github.com/AgenceBio/cartobio-front/actions/workflows/staging.yml)
+Chaque commit/push sur la branche `v3` déploie en préproduction : [Build and deploy (staging)](https://github.com/AgenceBio/cartobio-front/actions/workflows/staging.yml)
 
 ### Environnement de production
 
-Chaque nouveau tag ~~`v2.*`~~ `v3.*` déploie en production : [Build and deploy (production)](https://github.com/AgenceBio/cartobio-front/actions/workflows/deploy.yml)
+Chaque nouveau tag `v3.*` déploie en production : [Build and deploy (production)](https://github.com/AgenceBio/cartobio-front/actions/workflows/deploy.yml)
 
 Pour créer un tag :
 
