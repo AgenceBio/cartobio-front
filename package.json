@@ -30,7 +30,7 @@
     "@sentry/vue": "^10.67.0",
     "@turf/bbox": "^7.3.5",
     "@turf/bbox-polygon": "^7.3.5",
-    "@turf/difference": "^7.3.5",
+    "@turf/difference": "^7.4.0",
     "@turf/helpers": "^7.3.5",
     "@turf/intersect": "^7.3.5",
     "@turf/kinks": "^7.3.5",
