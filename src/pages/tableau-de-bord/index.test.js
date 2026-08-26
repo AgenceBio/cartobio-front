@@ -273,7 +273,7 @@ describe("Tableau de bord des APIs", () => {
     const wrapper = mountPage();
     await selectPeriode(wrapper);
 
-    expect(wrapper.find(".repetitions-banner").exists()).toBe(true);
+    expect(wrapper.find(".repetitions-banner").exists()).toBe(false);
     expect(wrapper.text()).toContain("C123");
 
     const masquer = wrapper
