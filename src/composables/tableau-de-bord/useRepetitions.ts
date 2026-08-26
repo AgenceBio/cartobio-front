@@ -10,9 +10,7 @@ export function typeRepetition(groupe: RepetitionGroupe): "envois" | "refus" {
 }
 
 export function labelRepetition(groupe: RepetitionGroupe): string {
-  return groupe.numeroClient
-    ? `N°Client ${groupe.numeroClient}`
-    : `N°Bio ${groupe.numeroBio}`;
+  return groupe.numeroClient ? `N°Client ${groupe.numeroClient}` : `N°Bio ${groupe.numeroBio}`;
 }
 
 const APERCU_NB = 3;
@@ -31,9 +29,7 @@ export function useRepetitions() {
   const alertesPage = ref(1);
   const alertesLimit = ref(8);
   const alertesTotal = ref(0);
-  const alertesMaxPage = computed(() =>
-    Math.max(1, Math.ceil(alertesTotal.value / alertesLimit.value)),
-  );
+  const alertesMaxPage = computed(() => Math.max(1, Math.ceil(alertesTotal.value / alertesLimit.value)));
 
   const repetitionsVisibles = computed(() =>
     repetitions.value.filter((groupe) => !repetitionsMasquees.value.has(clefGroupe(groupe))),
@@ -41,9 +37,7 @@ export function useRepetitions() {
 
   const repetitionsApercu = computed(() => repetitionsVisibles.value.slice(0, APERCU_NB));
 
-  const repetitionsRestantes = computed(() =>
-    Math.max(repetitionsVisibles.value.length - APERCU_NB, 0),
-  );
+  const repetitionsRestantes = computed(() => Math.max(repetitionsVisibles.value.length - APERCU_NB, 0));
 
   function masquerRepetition(groupe: RepetitionGroupe) {
     repetitionsMasquees.value.add(clefGroupe(groupe));

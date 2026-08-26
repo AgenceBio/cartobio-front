@@ -30,9 +30,7 @@ export function useBilanFiltres(options: {
   const ordreDate = ref<OrdreTri>("desc");
 
   const nombreFiltresActifs = computed(
-    () =>
-      (filtresBilanAppliques.value.statuts?.length ?? 0) +
-      (filtresBilanAppliques.value.etats?.length ?? 0),
+    () => (filtresBilanAppliques.value.statuts?.length ?? 0) + (filtresBilanAppliques.value.etats?.length ?? 0),
   );
 
   function toggleFiltreMenu() {
@@ -46,12 +44,10 @@ export function useBilanFiltres(options: {
   async function chargerBilanEnvois(page: number) {
     if (!fromBase.value || !toBase.value) return;
     isLoading.value = true;
-    bilanEnvois.value = await fetchBilanEnvois(
-      page,
-      formatStartOfDay(fromBase.value),
-      formatEndOfDay(toBase.value),
-      { ...filtresBilanAppliques.value, ordreDate: ordreDate.value },
-    );
+    bilanEnvois.value = await fetchBilanEnvois(page, formatStartOfDay(fromBase.value), formatEndOfDay(toBase.value), {
+      ...filtresBilanAppliques.value,
+      ordreDate: ordreDate.value,
+    });
     isLoading.value = false;
   }
 

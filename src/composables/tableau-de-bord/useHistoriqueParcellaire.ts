@@ -36,9 +36,7 @@ export function useHistoriqueParcellaire(options: { isLoading: Ref<boolean> }) {
       envoi.auditDate,
     );
     selectedEnvoi.value =
-      historiqueCurrentParcellaire.value.find(
-        (item) => String(item.jobId) === String(envoi.jobId),
-      ) ??
+      historiqueCurrentParcellaire.value.find((item) => String(item.jobId) === String(envoi.jobId)) ??
       historiqueCurrentParcellaire.value[0] ??
       null;
     envoiOrigine.value = selectedEnvoi.value;

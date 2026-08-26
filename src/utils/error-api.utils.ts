@@ -1,137 +1,134 @@
 export enum ErrorCode {
   // Import
-  UNKNOWN_NUMERO_BIO = 'UNKNOWN_NUMERO_BIO',
-  NOT_PRODUCTION = 'NOT_PRODUCTION',
-  NO_OC = 'NO_OC',
-  OC_MISMATCH = 'OC_MISMATCH',
-  INVALID_JSON = 'INVALID_JSON',
+  UNKNOWN_NUMERO_BIO = "UNKNOWN_NUMERO_BIO",
+  NOT_PRODUCTION = "NOT_PRODUCTION",
+  NO_OC = "NO_OC",
+  OC_MISMATCH = "OC_MISMATCH",
+  INVALID_JSON = "INVALID_JSON",
 
   // Validation des dates
-  INVALID_DATE_CERTIFICATION_DEBUT = 'INVALID_DATE_CERTIFICATION_DEBUT',
-  INVALID_DATE_CERTIFICATION_FIN = 'INVALID_DATE_CERTIFICATION_FIN',
-  INVALID_DATE_AUDIT = 'INVALID_DATE_AUDIT',
+  INVALID_DATE_CERTIFICATION_DEBUT = "INVALID_DATE_CERTIFICATION_DEBUT",
+  INVALID_DATE_CERTIFICATION_FIN = "INVALID_DATE_CERTIFICATION_FIN",
+  INVALID_DATE_AUDIT = "INVALID_DATE_AUDIT",
 
   // Validation des parcelles - erreurs
-  INVALID_ETAT_PRODUCTION = 'INVALID_ETAT_PRODUCTION',
-  MISSING_DATE_ENGAGEMENT = 'MISSING_DATE_ENGAGEMENT',
-  INVALID_DATE_ENGAGEMENT = 'INVALID_DATE_ENGAGEMENT',
-  MISSING_CULTURES = 'MISSING_CULTURES',
-  INVALID_CPF = 'INVALID_CPF',
-  INVALID_GEOM = 'INVALID_GEOM',
+  INVALID_ETAT_PRODUCTION = "INVALID_ETAT_PRODUCTION",
+  MISSING_DATE_ENGAGEMENT = "MISSING_DATE_ENGAGEMENT",
+  INVALID_DATE_ENGAGEMENT = "INVALID_DATE_ENGAGEMENT",
+  MISSING_CULTURES = "MISSING_CULTURES",
+  INVALID_CPF = "INVALID_CPF",
+  INVALID_GEOM = "INVALID_GEOM",
 
   // Validation des parcelles - warnings
-  MISSING_GEOM = 'MISSING_GEOM',
-  GEOM_OUT_OF_BOUNDS = 'GEOM_OUT_OF_BOUNDS',
-  GEOM_CORRECTED = 'GEOM_CORRECTED',
-  GEOM_INVALID_NOT_CORRECTED = 'GEOM_INVALID_NOT_CORRECTED',
+  MISSING_GEOM = "MISSING_GEOM",
+  GEOM_OUT_OF_BOUNDS = "GEOM_OUT_OF_BOUNDS",
+  GEOM_CORRECTED = "GEOM_CORRECTED",
+  GEOM_INVALID_NOT_CORRECTED = "GEOM_INVALID_NOT_CORRECTED",
 
   // Interne
-  DB_ERROR='DB_ERROR'
+  DB_ERROR = "DB_ERROR",
 }
 
 export enum ErrorType {
-  ERROR = 'error',
-  WARNING = 'warning',
+  ERROR = "error",
+  WARNING = "warning",
 }
 
-export type MessageVariant = 'full' | 'short';
+export type MessageVariant = "full" | "short";
 
-export const ErrorMessages: Record<
-  ErrorCode,
-  Record<MessageVariant, string>
-> = {
+export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = {
   [ErrorCode.UNKNOWN_NUMERO_BIO]: {
-    full: 'Numéro bio inconnu du portail de notification',
-    short: 'Numéro bio inconnu',
+    full: "Numéro bio inconnu du portail de notification",
+    short: "Numéro bio inconnu",
   },
 
   [ErrorCode.NOT_PRODUCTION]: {
-    full: 'Numéro bio sans notification liée à une activité de production',
-    short: 'Aucune activité de production',
+    full: "Numéro bio sans notification liée à une activité de production",
+    short: "Aucune activité de production",
   },
 
   [ErrorCode.NO_OC]: {
-    full: 'Aucun organisme certificateur pour ce numéro bio.',
-    short: 'Aucun organisme certificateur',
+    full: "Aucun organisme certificateur pour ce numéro bio.",
+    short: "Aucun organisme certificateur",
   },
 
   [ErrorCode.OC_MISMATCH]: {
-    full: 'Numéro client différent',
-    short: 'Numéro client différent',
+    full: "Numéro client différent",
+    short: "Numéro client différent",
   },
 
   [ErrorCode.INVALID_JSON]: {
-    full: 'Le fichier JSON est invalide.',
-    short: 'JSON invalide',
+    full: "Le fichier JSON est invalide.",
+    short: "JSON invalide",
   },
 
   [ErrorCode.INVALID_DATE_CERTIFICATION_DEBUT]: {
-    full: 'Champ dateCertificationDebut incorrect',
-    short: 'Date de certification de début invalide',
+    full: "Champ dateCertificationDebut incorrect",
+    short: "Date de certification de début invalide",
   },
 
   [ErrorCode.INVALID_DATE_CERTIFICATION_FIN]: {
-    full: 'Champ dateCertificationFin incorrect',
-    short: 'Date de certification de fin invalide',
+    full: "Champ dateCertificationFin incorrect",
+    short: "Date de certification de fin invalide",
   },
 
   [ErrorCode.INVALID_DATE_AUDIT]: {
-    full: 'Champ dateAudit incorrect',
-    short: 'Date d’audit invalide',
+    full: "Champ dateAudit incorrect",
+    short: "Date d’audit invalide",
   },
 
   [ErrorCode.INVALID_ETAT_PRODUCTION]: {
-    full: 'Champ etatProduction incorrect',
-    short: 'État de production invalide',
+    full: "Champ etatProduction incorrect",
+    short: "État de production invalide",
   },
 
   [ErrorCode.MISSING_DATE_ENGAGEMENT]: {
-    full: 'Champ dateEngagement obligatoire lorsque la parcelle est en conversion',
-    short: 'Date d’engagement obligatoire',
+    full: "Champ dateEngagement obligatoire lorsque la parcelle est en conversion",
+    short: "Date d’engagement obligatoire",
   },
 
   [ErrorCode.INVALID_DATE_ENGAGEMENT]: {
-    full: 'Champ dateEngagement incorrect',
-    short: 'Date d’engagement invalide',
+    full: "Champ dateEngagement incorrect",
+    short: "Date d’engagement invalide",
   },
 
   [ErrorCode.MISSING_CULTURES]: {
-    full: 'Cultures absentes',
-    short: 'Cultures absentes',
+    full: "Cultures absentes",
+    short: "Cultures absentes",
   },
 
   [ErrorCode.INVALID_CPF]: {
-    full: 'Cultures inconnues : {codes}',
-    short: 'Cultures inconnues',
+    full: "Cultures inconnues : {codes}",
+    short: "Cultures inconnues",
   },
 
   [ErrorCode.INVALID_GEOM]: {
-    full: 'Champ geom incorrect : {detail}',
-    short: 'Géométrie invalide',
+    full: "Champ geom incorrect : {detail}",
+    short: "Géométrie invalide",
   },
 
   [ErrorCode.MISSING_GEOM]: {
     full: "Parcelle {id} n'a pas de géométrie",
-    short: 'Géométrie absente',
+    short: "Géométrie absente",
   },
 
   [ErrorCode.GEOM_OUT_OF_BOUNDS]: {
-    full: 'Parcelle {id} en dehors des régions autorisées',
-    short: 'Hors zone autorisée',
+    full: "Parcelle {id} en dehors des régions autorisées",
+    short: "Hors zone autorisée",
   },
 
   [ErrorCode.GEOM_CORRECTED]: {
-    full: 'Ces parcelles ont été corrigées : {ids}',
-    short: 'Géométrie corrigée',
+    full: "Ces parcelles ont été corrigées : {ids}",
+    short: "Géométrie corrigée",
   },
 
   [ErrorCode.GEOM_INVALID_NOT_CORRECTED]: {
     full: "Ces parcelles n'ont pas été corrigées mais sont invalides : {ids}",
-    short: 'Géométrie invalide non corrigée',
+    short: "Géométrie invalide non corrigée",
   },
   [ErrorCode.DB_ERROR]: {
     full: "Une erreur interne est survenue dans Cartobio",
-    short: 'Erreur interne à Cartobio',
+    short: "Erreur interne à Cartobio",
   },
 };
 
@@ -144,7 +141,7 @@ export const ErrorTypes: Partial<Record<ErrorCode, ErrorType>> = {
 
 export const getErrorMessage = (
   code: ErrorCode,
-  variant: MessageVariant = 'full',
+  variant: MessageVariant = "full",
   params?: Record<string, string | number>,
 ): string => {
   let message = ErrorMessages[code]?.[variant] ?? code;
@@ -160,8 +157,7 @@ export const getErrorMessage = (
   return message;
 };
 
-export const getErrorType = (code: ErrorCode): ErrorType =>
-  ErrorTypes[code] ?? ErrorType.ERROR;
+export const getErrorType = (code: ErrorCode): ErrorType => ErrorTypes[code] ?? ErrorType.ERROR;
 
 export const ErrorGroups = {
   import: [

@@ -86,9 +86,7 @@ export function useBilanGraphique(options: {
     const items = source ?? [];
     return groupesAnomalies
       .map((groupe) => {
-        const codes = items.filter((a) =>
-          (ErrorGroups[groupe.key] as string[]).includes(a.code),
-        );
+        const codes = items.filter((a) => (ErrorGroups[groupe.key] as string[]).includes(a.code));
         return { ...groupe, count: codes.reduce((total, a) => total + a.count, 0) };
       })
       .filter((groupe) => groupe.count > 0);
@@ -100,9 +98,7 @@ export function useBilanGraphique(options: {
   }
 
   function anomaliesDetailChartData(source: AnomalieCode[] | null, groupeKey: ErrorGroupKey) {
-    const items = (source ?? []).filter((a) =>
-      (ErrorGroups[groupeKey] as string[]).includes(a.code),
-    );
+    const items = (source ?? []).filter((a) => (ErrorGroups[groupeKey] as string[]).includes(a.code));
     return {
       x: items.map((a) => getErrorMessage(a.code, "short")),
       y: items.map((a) => a.count),
@@ -166,17 +162,15 @@ export function useBilanGraphique(options: {
     return compareKpi.value.totalEnvoyes > 0;
   });
 
-const bilanHasData = computed(() =>
-  (bilanChartY.value ?? []).some((v: number) => v > 0)
-);
+  const bilanHasData = computed(() => (bilanChartY.value ?? []).some((v: number) => v > 0));
 
-const bilanBarHasData = computed(() =>
-  (bilanBarSeries.value ?? []).some((s) => (s.data ?? []).some((v: number) => v > 0))
-);
+  const bilanBarHasData = computed(() =>
+    (bilanBarSeries.value ?? []).some((s) => (s.data ?? []).some((v: number) => v > 0)),
+  );
 
-const compareBarHasData = computed(() =>
-  (compareBarSeries.value ?? []).some((s) => (s.data ?? []).some((v: number) => v > 0))
-);
+  const compareBarHasData = computed(() =>
+    (compareBarSeries.value ?? []).some((s) => (s.data ?? []).some((v: number) => v > 0)),
+  );
 
   const compareRange = computed<DateRange | null>(() => {
     if (compareRangeOverride.value) return compareRangeOverride.value;
@@ -190,14 +184,12 @@ const compareBarHasData = computed(() =>
     const date = fromBase.value ?? baseDate;
     if (unit.value === "week") {
       const now = new Date();
-      const isCurrentWeek =
-        getWeek(date) === getWeek(now) && date.getFullYear() === now.getFullYear();
+      const isCurrentWeek = getWeek(date) === getWeek(now) && date.getFullYear() === now.getFullYear();
       return isCurrentWeek ? "Cette semaine" : `Semaine ${getWeek(date)}`;
     }
     const label = formatPeriodLabel(unit.value, date, false);
     return label.charAt(0).toUpperCase() + label.slice(1);
   });
-
 
   const compareRangeLabel = computed(() => {
     if (!compareRange.value) return "";
@@ -218,17 +210,12 @@ const compareBarHasData = computed(() =>
   }
 
   function getErrorCodes(source: EvolutionPeriode[] | null): string[] {
-    return [
-      ...new Set(
-        (source ?? []).flatMap((period) => period.errors.map((error) => error.code)),
-      ),
-    ];
+    return [...new Set((source ?? []).flatMap((period) => period.errors.map((error) => error.code)))];
   }
 
   const chartGranularity = computed<"day" | "week">(() => {
     if (!fromBase.value || !toBase.value) return "day";
-    const diffInDays =
-      (toBase.value.getTime() - fromBase.value.getTime()) / (1000 * 60 * 60 * 24);
+    const diffInDays = (toBase.value.getTime() - fromBase.value.getTime()) / (1000 * 60 * 60 * 24);
     return diffInDays <= 7 ? "day" : "week";
   });
 
@@ -242,9 +229,7 @@ const compareBarHasData = computed(() =>
   function formatBarCategory(period: string, index: number): string {
     const date = new Date(period);
     if (chartGranularity.value === "day") {
-      return capitalize(
-        new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(date),
-      );
+      return capitalize(new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(date));
     }
     return `${formatOrdinal(index + 1)} semaine`;
   }
@@ -277,10 +262,7 @@ const compareBarHasData = computed(() =>
   }
 
   const bilanBarCategories = computed(
-    () =>
-      evolutionEnvois.value?.map((period, index) =>
-        formatBarCategory(period.period, index),
-      ) ?? [],
+    () => evolutionEnvois.value?.map((period, index) => formatBarCategory(period.period, index)) ?? [],
   );
 
   const bilanBarSeries = computed(() => construireSeriesBar(evolutionEnvois.value));

@@ -47,9 +47,7 @@ export function useTelechargements() {
     filename: string,
     sheetName: string,
   ) {
-    const rows = mapFn(
-      await fetchAllPages(fetchFn, formatStartOfDay(range.from), formatEndOfDay(range.to), 500),
-    );
+    const rows = mapFn(await fetchAllPages(fetchFn, formatStartOfDay(range.from), formatEndOfDay(range.to), 500));
     downloadXlsx(rows, filename, sheetName);
   }
 

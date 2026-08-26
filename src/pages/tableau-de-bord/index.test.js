@@ -88,11 +88,9 @@ const globalStubs = {
   },
   Modal: {
     name: "Modal",
-    template:
-      "<div class='modal-stub'><slot name='header' /><slot /><slot name='footer' /></div>",
+    template: "<div class='modal-stub'><slot name='header' /><slot /><slot name='footer' /></div>",
   },
 };
-
 
 const kpi = {
   totalEnvoyes: 10,
@@ -218,9 +216,7 @@ describe("Tableau de bord des APIs", () => {
     const wrapper = mountPage();
     await selectPeriode(wrapper);
 
-    wrapper
-      .findAllComponents({ name: "Pagination" })[0]
-      .vm.$emit("change-page", 2);
+    wrapper.findAllComponents({ name: "Pagination" })[0].vm.$emit("change-page", 2);
     await flushPromises();
 
     expect(apiMocks.fetchBilanEnvois).toHaveBeenLastCalledWith(
@@ -254,9 +250,7 @@ describe("Tableau de bord des APIs", () => {
 
     await wrapper.find("[aria-controls='filtre-panel-bilan']").trigger("click");
     await wrapper.find("#statut-REJECTED").setValue(true);
-    const valider = wrapper
-      .findAll("#filtre-panel-bilan button")
-      .find((b) => b.text() === "Valider");
+    const valider = wrapper.findAll("#filtre-panel-bilan button").find((b) => b.text() === "Valider");
     await valider.trigger("click");
     await flushPromises();
 
@@ -281,9 +275,7 @@ describe("Tableau de bord des APIs", () => {
     pie.vm.$emit("segment-click", { index: 0 });
     await flushPromises();
 
-    const retour = wrapper
-      .findAll("button")
-      .find((b) => b.text().includes("Opérateur"));
+    const retour = wrapper.findAll("button").find((b) => b.text().includes("Opérateur"));
     expect(retour).toBeDefined();
   });
 
@@ -307,17 +299,11 @@ describe("Tableau de bord des APIs", () => {
     await detailButton.trigger("click");
     await flushPromises();
 
-    expect(apiMocks.fetchHistoriqueParcellaire).toHaveBeenCalledWith(
-      "C123",
-      "B456",
-      "2026-08-10",
-    );
+    expect(apiMocks.fetchHistoriqueParcellaire).toHaveBeenCalledWith("C123", "B456", "2026-08-10");
     expect(wrapper.find(".modal-stub").exists()).toBe(true);
   });
   it("affiche l'alerte d'erreur interne quand le statut est ERROR", async () => {
-    apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([
-      { ...envoi, statut: "ERROR", erreurs: [] },
-    ]);
+    apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([{ ...envoi, statut: "ERROR", erreurs: [] }]);
     const wrapper = mountPage();
     await selectPeriode(wrapper);
 
@@ -329,11 +315,7 @@ describe("Tableau de bord des APIs", () => {
     await detailButton.trigger("click");
     await flushPromises();
 
-    expect(apiMocks.fetchHistoriqueParcellaire).toHaveBeenCalledWith(
-      "C123",
-      "B456",
-      "2026-08-10",
-    );
+    expect(apiMocks.fetchHistoriqueParcellaire).toHaveBeenCalledWith("C123", "B456", "2026-08-10");
 
     const alerte = wrapper.find(".modal-stub .fr-alert--error");
     expect(alerte.exists()).toBe(true);

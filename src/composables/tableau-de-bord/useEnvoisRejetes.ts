@@ -3,10 +3,7 @@ import { fetchEnvoisRejetes } from "@/api/endpoints/tableau-de-bord.api";
 import { formatStartOfDay, formatEndOfDay } from "@/utils/date.formatters";
 import type { PageResult, BilanEnvoiItem, OrdreTri } from "@/types/tableau-de-bord";
 
-export function useEnvoisRejetes(options: {
-  fromBase: Ref<Date | null>;
-  toBase: Ref<Date | null>;
-}) {
+export function useEnvoisRejetes(options: { fromBase: Ref<Date | null>; toBase: Ref<Date | null> }) {
   const { fromBase, toBase } = options;
 
   const envoisRejetes = ref<PageResult<BilanEnvoiItem>>({
@@ -15,8 +12,7 @@ export function useEnvoisRejetes(options: {
   });
   const rechercheRejetsBrouillon = ref<string>("");
   const rechercheRejetsAppliquee = ref<string>("");
-    const ordreDate = ref<OrdreTri>("desc");
-
+  const ordreDate = ref<OrdreTri>("desc");
 
   async function chargerEnvoisRejetes(page: number) {
     if (!fromBase.value || !toBase.value) return;
@@ -32,7 +28,6 @@ export function useEnvoisRejetes(options: {
     ordreDate.value = ordreDate.value === "asc" ? "desc" : "asc";
     await chargerEnvoisRejetes(1);
   }
-
 
   async function validerRechercheRejets() {
     rechercheRejetsAppliquee.value = rechercheRejetsBrouillon.value.trim();

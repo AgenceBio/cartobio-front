@@ -47,8 +47,7 @@ export const API_ERROR = {
     type: "error",
   },
   MISSING_DATE_ENGAGEMENT: {
-    label:
-      "Champ date d’engagement obligatoire lorsque la parcelle est en conversion",
+    label: "Champ date d’engagement obligatoire lorsque la parcelle est en conversion",
     type: "error",
   },
   INVALID_DATE_ENGAGEMENT: {
@@ -86,8 +85,7 @@ export const API_ERROR = {
     type: "warning",
   },
   GEOM_INVALID_NOT_CORRECTED: {
-    label:
-      "Ces parcelles n'ont pas été corrigées mais sont invalides : <liste des id>",
+    label: "Ces parcelles n'ont pas été corrigées mais sont invalides : <liste des id>",
     type: "warning",
   },
 };
