@@ -4,7 +4,7 @@
       <li>
         <button
           class="fr-pagination__link fr-pagination__link--first"
-          :disabled="currentPage === 1"
+          :disabled="currentPage === 1 || maxPage === 0"
           @click="$emit('changePage', 1)"
         >
           Première page
@@ -13,10 +13,10 @@
       <li>
         <button
           class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
-          :disabled="currentPage === 1"
+          :disabled="currentPage === 1 || maxPage === 0"
           @click="$emit('changePage', currentPage - 1)"
         >
-          Page précédente
+          {{ !noExplane ? "Page précédente" : "" }}
         </button>
       </li>
       <template v-for="page in visiblePages" :key="page">
@@ -42,7 +42,7 @@
         <button
           class="fr-pagination__link fr-displayed-lg"
           @click="$emit('changePage', maxPage)"
-          :aria-current="currentPage == maxPage"
+          :aria-current="currentPage == maxPage || maxPage === 0"
           aria-label="Aller à la dernière page"
         >
           {{ maxPage }}
@@ -51,16 +51,16 @@
       <li>
         <button
           class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
-          :disabled="currentPage === maxPage"
+          :disabled="currentPage === maxPage || maxPage === 0"
           @click="$emit('changePage', currentPage + 1)"
         >
-          Page suivante
+          {{ !noExplane ? "Page suivante" : "" }}
         </button>
       </li>
       <li>
         <button
           class="fr-pagination__link fr-pagination__link--last"
-          :disabled="currentPage === maxPage"
+          :disabled="currentPage === maxPage || maxPage === 0"
           @click="$emit('changePage', maxPage)"
         >
           Dernière page
@@ -77,6 +77,8 @@ import { computed } from "vue";
 const props = defineProps({
   currentPage: Number,
   maxPage: Number,
+  smallSize: Boolean,
+  noExplane: Boolean,
 });
 
 defineEmits(["changePage"]);
@@ -84,7 +86,7 @@ defineEmits(["changePage"]);
 const isMobile = useIsMobile();
 
 const visiblePages = computed(() => {
-  if (!isMobile.value) {
+  if (!isMobile.value && !props.smallSize) {
     if (props.maxPage <= 5) {
       return Array.from({ length: props.maxPage }, (_, i) => i + 1);
     }

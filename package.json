@@ -38,6 +38,8 @@
     "@unhead/vue": "^3.2.2",
     "@vueuse/core": "^14.3.0",
     "axios": "^1.18.1",
+    "chart.js": "^4.5.1",
+    "dayjs": "^1.11.21",
     "driver.js": "^1.8.0",
     "esbuild": "^0.28.1",
     "fuse.js": "^7.5.0",
