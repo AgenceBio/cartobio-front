@@ -1,7 +1,7 @@
 <template><p class="fr-sr-only">La carte est en mode consultation</p></template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import { useFeaturesStore } from "@/stores/features.js";
 
@@ -79,6 +79,28 @@ watch(
   { deep: true },
 );
 
+const isSyncingSelection = ref(false);
+
+const syncSelection = () => {
+  if (isSyncingSelection.value) return;
+
+  isSyncingSelection.value = true;
+
+  const selected = selectInteraction.getFeatures();
+
+  selected.clear();
+
+  store.selectedIds.forEach((id) => {
+    const feature = props.vectorSource.getFeatureById(id);
+
+    if (feature) {
+      selected.push(feature);
+    }
+  });
+
+  isSyncingSelection.value = false;
+};
+
 /*
  * * Fonctions
  */
@@ -153,6 +175,8 @@ onMounted(() => {
     setTimeout(() => {
       isInternalUpdate = false;
     }, 0);
+
+    props.vectorSource.on("change", syncSelection);
   });
 
   if (store.selectedIds && store.selectedIds.length > 0) {
@@ -171,6 +195,7 @@ onUnmounted(() => {
   if (selectInteraction) {
     props.map.removeInteraction(selectInteraction);
   }
+  props.vectorSource.un("change", syncSelection);
 });
 </script>
 
