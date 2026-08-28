@@ -738,7 +738,13 @@ const exploitationsMenuLabel = computed(() => {
 }
 
 .logo {
+  width: 1.5rem;
+  max-width: 1.5rem;
+}
+
+.fr-header__operator img {
   width: 2.5rem;
+  min-width: 2.5rem !important;
 }
 
 .tool-username {
