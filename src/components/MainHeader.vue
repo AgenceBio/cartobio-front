@@ -27,9 +27,12 @@
           <div class="fr-header__body-row">
             <div class="fr-header__brand fr-enlarge-link">
               <div class="fr-header__brand-top">
+                <div class="fr-header__logo">
+                  <p class="fr-logo">République<br role="presentation" />française</p>
+                </div>
                 <div class="fr-header__operator">
                   <img
-                    src="@/assets/header.svg"
+                    src="@/assets/logo-agence-bio.svg"
                     class="fr-responsive-img fr-hidden fr-unhidden-lg logo"
                     alt="Logo de l'Agence Bio"
                   />
@@ -735,7 +738,7 @@ const exploitationsMenuLabel = computed(() => {
 }
 
 .logo {
-  width: 10rem;
+  width: 2.5rem;
 }
 
 .tool-username {

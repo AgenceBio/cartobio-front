@@ -71,7 +71,7 @@ import { createFeaturesFromOther } from "@/cartobio-api.js";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Geometry } from "ol/geom";
-import { featureCollection, FeatureCollection } from "@turf/helpers";
+import { featureCollection, FeatureCollection, Feature as TurfFeature, Polygon, MultiPolygon } from "@turf/helpers";
 import union from "@turf/union";
 import { Fill, Stroke, Style } from "ol/style";
 import { CartoBioCulture } from "@agencebio/cartobio-types/outputs/types/features";
@@ -165,11 +165,16 @@ const mergeInteractions = (): Feature<Geometry> | null => {
 
   const turfFeatures = features.map((f) => geojsonFormat.writeFeatureObject(f));
 
-  const fc: FeatureCollection = featureCollection(turfFeatures);
+  const fc = featureCollection(turfFeatures) as FeatureCollection<Polygon | MultiPolygon>;
 
-  let merged = fc.features[0];
-  for (let i = 1; i < fc.features.length; i++) {
-    merged = union(merged, fc.features[i]);
+  let merged: TurfFeature<Polygon | MultiPolygon> | null;
+  try {
+    merged = union(fc);
+  } catch (e) {
+    console.error("Échec de l'union des parcelles", e);
+    isErrorMerging.value = true;
+    errorMessage.value = "Impossible de fusionner ces parcelles.";
+    return null;
   }
 
   if (!merged || merged.geometry.type === "MultiPolygon") {

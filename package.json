@@ -30,11 +30,11 @@
     "@sentry/vue": "^10.67.0",
     "@turf/bbox": "^7.3.5",
     "@turf/bbox-polygon": "^7.3.5",
-    "@turf/difference": "^7.3.5",
+    "@turf/difference": "^7.4.0",
     "@turf/helpers": "^7.3.5",
     "@turf/intersect": "^7.3.5",
     "@turf/kinks": "^7.3.5",
-    "@turf/union": "^7.3.5",
+    "@turf/union": "^7.4.0",
     "@unhead/vue": "^3.2.2",
     "@vueuse/core": "^14.3.0",
     "axios": "^1.18.1",
@@ -56,7 +56,7 @@
     "vue-matomo": "^4.2.0",
     "vue-router": "^5.2.0",
     "vue3-toastify": "^0.2.9",
-    "xlsx": "git+https://git.sheetjs.com/sheetjs/sheetjs.git#2669c7c"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@agencebio/cartobio-types": "^1.9.0",
