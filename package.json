@@ -33,7 +33,7 @@
     "@turf/difference": "^7.4.0",
     "@turf/helpers": "^7.3.5",
     "@turf/intersect": "^7.3.5",
-    "@turf/kinks": "^7.3.5",
+    "@turf/kinks": "^7.4.0",
     "@turf/union": "^7.4.0",
     "@unhead/vue": "^3.2.2",
     "@vueuse/core": "^14.3.0",
