@@ -49,6 +49,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 let selectInteraction: Select | null = null;
 let isInternalUpdate = false;
+let isRestoring = false;
+let restoreTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * * Emits
@@ -56,6 +58,40 @@ let isInternalUpdate = false;
 const emit = defineEmits<{
   (e: "selectFeature", value: number | string): void;
 }>();
+
+const restoreSelection = () => {
+  if (!selectInteraction || isRestoring) return;
+
+  const ids = store.selectedIds ?? [];
+
+  if (ids.length > 0 && !ids.some((id) => props.vectorSource.getFeatureById(id))) {
+    return;
+  }
+
+  const wanted = ids.map((id) => props.vectorSource.getFeatureById(id)).filter((f): f is Feature => !!f);
+
+  const collection = selectInteraction.getFeatures();
+  const current = collection.getArray();
+  const unchanged = current.length === wanted.length && wanted.every((f) => current.includes(f));
+
+  if (unchanged) return;
+
+  isRestoring = true;
+  try {
+    collection.clear();
+    wanted.forEach((f) => collection.push(f));
+  } finally {
+    isRestoring = false;
+  }
+};
+
+const scheduleRestore = () => {
+  if (restoreTimer) clearTimeout(restoreTimer);
+  restoreTimer = setTimeout(() => {
+    restoreTimer = null;
+    restoreSelection();
+  }, 0);
+};
 
 /**
  * * Watchers
@@ -143,7 +179,7 @@ onMounted(() => {
 
   selectInteraction = new Select({
     condition: click,
-    toggleCondition: platformModifierKey, // Ctrl / Cmd
+    toggleCondition: platformModifierKey,
     multi: true,
     layers: [props.vectorLayer],
     style: new Style({
@@ -156,6 +192,8 @@ onMounted(() => {
   props.map.on("click", handleMapClick);
 
   selectInteraction.on("select", (e: SelectEvent) => {
+    if (isRestoring) return;
+
     isInternalUpdate = true;
     const selected = e.target.getFeatures().getArray();
 
@@ -179,6 +217,8 @@ onMounted(() => {
     props.vectorSource.on("change", syncSelection);
   });
 
+  props.vectorSource.on("change", scheduleRestore);
+
   if (store.selectedIds && store.selectedIds.length > 0) {
     store.selectedIds.forEach((id) => {
       const feature = props.vectorSource.getFeatureById(id);
@@ -190,7 +230,10 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  if (restoreTimer) clearTimeout(restoreTimer);
+
   props.map.un("click", handleMapClick);
+  props.vectorSource.un("change", scheduleRestore);
 
   if (selectInteraction) {
     props.map.removeInteraction(selectInteraction);
