@@ -30,7 +30,6 @@
                 <div class="fr-header__logo">
                   <p class="fr-logo">République<br role="presentation" />française</p>
                 </div>
-
                 <div class="fr-header__operator">
                   <img
                     src="@/assets/logo-agence-bio.svg"
@@ -344,6 +343,7 @@
           (!isActive('/certification/*') &&
             !isActive('/exploitations/*') &&
             !isActive('/exploitations') &&
+            !isActive('/tableau-de-bord') &&
             !isOnExploitationsPage)
         "
       >
@@ -429,7 +429,11 @@
       <!-- Header Organisme certificateur -->
       <div
         class="fr-container"
-        v-if="isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*'))"
+        v-if="
+          isOc &&
+          !isMobile &&
+          (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/tableau-de-bord'))
+        "
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
@@ -444,6 +448,14 @@
                   isActive('/exploitations/*') || isActive('/certification/exploitations') ? 'page' : undefined
                 "
                 >Liste des exploitations</router-link
+              >
+            </li>
+            <li class="fr-nav__item">
+              <router-link
+                to="/tableau-de-bord"
+                class="fr-nav__link"
+                :aria-current="isActive('/tableau-de-bord') ? 'page' : undefined"
+                >Tableau de bord</router-link
               >
             </li>
             <li class="fr-nav__item">
@@ -726,7 +738,13 @@ const exploitationsMenuLabel = computed(() => {
 }
 
 .logo {
-  width: 3.5rem;
+  width: 1.5rem;
+  max-width: 1.5rem;
+}
+
+.fr-header__operator img {
+  width: 2.5rem;
+  min-width: 2.5rem !important;
 }
 
 .tool-username {

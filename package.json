@@ -38,6 +38,8 @@
     "@unhead/vue": "^3.2.2",
     "@vueuse/core": "^14.3.0",
     "axios": "^1.18.1",
+    "chart.js": "^4.5.1",
+    "dayjs": "^1.11.21",
     "driver.js": "^1.8.0",
     "esbuild": "^0.28.1",
     "fuse.js": "^7.5.0",
@@ -54,7 +56,7 @@
     "vue-matomo": "^4.2.0",
     "vue-router": "^5.2.0",
     "vue3-toastify": "^0.2.9",
-    "xlsx": "git+https://git.sheetjs.com/sheetjs/sheetjs.git#2669c7c"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@agencebio/cartobio-types": "^1.9.0",
