@@ -10,6 +10,7 @@ type BilanFiltres = {
   statuts?: string[];
   etats?: string[];
   ordreDate?: "asc" | "desc";
+  codes?: string[];
 };
 
 export async function fetchBilanEnvois(page = 1, from: string, to: string, filtres?: BilanFiltres, limit = 4) {
@@ -46,6 +47,7 @@ export async function fetchEnvoisRejetes(page = 1, from: string, to: string, fil
 
   if (filtres?.recherche) params.set("recherche", filtres.recherche);
   if (filtres?.ordreDate) params.set("ordreDate", filtres.ordreDate);
+  if (filtres?.codes?.length) params.set("codes", filtres.codes.join(","));
 
   const { data } = await apiClient.get(`/v3/tdb-api/tableau-errors?${params.toString()}`);
 
@@ -58,7 +60,7 @@ export async function fetchPalmaresAnomaliesGrouped(from: string, to: string) {
   return data;
 }
 
-export async function fetchRepetitions(page = 1, limit = 8, recherche?: string) {
+export async function fetchRepetitions(page = 1, limit = 8, recherche?: string, type?: "envois" | "refus" | "all") {
   const annee = new Date().getFullYear();
 
   const params = new URLSearchParams({
@@ -69,8 +71,18 @@ export async function fetchRepetitions(page = 1, limit = 8, recherche?: string) 
   });
 
   if (recherche) params.set("recherche", recherche);
+  if (type) params.set("type", type);
 
   const { data } = await apiClient.get(`/v3/tdb-api/repet-ano?${params.toString()}`);
 
+  return data;
+}
+
+export async function fetchTopAnomaliesGrouped(from: string, to: string) {
+  const params = new URLSearchParams({
+    from,
+    to,
+  });
+  const { data } = await apiClient.get(`/v3/tdb-api/top-anomalies-grouped?${params.toString()}`);
   return data;
 }

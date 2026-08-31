@@ -37,7 +37,13 @@ const tabs = [
 </script>
 
 <template>
-  <Modal v-if="modelValue" data-track-content data-content-name="Modale référentiel des anomalies" @close="closeModal">
+  <Modal
+    v-if="modelValue"
+    data-track-content
+    data-content-name="Modale référentiel des anomalies"
+    @close="closeModal"
+    mediumLarge
+  >
     <h2 class="fr-h5 fr-mb-3w">Référentiel des anomalies</h2>
 
     <div class="fr-tabs">

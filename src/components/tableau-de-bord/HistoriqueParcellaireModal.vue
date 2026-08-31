@@ -31,7 +31,13 @@ const { downloadJson } = useTelechargements();
 </script>
 
 <template>
-  <Modal v-if="model" data-track-content data-content-name="Historique envoi parcellaire" @close="emit('close')">
+  <Modal
+    v-if="model"
+    data-track-content
+    data-content-name="Historique envoi parcellaire"
+    @close="emit('close')"
+    mediumLarge
+  >
     <template #header>
       <button
         v-if="vueModal === 'historique' && envoiOrigine"
@@ -149,12 +155,14 @@ const { downloadJson } = useTelechargements();
 
     <template #footer>
       <div class="fr-col">
-        <button class="fr-btn" type="button" @click="emit('open-referentiel')">Référentiel des anomalies</button>
+        <button class="fr-btn fr-btn--tertiary-no-outline" type="button" @click="emit('open-referentiel')">
+          Référentiel des anomalies
+        </button>
       </div>
       <div class="fr-text--right">
         <button
           type="button"
-          class="fr-btn fr-icon-download-line fr-btn--icon-left"
+          class="fr-btn fr-icon-download-line fr-btn--icon-left fr-btn--secondary"
           @click="downloadJson(selectedEnvoi?.payload, `payload-${selectedEnvoi?.jobId}.json`)"
         >
           Télécharger l'envoi en JSON

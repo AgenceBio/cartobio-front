@@ -16,7 +16,11 @@
       <div :class="[!extraLarge ? 'fr-grid-row fr-grid-row--center' : '']">
         <div
           ref="target"
-          :class="[!extraLarge ?? 'fr-col-12 fr-col-md-8', !large && !extraLarge ? 'fr-col-lg-6' : null]"
+          :class="[
+            !extraLarge ?? 'fr-col-12 fr-col-md-8',
+            !large && !extraLarge && !mediumLarge ? 'fr-col-lg-6' : null,
+            mediumLarge ? 'fr-col-lg-10' : null,
+          ]"
         >
           <div class="fr-modal__body">
             <div class="fr-modal__header" v-if="!noHeader">
@@ -80,6 +84,10 @@ const props = defineProps({
     default: false,
   },
   noHeader: {
+    type: Boolean,
+    default: false,
+  },
+  mediumLarge: {
     type: Boolean,
     default: false,
   },

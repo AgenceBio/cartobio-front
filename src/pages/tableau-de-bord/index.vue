@@ -5,7 +5,7 @@ meta:
   skipLinks:
     - Recherche: "#search"
   seo:
-    title: "Tableau de bord API"
+    title: "Suivi des envois par APIs"
 </route>
 
 <script setup lang="ts">
@@ -16,9 +16,10 @@ import {
   fetchGeneralKpi,
   fetchEnvoisRejetes,
   fetchPalmaresAnomaliesGrouped,
+  fetchTopAnomaliesGrouped,
   fetchRepetitions,
 } from "@/api/endpoints/tableau-de-bord.api";
-import { getErrorColor, getErrorMessage } from "@/utils/error-api.utils";
+import { getErrorColor, getErrorMessage, GROUPE_ANOMALIE_OPTIONS } from "@/utils/error-api.utils";
 import PieChartCustom from "@/components/tableau-de-bord/PieChartCustom.vue";
 import BarGraphCustom from "@/components/tableau-de-bord/BarGraphCustom.vue";
 import DatePicker from "@/components/tableau-de-bord/DatePicker.vue";
@@ -53,6 +54,7 @@ import {
   currentWeekRange,
   currentMonthRange,
 } from "@/utils/date.formatters";
+import { formatNumberWithSpaces } from "@/utils/numbers.formatters";
 import type {
   ResumeKpi,
   CompareKpi,
@@ -80,6 +82,7 @@ const isLoading = ref(true);
 const searchQuery = ref("");
 const modalReferentielAnomalies = ref<boolean>(false);
 const modalBilanEnvoisAgrandi = ref<boolean>(false);
+const modalRejetsAgrandi = ref<boolean>(false);
 
 // Période
 const preferencesStore = usePreferences();
@@ -91,6 +94,7 @@ const toBase = ref<Date | null>(null);
 // Données
 const resumeKpi = ref<ResumeKpi | null>(null);
 const palmaresAnomalies = ref<AnomalieCode[] | null>(null);
+const topAnomalies = ref(null);
 const evolutionEnvois = ref<EvolutionPeriode[] | null>(null);
 const compareKpi = ref<CompareKpi | null>(null);
 const comparePalmaresAnomalies = ref<AnomalieCode[] | null>(null);
@@ -104,7 +108,6 @@ const avancement = ref(null);
 // Références DOM des graphiques
 const bilanChartCurrentRef = ref<HTMLElement | null>(null);
 const bilanChartCompareRef = ref<HTMLElement | null>(null);
-const rejectsChartRef = ref<HTMLElement | null>(null);
 const palmaresAnomaliesRef = ref<HTMLElement | null>(null);
 
 // Composables
@@ -170,6 +173,7 @@ const {
   alertesLimit,
   alertesTotal,
   alertesMaxPage,
+  typeFiltreAlertes,
   changerPageAlertes,
   masquerRepetition,
   ouvrirModalAlertes,
@@ -177,6 +181,7 @@ const {
   ouvrirDetailRepetition,
   retourListeAlertes,
   validerRechercheAlertes,
+  changerTypeFiltreAlertes,
 } = repetitionsState;
 
 const filtres = useBilanFiltres({ fromBase, toBase, bilanEnvois, isLoading });
@@ -200,11 +205,17 @@ const rejetes = useEnvoisRejetes({ fromBase, toBase });
 const {
   envoisRejetes,
   rechercheRejetsBrouillon,
-  changerTriDate: changerTriDateReject,
+  groupeFiltreBrouillon,
+  groupeFiltreApplique,
+  filtreGroupeOuvert,
   ordreDate: ordreDateReject,
+  changerTriDate: changerTriDateReject,
   chargerEnvoisRejetes,
   validerRechercheRejets,
   changerPageRejetes,
+  validerFiltreGroupe,
+  reinitialiserFiltreGroupe,
+  fetchRejetsFiltres,
 } = rejetes;
 
 const historique = useHistoriqueParcellaire({ isLoading });
@@ -224,20 +235,49 @@ const {
   fermerModalHistorique,
 } = historique;
 
+const COLONNES_BILAN_XLSX = ["N° client", "N° BIO", "État", "Date d'envoi", "Statut"];
+const COLONNES_REJETS_XLSX = ["N° client", "N° BIO", "Date d'audit", "Rejets", "Date d'envoi"];
+const COLONNES_GRAPHIQUE_XLSX = ["période", "catégorie", "valeur", "unité"];
+const COLONNES_PALMARES_XLSX = ["Rang", "Code", "Anomalie", "Occurrences"];
+
+function mapPalmaresRows(data: AnomalieCode[]) {
+  return [...data]
+    .sort((a, b) => b.count - a.count)
+    .map((anomalie, index) => ({
+      Rang: index + 1,
+      Code: anomalie.code,
+      Anomalie: getErrorMessage(anomalie.code, "short"),
+      Occurrences: anomalie.count,
+    }));
+}
+
+const periodeTelechargement = computed(() => {
+  const label = unit.value ? formatPeriodLabel(unit.value, fromBase.value ?? baseDate) : null;
+  return (label ?? "").toLowerCase();
+});
+const titrePngBilan = computed(() => {
+  const morceaux = ["Bilan des envois"];
+  if (detailAnomalies.value) {
+    morceaux.push(drillDownGroupe.value ? `anomalies « ${drillDownGroupe.value.label} »` : "détail des anomalies");
+  }
+  morceaux.push(periodeTelechargement.value);
+  return morceaux.join(" — ");
+});
+
 // Téléchargements : configuration des menus
 const tableDownloadActions: DownloadAction[] = [
-  { id: "json", label: "Télécharger en JSON pour la période séléctionné", icon: "fr-icon-file-line" },
-  { id: "xlsx", label: "Télécharger en XLSX pour la période séléctionné", icon: "fr-icon-file-line" },
-  { id: "xlsx-week", label: "Télécharger la semaine courante (XLSX)", icon: "fr-icon-calendar-line" },
-  { id: "xlsx-month", label: "Télécharger le mois courant (XLSX)", icon: "fr-icon-calendar-line" },
+  // { id: "json", label: "Télécharger en JSON pour la période séléctionnée", icon: "fr-icon-file-line" },
+  { id: "xlsx", label: "Télécharger en XLSX pour la période séléctionnée", icon: "fr-icon-file-line" },
+  { id: "xlsx-week", label: "Télécharger en XLSX la semaine en cours", icon: "fr-icon-file-line" },
+  { id: "xlsx-month", label: "Télécharger en XLSX le mois courant", icon: "fr-icon-file-line" },
 ];
 
 const chartDownloadActions: DownloadAction[] = [
   { id: "png", label: "Télécharger l'image (PNG)", icon: "fr-icon-image-line" },
-  { id: "json", label: "Télécharger les données pour la période séléctionné (JSON)", icon: "fr-icon-file-line" },
-  { id: "xlsx", label: "Télécharger les donnéespour la période séléctionné (XLSX)", icon: "fr-icon-file-line" },
-  { id: "json-week", label: "Télécharger la semaine courante (JSON)", icon: "fr-icon-calendar-line" },
-  { id: "json-month", label: "Télécharger le mois courant (JSON)", icon: "fr-icon-calendar-line" },
+  // { id: "json", label: "Télécharger les données pour la période séléctionné (JSON)", icon: "fr-icon-file-line" },
+  { id: "xlsx", label: "Télécharger en XLSX pour la période séléctionnée", icon: "fr-icon-file-line" },
+  // { id: "json-week", label: "Télécharger la semaine courante (JSON)", icon: "fr-icon-calendar-line" },
+  // { id: "json-month", label: "Télécharger le mois courant (JSON)", icon: "fr-icon-calendar-line" },
 ];
 
 const palmaresDownloadActions: DownloadAction[] = [
@@ -245,7 +285,6 @@ const palmaresDownloadActions: DownloadAction[] = [
   ...tableDownloadActions,
 ];
 
-// Mappage des lignes pour l'export
 function mapBilanRows(data: BilanEnvoiItem[]) {
   return data.map((envoi) => ({
     "N° client": envoi.numeroClient,
@@ -320,7 +359,7 @@ async function onBilanTableDownload(action: string) {
     const rows = mapBilanRows(
       await fetchAllPages(fetchBilanEnvois, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
     );
-    downloadXlsx(rows, "bilan-envois.xlsx", "Bilan des envois");
+    downloadXlsx(rows, "bilan-envois.xlsx", "Bilan des envois", COLONNES_BILAN_XLSX);
     return;
   }
   if (action === "xlsx-week") {
@@ -330,6 +369,7 @@ async function onBilanTableDownload(action: string) {
       currentWeekRange(),
       "bilan-envois-semaine-courante.xlsx",
       "Bilan des envois",
+      COLONNES_BILAN_XLSX,
     );
     return;
   }
@@ -340,19 +380,25 @@ async function onBilanTableDownload(action: string) {
       currentMonthRange(),
       "bilan-envois-mois-courant.xlsx",
       "Bilan des envois",
+      COLONNES_BILAN_XLSX,
     );
   }
 }
 
 async function onRejectsTableDownload(action: string) {
   if (action === "png") {
-    downloadCanvasPng(palmaresAnomaliesRef.value, "palmares-rejets.png", palmaresLegend.value);
+    downloadCanvasPng(
+      palmaresAnomaliesRef.value,
+      "palmares-rejets.png",
+      palmaresLegend.value,
+      `Palmarès des causes de rejets ${periodeTelechargement.value}`,
+    );
     return;
   }
   if (action === "json") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
-      await fetchAllPages(fetchEnvoisRejetes, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
+      await fetchAllPages(fetchRejetsFiltres, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
     );
     downloadJson(rows, "envois-rejetes.json");
     return;
@@ -360,9 +406,9 @@ async function onRejectsTableDownload(action: string) {
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
-      await fetchAllPages(fetchEnvoisRejetes, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
+      await fetchAllPages(fetchRejetsFiltres, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
     );
-    downloadXlsx(rows, "envois-rejetes.xlsx", "Envois rejetés");
+    downloadXlsx(rows, "envois-rejetes.xlsx", "Envois rejetés", COLONNES_REJETS_XLSX);
     return;
   }
   if (action === "xlsx-week") {
@@ -372,6 +418,7 @@ async function onRejectsTableDownload(action: string) {
       currentWeekRange(),
       "envois-rejetes-semaine-courante.xlsx",
       "Envois rejetés",
+      COLONNES_REJETS_XLSX,
     );
     return;
   }
@@ -382,11 +429,56 @@ async function onRejectsTableDownload(action: string) {
       currentMonthRange(),
       "envois-rejetes-mois-courant.xlsx",
       "Envois rejetés",
+      COLONNES_REJETS_XLSX,
     );
   }
 }
 
-const legendEntries = computed(() => bilanChartX.value.map((label, i) => ({ label, color: bilanPieColors.value[i] })));
+async function onPalmaresDownload(action: string) {
+  if (action === "png") {
+    downloadCanvasPng(
+      palmaresAnomaliesRef.value,
+      "palmares-rejets.png",
+      palmaresLegend.value,
+      `Palmarès des causes de rejets ${periodeTelechargement.value}`,
+    );
+    return;
+  }
+  if (action === "json") {
+    if (!fromBase.value || !toBase.value) return;
+    const rows = mapPalmaresRows(
+      await fetchPalmaresAnomalies(formatStartOfDay(fromBase.value), formatEndOfDay(toBase.value)),
+    );
+    downloadJson(rows, "palmares-rejets.json");
+    return;
+  }
+  if (action === "xlsx") {
+    if (!fromBase.value || !toBase.value) return;
+    const rows = mapPalmaresRows(
+      await fetchPalmaresAnomalies(formatStartOfDay(fromBase.value), formatEndOfDay(toBase.value)),
+    );
+    downloadXlsx(rows, "palmares-rejets.xlsx", "Palmarès des rejets", COLONNES_PALMARES_XLSX);
+    return;
+  }
+  if (action === "xlsx-week") {
+    const { from, to } = currentWeekRange();
+    const rows = mapPalmaresRows(await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to)));
+    downloadXlsx(rows, "palmares-rejets-semaine-courante.xlsx", "Palmarès des rejets", COLONNES_PALMARES_XLSX);
+    return;
+  }
+  if (action === "xlsx-month") {
+    const { from, to } = currentMonthRange();
+    const rows = mapPalmaresRows(await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to)));
+    downloadXlsx(rows, "palmares-rejets-mois-courant.xlsx", "Palmarès des rejets", COLONNES_PALMARES_XLSX);
+  }
+}
+
+const legendEntries = computed(() =>
+  bilanChartX.value.map((label, i) => ({
+    label: `${label} (${bilanChartY.value[i]}${detailAnomalies.value ? "" : "%"})`,
+    color: bilanPieColors.value[i],
+  })),
+);
 const palmaresLegend = computed(() =>
   [...(palmaresAnomalies.value ?? [])]
     .sort((a, b) => b.count - a.count)
@@ -398,7 +490,7 @@ const palmaresLegend = computed(() =>
 async function onBilanChartDownload(action: string) {
   if (action === "png") {
     if (bilanChartType.value === "bar") {
-      downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png");
+      downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png", undefined, titrePngBilan.value);
       return;
     }
     if (bilanViewMode.value === "comparer") {
@@ -408,9 +500,10 @@ async function onBilanChartDownload(action: string) {
         compareRangeLabel.value,
         currentPeriodLabel.value,
         legendEntries.value,
+        `Comparaison des envois — ${compareRangeLabel.value} vs ${currentPeriodLabel.value}`,
       );
     } else {
-      downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png", legendEntries.value);
+      downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png", legendEntries.value, titrePngBilan.value);
     }
     return;
   }
@@ -421,7 +514,7 @@ async function onBilanChartDownload(action: string) {
   }
   if (action === "xlsx") {
     const rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
-    downloadXlsx(rows, "bilan-graphique.xlsx", "Bilan graphique");
+    downloadXlsx(rows, "bilan-graphique.xlsx", "Bilan graphique", COLONNES_GRAPHIQUE_XLSX);
     return;
   }
   if (action === "json-week") {
@@ -467,12 +560,13 @@ async function chargerAlertes() {
     alertesPage.value,
     alertesLimit.value,
     rechercheAlertesAppliquee.value || undefined,
+    typeFiltreAlertes.value || undefined,
   );
   repetitions.value = res.data ?? [];
   alertesTotal.value = res.meta?.total ?? 0;
 }
 
-watch([rechercheAlertesAppliquee, alertesPage], () => {
+watch([rechercheAlertesAppliquee, typeFiltreAlertes, alertesPage], () => {
   chargerAlertes();
 });
 
@@ -489,7 +583,7 @@ watch([fromBase, toBase], async ([from, to]) => {
   palmaresAnomalies.value = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to));
   await chargerEnvoisRejetes(1);
   evolutionEnvois.value = await fetchPalmaresAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to));
-
+  topAnomalies.value = await fetchTopAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to));
   if (bilanViewMode.value === "comparer") await chargerComparePeriode();
   isLoading.value = false;
 });
@@ -515,9 +609,7 @@ onMounted(async () => {
     <div class="fr-container fr-py-6w">
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-6">
-          <h1 class="fr-h2 fr-mb-1w" style="color: var(--blue-france-sun-113-625)">
-            Tableau de bord <br />des envois par APIs
-          </h1>
+          <h1 class="fr-h2 fr-mb-1w" style="color: var(--blue-france-sun-113-625)">Suivi des envois par API</h1>
           <p :class="isMobile ? 'fr-text--lead' : ''">{{ user.organismeCertificateur?.nom || "ADMIN" }}</p>
         </div>
         <div class="fr-m-auto" :class="isMobile ? 'fr-col-6' : 'fr-col-6'">
@@ -533,16 +625,25 @@ onMounted(async () => {
     </div>
 
     <div class="around-container">
-      <div class="fr-container fr-py-6w">
-        <div class="fr-grid-row" v-if="avancement">
+      <div class="fr-container fr-py-6w fr-pb-0w">
+        <div class="fr-grid-row fr-mb-4w" v-if="avancement">
           <JaugeAvancement
-            class="fr-col-12 fr-mb-4w"
+            class="fr-col-6"
             :title="'Avancement des certifications ' + new Date().getFullYear()"
             label="Envoyés et validés"
             :info-text="'Certifications envoyées et validées depuis le 1er janvier ' + new Date().getFullYear()"
             :value="avancement.countCertifiees"
             :max="avancement.countCertifiees + avancement.countEnAttentes + avancement.countNonAuditees"
           />
+          <div class="fr-col-6 flex">
+            <button
+              class="fr-btn fr-btn--secondary button-referentiel"
+              type="button"
+              @click="modalReferentielAnomalies = true"
+            >
+              Référentiel des anomalies
+            </button>
+          </div>
         </div>
         <div v-else>
           <Spinner>Chargement des données sur l'avancement des certifications</Spinner>
@@ -572,7 +673,7 @@ onMounted(async () => {
                   <br />
                   {{ formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase() }}
                 </p>
-                <p class="fr-mb-0 global-envoie">{{ resumeKpi.totalEnvoyes ?? "—" }}</p>
+                <p class="fr-mb-0 global-envoie">{{ formatNumberWithSpaces(resumeKpi.totalEnvoyes) ?? "—" }}</p>
               </div>
             </div>
             <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
@@ -621,9 +722,7 @@ onMounted(async () => {
                     class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line"
                     aria-label="Agrandir le tableau bilan des envois"
                     @click="modalBilanEnvoisAgrandi = true"
-                  >
-                    <span class="fr-sr-only">Agrandir le tableau bilan des envois</span>
-                  </button>
+                  ></button>
                 </div>
               </div>
 
@@ -633,6 +732,7 @@ onMounted(async () => {
                   <input
                     id="table-search-input"
                     class="fr-input"
+                    placeholder="Rechercher un N°"
                     aria-describedby="table-search-input-messages"
                     type="search"
                     v-model="rechercheBilanBrouillon"
@@ -723,7 +823,7 @@ onMounted(async () => {
                     <ActionDropdown
                       noWrap
                       with-icons
-                      icon-class="fr-icon-more-line fr-btn--sm"
+                      icon-class="fr-icon-more-line fr-btn--sm fr-pr-1w fr-mr-0"
                       icon-style="font-size: 1.2em"
                     >
                       <template v-for="action in tableDownloadActions" :key="action.id">
@@ -873,7 +973,8 @@ onMounted(async () => {
                     :y="bilanChartY"
                     :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                     :colors="bilanPieColors"
-                    :unit-tooltip="detailAnomalies ? '' : '%'"
+                    :unit-tooltip="'%'"
+                    :size="'lg'"
                     @segment-click="(p: { index: number }) => onSegmentClick(p, palmaresAnomalies)"
                   />
                   <div v-else class="bilan-empty">Aucune donnée</div>
@@ -894,7 +995,7 @@ onMounted(async () => {
                         :y="compareChartY"
                         :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                         :colors="comparePieColors"
-                        :unit-tooltip="detailAnomalies ? '' : '%'"
+                        :unit-tooltip="'%'"
                         @segment-click="(p: { index: number }) => onSegmentClick(p, comparePalmaresAnomalies)"
                       />
                     </template>
@@ -910,7 +1011,7 @@ onMounted(async () => {
                         :y="bilanChartY"
                         :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                         :colors="bilanPieColors"
-                        :unit-tooltip="detailAnomalies ? '' : '%'"
+                        :unit-tooltip="'%'"
                         @segment-click="(p: { index: number }) => onSegmentClick(p, palmaresAnomalies)"
                       />
                     </template>
@@ -969,6 +1070,14 @@ onMounted(async () => {
                 <h2 class="fr-h6 fr-mb-0">
                   Envois rejetés {{ formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase() }}
                 </h2>
+                <div class="table-actions">
+                  <button
+                    type="button"
+                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line"
+                    aria-label="Agrandir le tableau des envois rejetés"
+                    @click="modalRejetsAgrandi = true"
+                  ></button>
+                </div>
               </div>
               <div class="fr-table__header">
                 <div class="fr-search-bar">
@@ -977,7 +1086,7 @@ onMounted(async () => {
                     id="table-search-rejetes-input"
                     class="fr-input"
                     aria-describedby="table-search-rejetes-messages"
-                    placeholder="Rechercher"
+                    placeholder="Rechercher un N°"
                     type="search"
                     v-model="rechercheRejetsBrouillon"
                     @keyup.enter="validerRechercheRejets"
@@ -987,10 +1096,69 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
+                    <div class="filtre-wrapper">
+                      <button
+                        type="button"
+                        class="fr-btn fr-btn--secondary"
+                        :aria-expanded="filtreGroupeOuvert"
+                        aria-controls="filtre-panel-rejets"
+                        @click="filtreGroupeOuvert = !filtreGroupeOuvert"
+                      >
+                        <i class="ri-filter-3-line"></i>
+                        <span class="fr-ml-1w">Filtrer</span>
+                        <span v-if="groupeFiltreApplique" class="fr-badge fr-badge--sm fr-badge--info filtre-count"
+                          >1</span
+                        >
+                      </button>
+                      <div
+                        v-show="filtreGroupeOuvert"
+                        id="filtre-panel-rejets"
+                        class="filtre-panel"
+                        role="dialog"
+                        aria-label="Filtrer par groupe d'anomalies"
+                      >
+                        <div class="filtre-panel__header">
+                          <h3 class="fr-h6 fr-mb-0">Filtres</h3>
+                        </div>
+                        <div class="filtre-panel__body">
+                          <fieldset class="fr-fieldset filtre-panel__section">
+                            <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Afficher uniquement</legend>
+                            <div class="filtre-panel__elements">
+                              <div
+                                v-for="option in GROUPE_ANOMALIE_OPTIONS"
+                                :key="option.value"
+                                class="fr-radio-group fr-radio-group--sm"
+                              >
+                                <input
+                                  type="radio"
+                                  :id="`groupe-${option.value}`"
+                                  name="groupe-anomalie"
+                                  :value="option.value"
+                                  v-model="groupeFiltreBrouillon"
+                                />
+                                <label class="fr-label" :for="`groupe-${option.value}`">{{ option.label }}</label>
+                              </div>
+                            </div>
+                          </fieldset>
+                        </div>
+                        <div class="filtre-panel__actions">
+                          <button
+                            type="button"
+                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
+                            @click="reinitialiserFiltreGroupe"
+                          >
+                            Réinitialiser
+                          </button>
+                          <button type="button" class="fr-btn fr-btn--sm" @click="validerFiltreGroupe">Valider</button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
                     <ActionDropdown
                       noWrap
                       with-icons
-                      icon-class="fr-icon-more-line fr-btn--sm"
+                      icon-class="fr-icon-more-line fr-btn--sm fr-pr-1w fr-mr-0"
                       icon-style="font-size: 1.2em"
                     >
                       <li v-for="action in tableDownloadActions" :key="action.id">
@@ -1038,7 +1206,7 @@ onMounted(async () => {
                       type="button"
                       class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
                       :class="action.icon"
-                      @click="onRejectsTableDownload(action.id)"
+                      @click="onPalmaresDownload(action.id)"
                     >
                       {{ action.label }}
                     </button>
@@ -1046,7 +1214,7 @@ onMounted(async () => {
                 </ActionDropdown>
               </div>
               <div ref="palmaresAnomaliesRef">
-                <RejectsChart v-if="palmaresAnomalies?.length" :reject-data="palmaresAnomalies" />
+                <RejectsChart v-if="palmaresAnomalies?.length" :reject-data="topAnomalies" />
                 <div v-else class="bilan-empty">Aucune donnée</div>
               </div>
             </div>
@@ -1057,11 +1225,146 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+    <!-- Modale envois rejetés agrandi -->
+    <Modal
+      v-if="modalRejetsAgrandi"
+      data-track-content
+      mediumLarge
+      data-content-name="Envois rejetés agrandi"
+      @close="modalRejetsAgrandi = false"
+    >
+      <template #header>
+        <button
+          class="fr-btn fr-btn--close"
+          type="button"
+          aria-controls="global-modal"
+          @click="modalRejetsAgrandi = false"
+        >
+          Fermer
+        </button>
+      </template>
+
+      <div class="download-title-row fr-mb-2w">
+        <h2 class="fr-h6 fr-mb-0">Envois rejetés</h2>
+      </div>
+
+      <div class="fr-table__header">
+        <div class="fr-search-bar">
+          <label class="fr-label" for="table-search-rejetes-agrandi-input">Rechercher</label>
+          <input
+            id="table-search-rejetes-agrandi-input"
+            class="fr-input"
+            aria-describedby="table-search-rejetes-agrandi-messages"
+            placeholder="Rechercher un N°"
+            type="search"
+            v-model="rechercheRejetsBrouillon"
+            @keyup.enter="validerRechercheRejets"
+          />
+          <div id="table-search-rejetes-agrandi-messages" class="fr-messages-group" aria-live="polite"></div>
+          <button type="button" class="fr-btn" @click="validerRechercheRejets">Rechercher</button>
+        </div>
+
+        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
+          <li>
+            <div class="filtre-wrapper">
+              <button
+                type="button"
+                class="fr-btn fr-btn--secondary"
+                :aria-expanded="filtreGroupeOuvert"
+                aria-controls="filtre-panel-rejets-agrandi"
+                @click="filtreGroupeOuvert = !filtreGroupeOuvert"
+              >
+                <i class="ri-filter-3-line"></i>
+                <span class="fr-ml-1w">Filtrer</span>
+                <span v-if="groupeFiltreApplique" class="fr-badge fr-badge--sm fr-badge--info filtre-count">1</span>
+              </button>
+              <div
+                v-show="filtreGroupeOuvert"
+                id="filtre-panel-rejets-agrandi"
+                class="filtre-panel"
+                role="dialog"
+                aria-label="Filtrer par groupe d'anomalies"
+              >
+                <div class="filtre-panel__header">
+                  <h3 class="fr-h6 fr-mb-0">Filtres</h3>
+                  <div></div>
+                </div>
+                <div class="filtre-panel__body">
+                  <fieldset class="fr-fieldset filtre-panel__section">
+                    <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Afficher uniquement</legend>
+                    <div class="filtre-panel__options">
+                      <div
+                        v-for="option in GROUPE_ANOMALIE_OPTIONS"
+                        :key="option.value"
+                        class="fr-radio-group fr-radio-group--sm"
+                      >
+                        <input
+                          type="radio"
+                          :id="`groupe-agrandi-${option.value}`"
+                          name="groupe-anomalie-agrandi"
+                          :value="option.value"
+                          v-model="groupeFiltreBrouillon"
+                        />
+                        <label class="fr-label" :for="`groupe-agrandi-${option.value}`">{{ option.label }}</label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+                <div class="filtre-panel__actions">
+                  <button
+                    type="button"
+                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
+                    @click="reinitialiserFiltreGroupe"
+                  >
+                    Réinitialiser
+                  </button>
+                  <button type="button" class="fr-btn fr-btn--sm" @click="validerFiltreGroupe">Valider</button>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <ActionDropdown
+              noWrap
+              with-icons
+              icon-class="fr-icon-more-line fr-btn--sm fr-pr-1w"
+              icon-style="font-size: 1.2em"
+            >
+              <template v-for="action in tableDownloadActions" :key="action.id">
+                <li>
+                  <button
+                    type="button"
+                    class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
+                    :class="action.icon"
+                    @click="onRejectsTableDownload(action.id)"
+                  >
+                    {{ action.label }}
+                  </button>
+                </li>
+              </template>
+            </ActionDropdown>
+          </li>
+        </ul>
+      </div>
+
+      <EnvoisRejetesTable
+        v-if="envoisRejetes.data.length"
+        :envois="envoisRejetes.data"
+        :page="envoisRejetes.meta.page"
+        :ordre-date="ordreDateReject"
+        :max-page="Math.ceil(envoisRejetes.meta.total / envoisRejetes.meta.limit)"
+        @change-page="changerPageRejetes"
+        @open-details="openDetailsEnvoi"
+        @change-tri-date="changerTriDateReject"
+      />
+      <div v-else class="bilan-empty bilan-empty--table">Aucune donnée</div>
+    </Modal>
 
     <!-- Modale bilan agrandi -->
     <Modal
       v-if="modalBilanEnvoisAgrandi"
       data-track-content
+      mediumLarge
       data-content-name="Bilan des envois agrandi"
       @close="modalBilanEnvoisAgrandi = false"
     >
@@ -1085,7 +1388,7 @@ onMounted(async () => {
             id="table-search-agrandi-input"
             class="fr-input"
             aria-describedby="table-search-agrandi-input-messages"
-            placeholder="Rechercher"
+            placeholder="Rechercher un N°"
             type="search"
             v-model="rechercheBilanBrouillon"
             @keyup.enter="validerRechercheBilan"
@@ -1172,7 +1475,12 @@ onMounted(async () => {
             </div>
           </li>
           <li>
-            <ActionDropdown noWrap with-icons icon-class="fr-icon-more-line fr-btn--sm" icon-style="font-size: 1.2em">
+            <ActionDropdown
+              noWrap
+              with-icons
+              icon-class="fr-icon-more-line fr-btn--sm fr-pr-1w"
+              icon-style="font-size: 1.2em"
+            >
               <template v-for="action in tableDownloadActions" :key="action.id">
                 <li>
                   <button
@@ -1232,6 +1540,7 @@ onMounted(async () => {
       :selected-envoi="selectedRepetitionEnvoi"
       :recherche-brouillon="rechercheAlertesBrouillon"
       :page="alertesPage"
+      :typeFiltre="typeFiltreAlertes"
       :max-page="alertesMaxPage"
       :total="alertesTotal"
       @update:recherche-brouillon="rechercheAlertesBrouillon = $event"
@@ -1240,6 +1549,7 @@ onMounted(async () => {
       @ouvrir-detail="ouvrirDetailRepetition"
       @valider-recherche="validerRechercheAlertes"
       @changer-page="changerPageAlertes"
+      @changer-type="changerTypeFiltreAlertes"
     />
 
     <!-- Référentiel des anomalies -->
@@ -1298,6 +1608,7 @@ onMounted(async () => {
   background: #fff;
   border-radius: 16px;
   padding: 24px 32px;
+  padding-bottom: 5px;
 }
 .align-center :deep(figure) {
   margin: auto;
@@ -1480,5 +1791,11 @@ onMounted(async () => {
   width: fit-content;
   margin-left: auto;
   margin-right: 0;
+}
+
+.button-referentiel {
+  align-items: center !important;
+  margin-right: 0px !important;
+  margin-left: auto !important;
 }
 </style>

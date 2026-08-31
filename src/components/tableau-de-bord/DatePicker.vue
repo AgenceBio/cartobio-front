@@ -11,7 +11,7 @@
 
       <button
         type="button"
-        class="fr-btn fr-btn--tertiary-no-outline fr-icon-calendar-line comparator__period-button"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-calendar-line fr-btn--sm comparator__period-button"
         @click="togglePicker"
       >
         <span>{{ currentPeriodLabel }}</span>
