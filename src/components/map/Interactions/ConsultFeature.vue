@@ -212,9 +212,7 @@ onMounted(() => {
 
     setTimeout(() => {
       isInternalUpdate = false;
-    }, 0);
-
-    props.vectorSource.on("change", syncSelection);
+    }, 10);
   });
 
   props.vectorSource.on("change", scheduleRestore);
