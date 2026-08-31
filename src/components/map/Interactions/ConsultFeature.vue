@@ -190,7 +190,7 @@ onMounted(() => {
 
     setTimeout(() => {
       isInternalUpdate = false;
-    }, 0);
+    }, 10);
   });
 
   props.vectorSource.on("change", scheduleRestore);
