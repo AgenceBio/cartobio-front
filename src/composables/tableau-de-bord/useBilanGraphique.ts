@@ -92,13 +92,26 @@ export function useBilanGraphique(options: {
       .filter((groupe) => groupe.count > 0);
   }
 
+  function agregerParCode(source: AnomalieCode[] | null): AnomalieCode[] {
+    const map = new Map<string, AnomalieCode>();
+    for (const a of source ?? []) {
+      const ex = map.get(a.code);
+      if (ex) {
+        ex.count += a.count; // même anomalie, période différente → on cumule
+      } else {
+        map.set(a.code, { ...a });
+      }
+    }
+    return [...map.values()];
+  }
+
   function anomaliesTopChartData(source: AnomalieCode[] | null) {
-    const groupes = grouperAnomalies(source);
+    const groupes = grouperAnomalies(agregerParCode(source));
     return { x: groupes.map((g) => g.label), y: groupes.map((g) => g.count) };
   }
 
   function anomaliesDetailChartData(source: AnomalieCode[] | null, groupeKey: ErrorGroupKey) {
-    const items = (source ?? []).filter((a) => (ErrorGroups[groupeKey] as string[]).includes(a.code));
+    const items = agregerParCode((source ?? []).filter((a) => (ErrorGroups[groupeKey] as string[]).includes(a.code)));
     return {
       x: items.map((a) => getErrorMessage(a.code, "short")),
       y: items.map((a) => a.count),
@@ -128,33 +141,58 @@ export function useBilanGraphique(options: {
     return getPieErrorColors(comparePalmaresAnomalies.value, drillDownGroupe.value?.key);
   });
 
-  const bilanChartX = computed(() => {
-    if (!detailAnomalies.value) return donutBilanX.value;
-    return drillDownGroupe.value
-      ? anomaliesDetailChartData(palmaresAnomalies.value, drillDownGroupe.value.key).x
-      : anomaliesTopChartData(palmaresAnomalies.value).x;
-  });
+  function enPourcentages(values: number[]): number[] {
+    const total = values.reduce((sum, v) => sum + v, 0);
+    if (total <= 0) return values.map(() => 0);
 
-  const bilanChartY = computed(() => {
-    if (!detailAnomalies.value) return donutBilanY.value;
-    return drillDownGroupe.value
-      ? anomaliesDetailChartData(palmaresAnomalies.value, drillDownGroupe.value.key).y
-      : anomaliesTopChartData(palmaresAnomalies.value).y;
-  });
+    const bruts = values.map((v) => (v / total) * 100);
+    const resultat = bruts.map((v) => Math.floor(v + 1e-9));
+    let reste = 100 - resultat.reduce((sum, v) => sum + v, 0);
 
-  const compareChartX = computed(() => {
-    if (!detailAnomalies.value) return donutBilanX.value;
-    return drillDownGroupe.value
-      ? anomaliesDetailChartData(comparePalmaresAnomalies.value, drillDownGroupe.value.key).x
-      : anomaliesTopChartData(comparePalmaresAnomalies.value).x;
-  });
+    bruts
+      .map((v, i) => ({ i, dec: v - Math.floor(v + 1e-9) }))
+      .sort((a, b) => b.dec - a.dec)
+      .forEach(({ i }) => {
+        if (reste > 0) {
+          resultat[i] += 1;
+          reste -= 1;
+        }
+      });
 
-  const compareChartY = computed(() => {
-    if (!detailAnomalies.value) return compareDonutY.value;
-    return drillDownGroupe.value
-      ? anomaliesDetailChartData(comparePalmaresAnomalies.value, drillDownGroupe.value.key).y
-      : anomaliesTopChartData(comparePalmaresAnomalies.value).y;
-  });
+    return resultat;
+  }
+
+  function chartDataPourcentages(
+    source: AnomalieCode[] | null,
+    kpi: ResumeKpi | CompareKpi | null,
+  ): { x: string[]; y: number[] } {
+    let labels: string[];
+    let brut: number[];
+
+    if (!detailAnomalies.value) {
+      labels = donutBilanX.value;
+      brut = [kpi?.totalValides ?? 0, kpi?.totalRejetes ?? 0];
+    } else if (drillDownGroupe.value) {
+      const data = anomaliesDetailChartData(source, drillDownGroupe.value.key);
+      labels = data.x;
+      brut = data.y;
+    } else {
+      const data = anomaliesTopChartData(source);
+      labels = data.x;
+      brut = data.y;
+    }
+
+    const y = enPourcentages(brut);
+    return { x: labels, y };
+  }
+
+  const bilanChart = computed(() => chartDataPourcentages(palmaresAnomalies.value, resumeKpi.value));
+  const bilanChartX = computed(() => bilanChart.value.x);
+  const bilanChartY = computed(() => bilanChart.value.y);
+
+  const compareChart = computed(() => chartDataPourcentages(comparePalmaresAnomalies.value, compareKpi.value));
+  const compareChartX = computed(() => compareChart.value.x);
+  const compareChartY = computed(() => compareChart.value.y);
 
   const compareHasData = computed(() => {
     if (!compareKpi.value) return false;

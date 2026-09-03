@@ -93,7 +93,7 @@ const labelTriDate = computed(() =>
                 <td>{{ formatDateTableau(envoi.createdAt) }}</td>
                 <td>
                   <div class="flex space-between">
-                    <span class="fr-badge fr-badge--sm" :class="statutBadgeClass(envoi.statut)">
+                    <span class="fr-badge fr-badge--sm badge" :class="statutBadgeClass(envoi.statut)">
                       {{ formatStatut(envoi.statut) }}
                     </span>
                     <button
@@ -160,6 +160,7 @@ th:last-child {
 
 .flex {
   display: flex;
+  align-items: center;
 }
 
 .space-between {

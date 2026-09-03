@@ -1,3 +1,4 @@
+import { TypeFiltreAlertes } from "./useRepetitions";
 import { computed, ref } from "vue";
 import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/tableau-de-bord";
 
@@ -10,8 +11,20 @@ export function typeRepetition(groupe: RepetitionGroupe): "envois" | "refus" {
 }
 
 export function labelRepetition(groupe: RepetitionGroupe): string {
-  return groupe.numeroClient ? `N°Client ${groupe.numeroClient}` : `N°Bio ${groupe.numeroBio}`;
+  const parts: string[] = [];
+  if (groupe.numeroClient) {
+    parts.push(`N°Client ${groupe.numeroClient}`);
+  }
+  if (groupe.numeroBio) {
+    parts.push(`N°Bio ${groupe.numeroBio}`);
+  }
+  if (parts.length === 0) {
+    return "Sans numéro";
+  }
+  return parts.join(" / ");
 }
+
+export type TypeFiltreAlertes = "envois" | "refus" | "all";
 
 const APERCU_NB = 3;
 
@@ -25,6 +38,7 @@ export function useRepetitions() {
   const groupeAOuvrirKey = ref<string | null>(null);
   const rechercheAlertesBrouillon = ref("");
   const rechercheAlertesAppliquee = ref("");
+  const typeFiltreAlertes = ref<TypeFiltreAlertes>("all");
 
   const alertesPage = ref(1);
   const alertesLimit = ref(8);
@@ -37,7 +51,7 @@ export function useRepetitions() {
 
   const repetitionsApercu = computed(() => repetitionsVisibles.value.slice(0, APERCU_NB));
 
-  const repetitionsRestantes = computed(() => Math.max(repetitionsVisibles.value.length - APERCU_NB, 0));
+  const repetitionsRestantes = computed(() => Math.max(repetitions.value.length - APERCU_NB, 0));
 
   function masquerRepetition(groupe: RepetitionGroupe) {
     repetitionsMasquees.value.add(clefGroupe(groupe));
@@ -72,6 +86,12 @@ export function useRepetitions() {
     alertesPage.value = 1;
   }
 
+  function changerTypeFiltreAlertes(type: TypeFiltreAlertes) {
+    if (typeFiltreAlertes.value === type) return;
+    typeFiltreAlertes.value = type;
+    alertesPage.value = 1;
+  }
+
   function changerPageAlertes(page: number) {
     alertesPage.value = page;
   }
@@ -86,6 +106,7 @@ export function useRepetitions() {
     groupeAOuvrirKey,
     rechercheAlertesBrouillon,
     rechercheAlertesAppliquee,
+    typeFiltreAlertes,
     alertesPage,
     alertesLimit,
     alertesTotal,
@@ -99,6 +120,7 @@ export function useRepetitions() {
     ouvrirDetailRepetition,
     retourListeAlertes,
     validerRechercheAlertes,
+    changerTypeFiltreAlertes,
     changerPageAlertes,
   };
 }

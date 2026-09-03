@@ -15,3 +15,5 @@ export function formatStatut(statut: string | undefined | null): string {
 export function statutBadgeClass(statut: string | undefined | null): string {
   return statut === "VALID" ? "fr-badge--success" : "fr-badge--error";
 }
+
+export const formatNumber = (value: number) => value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");

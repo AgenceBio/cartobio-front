@@ -16,6 +16,7 @@ defineProps<{
   selectedGroupe: RepetitionGroupe | null;
   selectedEnvoi: RepetitionEnvoi | null;
   rechercheBrouillon: string;
+  typeFiltre: "envois" | "refus" | "all";
   page: number;
   maxPage: number;
   total: number;
@@ -28,13 +29,19 @@ const emit = defineEmits<{
   (e: "valider-recherche"): void;
   (e: "update:rechercheBrouillon", value: string): void;
   (e: "changer-page", page: number): void;
+  (e: "changer-type", type: "envois" | "refus" | null): void;
 }>();
 
 const model = defineModel<boolean>({ required: true });
+
+function onChangerType(event: Event) {
+  const value = (event.target as HTMLInputElement).value;
+  emit("changer-type", value === "" ? null : (value as "envois" | "refus"));
+}
 </script>
 
 <template>
-  <Modal v-if="model" data-track-content data-content-name="Toutes les alertes" @close="emit('close')">
+  <Modal v-if="model" data-track-content data-content-name="Toutes les alertes" @close="emit('close')" mediumLarge>
     <template #header>
       <button class="fr-btn fr-btn--close" type="button" aria-controls="global-modal" @click="emit('close')">
         Fermer
@@ -46,12 +53,13 @@ const model = defineModel<boolean>({ required: true });
       <h2 class="fr-h5 fr-mb-3w">Toutes les alertes</h2>
 
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w alertes-toolbar">
-        <div class="fr-col-12">
+        <div class="fr-col-6 fr-col-md-6">
           <div class="fr-search-bar" role="search">
             <label class="fr-label" for="recherche-alertes">Rechercher</label>
             <input
               id="recherche-alertes"
               aria-describedby="recherche-alertes-messages"
+              placeholder="Rechercher un N°"
               :value="rechercheBrouillon"
               class="fr-input"
               type="search"
@@ -62,6 +70,46 @@ const model = defineModel<boolean>({ required: true });
             <div id="recherche-alertes-messages" class="fr-messages-group" aria-live="polite"></div>
             <button class="fr-btn" type="button" @click="emit('valider-recherche')">Rechercher</button>
           </div>
+        </div>
+        <div class="fr-col-6 fr-col-md-6 alertes-toolbar__filter">
+          <filedset class="fr-segmented fr-segmented--sm" role="group" aria-label="Filtrer par type d'alerte">
+            <legend class="fr-segmented__legend">Filtrer par type d'alerte</legend>
+            <div class="fr-segmented__elements">
+              <div class="fr-segmented__element">
+                <input
+                  type="radio"
+                  id="filtre-type-toutes"
+                  name="filtre-type-alertes"
+                  value=""
+                  :checked="typeFiltre === 'all'"
+                  @change="onChangerType"
+                />
+                <label class="fr-label" for="filtre-type-toutes">Toutes</label>
+              </div>
+              <div class="fr-segmented__element">
+                <input
+                  type="radio"
+                  id="filtre-type-envois"
+                  name="filtre-type-alertes"
+                  value="envois"
+                  :checked="typeFiltre === 'envois'"
+                  @change="onChangerType"
+                />
+                <label class="fr-label" for="filtre-type-envois">Envois</label>
+              </div>
+              <div class="fr-segmented__element">
+                <input
+                  type="radio"
+                  id="filtre-type-refus"
+                  name="filtre-type-alertes"
+                  value="refus"
+                  :checked="typeFiltre === 'refus'"
+                  @change="onChangerType"
+                />
+                <label class="fr-label" for="filtre-type-refus">Refus</label>
+              </div>
+            </div>
+          </filedset>
         </div>
       </div>
 
@@ -87,12 +135,6 @@ const model = defineModel<boolean>({ required: true });
               <div class="fr-table__container">
                 <div class="fr-table__content">
                   <table>
-                    <caption class="fr-sr-only">
-                      Envois de
-                      {{
-                        labelRepetition(groupe)
-                      }}
-                    </caption>
                     <thead>
                       <tr>
                         <th scope="col">Date</th>
@@ -120,20 +162,22 @@ const model = defineModel<boolean>({ required: true });
                           </span>
                         </td>
                         <td>
-                          <span
-                            class="fr-badge"
-                            :class="envoi.statut === 'VALID' ? 'fr-badge--success' : 'fr-badge--error'"
-                          >
-                            {{ envoi.statut === "VALID" ? "Validé" : "Rejeté" }}
-                          </span>
-                          <button
-                            type="button"
-                            class="fr-btn fr-icon-arrow-right-up-line fr-btn--tertiary-no-outline"
-                            :aria-label="`Voir le détail de l'envoi ${labelRepetition(groupe)}`"
-                            @click="emit('ouvrir-detail', groupe, envoi)"
-                          >
-                            <span class="fr-sr-only">Voir le détail de cet envoi</span>
-                          </button>
+                          <div class="flex space-between">
+                            <span
+                              class="fr-badge fr-badge--sm"
+                              :class="envoi.statut === 'VALID' ? 'fr-badge--success' : 'fr-badge--error'"
+                            >
+                              {{ envoi.statut === "VALID" ? "Validé" : "Rejeté" }}
+                            </span>
+                            <button
+                              type="button"
+                              class="fr-btn fr-icon-arrow-right-up-line fr-btn--tertiary-no-outline"
+                              :aria-label="`Voir le détail de l'envoi ${labelRepetition(groupe)}`"
+                              @click="emit('ouvrir-detail', groupe, envoi)"
+                            >
+                              <span class="fr-sr-only">Voir le détail de cet envoi</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -187,7 +231,29 @@ const model = defineModel<boolean>({ required: true });
 .alertes-toolbar {
   align-items: center;
 }
+.alertes-toolbar__filter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+@media (max-width: 48rem) {
+  .alertes-toolbar__filter {
+    justify-content: flex-start;
+  }
+}
 :deep(.fr-modal__content):has(> .fr-h5) {
   margin-bottom: 1rem !important;
+}
+
+.fr-segmented {
+  display: revert;
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
 }
 </style>

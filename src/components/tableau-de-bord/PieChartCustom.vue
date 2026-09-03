@@ -1,5 +1,5 @@
 <template>
-  <figure class="chart-container" :aria-labelledby="titleId">
+  <figure class="chart-container" :class="[`chart-container--${size}`]" :aria-labelledby="titleId">
     <figcaption :id="titleId" class="fr-sr-only">
       {{ accessibleDescription }}
     </figcaption>
@@ -8,10 +8,10 @@
       <canvas ref="canvasRef" role="img" :aria-label="accessibleDescription" />
     </div>
 
-    <ul class="chart-legend" aria-hidden="true">
+    <ul class="chart-legend" :class="[`chart-legend--${size}`]" aria-hidden="true">
       <li v-for="(label, index) in x" :key="label">
         <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
-        <span>{{ label }}</span>
+        <span> {{ label }} ({{ y[index] }}{{ unitTooltip }}) </span>
       </li>
     </ul>
 
@@ -49,6 +49,7 @@ interface Props {
   colors?: string[];
   unitTooltip?: string;
   title?: string;
+  size?: "sm" | "md" | "lg";
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -56,6 +57,7 @@ const props = withDefaults(defineProps<Props>(), {
   colors: () => [],
   unitTooltip: "%",
   title: "Répartition des données",
+  size: "md",
 });
 
 const emit = defineEmits<{
@@ -194,9 +196,21 @@ onBeforeUnmount(() => {
   position: relative;
 }
 
+/* Hauteurs selon la taille */
+.chart-container--sm .chart-wrapper {
+  height: 180px;
+}
+
+.chart-container--md .chart-wrapper {
+  height: 240px;
+}
+
+.chart-container--lg .chart-wrapper {
+  height: 320px;
+}
+
 .chart-wrapper {
   position: relative;
-  height: 240px;
 }
 
 .chart-wrapper canvas {
@@ -204,15 +218,30 @@ onBeforeUnmount(() => {
   height: 100% !important;
 }
 
+/* Légende selon la taille */
+.chart-legend--sm {
+  font-size: 0.6875rem;
+  gap: 0.25rem 0.75rem;
+}
+
+.chart-legend--md {
+  font-size: 0.75rem;
+  gap: 0.25rem 1rem;
+}
+
+.chart-legend--lg {
+  font-size: 0.875rem;
+  gap: 0.5rem 1.25rem;
+}
+
 .chart-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1rem;
   margin: 0.75rem 0 0;
   padding: 0;
   list-style: none;
-  font-size: 0.75rem;
   line-height: 1.25rem;
+  justify-content: center;
 }
 
 .chart-legend li {
@@ -226,6 +255,12 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   margin-right: 0.375rem;
   flex-shrink: 0;
+}
+
+.chart-legend--lg .chart-legend__dot {
+  width: 14px;
+  height: 14px;
+  margin-right: 0.5rem;
 }
 
 :deep(.chart-tooltip) {

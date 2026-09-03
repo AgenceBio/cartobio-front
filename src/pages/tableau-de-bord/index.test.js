@@ -9,6 +9,7 @@ const apiMocks = vi.hoisted(() => ({
   fetchPalmaresAnomaliesGrouped: vi.fn(),
   fetchEnvoisRejetes: vi.fn(),
   fetchRepetitions: vi.fn(),
+  fetchTopAnomaliesGrouped: vi.fn(),
   fetchHistoriqueParcellaire: vi.fn(),
 }));
 
@@ -20,18 +21,22 @@ vi.mock("@/api/endpoints/tableau-de-bord.api.ts", () => apiMocks);
 
 vi.mock("@/cartobio-api", () => cartobioApiMocks);
 
-vi.mock("@/utils/error-api.utils.ts", () => ({
-  getErrorMessage: (code) => `MSG_${code}`,
-  getErrorColor: () => "#eeeeee",
-  getErrorTextColor: () => "#000000",
-  ErrorCode: {},
-  ErrorGroups: {
-    import: ["E_IMPORT"],
-    dateValidation: ["E_DATE"],
-    parcelErrors: ["E_PARCELLE"],
-    parcelWarnings: ["E_WARNING"],
-  },
-}));
+vi.mock("@/utils/error-api.utils.ts", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    getErrorMessage: (code) => `MSG_${code}`,
+    getErrorColor: () => "#eeeeee",
+    getErrorTextColor: () => "#000000",
+    ErrorCode: {},
+    ErrorGroups: {
+      import: ["E_IMPORT"],
+      dateValidation: ["E_DATE"],
+      parcelErrors: ["E_PARCELLE"],
+      parcelWarnings: ["E_WARNING"],
+    },
+  };
+});
 
 vi.mock("xlsx", () => ({
   utils: {
@@ -144,6 +149,7 @@ describe("Tableau de bord des APIs", () => {
     ]);
     apiMocks.fetchPalmaresAnomaliesGrouped.mockResolvedValue([]);
     apiMocks.fetchEnvoisRejetes.mockResolvedValue(page([]));
+    apiMocks.fetchTopAnomaliesGrouped.mockResolvedValue(page([]));
     apiMocks.fetchRepetitions.mockResolvedValue([]);
     apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([envoi]);
     cartobioApiMocks.getDashboardSummary.mockResolvedValue({
