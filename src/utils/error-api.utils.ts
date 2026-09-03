@@ -39,22 +39,22 @@ export type MessageVariant = "full" | "short";
 export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = {
   [ErrorCode.UNKNOWN_NUMERO_BIO]: {
     full: "Numéro bio inconnu du portail de notification",
-    short: "Numéro bio inconnu",
+    short: "N°Bio inconnu",
   },
 
   [ErrorCode.NOT_PRODUCTION]: {
     full: "Numéro bio sans notification liée à une activité de production",
-    short: "Aucune activité de production",
+    short: "Pas d'activité de production",
   },
 
   [ErrorCode.NO_OC]: {
     full: "Aucun organisme certificateur pour ce numéro bio.",
-    short: "Aucun organisme certificateur",
+    short: "Aucun OC",
   },
 
   [ErrorCode.OC_MISMATCH]: {
-    full: "Numéro client différent",
-    short: "Numéro client différent",
+    full: "Numéro client différent du portail de notification",
+    short: "N°Client différent",
   },
 
   [ErrorCode.INVALID_JSON]: {
@@ -63,43 +63,43 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
   },
 
   [ErrorCode.INVALID_DATE_CERTIFICATION_DEBUT]: {
-    full: "Champ dateCertificationDebut incorrect",
-    short: "Date de certification de début invalide",
+    full: "Champ 'dateCertificationDebut' incorrect",
+    short: "Début certification invalide",
   },
 
   [ErrorCode.INVALID_DATE_CERTIFICATION_FIN]: {
-    full: "Champ dateCertificationFin incorrect",
-    short: "Date de certification de fin invalide",
+    full: "Champ 'dateCertificationFin' incorrect",
+    short: "Fin certification invalide",
   },
 
   [ErrorCode.INVALID_DATE_AUDIT]: {
-    full: "Champ dateAudit incorrect",
+    full: "Champ 'dateAudit' incorrect",
     short: "Date d’audit invalide",
   },
 
   [ErrorCode.INVALID_ETAT_PRODUCTION]: {
-    full: "Champ etatProduction incorrect",
-    short: "État de production invalide",
+    full: "Champ 'etatProduction' incorrect",
+    short: "Certification invalide",
   },
 
   [ErrorCode.MISSING_DATE_ENGAGEMENT]: {
-    full: "Champ dateEngagement obligatoire lorsque la parcelle est en conversion",
-    short: "Date d’engagement obligatoire",
+    full: "Champ 'dateEngagement' manquant pour une parcelle en conversion",
+    short: "Date d’engagement manquante",
   },
 
   [ErrorCode.INVALID_DATE_ENGAGEMENT]: {
-    full: "Champ dateEngagement incorrect",
+    full: "Champ 'dateEngagement' incorrect",
     short: "Date d’engagement invalide",
   },
 
   [ErrorCode.MISSING_CULTURES]: {
-    full: "Cultures absentes",
-    short: "Cultures absentes",
+    full: "Culture absente",
+    short: "Culture absente",
   },
 
   [ErrorCode.INVALID_CPF]: {
-    full: "Cultures inconnues : {codes}",
-    short: "Cultures inconnues",
+    full: "Culture inconnue : {code}",
+    short: "Culture inconnue",
   },
 
   [ErrorCode.INVALID_GEOM]: {
@@ -128,7 +128,7 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
   },
   [ErrorCode.DB_ERROR]: {
     full: "Une erreur interne est survenue dans Cartobio",
-    short: "Erreur interne à Cartobio",
+    short: "Erreur interne",
   },
 };
 

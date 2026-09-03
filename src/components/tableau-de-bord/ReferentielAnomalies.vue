@@ -31,7 +31,7 @@ const tabs = [
   {
     id: "parcelles",
     label: "Parcelles",
-    errors: [...ErrorGroups.parcelErrors, ...ErrorGroups.parcelWarnings],
+    errors: [...ErrorGroups.parcelErrors],
   },
 ];
 </script>
