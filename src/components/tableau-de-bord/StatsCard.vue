@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatNumberWithSpaces } from "@/utils/numbers.formatters";
+
 defineProps<{
   title: string;
   value: number | string | null | undefined;
@@ -26,8 +28,10 @@ defineProps<{
     </div>
     <div class="stats-card__content">
       <div>
-        <span class="stats-card__value fr-h6 fr-mb-0">{{ value ?? "—" }}</span>
-        <span v-if="total !== undefined && total !== null" class="fr-text--md"> / {{ total }}</span>
+        <span class="stats-card__value fr-h6 fr-mb-0">{{ formatNumberWithSpaces(value) ?? "—" }}</span>
+        <span v-if="total !== undefined && total !== null" class="fr-text--md">
+          / {{ formatNumberWithSpaces(total) }}</span
+        >
       </div>
       <img v-if="picto" :src="picto" :alt="pictoAlt ?? ''" width="42" height="42" />
     </div>
