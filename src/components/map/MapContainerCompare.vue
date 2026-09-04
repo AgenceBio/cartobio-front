@@ -61,6 +61,8 @@ let currentHoveredFeature1 = null;
 let currentHoveredFeature2 = null;
 let selectedFeature1 = null;
 let selectedCompareFeature = null;
+let selectedFeatureId1 = null;
+let selectedFeatureId2 = null;
 
 provide("map", map);
 provide("map2", map2);
@@ -96,11 +98,66 @@ const initMap = (): void => {
   });
 };
 
+const getLayer = (mapInstance: Map) => {
+  return mapInstance
+    .getLayers()
+    .getArray()
+    .find((l) => l.get("name") === props.layerId);
+};
+
+const applySelectionToFeature = (mapInstance: Map, id, isMap1: boolean) => {
+  if (id === null || id === undefined) return null;
+
+  const layer = getLayer(mapInstance);
+  const source = layer?.getSource?.();
+  if (!source) return null;
+
+  const feature = source.getFeatures().find((f) => (f.getId() ?? f.get("id")) === id);
+
+  if (feature) {
+    feature.set("selected", true);
+    if (isMap1) {
+      selectedFeature1 = feature;
+    } else {
+      selectedCompareFeature = feature;
+    }
+    layer.changed();
+  }
+
+  return feature;
+};
+
+const attachSelectionPersistence = (mapInstance: Map, isMap1: boolean) => {
+  mapInstance.getLayers().on("add", (e) => {
+    if (e.element.get("name") !== props.layerId) return;
+
+    const source = e.element.getSource?.();
+    if (!source) return;
+
+    source.on("featuresloadend", () => {
+      const id = isMap1 ? selectedFeatureId1 : selectedFeatureId2;
+      applySelectionToFeature(mapInstance, id, isMap1);
+    });
+
+    source.on("addfeature", () => {
+      const id = isMap1 ? selectedFeatureId1 : selectedFeatureId2;
+      applySelectionToFeature(mapInstance, id, isMap1);
+    });
+  });
+};
+
 onMounted(() => {
   initMap();
   if (mapRef.value && mapRef2.value) {
     map.value?.setTarget(mapRef.value);
     map2.value?.setTarget(mapRef2.value);
+  }
+
+  if (map.value) {
+    attachSelectionPersistence(map.value, true);
+  }
+  if (map2.value) {
+    attachSelectionPersistence(map2.value, false);
   }
 });
 
@@ -138,13 +195,6 @@ onMounted(() => {
     });
   }
 });
-
-const getLayer = (mapInstance: Map) => {
-  return mapInstance
-    .getLayers()
-    .getArray()
-    .find((l) => l.get("name") === props.layerId);
-};
 
 const detectAndHighlight = (mapInstance: Map, pixel: number[]) => {
   const layer = getLayer(mapInstance);
@@ -234,6 +284,7 @@ const onMapClick1 = (event: MouseEvent): void => {
 
   if (!feature) {
     selectedFeature1 = null;
+    selectedFeatureId1 = null;
     getLayer(map.value)?.changed();
     emit("parcel-click", null);
     return;
@@ -244,6 +295,7 @@ const onMapClick1 = (event: MouseEvent): void => {
   getLayer(map.value)?.changed();
 
   const id = feature.getId() ?? feature.get("id");
+  selectedFeatureId1 = id ?? null;
   emit("parcel-click", id ?? null);
 };
 
@@ -310,6 +362,7 @@ const onMapClick2 = (event: MouseEvent): void => {
 
   if (!feature2) {
     selectedCompareFeature = null;
+    selectedFeatureId2 = null;
     getLayer(map2.value)?.changed();
     emit("parcel-compare-click", null);
     return;
@@ -321,6 +374,7 @@ const onMapClick2 = (event: MouseEvent): void => {
 
   const featureObj = geoJson.writeFeatureObject(feature2) as CartoBioFeature;
 
+  selectedFeatureId2 = feature2.getId() ?? feature2.get("id") ?? null;
   emit("parcel-compare-click", featureObj);
 };
 
