@@ -9,7 +9,7 @@ const libConfig = {
     entry: resolve(join(__dirname, "widget", "main.js")),
     name: "NotificationCartobio",
     fileName: (format) => `notification-cartobio.${format}.js`,
-    formats: ["iife"],
+    formats: ["es"],
   },
 };
 
