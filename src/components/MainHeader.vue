@@ -30,7 +30,6 @@
                 <div class="fr-header__logo">
                   <p class="fr-logo">République<br role="presentation" />française</p>
                 </div>
-
                 <div class="fr-header__operator">
                   <img
                     src="@/assets/logo-agence-bio.svg"
@@ -726,7 +725,13 @@ const exploitationsMenuLabel = computed(() => {
 }
 
 .logo {
-  width: 3.5rem;
+  width: 1.5rem;
+  max-width: 1.5rem;
+}
+
+.fr-header__operator img {
+  width: 2.5rem;
+  min-width: 2.5rem !important;
 }
 
 .tool-username {

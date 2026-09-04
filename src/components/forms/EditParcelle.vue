@@ -676,7 +676,7 @@ nextTick(() => {
 .global {
   display: flex;
   flex-direction: column;
-  height: min(80vh, 1000px);
+  height: min(82vh, 1000px);
   overflow: auto;
 }
 
