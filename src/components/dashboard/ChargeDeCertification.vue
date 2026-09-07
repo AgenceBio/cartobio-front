@@ -208,7 +208,7 @@ onMounted(async () => {
   userDepartements.value = await userStore.getDepartements();
   if (userDepartements.value.length === 0) {
     loadSummary();
-    loadOperators();
+    await loadOperators();
   }
 });
 

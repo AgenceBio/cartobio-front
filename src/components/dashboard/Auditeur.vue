@@ -109,9 +109,9 @@ const tooltip = ref({
   operatorId: null,
 });
 
-onMounted(() => {
+onMounted(async () => {
   isLoading.value = true;
-  loadOperators();
+  await loadOperators();
 });
 
 async function loadOperators() {
