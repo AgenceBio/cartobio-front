@@ -138,6 +138,20 @@
           <img src="@/assets/map/cadastre.jpg" alt="Fond cadastre" />
           <span>Cadastre</span>
         </button>
+        <button
+          class="menu-entry"
+          :class="{ active: cartobioParcelles }"
+          @click="$emit('update:cartobio-parcelles', !cartobioParcelles)"
+          :aria-label="`${!cartobioParcelles ? 'Activer' : 'Désactiver'} le calque des parcelles certifiées CartoBio ${VUE_APP_CARTOBIO_PARCELLES_YEAR}`"
+          :aria-pressed="cartobioParcelles"
+          :disabled="mapParams.blockPlan"
+        >
+          <img
+            src="@/assets/map/cartobio-parcelles.png"
+            :alt="'Parcelles certifiées CartoBio ' + VUE_APP_CARTOBIO_PARCELLES_YEAR"
+          />
+          <span>Parcelles certifiées CartoBio {{ VUE_APP_CARTOBIO_PARCELLES_YEAR }}</span>
+        </button>
       </div>
     </dialog>
   </div>
@@ -149,6 +163,8 @@ import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useTélépac } from "@/referentiels/pac.js";
 import { usePreferences } from "@/stores/preferences.js";
 import { storeToRefs } from "pinia";
+
+const { VUE_APP_CARTOBIO_PARCELLES_YEAR } = import.meta.env;
 
 /**
  * * Refs
@@ -182,6 +198,10 @@ defineProps({
     type: Boolean,
     required: true,
   },
+  cartobioParcelles: {
+    type: Boolean,
+    required: true,
+  },
   isMobile: {
     type: Boolean,
     default: false,
@@ -192,7 +212,7 @@ defineProps({
  * * Emits
  */
 
-defineEmits(["update:fond", "update:classification", "update:cadastre"]);
+defineEmits(["update:fond", "update:classification", "update:cadastre", "update:cartobio-parcelles"]);
 
 /**
  * * Fonctions
@@ -317,11 +337,11 @@ onBeforeUnmount(() => {
   gap: 1rem;
   font-size: 1rem;
   margin-bottom: 0.5rem;
-
   > span {
     align-items: flex-start;
     display: flex;
     flex-direction: column;
+    text-align: start;
   }
 }
 
