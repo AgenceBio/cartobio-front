@@ -36,7 +36,7 @@ jobs:
         VUE_APP_SENTRY_DSN: ${{ secrets.VUE_APP_SENTRY_DSN }}
         VUE_APP_DATEIMPORT: "17/06/2026"
         VUE_APP_NOTIFICATIONS_API: "https://back.agencebio.org"
-
+        VUE_APP_CARTOBIO_PARCELLES_YEAR: 2025
     - run: |
         npm ci
         npm run build:app
