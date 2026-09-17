@@ -274,7 +274,7 @@ span[aria-selected="true"] {
   color: #18753c;
 }
 .input {
-  width: 100%;
+  flex: 1;
 }
 .icon-btn {
   padding: 0rem 0rem 0rem 0.6rem;
