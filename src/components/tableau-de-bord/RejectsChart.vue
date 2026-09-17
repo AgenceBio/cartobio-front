@@ -26,19 +26,13 @@ import {
   type TooltipModel,
 } from "chart.js";
 import { getErrorMessage, ErrorCode, getErrorColor } from "@/utils/error-api.utils.ts";
+import { AnomalieCode } from "@/types/tableau-de-bord";
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
 
-interface RejectItem {
-  code: ErrorCode;
-  count: number;
-}
-
-type RejectData = RejectItem[] | Record<string, RejectItem>;
-
 const props = withDefaults(
   defineProps<{
-    rejectData: RejectData;
+    rejectData: AnomalieCode[];
     title?: string;
   }>(),
   {
@@ -50,17 +44,16 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
 let tooltipEl: HTMLDivElement | null = null;
 
-const sortedData = computed<RejectItem[]>(() => {
-  const rawArray = Array.isArray(props.rejectData) ? props.rejectData : Object.values(props.rejectData);
-  return [...rawArray].sort((a, b) => b.count - a.count);
+const sortedData = computed<AnomalieCode[]>(() => {
+  return [...props.rejectData].sort((a, b) => b.count - a.count);
 });
 
-function getLabel(code: ErrorCode): string {
-  return getErrorMessage(code, "short");
+function getLabel(code: string): string {
+  return getErrorMessage(code as ErrorCode, "short");
 }
 
-function getColor(code: ErrorCode): string {
-  return getErrorColor(code);
+function getColor(code: string): string {
+  return getErrorColor(code as ErrorCode);
 }
 
 function lightenColor(hex: string, amount = 0.35): string {

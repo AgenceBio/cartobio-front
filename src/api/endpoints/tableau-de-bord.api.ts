@@ -77,12 +77,3 @@ export async function fetchRepetitions(page = 1, limit = 8, recherche?: string, 
 
   return data;
 }
-
-export async function fetchTopAnomaliesGrouped(from: string, to: string) {
-  const params = new URLSearchParams({
-    from,
-    to,
-  });
-  const { data } = await apiClient.get(`/v3/tdb-api/top-anomalies-grouped?${params.toString()}`);
-  return data;
-}

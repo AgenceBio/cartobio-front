@@ -16,7 +16,6 @@ import {
   fetchGeneralKpi,
   fetchEnvoisRejetes,
   fetchPalmaresAnomaliesGrouped,
-  fetchTopAnomaliesGrouped,
   fetchRepetitions,
 } from "@/api/endpoints/tableau-de-bord.api";
 import { getErrorColor, getErrorMessage, GROUPE_ANOMALIE_OPTIONS } from "@/utils/error-api.utils";
@@ -94,7 +93,6 @@ const toBase = ref<Date | null>(null);
 // Données
 const resumeKpi = ref<ResumeKpi | null>(null);
 const palmaresAnomalies = ref<AnomalieCode[] | null>(null);
-const topAnomalies = ref(null);
 const evolutionEnvois = ref<EvolutionPeriode[] | null>(null);
 const compareKpi = ref<CompareKpi | null>(null);
 const comparePalmaresAnomalies = ref<AnomalieCode[] | null>(null);
@@ -578,13 +576,15 @@ watch([fromBase, toBase], async ([from, to]) => {
   graphique.compareOffset.value = 0;
   compareRangeOverride.value = null;
 
-  resumeKpi.value = await fetchGeneralKpi(formatStartOfDay(from), formatEndOfDay(to));
-  await chargerBilanEnvois(1);
-  palmaresAnomalies.value = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to));
-  await chargerEnvoisRejetes(1);
-  evolutionEnvois.value = await fetchPalmaresAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to));
-  topAnomalies.value = await fetchTopAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to));
-  if (bilanViewMode.value === "comparer") await chargerComparePeriode();
+  await Promise.all([
+    (resumeKpi.value = await fetchGeneralKpi(formatStartOfDay(from), formatEndOfDay(to))),
+    chargerBilanEnvois(1),
+    (palmaresAnomalies.value = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to))),
+    chargerEnvoisRejetes(1),
+    (evolutionEnvois.value = await fetchPalmaresAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to))),
+    bilanViewMode.value === "comparer" ? chargerComparePeriode() : Promise.resolve(),
+  ]);
+
   isLoading.value = false;
 });
 
@@ -1214,7 +1214,7 @@ onMounted(async () => {
                 </ActionDropdown>
               </div>
               <div ref="palmaresAnomaliesRef">
-                <RejectsChart v-if="palmaresAnomalies?.length" :reject-data="topAnomalies" />
+                <RejectsChart v-if="palmaresAnomalies?.length" :reject-data="palmaresAnomalies" />
                 <div v-else class="bilan-empty">Aucune donnée</div>
               </div>
             </div>
