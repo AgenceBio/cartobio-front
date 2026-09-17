@@ -9,7 +9,6 @@ const apiMocks = vi.hoisted(() => ({
   fetchPalmaresAnomaliesGrouped: vi.fn(),
   fetchEnvoisRejetes: vi.fn(),
   fetchRepetitions: vi.fn(),
-  fetchTopAnomaliesGrouped: vi.fn(),
   fetchHistoriqueParcellaire: vi.fn(),
 }));
 
@@ -149,7 +148,6 @@ describe("Tableau de bord des APIs", () => {
     ]);
     apiMocks.fetchPalmaresAnomaliesGrouped.mockResolvedValue([]);
     apiMocks.fetchEnvoisRejetes.mockResolvedValue(page([]));
-    apiMocks.fetchTopAnomaliesGrouped.mockResolvedValue(page([]));
     apiMocks.fetchRepetitions.mockResolvedValue([]);
     apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([envoi]);
     cartobioApiMocks.getDashboardSummary.mockResolvedValue({
