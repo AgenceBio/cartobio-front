@@ -39,7 +39,7 @@
     "@vueuse/core": "^14.4.0",
     "axios": "^1.18.1",
     "driver.js": "^1.8.0",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "fuse.js": "^7.5.0",
     "geometric": "^3.0.9",
     "jsts": "^2.12.1",
