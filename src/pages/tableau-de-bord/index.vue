@@ -637,7 +637,7 @@ onMounted(async () => {
           />
           <div class="fr-col-6 flex">
             <button
-              class="fr-btn fr-btn--secondary button-referentiel"
+              class="fr-btn fr-btn--tertiary-no-outline button-referentiel"
               type="button"
               @click="modalReferentielAnomalies = true"
             >
@@ -1794,8 +1794,7 @@ onMounted(async () => {
 }
 
 .button-referentiel {
-  align-items: center !important;
-  margin-right: 0px !important;
-  margin-left: auto !important;
+  align-self: end;
+  margin-left: auto;
 }
 </style>

@@ -69,6 +69,10 @@ export function useRepetitions() {
     selectedRepetitionGroupe.value = null;
     selectedRepetitionEnvoi.value = null;
     groupeAOuvrirKey.value = null;
+    typeFiltreAlertes.value = "all";
+    rechercheAlertesBrouillon.value = "";
+    rechercheAlertesAppliquee.value = "";
+    alertesPage.value = 1;
   }
 
   function ouvrirDetailRepetition(groupe: RepetitionGroupe, envoi: RepetitionEnvoi) {

@@ -201,9 +201,7 @@ function onChangerType(event: Event) {
 
     <!-- Vue détail -->
     <template v-if="vueAlertes === 'detail' && selectedEnvoi && selectedGroupe">
-      <h2 class="fr-h5 fr-mb-3w">
-        N° BIO {{ selectedGroupe.numeroBio }} — N° Client {{ selectedGroupe.numeroClient }}
-      </h2>
+      <h2 class="fr-h5 fr-mb-3w">N°Client {{ selectedGroupe.numeroClient }} / N°Bio {{ selectedGroupe.numeroBio }}</h2>
       <div class="controle-highlight fr-p-2w fr-mb-4w">
         <p class="fr-mb-0">Contrôle réalisé le {{ formatDateControle(selectedGroupe.auditDate) }}</p>
       </div>
@@ -241,7 +239,7 @@ function onChangerType(event: Event) {
     justify-content: flex-start;
   }
 }
-:deep(.fr-modal__content):has(> .fr-h5) {
+:deep(.fr-modal__content):has(> .alertes-toolbar) {
   margin-bottom: 1rem !important;
 }
 
