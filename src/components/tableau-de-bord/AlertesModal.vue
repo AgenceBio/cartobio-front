@@ -239,9 +239,6 @@ function onChangerType(event: Event) {
     justify-content: flex-start;
   }
 }
-:deep(.fr-modal__content):has(> .alertes-toolbar) {
-  margin-bottom: 1rem !important;
-}
 
 .fr-segmented {
   display: revert;
