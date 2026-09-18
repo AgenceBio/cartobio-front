@@ -1063,8 +1063,8 @@ onMounted(async () => {
         </div>
 
         <!-- Envois rejetés + palmarès -->
-        <div v-if="resumeKpi" class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-          <div class="fr-col-12 fr-col-lg-8">
+        <div v-if="resumeKpi" class="fr-grid-row fr-grid-row--gutters fr-mt-3v">
+          <div class="fr-col-12 fr-col-lg-8 flex-block">
             <div class="card">
               <div class="download-title-row fr-mb-2w">
                 <h2 class="fr-h6 fr-mb-0">
@@ -1189,7 +1189,7 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div class="fr-col-12 fr-col-lg-4" ref="rejectsChartRef">
+          <div class="fr-col-12 fr-col-lg-4 flex-block" ref="rejectsChartRef">
             <div class="card">
               <div class="download-title-row fr-mb-2w">
                 <h2 class="fr-h6 fr-mb-0">
