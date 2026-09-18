@@ -15,10 +15,10 @@ const emit = defineEmits<{
 
 <template>
   <div class="fr-grid-row">
-    <div class="fr-col-11">
+    <div class="fr-col-12 fr-col-lg-11">
       <div v-if="apercu.length > 0" class="repetitions-banner fr-grid-row fr-mb-4w">
         <template v-for="groupe in apercu" :key="clefGroupe(groupe)">
-          <div class="fr-col-4 fr-p-1w">
+          <div class="fr-col-12 fr-col-lg-4 fr-p-1w">
             <div
               class="fr-alert repetition-alert"
               :class="typeRepetition(groupe) === 'envois' ? 'fr-alert--info' : 'fr-alert--error'"
@@ -50,7 +50,7 @@ const emit = defineEmits<{
         </template>
       </div>
     </div>
-    <div v-if="restantes > 0" class="fr-col-1 fr-mb-4w col-tout">
+    <div v-if="restantes > 0" class="fr-col-10 fr-col-lg-1 fr-mb-4w col-tout">
       <div class="voir-tout fr-mb-2w">
         <span class="fr-text--sm fr-mb-0">+{{ restantes }}</span>
         <br />

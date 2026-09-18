@@ -712,7 +712,7 @@ onMounted(async () => {
 
         <!-- Bilan des envois : tableau + graphique -->
         <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-lg-6">
+          <div class="fr-col-12 fr-col-lg-6 flex-block">
             <div class="card">
               <div class="download-title-row fr-mb-2w">
                 <h2 class="fr-h6 fr-mb-0">Bilan des envois</h2>
@@ -860,7 +860,7 @@ onMounted(async () => {
           </div>
 
           <!-- Graphique bilan -->
-          <div class="fr-col-12 fr-col-lg-6">
+          <div class="fr-col-12 fr-col-lg-6 flex-block">
             <div class="card">
               <div class="bilan-header fr-mb-2w">
                 <h2 class="fr-h6 fr-mb-0">Bilan des envois</h2>
@@ -1731,6 +1731,13 @@ onMounted(async () => {
 }
 .filtre-panel__actions .fr-btn {
   margin: 0;
+}
+
+.flex-block {
+  display: flex;
+  .card {
+    flex: 1;
+  }
 }
 
 @media (min-width: 48rem) {

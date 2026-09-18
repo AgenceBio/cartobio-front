@@ -237,7 +237,7 @@ onBeforeUnmount(() => {
 .chart-legend {
   display: flex;
   flex-wrap: wrap;
-  margin: 0.75rem 0 0;
+  margin: 1.75rem 0 0.75rem;
   padding: 0;
   list-style: none;
   line-height: 1.25rem;

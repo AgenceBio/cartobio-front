@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
-import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
+import { getErrorMessage, getErrorColor, getErrorTextColor, ErrorCode } from "@/utils/error-api.utils";
 import { useErreursEnvoi } from "@/composables/tableau-de-bord/useErreursEnvoi";
 import type { ErreurEnvoi } from "@/types/tableau-de-bord";
 
@@ -35,8 +35,19 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
       <div class="fr-p-2w">
         <p v-if="erreursOperateur.length === 0" class="fr-text--sm fr-mb-0">Aucune erreur liée à l'opérateur.</p>
         <div v-else>
-          <div v-for="erreur in erreursOperateur" :key="erreur.code" class="fr-mb-2w">
-            {{ getErrorMessage(erreur.code, "short") }}
+          <div v-for="erreur in erreursOperateur" :key="erreur.code" class="fr-mb-2w error-element">
+            <div>
+              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+            </div>
+            <span
+              class="fr-badge fr-badge--sm fr-mr-1w error-badge"
+              :style="{
+                backgroundColor: getErrorColor(erreur.code),
+                color: getErrorTextColor(erreur.code),
+              }"
+            >
+              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+            </span>
           </div>
         </div>
       </div>
@@ -107,5 +118,11 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
 .error-badge {
   border: 0;
   box-shadow: none;
+}
+
+.error-element {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

@@ -62,11 +62,10 @@ const { downloadJson } = useTelechargements();
     </template>
 
     <template v-if="!isLoading">
-      <h2 class="fr-h5 fr-mb-3w">N° BIO {{ numeroBio }} — N° Client {{ numeroClient }}</h2>
+      <h2 class="fr-h5 fr-mb-3w">N°Client {{ numeroClient }} / N°Bio {{ numeroBio }}</h2>
       <div class="controle-highlight fr-p-2w fr-mb-4w">
         <p class="fr-mb-0">Contrôle réalisé le {{ formatDateControle(auditDate ?? "") }}</p>
       </div>
-
       <!-- Vue historique -->
       <template v-if="vueModal === 'historique'">
         <div class="justify-between">
