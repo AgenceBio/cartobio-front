@@ -47,7 +47,7 @@
     "jsts": "^2.12.1",
     "ol": "^10.10.0",
     "ol-ext": "^4.0.38",
-    "ol-mapbox-style": "^13.4.3",
+    "ol-mapbox-style": "^13.5.1",
     "pinia": "^4.0.2",
     "proj4": "^2.22.0",
     "remixicon": "^4.9.1",
