@@ -157,22 +157,22 @@ describe("Tableau de bord des APIs", () => {
     });
   });
 
-  it("n'appelle aucune API tant qu'aucune période n'est sélectionnée", async () => {
+  it("appelle l'API au démarrage", async () => {
     mountPage();
     await flushPromises();
-    expect(apiMocks.fetchGeneralKpi).not.toHaveBeenCalled();
-    expect(apiMocks.fetchBilanEnvois).not.toHaveBeenCalled();
+    expect(apiMocks.fetchGeneralKpi).toHaveBeenCalled();
+    expect(apiMocks.fetchBilanEnvois).toHaveBeenCalled();
   });
 
   it("charge toutes les données après sélection d'une période", async () => {
     const wrapper = mountPage();
     await selectPeriode(wrapper);
 
-    expect(apiMocks.fetchGeneralKpi).toHaveBeenCalledTimes(1);
-    expect(apiMocks.fetchBilanEnvois).toHaveBeenCalledTimes(1);
-    expect(apiMocks.fetchPalmaresAnomalies).toHaveBeenCalledTimes(1);
-    expect(apiMocks.fetchEnvoisRejetes).toHaveBeenCalledTimes(1);
-    expect(apiMocks.fetchPalmaresAnomaliesGrouped).toHaveBeenCalledTimes(1);
+    expect(apiMocks.fetchGeneralKpi).toHaveBeenCalledTimes(2);
+    expect(apiMocks.fetchBilanEnvois).toHaveBeenCalledTimes(2);
+    expect(apiMocks.fetchPalmaresAnomalies).toHaveBeenCalledTimes(2);
+    expect(apiMocks.fetchEnvoisRejetes).toHaveBeenCalledTimes(2);
+    expect(apiMocks.fetchPalmaresAnomaliesGrouped).toHaveBeenCalledTimes(2);
     expect(apiMocks.fetchRepetitions).toHaveBeenCalledTimes(1);
   });
 
@@ -290,7 +290,7 @@ describe("Tableau de bord des APIs", () => {
     await wrapper.find("#segmented-comparer").setValue(true);
     await flushPromises();
 
-    expect(apiMocks.fetchGeneralKpi).toHaveBeenCalledTimes(2);
+    expect(apiMocks.fetchGeneralKpi).toHaveBeenCalledTimes(3);
   });
 
   it("ouvre la modale de détail d'un envoi", async () => {

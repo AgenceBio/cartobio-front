@@ -87,8 +87,11 @@ const modalRejetsAgrandi = ref<boolean>(false);
 const preferencesStore = usePreferences();
 const { unit } = storeToRefs(preferencesStore);
 const baseDate = new Date();
-const fromBase = ref<Date | null>(null);
-const toBase = ref<Date | null>(null);
+
+const { from, to } = currentWeekRange();
+
+const fromBase = ref<Date | null>(from);
+const toBase = ref<Date | null>(to);
 
 // Données
 const resumeKpi = ref<ResumeKpi | null>(null);
@@ -624,26 +627,30 @@ watch([rechercheAlertesAppliquee, typeFiltreAlertes, alertesPage], () => {
 });
 
 // Chargement principal
-watch([fromBase, toBase], async ([from, to]) => {
-  if (!from || !to) return;
+watch(
+  [fromBase, toBase],
+  async ([from, to]) => {
+    if (!from || !to) return;
 
-  isLoading.value = true;
-  drillDownGroupe.value = null;
+    isLoading.value = true;
+    drillDownGroupe.value = null;
 
-  graphique.compareOffset.value = 1;
-  compareRangeOverride.value = null;
+    graphique.compareOffset.value = 1;
+    compareRangeOverride.value = null;
 
-  await Promise.all([
-    (resumeKpi.value = await fetchGeneralKpi(formatStartOfDay(from), formatEndOfDay(to))),
-    chargerBilanEnvois(1),
-    (palmaresAnomalies.value = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to))),
-    chargerEnvoisRejetes(1),
-    (evolutionEnvois.value = await fetchPalmaresAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to))),
-    bilanViewMode.value === "comparer" ? chargerComparePeriode() : Promise.resolve(),
-  ]);
+    await Promise.all([
+      (resumeKpi.value = await fetchGeneralKpi(formatStartOfDay(from), formatEndOfDay(to))),
+      chargerBilanEnvois(1),
+      (palmaresAnomalies.value = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to))),
+      chargerEnvoisRejetes(1),
+      (evolutionEnvois.value = await fetchPalmaresAnomaliesGrouped(formatStartOfDay(from), formatEndOfDay(to))),
+      bilanViewMode.value === "comparer" ? chargerComparePeriode() : Promise.resolve(),
+    ]);
 
-  isLoading.value = false;
-});
+    isLoading.value = false;
+  },
+  { immediate: true },
+);
 
 watch(detailAnomalies, () => {
   drillDownGroupe.value = null;
