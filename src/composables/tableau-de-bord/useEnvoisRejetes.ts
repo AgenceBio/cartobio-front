@@ -26,13 +26,7 @@ export function useEnvoisRejetes(options: { fromBase: Ref<Date | null>; toBase: 
       return undefined;
     }
 
-    return [
-      ...new Set(
-        groupeFiltreApplique.value.flatMap(
-          (groupe) => [...ErrorGroups[groupe]] as ErrorCode[],
-        ),
-      ),
-    ];
+    return [...new Set(groupeFiltreApplique.value.flatMap((groupe) => [...ErrorGroups[groupe]] as ErrorCode[]))];
   });
 
   function optionsRequete(limit?: number) {
