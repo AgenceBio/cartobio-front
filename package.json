@@ -25,7 +25,7 @@
   "dependencies": {
     "@agencebio/rosetta-cultures": "^2.6.0",
     "@algolia/autocomplete-js": "^1.19.9",
-    "@algolia/autocomplete-theme-classic": "^1.19.9",
+    "@algolia/autocomplete-theme-classic": "^1.19.10",
     "@gouvfr/dsfr": "^1.15.3",
     "@sentry/vue": "^10.74.0",
     "@turf/bbox": "^7.4.0",
