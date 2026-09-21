@@ -9,7 +9,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import {
   fetchPalmaresAnomalies,
   fetchBilanEnvois,
@@ -211,6 +211,7 @@ const {
   chargerEnvoisRejetes,
   validerRechercheRejets,
   changerPageRejetes,
+  toggleFiltreGroupe,
   validerFiltreGroupe,
   reinitialiserFiltreGroupe,
   fetchRejetsFiltres,
@@ -321,6 +322,39 @@ const compareChartRowsForExport = computed<ChartRow[]>(() => [
   })),
   ...bilanChartRowsForExport.value,
 ]);
+
+const bilanBarRowsForExport = computed<ChartRow[]>(() => {
+  return bilanBarCategories.value.flatMap((periode, index) =>
+    bilanBarSeries.value.map((serie) => ({
+      période: periode,
+      catégorie: serie.name,
+      valeur: serie.data[index] ?? 0,
+      unité: "nombre",
+    })),
+  );
+});
+
+const compareBarRowsForExport = computed<ChartRow[]>(() => {
+  const comparaison = bilanBarCategories.value.flatMap((periode, index) =>
+    compareBarSeries.value.map((serie) => ({
+      période: periode,
+      catégorie: `${serie.name} — ${compareRangeLabel.value}`,
+      valeur: serie.data[index] ?? 0,
+      unité: "nombre",
+    })),
+  );
+
+  const courant = bilanBarCategories.value.flatMap((periode, index) =>
+    bilanBarSeries.value.map((serie) => ({
+      période: periode,
+      catégorie: `${serie.name} — ${currentPeriodLabel.value}`,
+      valeur: serie.data[index] ?? 0,
+      unité: "nombre",
+    })),
+  );
+
+  return [...comparaison, ...courant];
+});
 
 async function chartRowsForRange(from: Date, to: Date, periodLabel: string): Promise<ChartRow[]> {
   const anomalies = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to));
@@ -491,6 +525,7 @@ async function onBilanChartDownload(action: string) {
       downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png", undefined, titrePngBilan.value);
       return;
     }
+
     if (bilanViewMode.value === "comparer") {
       downloadComparisonPng(
         bilanChartCompareRef.value,
@@ -503,24 +538,44 @@ async function onBilanChartDownload(action: string) {
     } else {
       downloadCanvasPng(bilanChartCurrentRef.value, "bilan-envois.png", legendEntries.value, titrePngBilan.value);
     }
+
     return;
   }
+
   if (action === "json") {
-    const rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
+    let rows: ChartRow[];
+
+    if (bilanChartType.value === "bar") {
+      rows = bilanViewMode.value === "comparer" ? compareBarRowsForExport.value : bilanBarRowsForExport.value;
+    } else {
+      rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
+    }
+
     downloadJson(rows, "bilan-graphique.json");
     return;
   }
+
   if (action === "xlsx") {
-    const rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
+    let rows: ChartRow[];
+
+    if (bilanChartType.value === "bar") {
+      rows = bilanViewMode.value === "comparer" ? compareBarRowsForExport.value : bilanBarRowsForExport.value;
+    } else {
+      rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
+    }
+
     downloadXlsx(rows, "bilan-graphique.xlsx", "Bilan graphique", COLONNES_GRAPHIQUE_XLSX);
+
     return;
   }
+
   if (action === "json-week") {
     const { from, to } = currentWeekRange();
     const rows = await chartRowsForRange(from, to, "Semaine courante");
     downloadJson(rows, "bilan-graphique-semaine-courante.json");
     return;
   }
+
   if (action === "json-month") {
     const { from, to } = currentMonthRange();
     const rows = await chartRowsForRange(from, to, "Mois courant");
@@ -571,9 +626,11 @@ watch([rechercheAlertesAppliquee, typeFiltreAlertes, alertesPage], () => {
 // Chargement principal
 watch([fromBase, toBase], async ([from, to]) => {
   if (!from || !to) return;
+
   isLoading.value = true;
   drillDownGroupe.value = null;
-  graphique.compareOffset.value = 0;
+
+  graphique.compareOffset.value = 1;
   compareRangeOverride.value = null;
 
   await Promise.all([
@@ -594,6 +651,23 @@ watch(detailAnomalies, () => {
 
 watch(bilanViewMode, (mode) => {
   if (mode === "comparer") chargerComparePeriode();
+});
+
+function fermerFiltresAuClicExterieur(event: MouseEvent) {
+  const target = event.target as HTMLElement | null;
+
+  if (target?.closest(".filtre-wrapper")) return;
+
+  filtreMenuOuvert.value = false;
+  filtreGroupeOuvert.value = false;
+}
+
+onMounted(() => {
+  document.addEventListener("click", fermerFiltresAuClicExterieur);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", fermerFiltresAuClicExterieur);
 });
 
 onMounted(async () => {
@@ -985,6 +1059,7 @@ onMounted(async () => {
                       <DatePicker
                         :unit="unit"
                         :base-date="fromBase ?? baseDate"
+                        :compare-date="compareRange?.from"
                         is-compare
                         @validate="changeComparePeriod"
                       />
@@ -1036,6 +1111,7 @@ onMounted(async () => {
                     <DatePicker
                       :unit="unit"
                       :base-date="fromBase ?? baseDate"
+                      :compare-date="compareRange?.from"
                       is-compare
                       @validate="changeComparePeriod"
                       class="fr-col-6"
@@ -1102,13 +1178,16 @@ onMounted(async () => {
                         class="fr-btn fr-btn--secondary"
                         :aria-expanded="filtreGroupeOuvert"
                         aria-controls="filtre-panel-rejets"
-                        @click="filtreGroupeOuvert = !filtreGroupeOuvert"
+                        @click="toggleFiltreGroupe"
                       >
                         <i class="ri-filter-3-line"></i>
                         <span class="fr-ml-1w">Filtrer</span>
-                        <span v-if="groupeFiltreApplique" class="fr-badge fr-badge--sm fr-badge--info filtre-count"
-                          >1</span
+                        <span
+                          v-if="groupeFiltreApplique.length > 0"
+                          class="fr-badge fr-badge--sm fr-badge--info filtre-count"
                         >
+                          {{ groupeFiltreApplique.length }}
+                        </span>
                       </button>
                       <div
                         v-show="filtreGroupeOuvert"
@@ -1122,21 +1201,24 @@ onMounted(async () => {
                         </div>
                         <div class="filtre-panel__body">
                           <fieldset class="fr-fieldset filtre-panel__section">
-                            <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Afficher uniquement</legend>
+                            <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Catégorie d'anomalies</legend>
+
                             <div class="filtre-panel__elements">
                               <div
                                 v-for="option in GROUPE_ANOMALIE_OPTIONS"
                                 :key="option.value"
-                                class="fr-radio-group fr-radio-group--sm"
+                                class="fr-checkbox-group fr-checkbox-group--sm"
                               >
                                 <input
-                                  type="radio"
+                                  type="checkbox"
                                   :id="`groupe-${option.value}`"
-                                  name="groupe-anomalie"
                                   :value="option.value"
                                   v-model="groupeFiltreBrouillon"
                                 />
-                                <label class="fr-label" :for="`groupe-${option.value}`">{{ option.label }}</label>
+
+                                <label class="fr-label" :for="`groupe-${option.value}`">
+                                  {{ option.label }}
+                                </label>
                               </div>
                             </div>
                           </fieldset>
@@ -1272,11 +1354,13 @@ onMounted(async () => {
                 class="fr-btn fr-btn--secondary"
                 :aria-expanded="filtreGroupeOuvert"
                 aria-controls="filtre-panel-rejets-agrandi"
-                @click="filtreGroupeOuvert = !filtreGroupeOuvert"
+                @click="toggleFiltreGroupe"
               >
                 <i class="ri-filter-3-line"></i>
                 <span class="fr-ml-1w">Filtrer</span>
-                <span v-if="groupeFiltreApplique" class="fr-badge fr-badge--sm fr-badge--info filtre-count">1</span>
+                <span v-if="groupeFiltreApplique.length > 0" class="fr-badge fr-badge--sm fr-badge--info filtre-count">
+                  {{ groupeFiltreApplique.length }}
+                </span>
               </button>
               <div
                 v-show="filtreGroupeOuvert"
@@ -1291,21 +1375,24 @@ onMounted(async () => {
                 </div>
                 <div class="filtre-panel__body">
                   <fieldset class="fr-fieldset filtre-panel__section">
-                    <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Afficher uniquement</legend>
-                    <div class="filtre-panel__options">
+                    <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Catégorie d'anomalies</legend>
+
+                    <div class="filtre-panel__elements">
                       <div
                         v-for="option in GROUPE_ANOMALIE_OPTIONS"
                         :key="option.value"
-                        class="fr-radio-group fr-radio-group--sm"
+                        class="fr-checkbox-group fr-checkbox-group--sm"
                       >
                         <input
-                          type="radio"
-                          :id="`groupe-agrandi-${option.value}`"
-                          name="groupe-anomalie-agrandi"
+                          type="checkbox"
+                          :id="`groupe-${option.value}`"
                           :value="option.value"
                           v-model="groupeFiltreBrouillon"
                         />
-                        <label class="fr-label" :for="`groupe-agrandi-${option.value}`">{{ option.label }}</label>
+
+                        <label class="fr-label" :for="`groupe-${option.value}`">
+                          {{ option.label }}
+                        </label>
                       </div>
                     </div>
                   </fieldset>
@@ -1352,6 +1439,7 @@ onMounted(async () => {
         :envois="envoisRejetes.data"
         :page="envoisRejetes.meta.page"
         :ordre-date="ordreDateReject"
+        large
         :max-page="Math.ceil(envoisRejetes.meta.total / envoisRejetes.meta.limit)"
         @change-page="changerPageRejetes"
         @open-details="openDetailsEnvoi"
@@ -1676,59 +1764,82 @@ onMounted(async () => {
   display: inline-block;
   vertical-align: top;
 }
+
 .filtre-count {
   margin-left: 0.5rem;
 }
+
 .filtre-panel {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 0.25rem);
   right: 0;
-  background: #fff;
-  border: 1px solid var(--border-default-grey, #ddd);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 20;
+
   width: 300px;
   max-width: 90vw;
-  z-index: 20;
   overflow: hidden;
+
+  background: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 12%);
 }
+
 .filtre-panel__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-default-grey, #eee);
-  background: var(--background-alt-grey, #f6f6f6);
+
+  background: #fff;
+  border: none;
+  text-align: left;
 }
+
+.filtre-panel__header h3 {
+  width: 100%;
+  text-align: left;
+}
+
 .filtre-panel__body {
-  padding: 1rem;
   max-height: 320px;
+  padding: 1rem;
   overflow-y: auto;
+  background: #fff;
 }
+
 .filtre-panel__section {
   margin: 0;
   padding: 0;
   border: none;
 }
+
+.filtre-panel__elements,
 .filtre-panel__options {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .filtre-panel__separator {
+  margin: 1rem 0;
   border: none;
   border-top: 1px solid var(--border-default-grey, #eee);
-  margin: 1rem 0;
 }
+
 .filtre-panel__actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+
   padding: 0.75rem 1rem;
-  border-top: 1px solid var(--border-default-grey, #eee);
-  background: var(--background-alt-grey, #fafafa);
+
+  background: #fff;
+  border: none;
 }
+
 .filtre-panel__actions .fr-btn {
   margin: 0;
 }
@@ -1803,5 +1914,12 @@ onMounted(async () => {
 .button-referentiel {
   align-self: end;
   margin-left: auto;
+}
+.fr-table__header .fr-search-bar {
+  margin-bottom: 0rem;
+}
+
+:deep(.fr-btns-group .fr-btn) {
+  margin: 0rem !important;
 }
 </style>

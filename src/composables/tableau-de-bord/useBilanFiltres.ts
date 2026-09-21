@@ -9,7 +9,7 @@ export const STATUT_OPTIONS = [
 ];
 
 export const ETAT_OPTIONS = [
-  { value: "CREATION", label: "Création" },
+  { value: "CREATED", label: "Création" },
   { value: "UPDATED", label: "Mise à jour" },
   { value: "UNKNOWN", label: "—" },
 ];

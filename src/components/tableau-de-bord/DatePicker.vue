@@ -177,6 +177,7 @@ const props = withDefaults(
     unit?: Unit;
     isCompare?: boolean;
     baseDate: Date;
+    compareDate?: Date;
   }>(),
   {
     unit: "week",
@@ -258,11 +259,11 @@ const selectedUnit = ref<Unit>(props.unit);
 
 const draftUnit = ref<Unit>(props.unit);
 
-const committedDate = ref<Dayjs>(dayjs(props.baseDate));
+const initialDate = props.isCompare && props.compareDate ? dayjs(props.compareDate) : dayjs(props.baseDate);
 
-const draftDate = ref<Dayjs>(dayjs(props.baseDate));
-
-const calendarMonth = ref<Dayjs>(dayjs(props.baseDate).startOf("month"));
+const committedDate = ref<Dayjs>(initialDate);
+const draftDate = ref<Dayjs>(initialDate);
+const calendarMonth = ref<Dayjs>(initialDate.startOf("month"));
 
 /* ==========================================================================
  * Fonctions Day.js
@@ -312,6 +313,14 @@ function shiftDate(unit: Unit, date: Dayjs, offset: number): Dayjs {
     default:
       return date.add(offset, "week");
   }
+}
+
+function getPickerDate(): Dayjs {
+  if (props.isCompare && props.compareDate) {
+    return dayjs(props.compareDate);
+  }
+
+  return dayjs(props.baseDate);
 }
 
 /* ==========================================================================
@@ -512,16 +521,13 @@ function isRangeEnd(date: Date): boolean {
  * Watchers
  * ========================================================================== */
 
-watch(
-  () => props.baseDate,
-  (newDate) => {
-    committedDate.value = dayjs(newDate);
-    draftDate.value = dayjs(newDate);
-    calendarMonth.value = dayjs(newDate).startOf("month");
+watch([() => props.baseDate, () => props.compareDate], () => {
+  const date = getPickerDate();
 
-    emitCurrentPeriod();
-  },
-);
+  committedDate.value = date;
+  draftDate.value = date;
+  calendarMonth.value = date.startOf("month");
+});
 
 watch(
   () => props.unit,
@@ -545,11 +551,11 @@ onMounted(() => {
   selectedUnit.value = props.unit;
   draftUnit.value = props.unit;
 
-  committedDate.value = dayjs(props.baseDate);
-  draftDate.value = dayjs(props.baseDate);
-  calendarMonth.value = dayjs(props.baseDate).startOf("month");
+  const date = getPickerDate();
 
-  emitCurrentPeriod();
+  committedDate.value = date;
+  draftDate.value = date;
+  calendarMonth.value = date.startOf("month");
 });
 </script>
 

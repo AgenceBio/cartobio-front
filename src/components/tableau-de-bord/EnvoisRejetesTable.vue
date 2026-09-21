@@ -13,12 +13,14 @@ const props = withDefaults(
     maxPage: number;
     tableId?: string;
     caption?: string;
+    large?: boolean;
     ordreDate?: "asc" | "desc";
   }>(),
   {
     tableId: "table-envois-rejetes",
     caption: "Liste des envois rejetés de la période sélectionnée",
     ordreDate: "desc",
+    large: false,
   },
 );
 
@@ -48,7 +50,11 @@ const labelTriDate = computed(() =>
             </caption>
             <thead>
               <tr>
-                <th scope="col">N° Client<span class="fr-hint-text">N° BIO</span></th>
+                <template v-if="large">
+                  <th scope="col">N° Client</th>
+                  <th scope="col">N° BIO</th>
+                </template>
+                <th v-else scope="col">N° Client<span class="fr-hint-text"> N° BIO</span></th>
                 <th scope="col">Date d'audit</th>
                 <th scope="col">Rejets</th>
                 <th scope="col" :aria-sort="triCroissant ? 'ascending' : 'descending'">
@@ -70,12 +76,18 @@ const labelTriDate = computed(() =>
             </thead>
             <tbody>
               <tr v-for="envoi in envois" :key="envoi.jobId">
-                <td>
-                  <div class="identity-cell">
-                    <CopierColler :value="envoi.numeroClient" label="Numéro client" />
-                    <CopierColler :value="envoi.numeroBio" label="Numéro BIO" hint />
-                  </div>
-                </td>
+                <template v-if="large">
+                  <td>{{ envoi.numeroClient }}</td>
+                  <td>{{ envoi.numeroBio }}</td>
+                </template>
+                <template v-else>
+                  <td>
+                    <div class="identity-cell">
+                      <CopierColler :value="envoi.numeroClient" label="Numéro client" />
+                      <CopierColler :value="envoi.numeroBio" label="Numéro BIO" hint />
+                    </div>
+                  </td>
+                </template>
                 <td>
                   {{ envoi.auditDate ? new Date(envoi.auditDate).toLocaleDateString("fr-FR") : "—" }}
                 </td>
