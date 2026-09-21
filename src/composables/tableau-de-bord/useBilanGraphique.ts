@@ -211,11 +211,45 @@ export function useBilanGraphique(options: {
   );
 
   const compareRange = computed<DateRange | null>(() => {
-    if (compareRangeOverride.value) return compareRangeOverride.value;
-    if (!fromBase.value || !toBase.value) return null;
-    const from = dayjs(fromBase.value).subtract(compareOffset.value, unit.value).toDate();
-    const to = dayjs(toBase.value).subtract(compareOffset.value, unit.value).toDate();
-    return { from, to };
+    if (compareRangeOverride.value) {
+      return compareRangeOverride.value;
+    }
+
+    if (!fromBase.value || !toBase.value) {
+      return null;
+    }
+
+    if (unit.value === "week") {
+      const previousWeek = dayjs(fromBase.value).subtract(1, "week");
+
+      return {
+        from: previousWeek.startOf("week").add(1, "day").toDate(),
+        to: previousWeek.endOf("week").add(1, "day").toDate(),
+      };
+    }
+
+    if (unit.value === "month") {
+      const previousMonth = dayjs(fromBase.value).subtract(1, "month");
+
+      return {
+        from: previousMonth.startOf("month").toDate(),
+        to: previousMonth.endOf("month").toDate(),
+      };
+    }
+
+    if (unit.value === "year") {
+      const previousYear = dayjs(fromBase.value).subtract(1, "year");
+
+      return {
+        from: previousYear.startOf("year").toDate(),
+        to: previousYear.endOf("year").toDate(),
+      };
+    }
+
+    return {
+      from: dayjs(fromBase.value).subtract(1, "day").toDate(),
+      to: dayjs(toBase.value).subtract(1, "day").toDate(),
+    };
   });
 
   const currentPeriodLabel = computed(() => {

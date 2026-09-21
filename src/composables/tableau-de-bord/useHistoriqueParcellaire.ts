@@ -31,9 +31,9 @@ export function useHistoriqueParcellaire(options: { isLoading: Ref<boolean> }) {
     currentNumeroBio.value = envoi.numeroBio;
     currentAuditDate.value = envoi.auditDate ?? null;
     historiqueCurrentParcellaire.value = await fetchHistoriqueParcellaire(
-      envoi.numeroClient,
-      envoi.numeroBio,
-      envoi.auditDate,
+      envoi.numeroClient ?? "",
+      envoi.numeroBio ?? "",
+      envoi.auditDate ?? "",
     );
     selectedEnvoi.value =
       historiqueCurrentParcellaire.value.find((item) => String(item.jobId) === String(envoi.jobId)) ??

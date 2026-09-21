@@ -18,12 +18,22 @@ export function useEnvoisRejetes(options: { fromBase: Ref<Date | null>; toBase: 
   const ordreDate = ref<OrdreTri>("desc");
 
   const filtreGroupeOuvert = ref(false);
-  const groupeFiltreBrouillon = ref<GroupeAnomalie | null>(null);
-  const groupeFiltreApplique = ref<GroupeAnomalie | null>(null);
+  const groupeFiltreBrouillon = ref<GroupeAnomalie[]>([]);
+  const groupeFiltreApplique = ref<GroupeAnomalie[]>([]);
 
-  const codesFiltres = computed<ErrorCode[] | undefined>(() =>
-    groupeFiltreApplique.value ? [...ErrorGroups[groupeFiltreApplique.value]] : undefined,
-  );
+  const codesFiltres = computed<ErrorCode[] | undefined>(() => {
+    if (!groupeFiltreApplique.value.length) {
+      return undefined;
+    }
+
+    return [
+      ...new Set(
+        groupeFiltreApplique.value.flatMap(
+          (groupe) => [...ErrorGroups[groupe]] as ErrorCode[],
+        ),
+      ),
+    ];
+  });
 
   function optionsRequete(limit?: number) {
     return {
@@ -63,18 +73,22 @@ export function useEnvoisRejetes(options: { fromBase: Ref<Date | null>; toBase: 
   }
 
   function toggleFiltreGroupe() {
+    if (!filtreGroupeOuvert.value) {
+      groupeFiltreBrouillon.value = [...groupeFiltreApplique.value];
+    }
+
     filtreGroupeOuvert.value = !filtreGroupeOuvert.value;
   }
 
   async function validerFiltreGroupe() {
-    groupeFiltreApplique.value = groupeFiltreBrouillon.value;
+    groupeFiltreApplique.value = [...groupeFiltreBrouillon.value];
     filtreGroupeOuvert.value = false;
     await chargerEnvoisRejetes(1);
   }
 
   async function reinitialiserFiltreGroupe() {
-    groupeFiltreBrouillon.value = null;
-    groupeFiltreApplique.value = null;
+    groupeFiltreBrouillon.value = [];
+    groupeFiltreApplique.value = [];
     await chargerEnvoisRejetes(1);
   }
 

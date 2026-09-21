@@ -29,7 +29,11 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
     <AccordionSection title="Opérateur">
       <template #right>
         <span class="fr-badge fr-badge--sm" :class="erreursOperateur.length ? 'fr-badge--error' : 'fr-badge--success'">
-          {{ erreursOperateur.length ? `${erreursOperateur.length} ERREURS` : "VALIDÉ" }}
+          {{
+            erreursOperateur.length
+              ? `${erreursOperateur.length} ERREUR${erreursOperateur.length > 1 ? "S" : ""}`
+              : "VALIDÉ"
+          }}
         </span>
       </template>
       <div class="fr-p-2w">
@@ -59,7 +63,11 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
           class="fr-badge fr-badge--sm"
           :class="erreursDatesParcellaire.length ? 'fr-badge--error' : 'fr-badge--success'"
         >
-          {{ erreursDatesParcellaire.length ? `${erreursDatesParcellaire.length} ERREURS` : "VALIDÉ" }}
+          {{
+            erreursDatesParcellaire.length
+              ? `${erreursDatesParcellaire.length} ERREUR${erreursDatesParcellaire.length > 1 ? "S" : ""}`
+              : "VALIDÉ"
+          }}
         </span>
       </template>
       <div class="fr-p-2w">
@@ -77,7 +85,11 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
     <AccordionSection title="Parcelles">
       <template #right>
         <span class="fr-badge fr-badge--sm" :class="erreursParcelles.length ? 'fr-badge--error' : 'fr-badge--success'">
-          {{ erreursParcelles.length ? `${erreursParcelles.length} ERREURS` : "VALIDÉ" }}
+          {{
+            erreursParcelles.length
+              ? `${erreursParcelles.length} ERREUR${erreursParcelles.length > 1 ? "S" : ""}`
+              : "VALIDÉ"
+          }}
         </span>
       </template>
       <div class="fr-p-2w">
