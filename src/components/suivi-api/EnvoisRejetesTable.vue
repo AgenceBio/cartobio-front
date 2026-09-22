@@ -35,7 +35,6 @@ const triCroissant = computed(() => props.ordreDate === "asc");
 const labelTriDate = computed(() =>
   triCroissant.value ? "Trier par date d'envoi par ordre décroissant" : "Trier par date d'envoi par ordre croissant",
 );
-
 </script>
 
 <template>

@@ -431,9 +431,7 @@
       <div
         class="fr-container"
         v-if="
-          isOc &&
-          !isMobile &&
-          (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/suivi-api'))
+          isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/suivi-api'))
         "
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">

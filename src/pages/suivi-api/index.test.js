@@ -289,10 +289,7 @@ describe("Tableau de bord des APIs", () => {
     await flushPromises();
 
     expect(apiMocks.fetchGeneralKpi).toHaveBeenCalledTimes(3);
-    expect(apiMocks.fetchGeneralKpi).toHaveBeenLastCalledWith(
-      "2026-07-27T00:00:00.000",
-      "2026-08-02T23:59:59.999",
-    );
+    expect(apiMocks.fetchGeneralKpi).toHaveBeenLastCalledWith("2026-07-27T00:00:00.000", "2026-08-02T23:59:59.999");
   });
 
   it("ouvre la modale de détail d'un envoi", async () => {

@@ -18,7 +18,7 @@ import {
   fetchPalmaresAnomaliesGrouped,
   fetchRepetitions,
 } from "@/api/endpoints/tableau-de-bord.api";
-import {getErrorMessage, GROUPE_ANOMALIE_OPTIONS } from "@/utils/error-api.utils";
+import { getErrorMessage, GROUPE_ANOMALIE_OPTIONS } from "@/utils/error-api.utils";
 import PieChartCustom from "@/components/suivi-api/PieChartCustom.vue";
 import BarGraphCustom from "@/components/suivi-api/BarGraphCustom.vue";
 import DatePicker from "@/components/suivi-api/DatePicker.vue";
@@ -336,7 +336,6 @@ const compareBarRowsForExport = computed<ChartRow[]>(() => {
 
   return [...comparaison, ...courant];
 });
-
 
 async function onBilanTableDownload(action: string) {
   if (action === "xlsx") {
