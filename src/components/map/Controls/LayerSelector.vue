@@ -150,7 +150,16 @@
             src="@/assets/map/cartobio-parcelles.png"
             :alt="'Parcelles certifiées CartoBio ' + VUE_APP_CARTOBIO_PARCELLES_YEAR"
           />
-          <span>Parcelles certifiées CartoBio {{ VUE_APP_CARTOBIO_PARCELLES_YEAR }}</span>
+          <span>
+            <p class="fr-mb-0">CartoBio {{ VUE_APP_CARTOBIO_PARCELLES_YEAR }}</p>
+            <small class="fr-hint-text">
+              <a
+                href="https://docs-cartobio.agencebio.org/agriculteurs.trices/annexes/legendes-de-la-carte"
+                @click.stop
+                target="_blank"
+                >En savoir plus<lien-externe /></a
+            ></small>
+          </span>
         </button>
       </div>
     </dialog>
