@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { clefGroupe, typeRepetition, labelRepetition } from "@/composables/tableau-de-bord/useRepetitions";
-import type { RepetitionGroupe } from "@/types/tableau-de-bord";
+import { clefGroupe, typeRepetition, labelRepetition } from "@/composables/suivi-api/useRepetitions";
+import type { RepetitionGroupe } from "@/types/suivi-api";
 
 defineProps<{
   apercu: RepetitionGroupe[];

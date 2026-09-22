@@ -2,7 +2,7 @@ import { ref, computed, type Ref } from "vue";
 import { fetchEnvoisRejetes } from "@/api/endpoints/tableau-de-bord.api";
 import { formatStartOfDay, formatEndOfDay } from "@/utils/date.formatters";
 import { ErrorGroups, type ErrorCode } from "@/utils/error-api.utils";
-import type { PageResult, BilanEnvoiItem, OrdreTri } from "@/types/tableau-de-bord";
+import type { PageResult, BilanEnvoiItem, OrdreTri } from "@/types/suivi-api";
 
 export type GroupeAnomalie = keyof typeof ErrorGroups;
 

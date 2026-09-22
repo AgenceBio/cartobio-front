@@ -18,30 +18,29 @@ import {
   fetchPalmaresAnomaliesGrouped,
   fetchRepetitions,
 } from "@/api/endpoints/tableau-de-bord.api";
-import { getErrorColor, getErrorMessage, GROUPE_ANOMALIE_OPTIONS } from "@/utils/error-api.utils";
-import PieChartCustom from "@/components/tableau-de-bord/PieChartCustom.vue";
-import BarGraphCustom from "@/components/tableau-de-bord/BarGraphCustom.vue";
-import DatePicker from "@/components/tableau-de-bord/DatePicker.vue";
-import ReferentielAnomalies from "@/components/tableau-de-bord/ReferentielAnomalies.vue";
-import RejectsChart from "@/components/tableau-de-bord/RejectsChart.vue";
+import { getErrorMessage, GROUPE_ANOMALIE_OPTIONS } from "@/utils/error-api.utils";
+import PieChartCustom from "@/components/suivi-api/PieChartCustom.vue";
+import BarGraphCustom from "@/components/suivi-api/BarGraphCustom.vue";
+import DatePicker from "@/components/suivi-api/DatePicker.vue";
+import ReferentielAnomalies from "@/components/suivi-api/ReferentielAnomalies.vue";
 import Modal from "@/components/widgets/Modal.vue";
 import ActionDropdown from "@/components/widgets/ActionDropdown.vue";
 import AutoCompleteSearch from "@/components/operator/AutoCompleteSearch.vue";
-import StatsCard from "@/components/tableau-de-bord/StatsCard.vue";
-import BilanEnvoisTable from "@/components/tableau-de-bord/BilanEnvoisTable.vue";
-import EnvoisRejetesTable from "@/components/tableau-de-bord/EnvoisRejetesTable.vue";
-import AlertesBanniere from "@/components/tableau-de-bord/AlertesBanniere.vue";
-import JaugeAvancement from "@/components/tableau-de-bord/JaugeAvancement.vue";
-import HistoriqueParcellaireModal from "@/components/tableau-de-bord/HistoriqueParcellaireModal.vue";
-import AlertesModal from "@/components/tableau-de-bord/AlertesModal.vue";
+import StatsCard from "@/components/suivi-api/StatsCard.vue";
+import BilanEnvoisTable from "@/components/suivi-api/BilanEnvoisTable.vue";
+import EnvoisRejetesTable from "@/components/suivi-api/EnvoisRejetesTable.vue";
+import AlertesBanniere from "@/components/suivi-api/AlertesBanniere.vue";
+import JaugeAvancement from "@/components/suivi-api/JaugeAvancement.vue";
+import HistoriqueParcellaireModal from "@/components/suivi-api/HistoriqueParcellaireModal.vue";
+import AlertesModal from "@/components/suivi-api/AlertesModal.vue";
 import { useIsMobile } from "@/composables/useIsMobile";
-import { useTelechargements } from "@/composables/tableau-de-bord/useTelechargements";
-import { useCC } from "@/composables/tableau-de-bord/useCC";
-import { useBilanGraphique, calculerTaux } from "@/composables/tableau-de-bord/useBilanGraphique";
-import { useRepetitions } from "@/composables/tableau-de-bord/useRepetitions";
-import { useBilanFiltres, STATUT_OPTIONS, ETAT_OPTIONS } from "@/composables/tableau-de-bord/useBilanFiltres";
-import { useEnvoisRejetes } from "@/composables/tableau-de-bord/useEnvoisRejetes";
-import { useHistoriqueParcellaire } from "@/composables/tableau-de-bord/useHistoriqueParcellaire";
+import { useTelechargements } from "@/composables/suivi-api/useTelechargements";
+import { useCC } from "@/composables/suivi-api/useCC";
+import { useBilanGraphique } from "@/composables/suivi-api/useBilanGraphique";
+import { useRepetitions } from "@/composables/suivi-api/useRepetitions";
+import { useBilanFiltres, STATUT_OPTIONS, ETAT_OPTIONS } from "@/composables/suivi-api/useBilanFiltres";
+import { useEnvoisRejetes } from "@/composables/suivi-api/useEnvoisRejetes";
+import { useHistoriqueParcellaire } from "@/composables/suivi-api/useHistoriqueParcellaire";
 import successPicto from "@gouvfr/dsfr/artwork/pictograms/system/success.svg";
 import errorPicto from "@gouvfr/dsfr/artwork/pictograms/system/error.svg";
 import {
@@ -64,7 +63,7 @@ import type {
   DownloadAction,
   ChartRow,
   ChangePeriodPayload,
-} from "@/types/tableau-de-bord";
+} from "@/types/suivi-api";
 import Spinner from "@/components/widgets/Spinner.vue";
 
 import { storeToRefs } from "pinia";
@@ -109,10 +108,9 @@ const avancement = ref(null);
 // Références DOM des graphiques
 const bilanChartCurrentRef = ref<HTMLElement | null>(null);
 const bilanChartCompareRef = ref<HTMLElement | null>(null);
-const palmaresAnomaliesRef = ref<HTMLElement | null>(null);
 
 // Composables
-const { downloadJson, downloadXlsx, fetchAllPages, downloadRangeAsXlsx, downloadCanvasPng, downloadComparisonPng } =
+const { downloadXlsx, fetchAllPages, downloadRangeAsXlsx, downloadCanvasPng, downloadComparisonPng } =
   useTelechargements();
 
 const { copiedValue } = useCC();
@@ -240,23 +238,12 @@ const {
 const COLONNES_BILAN_XLSX = ["N° client", "N° BIO", "État", "Date d'envoi", "Statut"];
 const COLONNES_REJETS_XLSX = ["N° client", "N° BIO", "Date d'audit", "Rejets", "Date d'envoi"];
 const COLONNES_GRAPHIQUE_XLSX = ["période", "catégorie", "valeur", "unité"];
-const COLONNES_PALMARES_XLSX = ["Rang", "Code", "Anomalie", "Occurrences"];
-
-function mapPalmaresRows(data: AnomalieCode[]) {
-  return [...data]
-    .sort((a, b) => b.count - a.count)
-    .map((anomalie, index) => ({
-      Rang: index + 1,
-      Code: anomalie.code,
-      Anomalie: getErrorMessage(anomalie.code, "short"),
-      Occurrences: anomalie.count,
-    }));
-}
 
 const periodeTelechargement = computed(() => {
   const label = unit.value ? formatPeriodLabel(unit.value, fromBase.value ?? baseDate) : null;
   return (label ?? "").toLowerCase();
 });
+
 const titrePngBilan = computed(() => {
   const morceaux = ["Bilan des envois"];
   if (detailAnomalies.value) {
@@ -268,7 +255,6 @@ const titrePngBilan = computed(() => {
 
 // Téléchargements : configuration des menus
 const tableDownloadActions: DownloadAction[] = [
-  // { id: "json", label: "Télécharger en JSON pour la période séléctionnée", icon: "fr-icon-file-line" },
   { id: "xlsx", label: "Télécharger en XLSX pour la période séléctionnée", icon: "fr-icon-file-line" },
   { id: "xlsx-week", label: "Télécharger en XLSX la semaine en cours", icon: "fr-icon-file-line" },
   { id: "xlsx-month", label: "Télécharger en XLSX le mois courant", icon: "fr-icon-file-line" },
@@ -276,15 +262,7 @@ const tableDownloadActions: DownloadAction[] = [
 
 const chartDownloadActions: DownloadAction[] = [
   { id: "png", label: "Télécharger l'image (PNG)", icon: "fr-icon-image-line" },
-  // { id: "json", label: "Télécharger les données pour la période séléctionné (JSON)", icon: "fr-icon-file-line" },
   { id: "xlsx", label: "Télécharger en XLSX pour la période séléctionnée", icon: "fr-icon-file-line" },
-  // { id: "json-week", label: "Télécharger la semaine courante (JSON)", icon: "fr-icon-calendar-line" },
-  // { id: "json-month", label: "Télécharger le mois courant (JSON)", icon: "fr-icon-calendar-line" },
-];
-
-const palmaresDownloadActions: DownloadAction[] = [
-  { id: "png", label: "Télécharger l'image (PNG)", icon: "fr-icon-image-line" },
-  ...tableDownloadActions,
 ];
 
 function mapBilanRows(data: BilanEnvoiItem[]) {
@@ -359,36 +337,7 @@ const compareBarRowsForExport = computed<ChartRow[]>(() => {
   return [...comparaison, ...courant];
 });
 
-async function chartRowsForRange(from: Date, to: Date, periodLabel: string): Promise<ChartRow[]> {
-  const anomalies = await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to));
-  if (!detailAnomalies.value) {
-    const kpi = await fetchGeneralKpi(formatStartOfDay(from), formatEndOfDay(to));
-    const taux = calculerTaux(kpi);
-    return [
-      { période: periodLabel, catégorie: "Acceptés", valeur: taux.validation, unité: "%" },
-      { période: periodLabel, catégorie: "Rejetés", valeur: taux.rejet, unité: "%" },
-    ];
-  }
-  const { x, y } = drillDownGroupe.value
-    ? graphique.anomaliesDetailChartData(anomalies, drillDownGroupe.value.key)
-    : graphique.anomaliesTopChartData(anomalies);
-  return x.map((label, index) => ({
-    période: periodLabel,
-    catégorie: label,
-    valeur: y[index],
-    unité: "nombre",
-  }));
-}
-
 async function onBilanTableDownload(action: string) {
-  if (action === "json") {
-    if (!fromBase.value || !toBase.value) return;
-    const rows = mapBilanRows(
-      await fetchAllPages(fetchBilanEnvois, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
-    );
-    downloadJson(rows, "bilan-envois.json");
-    return;
-  }
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapBilanRows(
@@ -421,23 +370,6 @@ async function onBilanTableDownload(action: string) {
 }
 
 async function onRejectsTableDownload(action: string) {
-  if (action === "png") {
-    downloadCanvasPng(
-      palmaresAnomaliesRef.value,
-      "palmares-rejets.png",
-      palmaresLegend.value,
-      `Palmarès des causes de rejets ${periodeTelechargement.value}`,
-    );
-    return;
-  }
-  if (action === "json") {
-    if (!fromBase.value || !toBase.value) return;
-    const rows = mapRejectsRows(
-      await fetchAllPages(fetchRejetsFiltres, fromBase.value.toISOString(), toBase.value.toISOString(), 500),
-    );
-    downloadJson(rows, "envois-rejetes.json");
-    return;
-  }
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
@@ -469,59 +401,13 @@ async function onRejectsTableDownload(action: string) {
   }
 }
 
-async function onPalmaresDownload(action: string) {
-  if (action === "png") {
-    downloadCanvasPng(
-      palmaresAnomaliesRef.value,
-      "palmares-rejets.png",
-      palmaresLegend.value,
-      `Palmarès des causes de rejets ${periodeTelechargement.value}`,
-    );
-    return;
-  }
-  if (action === "json") {
-    if (!fromBase.value || !toBase.value) return;
-    const rows = mapPalmaresRows(
-      await fetchPalmaresAnomalies(formatStartOfDay(fromBase.value), formatEndOfDay(toBase.value)),
-    );
-    downloadJson(rows, "palmares-rejets.json");
-    return;
-  }
-  if (action === "xlsx") {
-    if (!fromBase.value || !toBase.value) return;
-    const rows = mapPalmaresRows(
-      await fetchPalmaresAnomalies(formatStartOfDay(fromBase.value), formatEndOfDay(toBase.value)),
-    );
-    downloadXlsx(rows, "palmares-rejets.xlsx", "Palmarès des rejets", COLONNES_PALMARES_XLSX);
-    return;
-  }
-  if (action === "xlsx-week") {
-    const { from, to } = currentWeekRange();
-    const rows = mapPalmaresRows(await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to)));
-    downloadXlsx(rows, "palmares-rejets-semaine-courante.xlsx", "Palmarès des rejets", COLONNES_PALMARES_XLSX);
-    return;
-  }
-  if (action === "xlsx-month") {
-    const { from, to } = currentMonthRange();
-    const rows = mapPalmaresRows(await fetchPalmaresAnomalies(formatStartOfDay(from), formatEndOfDay(to)));
-    downloadXlsx(rows, "palmares-rejets-mois-courant.xlsx", "Palmarès des rejets", COLONNES_PALMARES_XLSX);
-  }
-}
-
 const legendEntries = computed(() =>
   bilanChartX.value.map((label, i) => ({
     label: `${label} (${bilanChartY.value[i]}${detailAnomalies.value ? "" : "%"})`,
     color: bilanPieColors.value[i],
   })),
 );
-const palmaresLegend = computed(() =>
-  [...(palmaresAnomalies.value ?? [])]
-    .sort((a, b) => b.count - a.count)
-    .map((anomalie, index) => ({
-      label: `N°${index + 1} — ${getErrorMessage(anomalie.code, "short")}`,
-      color: getErrorColor(anomalie.code),
-    })),
-);
+
 async function onBilanChartDownload(action: string) {
   if (action === "png") {
     if (bilanChartType.value === "bar") {
@@ -545,19 +431,6 @@ async function onBilanChartDownload(action: string) {
     return;
   }
 
-  if (action === "json") {
-    let rows: ChartRow[];
-
-    if (bilanChartType.value === "bar") {
-      rows = bilanViewMode.value === "comparer" ? compareBarRowsForExport.value : bilanBarRowsForExport.value;
-    } else {
-      rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
-    }
-
-    downloadJson(rows, "bilan-graphique.json");
-    return;
-  }
-
   if (action === "xlsx") {
     let rows: ChartRow[];
 
@@ -570,19 +443,6 @@ async function onBilanChartDownload(action: string) {
     downloadXlsx(rows, "bilan-graphique.xlsx", "Bilan graphique", COLONNES_GRAPHIQUE_XLSX);
 
     return;
-  }
-
-  if (action === "json-week") {
-    const { from, to } = currentWeekRange();
-    const rows = await chartRowsForRange(from, to, "Semaine courante");
-    downloadJson(rows, "bilan-graphique-semaine-courante.json");
-    return;
-  }
-
-  if (action === "json-month") {
-    const { from, to } = currentMonthRange();
-    const rows = await chartRowsForRange(from, to, "Mois courant");
-    downloadJson(rows, "bilan-graphique-mois-courant.json");
   }
 }
 
@@ -1028,22 +888,24 @@ onMounted(async () => {
                   </li>
                 </ActionDropdown>
               </div>
-
-              <button
-                v-if="detailAnomalies && drillDownGroupe"
-                type="button"
-                class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-line fr-btn--icon-left fr-mb-2w"
-                @click="retourCategories"
-              >
-                {{ drillDownGroupe.label }}
-              </button>
-              <div
-                v-else
-                class="fr-btn fr-btn--tertiary-no-outline fr-mb-2w"
-                aria-hidden="true"
-                style="visibility: hidden"
-              >
-                &nbsp;
+              <div class="flex justify-between">
+                <span v-if="detailAnomalies">Détails des envois rejetés</span>
+                <button
+                  v-if="detailAnomalies && drillDownGroupe"
+                  type="button"
+                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-line fr-btn--icon-left fr-mb-2w"
+                  @click="retourCategories"
+                >
+                  {{ drillDownGroupe.label }}
+                </button>
+                <div
+                  v-else
+                  class="fr-btn fr-btn--tertiary-no-outline fr-mb-2w"
+                  aria-hidden="true"
+                  style="visibility: hidden"
+                >
+                  &nbsp;
+                </div>
               </div>
 
               <div v-if="bilanChartType === 'pie'">
@@ -1147,7 +1009,7 @@ onMounted(async () => {
 
         <!-- Envois rejetés + palmarès -->
         <div v-if="resumeKpi" class="fr-grid-row fr-grid-row--gutters fr-mt-3v">
-          <div class="fr-col-12 fr-col-lg-8 flex-block">
+          <div class="fr-col-12 fr-col-lg-12 flex-block">
             <div class="card">
               <div class="download-title-row fr-mb-2w">
                 <h2 class="fr-h6 fr-mb-0">
@@ -1277,40 +1139,6 @@ onMounted(async () => {
               <div v-else class="bilan-empty bilan-empty--table">Aucune donnée</div>
             </div>
           </div>
-
-          <div class="fr-col-12 fr-col-lg-4 flex-block" ref="rejectsChartRef">
-            <div class="card">
-              <div class="download-title-row fr-mb-2w">
-                <h2 class="fr-h6 fr-mb-0">
-                  Palmarès des causes de rejets {{ formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase() }}
-                </h2>
-                <ActionDropdown
-                  noWrap
-                  with-icons
-                  icon-class="fr-icon-more-line fr-btn--sm"
-                  icon-style="font-size: 1.2em"
-                >
-                  <li v-for="action in palmaresDownloadActions" :key="action.id">
-                    <button
-                      type="button"
-                      class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
-                      :class="action.icon"
-                      @click="onPalmaresDownload(action.id)"
-                    >
-                      {{ action.label }}
-                    </button>
-                  </li>
-                </ActionDropdown>
-              </div>
-              <div ref="palmaresAnomaliesRef">
-                <RejectsChart v-if="palmaresAnomalies?.length" :reject-data="palmaresAnomalies" />
-                <div v-else class="bilan-empty">Aucune donnée</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div v-else>
-          <span>Aucun envoi parcellaire cette semaine</span>
         </div>
       </div>
     </div>
@@ -1662,6 +1490,7 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
 }
+
 .justify-between {
   justify-content: space-between;
   display: flex;
@@ -1679,6 +1508,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
 }
+
 .global-envoie {
   color: var(--light-decisions-artwork-artwork-major-blue-france, #000091);
   font-family: Marianne;
@@ -1692,9 +1522,11 @@ onMounted(async () => {
 .fr-grid-row--gutters.stats-row {
   align-items: stretch;
 }
+
 .stats-row [class*="fr-col-"] {
   display: flex;
 }
+
 .stats-row__filters {
   margin-bottom: 1rem;
 }
@@ -1705,6 +1537,7 @@ onMounted(async () => {
   padding: 24px 32px;
   padding-bottom: 5px;
 }
+
 .align-center :deep(figure) {
   margin: auto;
 }
@@ -1716,12 +1549,14 @@ onMounted(async () => {
   justify-content: space-between;
   gap: 1rem;
 }
+
 .bilan-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
+
 .bilan-controls {
   display: flex;
   align-items: center;
@@ -1729,6 +1564,7 @@ onMounted(async () => {
   flex-wrap: wrap;
   justify-content: space-between;
 }
+
 .table-actions {
   display: flex;
   align-items: center;
@@ -1741,22 +1577,26 @@ onMounted(async () => {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
+
 .bilan-compare__col {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .bilan-compare__empty {
   color: var(--text-mention-grey);
   padding: 24px 0;
 }
+
 .bilan-compare__nav {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 8px;
 }
+
 .bilan-compare__nav > div {
   color: var(--blue-france-sun-113-625);
 }
@@ -1853,6 +1693,7 @@ onMounted(async () => {
 
 .flex-block {
   display: flex;
+
   .card {
     flex: 1;
   }
@@ -1863,10 +1704,12 @@ onMounted(async () => {
     margin-bottom: 0;
   }
 }
+
 @media (max-width: 48rem) {
   .bilan-compare {
     flex-direction: column;
   }
+
   .stats-row__date-picker {
     margin-top: 1rem;
   }
@@ -1876,16 +1719,19 @@ onMounted(async () => {
     align-items: flex-start;
     flex-wrap: wrap;
   }
+
   .global-envoie {
     font-size: 32px;
     line-height: 40px;
   }
 }
+
 @media (max-width: 30rem) {
   .flex {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .bilan-header,
   .download-title-row {
     flex-direction: column;
@@ -1901,9 +1747,11 @@ onMounted(async () => {
   justify-content: center;
   color: var(--text-mention-grey);
 }
+
 .bilan-empty--table {
   min-height: 360px;
 }
+
 .bilan-empty--kpi {
   min-height: 140px;
 }
@@ -1922,6 +1770,7 @@ onMounted(async () => {
   align-self: end;
   margin-left: auto;
 }
+
 .fr-table__header .fr-search-bar {
   margin-bottom: 0rem;
 }

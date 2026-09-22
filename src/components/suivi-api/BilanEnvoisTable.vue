@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Pagination from "@/components/widgets/Pagination.vue";
-import CopierColler from "@/components/tableau-de-bord/CopierColler.vue";
+import CopierColler from "@/components/suivi-api/CopierColler.vue";
 import { formatDateTableau } from "@/utils/date.formatters";
 import { formatEtat, formatEtatLong, formatStatut, statutBadgeClass } from "@/utils/etat.formatters";
-import type { BilanEnvoiItem } from "@/types/tableau-de-bord";
+import type { BilanEnvoiItem } from "@/types/suivi-api";
 import { computed } from "vue";
 
 const props = withDefaults(

@@ -1,6 +1,6 @@
 import { computed, type Ref } from "vue";
 import { ErrorGroups, type ErrorCode } from "@/utils/error-api.utils";
-import type { ErreurEnvoi, GroupeErreursParcelle } from "@/types/tableau-de-bord";
+import type { ErreurEnvoi, GroupeErreursParcelle } from "@/types/suivi-api";
 
 export function grouperErreursParcelles(erreurs: ErreurEnvoi[]): GroupeErreursParcelle[] {
   const groupes = new Map<string, GroupeErreursParcelle>();

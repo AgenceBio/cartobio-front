@@ -2,11 +2,11 @@
 import Modal from "@/components/widgets/Modal.vue";
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
-import ErreursAccordion from "@/components/tableau-de-bord/ErreursAccordion.vue";
+import ErreursAccordion from "@/components/suivi-api/ErreursAccordion.vue";
 import Pagination from "@/components/widgets/Pagination.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
 import { formatDateTableau, formatDateControle } from "@/utils/date.formatters";
-import { clefGroupe, typeRepetition, labelRepetition } from "@/composables/tableau-de-bord/useRepetitions";
+import { clefGroupe, typeRepetition, labelRepetition } from "@/composables/suivi-api/useRepetitions";
 import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/tableau-de-bord.types";
 
 defineProps<{

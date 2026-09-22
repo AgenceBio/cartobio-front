@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCC } from "@/composables/tableau-de-bord/useCC";
+import { useCC } from "@/composables/suivi-api/useCC";
 
 const props = defineProps<{
   value: string | number | null | undefined;

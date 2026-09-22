@@ -1,6 +1,6 @@
 import { TypeFiltreAlertes } from "./useRepetitions";
 import { computed, ref } from "vue";
-import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/tableau-de-bord";
+import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/suivi-api";
 
 export function clefGroupe(groupe: RepetitionGroupe): string {
   return `${groupe.numeroBio}-${groupe.numeroClient}-${groupe.auditDate}`;

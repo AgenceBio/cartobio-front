@@ -11,7 +11,7 @@ import type {
   CompareKpi,
   BarSerie,
   DateRange,
-} from "@/types/tableau-de-bord";
+} from "@/types/suivi-api";
 
 export const groupesAnomalies: { key: ErrorGroupKey; label: string }[] = [
   { key: "import", label: "Opérateur" },
@@ -223,8 +223,8 @@ export function useBilanGraphique(options: {
       const previousWeek = dayjs(fromBase.value).subtract(1, "week");
 
       return {
-        from: previousWeek.startOf("week").add(1, "day").toDate(),
-        to: previousWeek.endOf("week").add(1, "day").toDate(),
+        from: previousWeek.startOf("isoWeek").toDate(),
+        to: previousWeek.endOf("isoWeek").toDate(),
       };
     }
 
