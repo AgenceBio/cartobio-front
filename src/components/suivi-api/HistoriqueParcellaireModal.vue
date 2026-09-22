@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Modal from "@/components/widgets/Modal.vue";
-import ErreursAccordion from "@/components/tableau-de-bord/ErreursAccordion.vue";
+import ErreursAccordion from "@/components/suivi-api/ErreursAccordion.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
 import { formatDateTableau, formatDateControle } from "@/utils/date.formatters";
-import { useTelechargements } from "@/composables/tableau-de-bord/useTelechargements";
-import type { HistoriqueEnvoi } from "@/types/tableau-de-bord";
+import { useTelechargements } from "@/composables/suivi-api/useTelechargements";
+import type { HistoriqueEnvoi } from "@/types/suivi-api";
 
 defineProps<{
   vueModal: "historique" | "detail";

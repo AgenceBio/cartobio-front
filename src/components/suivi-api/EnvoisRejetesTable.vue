@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Pagination from "@/components/widgets/Pagination.vue";
-import CopierColler from "@/components/tableau-de-bord/CopierColler.vue";
+import CopierColler from "@/components/suivi-api/CopierColler.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor, ErrorCode } from "@/utils/error-api.utils";
 import { formatDateTableau } from "@/utils/date.formatters";
-import type { BilanEnvoiItem } from "@/types/tableau-de-bord";
+import type { BilanEnvoiItem } from "@/types/suivi-api";
 import { computed } from "vue";
 
 const props = withDefaults(
@@ -35,6 +35,7 @@ const triCroissant = computed(() => props.ordreDate === "asc");
 const labelTriDate = computed(() =>
   triCroissant.value ? "Trier par date d'envoi par ordre décroissant" : "Trier par date d'envoi par ordre croissant",
 );
+
 </script>
 
 <template>
@@ -93,7 +94,7 @@ const labelTriDate = computed(() =>
                 </td>
                 <td>
                   <span
-                    v-for="detail in envoi.details?.slice(0, 1)"
+                    v-for="detail in envoi.details?.slice(0, 3)"
                     :key="detail.code"
                     class="fr-badge fr-badge--sm fr-mr-1w error-badge"
                     :style="{
@@ -103,8 +104,8 @@ const labelTriDate = computed(() =>
                   >
                     {{ getErrorMessage(detail.code as ErrorCode, "short") }}
                   </span>
-                  <span v-if="(envoi.details?.length ?? 0) > 2" class="fr-text--sm">
-                    +{{ (envoi.details?.length ?? 0) - 1 }}
+                  <span v-if="(envoi.details?.length ?? 0) > 3" class="fr-text--sm">
+                    +{{ (envoi.details?.length ?? 0) - 3 }}
                   </span>
                 </td>
                 <td>

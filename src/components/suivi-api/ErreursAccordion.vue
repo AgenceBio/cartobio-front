@@ -3,8 +3,8 @@ import { computed } from "vue";
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor, ErrorCode } from "@/utils/error-api.utils";
-import { useErreursEnvoi } from "@/composables/tableau-de-bord/useErreursEnvoi";
-import type { ErreurEnvoi } from "@/types/tableau-de-bord";
+import { useErreursEnvoi } from "@/composables/suivi-api/useErreursEnvoi";
+import type { ErreurEnvoi } from "@/types/suivi-api";
 
 const props = defineProps<{
   envoi: { erreurs?: ErreurEnvoi[]; statut?: string } | null;

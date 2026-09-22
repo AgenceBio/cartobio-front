@@ -1,6 +1,6 @@
 import { ref, type Ref } from "vue";
 import { fetchHistoriqueParcellaire } from "@/api/endpoints/tableau-de-bord.api";
-import type { HistoriqueEnvoi, ModalContext } from "@/types/tableau-de-bord";
+import type { HistoriqueEnvoi, ModalContext } from "@/types/suivi-api";
 
 export function useHistoriqueParcellaire(options: { isLoading: Ref<boolean> }) {
   const { isLoading } = options;

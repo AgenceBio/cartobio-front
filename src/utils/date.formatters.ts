@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import isoWeek from "dayjs/plugin/isoWeek";
-import type { Unit, DateRange } from "@/types/tableau-de-bord.ts";
+import type { Unit, DateRange } from "@/types/suivi-api";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);

@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { formatStartOfDay, formatEndOfDay, currentWeekRange, currentMonthRange } from "@/utils/date.formatters";
-import type { PageResult, DateRange } from "@/types/tableau-de-bord";
+import type { PageResult, DateRange } from "@/types/suivi-api";
 
 export interface LegendEntry {
   label: string;
@@ -17,11 +17,6 @@ export function useTelechargements() {
     link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
-  }
-
-  function downloadJson(data: unknown, filename: string) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    downloadBlob(blob, filename);
   }
 
   function downloadXlsx(rows: XlsxRow[], filename: string, sheetName: string, columns?: string[]) {
@@ -173,7 +168,6 @@ export function useTelechargements() {
 
   return {
     downloadBlob,
-    downloadJson,
     downloadXlsx,
     fetchAllPages,
     downloadRangeAsXlsx,

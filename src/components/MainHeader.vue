@@ -344,7 +344,7 @@
           (!isActive('/certification/*') &&
             !isActive('/exploitations/*') &&
             !isActive('/exploitations') &&
-            !isActive('/tableau-de-bord') &&
+            !isActive('/suivi-api') &&
             !isOnExploitationsPage)
         "
       >
@@ -433,7 +433,7 @@
         v-if="
           isOc &&
           !isMobile &&
-          (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/tableau-de-bord'))
+          (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/suivi-api'))
         "
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
@@ -453,10 +453,10 @@
             </li>
             <li class="fr-nav__item">
               <router-link
-                to="/tableau-de-bord"
+                to="/suivi-api"
                 class="fr-nav__link"
-                :aria-current="isActive('/tableau-de-bord') ? 'page' : undefined"
-                >Tableau de bord</router-link
+                :aria-current="isActive('/suivi-api') ? 'page' : undefined"
+                >Suivi des envois API</router-link
               >
             </li>
             <li class="fr-nav__item">

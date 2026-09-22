@@ -1,7 +1,7 @@
 import { computed, ref, type Ref } from "vue";
 import { fetchBilanEnvois } from "@/api/endpoints/tableau-de-bord.api";
 import { formatStartOfDay, formatEndOfDay } from "@/utils/date.formatters";
-import type { BilanFiltres, BilanEnvoiItem, PageResult, OrdreTri } from "@/types/tableau-de-bord";
+import type { BilanFiltres, BilanEnvoiItem, PageResult, OrdreTri } from "@/types/suivi-api";
 
 export const STATUT_OPTIONS = [
   { value: "VALID", label: "Validé" },
