@@ -10,6 +10,7 @@ export enum ErrorCode {
   INVALID_DATE_CERTIFICATION_DEBUT = "INVALID_DATE_CERTIFICATION_DEBUT",
   INVALID_DATE_CERTIFICATION_FIN = "INVALID_DATE_CERTIFICATION_FIN",
   INVALID_DATE_AUDIT = "INVALID_DATE_AUDIT",
+  MISSING_CERTIFICATION_DATES = "MISSING_CERTIFICATION_DATES",
 
   // Validation des parcelles - erreurs
   INVALID_ETAT_PRODUCTION = "INVALID_ETAT_PRODUCTION",
@@ -70,6 +71,11 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
   [ErrorCode.INVALID_DATE_CERTIFICATION_FIN]: {
     full: "Champ 'dateCertificationFin' incorrect",
     short: "Fin certification invalide",
+  },
+
+  [ErrorCode.MISSING_CERTIFICATION_DATES]: {
+    full: "Un des champs de dates de certification est manquant",
+    short: "Date de certification manquant",
   },
 
   [ErrorCode.INVALID_DATE_AUDIT]: {
@@ -172,6 +178,7 @@ export const ErrorGroups = {
     ErrorCode.INVALID_DATE_CERTIFICATION_DEBUT,
     ErrorCode.INVALID_DATE_CERTIFICATION_FIN,
     ErrorCode.INVALID_DATE_AUDIT,
+    ErrorCode.MISSING_CERTIFICATION_DATES,
   ],
 
   parcelErrors: [
@@ -210,6 +217,7 @@ export const ErrorColors: Record<ErrorCode, string> = {
   [ErrorCode.INVALID_DATE_CERTIFICATION_DEBUT]: "#7B61FF",
   [ErrorCode.INVALID_DATE_CERTIFICATION_FIN]: "#5B45C8",
   [ErrorCode.INVALID_DATE_AUDIT]: "#A55CAE",
+  [ErrorCode.MISSING_CERTIFICATION_DATES]: "#929292",
 
   [ErrorCode.INVALID_ETAT_PRODUCTION]: "#D1495B",
   [ErrorCode.MISSING_DATE_ENGAGEMENT]: "#CC5F00",
