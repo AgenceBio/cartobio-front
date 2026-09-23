@@ -159,6 +159,7 @@ const {
 const repetitionsState = useRepetitions();
 const {
   repetitions,
+  repetitionsModal,
   modalAlertes,
   vueAlertes,
   selectedRepetitionGroupe,
@@ -471,20 +472,30 @@ async function chargerComparePeriode() {
   compareEvolutionEnvois.value = evolution;
 }
 
-async function chargerAlertes() {
+async function chargerApercuAlertes() {
+  const res = await fetchRepetitions(1, alertesLimit.value);
+  repetitions.value = res.data ?? [];
+}
+
+async function chargerAlertesModal() {
   const res = await fetchRepetitions(
     alertesPage.value,
     alertesLimit.value,
     rechercheAlertesAppliquee.value || undefined,
     typeFiltreAlertes.value || undefined,
   );
-  repetitions.value = res.data ?? [];
+  repetitionsModal.value = res.data ?? [];
   alertesTotal.value = res.meta?.total ?? 0;
 }
 
 watch([rechercheAlertesAppliquee, typeFiltreAlertes, alertesPage], () => {
-  chargerAlertes();
+  if (modalAlertes.value) chargerAlertesModal();
 });
+
+async function ouvrirModalToutesAlertes(groupe?: (typeof repetitions.value)[number]) {
+  ouvrirModalAlertes(groupe);
+  await chargerAlertesModal();
+}
 
 // Chargement principal
 watch(
@@ -539,7 +550,7 @@ onBeforeUnmount(() => {
 
 onMounted(async () => {
   isLoading.value = true;
-  await chargerAlertes();
+  await chargerApercuAlertes();
   avancement.value = await getDashboardSummary([], new Date().getFullYear());
   isLoading.value = false;
 });
@@ -594,7 +605,7 @@ onMounted(async () => {
           :apercu="repetitionsApercu"
           :restantes="repetitionsRestantes"
           @masquer="masquerRepetition"
-          @ouvrir="ouvrirModalAlertes"
+          @ouvrir="ouvrirModalToutesAlertes"
         />
         <!-- Ligne filtres + sélecteur de période -->
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4w stats-row">
@@ -1457,7 +1468,7 @@ onMounted(async () => {
     <AlertesModal
       v-model="modalAlertes"
       :vue-alertes="vueAlertes"
-      :repetitions="repetitions"
+      :repetitions="repetitionsModal"
       :groupe-a-ouvrir-key="groupeAOuvrirKey"
       :selected-groupe="selectedRepetitionGroupe"
       :selected-envoi="selectedRepetitionEnvoi"

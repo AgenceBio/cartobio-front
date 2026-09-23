@@ -30,6 +30,7 @@ const APERCU_NB = 3;
 
 export function useRepetitions() {
   const repetitions = ref<RepetitionGroupe[]>([]);
+  const repetitionsModal = ref<RepetitionGroupe[]>([]);
   const repetitionsMasquees = ref<Set<string>>(new Set());
   const modalAlertes = ref(false);
   const vueAlertes = ref<"liste" | "detail">("liste");
@@ -102,6 +103,7 @@ export function useRepetitions() {
 
   return {
     repetitions,
+    repetitionsModal,
     repetitionsMasquees,
     modalAlertes,
     vueAlertes,
