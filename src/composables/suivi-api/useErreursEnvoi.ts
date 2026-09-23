@@ -25,11 +25,11 @@ export function useErreursEnvoi(source: Ref<{ erreurs?: ErreurEnvoi[]; statut?: 
   const erreurs = computed<ErreurEnvoi[]>(() => source.value?.erreurs ?? []);
 
   const erreursOperateur = computed(() =>
-    erreurs.value.filter((e) => !e.parcelleId && ErrorGroups.import.includes(e.code as ErrorCode)),
+    erreurs.value.filter((e) => ErrorGroups.import.includes(e.code as ErrorCode)),
   );
 
   const erreursDatesParcellaire = computed(() =>
-    erreurs.value.filter((e) => !e.parcelleId && ErrorGroups.dateValidation.includes(e.code as ErrorCode)),
+    erreurs.value.filter((e) => ErrorGroups.dateValidation.includes(e.code as ErrorCode)),
   );
 
   const erreursParcelles = computed(() =>

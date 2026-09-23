@@ -19,6 +19,11 @@ export function useTelechargements() {
     URL.revokeObjectURL(url);
   }
 
+  function downloadJson(data: unknown, filename: string) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    downloadBlob(blob, filename);
+  }
+
   function downloadXlsx(rows: XlsxRow[], filename: string, sheetName: string, columns?: string[]) {
     const worksheet = rows.length
       ? XLSX.utils.json_to_sheet(rows, columns?.length ? { header: columns } : undefined)
@@ -175,5 +180,6 @@ export function useTelechargements() {
     downloadComparisonPng,
     currentWeekRange,
     currentMonthRange,
+    downloadJson,
   };
 }

@@ -14,6 +14,7 @@ const source = computed(() => props.envoi);
 
 const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParcellesGroupees, isInternalJobError } =
   useErreursEnvoi(source);
+console.log(source);
 </script>
 
 <template>
@@ -39,7 +40,7 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
       <div class="fr-p-2w">
         <p v-if="erreursOperateur.length === 0" class="fr-text--sm fr-mb-0">Aucune erreur liée à l'opérateur.</p>
         <div v-else>
-          <div v-for="erreur in erreursOperateur" :key="erreur.code" class="fr-mb-2w error-element">
+          <div v-for="erreur in erreursOperateur" :key="erreur.code" class="fr-mb-2w error-element row-accordion">
             <div>
               {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
             </div>
@@ -75,8 +76,19 @@ const { erreursOperateur, erreursDatesParcellaire, erreursParcelles, erreursParc
           Aucune erreur liée aux dates du parcellaire.
         </p>
         <div v-else>
-          <div v-for="erreur in erreursDatesParcellaire" :key="erreur.code">
-            {{ getErrorMessage(erreur.code, "short") }}
+          <div v-for="erreur in erreursDatesParcellaire" :key="erreur.code" class="row-accordion">
+            <div>
+              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+            </div>
+            <span
+              class="fr-badge fr-badge--sm fr-mr-1w error-badge"
+              :style="{
+                backgroundColor: getErrorColor(erreur.code),
+                color: getErrorTextColor(erreur.code),
+              }"
+            >
+              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+            </span>
           </div>
         </div>
       </div>
