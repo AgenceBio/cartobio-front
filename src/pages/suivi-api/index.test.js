@@ -305,6 +305,31 @@ describe("Tableau de bord des APIs", () => {
     expect(apiMocks.fetchHistoriqueParcellaire).toHaveBeenCalledWith("C123", "B456", "2026-08-10");
     expect(wrapper.find(".modal-stub").exists()).toBe(true);
   });
+  it("affiche une erreur générale pour INVALID_API_REQUEST seul", async () => {
+    apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([
+      {
+        ...envoi,
+        statut: "REJECTED",
+        erreurs: [
+          { code: "INVALID_API_REQUEST", numeroBio: null, parcelleId: null, parcelleName: null, message: null },
+        ],
+      },
+    ]);
+    const wrapper = mountPage();
+    await selectPeriode(wrapper);
+
+    const detailButton = wrapper
+      .findAll("#table-bilan-envoi button")
+      .find((b) => b.attributes("aria-label")?.includes("Voir le détail"));
+    await detailButton.trigger("click");
+    await flushPromises();
+
+    const alerte = wrapper.find(".modal-stub .fr-alert--error");
+    expect(alerte.exists()).toBe(true);
+    expect(alerte.text()).toContain("Erreur de l'API");
+    expect(alerte.text()).not.toContain("Erreur interne");
+  });
+
   it("affiche l'alerte d'erreur interne quand le statut est ERROR", async () => {
     apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([{ ...envoi, statut: "ERROR", erreurs: [] }]);
     const wrapper = mountPage();

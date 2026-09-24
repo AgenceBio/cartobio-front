@@ -448,7 +448,7 @@
                 >Liste des exploitations</router-link
               >
             </li>
-            <li class="fr-nav__item">
+            <li class="fr-nav__item" v-if="canAccessApiDashboard">
               <router-link
                 to="/suivi-api"
                 class="fr-nav__link"
@@ -700,7 +700,8 @@ const ROLE_ICONS = new Map([
 
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION);
 
-const { user, isLogged, roles, startPage, accueilPage, documentationPage } = storeToRefs(userStore);
+const { user, isLogged, roles, startPage, accueilPage, documentationPage, canAccessApiDashboard } =
+  storeToRefs(userStore);
 const roleIcon = computed(() => {
   for (const role of roles.value) {
     if (ROLE_ICONS.has(role)) return ROLE_ICONS.get(role);
