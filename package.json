@@ -27,7 +27,7 @@
     "@algolia/autocomplete-js": "^1.19.10",
     "@algolia/autocomplete-theme-classic": "^1.19.10",
     "@gouvfr/dsfr": "^1.15.3",
-    "@sentry/vue": "^10.75.0",
+    "@sentry/vue": "^10.75.1",
     "@turf/bbox": "^7.4.0",
     "@turf/bbox-polygon": "^7.4.0",
     "@turf/difference": "^7.4.0",
