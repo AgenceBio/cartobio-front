@@ -17,6 +17,8 @@ export const ROLES = Object.freeze({
   UNKNOWN: "unknown",
 });
 
+export const API_DASHBOARD_OC_IDS = new Set([1, 2, 3, 7]);
+
 const rolesMap = {
   "Super OC": [ROLES.OC_CERTIF, ROLES.OC_AUDIT],
   // Legacy
@@ -84,6 +86,9 @@ export const useUserStore = defineStore("user", () => {
   const isOcCertif = computed(() => roles.value.includes(ROLES.OC_CERTIF));
   const isOc = computed(() => isOcAudit.value || isOcCertif.value);
   const isAgri = computed(() => roles.value.includes(ROLES.OPERATEUR));
+  const canAccessApiDashboard = computed(
+    () => !isAdmin.value && isOc.value && API_DASHBOARD_OC_IDS.has(Number(user.value.organismeCertificateur?.id)),
+  );
 
   const startPage = computed(() => {
     if (isOc.value) {
@@ -192,6 +197,7 @@ export const useUserStore = defineStore("user", () => {
     isOc,
     isOcAudit,
     isOcCertif,
+    canAccessApiDashboard,
     isUnknown,
     roles,
     startPage,

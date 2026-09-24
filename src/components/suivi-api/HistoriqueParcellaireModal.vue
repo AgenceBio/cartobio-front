@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import Modal from "@/components/widgets/Modal.vue";
 import ErreursAccordion from "@/components/suivi-api/ErreursAccordion.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
@@ -6,7 +7,7 @@ import { formatDateTableau, formatDateControle } from "@/utils/date.formatters";
 import { useTelechargements } from "@/composables/suivi-api/useTelechargements";
 import type { HistoriqueEnvoi } from "@/types/suivi-api";
 
-defineProps<{
+const props = defineProps<{
   vueModal: "historique" | "detail";
   isLoading: boolean;
   numeroBio: string | null;
@@ -28,6 +29,11 @@ const emit = defineEmits<{
 const model = defineModel<boolean>({ required: true });
 
 const { downloadJson } = useTelechargements();
+
+const hasOnlyInvalidApiRequest = computed(() => {
+  const erreurs = props.selectedEnvoi?.erreurs ?? [];
+  return erreurs.length > 0 && erreurs.every((erreur) => erreur.code === "INVALID_API_REQUEST");
+});
 </script>
 
 <template>
@@ -150,7 +156,11 @@ const { downloadJson } = useTelechargements();
           </button>
         </div>
 
-        <ErreursAccordion :envoi="selectedEnvoi" />
+        <div v-if="hasOnlyInvalidApiRequest" class="fr-alert fr-alert--error fr-mt-3w">
+          <h3 class="fr-alert__title">Erreur de l'API</h3>
+          <p>Une erreur est survenue lors de l'appel à l'API. Aucun détail d'anomalie n'est disponible.</p>
+        </div>
+        <ErreursAccordion v-else :envoi="selectedEnvoi" />
       </template>
     </template>
 

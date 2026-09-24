@@ -2,6 +2,7 @@
 meta:
   requiredRoles: ["certif", "audit"]
   forbiddenRoles: ["admin"]
+  requiredPermissions: ["canAccessApiDashboard"]
   skipLinks:
     - Recherche: "#search"
   seo:
