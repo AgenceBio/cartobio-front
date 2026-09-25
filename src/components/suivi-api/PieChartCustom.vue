@@ -13,7 +13,7 @@
         <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
         <span>
           {{ label }} ({{ y[index] }}{{ unitTooltip
-          }}<template v-if="counts[index] !== undefined"> — {{ counts[index] }}</template
+          }}<template v-if="counts[index] !== undefined"> — {{ formatNumberWithSpaces(counts[index]) }}</template
           >)
         </span>
       </li>
@@ -34,7 +34,7 @@
         <tr v-for="(label, index) in x" :key="label">
           <th scope="row">{{ label }}</th>
           <td>{{ y[index] }}{{ unitTooltip }}</td>
-          <td v-if="hasCounts">{{ counts[index] }}</td>
+          <td v-if="hasCounts">{{ formatNumberWithSpaces(counts[index]) }}</td>
         </tr>
       </tbody>
     </table>
@@ -45,6 +45,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Chart, PieController, ArcElement, Tooltip } from "chart.js";
 import type { ChartType, TooltipModel } from "chart.js";
+import { formatNumberWithSpaces } from "@/utils/numbers.formatters";
 
 Chart.register(PieController, ArcElement, Tooltip);
 
@@ -86,7 +87,11 @@ const accessibleDescription = computed(() => {
   const values = props.x
     .map(
       (label, i) =>
-        label + ": " + props.y[i] + props.unitTooltip + (props.counts[i] !== undefined ? " — " + props.counts[i] : ""),
+        label +
+        ": " +
+        props.y[i] +
+        props.unitTooltip +
+        (props.counts[i] !== undefined ? " — " + formatNumberWithSpaces(props.counts[i]) : ""),
     )
     .join(", ");
   return `${props.title}. ${values}.`;
@@ -127,7 +132,11 @@ function externalTooltipHandler(context: { chart: Chart; tooltip: TooltipModel<C
   const point = tooltip.dataPoints[0];
   const count = props.counts[point.dataIndex];
   el.textContent =
-    point.label + ": " + point.formattedValue + props.unitTooltip + (count !== undefined ? " — " + count : "");
+    point.label +
+    ": " +
+    point.formattedValue +
+    props.unitTooltip +
+    (count !== undefined ? " — " + formatNumberWithSpaces(count) : "");
   el.setAttribute("aria-hidden", "false");
   el.className = "fr-tooltip chart-tooltip";
 

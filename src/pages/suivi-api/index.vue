@@ -413,7 +413,7 @@ async function onRejectsTableDownload(action: string) {
 
 const legendEntries = computed(() =>
   bilanChartX.value.map((label, i) => ({
-    label: label + " (" + bilanChartY.value[i] + "% — " + bilanChartCounts.value[i] + ")",
+    label: label + " (" + bilanChartY.value[i] + "% — " + formatNumberWithSpaces(bilanChartCounts.value[i]) + ")",
     color: bilanPieColors.value[i],
   })),
 );
@@ -550,6 +550,16 @@ function fermerFiltresAuClicExterieur(event: MouseEvent) {
   const target = event.target as HTMLElement | null;
 
   if (target?.closest(".filtre-wrapper")) return;
+
+  filtreMenuOuvert.value = false;
+  filtreGroupeOuvert.value = false;
+}
+
+function fermerFiltresAuFocusExterieur(event: FocusEvent) {
+  const wrapper = event.currentTarget as HTMLElement;
+  const nextFocusTarget = event.relatedTarget as Node | null;
+
+  if (nextFocusTarget && wrapper.contains(nextFocusTarget)) return;
 
   filtreMenuOuvert.value = false;
   filtreGroupeOuvert.value = false;
@@ -710,7 +720,7 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper">
+                    <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -1065,7 +1075,7 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper">
+                    <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -1207,7 +1217,7 @@ onMounted(async () => {
 
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper">
+            <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
@@ -1345,7 +1355,7 @@ onMounted(async () => {
         </div>
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper">
+            <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"

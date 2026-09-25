@@ -1,5 +1,5 @@
 <template>
-  <div class="comparator">
+  <div ref="comparatorRef" class="comparator" @focusout="closeOnFocusOutside">
     <!-- Navigation de la période active -->
     <div class="comparator__trigger">
       <button
@@ -12,6 +12,9 @@
       <button
         type="button"
         class="fr-btn fr-btn--tertiary-no-outline fr-icon-calendar-line fr-btn--sm comparator__period-button"
+        ref="triggerRef"
+        :aria-expanded="isPickerOpen"
+        :aria-controls="pickerId"
         @click="togglePicker"
       >
         <span>{{ currentPeriodLabel }}</span>
@@ -28,7 +31,13 @@
     </div>
 
     <!-- Sélecteur de période -->
-    <div v-if="isPickerOpen" class="comparator__picker" role="dialog" aria-label="Sélection d'une période">
+    <div
+      v-if="isPickerOpen"
+      :id="pickerId"
+      class="comparator__picker"
+      role="dialog"
+      aria-label="Sélection d'une période"
+    >
       <!-- Comparaison entre deux périodes -->
       <div v-if="props.isCompare" class="comparator__periods">
         <div class="comparator__period">
@@ -123,6 +132,8 @@
 
       <!-- Actions -->
       <div class="comparator__footer">
+        <button type="button" class="fr-btn fr-btn--secondary" @click="selectToday">Aujourd'hui</button>
+
         <button type="button" class="fr-btn fr-btn--secondary" @click="cancel">Annuler</button>
 
         <button type="button" class="fr-btn" @click="validate">Valider</button>
@@ -132,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import dayjs, { type Dayjs } from "dayjs";
 
@@ -254,6 +265,9 @@ const periodOptions = computed<PeriodOption[]>(() => {
  * ========================================================================== */
 
 const isPickerOpen = ref(false);
+const comparatorRef = ref<HTMLElement | null>(null);
+const triggerRef = ref<HTMLButtonElement | null>(null);
+const pickerId = "period-picker-" + crypto.randomUUID();
 
 const selectedUnit = ref<Unit>(props.unit);
 
@@ -469,35 +483,59 @@ function goToNextMonth(): void {
   calendarMonth.value = calendarMonth.value.add(1, "month");
 }
 
+function closePicker(): void {
+  isPickerOpen.value = false;
+  draftUnit.value = selectedUnit.value;
+  draftDate.value = committedDate.value;
+}
+
+function closeOnFocusOutside(event: FocusEvent): void {
+  const nextFocusTarget = event.relatedTarget as Node | null;
+  if (nextFocusTarget && comparatorRef.value?.contains(nextFocusTarget)) return;
+  closePicker();
+}
+
+function onDocumentPointerDown(event: PointerEvent): void {
+  if (isPickerOpen.value && comparatorRef.value && !comparatorRef.value.contains(event.target as Node)) {
+    closePicker();
+  }
+}
+
+function onDocumentKeydown(event: KeyboardEvent): void {
+  if (event.key !== "Escape" || !isPickerOpen.value) return;
+  closePicker();
+  triggerRef.value?.focus();
+}
+
+function selectToday(): void {
+  selectedUnit.value = draftUnit.value;
+  committedDate.value = dayjs();
+  calendarMonth.value = committedDate.value.startOf("month");
+  isPickerOpen.value = false;
+  emitCurrentPeriod();
+}
+
 function togglePicker(): void {
   if (isPickerOpen.value) {
-    isPickerOpen.value = false;
+    closePicker();
     return;
   }
 
   draftUnit.value = selectedUnit.value;
   draftDate.value = committedDate.value;
-
   calendarMonth.value = committedDate.value.startOf("month");
-
   isPickerOpen.value = true;
 }
 
 function cancel(): void {
-  isPickerOpen.value = false;
-
-  draftUnit.value = selectedUnit.value;
-  draftDate.value = committedDate.value;
+  closePicker();
 }
 
 function validate(): void {
   selectedUnit.value = draftUnit.value;
   committedDate.value = draftDate.value;
-
   calendarMonth.value = committedDate.value.startOf("month");
-
   isPickerOpen.value = false;
-
   emitCurrentPeriod();
 }
 
@@ -548,6 +586,8 @@ watch(
  * ========================================================================== */
 
 onMounted(() => {
+  document.addEventListener("pointerdown", onDocumentPointerDown, true);
+  document.addEventListener("keydown", onDocumentKeydown);
   selectedUnit.value = props.unit;
   draftUnit.value = props.unit;
 
@@ -556,6 +596,11 @@ onMounted(() => {
   committedDate.value = date;
   draftDate.value = date;
   calendarMonth.value = date.startOf("month");
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("pointerdown", onDocumentPointerDown, true);
+  document.removeEventListener("keydown", onDocumentKeydown);
 });
 </script>
 
