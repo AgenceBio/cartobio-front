@@ -1715,7 +1715,7 @@ onMounted(async () => {
   padding: 0.75rem 1rem;
 
   background: #fff;
-  border: none;
+  border-top: 1px solid var(--border-default-grey, #eee);
 }
 
 .filtre-panel__actions .fr-btn {
