@@ -13,6 +13,7 @@ describe("map preferences", () => {
       background: "plan",
       cadastre: false,
       rpg: false,
+      cartobioParcelles: false,
     });
     expect(preferences.params).toEqual({
       currentMode: "consult",
@@ -26,11 +27,13 @@ describe("map preferences", () => {
     preferences.map.background = "satellite";
     preferences.map.cadastre = true;
     preferences.map.rpg = true;
+    preferences.map.cartobioParcelles = true;
 
     expect(localStorage.setItem).toHaveBeenCalledWith("cartobio/preferences/map", {
       background: "satellite",
       cadastre: true,
       rpg: true,
+      cartobioParcelles: true,
     });
   });
 
@@ -38,6 +41,7 @@ describe("map preferences", () => {
     preferences.layers.background = "satellite";
     preferences.layers.cadastre = true;
     preferences.layers.rpg = true;
+    preferences.layers.cartobioParcelles = true;
     preferences.params.currentMode = "draw";
     preferences.params.blockPlan = true;
     preferences.params.hasUndo = true;
@@ -47,6 +51,7 @@ describe("map preferences", () => {
     expect(preferences).toHaveProperty("layers.background", "plan");
     expect(preferences).toHaveProperty("layers.cadastre", false);
     expect(preferences).toHaveProperty("layers.rpg", false);
+    expect(preferences).toHaveProperty("layers.cartobioParcelles", false);
     expect(preferences).toHaveProperty("params.currentMode", "consult");
     expect(preferences).toHaveProperty("params.blockPlan", false);
     expect(preferences).toHaveProperty("params.hasUndo", false);
