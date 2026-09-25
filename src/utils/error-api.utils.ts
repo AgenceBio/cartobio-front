@@ -201,10 +201,9 @@ export const ErrorGroups = {
 export type GroupeAnomalie = keyof typeof ErrorGroups;
 
 export const GROUPE_ANOMALIE_OPTIONS: { value: GroupeAnomalie; label: string }[] = [
-  { value: "import", label: "Import et certification" },
-  { value: "dateValidation", label: "Dates de certification" },
-  { value: "parcelErrors", label: "Erreurs parcelles" },
-  { value: "parcelWarnings", label: "Avertissements parcelles" },
+  { value: "import", label: "Opérateur" },
+  { value: "dateValidation", label: "Dates du parcellaire" },
+  { value: "parcelErrors", label: "Parcelles" },
 ];
 
 export const ErrorColors: Record<ErrorCode, string> = {
