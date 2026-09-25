@@ -47,8 +47,6 @@ import successPicto from "@gouvfr/dsfr/artwork/pictograms/system/success.svg";
 import errorPicto from "@gouvfr/dsfr/artwork/pictograms/system/error.svg";
 import {
   formatPeriodLabel,
-  formatDateControle,
-  formatDateTableau,
   formatStartOfDay,
   formatEndOfDay,
   currentWeekRange,
