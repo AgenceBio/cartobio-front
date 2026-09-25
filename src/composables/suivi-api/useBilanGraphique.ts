@@ -165,7 +165,7 @@ export function useBilanGraphique(options: {
   function chartDataPourcentages(
     source: AnomalieCode[] | null,
     kpi: ResumeKpi | CompareKpi | null,
-  ): { x: string[]; y: number[] } {
+  ): { x: string[]; y: number[]; counts: number[] } {
     let labels: string[];
     let brut: number[];
 
@@ -183,22 +183,20 @@ export function useBilanGraphique(options: {
     }
 
     const y = enPourcentages(brut);
-    return { x: labels, y };
+    return { x: labels, y, counts: brut };
   }
 
   const bilanChart = computed(() => chartDataPourcentages(palmaresAnomalies.value, resumeKpi.value));
   const bilanChartX = computed(() => bilanChart.value.x);
   const bilanChartY = computed(() => bilanChart.value.y);
+  const bilanChartCounts = computed(() => bilanChart.value.counts);
 
   const compareChart = computed(() => chartDataPourcentages(comparePalmaresAnomalies.value, compareKpi.value));
   const compareChartX = computed(() => compareChart.value.x);
   const compareChartY = computed(() => compareChart.value.y);
+  const compareChartCounts = computed(() => compareChart.value.counts);
 
-  const compareHasData = computed(() => {
-    if (!compareKpi.value) return false;
-    if (detailAnomalies.value) return (comparePalmaresAnomalies.value?.length ?? 0) > 0;
-    return compareKpi.value.totalEnvoyes > 0;
-  });
+  const compareHasData = computed(() => (compareChartY.value ?? []).some((value: number) => value > 0));
 
   const bilanHasData = computed(() => (bilanChartY.value ?? []).some((v: number) => v > 0));
 
@@ -374,8 +372,10 @@ export function useBilanGraphique(options: {
     comparePieColors,
     bilanChartX,
     bilanChartY,
+    bilanChartCounts,
     compareChartX,
     compareChartY,
+    compareChartCounts,
     compareHasData,
     bilanHasData,
     bilanBarHasData,

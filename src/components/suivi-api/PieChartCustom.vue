@@ -11,7 +11,11 @@
     <ul class="chart-legend" :class="[`chart-legend--${size}`]" aria-hidden="true">
       <li v-for="(label, index) in x" :key="label">
         <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
-        <span> {{ label }} ({{ y[index] }}{{ unitTooltip }}) </span>
+        <span>
+          {{ label }} ({{ y[index] }}{{ unitTooltip
+          }}<template v-if="counts[index] !== undefined"> — {{ counts[index] }}</template
+          >)
+        </span>
       </li>
     </ul>
 
@@ -23,12 +27,14 @@
         <tr>
           <th scope="col">Catégorie</th>
           <th scope="col">Valeur</th>
+          <th v-if="hasCounts" scope="col">Nombre</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(label, index) in x" :key="label">
           <th scope="row">{{ label }}</th>
           <td>{{ y[index] }}{{ unitTooltip }}</td>
+          <td v-if="hasCounts">{{ counts[index] }}</td>
         </tr>
       </tbody>
     </table>
@@ -45,6 +51,7 @@ Chart.register(PieController, ArcElement, Tooltip);
 interface Props {
   x: string[];
   y: number[];
+  counts?: number[];
   name?: string[];
   colors?: string[];
   unitTooltip?: string;
@@ -53,6 +60,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  counts: () => [],
   name: () => [],
   colors: () => [],
   unitTooltip: "%",
@@ -72,9 +80,15 @@ let tooltipEl: HTMLDivElement | null = null;
 const defaultColors = ["#009081", "#e1000f", "#6e3d89", "#f4732a", "#666666"];
 
 const legendColors = computed(() => (props.colors.length ? props.colors : defaultColors));
+const hasCounts = computed(() => props.counts.length > 0);
 
 const accessibleDescription = computed(() => {
-  const values = props.x.map((label, i) => `${label} : ${props.y[i]}${props.unitTooltip}`).join(", ");
+  const values = props.x
+    .map(
+      (label, i) =>
+        label + ": " + props.y[i] + props.unitTooltip + (props.counts[i] !== undefined ? " — " + props.counts[i] : ""),
+    )
+    .join(", ");
   return `${props.title}. ${values}.`;
 });
 
@@ -111,7 +125,9 @@ function externalTooltipHandler(context: { chart: Chart; tooltip: TooltipModel<C
   }
 
   const point = tooltip.dataPoints[0];
-  el.textContent = `${point.label} : ${point.formattedValue}${props.unitTooltip}`;
+  const count = props.counts[point.dataIndex];
+  el.textContent =
+    point.label + ": " + point.formattedValue + props.unitTooltip + (count !== undefined ? " — " + count : "");
   el.setAttribute("aria-hidden", "false");
   el.className = "fr-tooltip chart-tooltip";
 
@@ -180,7 +196,7 @@ function downloadPng(filename = "graphique.png") {
 defineExpose({ downloadPng, canvas: canvasRef });
 
 onMounted(buildChart);
-watch(() => [props.x, props.y, props.name, props.colors], updateChart, { deep: true });
+watch(() => [props.x, props.y, props.counts, props.name, props.colors], updateChart, { deep: true });
 
 onBeforeUnmount(() => {
   chartInstance?.destroy();

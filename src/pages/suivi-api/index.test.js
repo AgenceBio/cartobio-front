@@ -59,7 +59,7 @@ const globalStubs = {
   PieChartCustom: {
     name: "PieChartCustom",
     template: "<div class='pie-chart-stub' />",
-    props: ["x", "y", "name", "colors", "unitTooltip"],
+    props: ["x", "y", "counts", "name", "colors", "unitTooltip"],
     emits: ["segment-click"],
   },
   BarGraphCustom: {
@@ -273,6 +273,7 @@ describe("Tableau de bord des APIs", () => {
 
     const pie = wrapper.findComponent({ name: "PieChartCustom" });
     expect(pie.props("x")).toEqual(["Opérateur", "Parcelles"]);
+    expect(pie.props("counts")).toEqual([4, 2]);
 
     pie.vm.$emit("segment-click", { index: 0 });
     await flushPromises();
@@ -284,6 +285,24 @@ describe("Tableau de bord des APIs", () => {
     await flushPromises();
 
     expect(wrapper.findAll("button").some((b) => b.text().includes("Opérateur"))).toBe(false);
+  });
+
+  it("affiche « Aucune donnée » pour une catégorie absente de la période comparée", async () => {
+    const wrapper = mountPage();
+    await selectPeriode(wrapper);
+
+    await wrapper.find("#checkbox-detail-anomalies").setValue(true);
+    await flushPromises();
+
+    apiMocks.fetchPalmaresAnomalies.mockResolvedValue([{ code: "E_PARCELLE", count: 2 }]);
+    await wrapper.find("#segmented-comparer").setValue(true);
+    await flushPromises();
+
+    const pies = wrapper.findAllComponents({ name: "PieChartCustom" });
+    pies[1].vm.$emit("segment-click", { index: 0 });
+    await flushPromises();
+
+    expect(wrapper.findAll(".bilan-compare__col")[0].text()).toContain("Aucune donnée");
   });
 
   it("charge la période de comparaison en mode « comparer »", async () => {
