@@ -11,6 +11,7 @@ meta:
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import dayjs from "dayjs";
 import {
   fetchPalmaresAnomalies,
   fetchBilanEnvois,
@@ -237,8 +238,8 @@ const {
   fermerModalHistorique,
 } = historique;
 
-const COLONNES_BILAN_XLSX = ["N° client", "N° BIO", "État", "Date d'envoi", "Statut"];
-const COLONNES_REJETS_XLSX = ["N° client", "N° BIO", "Date d'audit", "Rejets", "Date d'envoi"];
+const COLONNES_BILAN_XLSX = ["N° client", "N° BIO", "État", "Date d'envoi", "Heure d'envoi", "Statut"];
+const COLONNES_REJETS_XLSX = ["N° client", "N° BIO", "Date d'audit", "Rejets", "Date d'envoi", "Heure d'envoi"];
 const COLONNES_GRAPHIQUE_XLSX = ["période", "catégorie", "valeur", "unité"];
 
 const periodeTelechargement = computed(() => {
@@ -267,12 +268,18 @@ const chartDownloadActions: DownloadAction[] = [
   { id: "xlsx", label: "Télécharger en XLSX pour la période séléctionnée", icon: "fr-icon-file-line" },
 ];
 
+function formatTimestampForXlsx(value: string) {
+  const timestamp = dayjs(value);
+  return { date: timestamp.format("YYYY-MM-DD"), time: timestamp.format("HH:mm:ss") };
+}
+
 function mapBilanRows(data: BilanEnvoiItem[]) {
   return data.map((envoi) => ({
     "N° client": envoi.numeroClient,
     "N° BIO": envoi.numeroBio,
     État: envoi.etat === "UNKNOWN" ? "—" : envoi.etat === "UPDATED" ? "Mise à jour" : "Création",
-    "Date d'envoi": formatDateTableau(envoi.createdAt),
+    "Date d'envoi": formatTimestampForXlsx(envoi.createdAt).date,
+    "Heure d'envoi": formatTimestampForXlsx(envoi.createdAt).time,
     Statut: envoi.statut === "VALID" ? "Validé" : "Rejeté",
   }));
 }
@@ -281,9 +288,10 @@ function mapRejectsRows(data: BilanEnvoiItem[]) {
   return data.map((envoi) => ({
     "N° client": envoi.numeroClient,
     "N° BIO": envoi.numeroBio,
-    "Date d'audit": envoi.auditDate ? formatDateControle(envoi.auditDate) : "—",
+    "Date d'audit": envoi.auditDate ?? "—",
     Rejets: (envoi.details ?? []).map((detail) => getErrorMessage(detail.code, "short")).join(", "),
-    "Date d'envoi": formatDateTableau(envoi.createdAt),
+    "Date d'envoi": formatTimestampForXlsx(envoi.createdAt).date,
+    "Heure d'envoi": formatTimestampForXlsx(envoi.createdAt).time,
   }));
 }
 
@@ -526,6 +534,12 @@ watch(
 
 watch(detailAnomalies, () => {
   drillDownGroupe.value = null;
+});
+
+watch(bilanChartType, (type) => {
+  if (type === "bar" && drillDownGroupe.value) {
+    drillDownGroupe.value = null;
+  }
 });
 
 watch(bilanViewMode, (mode) => {
@@ -900,22 +914,17 @@ onMounted(async () => {
                   </li>
                 </ActionDropdown>
               </div>
-              <div class="flex justify-between">
+              <div class="drill-down-header">
                 <span v-if="detailAnomalies">Détails des envois rejetés</span>
                 <button
                   v-if="detailAnomalies && drillDownGroupe"
                   type="button"
-                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-line fr-btn--icon-left fr-mb-2w"
+                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-line fr-btn--icon-left"
                   @click="retourCategories"
                 >
                   {{ drillDownGroupe.label }}
                 </button>
-                <div
-                  v-else
-                  class="fr-btn fr-btn--tertiary-no-outline fr-mb-2w"
-                  aria-hidden="true"
-                  style="visibility: hidden"
-                >
+                <div v-else class="fr-btn fr-btn--tertiary-no-outline" aria-hidden="true" style="visibility: hidden">
                   &nbsp;
                 </div>
               </div>
@@ -1566,6 +1575,13 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+}
+
+.drill-down-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
 }
 

@@ -37,7 +37,7 @@ export async function fetchPalmaresAnomalies(from: string, to: string) {
   return data.data;
 }
 
-export async function fetchEnvoisRejetes(page = 1, from: string, to: string, filtres?: BilanFiltres, limit = 4) {
+export async function fetchEnvoisRejetes(page = 1, from: string, to: string, filtres?: BilanFiltres, limit = 5) {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),

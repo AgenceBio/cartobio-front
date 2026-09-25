@@ -279,6 +279,11 @@ describe("Tableau de bord des APIs", () => {
 
     const retour = wrapper.findAll("button").find((b) => b.text().includes("Opérateur"));
     expect(retour).toBeDefined();
+
+    await wrapper.find("#segmented-bar").setValue(true);
+    await flushPromises();
+
+    expect(wrapper.findAll("button").some((b) => b.text().includes("Opérateur"))).toBe(false);
   });
 
   it("charge la période de comparaison en mode « comparer »", async () => {
@@ -286,6 +291,7 @@ describe("Tableau de bord des APIs", () => {
     await selectPeriode(wrapper);
 
     await wrapper.find("#segmented-comparer").setValue(true);
+
     await flushPromises();
 
     expect(apiMocks.fetchGeneralKpi).toHaveBeenCalledTimes(3);
