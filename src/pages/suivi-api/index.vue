@@ -142,8 +142,10 @@ const {
   compareRangeLabel,
   bilanChartX,
   bilanChartY,
+  bilanChartCounts,
   compareChartX,
   compareChartY,
+  compareChartCounts,
   bilanPieColors,
   comparePieColors,
   bilanBarCategories,
@@ -411,7 +413,7 @@ async function onRejectsTableDownload(action: string) {
 
 const legendEntries = computed(() =>
   bilanChartX.value.map((label, i) => ({
-    label: `${label} (${bilanChartY.value[i]}${detailAnomalies.value ? "" : "%"})`,
+    label: label + " (" + bilanChartY.value[i] + "% — " + bilanChartCounts.value[i] + ")",
     color: bilanPieColors.value[i],
   })),
 );
@@ -933,6 +935,7 @@ onMounted(async () => {
                     v-if="bilanHasData"
                     :x="bilanChartX"
                     :y="bilanChartY"
+                    :counts="bilanChartCounts"
                     :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                     :colors="bilanPieColors"
                     :unit-tooltip="'%'"
@@ -956,6 +959,7 @@ onMounted(async () => {
                       <PieChartCustom
                         :x="compareChartX"
                         :y="compareChartY"
+                        :counts="compareChartCounts"
                         :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                         :colors="comparePieColors"
                         :unit-tooltip="'%'"
@@ -972,6 +976,7 @@ onMounted(async () => {
                       <PieChartCustom
                         :x="bilanChartX"
                         :y="bilanChartY"
+                        :counts="bilanChartCounts"
                         :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                         :colors="bilanPieColors"
                         :unit-tooltip="'%'"
