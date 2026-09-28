@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-webcomponent
+coverage
+.git
+.github
+.env
+.env.*
+!.env.local.example
