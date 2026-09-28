@@ -36,7 +36,7 @@
     "@turf/kinks": "^7.4.0",
     "@turf/union": "^7.4.0",
     "@unhead/vue": "^3.4.0",
-    "@vueuse/core": "^14.3.0",
+    "@vueuse/core": "^15.0.0",
     "axios": "^1.20.0",
     "chart.js": "^4.5.1",
     "dayjs": "^1.11.23",
