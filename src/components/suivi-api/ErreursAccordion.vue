@@ -106,8 +106,8 @@ console.log(source);
       </template>
       <div class="fr-p-2w">
         <p v-if="erreursParcelles.length === 0" class="fr-text--sm fr-mb-0">Aucune erreur liée à une parcelle.</p>
-        <div v-for="groupe in erreursParcellesGroupees" :key="groupe.key" class="row-accordion">
-          <strong>{{ groupe.label }}</strong>
+        <div v-for="groupe in erreursParcellesGroupees" :key="groupe.key" class="row-accordion parcel-error-row">
+          <span class="parcel-error-label">{{ groupe.label }}</span>
           <div class="parcel-error-badges">
             <span
               v-for="erreur in groupe.erreurs"
@@ -132,6 +132,14 @@ console.log(source);
   display: flex;
   justify-content: space-between;
 }
+.parcel-error-row + .parcel-error-row {
+  margin-top: 1rem;
+}
+
+.parcel-error-label {
+  font-weight: 500;
+}
+
 .parcel-error-badges {
   display: flex;
   justify-content: flex-end;

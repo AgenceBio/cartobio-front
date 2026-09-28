@@ -8,14 +8,30 @@
       <canvas ref="canvasRef" role="img" :aria-label="accessibleDescription" />
     </div>
 
-    <ul class="chart-legend" :class="[`chart-legend--${size}`]" aria-hidden="true">
+    <ul class="chart-legend" :class="[`chart-legend--${size}`]">
       <li v-for="(label, index) in x" :key="label">
-        <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
-        <span>
-          {{ label }} ({{ y[index] }}{{ unitTooltip
-          }}<template v-if="counts[index] !== undefined"> — {{ counts[index] }}</template
-          >)
-        </span>
+        <button
+          v-if="legendClickable"
+          type="button"
+          class="chart-legend__button"
+          :aria-label="`Afficher le détail de ${label}`"
+          @click="emitSegmentClick(index)"
+        >
+          <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
+          <span>
+            {{ label }} ({{ y[index] }}{{ unitTooltip
+            }}<template v-if="counts[index] !== undefined"> — {{ formatNumberWithSpaces(counts[index]) }}</template
+            >)
+          </span>
+        </button>
+        <template v-else>
+          <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
+          <span>
+            {{ label }} ({{ y[index] }}{{ unitTooltip
+            }}<template v-if="counts[index] !== undefined"> — {{ formatNumberWithSpaces(counts[index]) }}</template
+            >)
+          </span>
+        </template>
       </li>
     </ul>
 
@@ -34,7 +50,7 @@
         <tr v-for="(label, index) in x" :key="label">
           <th scope="row">{{ label }}</th>
           <td>{{ y[index] }}{{ unitTooltip }}</td>
-          <td v-if="hasCounts">{{ counts[index] }}</td>
+          <td v-if="hasCounts">{{ formatNumberWithSpaces(counts[index]) }}</td>
         </tr>
       </tbody>
     </table>
@@ -45,6 +61,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Chart, PieController, ArcElement, Tooltip } from "chart.js";
 import type { ChartType, TooltipModel } from "chart.js";
+import { formatNumberWithSpaces } from "@/utils/numbers.formatters";
 
 Chart.register(PieController, ArcElement, Tooltip);
 
@@ -57,6 +74,7 @@ interface Props {
   unitTooltip?: string;
   title?: string;
   size?: "sm" | "md" | "lg";
+  legendClickable?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -66,6 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
   unitTooltip: "%",
   title: "Répartition des données",
   size: "md",
+  legendClickable: false,
 });
 
 const emit = defineEmits<{
@@ -86,11 +105,23 @@ const accessibleDescription = computed(() => {
   const values = props.x
     .map(
       (label, i) =>
-        label + ": " + props.y[i] + props.unitTooltip + (props.counts[i] !== undefined ? " — " + props.counts[i] : ""),
+        label +
+        ": " +
+        props.y[i] +
+        props.unitTooltip +
+        (props.counts[i] !== undefined ? " — " + formatNumberWithSpaces(props.counts[i]) : ""),
     )
     .join(", ");
   return `${props.title}. ${values}.`;
 });
+
+function emitSegmentClick(index: number) {
+  emit("segment-click", {
+    label: props.x[index],
+    value: props.y[index],
+    index,
+  });
+}
 
 function getOrCreateTooltipEl() {
   if (tooltipEl) return tooltipEl;
@@ -127,7 +158,11 @@ function externalTooltipHandler(context: { chart: Chart; tooltip: TooltipModel<C
   const point = tooltip.dataPoints[0];
   const count = props.counts[point.dataIndex];
   el.textContent =
-    point.label + ": " + point.formattedValue + props.unitTooltip + (count !== undefined ? " — " + count : "");
+    point.label +
+    ": " +
+    point.formattedValue +
+    props.unitTooltip +
+    (count !== undefined ? " — " + formatNumberWithSpaces(count) : "");
   el.setAttribute("aria-hidden", "false");
   el.className = "fr-tooltip chart-tooltip";
 
@@ -160,11 +195,7 @@ function buildChart() {
         if (!elements.length) return;
 
         const index = elements[0].index;
-        emit("segment-click", {
-          label: props.x[index],
-          value: props.y[index],
-          index,
-        });
+        emitSegmentClick(index);
       },
       plugins: {
         legend: { display: false },
@@ -263,6 +294,30 @@ onBeforeUnmount(() => {
 .chart-legend li {
   display: inline-flex;
   align-items: center;
+}
+
+.chart-legend__button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.chart-legend__button:hover,
+.chart-legend__button:active {
+  font-weight: 500;
+}
+
+.chart-legend__button:focus-visible {
+  font-weight: 500;
+  outline: 2px solid var(--focus-color, #0a76f6);
+  outline-offset: 2px;
 }
 
 .chart-legend__dot {

@@ -114,6 +114,7 @@ export type BarSerie = {
 export type ChartRow = {
   période: string;
   catégorie: string;
+  "référence de période"?: string;
   valeur: number;
   unité: string;
 };

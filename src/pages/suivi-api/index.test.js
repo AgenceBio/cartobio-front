@@ -59,7 +59,7 @@ const globalStubs = {
   PieChartCustom: {
     name: "PieChartCustom",
     template: "<div class='pie-chart-stub' />",
-    props: ["x", "y", "counts", "name", "colors", "unitTooltip"],
+    props: ["x", "y", "counts", "name", "colors", "unitTooltip", "legendClickable"],
     emits: ["segment-click"],
   },
   BarGraphCustom: {
@@ -199,6 +199,31 @@ describe("Tableau de bord des APIs", () => {
     expect(table.text()).toContain("Validé");
   });
 
+  it("affiche les rejets de l’historique issus des erreurs", async () => {
+    apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([
+      {
+        ...envoi,
+        statut: "REJECTED",
+        erreurs: [{ code: "E_PARCELLE", numeroBio: null, parcelleId: null, parcelleName: null, message: null }],
+      },
+    ]);
+    const wrapper = mountPage();
+    await selectPeriode(wrapper);
+
+    const detailButton = wrapper
+      .findAll("#table-bilan-envoi button")
+      .find((b) => b.attributes("aria-label")?.includes("Voir le détail"));
+    await detailButton.trigger("click");
+    await flushPromises();
+    await wrapper
+      .findAll("button")
+      .find((b) => b.text().includes("Accéder aux bilans des envois"))
+      .trigger("click");
+    await flushPromises();
+
+    expect(wrapper.find("#table-historique-envois").text()).toContain("MSG_E_PARCELLE");
+  });
+
   it("affiche les bons libellés d'état (Mise à jour / —)", async () => {
     apiMocks.fetchBilanEnvois.mockResolvedValue(
       page([
@@ -274,6 +299,7 @@ describe("Tableau de bord des APIs", () => {
     const pie = wrapper.findComponent({ name: "PieChartCustom" });
     expect(pie.props("x")).toEqual(["Opérateur", "Parcelles"]);
     expect(pie.props("counts")).toEqual([4, 2]);
+    expect(pie.props("legendClickable")).toBe(true);
 
     pie.vm.$emit("segment-click", { index: 0 });
     await flushPromises();

@@ -34,6 +34,10 @@ const hasOnlyInvalidApiRequest = computed(() => {
   const erreurs = props.selectedEnvoi?.erreurs ?? [];
   return erreurs.length > 0 && erreurs.every((erreur) => erreur.code === "INVALID_API_REQUEST");
 });
+
+function getRejets(envoi: HistoriqueEnvoi) {
+  return envoi.details?.length ? envoi.details : envoi.erreurs;
+}
 </script>
 
 <template>
@@ -100,7 +104,7 @@ const hasOnlyInvalidApiRequest = computed(() => {
                       <td>{{ formatDateTableau(envoi.createdAt) }}</td>
                       <td>
                         <span
-                          v-for="detail in envoi.details?.slice(0, 2)"
+                          v-for="detail in getRejets(envoi).slice(0, 2)"
                           :key="detail.code"
                           class="fr-badge fr-badge--sm fr-mr-1w error-badge"
                           :style="{
@@ -110,8 +114,8 @@ const hasOnlyInvalidApiRequest = computed(() => {
                         >
                           {{ getErrorMessage(detail.code, "short") }}
                         </span>
-                        <span v-if="(envoi.details?.length ?? 0) > 2" class="fr-text--sm">
-                          +{{ (envoi.details?.length ?? 0) - 2 }}
+                        <span v-if="getRejets(envoi).length > 2" class="fr-text--sm">
+                          +{{ getRejets(envoi).length - 2 }}
                         </span>
                       </td>
                       <td>
