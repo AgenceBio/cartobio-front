@@ -8,14 +8,30 @@
       <canvas ref="canvasRef" role="img" :aria-label="accessibleDescription" />
     </div>
 
-    <ul class="chart-legend" :class="[`chart-legend--${size}`]" aria-hidden="true">
+    <ul class="chart-legend" :class="[`chart-legend--${size}`]">
       <li v-for="(label, index) in x" :key="label">
-        <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
-        <span>
-          {{ label }} ({{ y[index] }}{{ unitTooltip
-          }}<template v-if="counts[index] !== undefined"> — {{ formatNumberWithSpaces(counts[index]) }}</template
-          >)
-        </span>
+        <button
+          v-if="legendClickable"
+          type="button"
+          class="chart-legend__button"
+          :aria-label="`Afficher le détail de ${label}`"
+          @click="emitSegmentClick(index)"
+        >
+          <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
+          <span>
+            {{ label }} ({{ y[index] }}{{ unitTooltip
+            }}<template v-if="counts[index] !== undefined"> — {{ formatNumberWithSpaces(counts[index]) }}</template
+            >)
+          </span>
+        </button>
+        <template v-else>
+          <span class="chart-legend__dot" :style="{ backgroundColor: legendColors[index % legendColors.length] }" />
+          <span>
+            {{ label }} ({{ y[index] }}{{ unitTooltip
+            }}<template v-if="counts[index] !== undefined"> — {{ formatNumberWithSpaces(counts[index]) }}</template
+            >)
+          </span>
+        </template>
       </li>
     </ul>
 
@@ -58,6 +74,7 @@ interface Props {
   unitTooltip?: string;
   title?: string;
   size?: "sm" | "md" | "lg";
+  legendClickable?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,6 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
   unitTooltip: "%",
   title: "Répartition des données",
   size: "md",
+  legendClickable: false,
 });
 
 const emit = defineEmits<{
@@ -96,6 +114,14 @@ const accessibleDescription = computed(() => {
     .join(", ");
   return `${props.title}. ${values}.`;
 });
+
+function emitSegmentClick(index: number) {
+  emit("segment-click", {
+    label: props.x[index],
+    value: props.y[index],
+    index,
+  });
+}
 
 function getOrCreateTooltipEl() {
   if (tooltipEl) return tooltipEl;
@@ -169,11 +195,7 @@ function buildChart() {
         if (!elements.length) return;
 
         const index = elements[0].index;
-        emit("segment-click", {
-          label: props.x[index],
-          value: props.y[index],
-          index,
-        });
+        emitSegmentClick(index);
       },
       plugins: {
         legend: { display: false },
@@ -272,6 +294,30 @@ onBeforeUnmount(() => {
 .chart-legend li {
   display: inline-flex;
   align-items: center;
+}
+
+.chart-legend__button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.chart-legend__button:hover,
+.chart-legend__button:active {
+  font-weight: 500;
+}
+
+.chart-legend__button:focus-visible {
+  font-weight: 500;
+  outline: 2px solid var(--focus-color, #0a76f6);
+  outline-offset: 2px;
 }
 
 .chart-legend__dot {

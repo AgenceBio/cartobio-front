@@ -241,6 +241,7 @@ const {
 const COLONNES_BILAN_XLSX = ["N° client", "N° BIO", "État", "Date d'envoi", "Heure d'envoi", "Statut"];
 const COLONNES_REJETS_XLSX = ["N° client", "N° BIO", "Date d'audit", "Rejets", "Date d'envoi", "Heure d'envoi"];
 const COLONNES_GRAPHIQUE_XLSX = ["période", "catégorie", "valeur", "unité"];
+const COLONNES_GRAPHIQUE_COMPARAISON_XLSX = ["période", "catégorie", "référence de période", "valeur", "unité"];
 
 const periodeTelechargement = computed(() => {
   const label = unit.value ? formatPeriodLabel(unit.value, fromBase.value ?? baseDate) : null;
@@ -329,7 +330,8 @@ const compareBarRowsForExport = computed<ChartRow[]>(() => {
   const comparaison = bilanBarCategories.value.flatMap((periode, index) =>
     compareBarSeries.value.map((serie) => ({
       période: periode,
-      catégorie: `${serie.name} — ${compareRangeLabel.value}`,
+      catégorie: serie.name,
+      "référence de période": compareRangeLabel.value,
       valeur: serie.data[index] ?? 0,
       unité: "nombre",
     })),
@@ -338,7 +340,8 @@ const compareBarRowsForExport = computed<ChartRow[]>(() => {
   const courant = bilanBarCategories.value.flatMap((periode, index) =>
     bilanBarSeries.value.map((serie) => ({
       période: periode,
-      catégorie: `${serie.name} — ${currentPeriodLabel.value}`,
+      catégorie: serie.name,
+      "référence de période": currentPeriodLabel.value,
       valeur: serie.data[index] ?? 0,
       unité: "nombre",
     })),
@@ -450,7 +453,11 @@ async function onBilanChartDownload(action: string) {
       rows = bilanViewMode.value === "comparer" ? compareChartRowsForExport.value : bilanChartRowsForExport.value;
     }
 
-    downloadXlsx(rows, "bilan-graphique.xlsx", "Bilan graphique", COLONNES_GRAPHIQUE_XLSX);
+    const columns =
+      bilanChartType.value === "bar" && bilanViewMode.value === "comparer"
+        ? COLONNES_GRAPHIQUE_COMPARAISON_XLSX
+        : COLONNES_GRAPHIQUE_XLSX;
+    downloadXlsx(rows, "bilan-graphique.xlsx", "Bilan graphique", columns);
 
     return;
   }
@@ -608,7 +615,7 @@ onMounted(async () => {
             class="fr-col-6"
             :title="'Avancement des certifications ' + new Date().getFullYear()"
             label="Envoyés et validés"
-            :info-text="'Certifications envoyées et validées depuis le 1er janvier ' + new Date().getFullYear()"
+            :info-text="'Certifications envoyées et validées pour l’année de référence ' + new Date().getFullYear()"
             :value="avancement.countCertifiees"
             :max="avancement.countCertifiees + avancement.countEnAttentes + avancement.countNonAuditees"
           />
@@ -950,6 +957,7 @@ onMounted(async () => {
                     :colors="bilanPieColors"
                     :unit-tooltip="'%'"
                     :size="'lg'"
+                    :legend-clickable="detailAnomalies && !drillDownGroupe"
                     @segment-click="(p: { index: number }) => onSegmentClick(p, palmaresAnomalies)"
                   />
                   <div v-else class="bilan-empty">Aucune donnée</div>
@@ -973,6 +981,7 @@ onMounted(async () => {
                         :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                         :colors="comparePieColors"
                         :unit-tooltip="'%'"
+                        :legend-clickable="detailAnomalies && !drillDownGroupe"
                         @segment-click="(p: { index: number }) => onSegmentClick(p, comparePalmaresAnomalies)"
                       />
                     </template>
@@ -990,6 +999,7 @@ onMounted(async () => {
                         :name="detailAnomalies ? ['Anomalies'] : ['Validés', 'Rejetés']"
                         :colors="bilanPieColors"
                         :unit-tooltip="'%'"
+                        :legend-clickable="detailAnomalies && !drillDownGroupe"
                         @segment-click="(p: { index: number }) => onSegmentClick(p, palmaresAnomalies)"
                       />
                     </template>

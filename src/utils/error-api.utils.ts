@@ -75,7 +75,7 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
 
   [ErrorCode.MISSING_CERTIFICATION_DATES]: {
     full: "Un des champs de dates de certification est manquant",
-    short: "Date de certification manquant",
+    short: "Date de certification manquante",
   },
 
   [ErrorCode.INVALID_DATE_AUDIT]: {
@@ -104,8 +104,8 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
   },
 
   [ErrorCode.INVALID_CPF]: {
-    full: "Culture inconnue : {code}",
-    short: "Culture inconnue",
+    full: "Culture non reconnue : {code}",
+    short: "Culture non reconnue",
   },
 
   [ErrorCode.INVALID_GEOM]: {

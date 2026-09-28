@@ -38,7 +38,6 @@
       role="dialog"
       aria-label="Sélection d'une période"
     >
-      <!-- Comparaison entre deux périodes -->
       <div v-if="props.isCompare" class="comparator__periods">
         <div class="comparator__period">
           <span class="fr-label fr-mb-1v"> Comparer </span>
@@ -132,11 +131,13 @@
 
       <!-- Actions -->
       <div class="comparator__footer">
-        <button type="button" class="fr-btn fr-btn--secondary" @click="selectToday">Aujourd'hui</button>
+        <button type="button" class="fr-btn fr-btn--tertiary-no-outline" @click="selectToday">Aujourd'hui</button>
 
-        <button type="button" class="fr-btn fr-btn--secondary" @click="cancel">Annuler</button>
+        <div class="comparator__footer-actions">
+          <button type="button" class="fr-btn fr-btn--secondary" @click="cancel">Annuler</button>
 
-        <button type="button" class="fr-btn" @click="validate">Valider</button>
+          <button type="button" class="fr-btn" @click="validate">Valider</button>
+        </div>
       </div>
     </div>
   </div>
@@ -268,6 +269,7 @@ const isPickerOpen = ref(false);
 const comparatorRef = ref<HTMLElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
 const pickerId = "period-picker-" + crypto.randomUUID();
+let pointerInteractionStartedInside = false;
 
 const selectedUnit = ref<Unit>(props.unit);
 
@@ -489,16 +491,27 @@ function closePicker(): void {
   draftDate.value = committedDate.value;
 }
 
-function closeOnFocusOutside(event: FocusEvent): void {
-  const nextFocusTarget = event.relatedTarget as Node | null;
-  if (nextFocusTarget && comparatorRef.value?.contains(nextFocusTarget)) return;
-  closePicker();
+function closeOnFocusOutside(): void {
+  const clickStartedInside = pointerInteractionStartedInside;
+
+  requestAnimationFrame(() => {
+    if (clickStartedInside || comparatorRef.value?.contains(document.activeElement)) return;
+    closePicker();
+  });
 }
 
 function onDocumentPointerDown(event: PointerEvent): void {
-  if (isPickerOpen.value && comparatorRef.value && !comparatorRef.value.contains(event.target as Node)) {
-    closePicker();
+  if (!isPickerOpen.value || !comparatorRef.value) return;
+
+  if (comparatorRef.value.contains(event.target as Node)) {
+    pointerInteractionStartedInside = true;
+    window.setTimeout(() => {
+      pointerInteractionStartedInside = false;
+    }, 0);
+    return;
   }
+
+  closePicker();
 }
 
 function onDocumentKeydown(event: KeyboardEvent): void {
@@ -785,11 +798,16 @@ onBeforeUnmount(() => {
 .comparator__footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   margin-top: 1.25rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border-default-grey);
+}
+
+.comparator__footer-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
 }
 
 @media (max-width: 40rem) {
@@ -837,6 +855,10 @@ onBeforeUnmount(() => {
   .comparator__footer {
     flex-direction: column-reverse;
     align-items: stretch;
+  }
+
+  .comparator__footer-actions {
+    flex-direction: column;
   }
 
   .comparator__footer .fr-btn {
