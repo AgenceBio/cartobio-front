@@ -260,7 +260,6 @@ describe("Tableau de bord des APIs", () => {
 
     const input = wrapper.find("#table-search-input");
     await input.setValue("C123");
-    await input.trigger("keyup.enter");
     await flushPromises();
 
     expect(apiMocks.fetchBilanEnvois).toHaveBeenLastCalledWith(

@@ -4,6 +4,7 @@ import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
 import ErreursAccordion from "@/components/suivi-api/ErreursAccordion.vue";
 import Pagination from "@/components/widgets/Pagination.vue";
+import Spinner from "@/components/widgets/Spinner.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
 import { formatDateTableau, formatDateControle } from "@/utils/date.formatters";
 import { clefGroupe, typeRepetition, labelRepetition } from "@/composables/suivi-api/useRepetitions";
@@ -18,6 +19,7 @@ defineProps<{
   rechercheBrouillon: string;
   typeFiltre: "envois" | "refus" | "all";
   page: number;
+  isLoading: boolean;
   maxPage: number;
   total: number;
 }>();
@@ -113,7 +115,9 @@ function onChangerType(event: Event) {
         </div>
       </div>
 
-      <AccordionGroup>
+      <Spinner v-if="isLoading">Recherche en cours…</Spinner>
+
+      <AccordionGroup v-else>
         <AccordionSection
           v-for="groupe in repetitions"
           :key="clefGroupe(groupe)"
@@ -189,9 +193,10 @@ function onChangerType(event: Event) {
         </AccordionSection>
       </AccordionGroup>
 
-      <p v-if="repetitions.length === 0" class="fr-text--sm">Aucune alerte pour cette période.</p>
+      <p v-if="!isLoading && repetitions.length === 0" class="fr-text--sm">Aucune alerte pour cette période.</p>
 
       <Pagination
+        v-if="!isLoading"
         class="fr-mt-2w"
         :current-page="page"
         :max-page="maxPage"

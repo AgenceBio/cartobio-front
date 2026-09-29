@@ -100,11 +100,8 @@ const cancelKeyStroke = onKeyStroke("Escape", () => {
     emit("close");
   }
 });
-const cancelClickOutside = onClickOutside(target, (event) => {
-  const range = document.createRange();
-  range.selectNode(target.value);
-  const isOutside = range.intersectsNode(event.target);
-  if (isOutside && !props.lockClose) {
+const cancelClickOutside = onClickOutside(target, () => {
+  if (!props.lockClose) {
     emit("close");
   }
 });
