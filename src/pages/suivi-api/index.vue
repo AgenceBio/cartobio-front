@@ -77,6 +77,10 @@ const { user } = storeToRefs(userStore);
 
 // État global
 const isLoading = ref(true);
+const rechercheBilanEnCours = ref(false);
+const rechercheRejetsEnCours = ref(false);
+const alertesEnChargement = ref(false);
+const DELAI_AFFICHAGE_SPINNER_MS = 150;
 const searchQuery = ref("");
 const modalReferentielAnomalies = ref<boolean>(false);
 const modalBilanEnvoisAgrandi = ref<boolean>(false);
@@ -494,18 +498,64 @@ async function chargerApercuAlertes() {
 }
 
 async function chargerAlertesModal() {
-  const res = await fetchRepetitions(
-    alertesPage.value,
-    alertesLimit.value,
-    rechercheAlertesAppliquee.value || undefined,
-    typeFiltreAlertes.value || undefined,
-  );
-  repetitionsModal.value = res.data ?? [];
-  alertesTotal.value = res.meta?.total ?? 0;
+  const delaiSpinner = setTimeout(() => (alertesEnChargement.value = true), DELAI_AFFICHAGE_SPINNER_MS);
+  try {
+    const res = await fetchRepetitions(
+      alertesPage.value,
+      alertesLimit.value,
+      rechercheAlertesAppliquee.value || undefined,
+      typeFiltreAlertes.value || undefined,
+    );
+    repetitionsModal.value = res.data ?? [];
+    alertesTotal.value = res.meta?.total ?? 0;
+  } finally {
+    clearTimeout(delaiSpinner);
+    alertesEnChargement.value = false;
+  }
 }
 
 watch([rechercheAlertesAppliquee, typeFiltreAlertes, alertesPage], () => {
   if (modalAlertes.value) chargerAlertesModal();
+});
+
+const MIN_RECHERCHE_CARACTERES = 3;
+function rechercheEligible(terme: string) {
+  const recherche = terme.trim();
+  return recherche.length === 0 || recherche.length >= MIN_RECHERCHE_CARACTERES;
+}
+
+async function lancerRechercheBilan() {
+  if (!rechercheEligible(rechercheBilanBrouillon.value)) return;
+  const delaiSpinner = setTimeout(() => (rechercheBilanEnCours.value = true), DELAI_AFFICHAGE_SPINNER_MS);
+  try {
+    await validerRechercheBilan();
+  } finally {
+    clearTimeout(delaiSpinner);
+    rechercheBilanEnCours.value = false;
+  }
+}
+
+async function lancerRechercheRejets() {
+  if (!rechercheEligible(rechercheRejetsBrouillon.value)) return;
+  const delaiSpinner = setTimeout(() => (rechercheRejetsEnCours.value = true), DELAI_AFFICHAGE_SPINNER_MS);
+  try {
+    await validerRechercheRejets();
+  } finally {
+    clearTimeout(delaiSpinner);
+    rechercheRejetsEnCours.value = false;
+  }
+}
+
+function lancerRechercheAlertes() {
+  if (!rechercheEligible(rechercheAlertesBrouillon.value)) return;
+  rechercheAlertesAppliquee.value = rechercheAlertesBrouillon.value.trim();
+  alertesPage.value = 1;
+}
+
+watch(rechercheBilanBrouillon, lancerRechercheBilan);
+watch(rechercheRejetsBrouillon, lancerRechercheRejets);
+watch(rechercheAlertesBrouillon, () => {
+  if (modalAlertes.value) lancerRechercheAlertes();
 });
 
 async function ouvrirModalToutesAlertes(groupe?: (typeof repetitions.value)[number]) {
@@ -557,16 +607,6 @@ function fermerFiltresAuClicExterieur(event: MouseEvent) {
   const target = event.target as HTMLElement | null;
 
   if (target?.closest(".filtre-wrapper")) return;
-
-  filtreMenuOuvert.value = false;
-  filtreGroupeOuvert.value = false;
-}
-
-function fermerFiltresAuFocusExterieur(event: FocusEvent) {
-  const wrapper = event.currentTarget as HTMLElement;
-  const nextFocusTarget = event.relatedTarget as Node | null;
-
-  if (nextFocusTarget && wrapper.contains(nextFocusTarget)) return;
 
   filtreMenuOuvert.value = false;
   filtreGroupeOuvert.value = false;
@@ -727,7 +767,7 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
+                    <div class="filtre-wrapper">
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -827,8 +867,9 @@ onMounted(async () => {
                 </ul>
               </div>
 
+              <Spinner v-if="rechercheBilanEnCours">Recherche en cours…</Spinner>
               <BilanEnvoisTable
-                v-if="bilanEnvois.data.length"
+                v-else-if="bilanEnvois.data.length"
                 :envois="bilanEnvois.data"
                 :page="bilanEnvois.meta.page"
                 :max-page="Math.ceil(bilanEnvois.meta.total / bilanEnvois.meta.limit)"
@@ -1085,7 +1126,7 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
+                    <div class="filtre-wrapper">
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -1170,8 +1211,9 @@ onMounted(async () => {
                   </li>
                 </ul>
               </div>
+              <Spinner v-if="rechercheRejetsEnCours">Recherche en cours…</Spinner>
               <EnvoisRejetesTable
-                v-if="envoisRejetes.data.length"
+                v-else-if="envoisRejetes.data.length"
                 :envois="envoisRejetes.data"
                 :page="envoisRejetes.meta.page"
                 :ordre-date="ordreDateReject"
@@ -1227,7 +1269,7 @@ onMounted(async () => {
 
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
+            <div class="filtre-wrapper">
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
@@ -1313,8 +1355,9 @@ onMounted(async () => {
         </ul>
       </div>
 
+      <Spinner v-if="rechercheRejetsEnCours">Recherche en cours…</Spinner>
       <EnvoisRejetesTable
-        v-if="envoisRejetes.data.length"
+        v-else-if="envoisRejetes.data.length"
         :envois="envoisRejetes.data"
         :page="envoisRejetes.meta.page"
         :ordre-date="ordreDateReject"
@@ -1365,7 +1408,7 @@ onMounted(async () => {
         </div>
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper" @focusout="fermerFiltresAuFocusExterieur">
+            <div class="filtre-wrapper">
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
@@ -1464,8 +1507,9 @@ onMounted(async () => {
           </li>
         </ul>
       </div>
+      <Spinner v-if="rechercheBilanEnCours">Recherche en cours…</Spinner>
       <BilanEnvoisTable
-        v-if="bilanEnvois.data.length"
+        v-else-if="bilanEnvois.data.length"
         :envois="bilanEnvois.data"
         :page="bilanEnvois.meta.page"
         :max-page="Math.ceil(bilanEnvois.meta.total / bilanEnvois.meta.limit)"
@@ -1508,6 +1552,7 @@ onMounted(async () => {
       :recherche-brouillon="rechercheAlertesBrouillon"
       :page="alertesPage"
       :typeFiltre="typeFiltreAlertes"
+      :is-loading="alertesEnChargement"
       :max-page="alertesMaxPage"
       :total="alertesTotal"
       @update:recherche-brouillon="rechercheAlertesBrouillon = $event"

@@ -52,10 +52,8 @@ const emit = defineEmits<{
     </div>
     <div v-if="restantes > 0" class="fr-col-10 fr-col-lg-1 fr-mb-4w col-tout">
       <div class="voir-tout fr-mb-2w">
-        <span class="fr-text--sm fr-mb-0">+{{ restantes }}</span>
-        <br />
         <button type="button" class="fr-link fr-text--sm" @click="emit('ouvrir')">
-          Voir tout <span class="fr-icon--sm fr-icon-arrow-right-line" aria-hidden="true"></span>
+          Voir tout ({{ restantes }}) <span class="fr-icon--sm fr-icon-arrow-right-line" aria-hidden="true"></span>
         </button>
       </div>
     </div>
