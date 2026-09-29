@@ -44,6 +44,7 @@ export function useRepetitions() {
   const alertesPage = ref(1);
   const alertesLimit = ref(8);
   const alertesTotal = ref(0);
+  const repetitionsTotal = ref(0);
   const alertesMaxPage = computed(() => Math.max(1, Math.ceil(alertesTotal.value / alertesLimit.value)));
 
   const repetitionsVisibles = computed(() =>
@@ -52,7 +53,7 @@ export function useRepetitions() {
 
   const repetitionsApercu = computed(() => repetitionsVisibles.value.slice(0, APERCU_NB));
 
-  const repetitionsRestantes = computed(() => Math.max(repetitions.value.length - APERCU_NB, 0));
+  const repetitionsRestantes = computed(() => Math.max(repetitionsTotal.value - repetitionsApercu.value.length, 0));
 
   function masquerRepetition(groupe: RepetitionGroupe) {
     repetitionsMasquees.value.add(clefGroupe(groupe));
@@ -116,6 +117,7 @@ export function useRepetitions() {
     alertesPage,
     alertesLimit,
     alertesTotal,
+    repetitionsTotal,
     alertesMaxPage,
     repetitionsVisibles,
     repetitionsApercu,

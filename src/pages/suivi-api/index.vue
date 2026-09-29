@@ -178,6 +178,7 @@ const {
   alertesPage,
   alertesLimit,
   alertesTotal,
+  repetitionsTotal,
   alertesMaxPage,
   typeFiltreAlertes,
   changerPageAlertes,
@@ -495,6 +496,7 @@ async function chargerComparePeriode() {
 async function chargerApercuAlertes() {
   const res = await fetchRepetitions(1, alertesLimit.value);
   repetitions.value = res.data ?? [];
+  repetitionsTotal.value = res.meta?.total ?? repetitions.value.length;
 }
 
 async function chargerAlertesModal() {
