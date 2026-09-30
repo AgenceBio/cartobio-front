@@ -67,11 +67,49 @@ export function useTelechargements() {
     downloadXlsx(rows, filename, sheetName, columns);
   }
 
-  function drawTitle(context: CanvasRenderingContext2D, title: string, x: number, y: number, size = 18) {
+  function getTitleLines(context: CanvasRenderingContext2D, title: string, maxWidth: number, size: number) {
+    context.font = `bold ${size}px Marianne, sans-serif`;
+    const words = title.split(/\s+/);
+    const lines: string[] = [];
+    let line = "";
+
+    words.forEach((word) => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && context.measureText(candidate).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    });
+
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function getTitleHeight(title: string | undefined, width: number, size: number) {
+    if (!title) return 0;
+    const measurementCanvas = document.createElement("canvas");
+    const context = measurementCanvas.getContext("2d");
+    if (!context) return 0;
+    return getTitleLines(context, title, width, size).length * Math.ceil(size * 1.35);
+  }
+
+  function drawTitle(
+    context: CanvasRenderingContext2D,
+    title: string,
+    x: number,
+    y: number,
+    maxWidth: number,
+    size = 18,
+  ) {
     context.fillStyle = "#161616";
     context.font = `bold ${size}px Marianne, sans-serif`;
     context.textBaseline = "top";
-    context.fillText(title, x, y);
+    const lineHeight = Math.ceil(size * 1.35);
+    getTitleLines(context, title, maxWidth, size).forEach((line, index) => {
+      context.fillText(line, x, y + index * lineHeight);
+    });
   }
 
   function drawLegend(context: CanvasRenderingContext2D, legend: LegendEntry[], x: number, startY: number) {
@@ -91,7 +129,7 @@ export function useTelechargements() {
     if (!(canvas instanceof HTMLCanvasElement)) return;
 
     const padding = 32;
-    const titleHeight = title ? 40 : 0;
+    const titleHeight = getTitleHeight(title, canvas.width, 18);
     const legendGap = 16;
     const legendHeight = legend?.length ? legendGap + legend.length * 24 : 0;
 
@@ -105,7 +143,7 @@ export function useTelechargements() {
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, output.width, output.height);
 
-    if (title) drawTitle(context, title, padding, padding);
+    if (title) drawTitle(context, title, padding, padding, canvas.width);
 
     context.drawImage(canvas, padding, padding + titleHeight);
 
@@ -132,7 +170,8 @@ export function useTelechargements() {
     if (!(compareCanvas instanceof HTMLCanvasElement) || !(currentCanvas instanceof HTMLCanvasElement)) return;
 
     const padding = 32;
-    const titleHeight = title ? 48 : 0;
+    const graphWidth = compareCanvas.width + currentCanvas.width + padding;
+    const titleHeight = getTitleHeight(title, graphWidth, 20);
     const labelsHeight = 48;
     const legendGap = 16;
     const legendHeight = legend?.length ? legendGap + legend.length * 24 : 0;
@@ -148,7 +187,7 @@ export function useTelechargements() {
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, output.width, output.height);
 
-    if (title) drawTitle(context, title, padding, padding, 20);
+    if (title) drawTitle(context, title, padding, padding, graphWidth, 20);
 
     const graphsTop = titleHeight + padding;
 

@@ -521,11 +521,8 @@ function onDocumentKeydown(event: KeyboardEvent): void {
 }
 
 function selectToday(): void {
-  selectedUnit.value = draftUnit.value;
-  committedDate.value = dayjs();
-  calendarMonth.value = committedDate.value.startOf("month");
-  isPickerOpen.value = false;
-  emitCurrentPeriod();
+  draftDate.value = dayjs();
+  calendarMonth.value = draftDate.value.startOf("month");
 }
 
 function togglePicker(): void {
@@ -593,6 +590,13 @@ watch(
     emitCurrentPeriod();
   },
 );
+
+watch(draftUnit, () => {
+  // Le changement de granularité prépare la période courante ; seul « Valider »
+  // applique ensuite ce choix au tableau de bord.
+  draftDate.value = dayjs();
+  calendarMonth.value = draftDate.value.startOf("month");
+});
 
 /* ==========================================================================
  * Cycle de vie
