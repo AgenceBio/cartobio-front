@@ -1,0 +1,175 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - '**'
+    tags:
+    - v*
+    paths-ignore:
+    - 'docs/**'
+    - 'CHANGELOG.md'
+    - 'bin/**'
+    - 'infrastructure/**'
+    - '*.example'
+    - 'netlify.toml'
+    - '*.md'
+
+env:
+  DOCKER_BUILDKIT: 1
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image: "agencebio/cartobio-front:${{ steps.publish.outputs.tag }}"
+      version: ${{ steps.version.outputs.name }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: docker/setup-buildx-action@v3
+
+    - name: Build args (staging)
+      if: github.ref == 'refs/heads/v3'
+      run: |
+        {
+          echo "matomo_id=11"
+          echo "api_endpoint=https://cartobio-preprod.agencebio.org/api"
+          echo "campagne_pac=2024"
+          echo "environment=staging"
+          echo "production="
+          echo "notifications_api=https://preprod-back.agencebio.org"
+          echo "parcelles_year=2025"
+          echo "widget_base=https://cartobio-preprod.agencebio.org/notification-webcomponent/"
+        } >> "$GITHUB_ENV"
+
+    - name: Build args (production)
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        {
+          echo "matomo_id=10"
+          echo "api_endpoint=https://cartobio.agencebio.org/api"
+          echo "campagne_pac=2024"
+          echo "environment=production"
+          echo "production=true"
+          echo "notifications_api=https://back.agencebio.org"
+          echo "parcelles_year=2025"
+          echo "widget_base=https://cartobio.agencebio.org/notification-webcomponent/"
+        } >> "$GITHUB_ENV"
+
+    - name: Build args (test, *)
+      if: github.ref != 'refs/heads/v3' && !startsWith(github.ref, 'refs/tags/')
+      run: |
+        {
+          echo "matomo_id=245"
+          echo "api_endpoint=https://cartobio-test.agencebio.org/api"
+          echo "campagne_pac=2024"
+          echo "environment=test"
+          echo "production="
+          echo "notifications_api=https://preprod-back.agencebio.org"
+          echo "parcelles_year=2025"
+        } >> "$GITHUB_ENV"
+
+
+    - name: Build image
+      run: |
+        docker build \
+          --build-arg NODE_VERSION=current \
+          --build-arg VUE_APP_MATOMO_SITE_ID=${MATOMO_ID} \
+          --build-arg VUE_APP_API_ENDPOINT=${API_ENDPOINT} \
+          --build-arg VUE_APP_PRELOADED_CAMPAGNE_PAC=${CAMPAGNE_PAC} \
+          --build-arg VUE_APP_ENVIRONMENT=${ENVIRONMENT} \
+          --build-arg VUE_APP_PRODUCTION=${PRODUCTION} \
+          --build-arg VUE_APP_SENTRY_DSN=${{ secrets.VUE_APP_SENTRY_DSN }} \
+          --build-arg VUE_APP_GIT_COMMIT_SHA=${{ github.sha }} \
+          --build-arg VUE_APP_DATEIMPORT="17/06/2026" \
+          --build-arg VUE_APP_NOTIFICATIONS_API=${NOTIFICATIONS_API} \
+          --build-arg VUE_APP_CARTOBIO_PARCELLES_YEAR=${PARCELLES_YEAR} \
+          --build-arg widget_base=${WIDGET_BASE} \
+          -t agencebio/cartobio-front .
+
+    - name: Login to Docker Hub
+      if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test' || startsWith(github.ref, 'refs/tags/') }}
+      run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+    - name: Assign Docker ref
+      id: publish
+      run: |
+        if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+          echo "tag=latest" >> $GITHUB_OUTPUT
+        else
+          echo "tag=${GITHUB_REF_NAME#v*}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Publish to Docker Hub
+      if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test' || startsWith(github.ref, 'refs/tags/') }}
+      run: |
+        docker tag agencebio/cartobio-front agencebio/cartobio-front:${{ steps.publish.outputs.tag }}
+        docker push agencebio/cartobio-front:${{ steps.publish.outputs.tag }}
+
+    - name: Get package.json version
+      id: version
+      run: echo name=$(node -p "require('./package.json').version") >> $GITHUB_OUTPUT
+
+  # deploy-staging:
+  #   needs: [build]
+  #   if: github.ref == 'refs/heads/main'
+  #   environment: staging
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: garygrossgarten/github-action-ssh@0.7.0
+  #     with:
+  #       host: ${{ secrets.AGENCEBIO_PREPROD_SSH_HOST }}
+  #       username: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+  #       privateKey: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+  #       command: |
+  #         docker pull ${{ needs.build.outputs.image }} \
+  #         && docker stop cartobio-front-staging || true \
+  #         && docker container rm cartobio-front-staging || true \
+  #         && docker run -d --restart always \
+  #           -p 8080:8080 \
+  #           --name cartobio-front-staging \
+  #           ${{ needs.build.outputs.image }}
+  deploy-test:
+    needs: [build]
+    if: github.ref == 'refs/heads/test'
+    environment: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: garygrossgarten/github-action-ssh@0.7.0
+      with:
+        host: ${{ secrets.AGENCEBIO_PREPROD_SSH_HOST }}
+        username: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+        privateKey: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+        command: |
+          docker pull ${{ needs.build.outputs.image }} \
+          && docker stop cartobio-front-test || true \
+          && docker container rm cartobio-front-test || true \
+          && docker run -d --restart always \
+            -p 8080:8080 \
+            --name cartobio-front-test \
+            ${{ needs.build.outputs.image }}
+  # deploy-production:
+  #   needs: [build]
+  #   if: startsWith(github.ref, 'refs/tags/')
+  #   environment: production
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: garygrossgarten/github-action-ssh@0.7.0
+  #     with:
+  #       host: ${{ secrets.AGENCEBIO_SSH_HOST }}
+  #       username: ${{ secrets.AGENCEBIO_SSH_USERNAME }}
+  #       privateKey: ${{ secrets.AGENCEBIO_SSH_PRIVATE_KEY }}
+  #       command: |
+  #         docker pull ${{ needs.build.outputs.image }} \
+  #         && docker stop cartobio-front-production \
+  #         && docker container rm cartobio-front-production \
+  #         && docker run -d --restart always \
+  #           -p 127.0.0.1:8080:8080 \
+  #           --name cartobio-front-production \
+  #           ${{ needs.build.outputs.image }}
