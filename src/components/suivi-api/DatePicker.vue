@@ -521,11 +521,8 @@ function onDocumentKeydown(event: KeyboardEvent): void {
 }
 
 function selectToday(): void {
-  selectedUnit.value = draftUnit.value;
-  committedDate.value = dayjs();
-  calendarMonth.value = committedDate.value.startOf("month");
-  isPickerOpen.value = false;
-  emitCurrentPeriod();
+  draftDate.value = dayjs();
+  calendarMonth.value = draftDate.value.startOf("month");
 }
 
 function togglePicker(): void {
@@ -593,6 +590,11 @@ watch(
     emitCurrentPeriod();
   },
 );
+
+watch(draftUnit, () => {
+  draftDate.value = dayjs();
+  calendarMonth.value = draftDate.value.startOf("month");
+});
 
 /* ==========================================================================
  * Cycle de vie

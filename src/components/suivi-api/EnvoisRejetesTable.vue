@@ -35,6 +35,10 @@ const triCroissant = computed(() => props.ordreDate === "asc");
 const labelTriDate = computed(() =>
   triCroissant.value ? "Trier par date d'envoi par ordre décroissant" : "Trier par date d'envoi par ordre croissant",
 );
+
+function hasDetailIdentifiers(envoi: BilanEnvoiItem) {
+  return Boolean(envoi.numeroClient?.trim() || envoi.numeroBio?.trim());
+}
 </script>
 
 <template>
@@ -111,12 +115,25 @@ const labelTriDate = computed(() =>
                   <div class="flex space-between">
                     <span style="align-self: center">{{ formatDateTableau(envoi.createdAt) }}</span>
                     <button
+                      v-if="hasDetailIdentifiers(envoi)"
                       type="button"
                       class="fr-btn fr-icon-arrow-right-up-line fr-btn--tertiary-no-outline"
                       :aria-label="`Voir le détail de l'envoi ${envoi.numeroClient ?? ''}`"
                       @click="emit('open-details', envoi)"
                     >
                       <span class="fr-sr-only">Voir le détail de cet envoi</span>
+                    </button>
+                    <button
+                      v-else
+                      type="button"
+                      class="fr-btn fr-icon-information-line fr-btn--tertiary-no-outline fr-btn--sm"
+                      aria-label="Détail indisponible"
+                      v-tooltip="{
+                        text: 'Cet envoi ne peut pas être identifié : aucun numéro client ni numéro BIO n’a été transmis.',
+                        position: 'top',
+                      }"
+                    >
+                      <span class="fr-sr-only">Détail indisponible : aucun identifiant transmis</span>
                     </button>
                   </div>
                 </td>

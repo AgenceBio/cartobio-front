@@ -294,6 +294,8 @@ onBeforeUnmount(() => {
 .chart-legend li {
   display: inline-flex;
   align-items: center;
+  width: auto;
+  margin: 0;
 }
 
 .chart-legend__button {

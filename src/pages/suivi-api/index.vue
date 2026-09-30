@@ -614,6 +614,18 @@ function fermerFiltresAuClicExterieur(event: MouseEvent) {
   filtreGroupeOuvert.value = false;
 }
 
+function fermerFiltreEnSortieDeFocus(event: FocusEvent, filtre: "bilan" | "rejets") {
+  const wrapper = event.currentTarget as HTMLElement;
+  const nextFocusedElement = event.relatedTarget as Node | null;
+  if (nextFocusedElement && wrapper.contains(nextFocusedElement)) return;
+
+  if (filtre === "bilan") {
+    filtreMenuOuvert.value = false;
+  } else {
+    filtreGroupeOuvert.value = false;
+  }
+}
+
 onMounted(() => {
   document.addEventListener("click", fermerFiltresAuClicExterieur);
 });
@@ -769,7 +781,7 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper">
+                    <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'bilan')">
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -1128,7 +1140,7 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper">
+                    <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')">
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -1271,7 +1283,7 @@ onMounted(async () => {
 
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper">
+            <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')">
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
@@ -1410,7 +1422,7 @@ onMounted(async () => {
         </div>
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper">
+            <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'bilan')">
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
