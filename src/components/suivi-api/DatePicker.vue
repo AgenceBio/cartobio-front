@@ -592,8 +592,6 @@ watch(
 );
 
 watch(draftUnit, () => {
-  // Le changement de granularité prépare la période courante ; seul « Valider »
-  // applique ensuite ce choix au tableau de bord.
   draftDate.value = dayjs();
   calendarMonth.value = draftDate.value.startOf("month");
 });
