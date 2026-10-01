@@ -23,7 +23,7 @@
     "node": "^24.0.0"
   },
   "dependencies": {
-    "@agencebio/rosetta-cultures": "^2.6.0",
+    "@agencebio/rosetta-cultures": "^2.7.0",
     "@algolia/autocomplete-js": "^1.19.11",
     "@algolia/autocomplete-theme-classic": "^1.19.10",
     "@gouvfr/dsfr": "^1.15.3",
