@@ -44,16 +44,16 @@ export function useTelechargements() {
     fromIso: string,
     toIso: string,
     limit = 500,
-    onProgress?: (currentPage: number, totalPages: number) => void,
+    onProgress?: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
   ): Promise<T[]> {
     const first = await fetchFn(1, fromIso, toIso, limit);
     const rows = [...first.data];
     const pageCount = Math.max(1, Math.ceil(first.meta.total / first.meta.limit));
-    onProgress?.(1, pageCount);
+    onProgress?.(1, pageCount, rows.length, first.meta.total);
     for (let page = 2; page <= pageCount; page++) {
       const next = await fetchFn(page, fromIso, toIso, limit);
       rows.push(...next.data);
-      onProgress?.(page, pageCount);
+      onProgress?.(page, pageCount, rows.length, first.meta.total);
     }
     return rows;
   }
@@ -65,7 +65,7 @@ export function useTelechargements() {
     filename: string,
     sheetName: string,
     columns?: string[],
-    onProgress?: (currentPage: number, totalPages: number) => void,
+    onProgress?: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
   ) {
     const rows = mapFn(
       await fetchAllPages(fetchFn, formatStartOfDay(range.from), formatEndOfDay(range.to), 500, onProgress),
