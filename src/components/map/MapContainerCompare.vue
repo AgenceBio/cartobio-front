@@ -473,7 +473,7 @@ const onMouseLeave2 = (): void => {
 <style scoped>
 .openlayers-container {
   z-index: 0;
-  height: 80vh;
+  height: 82vh;
   flex: 1;
   position: relative;
 }
