@@ -359,24 +359,21 @@ const compareBarRowsForExport = computed<ChartRow[]>(() => {
 });
 
 async function executerExport(
-  exportFn: (onProgress: (currentPage: number, totalPages: number) => void) => Promise<void>,
+  titre: string,
+  exportFn: (
+    onProgress: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
+  ) => Promise<void>,
 ) {
   if (exportEnCours.value) return;
 
   exportEnCours.value = true;
   erreurExport.value = "";
-  statutExport.value = "Export en cours : récupération des données…";
+  statutExport.value = "Téléchargement du " + titre + " en cours…";
 
   try {
-    await exportFn((currentPage, totalPages) => {
+    await exportFn((_currentPage, _totalPages, _loadedRows, totalRows) => {
       statutExport.value =
-        "Export en cours : récupération des données (" +
-        currentPage +
-        "/" +
-        totalPages +
-        " page" +
-        (totalPages > 1 ? "s" : "") +
-        ").";
+        "Téléchargement du " + titre + " : " + totalRows + " envoi" + (totalRows > 1 ? "s" : "") + ".";
     });
     statutExport.value = "Téléchargement prêt.";
   } catch {
@@ -386,18 +383,26 @@ async function executerExport(
   }
 }
 
-async function onBilanTableDownload(action: string, onProgress: (currentPage: number, totalPages: number) => void) {
+const fetchBilanExport = (page: number, from: string, to: string, limit?: number) =>
+  fetchBilanEnvois(page, from, to, undefined, limit);
+const fetchRejetsExport = (page: number, from: string, to: string, limit?: number) =>
+  fetchEnvoisRejetes(page, from, to, undefined, limit);
+
+async function onBilanTableDownload(
+  action: string,
+  onProgress: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
+) {
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapBilanRows(
-      await fetchAllPages(fetchBilanEnvois, fromBase.value.toISOString(), toBase.value.toISOString(), 500, onProgress),
+      await fetchAllPages(fetchBilanExport, fromBase.value.toISOString(), toBase.value.toISOString(), 500, onProgress),
     );
     downloadXlsx(rows, "bilan-envois.xlsx", "Bilan des envois", COLONNES_BILAN_XLSX);
     return;
   }
   if (action === "xlsx-week") {
     await downloadRangeAsXlsx(
-      fetchBilanEnvois,
+      fetchBilanExport,
       mapBilanRows,
       currentWeekRange(),
       "bilan-envois-semaine-courante.xlsx",
@@ -409,7 +414,7 @@ async function onBilanTableDownload(action: string, onProgress: (currentPage: nu
   }
   if (action === "xlsx-month") {
     await downloadRangeAsXlsx(
-      fetchBilanEnvois,
+      fetchBilanExport,
       mapBilanRows,
       currentMonthRange(),
       "bilan-envois-mois-courant.xlsx",
@@ -420,7 +425,10 @@ async function onBilanTableDownload(action: string, onProgress: (currentPage: nu
   }
 }
 
-async function onRejectsTableDownload(action: string, onProgress: (currentPage: number, totalPages: number) => void) {
+async function onRejectsTableDownload(
+  action: string,
+  onProgress: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
+) {
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
@@ -437,7 +445,7 @@ async function onRejectsTableDownload(action: string, onProgress: (currentPage: 
   }
   if (action === "xlsx-week") {
     await downloadRangeAsXlsx(
-      fetchEnvoisRejetes,
+      fetchRejetsExport,
       mapRejectsRows,
       currentWeekRange(),
       "envois-rejetes-semaine-courante.xlsx",
@@ -449,7 +457,7 @@ async function onRejectsTableDownload(action: string, onProgress: (currentPage: 
   }
   if (action === "xlsx-month") {
     await downloadRangeAsXlsx(
-      fetchEnvoisRejetes,
+      fetchRejetsExport,
       mapRejectsRows,
       currentMonthRange(),
       "envois-rejetes-mois-courant.xlsx",
@@ -924,7 +932,11 @@ onMounted(async () => {
                             type="button"
                             class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
                             :class="action.icon"
-                            @click="executerExport((onProgress) => onBilanTableDownload(action.id, onProgress))"
+                            @click="
+                              executerExport('bilan des envois', (onProgress) =>
+                                onBilanTableDownload(action.id, onProgress),
+                              )
+                            "
                             :disabled="exportEnCours"
                           >
                             {{ action.label }}
@@ -1271,7 +1283,11 @@ onMounted(async () => {
                           type="button"
                           class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
                           :class="action.icon"
-                          @click="executerExport((onProgress) => onRejectsTableDownload(action.id, onProgress))"
+                          @click="
+                            executerExport('envois rejetés', (onProgress) =>
+                              onRejectsTableDownload(action.id, onProgress),
+                            )
+                          "
                           :disabled="exportEnCours"
                         >
                           {{ action.label }}
@@ -1414,7 +1430,9 @@ onMounted(async () => {
                     type="button"
                     class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
                     :class="action.icon"
-                    @click="executerExport((onProgress) => onRejectsTableDownload(action.id, onProgress))"
+                    @click="
+                      executerExport('envois rejetés', (onProgress) => onRejectsTableDownload(action.id, onProgress))
+                    "
                     :disabled="exportEnCours"
                   >
                     {{ action.label }}
@@ -1568,7 +1586,9 @@ onMounted(async () => {
                     type="button"
                     class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
                     :class="action.icon"
-                    @click="executerExport((onProgress) => onBilanTableDownload(action.id, onProgress))"
+                    @click="
+                      executerExport('bilan des envois', (onProgress) => onBilanTableDownload(action.id, onProgress))
+                    "
                     :disabled="exportEnCours"
                   >
                     {{ action.label }}
