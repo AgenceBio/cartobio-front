@@ -30,6 +30,8 @@ const model = defineModel<boolean>({ required: true });
 
 const { downloadJson } = useTelechargements();
 
+const hasPayload = computed(() => props.selectedEnvoi?.payload != null);
+
 const hasOnlyInvalidApiRequest = computed(() => {
   const erreurs = props.selectedEnvoi?.erreurs ?? [];
   return erreurs.length > 0 && erreurs.every((erreur) => erreur.code === "INVALID_API_REQUEST");
@@ -175,13 +177,19 @@ function getRejets(envoi: HistoriqueEnvoi) {
         </button>
       </div>
       <div class="fr-text--right">
-        <button
-          type="button"
-          class="fr-btn fr-icon-download-line fr-btn--icon-left fr-btn--secondary"
-          @click="downloadJson(selectedEnvoi?.payload, `payload-${selectedEnvoi?.jobId}.json`)"
+        <span
+          v-tooltip="{ text: hasPayload ? '' : 'Les payloads sont conservés pendant deux mois.', position: 'top' }"
+          :tabindex="hasPayload ? -1 : 0"
         >
-          Télécharger l'envoi en JSON
-        </button>
+          <button
+            type="button"
+            class="fr-btn fr-icon-download-line fr-btn--icon-left fr-btn--secondary"
+            :disabled="!hasPayload"
+            @click="downloadJson(selectedEnvoi?.payload, `payload-${selectedEnvoi?.jobId}.json`)"
+          >
+            {{ hasPayload ? "Télécharger l'envoi en JSON" : "Payload indisponible" }}
+          </button>
+        </span>
       </div>
     </template>
   </Modal>

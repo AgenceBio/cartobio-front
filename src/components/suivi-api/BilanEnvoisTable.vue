@@ -110,7 +110,7 @@ function hasDetailIdentifiers(envoi: BilanEnvoiItem) {
                       <span class="fr-sr-only">Voir le détail de cet envoi</span>
                     </button>
                     <button
-                      v-else
+                      v-else-if="!large"
                       type="button"
                       class="fr-btn fr-icon-information-line fr-btn--tertiary-no-outline fr-btn--sm"
                       aria-label="Détail indisponible"
