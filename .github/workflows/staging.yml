@@ -35,6 +35,7 @@ jobs:
         VUE_APP_GIT_COMMIT_SHA: ${{ github.sha }}
         VUE_APP_DATEIMPORT: "17/06/2026"
         VUE_APP_NOTIFICATIONS_API: "https://preprod-back.agencebio.org"
+        VUE_APP_CARTOBIO_PARCELLES_YEAR: 2025
     - run: |
         npm ci
         npm run build:app
