@@ -433,7 +433,7 @@ async function onRejectsTableDownload(
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
       await fetchAllPages(
-        fetchRejetsFiltres,
+        fetchRejetsExport,
         fromBase.value.toISOString(),
         toBase.value.toISOString(),
         500,
