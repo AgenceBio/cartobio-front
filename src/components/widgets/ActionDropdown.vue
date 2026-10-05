@@ -1,11 +1,14 @@
 <script setup>
-import { onBeforeUnmount, onUpdated, ref } from "vue";
+import { nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { onClickOutside, onKeyStroke, useSwipe } from "@vueuse/core";
 import { useHead } from "@unhead/vue";
 
 const show = ref(false);
 const fadeIn = ref(false);
 const actionsMenuRef = ref(null);
+const triggerRef = ref(null);
+
+const menuId = `actions-menu-${Math.random().toString(36).slice(2)}`;
 
 const props = defineProps({
   withIcons: {
@@ -42,10 +45,143 @@ const props = defineProps({
   },
 });
 
-onUpdated(() => {
-  setTimeout(() => {
-    fadeIn.value = show.value;
-  }, 1);
+const getFocusableElements = () => {
+  if (!actionsMenuRef.value) {
+    return [];
+  }
+
+  return [
+    ...actionsMenuRef.value.querySelectorAll(
+      'button:not(:disabled):not([aria-disabled="true"]), a[href]:not([aria-disabled="true"]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ];
+};
+
+const openMenu = async () => {
+  if (props.disabled) {
+    return;
+  }
+
+  show.value = true;
+
+  await nextTick();
+
+  fadeIn.value = true;
+
+  await nextTick();
+
+  const elements = getFocusableElements();
+
+  elements[0]?.focus();
+};
+
+const closeMenu = async ({ restoreFocus = true } = {}) => {
+  show.value = false;
+  fadeIn.value = false;
+
+  if (restoreFocus) {
+    await nextTick();
+    triggerRef.value?.focus();
+  }
+};
+
+const toggleMenu = () => {
+  if (show.value) {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+};
+
+const handleMenuClick = (event) => {
+  if (event.target.closest("button, a")) {
+    closeMenu({ restoreFocus: false });
+  }
+};
+
+const handleMenuKeydown = (event) => {
+  const elements = getFocusableElements();
+
+  if (!elements.length) {
+    return;
+  }
+
+  const currentIndex = elements.indexOf(document.activeElement);
+
+  switch (event.key) {
+    case "ArrowDown": {
+      event.preventDefault();
+
+      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % elements.length;
+
+      elements[nextIndex].focus();
+      break;
+    }
+
+    case "ArrowUp": {
+      event.preventDefault();
+
+      const previousIndex = currentIndex <= 0 ? elements.length - 1 : currentIndex - 1;
+
+      elements[previousIndex].focus();
+      break;
+    }
+
+    case "Home": {
+      event.preventDefault();
+      elements[0].focus();
+      break;
+    }
+
+    case "End": {
+      event.preventDefault();
+      elements[elements.length - 1].focus();
+      break;
+    }
+
+    case "Tab": {
+      const isFirst = currentIndex === 0;
+      const isLast = currentIndex === elements.length - 1;
+
+      if (!event.shiftKey && isLast) {
+        closeMenu({ restoreFocus: false });
+        return;
+      }
+
+      if (event.shiftKey && isFirst) {
+        closeMenu({ restoreFocus: false });
+      }
+
+      break;
+    }
+
+    default:
+      break;
+  }
+};
+
+const handleEscape = () => {
+  if (show.value) {
+    closeMenu();
+  }
+};
+
+const handleTriggerKeydown = (event) => {
+  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    event.preventDefault();
+
+    if (!show.value) {
+      openMenu();
+    }
+  }
+};
+
+const cancelKeyStroke = onKeyStroke("Escape", handleEscape);
+
+const cancelClickOutside = onClickOutside(actionsMenuRef, () => {
+  if (show.value) {
+    closeMenu();
+  }
 });
 
 const down = ref("16px");
@@ -53,31 +189,31 @@ const down = ref("16px");
 const { direction, lengthY } = useSwipe(actionsMenuRef, {
   onSwipe: () => {
     if (direction.value === "DOWN" && lengthY.value < 0) {
-      down.value = 16 + lengthY.value + "px";
+      down.value = `${16 + lengthY.value}px`;
     } else {
       down.value = "16px";
     }
   },
+
   onSwipeEnd: () => {
     if (lengthY.value < -30) {
-      show.value = false;
+      closeMenu({ restoreFocus: false });
       down.value = "16px";
     }
   },
 });
 
-const handleMenuClick = (event) => {
-  if (event.target.closest("button, a")) {
-    show.value = false;
+watch(show, async (isOpen) => {
+  if (!isOpen) {
+    fadeIn.value = false;
+    return;
   }
-};
 
-const cancelKeyStroke = onKeyStroke("Escape", () => {
-  show.value = false;
-});
+  await nextTick();
 
-const cancelClickOutside = onClickOutside(actionsMenuRef, () => {
-  show.value = false;
+  requestAnimationFrame(() => {
+    fadeIn.value = true;
+  });
 });
 
 onBeforeUnmount(() => {
@@ -95,24 +231,33 @@ useHead(() => ({
 
 <template>
   <div class="menu-anchor">
-    <slot name="trigger" :toggle="() => (show = !show)">
+    <slot name="trigger" :toggle="toggleMenu" :open="show" :menu-id="menuId">
       <button
+        ref="triggerRef"
         type="button"
-        @click.stop.prevent="show = !show"
         class="fr-btn fr-btn--tertiary-no-outline show-actions"
         :class="props.iconClass"
         :style="[props.iconStyle, props.vertical ? { transform: 'rotate(90deg)' } : {}]"
         :disabled="props.disabled"
         :aria-expanded="show"
+        :aria-controls="menuId"
+        aria-haspopup="true"
         aria-label="Choix des actions"
+        @click.stop.prevent="toggleMenu"
+        @keydown="handleTriggerKeydown"
       ></button>
     </slot>
-    <dialog class="menu-container" :open="show" tabindex="-1">
+
+    <dialog :id="menuId" class="menu-container" :open="show" aria-label="Actions">
       <div
-        class="fr-menu"
-        :class="{ '--fade-in': fadeIn, '--align-left': props.alignLeft }"
         ref="actionsMenuRef"
+        class="fr-menu"
+        :class="{
+          '--fade-in': fadeIn,
+          '--align-left': props.alignLeft,
+        }"
         :style="{ '--down': down }"
+        @keydown="handleMenuKeydown"
       >
         <ul
           class="fr-menu__list"

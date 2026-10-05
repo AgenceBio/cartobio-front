@@ -226,7 +226,6 @@ const {
   toggleFiltreGroupe,
   validerFiltreGroupe,
   reinitialiserFiltreGroupe,
-  fetchRejetsFiltres,
 } = rejetes;
 
 const historique = useHistoriqueParcellaire({ isLoading });
@@ -432,13 +431,7 @@ async function onRejectsTableDownload(
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
-      await fetchAllPages(
-        fetchRejetsFiltres,
-        fromBase.value.toISOString(),
-        toBase.value.toISOString(),
-        500,
-        onProgress,
-      ),
+      await fetchAllPages(fetchRejetsExport, fromBase.value.toISOString(), toBase.value.toISOString(), 500, onProgress),
     );
     downloadXlsx(rows, "envois-rejetes.xlsx", "Envois rejetés", COLONNES_REJETS_XLSX);
     return;
@@ -666,13 +659,21 @@ function fermerFiltresAuClicExterieur(event: MouseEvent) {
 function fermerFiltreEnSortieDeFocus(event: FocusEvent, filtre: "bilan" | "rejets") {
   const wrapper = event.currentTarget as HTMLElement;
   const nextFocusedElement = event.relatedTarget as Node | null;
-  if (nextFocusedElement && wrapper.contains(nextFocusedElement)) return;
+  if (!nextFocusedElement || wrapper.contains(nextFocusedElement)) return;
 
   if (filtre === "bilan") {
     filtreMenuOuvert.value = false;
   } else {
     filtreGroupeOuvert.value = false;
   }
+}
+
+function fermerFiltreAuClavier(event: KeyboardEvent, filtre: "bilan" | "rejets") {
+  const ouvert = filtre === "bilan" ? filtreMenuOuvert : filtreGroupeOuvert;
+  if (!ouvert.value) return;
+  ouvert.value = false;
+  const wrapper = event.currentTarget as HTMLElement;
+  wrapper.querySelector<HTMLButtonElement>("button[aria-controls]")?.focus();
 }
 
 onMounted(() => {
@@ -843,7 +844,11 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'bilan')">
+                    <div
+                      class="filtre-wrapper"
+                      @focusout="fermerFiltreEnSortieDeFocus($event, 'bilan')"
+                      @keydown.esc="fermerFiltreAuClavier($event, 'bilan')"
+                    >
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -861,6 +866,7 @@ onMounted(async () => {
                         v-show="filtreMenuOuvert"
                         id="filtre-panel-bilan"
                         class="filtre-panel"
+                        tabindex="-1"
                         role="dialog"
                         aria-label="Filtres du tableau"
                       >
@@ -1207,7 +1213,11 @@ onMounted(async () => {
                 </div>
                 <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
                   <li>
-                    <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')">
+                    <div
+                      class="filtre-wrapper"
+                      @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')"
+                      @keydown.esc="fermerFiltreAuClavier($event, 'rejets')"
+                    >
                       <button
                         type="button"
                         class="fr-btn fr-btn--secondary"
@@ -1228,6 +1238,7 @@ onMounted(async () => {
                         v-show="filtreGroupeOuvert"
                         id="filtre-panel-rejets"
                         class="filtre-panel"
+                        tabindex="-1"
                         role="dialog"
                         aria-label="Filtrer par groupe d'anomalies"
                       >
@@ -1355,7 +1366,11 @@ onMounted(async () => {
 
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')">
+            <div
+              class="filtre-wrapper"
+              @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')"
+              @keydown.esc="fermerFiltreAuClavier($event, 'rejets')"
+            >
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
@@ -1373,6 +1388,7 @@ onMounted(async () => {
                 v-show="filtreGroupeOuvert"
                 id="filtre-panel-rejets-agrandi"
                 class="filtre-panel"
+                tabindex="-1"
                 role="dialog"
                 aria-label="Filtrer par groupe d'anomalies"
               >
@@ -1392,12 +1408,12 @@ onMounted(async () => {
                       >
                         <input
                           type="checkbox"
-                          :id="`groupe-${option.value}`"
+                          :id="`groupe-agrandi-${option.value}`"
                           :value="option.value"
                           v-model="groupeFiltreBrouillon"
                         />
 
-                        <label class="fr-label" :for="`groupe-${option.value}`">
+                        <label class="fr-label" :for="`groupe-agrandi-${option.value}`">
                           {{ option.label }}
                         </label>
                       </div>
@@ -1497,12 +1513,16 @@ onMounted(async () => {
         </div>
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
           <li>
-            <div class="filtre-wrapper" @focusout="fermerFiltreEnSortieDeFocus($event, 'bilan')">
+            <div
+              class="filtre-wrapper"
+              @focusout="fermerFiltreEnSortieDeFocus($event, 'bilan')"
+              @keydown.esc="fermerFiltreAuClavier($event, 'bilan')"
+            >
               <button
                 type="button"
                 class="fr-btn fr-btn--secondary"
                 :aria-expanded="filtreMenuOuvert"
-                aria-controls="filtre-panel-bilan"
+                aria-controls="filtre-panel-bilan-agrandi"
                 @click="toggleFiltreMenu"
               >
                 <i class="ri-filter-3-line"></i>
@@ -1513,8 +1533,9 @@ onMounted(async () => {
               </button>
               <div
                 v-show="filtreMenuOuvert"
-                id="filtre-panel-bilan"
+                id="filtre-panel-bilan-agrandi"
                 class="filtre-panel"
+                tabindex="-1"
                 role="dialog"
                 aria-label="Filtres du tableau"
               >
@@ -1531,12 +1552,12 @@ onMounted(async () => {
                         class="fr-checkbox-group fr-checkbox-group--sm"
                       >
                         <input
-                          :id="`statut-${option.value}`"
+                          :id="`statut-agrandi-${option.value}`"
                           type="checkbox"
                           :value="option.value"
                           v-model="statutFiltreBrouillon"
                         />
-                        <label class="fr-label" :for="`statut-${option.value}`">{{ option.label }}</label>
+                        <label class="fr-label" :for="`statut-agrandi-${option.value}`">{{ option.label }}</label>
                       </div>
                     </div>
                   </fieldset>
@@ -1550,12 +1571,12 @@ onMounted(async () => {
                         class="fr-checkbox-group fr-checkbox-group--sm"
                       >
                         <input
-                          :id="`etat-${option.value}`"
+                          :id="`etat-agrandi-${option.value}`"
                           type="checkbox"
                           :value="option.value"
                           v-model="etatFiltreBrouillon"
                         />
-                        <label class="fr-label" :for="`etat-${option.value}`">{{ option.label }}</label>
+                        <label class="fr-label" :for="`etat-agrandi-${option.value}`">{{ option.label }}</label>
                       </div>
                     </div>
                   </fieldset>
