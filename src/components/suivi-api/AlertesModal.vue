@@ -43,11 +43,16 @@ function onChangerType(event: Event) {
 </script>
 
 <template>
-  <Modal v-if="model" data-track-content data-content-name="Toutes les alertes" @close="emit('close')" mediumLarge>
+  <Modal
+    v-if="model"
+    data-track-content
+    data-content-name="Toutes les alertes"
+    :label="vueAlertes === 'liste' ? 'Toutes les alertes' : 'Détail de l\'alerte'"
+    @close="emit('close')"
+    mediumLarge
+  >
     <template #header>
-      <button class="fr-btn fr-btn--close" type="button" aria-controls="global-modal" @click="emit('close')">
-        Fermer
-      </button>
+      <button class="fr-btn fr-btn--close" type="button" @click="emit('close')">Fermer</button>
     </template>
 
     <!-- Vue liste -->

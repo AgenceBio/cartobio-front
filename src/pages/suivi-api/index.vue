@@ -84,7 +84,6 @@ const DELAI_AFFICHAGE_SPINNER_MS = 150;
 const searchQuery = ref("");
 const modalReferentielAnomalies = ref<boolean>(false);
 const modalBilanEnvoisAgrandi = ref<boolean>(false);
-const modalRejetsAgrandi = ref<boolean>(false);
 const exportEnCours = ref(false);
 const statutExport = ref("");
 const erreurExport = ref("");
@@ -671,6 +670,7 @@ function fermerFiltreEnSortieDeFocus(event: FocusEvent, filtre: "bilan" | "rejet
 function fermerFiltreAuClavier(event: KeyboardEvent, filtre: "bilan" | "rejets") {
   const ouvert = filtre === "bilan" ? filtreMenuOuvert : filtreGroupeOuvert;
   if (!ouvert.value) return;
+  event.preventDefault();
   ouvert.value = false;
   const wrapper = event.currentTarget as HTMLElement;
   wrapper.querySelector<HTMLButtonElement>("button[aria-controls]")?.focus();
@@ -1187,14 +1187,6 @@ onMounted(async () => {
                 <h2 class="fr-h6 fr-mb-0">
                   Envois rejetés {{ formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase() }}
                 </h2>
-                <div class="table-actions">
-                  <button
-                    type="button"
-                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-up-line"
-                    aria-label="Agrandir le tableau des envois rejetés"
-                    @click="modalRejetsAgrandi = true"
-                  ></button>
-                </div>
               </div>
               <div class="fr-table__header">
                 <div class="fr-search-bar">
@@ -1325,155 +1317,6 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    <!-- Modale envois rejetés agrandi -->
-    <Modal
-      v-if="modalRejetsAgrandi"
-      data-track-content
-      mediumLarge
-      data-content-name="Envois rejetés agrandi"
-      @close="modalRejetsAgrandi = false"
-    >
-      <template #header>
-        <button
-          class="fr-btn fr-btn--close"
-          type="button"
-          aria-controls="global-modal"
-          @click="modalRejetsAgrandi = false"
-        >
-          Fermer
-        </button>
-      </template>
-
-      <div class="download-title-row fr-mb-2w">
-        <h2 class="fr-h6 fr-mb-0">Envois rejetés</h2>
-      </div>
-
-      <div class="fr-table__header">
-        <div class="fr-search-bar">
-          <label class="fr-label" for="table-search-rejetes-agrandi-input">Rechercher</label>
-          <input
-            id="table-search-rejetes-agrandi-input"
-            class="fr-input"
-            aria-describedby="table-search-rejetes-agrandi-messages"
-            placeholder="Rechercher un N°"
-            type="search"
-            v-model="rechercheRejetsBrouillon"
-            @keyup.enter="validerRechercheRejets"
-          />
-          <div id="table-search-rejetes-agrandi-messages" class="fr-messages-group" aria-live="polite"></div>
-          <button type="button" class="fr-btn" @click="validerRechercheRejets">Rechercher</button>
-        </div>
-
-        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-md fr-btns-group--icon-left">
-          <li>
-            <div
-              class="filtre-wrapper"
-              @focusout="fermerFiltreEnSortieDeFocus($event, 'rejets')"
-              @keydown.esc="fermerFiltreAuClavier($event, 'rejets')"
-            >
-              <button
-                type="button"
-                class="fr-btn fr-btn--secondary"
-                :aria-expanded="filtreGroupeOuvert"
-                aria-controls="filtre-panel-rejets-agrandi"
-                @click="toggleFiltreGroupe"
-              >
-                <i class="ri-filter-3-line"></i>
-                <span class="fr-ml-1w">Filtrer</span>
-                <span v-if="groupeFiltreApplique.length > 0" class="fr-badge fr-badge--sm fr-badge--info filtre-count">
-                  {{ groupeFiltreApplique.length }}
-                </span>
-              </button>
-              <div
-                v-show="filtreGroupeOuvert"
-                id="filtre-panel-rejets-agrandi"
-                class="filtre-panel"
-                tabindex="-1"
-                role="dialog"
-                aria-label="Filtrer par groupe d'anomalies"
-              >
-                <div class="filtre-panel__header">
-                  <h3 class="fr-h6 fr-mb-0">Filtres</h3>
-                  <div></div>
-                </div>
-                <div class="filtre-panel__body">
-                  <fieldset class="fr-fieldset filtre-panel__section">
-                    <legend class="fr-fieldset__legend fr-text--bold fr-mb-1w">Catégorie d'anomalies</legend>
-
-                    <div class="filtre-panel__elements">
-                      <div
-                        v-for="option in GROUPE_ANOMALIE_OPTIONS"
-                        :key="option.value"
-                        class="fr-checkbox-group fr-checkbox-group--sm"
-                      >
-                        <input
-                          type="checkbox"
-                          :id="`groupe-agrandi-${option.value}`"
-                          :value="option.value"
-                          v-model="groupeFiltreBrouillon"
-                        />
-
-                        <label class="fr-label" :for="`groupe-agrandi-${option.value}`">
-                          {{ option.label }}
-                        </label>
-                      </div>
-                    </div>
-                  </fieldset>
-                </div>
-                <div class="filtre-panel__actions">
-                  <button
-                    type="button"
-                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
-                    @click="reinitialiserFiltreGroupe"
-                  >
-                    Réinitialiser
-                  </button>
-                  <button type="button" class="fr-btn fr-btn--sm" @click="validerFiltreGroupe">Valider</button>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <ActionDropdown
-              noWrap
-              with-icons
-              icon-class="fr-icon-more-line fr-btn--sm fr-pr-1w"
-              icon-style="font-size: 1.2em"
-            >
-              <template v-for="action in tableDownloadActions" :key="action.id">
-                <li>
-                  <button
-                    type="button"
-                    class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-btn--icon-left"
-                    :class="action.icon"
-                    @click="
-                      executerExport('envois rejetés', (onProgress) => onRejectsTableDownload(action.id, onProgress))
-                    "
-                    :disabled="exportEnCours"
-                  >
-                    {{ action.label }}
-                  </button>
-                </li>
-              </template>
-            </ActionDropdown>
-          </li>
-        </ul>
-      </div>
-
-      <Spinner v-if="rechercheRejetsEnCours">Recherche en cours…</Spinner>
-      <EnvoisRejetesTable
-        v-else-if="envoisRejetes.data.length"
-        :envois="envoisRejetes.data"
-        :page="envoisRejetes.meta.page"
-        :ordre-date="ordreDateReject"
-        large
-        :max-page="Math.ceil(envoisRejetes.meta.total / envoisRejetes.meta.limit)"
-        @change-page="changerPageRejetes"
-        @open-details="openDetailsEnvoi"
-        @change-tri-date="changerTriDateReject"
-      />
-      <div v-else class="bilan-empty bilan-empty--table">Aucune donnée</div>
-    </Modal>
 
     <!-- Modale bilan agrandi -->
     <Modal
@@ -1481,17 +1324,11 @@ onMounted(async () => {
       data-track-content
       mediumLarge
       data-content-name="Bilan des envois agrandi"
+      label="Bilan des envois"
       @close="modalBilanEnvoisAgrandi = false"
     >
       <template #header>
-        <button
-          class="fr-btn fr-btn--close"
-          type="button"
-          aria-controls="global-modal"
-          @click="modalBilanEnvoisAgrandi = false"
-        >
-          Fermer
-        </button>
+        <button class="fr-btn fr-btn--close" type="button" @click="modalBilanEnvoisAgrandi = false">Fermer</button>
       </template>
       <div class="download-title-row fr-mb-2w">
         <h2 class="fr-h6 fr-mb-0">Bilan des envois</h2>
