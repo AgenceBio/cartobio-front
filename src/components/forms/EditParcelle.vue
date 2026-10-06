@@ -184,22 +184,6 @@
               </div>
             </div>
           </div>
-          <div v-if="!permissions.isOc" class="fr-input-group fr-px-6v fr-mt-6v">
-            <label class="fr-label" for="feature-commentaires">
-              Vos notes
-              <span class="fr-hint-text">Elles seront visibles par votre organisme de certification.</span>
-            </label>
-            <textarea
-              class="fr-input"
-              aria-describedby="feature-commentaires-hint"
-              id="feature-commentaires"
-              name="commentaires"
-              v-model="patch.commentaires"
-            />
-            <span id="feature-commentaires-hint" class="fr-sr-only">
-              Ces notes sont visibles par votre organisme de certification.
-            </span>
-          </div>
           <AccordionGroup
             v-if="permissions.isOc && permissions.canEditParcellaire && !isFeatureCompare"
             :constraint-toggle="!open"
@@ -329,7 +313,7 @@
                   v-model="patch.auditeur_notes"
                 />
               </div>
-              <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-else-if="patch.auditeur_notes">
+              <figure class="fr-quote fr-py-1w fr-px-2w fr-my-2w" v-else-if="permissions.isOc && patch.auditeur_notes">
                 <blockquote>
                   <p>{{ patch.auditeur_notes }}</p>
                 </blockquote>
@@ -341,6 +325,22 @@
           </AccordionGroup>
         </template>
 
+        <div v-if="!permissions.isOc" class="fr-input-group fr-px-6v fr-mt-6v">
+          <label class="fr-label" for="feature-commentaires">
+            Vos notes
+            <span class="fr-hint-text">Elles seront visibles par votre organisme de certification.</span>
+          </label>
+          <textarea
+            class="fr-input"
+            aria-describedby="feature-commentaires-hint"
+            id="feature-commentaires"
+            name="commentaires"
+            v-model="patch.commentaires"
+          />
+          <span id="feature-commentaires-hint" class="fr-sr-only">
+            Ces notes sont visibles par votre organisme de certification.
+          </span>
+        </div>
         <p class="fr-text--bold fr-mt-2w" v-if="feature.properties.historique">Historique</p>
         <TimelineHistorique class="fr-mt-1w" :historique="feature.properties.historique" />
       </form>
