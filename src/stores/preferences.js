@@ -6,6 +6,7 @@ const defaultLayers = () => ({
   background: "plan",
   cadastre: false,
   rpg: false,
+  cartobioParcelles: false,
 });
 
 const defaultParams = () => ({

@@ -264,8 +264,8 @@ async function handleMultipleDelete(reason) {
 }
 
 function scrollToTop() {
-  if (document.getElementById("headerRecord")) {
-    const element = document.getElementById("headerRecord");
+  if (document.getElementById("list-parcelles-container")) {
+    const element = document.getElementById("list-parcelles-container");
     element.scrollIntoView({ block: "start" });
   }
 }

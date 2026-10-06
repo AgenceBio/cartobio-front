@@ -110,7 +110,7 @@ describe("storage", () => {
         new SyncOperation(SyncOperation.ACTIONS.RECORD_INFO, { version_name: "Version test au nom changé" }),
       );
 
-      expect(storage.sync).rejects.toThrow("BAD_REQUEST_AXIOS");
+      await expect(storage.sync).rejects.toThrow("BAD_REQUEST_AXIOS");
     });
   });
 });
