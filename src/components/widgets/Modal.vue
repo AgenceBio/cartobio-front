@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, useId, useSlots,ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, useId, useSlots, ref } from "vue";
 import { useHead } from "@unhead/vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useContentTracking } from "@/stats.js";
@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
 }
 .fr-modal__footer {
   filter: drop-shadow(var(--lifted-shadow));
-  z-index: calc(var(--ground) + 2000); 
+  z-index: calc(var(--ground) + 2000);
 }
 .fr-modal__footer:empty {
   display: none;
