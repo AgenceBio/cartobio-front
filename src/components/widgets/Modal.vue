@@ -1,11 +1,14 @@
 <template>
   <dialog
-    aria-labelledby="modal-title"
+    ref="dialog"
+    :aria-labelledby="!label && titreAffiche ? titleId : undefined"
+    :aria-label="label"
     role="dialog"
-    id="global-modal"
+    :id="modalId"
     class="fr-modal fr-modal--opened"
     open
     aria-modal="true"
+    tabindex="-1"
   >
     <div
       :class="[
@@ -16,12 +19,16 @@
       <div :class="[!extraLarge ? 'fr-grid-row fr-grid-row--center' : '']">
         <div
           ref="target"
-          :class="[!extraLarge ?? 'fr-col-12 fr-col-md-8', !large && !extraLarge ? 'fr-col-lg-6' : null]"
+          :class="[
+            !extraLarge ?? 'fr-col-12 fr-col-md-8',
+            !large && !extraLarge && !mediumLarge ? 'fr-col-lg-6' : null,
+            mediumLarge ? 'fr-col-lg-10' : null,
+          ]"
         >
           <div class="fr-modal__body">
             <div class="fr-modal__header" v-if="!noHeader">
               <template v-if="!slots.header">
-                <h1 id="modal-title" class="fr-modal__title fr-m-0 fr-mt-2w">
+                <h1 v-if="titreAffiche" :id="titleId" class="fr-modal__title fr-m-0 fr-mt-2w">
                   <span :class="['fr-icon', icon, 'fr-mr-1w']" v-if="icon" aria-hidden="true" />
                   <slot name="title" />
                 </h1>
@@ -29,7 +36,7 @@
                 <button
                   class="fr-btn--close fr-btn"
                   title="Fermer la fenêtre modale"
-                  aria-controls="global-modal"
+                  :aria-controls="modalId"
                   @click="emit('close')"
                   :disabled="lockClose"
                   v-if="!noCloseButton"
@@ -54,7 +61,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, useSlots } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, useId, useSlots, ref } from "vue";
 import { useHead } from "@unhead/vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useContentTracking } from "@/stats.js";
@@ -66,6 +73,7 @@ useContentTracking();
 const emit = defineEmits(["close"]);
 const props = defineProps({
   icon: String,
+  label: String,
   noCloseButton: Boolean,
   lockClose: {
     type: Boolean,
@@ -83,46 +91,124 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  mediumLarge: {
+    type: Boolean,
+    default: false,
+  },
 });
 
+const uid = useId();
+const modalId = `modal-${uid}`;
+const titleId = `modal-title-${uid}`;
+const titreAffiche = computed(() => !props.noHeader && !slots.header && Boolean(slots.title));
+
+const dialog = ref(null);
 const target = ref(null);
+const estAuPremierPlan = computed(() => pileModales.value.at(-1) === modalId);
 
-const cancelKeyStroke = onKeyStroke("Escape", () => {
-  if (!props.lockClose) {
-    emit("close");
+const pileModales = ref([]);
+
+const FOCUSABLES = [
+  "a[href]",
+  "area[href]",
+  "button:not([disabled])",
+  "input:not([disabled]):not([type='hidden'])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  "iframe",
+  "[tabindex]:not([tabindex='-1'])",
+  "[contenteditable='true']",
+].join(",");
+
+let elementOrigine = null;
+
+function elementsFocusables() {
+  if (!dialog.value) return [];
+  return [...dialog.value.querySelectorAll(FOCUSABLES)].filter((el) => el.getClientRects().length > 0);
+}
+
+const cancelKeyStroke = onKeyStroke("Escape", (event) => {
+  if (event.defaultPrevented || !estAuPremierPlan.value || props.lockClose) return;
+  emit("close");
+});
+
+const cancelTabKeyStroke = onKeyStroke("Tab", (event) => {
+  if (!estAuPremierPlan.value || !dialog.value) return;
+
+  const focusables = elementsFocusables();
+  if (focusables.length === 0) {
+    event.preventDefault();
+    dialog.value.focus();
+    return;
+  }
+
+  const premier = focusables[0];
+  const dernier = focusables.at(-1);
+  const actif = document.activeElement;
+
+  if (!dialog.value.contains(actif)) {
+    event.preventDefault();
+    (event.shiftKey ? dernier : premier).focus();
+  } else if (event.shiftKey && (actif === premier || actif === dialog.value)) {
+    event.preventDefault();
+    dernier.focus();
+  } else if (!event.shiftKey && actif === dernier) {
+    event.preventDefault();
+    premier.focus();
   }
 });
-const cancelClickOutside = onClickOutside(target, (event) => {
-  const range = document.createRange();
-  range.selectNode(target.value);
-  const isOutside = range.intersectsNode(event.target);
-  if (isOutside && !props.lockClose) {
-    emit("close");
-  }
+
+const cancelClickOutside = onClickOutside(target, () => {
+  if (!estAuPremierPlan.value || props.lockClose) return;
+  emit("close");
 });
 
 onMounted(() => {
+  elementOrigine = document.activeElement;
+  pileModales.value.push(modalId);
+
   useHead({
     htmlAttrs: {
       "data-fr-scrolling": true,
       tagDuplicateStrategy: "replace",
     },
   });
+
+  nextTick(() => {
+    if (!dialog.value || dialog.value.contains(document.activeElement)) return;
+    (elementsFocusables()[0] ?? dialog.value).focus();
+  });
 });
 
 onBeforeUnmount(() => {
-  useHead({
-    htmlAttrs: {
-      "data-fr-scrolling": false,
-      tagDuplicateStrategy: "replace",
-    },
-  });
+  const focusDansModale = dialog.value?.contains(document.activeElement) || document.activeElement === document.body;
+
+  pileModales.value = pileModales.value.filter((id) => id !== modalId);
+
+  if (pileModales.value.length === 0) {
+    useHead({
+      htmlAttrs: {
+        "data-fr-scrolling": false,
+        tagDuplicateStrategy: "replace",
+      },
+    });
+  }
   cancelClickOutside();
   cancelKeyStroke();
+  cancelTabKeyStroke();
 
-  useHead({
-    htmlAttrs: {},
-  });
+  if (pileModales.value.length === 0) {
+    useHead({
+      htmlAttrs: {},
+    });
+  }
+
+  if (!focusDansModale) return;
+  if (elementOrigine?.isConnected && typeof elementOrigine.focus === "function") {
+    elementOrigine.focus();
+  } else {
+    document.getElementById(pileModales.value.at(-1))?.focus();
+  }
 });
 </script>
 
@@ -132,10 +218,13 @@ onBeforeUnmount(() => {
 }
 .fr-modal__footer {
   filter: drop-shadow(var(--lifted-shadow));
-  z-index: calc(var(--ground) + 2000); /* same as .fr-modal__body in DSFR */
+  z-index: calc(var(--ground) + 2000);
 }
 .fr-modal__footer:empty {
   display: none;
+}
+.fr-modal:focus {
+  outline: none;
 }
 </style>
 <style>

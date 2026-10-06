@@ -96,7 +96,11 @@ export async function getUserOperatorsForDashboard() {
  * @return {Promise<AgenceBioNormalizedOperator[]>}
  */
 export async function getDashboardSummary(departements, anneeReferenceControle) {
-  const { data } = await apiClient.post(`/v2/operators/dashboard-summary`, { departements, anneeReferenceControle });
+  const { data } = await apiClient.post(
+    `/v2/operators/dashboard-summary`,
+    { departements, anneeReferenceControle },
+    { timeout: 60000 },
+  );
 
   return data;
 }

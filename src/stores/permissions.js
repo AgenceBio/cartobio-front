@@ -72,6 +72,7 @@ export const usePermissions = defineStore("permissions", () => {
   const canAddAnnotations = isOc;
   const canViewAnnotations = isOc;
   const canExportAnnotations = isOc;
+  const canAccessApiDashboard = computed(() => userStore.canAccessApiDashboard);
 
   return {
     // convenience proxy
@@ -80,6 +81,7 @@ export const usePermissions = defineStore("permissions", () => {
     //
     canAddAnnotations,
     canExportAnnotations,
+    canAccessApiDashboard,
     canViewAnnotations,
     canAddParcelle,
     canDeleteFeature,

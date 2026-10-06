@@ -1,0 +1,230 @@
+import * as XLSX from "xlsx";
+import { formatStartOfDay, formatEndOfDay, currentWeekRange, currentMonthRange } from "@/utils/date.formatters";
+import type { PageResult, DateRange } from "@/types/suivi-api";
+
+export interface LegendEntry {
+  label: string;
+  color: string;
+}
+
+type XlsxRow = Record<string, string | number | null | undefined>;
+
+export function useTelechargements() {
+  function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadJson(data: unknown, filename: string) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    downloadBlob(blob, filename);
+  }
+
+  function downloadXlsx(rows: XlsxRow[], filename: string, sheetName: string, columns?: string[]) {
+    const worksheet = rows.length
+      ? XLSX.utils.json_to_sheet(rows, columns?.length ? { header: columns } : undefined)
+      : XLSX.utils.aoa_to_sheet([columns ?? []]);
+
+    const header = columns?.length ? columns : Object.keys(rows[0] ?? {});
+    if (header.length) {
+      worksheet["!cols"] = header.map((titre) => ({ wch: Math.max(titre.length + 2, 14) }));
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    XLSX.writeFile(workbook, filename);
+  }
+
+  async function fetchAllPages<T>(
+    fetchFn: (page: number, from: string, to: string, limit?: number) => Promise<PageResult<T>>,
+    fromIso: string,
+    toIso: string,
+    limit = 500,
+    onProgress?: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
+  ): Promise<T[]> {
+    const first = await fetchFn(1, fromIso, toIso, limit);
+    const rows = [...first.data];
+    const pageCount = Math.max(1, Math.ceil(first.meta.total / first.meta.limit));
+    onProgress?.(1, pageCount, rows.length, first.meta.total);
+    for (let page = 2; page <= pageCount; page++) {
+      const next = await fetchFn(page, fromIso, toIso, limit);
+      rows.push(...next.data);
+      onProgress?.(page, pageCount, rows.length, first.meta.total);
+    }
+    return rows;
+  }
+
+  async function downloadRangeAsXlsx<T>(
+    fetchFn: (page: number, from: string, to: string, limit?: number) => Promise<PageResult<T>>,
+    mapFn: (data: T[]) => XlsxRow[],
+    range: DateRange,
+    filename: string,
+    sheetName: string,
+    columns?: string[],
+    onProgress?: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
+  ) {
+    const rows = mapFn(
+      await fetchAllPages(fetchFn, formatStartOfDay(range.from), formatEndOfDay(range.to), 500, onProgress),
+    );
+    downloadXlsx(rows, filename, sheetName, columns);
+  }
+
+  function getTitleLines(context: CanvasRenderingContext2D, title: string, maxWidth: number, size: number) {
+    context.font = `bold ${size}px Marianne, sans-serif`;
+    const words = title.split(/\s+/);
+    const lines: string[] = [];
+    let line = "";
+
+    words.forEach((word) => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && context.measureText(candidate).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    });
+
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function getTitleHeight(title: string | undefined, width: number, size: number) {
+    if (!title) return 0;
+    const measurementCanvas = document.createElement("canvas");
+    const context = measurementCanvas.getContext("2d");
+    if (!context) return 0;
+    return getTitleLines(context, title, width, size).length * Math.ceil(size * 1.35);
+  }
+
+  function drawTitle(
+    context: CanvasRenderingContext2D,
+    title: string,
+    x: number,
+    y: number,
+    maxWidth: number,
+    size = 18,
+  ) {
+    context.fillStyle = "#161616";
+    context.font = `bold ${size}px Marianne, sans-serif`;
+    context.textBaseline = "top";
+    const lineHeight = Math.ceil(size * 1.35);
+    getTitleLines(context, title, maxWidth, size).forEach((line, index) => {
+      context.fillText(line, x, y + index * lineHeight);
+    });
+  }
+
+  function drawLegend(context: CanvasRenderingContext2D, legend: LegendEntry[], x: number, startY: number) {
+    context.font = "14px Marianne, sans-serif";
+    context.textBaseline = "middle";
+    legend.forEach((entry, i) => {
+      const y = startY + i * 24;
+      context.fillStyle = entry.color;
+      context.fillRect(x, y, 14, 14);
+      context.fillStyle = "#161616";
+      context.fillText(entry.label, x + 22, y + 7);
+    });
+  }
+
+  function downloadCanvasPng(container: HTMLElement | null, filename: string, legend?: LegendEntry[], title?: string) {
+    const canvas = container?.querySelector("canvas");
+    if (!(canvas instanceof HTMLCanvasElement)) return;
+
+    const padding = 32;
+    const titleHeight = getTitleHeight(title, canvas.width, 18);
+    const legendGap = 16;
+    const legendHeight = legend?.length ? legendGap + legend.length * 24 : 0;
+
+    const output = document.createElement("canvas");
+    output.width = canvas.width + padding * 2;
+    output.height = canvas.height + titleHeight + legendHeight + padding * 2;
+
+    const context = output.getContext("2d");
+    if (!context) return;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, output.width, output.height);
+
+    if (title) drawTitle(context, title, padding, padding, canvas.width);
+
+    context.drawImage(canvas, padding, padding + titleHeight);
+
+    if (legend?.length) {
+      drawLegend(context, legend, padding, padding + titleHeight + canvas.height + legendGap);
+    }
+
+    output.toBlob((blob) => {
+      if (blob) downloadBlob(blob, filename);
+    }, "image/png");
+  }
+
+  function downloadComparisonPng(
+    compareContainer: HTMLElement | null,
+    currentContainer: HTMLElement | null,
+    compareLabel: string,
+    currentLabel: string,
+    legend?: LegendEntry[],
+    title?: string,
+    filename = "comparaison-bilan-envois.png",
+  ) {
+    const compareCanvas = compareContainer?.querySelector("canvas");
+    const currentCanvas = currentContainer?.querySelector("canvas");
+    if (!(compareCanvas instanceof HTMLCanvasElement) || !(currentCanvas instanceof HTMLCanvasElement)) return;
+
+    const padding = 32;
+    const graphWidth = compareCanvas.width + currentCanvas.width + padding;
+    const titleHeight = getTitleHeight(title, graphWidth, 20);
+    const labelsHeight = 48;
+    const legendGap = 16;
+    const legendHeight = legend?.length ? legendGap + legend.length * 24 : 0;
+
+    const output = document.createElement("canvas");
+    output.width = compareCanvas.width + currentCanvas.width + padding * 3;
+    output.height =
+      Math.max(compareCanvas.height, currentCanvas.height) + titleHeight + labelsHeight + padding * 3 + legendHeight;
+
+    const context = output.getContext("2d");
+    if (!context) return;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, output.width, output.height);
+
+    if (title) drawTitle(context, title, padding, padding, graphWidth, 20);
+
+    const graphsTop = titleHeight + padding;
+
+    context.fillStyle = "#161616";
+    context.font = "bold 16px Marianne, sans-serif";
+    context.textBaseline = "top";
+    context.fillText(compareLabel, padding, graphsTop + padding);
+    context.fillText(currentLabel, compareCanvas.width + padding * 2, graphsTop + padding);
+
+    const canvasesTop = graphsTop + labelsHeight + padding;
+    context.drawImage(compareCanvas, padding, canvasesTop);
+    context.drawImage(currentCanvas, compareCanvas.width + padding * 2, canvasesTop);
+
+    if (legend?.length) {
+      drawLegend(context, legend, padding, output.height - legendHeight + legendGap);
+    }
+
+    output.toBlob((blob) => {
+      if (blob) downloadBlob(blob, filename);
+    }, "image/png");
+  }
+
+  return {
+    downloadBlob,
+    downloadXlsx,
+    fetchAllPages,
+    downloadRangeAsXlsx,
+    downloadCanvasPng,
+    downloadComparisonPng,
+    currentWeekRange,
+    currentMonthRange,
+    downloadJson,
+  };
+}

@@ -343,6 +343,7 @@
           (!isActive('/certification/*') &&
             !isActive('/exploitations/*') &&
             !isActive('/exploitations') &&
+            !isActive('/suivi-api') &&
             !isOnExploitationsPage)
         "
       >
@@ -428,7 +429,9 @@
       <!-- Header Organisme certificateur -->
       <div
         class="fr-container"
-        v-if="isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*'))"
+        v-if="
+          isOc && !isMobile && (isActive('/certification/*') || isActive('/exploitations/*') || isActive('/suivi-api'))
+        "
       >
         <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
           <ul class="fr-nav__list">
@@ -443,6 +446,14 @@
                   isActive('/exploitations/*') || isActive('/certification/exploitations') ? 'page' : undefined
                 "
                 >Liste des exploitations</router-link
+              >
+            </li>
+            <li class="fr-nav__item" v-if="canAccessApiDashboard">
+              <router-link
+                to="/suivi-api"
+                class="fr-nav__link"
+                :aria-current="isActive('/suivi-api') ? 'page' : undefined"
+                >Suivi des envois API</router-link
               >
             </li>
             <li class="fr-nav__item">
@@ -689,7 +700,8 @@ const ROLE_ICONS = new Map([
 
 const isStaging = computed(() => !import.meta.env.VUE_APP_PRODUCTION);
 
-const { user, isLogged, roles, startPage, accueilPage, documentationPage } = storeToRefs(userStore);
+const { user, isLogged, roles, startPage, accueilPage, documentationPage, canAccessApiDashboard } =
+  storeToRefs(userStore);
 const roleIcon = computed(() => {
   for (const role of roles.value) {
     if (ROLE_ICONS.has(role)) return ROLE_ICONS.get(role);

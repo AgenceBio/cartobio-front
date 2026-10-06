@@ -1,0 +1,210 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import Modal from "@/components/widgets/Modal.vue";
+import ErreursAccordion from "@/components/suivi-api/ErreursAccordion.vue";
+import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
+import { formatDateTableau, formatDateControle } from "@/utils/date.formatters";
+import { useTelechargements } from "@/composables/suivi-api/useTelechargements";
+import type { HistoriqueEnvoi } from "@/types/suivi-api";
+
+const props = defineProps<{
+  vueModal: "historique" | "detail";
+  isLoading: boolean;
+  numeroBio: string | null;
+  numeroClient: string | null;
+  auditDate: string | null;
+  historique: HistoriqueEnvoi[];
+  selectedEnvoi: HistoriqueEnvoi | null;
+  envoiOrigine: HistoriqueEnvoi | null;
+}>();
+
+const emit = defineEmits<{
+  (e: "close"): void;
+  (e: "select-envoi", envoi: HistoriqueEnvoi): void;
+  (e: "retour-historique"): void;
+  (e: "retour-origine"): void;
+  (e: "open-referentiel"): void;
+}>();
+
+const model = defineModel<boolean>({ required: true });
+
+const { downloadJson } = useTelechargements();
+
+const hasPayload = computed(() => props.selectedEnvoi?.payload != null);
+
+const hasOnlyInvalidApiRequest = computed(() => {
+  const erreurs = props.selectedEnvoi?.erreurs ?? [];
+  return erreurs.length > 0 && erreurs.every((erreur) => erreur.code === "INVALID_API_REQUEST");
+});
+
+function getRejets(envoi: HistoriqueEnvoi) {
+  return envoi.details?.length ? envoi.details : envoi.erreurs;
+}
+</script>
+
+<template>
+  <Modal
+    v-if="model"
+    data-track-content
+    data-content-name="Historique envoi parcellaire"
+    :label="vueModal === 'historique' ? 'Historique des envois du parcellaire' : 'Détail de l\'envoi'"
+    @close="emit('close')"
+    mediumLarge
+  >
+    <template #header>
+      <button
+        v-if="vueModal === 'historique' && envoiOrigine"
+        type="button"
+        class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-line fr-btn--icon-left"
+        @click="emit('retour-origine')"
+      >
+        Retour à l'envoi du {{ formatDateTableau(envoiOrigine.createdAt) }}
+      </button>
+      <button
+        v-else-if="vueModal === 'detail' && selectedEnvoi !== envoiOrigine"
+        type="button"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left"
+        :class="envoiOrigine === selectedEnvoi ? 'fr-icon-arrow-right-up-line' : 'fr-icon-arrow-left-line'"
+        @click="emit('retour-historique')"
+      >
+        {{ envoiOrigine === selectedEnvoi ? "Accéder aux bilans des envois" : "Retour aux bilans des envois" }}
+      </button>
+      <button class="fr-btn fr-btn--close" type="button" @click="emit('close')">Fermer</button>
+    </template>
+
+    <template v-if="!isLoading">
+      <h2 class="fr-h5 fr-mb-3w">
+        N°Client {{ numeroClient ?? "non renseigné" }} / N°Bio {{ numeroBio ?? "non renseigné" }}
+      </h2>
+      <div class="controle-highlight fr-p-2w fr-mb-4w">
+        <p class="fr-mb-0">Contrôle réalisé le {{ formatDateControle(auditDate ?? "") }}</p>
+      </div>
+      <!-- Vue historique -->
+      <template v-if="vueModal === 'historique'">
+        <div class="justify-between">
+          <h3 class="fr-h6 fr-mb-2w">Bilan des envois</h3>
+        </div>
+        <div class="fr-table">
+          <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+              <div class="fr-table__content">
+                <table id="table-historique-envois">
+                  <caption class="fr-sr-only">
+                    Historique des envois du parcellaire sélectionné
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Rejets</th>
+                      <th scope="col">Statut</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="envoi in historique" :key="envoi.jobId">
+                      <td>{{ formatDateTableau(envoi.createdAt) }}</td>
+                      <td>
+                        <span
+                          v-for="detail in getRejets(envoi).slice(0, 2)"
+                          :key="detail.code"
+                          class="fr-badge fr-badge--sm fr-mr-1w error-badge"
+                          :style="{
+                            backgroundColor: getErrorColor(detail.code),
+                            color: getErrorTextColor(detail.code),
+                          }"
+                        >
+                          {{ getErrorMessage(detail.code, "short") }}
+                        </span>
+                        <span v-if="getRejets(envoi).length > 2" class="fr-text--sm">
+                          +{{ getRejets(envoi).length - 2 }}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          class="fr-badge"
+                          :class="envoi.erreurs.length > 0 ? 'fr-badge--error' : 'fr-badge--success'"
+                        >
+                          {{ envoi.erreurs.length > 0 ? "Rejeté" : "Validé" }}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          class="fr-btn fr-icon-arrow-right-up-line fr-btn--tertiary-no-outline"
+                          :aria-label="`Voir le détail de l'envoi ${envoi.jobId}`"
+                          @click="emit('select-envoi', envoi)"
+                        >
+                          <span class="fr-sr-only">Voir le détail de cet envoi</span>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Vue détail -->
+      <template v-if="vueModal === 'detail' && selectedEnvoi">
+        <div class="justify-between">
+          <h3 class="fr-h6 fr-mb-2w">Envoi du {{ formatDateTableau(selectedEnvoi.createdAt) }}</h3>
+          <button
+            type="button"
+            v-if="envoiOrigine === selectedEnvoi"
+            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left"
+            :class="envoiOrigine === selectedEnvoi ? 'fr-icon-arrow-right-up-line' : 'fr-icon-arrow-left-line'"
+            @click="emit('retour-historique')"
+          >
+            Accéder aux bilans des envois
+          </button>
+        </div>
+
+        <div v-if="hasOnlyInvalidApiRequest" class="fr-alert fr-alert--error fr-mt-3w">
+          <h3 class="fr-alert__title">Erreur de l'API</h3>
+          <p>Une erreur est survenue lors de l'appel à l'API. Aucun détail d'anomalie n'est disponible.</p>
+        </div>
+        <ErreursAccordion v-else :envoi="selectedEnvoi" />
+      </template>
+    </template>
+
+    <template #footer>
+      <div class="fr-col">
+        <button class="fr-btn fr-btn--tertiary-no-outline" type="button" @click="emit('open-referentiel')">
+          Référentiel des anomalies
+        </button>
+      </div>
+      <div class="fr-text--right">
+        <span
+          v-tooltip="{ text: hasPayload ? '' : 'Les payloads sont conservés pendant deux mois.', position: 'top' }"
+          :tabindex="hasPayload ? -1 : 0"
+        >
+          <button
+            type="button"
+            class="fr-btn fr-icon-download-line fr-btn--icon-left fr-btn--secondary"
+            :disabled="!hasPayload"
+            @click="downloadJson(selectedEnvoi?.payload, `payload-${selectedEnvoi?.jobId}.json`)"
+          >
+            {{ hasPayload ? "Télécharger l'envoi en JSON" : "Payload indisponible" }}
+          </button>
+        </span>
+      </div>
+    </template>
+  </Modal>
+</template>
+
+<style scoped>
+.controle-highlight {
+  background: var(--light-decisions-background-background-alt-blue-france, #f5f5fe);
+  border-left: 4px solid var(--blue-france-sun-113-625);
+}
+.error-badge {
+  border: 0;
+  box-shadow: none;
+}
+.justify-between {
+  justify-content: space-between;
+  display: flex;
+}
+</style>

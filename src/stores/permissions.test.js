@@ -112,6 +112,19 @@ describe("roles", () => {
     expect(permissions.canCertify).toEqual(false);
   });
 
+  it("limits the API dashboard to the authorised certification bodies", () => {
+    userStore.roles = [ROLES.OC_AUDIT];
+
+    userStore.user = { organismeCertificateur: { id: 1 } };
+    expect(permissions.canAccessApiDashboard).toEqual(true);
+
+    userStore.user = { organismeCertificateur: { id: "7" } };
+    expect(permissions.canAccessApiDashboard).toEqual(true);
+
+    userStore.user = { organismeCertificateur: { id: 4 } };
+    expect(permissions.canAccessApiDashboard).toEqual(false);
+  });
+
   it("unknwon role cannot do anything", () => {
     userStore.roles = [ROLES.UNKNOWN];
     userStore.user = { organismeCertificateur: { id: 2 } };
