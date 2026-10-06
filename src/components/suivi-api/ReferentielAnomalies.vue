@@ -41,6 +41,7 @@ const tabs = [
     v-if="modelValue"
     data-track-content
     data-content-name="Modale référentiel des anomalies"
+    label="Référentiel des anomalies"
     @close="closeModal"
     mediumLarge
   >

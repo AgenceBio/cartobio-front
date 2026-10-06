@@ -60,7 +60,7 @@ function hasDetailIdentifiers(envoi: BilanEnvoiItem) {
                 <th v-else scope="col">N° Client<span class="fr-hint-text"> N° BIO</span></th>
                 <th scope="col">État</th>
                 <th scope="col" :aria-sort="triCroissant ? 'ascending' : 'descending'">
-                  <div class="flex space-between">
+                  <div class="flex" :class="{ 'space-between': !large }">
                     <span style="align-self: center">Date d'envoi</span>
                     <button
                       type="button"
@@ -96,7 +96,7 @@ function hasDetailIdentifiers(envoi: BilanEnvoiItem) {
                 </template>
                 <td>{{ formatDateTableau(envoi.createdAt) }}</td>
                 <td>
-                  <div class="flex space-between">
+                  <div class="flex" :class="{ 'space-between': !large }">
                     <span class="fr-badge fr-badge--sm badge" :class="statutBadgeClass(envoi.statut)">
                       {{ formatStatut(envoi.statut) }}
                     </span>

@@ -47,6 +47,7 @@ function getRejets(envoi: HistoriqueEnvoi) {
     v-if="model"
     data-track-content
     data-content-name="Historique envoi parcellaire"
+    :label="vueModal === 'historique' ? 'Historique des envois du parcellaire' : 'Détail de l\'envoi'"
     @close="emit('close')"
     mediumLarge
   >
@@ -68,9 +69,7 @@ function getRejets(envoi: HistoriqueEnvoi) {
       >
         {{ envoiOrigine === selectedEnvoi ? "Accéder aux bilans des envois" : "Retour aux bilans des envois" }}
       </button>
-      <button class="fr-btn fr-btn--close" type="button" aria-controls="global-modal" @click="emit('close')">
-        Fermer
-      </button>
+      <button class="fr-btn fr-btn--close" type="button" @click="emit('close')">Fermer</button>
     </template>
 
     <template v-if="!isLoading">
