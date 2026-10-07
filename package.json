@@ -40,7 +40,7 @@
     "axios": "^1.20.0",
     "chart.js": "^4.5.1",
     "dayjs": "^1.11.23",
-    "driver.js": "^1.8.0",
+    "driver.js": "^1.9.0",
     "esbuild": "^0.28.2",
     "fuse.js": "^7.5.0",
     "geometric": "^3.0.9",
