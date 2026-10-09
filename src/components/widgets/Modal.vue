@@ -158,10 +158,14 @@ const cancelTabKeyStroke = onKeyStroke("Tab", (event) => {
   }
 });
 
-const cancelClickOutside = onClickOutside(target, () => {
-  if (!estAuPremierPlan.value || props.lockClose) return;
-  emit("close");
-});
+const cancelClickOutside = onClickOutside(
+  target,
+  () => {
+    if (!estAuPremierPlan.value || props.lockClose) return;
+    emit("close");
+  },
+  { ignore: [".aa-Panel"] },
+);
 
 onMounted(() => {
   elementOrigine = document.activeElement;
