@@ -15,6 +15,9 @@ ARG VUE_APP_NOTIFICATIONS_API
 ARG VUE_APP_SENTRY_DSN
 ARG VUE_APP_GIT_COMMIT_SHA
 ARG VUE_APP_PRODUCTION
+ARG VUE_APP_CARTOBIO_PARCELLES_YEAR
+# Jeton de démonstration du widget (widget/index.html) ; non passé par les workflows actuels
+ARG VUE_APP_NOTIFICATIONS_AB_SAMPLE_WEBCOMPONENT_TOKEN
 # Base publique du widget de notification ; vide = pas de widget (environnement test)
 ARG WIDGET_BASE
 RUN env | grep '^VUE_APP_' > .env.local \
