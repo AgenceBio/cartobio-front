@@ -222,7 +222,6 @@
 import { computed, ref, watch, nextTick, inject, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
-import { useRecordStore } from "@/stores/record.js";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import { usePermissions } from "@/stores/permissions.js";
@@ -236,13 +235,10 @@ import {
   getTimeAgo,
   getCultureIcon,
 } from "@/utils/features.js";
-import { useUserStore } from "@/stores/user";
 import { countRotationErrors } from "@/utils/culture";
 
 const route = useRoute();
-const recordStore = useRecordStore();
 const featuresStore = useFeaturesStore();
-const userStore = useUserStore();
 const featuresSets = useFeaturesSetsStore();
 const permissions = usePermissions();
 
@@ -262,7 +258,6 @@ const emit = defineEmits([
   "edit:featureId",
   "edit-niveau-conversion:featureId",
   "edit-cultures:featureId",
-  "view:featureId",
   "delete:featureId",
   "zoom:featureId",
 ]);
@@ -285,25 +280,11 @@ const groupErrors = computed(() => {
   return featureIds.value.reduce((sum, id) => sum + featuresSets.byFeature(id, true).size, 0);
 });
 
-const readonly = computed(() => {
-  return (
-    permissions.isOc &&
-    recordStore.record.oc_id != null &&
-    recordStore.record.oc_id !== userStore.user?.organismeCertificateur?.id
-  );
-});
-
 function toggleEditForm(featureId) {
-  if (readonly.value) {
-    return;
-  }
   return emit("edit:featureId", featureId);
 }
 
 function toggleDeleteForm(featureId) {
-  if (readonly.value) {
-    return;
-  }
   return emit("delete:featureId", featureId);
 }
 

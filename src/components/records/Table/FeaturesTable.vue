@@ -102,7 +102,6 @@
       :key="featureGroup.key + '-modal'"
       @toggle="(isExpanded) => handleGroupToggle(featureGroup.key, isExpanded)"
       @edit:featureId="(featuredId) => emit('edit:featureId', featuredId)"
-      @view:featureId="(featuredId) => emit('view:featureId', featuredId)"
       @delete:featureId="(featureId) => (maybeDeletedFeatureId = featureId)"
       @zoom:featureId="(featureId) => emit('zoom:featureId', featureId)"
       @editNiveauConversion:featureId="(featuredId) => emit('edit-niveau-conversion:featureId', featuredId)"
