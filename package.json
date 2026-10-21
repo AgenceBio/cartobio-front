@@ -61,7 +61,7 @@
   "devDependencies": {
     "@agencebio/cartobio-types": "^1.9.0",
     "@eslint/js": "^10.0.1",
-    "@pinia/testing": "^2.0.1",
+    "@pinia/testing": "^2.0.2",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-legacy": "^8.2.3",
     "@vitejs/plugin-vue": "^6.0.10",
