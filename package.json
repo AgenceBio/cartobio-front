@@ -38,7 +38,7 @@
     "@unhead/vue": "^3.4.3",
     "@vueuse/core": "^15.0.0",
     "axios": "^1.20.0",
-    "chart.js": "^4.5.1",
+    "chart.js": "^4.6.1",
     "dayjs": "^1.11.23",
     "driver.js": "^1.10.2",
     "esbuild": "^0.28.2",
