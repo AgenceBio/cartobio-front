@@ -51,8 +51,7 @@ function parcelleStyle(feature: FeatureLike, resolution: number): Style | void {
   const section = feature.get("section") || "";
   const numero = feature.get("numero") || "";
   const label = `${section}.${numero}`.trim();
-  const showLabel = label.length > 1 && resolution < 50;
-
+  const showLabel = label.length > 1 && resolution < 8;
   const stroke = new Stroke({
     color: "black",
     width: 0.5,

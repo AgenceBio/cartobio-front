@@ -46,14 +46,7 @@ const MAX_RESOLUTION = 42;
  * * Fonctions
  */
 
-function parcelleStyle(feature: FeatureLike, resolution: number): Style | void {
-  let lineWidth = 0;
-  if (resolution < 200) {
-    lineWidth = 1;
-  } else if (resolution < 500) {
-    lineWidth = 0.5;
-  }
-
+function parcelleStyle(feature: FeatureLike): Style | void {
   return new Style({
     fill: new FillPattern({
       pattern: "hatch",
@@ -62,11 +55,11 @@ function parcelleStyle(feature: FeatureLike, resolution: number): Style | void {
       offset: feature.getProperties().id % 100,
       scale: 2,
       fill: new Fill({ color: "rgba(0, 0, 0, 0)" }),
-      size: lineWidth,
+      size: 1,
       spacing: 6,
       angle: 45,
     }),
-    stroke: new Stroke({ color: "rgba(40, 166, 54, 1)", width: lineWidth }),
+    stroke: new Stroke({ color: "rgba(40, 166, 54, 1)", width: 1 }),
   });
 }
 
