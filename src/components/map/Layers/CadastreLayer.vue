@@ -69,7 +69,7 @@ function parcelleStyle(feature: FeatureLike, resolution: number): Style | void {
   if (showLabel) {
     const text = new Text({
       text: label || "test",
-      font: '12px "Noto Sans", sans-serif',
+      font: '12px "Marianne", sans-serif',
       fill: new Fill({ color: "rgba(0, 0, 0, 1)" }),
       stroke: new Stroke({
         color: "#fff6f1",

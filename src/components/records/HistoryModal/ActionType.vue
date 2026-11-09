@@ -30,11 +30,14 @@ const props = defineProps({
   },
 });
 
+// "" : ancienne valeur de sources.MANUAL encore présente dans l'historique
+const isManual = [sources.MANUAL, ""].includes(props.metadata?.source);
+
 const TYPES_MAP = readonly({
   [EventType.CERTIFICATION_STATE_CHANGE]: {
     // Phase 2
     [CertificationState.OPERATOR_DRAFT]: {
-      label: props.metadata?.source === sources.MANUAL ? "Parcellaire créé" : "Parcellaire importé",
+      label: isManual ? "Parcellaire créé" : "Parcellaire importé",
       color: "fr-badge--info fr-badge--icon-left fr-icon-info-line",
     },
     // Phase 3
@@ -54,7 +57,7 @@ const TYPES_MAP = readonly({
     },
   },
   [EventType.FEATURE_COLLECTION_CREATE]: {
-    label: props.metadata?.source === sources.MANUAL ? "Parcellaire créé" : "Parcellaire importé",
+    label: isManual ? "Parcellaire créé" : "Parcellaire importé",
     color: "fr-badge--blue-cumulus fr-badge--icon-left fr-icon-info-line",
   },
   [EventType.FEATURE_COLLECTION_DELETE]: {

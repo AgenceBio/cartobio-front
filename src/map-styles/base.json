@@ -2392,7 +2392,7 @@
         "symbol-placement": "line",
         "symbol-spacing": 350,
         "text-field": "{name:latin} {name:nonlatin}",
-        "text-font": ["Noto Sans Italic"],
+        "text-font": ["Marianne Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
         "text-rotation-alignment": "map",
@@ -2414,7 +2414,7 @@
         "symbol-placement": "line",
         "symbol-spacing": 350,
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Italic"],
+        "text-font": ["Marianne Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
         "text-rotation-alignment": "map",
@@ -2436,7 +2436,7 @@
         "symbol-placement": "point",
         "symbol-spacing": 350,
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Italic"],
+        "text-font": ["Marianne Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
         "text-rotation-alignment": "map",
@@ -2458,7 +2458,7 @@
         "symbol-placement": "point",
         "symbol-spacing": 350,
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Italic"],
+        "text-font": ["Marianne Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
         "text-rotation-alignment": "map",
@@ -2487,7 +2487,7 @@
         "icon-image": "{class}_11",
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],
         "text-padding": 2,
@@ -2518,7 +2518,7 @@
         "icon-image": "{class}_11",
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],
         "text-padding": 2,
@@ -2549,7 +2549,7 @@
         "icon-image": "{class}_11",
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],
         "text-padding": 2,
@@ -2584,7 +2584,7 @@
         "text-allow-overlap": false,
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-ignore-placement": false,
         "text-max-width": 9,
         "text-offset": [0, 0.6],
@@ -2667,7 +2667,7 @@
       "layout": {
         "symbol-placement": "line",
         "text-field": "{name:latin} {name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-rotation-alignment": "map",
         "text-size": {
           "base": 1,
@@ -2693,7 +2693,7 @@
       "layout": {
         "symbol-placement": "line",
         "text-field": "{name:latin} {name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-rotation-alignment": "map",
         "text-size": {
           "base": 1,
@@ -2719,7 +2719,7 @@
       "layout": {
         "symbol-placement": "line",
         "text-field": "{name:latin} {name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-rotation-alignment": "map",
         "text-size": {
           "base": 1,
@@ -2760,7 +2760,7 @@
         },
         "symbol-spacing": 200,
         "text-field": "{ref}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-rotation-alignment": "viewport",
         "text-size": 10
       },
@@ -2787,7 +2787,7 @@
         },
         "symbol-spacing": 200,
         "text-field": "{ref}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-rotation-alignment": "viewport",
         "text-size": 10
       },
@@ -2820,7 +2820,7 @@
         },
         "symbol-spacing": 200,
         "text-field": "{ref}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-rotation-alignment": "viewport",
         "text-size": 10
       },
@@ -2840,7 +2840,7 @@
         "icon-size": 1,
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],
         "text-optional": true,
@@ -2866,7 +2866,7 @@
       "filter": ["!in", "class", "city", "town", "village", "state", "country", "continent"],
       "layout": {
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Bold"],
+        "text-font": ["Marianne Bold"],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
         "text-size": {
@@ -2896,7 +2896,7 @@
       "filter": ["==", "class", "village"],
       "layout": {
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 8,
         "text-size": {
           "base": 1.2,
@@ -2924,7 +2924,7 @@
       "filter": ["==", "class", "town"],
       "layout": {
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 8,
         "text-size": {
           "base": 1.2,
@@ -2952,7 +2952,7 @@
       "filter": ["all", ["!=", "capital", 2], ["==", "class", "city"]],
       "layout": {
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 8,
         "text-size": {
           "base": 1.2,
@@ -2983,7 +2983,7 @@
         "icon-size": 0.8,
         "text-anchor": "left",
         "text-field": "{name:latin}\n{name:nonlatin}",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Marianne Regular"],
         "text-max-width": 8,
         "text-offset": [0.4, 0],
         "text-size": {
@@ -3012,7 +3012,7 @@
       "filter": ["in", "class", "state"],
       "layout": {
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Bold"],
+        "text-font": ["Marianne Bold"],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
         "text-size": {
@@ -3042,7 +3042,7 @@
       "filter": ["all", ["==", "class", "country"], [">=", "rank", 3], ["!has", "iso_a2"]],
       "layout": {
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Italic"],
+        "text-font": ["Marianne Italic"],
         "text-max-width": 6.25,
         "text-size": {
           "stops": [
@@ -3071,7 +3071,7 @@
       "filter": ["all", ["==", "class", "country"], [">=", "rank", 3], ["has", "iso_a2"]],
       "layout": {
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Bold"],
+        "text-font": ["Marianne Bold"],
         "text-max-width": 6.25,
         "text-size": {
           "stops": [
@@ -3100,7 +3100,7 @@
       "filter": ["all", ["==", "class", "country"], ["==", "rank", 2], ["has", "iso_a2"]],
       "layout": {
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Bold"],
+        "text-font": ["Marianne Bold"],
         "text-max-width": 6.25,
         "text-size": {
           "stops": [
@@ -3129,7 +3129,7 @@
       "filter": ["all", ["==", "class", "country"], ["==", "rank", 1], ["has", "iso_a2"]],
       "layout": {
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Bold"],
+        "text-font": ["Marianne Bold"],
         "text-max-width": 6.25,
         "text-size": {
           "stops": [
@@ -3159,7 +3159,7 @@
       "filter": ["==", "class", "continent"],
       "layout": {
         "text-field": "{name:latin}",
-        "text-font": ["Noto Sans Bold"],
+        "text-font": ["Marianne Bold"],
         "text-max-width": 6.25,
         "text-size": 14,
         "text-transform": "uppercase",

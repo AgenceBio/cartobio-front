@@ -224,7 +224,7 @@ describe("OperatorSetupFlow", () => {
         },
       });
 
-      await wrapper.find("ul").find(".import-source-tab--anygeo").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--ANYGEO").trigger("click");
       expect(wrapper.text()).toContain(`QGIS`);
 
       axios.__createMock.post.mockResolvedValueOnce({
@@ -273,7 +273,7 @@ describe("OperatorSetupFlow", () => {
       });
 
       // Click on geofolia tab
-      await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--GEOFOLIA").trigger("click");
       expect(wrapper.text()).toContain(`Parcelles et interventions (ZIP)`);
 
       axios.__createMock.post.mockResolvedValueOnce({
@@ -302,7 +302,7 @@ describe("OperatorSetupFlow", () => {
       axios.__createMock.head.mockResolvedValueOnce({ status: 204 });
 
       // Click on geofolia tab
-      await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--GEOFOLIA").trigger("click");
       expect(wrapper.text()).toContain("Vérification de votre contrat");
       const form = wrapper.find("form");
 
@@ -349,7 +349,7 @@ describe("OperatorSetupFlow", () => {
       });
 
       // Click on geofolia tab
-      await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--GEOFOLIA").trigger("click");
 
       axios.__createMock.head.mockResolvedValueOnce({ status: 404 });
       await flushPromises();
@@ -375,7 +375,7 @@ describe("OperatorSetupFlow", () => {
 
       axios.__createMock.post.mockRejectedValueOnce(error);
 
-      await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--GEOFOLIA").trigger("click");
       await wrapper.find('input[type="file"]').setValue("");
       await flushPromises();
 
@@ -398,7 +398,7 @@ describe("OperatorSetupFlow", () => {
         },
       });
 
-      await wrapper.find("ul").find(".import-source-tab--geofolia").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--GEOFOLIA").trigger("click");
 
       const error = new AxiosError("Server is down");
       error.response = { status: 500 };
@@ -421,7 +421,7 @@ describe("OperatorSetupFlow", () => {
       });
 
       // Click on mesparcelles tab
-      await wrapper.find("ul").find(".import-source-tab--mesparcelles").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--MES_PARCELLES").trigger("click");
       expect(wrapper.text()).toContain(`Sélectionner mon export MesParcelles (service Telepac)`);
 
       axios.__createMock.post.mockResolvedValueOnce({
@@ -449,7 +449,7 @@ describe("OperatorSetupFlow", () => {
       error.response = { status: 400 };
       axios.__createMock.post.mockRejectedValueOnce(error);
 
-      await wrapper.find("ul").find(".import-source-tab--mesparcelles").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--MES_PARCELLES").trigger("click");
       await wrapper.find('input[type="file"]').setValue("");
       await flushPromises();
 
@@ -472,7 +472,7 @@ describe("OperatorSetupFlow", () => {
         },
       });
 
-      await wrapper.find("ul").find(".import-source-tab--mesparcelles").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--MES_PARCELLES").trigger("click");
 
       const error = new AxiosError("Server is down");
       error.response = { status: 500 };
@@ -496,7 +496,7 @@ describe("OperatorSetupFlow", () => {
       });
 
       // Click on rpg tab
-      await wrapper.find("ul").find(".import-source-tab--rpg").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--RPG").trigger("click");
       expect(wrapper.text()).toContain(`Vous pouvez importer le dernier Registre parcellaire graphique (RPG) instruit`);
     });
 
@@ -510,7 +510,7 @@ describe("OperatorSetupFlow", () => {
       });
 
       // Click on rpg tab
-      await wrapper.find("ul").find(".import-source-tab--rpg").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--RPG").trigger("click");
       await wrapper.find("#input-pacage").setValue("12345");
       await wrapper.find(".fr-btn").trigger("click");
       expect(wrapper.text()).toContain(`Le numéro de PACAGE est composé de minimum 7 chiffres.`);
@@ -530,7 +530,7 @@ describe("OperatorSetupFlow", () => {
       });
 
       // Click on rpg tab
-      await wrapper.find("ul").find(".import-source-tab--rpg").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--RPG").trigger("click");
       await wrapper.find("#input-pacage").setValue("012345678");
       await wrapper.find(".fr-btn").trigger("click");
       await flushPromises();
@@ -563,7 +563,7 @@ describe("OperatorSetupFlow", () => {
       error.response = { status: 401, data: { error: "EVV et SIRET non correspondants" } };
       axios.__createMock.get.mockRejectedValueOnce(error);
 
-      await wrapper.find("ul").find(".import-source-tab--cvi").trigger("click");
+      await wrapper.find("ul").find(".import-source-tab--CVI").trigger("click");
 
       wrapper.getComponent(CviComponent);
       await wrapper.find("#ncvi-evv").setValue("99999");

@@ -1,11 +1,13 @@
 /** @enum string */
 export const sources = Object.freeze({
-  ANYGEO: "anygeo",
-  GEOFOLIA: "geofolia",
-  MANUAL: "",
-  MESPARCELLES: "mesparcelles",
-  CVI: "cvi",
-  RPG: "rpg",
-  SMAG_FARMER: "smagfarmer",
-  TELEPAC: "telepac",
+  ANYGEO: "ANYGEO",
+  API_PARCELLAIRE: "API_PARCELLAIRE",
+  GEOFOLIA: "GEOFOLIA",
+  MANUAL: "MANUEL",
+  MESPARCELLES: "MES_PARCELLES",
+  CVI: "CVI",
+  RPG: "RPG",
+  TELEPAC: "TELEPAC",
+  COPIE_VERSION: "COPIE_VERSION",
+  COPIE_CONFLIT: "COPIE_CONFLIT",
 });

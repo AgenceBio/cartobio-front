@@ -37,11 +37,12 @@
 <script setup>
 import { ref } from "vue";
 import { convertGeographicalFileToGeoJSON } from "@/cartobio-api.js";
+import { sources } from "@/referentiels/imports.js";
 
 const emit = defineEmits(["upload:start", "upload:complete"]);
 
 const fileInput = ref(null);
-const source = "anygeo";
+const source = sources.ANYGEO;
 const erreur = ref("");
 
 async function handleFileUpload() {

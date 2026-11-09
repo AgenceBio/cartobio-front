@@ -52,12 +52,13 @@
 <script setup>
 import { inject, onMounted, ref, unref } from "vue";
 import { getOperatorNcviFeatures } from "@/cartobio-api.js";
+import { sources } from "@/referentiels/imports.js";
 
 import Spinner from "@/components/widgets/Spinner.vue";
 import { applyCadastreGeometries } from "@/utils/features.js";
 
 const emit = defineEmits(["upload:start", "upload:complete"]);
-const source = "ncvi";
+const source = sources.CVI;
 const errors = ref([]);
 const inputError = ref("");
 const inputRef = ref(null);

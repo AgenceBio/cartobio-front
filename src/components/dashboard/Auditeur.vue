@@ -172,9 +172,7 @@ function checkIfDisabled(operator) {
       .catch(() => {
         operatorDisabled.value[operator.numeroBio] = true;
       });
-  }
-
-  if (user.organismeCertificateur && operator.organismeCertificateur.id !== user.organismeCertificateur.id) {
+  } else if (user.organismeCertificateur && operator.organismeCertificateur.id !== user.organismeCertificateur.id) {
     operatorStore
       .getOperator(operator.numeroBio)
       .then((res) => {

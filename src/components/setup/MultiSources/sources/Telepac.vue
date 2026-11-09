@@ -62,6 +62,7 @@
 import { ref, inject } from "vue";
 import { convertTelepacFileToGeoJSON } from "@/cartobio-api.js";
 import { useTélépac } from "@/referentiels/pac.js";
+import { sources } from "@/referentiels/imports.js";
 const { VUE_APP_DATEIMPORT } = import.meta.env;
 import { useOperatorStore } from "@/stores/operator.js";
 
@@ -72,7 +73,7 @@ const emit = defineEmits(["upload:start", "upload:complete"]);
 
 const { campagne: currentCampagne } = useTélépac();
 const fileInput = ref(null);
-const source = "telepac";
+const source = sources.TELEPAC;
 const erreur = ref("");
 
 async function importPAC() {

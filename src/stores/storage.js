@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { sources } from "@/referentiels/imports.js";
 import { computed, ref, watch } from "vue";
 import { useLocalStorage, useOnline } from "@vueuse/core";
 import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
@@ -218,7 +219,8 @@ export const useCartoBioStorage = defineStore("storage", () => {
         numeroBio,
         {
           operator,
-          records: recordsSummary?.map((r) => {
+          // localStorage peut contenir une valeur non-tableau (ancienne réponse non parsée)
+          records: (Array.isArray(recordsSummary) ? recordsSummary : []).map((r) => {
             if (!syncQueues.value[r.record_id]) return r;
             const updatedRecord = records.value[r.record_id];
             if (!updatedRecord) return r;
@@ -378,7 +380,7 @@ export const useCartoBioStorage = defineStore("storage", () => {
         certification_date_fin: record.certification_date_fin,
         metadata: {
           provenance: window.location.host,
-          source: "Copie lors de la résolution de conflits",
+          source: sources.COPIE_CONFLIT,
           copy_of: record.record_id,
         },
         audit_date: null,

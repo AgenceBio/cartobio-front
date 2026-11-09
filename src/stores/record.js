@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { sources } from "@/referentiels/imports.js";
 import { computed, reactive } from "vue";
 import { useFeaturesStore } from "@/stores/features.js";
 import { useFeaturesSetsStore } from "@/stores/features-sets.js";
@@ -155,7 +156,7 @@ export const useRecordStore = defineStore("record", () => {
           },
           metadata: {
             provenance: window.location.host,
-            source: "Copie de version existante",
+            source: sources.COPIE_VERSION,
             copy_of: record.record_id,
           },
         });
