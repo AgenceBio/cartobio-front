@@ -12,6 +12,7 @@ import { Map as OlMap } from "ol";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
 import * as XLSX from "xlsx";
 import cheminFichierXlsx from "@/data/culture_rpg.xlsx?url";
+import FillPattern from "ol-ext/style/FillPattern";
 
 /**
  * * Props
@@ -57,7 +58,6 @@ const COLOR_BY_GROUP: Record<string, { fill: string; stroke: string }> = {
 };
 
 const COLOR_DEFAULT = { fill: "#000000", stroke: "#ffc177" };
-const COLOR_BIO = { fill: "#9fe3d2", stroke: "#54cdaf" };
 
 let lignesXlsx = null;
 let chargementXlsx = null;
@@ -81,34 +81,34 @@ async function chargerLignesXlsx() {
  * * Fonctions
  */
 
-function styleFunction(feature: FeatureLike, resolution: number): Style | void {
-  const bio = feature.get("bio") || feature.get("BIO");
-
-  const codeCulture = feature.get("code_cultu") || feature.get("CODE_CULTU");
+function styleFunction(feature: FeatureLike): Style | void {
+  const bio = feature.get("bio");
+  const codeCulture = feature.get("code_cultu");
+  const group = getFromCsvGroup(codeCulture);
 
   let colors = COLOR_DEFAULT;
 
-  if (bio === 1 || bio === "1" || bio === true) {
-    colors = COLOR_BIO;
-  } else {
-    const group = getFromCsvGroup(codeCulture);
-    if (group) {
-      colors = COLOR_BY_GROUP[group];
-    }
+  if (group) {
+    colors = COLOR_BY_GROUP[group];
   }
 
-  let lineWidth = 0;
-  if (resolution < 200) {
-    lineWidth = 1;
-  } else if (resolution < 500) {
-    lineWidth = 0.5;
-  }
+  const fill = new Fill({ color: colors.fill });
 
   return new Style({
-    fill: new Fill({ color: colors.fill }),
+    fill: bio
+      ? new FillPattern({
+          pattern: "dot",
+          color: "rgba(40, 166, 54, 1)",
+          offset: feature.getProperties().id % 100,
+          scale: 4,
+          fill,
+          size: 1,
+          spacing: 2,
+        })
+      : fill,
     stroke: new Stroke({
       color: colors.stroke,
-      width: lineWidth,
+      width: 1,
     }),
   });
 }
@@ -140,7 +140,7 @@ onMounted(async () => {
             SERVICE: "WFS",
             VERSION: "2.0.0",
             REQUEST: "GetFeature",
-            TYPENAME: "RPG.2024:parcelles_graphiques",
+            TYPENAME: "LANDUSE.AGRICULTURE2025:parcelles_graphiques",
             OUTPUTFORMAT: "application/json",
             SRSNAME: projection.getCode(),
             BBOX: extent.join(",") + "," + projection.getCode(),
