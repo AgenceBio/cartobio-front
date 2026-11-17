@@ -96,6 +96,7 @@
             <AccordionSection
               title="Culture"
               isEdit
+              :open="openAccordions"
               :optionsCulture="optionsCulture(feature)"
               :requires-action="requiresAction(['cultures'])"
             >
@@ -186,13 +187,13 @@
           </div>
           <AccordionGroup
             v-if="permissions.isOc && permissions.canEditParcellaire && !isFeatureCompare"
-            :constraint-toggle="!open"
+            :constraint-toggle="!openAccordions"
           >
             <AccordionSection
               title="Certification"
               :optionsCulture="{ name: getConversionLevel(patch.conversion_niveau).labelSelector }"
               isEdit
-              :open="open"
+              :open="openAccordions"
               :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
             >
               <div class="fr-card fr-p-2w">
@@ -283,10 +284,10 @@
             </AccordionSection>
           </AccordionGroup>
 
-          <AccordionGroup :constraint-toggle="!open">
+          <AccordionGroup :constraint-toggle="!openAccordions">
             <AccordionSection
               title="Certification"
-              :open="open"
+              :open="openAccordions"
               isEdit
               :optionsCulture="{ name: getConversionLevel(patch.conversion_niveau).labelSelector }"
               :requires-action="requiresAction(['conversion_niveau', 'engagement_date', 'annotations'])"
@@ -470,6 +471,10 @@ const props = defineProps({
     default: false,
   },
   isFeatureCompare: {
+    type: Boolean,
+    default: false,
+  },
+  openAccordions: {
     type: Boolean,
     default: false,
   },
