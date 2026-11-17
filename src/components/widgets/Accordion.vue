@@ -122,6 +122,13 @@ watch(openingState, (newState) => {
   }
 });
 
+watch(
+  () => props.open,
+  (open) => {
+    if (open) openingState.value = STATE.OPEN;
+  },
+);
+
 if (activeAccordionId) {
   watch(activeAccordionId, (newId) => {
     if (newId && newId !== elementId.value) {
