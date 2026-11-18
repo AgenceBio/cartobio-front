@@ -8,7 +8,7 @@ import Spinner from "@/components/widgets/Spinner.vue";
 import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
 import { formatDateTableau, formatDateControle } from "@/utils/date.formatters";
 import { clefGroupe, typeRepetition, labelRepetition } from "@/composables/suivi-api/useRepetitions";
-import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/tableau-de-bord.types";
+import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/suivi-api";
 
 defineProps<{
   vueAlertes: "liste" | "detail";
@@ -213,7 +213,9 @@ function onChangerType(event: Event) {
     <template v-if="vueAlertes === 'detail' && selectedEnvoi && selectedGroupe">
       <h2 class="fr-h5 fr-mb-3w">N°Client {{ selectedGroupe.numeroClient }} / N°Bio {{ selectedGroupe.numeroBio }}</h2>
       <div class="controle-highlight fr-p-2w fr-mb-4w">
-        <p class="fr-mb-0">Contrôle réalisé le {{ formatDateControle(selectedGroupe.auditDate) }}</p>
+        <p class="fr-mb-0">
+          Contrôle réalisé le {{ selectedGroupe.auditDate ? formatDateControle(selectedGroupe.auditDate) : "—" }}
+        </p>
       </div>
       <h3 class="fr-h6 fr-mb-2w">Envoi du {{ formatDateTableau(selectedEnvoi.createdAt) }}</h3>
       <ErreursAccordion :envoi="selectedEnvoi" />

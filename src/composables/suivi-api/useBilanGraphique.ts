@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from "vue";
 import dayjs from "dayjs";
-import { getErrorMessage, getErrorColor, ErrorGroups, type ErrorCode } from "@/utils/error-api.utils";
+import { getErrorMessage, getErrorColor, ErrorGroups, isInErrorGroup } from "@/utils/error-api.utils";
 import { getWeek, formatPeriodLabel, capitalize } from "@/utils/date.formatters";
 import type {
   Unit,
@@ -86,7 +86,7 @@ export function useBilanGraphique(options: {
     const items = source ?? [];
     return groupesAnomalies
       .map((groupe) => {
-        const codes = items.filter((a) => (ErrorGroups[groupe.key] as string[]).includes(a.code));
+        const codes = items.filter((a) => isInErrorGroup(groupe.key, a.code));
         return { ...groupe, count: codes.reduce((total, a) => total + a.count, 0) };
       })
       .filter((groupe) => groupe.count > 0);
@@ -111,7 +111,7 @@ export function useBilanGraphique(options: {
   }
 
   function anomaliesDetailChartData(source: AnomalieCode[] | null, groupeKey: ErrorGroupKey) {
-    const items = agregerParCode((source ?? []).filter((a) => (ErrorGroups[groupeKey] as string[]).includes(a.code)));
+    const items = agregerParCode((source ?? []).filter((a) => isInErrorGroup(groupeKey, a.code)));
     return {
       x: items.map((a) => getErrorMessage(a.code, "short")),
       y: items.map((a) => a.count),
@@ -122,7 +122,7 @@ export function useBilanGraphique(options: {
     const items = source ?? [];
     if (groupKey) {
       return items
-        .filter((anomaly) => (ErrorGroups[groupKey] as string[]).includes(anomaly.code))
+        .filter((anomaly) => isInErrorGroup(groupKey, anomaly.code))
         .map((anomaly) => getErrorColor(anomaly.code));
     }
     return grouperAnomalies(source).map((group) => {
@@ -321,14 +321,11 @@ export function useBilanGraphique(options: {
       ];
     }
     const errorCodes = getErrorCodes(source);
-    return errorCodes.map((code) => {
-      const errorCode = code as ErrorCode;
-      return {
-        name: getErrorMessage(errorCode, "short"),
-        data: source.map((period) => getErrorCount(period, code)),
-        color: getErrorColor(errorCode),
-      };
-    });
+    return errorCodes.map((code) => ({
+      name: getErrorMessage(code, "short"),
+      data: source.map((period) => getErrorCount(period, code)),
+      color: getErrorColor(code),
+    }));
   }
 
   const bilanBarCategories = computed(

@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue";
-import { ErrorGroups, type ErrorCode } from "@/utils/error-api.utils";
+import { isInErrorGroup } from "@/utils/error-api.utils";
 import type { ErreurEnvoi, GroupeErreursParcelle } from "@/types/suivi-api";
 
 export function grouperErreursParcelles(erreurs: ErreurEnvoi[]): GroupeErreursParcelle[] {
@@ -21,25 +21,19 @@ export function grouperErreursParcelles(erreurs: ErreurEnvoi[]): GroupeErreursPa
   return [...groupes.values()];
 }
 
-export function useErreursEnvoi(source: Ref<{ erreurs?: ErreurEnvoi[]; statut?: string } | null>) {
+export function useErreursEnvoi(source: Ref<{ erreurs?: ErreurEnvoi[]; statut?: string | null } | null>) {
   const erreurs = computed<ErreurEnvoi[]>(() => source.value?.erreurs ?? []);
 
-  const erreursOperateur = computed(() =>
-    erreurs.value.filter((e) => ErrorGroups.import.includes(e.code as ErrorCode)),
-  );
+  const erreursOperateur = computed(() => erreurs.value.filter((e) => isInErrorGroup("import", e.code)));
 
-  const erreursDatesParcellaire = computed(() =>
-    erreurs.value.filter((e) => ErrorGroups.dateValidation.includes(e.code as ErrorCode)),
-  );
+  const erreursDatesParcellaire = computed(() => erreurs.value.filter((e) => isInErrorGroup("dateValidation", e.code)));
 
-  const erreursParcelles = computed(() =>
-    erreurs.value.filter((e) => ErrorGroups.parcelErrors.includes(e.code as ErrorCode)),
-  );
+  const erreursParcelles = computed(() => erreurs.value.filter((e) => isInErrorGroup("parcelErrors", e.code)));
 
   const erreursParcellesGroupees = computed(() => grouperErreursParcelles(erreursParcelles.value));
 
   const warningsParcelles = computed(() =>
-    erreurs.value.filter((e) => e.parcelleId && ErrorGroups.parcelWarnings.includes(e.code as ErrorCode)),
+    erreurs.value.filter((e) => e.parcelleId && isInErrorGroup("parcelWarnings", e.code)),
   );
 
   const isInternalJobError = computed(() => source.value?.statut?.toUpperCase() === "ERROR");

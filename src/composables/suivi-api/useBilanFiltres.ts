@@ -1,14 +1,15 @@
 import { computed, ref, type Ref } from "vue";
 import { fetchBilanEnvois } from "@/api/endpoints/tableau-de-bord.api";
 import { formatStartOfDay, formatEndOfDay } from "@/utils/date.formatters";
-import type { BilanFiltres, BilanEnvoiItem, PageResult, OrdreTri } from "@/types/suivi-api";
+import type { ImportJobEtat, ImportJobResult } from "@agencebio/cartobio-types";
+import type { BilanFiltres, BilanEnvoisPage, OrdreTri } from "@/types/suivi-api";
 
-export const STATUT_OPTIONS = [
+export const STATUT_OPTIONS: { value: ImportJobResult; label: string }[] = [
   { value: "VALID", label: "Validé" },
   { value: "REJECTED", label: "Rejeté" },
 ];
 
-export const ETAT_OPTIONS = [
+export const ETAT_OPTIONS: { value: ImportJobEtat; label: string }[] = [
   { value: "CREATED", label: "Création" },
   { value: "UPDATED", label: "Mise à jour" },
   { value: "UNKNOWN", label: "—" },
@@ -17,13 +18,13 @@ export const ETAT_OPTIONS = [
 export function useBilanFiltres(options: {
   fromBase: Ref<Date | null>;
   toBase: Ref<Date | null>;
-  bilanEnvois: Ref<PageResult<BilanEnvoiItem>>;
+  bilanEnvois: Ref<BilanEnvoisPage>;
   isLoading: Ref<boolean>;
 }) {
   const { fromBase, toBase, bilanEnvois, isLoading } = options;
 
-  const statutFiltreBrouillon = ref<string[]>([]);
-  const etatFiltreBrouillon = ref<string[]>([]);
+  const statutFiltreBrouillon = ref<ImportJobResult[]>([]);
+  const etatFiltreBrouillon = ref<ImportJobEtat[]>([]);
   const filtresBilanAppliques = ref<BilanFiltres>({});
   const rechercheBilanBrouillon = ref<string>("");
   const filtreMenuOuvert = ref<boolean>(false);

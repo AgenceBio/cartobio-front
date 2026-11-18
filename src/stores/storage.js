@@ -2,7 +2,13 @@ import { defineStore } from "pinia";
 import { sources } from "@/referentiels/imports.js";
 import { computed, ref, watch } from "vue";
 import { useLocalStorage, useOnline } from "@vueuse/core";
-import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
+import {
+  createOperatorRecord,
+  deleteParcelle,
+  updateFeature,
+  updateFeatureCollection,
+  updateRecordInfo,
+} from "@/api/endpoints/audits.api";
 import { legalProjectionSurface } from "@/utils/features.js";
 import { AxiosError } from "axios";
 import toast from "@/utils/toast.js";
@@ -72,24 +78,21 @@ class SyncQueue {
     let result;
     switch (op.action) {
       case SyncOperation.ACTIONS.RECORD_INFO:
-        result = await apiClient.patch(`/v2/audits/${recordId}`, op.payload, config);
+        result = await updateRecordInfo(recordId, op.payload, config);
         break;
       case SyncOperation.ACTIONS.DELETE_FEATURE:
-        result = await apiClient.delete(`/v2/audits/${recordId}/parcelles/${op.featureId}`, {
-          data: op.payload,
-          ...config,
-        });
+        result = await deleteParcelle(recordId, op.featureId, op.payload, config);
         break;
       case SyncOperation.ACTIONS.UPDATE_FEATURE:
-        result = await apiClient.patch(`/v2/audits/${recordId}/parcelles/${op.featureId}`, op.payload, config);
+        result = await updateFeature(recordId, op.payload, op.featureId, config);
         break;
       case SyncOperation.ACTIONS.UPDATE_COLLECTION:
-        result = await apiClient.patch(`/v2/audits/${recordId}/parcelles`, op.payload, config);
+        result = await updateFeatureCollection(recordId, op.payload, config);
         break;
     }
 
     this.operations.shift();
-    return new Date(result.data.updated_at);
+    return new Date(result.updated_at);
   }
 
   /**

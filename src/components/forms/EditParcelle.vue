@@ -441,7 +441,7 @@ import CancelModal from "@/components/forms/CancelModal.vue";
 import { featureDetails, featureName, inHa, legalProjectionSurface, getCultureIcon } from "@/utils/features.js";
 import { getCulturePAC } from "@agencebio/rosetta-cultures";
 import { jjmmyyyy } from "@/utils/dates";
-import { tagParcelleControlee, tagParcelleNonControlee } from "@/cartobio-api";
+import { tagParcelleControlee, tagParcelleNonControlee } from "@/api/endpoints/audits.api";
 import { fromCodeCpf } from "@agencebio/rosetta-cultures";
 import { toDateInputString } from "@/utils/dates.js";
 

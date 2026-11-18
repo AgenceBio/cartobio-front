@@ -189,7 +189,7 @@ router.beforeEach(async (to) => {
     }
 
     if (error?.response?.status === 401 && !userStore.isLogged) {
-      window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login?returnto=${to.fullPath}`;
+      window.location = `${VUE_APP_API_ENDPOINT}/auth-provider/agencebio/login?returnto=${encodeURIComponent(to.fullPath)}`;
 
       return false;
     }

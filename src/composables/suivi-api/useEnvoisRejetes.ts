@@ -2,14 +2,14 @@ import { ref, computed, type Ref } from "vue";
 import { fetchEnvoisRejetes } from "@/api/endpoints/tableau-de-bord.api";
 import { formatStartOfDay, formatEndOfDay } from "@/utils/date.formatters";
 import { ErrorGroups, type ErrorCode } from "@/utils/error-api.utils";
-import type { PageResult, BilanEnvoiItem, OrdreTri } from "@/types/suivi-api";
+import type { EnvoisRejetesPage, OrdreTri } from "@/types/suivi-api";
 
 export type GroupeAnomalie = keyof typeof ErrorGroups;
 
 export function useEnvoisRejetes(options: { fromBase: Ref<Date | null>; toBase: Ref<Date | null> }) {
   const { fromBase, toBase } = options;
 
-  const envoisRejetes = ref<PageResult<BilanEnvoiItem>>({
+  const envoisRejetes = ref<EnvoisRejetesPage>({
     data: [],
     meta: { total: 0, page: 1, limit: 5 },
   });

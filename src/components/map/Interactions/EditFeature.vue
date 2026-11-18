@@ -123,7 +123,8 @@ import FillPattern from "ol-ext/style/FillPattern";
 import { useFeaturesStore } from "@/stores/features.js";
 import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
-import { updateFeatures, addParcelleVerif } from "@/cartobio-api.js";
+import { updateFeatures } from "@/api/endpoints/audits.api";
+import { addParcelleVerif } from "@/api/endpoints/geometry.api";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { click, platformModifierKey, altKeyOnly, singleClick } from "ol/events/condition";
@@ -640,7 +641,8 @@ const saveModifiedFeature = async () => {
 
   if (
     data.valid === true ||
-    data.corrections.filter((c: { id: string }) => !correctedParcellesId.includes(c.id)).length === 0
+    (data.corrections !== undefined &&
+      data.corrections.filter((c: { id: string }) => !correctedParcellesId.includes(c.id)).length === 0)
   ) {
     const correctedParcelles = [];
     loading.value = true;

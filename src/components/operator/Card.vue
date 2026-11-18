@@ -112,11 +112,21 @@
                   </p> </span
                 ><span class="informations-tooltip">
                   <p class="fr-mb-0 fr-text--sm fr-text--regular text-gray">Par</p>
-                  <template v-if="operator.otherParcellaire[0].metadata.source === 'API Parcellaire' || operator.otherParcellaire[0].metadata.source === 'API_PARCELLAIRE'">
+                  <template
+                    v-if="
+                      operator.otherParcellaire[0].metadata.source === 'API Parcellaire' ||
+                      operator.otherParcellaire[0].metadata.source === 'API_PARCELLAIRE'
+                    "
+                  >
                     <span class="fr-icon-download-line fr-icon--sm text-black" aria-hidden="true"></span>
                     <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">Api Parcellaire</p>
                   </template>
-                  <template v-else-if="operator.otherParcellaire[0].metadata.source === 'telepac' || operator.otherParcellaire[0].metadata.source === 'TELEPAC'">
+                  <template
+                    v-else-if="
+                      operator.otherParcellaire[0].metadata.source === 'telepac' ||
+                      operator.otherParcellaire[0].metadata.source === 'TELEPAC'
+                    "
+                  >
                     <span class="fr-icon-refresh-line fr-icon--sm text-black" aria-hidden="true"></span>
                     <p class="fr-mb-0 fr-text--sm fr-text--regular text-black">
                       Import Telépac {{ operator.otherParcellaire[0].metadata.campagne }}
@@ -254,7 +264,7 @@ import { storeToRefs } from "pinia";
 import ParcellaireState from "@/components/records/State.vue";
 import NotificationState from "@/components/records/NotificationState.vue";
 import { engagementList } from "@/referentiels/ab.js";
-import { pinOperator, unpinOperator } from "@/cartobio-api";
+import { pinOperator, unpinOperator } from "@/api/endpoints/operators.api";
 import { useUserStore } from "@/stores/user.js";
 
 const userStore = useUserStore();

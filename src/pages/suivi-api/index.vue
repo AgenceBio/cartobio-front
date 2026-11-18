@@ -12,6 +12,7 @@ meta:
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import dayjs from "dayjs";
+import { STATS_MAX_LIMIT, type DashboardSummaryResponse } from "@agencebio/cartobio-types";
 import {
   fetchPalmaresAnomalies,
   fetchBilanEnvois,
@@ -60,6 +61,7 @@ import type {
   EvolutionPeriode,
   PageResult,
   BilanEnvoiItem,
+  EnvoiRejeteItem,
   DownloadAction,
   ChartRow,
   ChangePeriodPayload,
@@ -68,7 +70,7 @@ import Spinner from "@/components/widgets/Spinner.vue";
 
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/user";
-import { getDashboardSummary } from "@/cartobio-api";
+import { getDashboardSummary } from "@/api/endpoints/operators.api";
 import { usePreferences } from "@/stores/preferences";
 
 const userStore = useUserStore();
@@ -109,7 +111,7 @@ const bilanEnvois = ref<PageResult<BilanEnvoiItem>>({
   data: [],
   meta: { total: 0, page: 1, limit: 5 },
 });
-const avancement = ref(null);
+const avancement = ref<DashboardSummaryResponse | null>(null);
 
 // Références DOM des graphiques
 const bilanChartCurrentRef = ref<HTMLElement | null>(null);
@@ -291,7 +293,7 @@ function mapBilanRows(data: BilanEnvoiItem[]) {
   }));
 }
 
-function mapRejectsRows(data: BilanEnvoiItem[]) {
+function mapRejectsRows(data: EnvoiRejeteItem[]) {
   return data.map((envoi) => ({
     "N° client": envoi.numeroClient,
     "N° BIO": envoi.numeroBio,
@@ -393,7 +395,13 @@ async function onBilanTableDownload(
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapBilanRows(
-      await fetchAllPages(fetchBilanExport, fromBase.value.toISOString(), toBase.value.toISOString(), 500, onProgress),
+      await fetchAllPages(
+        fetchBilanExport,
+        fromBase.value.toISOString(),
+        toBase.value.toISOString(),
+        STATS_MAX_LIMIT,
+        onProgress,
+      ),
     );
     downloadXlsx(rows, "bilan-envois.xlsx", "Bilan des envois", COLONNES_BILAN_XLSX);
     return;
@@ -430,7 +438,13 @@ async function onRejectsTableDownload(
   if (action === "xlsx") {
     if (!fromBase.value || !toBase.value) return;
     const rows = mapRejectsRows(
-      await fetchAllPages(fetchRejetsExport, fromBase.value.toISOString(), toBase.value.toISOString(), 500, onProgress),
+      await fetchAllPages(
+        fetchRejetsExport,
+        fromBase.value.toISOString(),
+        toBase.value.toISOString(),
+        STATS_MAX_LIMIT,
+        onProgress,
+      ),
     );
     downloadXlsx(rows, "envois-rejetes.xlsx", "Envois rejetés", COLONNES_REJETS_XLSX);
     return;
@@ -801,7 +815,9 @@ onMounted(async () => {
             <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
               <StatsCard
                 :title="`Anomalie la plus fréquente \n ${formatPeriodLabel(unit, fromBase ?? baseDate).toLowerCase()}`"
-                :value="getErrorMessage(resumeKpi.anomaliePlusFrequente?.code, 'short') ?? '—'"
+                :value="
+                  resumeKpi.anomaliePlusFrequente ? getErrorMessage(resumeKpi.anomaliePlusFrequente.code, 'short') : '—'
+                "
                 variant="warning"
               />
             </div>

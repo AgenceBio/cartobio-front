@@ -9,7 +9,7 @@ import { Fill, Stroke, Style } from "ol/style";
 import GeoJSON from "ol/format/GeoJSON";
 import { useRecordStore } from "@/stores/record.js";
 
-import { getGeometryEquals } from "@/cartobio-api.js";
+import { getGeometryEquals } from "@/api/endpoints/geometry.api";
 
 const recordStore = useRecordStore();
 

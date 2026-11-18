@@ -1,90 +1,56 @@
-import type { ErrorGroups, ErrorCode } from "@/utils/error-api.utils";
+import type {
+  GeneralKpiResponse,
+  HistoriqueResponse,
+  ImportErrorDetail,
+  ImportJobEtat,
+  ImportJobResult,
+  RepetitionsResponse,
+  StatsQueryInput,
+  TableauBilanResponse,
+  TableauErreursResponse,
+  TopAnomaliesGroupedResponse,
+} from "@agencebio/cartobio-types";
+import type { ErrorGroups } from "@/utils/error-api.utils";
 
 export type Unit = "day" | "week" | "month" | "year";
 
-export type ErreurEnvoi = {
-  numeroBio: string | null;
-  parcelleId: string | number | null;
-  parcelleName: string | null;
-  code: string;
-  message: string | null;
-};
+export type OrdreTri = NonNullable<StatsQueryInput["ordreDate"]>;
 
-export type HistoriqueEnvoi = {
-  jobId: number;
-  statut: string;
-  createdAt: string;
-  payload: unknown;
-  parcelles?: { id: string | number; nom?: string; name?: string | null }[];
-  erreurs: ErreurEnvoi[];
-  details?: { code: string }[];
-  numeroClient?: string | null;
-  numeroBio?: string | null;
-  etat?: string;
-  auditDate?: string;
-};
+export type ErreurEnvoi = ImportErrorDetail;
 
-export type RepetitionEnvoi = {
-  jobId: number;
-  statut: string;
-  etat: string;
-  createdAt: string;
-  erreurs: ErreurEnvoi[];
-};
+export type HistoriqueEnvoi = HistoriqueResponse[number];
 
-export type RepetitionGroupe = {
-  numeroBio: string;
-  numeroClient: string;
-  auditDate: string;
-  envois: RepetitionEnvoi[];
-};
+export type RepetitionGroupe = RepetitionsResponse["data"][number];
 
-export type AnomalieCode = { code: string; count: number };
+export type RepetitionEnvoi = RepetitionGroupe["envois"][number];
+
+export type EvolutionPeriode = TopAnomaliesGroupedResponse[number];
+
+export type AnomalieCode = EvolutionPeriode["errors"][number];
 
 export type ErrorGroupKey = keyof typeof ErrorGroups;
-
-export type EvolutionPeriode = {
-  period: string;
-  accepted: number;
-  refused: number;
-  errorCount: number;
-  errors: AnomalieCode[];
-};
 
 export type PageResult<T> = {
   data: T[];
   meta: { total: number; page: number; limit: number };
 };
 
-export type ResumeKpi = {
-  totalEnvoyes: number;
-  totalValides: number;
-  totalRejetes: number;
-  anomaliePlusFrequente?: { code: ErrorCode } | null;
-};
+export type ResumeKpi = GeneralKpiResponse["data"];
 
-export type CompareKpi = {
-  totalEnvoyes: number;
-  totalValides: number;
-  totalRejetes: number;
-};
+export type CompareKpi = Pick<ResumeKpi, "totalEnvoyes" | "totalValides" | "totalRejetes">;
 
-export type BilanEnvoiItem = {
-  jobId: number;
-  numeroClient: string | null;
-  numeroBio: string | null;
-  etat: string;
-  statut: string;
-  createdAt: string;
-  auditDate?: string;
-  details?: { code: string }[];
-  erreurs?: ErreurEnvoi[];
-};
+export type BilanEnvoisPage = TableauBilanResponse;
+
+export type BilanEnvoiItem = BilanEnvoisPage["data"][number];
+
+export type EnvoisRejetesPage = TableauErreursResponse;
+
+export type EnvoiRejeteItem = EnvoisRejetesPage["data"][number];
 
 export type BilanFiltres = {
   recherche?: string;
-  statuts?: string[];
-  etats?: string[];
+  statuts?: ImportJobResult[];
+  etats?: ImportJobEtat[];
 };
 
 export type ModalContext = {

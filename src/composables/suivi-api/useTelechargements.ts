@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { STATS_MAX_LIMIT } from "@agencebio/cartobio-types";
 import { formatStartOfDay, formatEndOfDay, currentWeekRange, currentMonthRange } from "@/utils/date.formatters";
 import type { PageResult, DateRange } from "@/types/suivi-api";
 
@@ -43,7 +44,7 @@ export function useTelechargements() {
     fetchFn: (page: number, from: string, to: string, limit?: number) => Promise<PageResult<T>>,
     fromIso: string,
     toIso: string,
-    limit = 500,
+    limit = STATS_MAX_LIMIT,
     onProgress?: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
   ): Promise<T[]> {
     const first = await fetchFn(1, fromIso, toIso, limit);
@@ -68,7 +69,7 @@ export function useTelechargements() {
     onProgress?: (currentPage: number, totalPages: number, loadedRows: number, totalRows: number) => void,
   ) {
     const rows = mapFn(
-      await fetchAllPages(fetchFn, formatStartOfDay(range.from), formatEndOfDay(range.to), 500, onProgress),
+      await fetchAllPages(fetchFn, formatStartOfDay(range.from), formatEndOfDay(range.to), STATS_MAX_LIMIT, onProgress),
     );
     downloadXlsx(rows, filename, sheetName, columns);
   }

@@ -90,7 +90,7 @@
 import { onMounted, ref } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
 import { useUserStore } from "@/stores/user";
-import { getUserOperatorsForDashboard } from "@/cartobio-api";
+import { getUserOperatorsForDashboard } from "@/api/endpoints/operators.api";
 import { useOperatorStore } from "@/stores/operator";
 import OperatorCard from "@/components/operator/Card.vue";
 

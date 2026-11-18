@@ -51,7 +51,7 @@
 
 <script setup>
 import { inject, onMounted, ref, unref } from "vue";
-import { getOperatorNcviFeatures } from "@/cartobio-api.js";
+import { getOperatorNcviFeatures } from "@/api/endpoints/imports.api";
 import { sources } from "@/referentiels/imports.js";
 
 import Spinner from "@/components/widgets/Spinner.vue";

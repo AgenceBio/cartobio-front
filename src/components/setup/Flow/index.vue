@@ -82,7 +82,8 @@ import { computed, markRaw, provide, readonly, ref, shallowRef, unref } from "vu
 import PreviewStep from "@/components/setup/Flow/Preview.vue";
 
 import { useRecordStore } from "@/stores/record.js";
-import { createOperatorRecord, hideNotif } from "@/cartobio-api.js";
+import { createOperatorRecord } from "@/api/endpoints/audits.api";
+import { hideNotif } from "@/api/endpoints/operators.api";
 import { useRouter } from "vue-router";
 
 const { VUE_APP_API_ENDPOINT } = import.meta.env;

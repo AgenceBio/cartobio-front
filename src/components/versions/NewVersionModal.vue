@@ -5,7 +5,7 @@ import Modal from "@/components/widgets/Modal.vue";
 import { useOperatorStore } from "@/stores/operator.js";
 import { useRecordStore } from "@/stores/record.js";
 import { sources } from "@/referentiels/imports.js";
-import { createOperatorRecord } from "@/cartobio-api.js";
+import { createOperatorRecord } from "@/api/endpoints/audits.api";
 import { useRouter } from "vue-router";
 import { jjmmyyyy } from "@/utils/dates";
 import { inHa } from "@/utils/features.js";

@@ -101,7 +101,8 @@ import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { createFeaturesFromOther, getCutBorder } from "@/cartobio-api.js";
+import { createFeaturesFromOther } from "@/api/endpoints/audits.api";
+import { getCutBorder } from "@/api/endpoints/geometry.api";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";
 import { Coordinate } from "ol/coordinate";
@@ -411,11 +412,6 @@ const drawBorder = async () => {
       startBorderPointTab,
       endBorderPointTab,
     );
-
-    if (response.status !== 200) {
-      const error = await response.json();
-      throw new Error(error.error);
-    }
 
     const result = response.data;
 

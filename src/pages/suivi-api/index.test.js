@@ -18,7 +18,14 @@ const cartobioApiMocks = vi.hoisted(() => ({
 
 vi.mock("@/api/endpoints/tableau-de-bord.api.ts", () => apiMocks);
 
-vi.mock("@/cartobio-api", () => cartobioApiMocks);
+vi.mock("@/api/endpoints/operators.api", () => cartobioApiMocks);
+
+const errorGroups = vi.hoisted(() => ({
+  import: ["E_IMPORT"],
+  dateValidation: ["E_DATE"],
+  parcelErrors: ["E_PARCELLE"],
+  parcelWarnings: ["E_WARNING"],
+}));
 
 vi.mock("@/utils/error-api.utils.ts", async (importOriginal) => {
   const actual = await importOriginal();
@@ -27,13 +34,8 @@ vi.mock("@/utils/error-api.utils.ts", async (importOriginal) => {
     getErrorMessage: (code) => `MSG_${code}`,
     getErrorColor: () => "#eeeeee",
     getErrorTextColor: () => "#000000",
-    ErrorCode: {},
-    ErrorGroups: {
-      import: ["E_IMPORT"],
-      dateValidation: ["E_DATE"],
-      parcelErrors: ["E_PARCELLE"],
-      parcelWarnings: ["E_WARNING"],
-    },
+    ErrorGroups: errorGroups,
+    isInErrorGroup: (group, code) => errorGroups[group].includes(code),
   };
 });
 
@@ -355,14 +357,12 @@ describe("Tableau de bord des APIs", () => {
     expect(apiMocks.fetchHistoriqueParcellaire).toHaveBeenCalledWith("C123", "B456", "2026-08-10");
     expect(wrapper.find(".modal-stub").exists()).toBe(true);
   });
-  it("affiche une erreur générale pour INVALID_API_REQUEST seul", async () => {
+  it("affiche une erreur générale pour INVALID_FORMAT seul", async () => {
     apiMocks.fetchHistoriqueParcellaire.mockResolvedValue([
       {
         ...envoi,
         statut: "REJECTED",
-        erreurs: [
-          { code: "INVALID_API_REQUEST", numeroBio: null, parcelleId: null, parcelleName: null, message: null },
-        ],
+        erreurs: [{ code: "INVALID_FORMAT", numeroBio: null, parcelleId: null, parcelleName: null, message: null }],
       },
     ]);
     const wrapper = mountPage();

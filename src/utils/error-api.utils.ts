@@ -1,34 +1,9 @@
-export enum ErrorCode {
-  // Import
-  UNKNOWN_NUMERO_BIO = "UNKNOWN_NUMERO_BIO",
-  NOT_PRODUCTION = "NOT_PRODUCTION",
-  NO_OC = "NO_OC",
-  OC_MISMATCH = "OC_MISMATCH",
-  INVALID_JSON = "INVALID_JSON",
+import { ImportLogCode } from "@agencebio/cartobio-types";
 
-  // Validation des dates
-  INVALID_DATE_CERTIFICATION_DEBUT = "INVALID_DATE_CERTIFICATION_DEBUT",
-  INVALID_DATE_CERTIFICATION_FIN = "INVALID_DATE_CERTIFICATION_FIN",
-  INVALID_DATE_AUDIT = "INVALID_DATE_AUDIT",
-  MISSING_CERTIFICATION_DATES = "MISSING_CERTIFICATION_DATES",
+export const ErrorCode = ImportLogCode;
+export type ErrorCode = ImportLogCode;
 
-  // Validation des parcelles - erreurs
-  INVALID_ETAT_PRODUCTION = "INVALID_ETAT_PRODUCTION",
-  MISSING_DATE_ENGAGEMENT = "MISSING_DATE_ENGAGEMENT",
-  INVALID_DATE_ENGAGEMENT = "INVALID_DATE_ENGAGEMENT",
-  MISSING_CULTURES = "MISSING_CULTURES",
-  INVALID_CPF = "INVALID_CPF",
-  INVALID_GEOM = "INVALID_GEOM",
-
-  // Validation des parcelles - warnings
-  MISSING_GEOM = "MISSING_GEOM",
-  GEOM_OUT_OF_BOUNDS = "GEOM_OUT_OF_BOUNDS",
-  GEOM_CORRECTED = "GEOM_CORRECTED",
-  GEOM_INVALID_NOT_CORRECTED = "GEOM_INVALID_NOT_CORRECTED",
-
-  // Interne
-  DB_ERROR = "DB_ERROR",
-}
+export const isErrorCode = (code: string): code is ErrorCode => Object.hasOwn(ErrorCode, code);
 
 export enum ErrorType {
   ERROR = "error",
@@ -58,9 +33,9 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
     short: "N°Client différent",
   },
 
-  [ErrorCode.INVALID_JSON]: {
-    full: "Le fichier JSON est invalide.",
-    short: "JSON invalide",
+  [ErrorCode.INVALID_FORMAT]: {
+    full: "Le format des données envoyées est incorrect",
+    short: "Format invalide",
   },
 
   [ErrorCode.INVALID_DATE_CERTIFICATION_DEBUT]: {
@@ -132,6 +107,10 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
     full: "Ces parcelles n'ont pas été corrigées mais sont invalides : {ids}",
     short: "Géométrie invalide non corrigée",
   },
+  [ErrorCode.PAC_PENDING_WITH_ILOT]: {
+    full: "Parcelle {id} acceptée mais ne peut être en attente PAC car un îlot PAC est renseigné",
+    short: "Attente PAC ignorée",
+  },
   [ErrorCode.DB_ERROR]: {
     full: "Une erreur interne est survenue dans Cartobio",
     short: "Erreur interne",
@@ -139,18 +118,18 @@ export const ErrorMessages: Record<ErrorCode, Record<MessageVariant, string>> = 
 };
 
 export const ErrorTypes: Partial<Record<ErrorCode, ErrorType>> = {
-  [ErrorCode.MISSING_GEOM]: ErrorType.WARNING,
   [ErrorCode.GEOM_OUT_OF_BOUNDS]: ErrorType.WARNING,
   [ErrorCode.GEOM_CORRECTED]: ErrorType.WARNING,
   [ErrorCode.GEOM_INVALID_NOT_CORRECTED]: ErrorType.WARNING,
+  [ErrorCode.PAC_PENDING_WITH_ILOT]: ErrorType.WARNING,
 };
 
 export const getErrorMessage = (
-  code: ErrorCode,
+  code: ErrorCode | string,
   variant: MessageVariant = "full",
   params?: Record<string, string | number>,
 ): string => {
-  let message = ErrorMessages[code]?.[variant] ?? code;
+  let message = isErrorCode(code) ? ErrorMessages[code][variant] : code;
 
   if (!params) {
     return message;
@@ -163,7 +142,8 @@ export const getErrorMessage = (
   return message;
 };
 
-export const getErrorType = (code: ErrorCode): ErrorType => ErrorTypes[code] ?? ErrorType.ERROR;
+export const getErrorType = (code: ErrorCode | string): ErrorType =>
+  (isErrorCode(code) && ErrorTypes[code]) || ErrorType.ERROR;
 
 export const ErrorGroups = {
   import: [
@@ -171,7 +151,7 @@ export const ErrorGroups = {
     ErrorCode.NOT_PRODUCTION,
     ErrorCode.NO_OC,
     ErrorCode.OC_MISMATCH,
-    ErrorCode.INVALID_JSON,
+    ErrorCode.INVALID_FORMAT,
   ],
 
   dateValidation: [
@@ -188,15 +168,19 @@ export const ErrorGroups = {
     ErrorCode.MISSING_CULTURES,
     ErrorCode.INVALID_CPF,
     ErrorCode.INVALID_GEOM,
+    ErrorCode.MISSING_GEOM,
   ],
 
   parcelWarnings: [
-    ErrorCode.MISSING_GEOM,
     ErrorCode.GEOM_OUT_OF_BOUNDS,
     ErrorCode.GEOM_CORRECTED,
     ErrorCode.GEOM_INVALID_NOT_CORRECTED,
+    ErrorCode.PAC_PENDING_WITH_ILOT,
   ],
-} as const;
+} as const satisfies Record<string, readonly ErrorCode[]>;
+
+export const isInErrorGroup = (group: keyof typeof ErrorGroups, code: string): boolean =>
+  (ErrorGroups[group] as readonly string[]).includes(code);
 
 export type GroupeAnomalie = keyof typeof ErrorGroups;
 
@@ -211,7 +195,7 @@ export const ErrorColors: Record<ErrorCode, string> = {
   [ErrorCode.NOT_PRODUCTION]: "#D17A00",
   [ErrorCode.NO_OC]: "#9C6B30",
   [ErrorCode.OC_MISMATCH]: "#C94C4C",
-  [ErrorCode.INVALID_JSON]: "#7F1D1D",
+  [ErrorCode.INVALID_FORMAT]: "#7F1D1D",
 
   [ErrorCode.INVALID_DATE_CERTIFICATION_DEBUT]: "#7B61FF",
   [ErrorCode.INVALID_DATE_CERTIFICATION_FIN]: "#5B45C8",
@@ -229,10 +213,12 @@ export const ErrorColors: Record<ErrorCode, string> = {
   [ErrorCode.GEOM_OUT_OF_BOUNDS]: "#0078A3",
   [ErrorCode.GEOM_CORRECTED]: "#008C6A",
   [ErrorCode.GEOM_INVALID_NOT_CORRECTED]: "#5C5C5C",
+  [ErrorCode.PAC_PENDING_WITH_ILOT]: "#8D6E2C",
+  [ErrorCode.DB_ERROR]: "#3A3A3A",
 };
 
 export const getErrorColor = (code: ErrorCode | string): string => {
-  return ErrorColors[code as ErrorCode] ?? "#929292";
+  return isErrorCode(code) ? ErrorColors[code] : "#929292";
 };
 
 export const getErrorTextColor = (code: ErrorCode | string): string => {

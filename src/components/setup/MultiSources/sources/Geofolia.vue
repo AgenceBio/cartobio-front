@@ -73,7 +73,7 @@ import {
   convertGeofoliaArchiveToGeoJSON,
   checkGeofoliaAccountStatus,
   getOperatorGeofoliaFeatures,
-} from "@/cartobio-api.js";
+} from "@/api/endpoints/imports.api";
 import { sources } from "@/referentiels/imports.js";
 
 import Spinner from "@/components/widgets/Spinner.vue";

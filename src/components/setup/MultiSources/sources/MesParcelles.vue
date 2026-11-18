@@ -32,7 +32,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { convertTelepacFileToGeoJSON } from "@/cartobio-api.js";
+import { convertTelepacFileToGeoJSON } from "@/api/endpoints/imports.api";
 import { sources } from "@/referentiels/imports.js";
 
 const emit = defineEmits(["upload:start", "upload:complete"]);

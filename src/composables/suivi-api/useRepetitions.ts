@@ -1,4 +1,3 @@
-import { TypeFiltreAlertes } from "./useRepetitions";
 import { computed, ref } from "vue";
 import type { RepetitionGroupe, RepetitionEnvoi } from "@/types/suivi-api";
 
@@ -7,7 +6,7 @@ export function clefGroupe(groupe: RepetitionGroupe): string {
 }
 
 export function typeRepetition(groupe: RepetitionGroupe): "envois" | "refus" {
-  return groupe.envois[0]?.statut === "VALID" ? "envois" : "refus";
+  return groupe.type;
 }
 
 export function labelRepetition(groupe: RepetitionGroupe): string {
@@ -92,9 +91,10 @@ export function useRepetitions() {
     alertesPage.value = 1;
   }
 
-  function changerTypeFiltreAlertes(type: TypeFiltreAlertes) {
-    if (typeFiltreAlertes.value === type) return;
-    typeFiltreAlertes.value = type;
+  function changerTypeFiltreAlertes(type: TypeFiltreAlertes | null) {
+    const nouveauType = type ?? "all";
+    if (typeFiltreAlertes.value === nouveauType) return;
+    typeFiltreAlertes.value = nouveauType;
     alertesPage.value = 1;
   }
 

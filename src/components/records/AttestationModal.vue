@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
-import { getPDFData, getHasAttestationProduction } from "@/cartobio-api.js";
+import { getPDFData } from "@/api/endpoints/exports.api";
+import { getHasAttestationProduction } from "@/api/endpoints/audits.api";
 import Modal from "@/components/widgets/Modal.vue";
 import { useFeaturesStore } from "@/stores/features.js";
 

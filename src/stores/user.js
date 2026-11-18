@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import * as Sentry from "@sentry/vue";
-import { computed, ref, watch, watchEffect } from "vue";
-import { setAuthorization, logoutApi } from "@/cartobio-api";
+import { computed, ref, watch } from "vue";
+import { setAuthorization, setTokenRefresher } from "@/api/client";
+import { logoutApi, refreshApi, verifyToken } from "@/api/endpoints/auth.api";
 import { CUSTOM_DIMENSION_ROLE, setCustomDimension } from "@/stats.js";
 
 /**
@@ -19,66 +20,23 @@ export const ROLES = Object.freeze({
 
 export const API_DASHBOARD_OC_IDS = new Set([1, 2, 3, 7]);
 
-const rolesMap = {
-  "Super OC": [ROLES.OC_CERTIF, ROLES.OC_AUDIT],
-  // Legacy
-  "OC CartoBio": [ROLES.OC_AUDIT],
-  // Depuis 09/2023
-  Auditeur: [ROLES.OC_AUDIT],
-  // Legacy
-  OC: [ROLES.OC_CERTIF],
-  // Depuis 09/2023
-  "Chargé de certification": [ROLES.OC_CERTIF],
-  Admin: [ROLES.ADMIN, ROLES.OC_CERTIF, ROLES.OC_AUDIT],
-};
-
-export function parseJwt(token) {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split("")
-      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-      .join(""),
-  );
-
-  return JSON.parse(jsonPayload);
-}
-
-export function deriveRolesFromGroups(user) {
+export function deriveRoles(user) {
   if (Boolean(user.id) === false) {
     return [ROLES.GUEST];
   }
 
-  const groupNames = (user.groups ?? [user.mainGroup]).filter((group) => group).map((group) => group.nom);
-
-  if (groupNames.includes("Opérateur") || user.numeroBio) {
-    return [ROLES.OPERATEUR];
-  }
-
-  const roles = new Set();
-  groupNames.forEach((groupName) => {
-    if (groupName in rolesMap) {
-      rolesMap[groupName].forEach((role) => roles.add(role));
-    }
-  });
-
-  if (roles.size === 0) {
-    return [ROLES.UNKNOWN];
-  }
-
-  return Array.from(roles);
+  return user.roles?.length ? user.roles : [ROLES.UNKNOWN];
 }
 
 export const useUserStore = defineStore("user", () => {
-  const storageName = "cartobio.v3";
+  const storageName = "cartobio.user";
   const token = ref("");
   /**
-   * @type {ComputedRef<CartoBioUser|{}>}
+   * @type {Ref<CartoBioUser|{}>}
    */
-  const user = computed(() => (token.value ? parseJwt(token.value) : {}));
-  const roles = computed(() => deriveRolesFromGroups(user.value));
+  const user = ref({});
+  const roles = computed(() => deriveRoles(user.value));
+  let refreshing = null;
   const isLogged = computed(() => Boolean(user.value.id));
   const isAdmin = computed(() => roles.value.includes(ROLES.ADMIN));
   const isUnknown = computed(() => roles.value.includes(ROLES.UNKNOWN));
@@ -139,24 +97,45 @@ export const useUserStore = defineStore("user", () => {
     return "https://docs-cartobio.agencebio.org/cartobio-aide/";
   });
 
-  function login(userToken) {
-    token.value = userToken;
+  function login(profile, accessToken) {
+    token.value = accessToken;
+    user.value = profile;
+  }
+
+  function refresh() {
+    refreshing ??= refreshApi()
+      .then(async ({ token: accessToken }) => {
+        const profile = await verifyToken(accessToken);
+        login(profile, accessToken);
+        return accessToken;
+      })
+      .catch(() => null)
+      .finally(() => (refreshing = null));
+
+    return refreshing;
   }
 
   async function logout() {
-    token.value = null;
-    return await logoutApi();
+    try {
+      return await logoutApi();
+    } finally {
+      token.value = "";
+      user.value = {};
+    }
   }
 
   function enablePersistance() {
-    token.value = window.localStorage.getItem(storageName) || "";
+    window.localStorage.removeItem("cartobio.v3");
+    try {
+      user.value = JSON.parse(window.localStorage.getItem(storageName) || "{}");
+    } catch {
+      user.value = {};
+    }
 
-    watchEffect(
-      function () {
-        window.localStorage.setItem(storageName, token.value || "");
-      },
-      { flush: "sync" },
-    );
+    watch(user, (value) => window.localStorage.setItem(storageName, JSON.stringify(value || {})), {
+      flush: "sync",
+      deep: true,
+    });
   }
 
   function saveDepartements(departements) {
@@ -177,7 +156,8 @@ export const useUserStore = defineStore("user", () => {
     logout();
   }
 
-  watch(token, (newToken) => setAuthorization(newToken ? newToken : ""));
+  watch(token, (newToken) => setAuthorization(newToken ? newToken : ""), { flush: "sync" });
+  setTokenRefresher(refresh);
   watch(user, () => {
     setCustomDimension(CUSTOM_DIMENSION_ROLE, roles.value.join(", "));
 
@@ -209,6 +189,7 @@ export const useUserStore = defineStore("user", () => {
     // methods
     enablePersistance,
     login,
+    refresh,
     logout,
     $reset,
     saveDepartements,

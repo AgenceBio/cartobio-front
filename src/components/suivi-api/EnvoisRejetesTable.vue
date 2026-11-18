@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import Pagination from "@/components/widgets/Pagination.vue";
 import CopierColler from "@/components/suivi-api/CopierColler.vue";
-import { getErrorMessage, getErrorColor, getErrorTextColor, ErrorCode } from "@/utils/error-api.utils";
+import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
 import { formatDateTableau } from "@/utils/date.formatters";
-import type { BilanEnvoiItem } from "@/types/suivi-api";
+import type { EnvoiRejeteItem } from "@/types/suivi-api";
 import { computed } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    envois: BilanEnvoiItem[];
+    envois: EnvoiRejeteItem[];
     page: number;
     maxPage: number;
     tableId?: string;
@@ -26,7 +26,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "change-page", page: number): void;
-  (e: "open-details", envoi: BilanEnvoiItem): void;
+  (e: "open-details", envoi: EnvoiRejeteItem): void;
   (e: "change-tri-date"): void;
 }>();
 
@@ -36,7 +36,7 @@ const labelTriDate = computed(() =>
   triCroissant.value ? "Trier par date d'envoi par ordre décroissant" : "Trier par date d'envoi par ordre croissant",
 );
 
-function hasDetailIdentifiers(envoi: BilanEnvoiItem) {
+function hasDetailIdentifiers(envoi: EnvoiRejeteItem) {
   return Boolean(envoi.numeroClient?.trim() || envoi.numeroBio?.trim());
 }
 </script>
@@ -105,7 +105,7 @@ function hasDetailIdentifiers(envoi: BilanEnvoiItem) {
                       color: getErrorTextColor(detail.code),
                     }"
                   >
-                    {{ getErrorMessage(detail.code as ErrorCode, "short") }}
+                    {{ getErrorMessage(detail.code, "short") }}
                   </span>
                   <span v-if="(envoi.details?.length ?? 0) > 3" class="fr-text--sm">
                     +{{ (envoi.details?.length ?? 0) - 3 }}

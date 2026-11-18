@@ -79,7 +79,7 @@ const tabs = [
               <span
                 class="anomalie-color"
                 :style="{
-                  backgroundColor: getErrorColor(anomalie as ErrorCode),
+                  backgroundColor: getErrorColor(anomalie),
                 }"
                 aria-hidden="true"
               ></span>

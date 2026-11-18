@@ -230,7 +230,7 @@ import { useUserStore } from "@/stores/user";
 import { useOnline } from "@vueuse/core";
 import { useCartoBioStorage } from "@/stores/storage.js";
 
-import { pinOperator, unpinOperator } from "@/cartobio-api";
+import { pinOperator, unpinOperator } from "@/api/endpoints/operators.api";
 import ActionDropdown from "../widgets/ActionDropdown.vue";
 import ExportActions from "./ExportActions.vue";
 import toast from "@/utils/toast.js";

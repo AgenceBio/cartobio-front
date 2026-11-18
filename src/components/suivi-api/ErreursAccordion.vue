@@ -2,12 +2,12 @@
 import { computed } from "vue";
 import AccordionGroup from "@/components/widgets/AccordionGroup.vue";
 import AccordionSection from "@/components/widgets/Accordion.vue";
-import { getErrorMessage, getErrorColor, getErrorTextColor, ErrorCode } from "@/utils/error-api.utils";
+import { getErrorMessage, getErrorColor, getErrorTextColor } from "@/utils/error-api.utils";
 import { useErreursEnvoi } from "@/composables/suivi-api/useErreursEnvoi";
 import type { ErreurEnvoi } from "@/types/suivi-api";
 
 const props = defineProps<{
-  envoi: { erreurs?: ErreurEnvoi[]; statut?: string } | null;
+  envoi: { erreurs?: ErreurEnvoi[]; statut?: string | null } | null;
 }>();
 
 const source = computed(() => props.envoi);
@@ -42,7 +42,7 @@ console.log(source);
         <div v-else>
           <div v-for="erreur in erreursOperateur" :key="erreur.code" class="fr-mb-2w error-element row-accordion">
             <div>
-              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+              {{ getErrorMessage(erreur.code, "short") }}
             </div>
             <span
               class="fr-badge fr-badge--sm fr-mr-1w error-badge"
@@ -51,7 +51,7 @@ console.log(source);
                 color: getErrorTextColor(erreur.code),
               }"
             >
-              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+              {{ getErrorMessage(erreur.code, "short") }}
             </span>
           </div>
         </div>
@@ -78,7 +78,7 @@ console.log(source);
         <div v-else>
           <div v-for="erreur in erreursDatesParcellaire" :key="erreur.code" class="row-accordion">
             <div>
-              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+              {{ getErrorMessage(erreur.code, "short") }}
             </div>
             <span
               class="fr-badge fr-badge--sm fr-mr-1w error-badge"
@@ -87,7 +87,7 @@ console.log(source);
                 color: getErrorTextColor(erreur.code),
               }"
             >
-              {{ getErrorMessage(erreur.code as ErrorCode, "short") }}
+              {{ getErrorMessage(erreur.code, "short") }}
             </span>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { useFeaturesSetsStore } from "@/stores/features-sets.js";
 import bbox from "@turf/bbox";
 import toast from "@/utils/toast.js";
 import { useOperatorStore } from "@/stores/operator.js";
-import { apiClient, createOperatorRecord } from "@/cartobio-api.js";
+import { createOperatorRecord, fetchRecord } from "@/api/endpoints/audits.api";
 import { SyncOperation, useCartoBioStorage } from "@/stores/storage.js";
 
 /**
@@ -180,7 +180,7 @@ export const useRecordStore = defineStore("record", () => {
    * @return {Promise<NormalizedRecord>}
    */
   async function getRecord(recordId, store = false) {
-    const { data } = await apiClient.get(`/v2/audits/${recordId}`);
+    const data = await fetchRecord(recordId);
 
     // Update storage if requested or if already present and no local changes are pending
     if (store || (storage.records[recordId] && !storage.syncQueues[recordId])) {

@@ -65,50 +65,21 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/user.js";
 
-import { verifyToken } from "@/cartobio-api.js";
-import toast from "@/utils/toast.js";
 import Spinner from "@/components/widgets/Spinner.vue";
 
 const store = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
-const { token, isLogged } = storeToRefs(store);
+const { isLogged } = storeToRefs(store);
 const isVerifying = ref(false);
-const userMismatch = ref(false);
 
 onMounted(async () => {
-  const hashOrUserToken = route.hash ? new URLSearchParams(route.hash).get("#token") : token.value;
-  if (!hashOrUserToken) {
-    return;
-  }
-
   isVerifying.value = true;
 
   try {
-    const [res] = await Promise.all([
-      verifyToken(hashOrUserToken),
-      new Promise((resolve) => setTimeout(resolve, 1000)),
-    ]);
-    if (res.id) {
-      if (store.isLogged && store.user.id !== res.id) {
-        userMismatch.value = true;
-        if (route.query.returnto.startsWith("/exploitations")) {
-          const unsubscribe = router.afterEach(() => {
-            unsubscribe();
-            toast.error("Vous n'avez pas les droits pour accéder à cette page.");
-          });
-        }
-        router.replace(store.accueilPage);
-
-        return;
-      }
-
-      store.login(hashOrUserToken);
-      router.replace("/login");
-    }
-
-    if (store.isLogged) {
+    const [accessToken] = await Promise.all([store.refresh(), new Promise((resolve) => setTimeout(resolve, 1000))]);
+    if (accessToken && store.isLogged) {
       router.replace(route.query.returnto || store.accueilPage);
     }
   } finally {

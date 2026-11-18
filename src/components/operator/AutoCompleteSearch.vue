@@ -23,7 +23,7 @@ import { useOnline } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/user.js";
 import { useRouter } from "vue-router";
-import { getForAutocomplete } from "@/cartobio-api";
+import { getForAutocomplete } from "@/api/endpoints/operators.api";
 
 import { autocomplete } from "@algolia/autocomplete-js";
 import "@algolia/autocomplete-theme-classic";

@@ -175,7 +175,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import Spinner from "@/components/widgets/Spinner.vue";
-import { getDashboardSummary, searchOperators } from "@/cartobio-api";
+import { getDashboardSummary, searchOperators } from "@/api/endpoints/operators.api";
 import DepartementFilter from "../operator/DepartementFilter.vue";
 import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";

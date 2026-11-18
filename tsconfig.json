@@ -5,15 +5,14 @@
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "allowJs": true,
     "checkJs": false,
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@gouvfr/dsfr/*": ["./node_modules/@gouvfr/dsfr/dist/*"],
       "styles/*": ["./src/styles/*"]
     }

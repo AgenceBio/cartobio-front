@@ -53,7 +53,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
-import { getDepartements } from "@/cartobio-api";
+import { getDepartements } from "@/api/endpoints/referentiel.api";
 import { useOnline } from "@vueuse/core";
 
 const isSearching = ref(false);

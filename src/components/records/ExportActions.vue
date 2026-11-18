@@ -41,7 +41,7 @@ import { fromId } from "@/utils/exports.js";
 import { useFocus } from "@vueuse/core";
 import { usePermissions } from "@/stores/permissions.js";
 import { statsPush } from "@/stats.js";
-import { getHasAttestationProduction } from "@/cartobio-api.js";
+import { getHasAttestationProduction } from "@/api/endpoints/audits.api";
 
 const props = defineProps({
   operator: {

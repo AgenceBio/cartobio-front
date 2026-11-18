@@ -67,14 +67,14 @@ import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { createFeaturesFromOther } from "@/cartobio-api.js";
+import { createFeaturesFromOther } from "@/api/endpoints/audits.api";
 
-import { CartoBioFeature } from "@agencebio/cartobio-types";
+import { type CartoBioFeature, toIsoDate } from "@agencebio/cartobio-types";
 import { Geometry } from "ol/geom";
 import { featureCollection, FeatureCollection, Feature as TurfFeature, Polygon, MultiPolygon } from "@turf/helpers";
 import union from "@turf/union";
 import { Fill, Stroke, Style } from "ol/style";
-import { CartoBioCulture } from "@agencebio/cartobio-types/outputs/types/features";
+import type { CartoBioCulture } from "@agencebio/cartobio-types";
 
 /*
  * * Variables
@@ -241,7 +241,7 @@ const confirmer = async (e: {
       auditeur_notes: e.properties.auditeur_notes,
       conversion_niveau: e.properties.conversion_niveau,
       cultures: e.properties.cultures,
-      engagement_date: e.properties.engagement_date,
+      engagement_date: e.properties.engagement_date ? toIsoDate(e.properties.engagement_date) : null,
     };
     loading.value = true;
     try {

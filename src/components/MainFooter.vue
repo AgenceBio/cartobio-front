@@ -152,7 +152,7 @@
 <script setup lang="ts">
 import { onMounted, computed, reactive, ref, Ref } from "vue";
 import { useRoute } from "vue-router";
-import { getVersion } from "@/cartobio-api.js";
+import { getVersion } from "@/api/endpoints/system.api";
 import { useUserStore } from "@/stores/user";
 
 const userStore = useUserStore();

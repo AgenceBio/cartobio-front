@@ -173,7 +173,8 @@ import { useRecordStore } from "@/stores/record.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { addParcelleVerif, submitNewParcelle } from "@/cartobio-api.js";
+import { addParcelleVerif } from "@/api/endpoints/geometry.api";
+import { submitNewParcelle } from "@/api/endpoints/audits.api";
 
 import AddParcelleModal from "@/components/forms/AddParcelleModal.vue";
 import CommuneSelect from "@/components/forms/fields/CommuneSelect.vue";
@@ -188,7 +189,8 @@ import NewParcelleTooltip from "../Overlays/NewParcelleTooltip.vue";
 import { storeToRefs } from "pinia";
 import VectorTileLayer from "ol/layer/VectorTile";
 import VectorTileSource from "ol/source/VectorTile";
-import { FeatureCollection } from "@turf/helpers";
+import { feature as turfFeature, featureCollection as turfFeatureCollection } from "@turf/helpers";
+import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import intersect from "@turf/intersect";
 import kinks from "@turf/kinks";
 import axios from "axios";
@@ -870,12 +872,14 @@ watch(
       if (data.corrections.length === 1) {
         feature = format.readFeature(data.corrections[0].new_minus_intersection) as Feature;
       } else {
-        let correctedGeometry = data.corrections[0].new_minus_intersection;
+        let correctedGeometry: Polygon | MultiPolygon | null = data.corrections[0].new_minus_intersection as Polygon;
 
-        for (let i = 1; i < data.corrections.length; i++) {
-          correctedGeometry = intersect(correctedGeometry, data.corrections[i].new_minus_intersection);
+        for (let i = 1; i < data.corrections.length && correctedGeometry; i++) {
+          const next = data.corrections[i].new_minus_intersection as Polygon;
+          correctedGeometry =
+            intersect(turfFeatureCollection([turfFeature(correctedGeometry), turfFeature(next)]))?.geometry ?? null;
         }
-        feature = format.readFeature(correctedGeometry) as Feature;
+        feature = correctedGeometry ? (format.readFeature(correctedGeometry) as Feature) : null;
       }
       if (!feature) {
         return;

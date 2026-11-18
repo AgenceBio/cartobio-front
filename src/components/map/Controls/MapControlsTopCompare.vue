@@ -83,7 +83,7 @@ import { computed, inject, onMounted, Ref, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRecordStore } from "@/stores/record.js";
 import { useOperatorStore } from "@/stores/operator.js";
-import { apiClient } from "@/cartobio-api.js";
+import { fetchRecordParcelles } from "@/api/endpoints/audits.api";
 import { Map } from "ol";
 import { usePermissions } from "@/stores/permissions.js";
 
@@ -201,7 +201,7 @@ watch(
   async (newId) => {
     if (!newId) return;
     try {
-      const { data } = await apiClient.get(`/v2/audits/${newId}/parcelles`);
+      const data = await fetchRecordParcelles(newId);
       emit("changeCompare", { data, record_id: newId });
     } catch (error) {
       console.error("Erreur lors du chargement des parcelles:", error);

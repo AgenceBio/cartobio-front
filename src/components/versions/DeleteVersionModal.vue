@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useFocus } from "@vueuse/core";
 import Modal from "@/components/widgets/Modal.vue";
-import { deleteRecord } from "@/cartobio-api.js";
+import { deleteRecord } from "@/api/endpoints/audits.api";
 import toast from "@/utils/toast.js";
 import { useOperatorStore } from "@/stores/operator.js";
 

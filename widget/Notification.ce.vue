@@ -25,7 +25,8 @@ import { computed, markRaw, onBeforeMount, ref, watch } from "vue";
 import Loading from "@/components/widgets/Loading.vue";
 import OperatorSetupFlow from "@/components/setup/Flow/index.vue";
 import FlowMultiSources from "@/components/setup/MultiSources/index.vue";
-import { exchangeNotificationToken, setAuthorization } from "@/cartobio-api.js";
+import { setAuthorization } from "@/api/client";
+import { exchangeNotificationToken } from "@/api/endpoints/auth.api";
 import { sources } from "@/referentiels/imports.js";
 
 const props = defineProps({ authToken: String });

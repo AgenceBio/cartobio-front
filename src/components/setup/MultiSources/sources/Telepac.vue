@@ -60,7 +60,7 @@
 
 <script setup>
 import { ref, inject } from "vue";
-import { convertTelepacFileToGeoJSON } from "@/cartobio-api.js";
+import { convertTelepacFileToGeoJSON } from "@/api/endpoints/imports.api";
 import { useTélépac } from "@/referentiels/pac.js";
 import { sources } from "@/referentiels/imports.js";
 const { VUE_APP_DATEIMPORT } = import.meta.env;

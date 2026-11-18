@@ -45,6 +45,9 @@ vi.mock("axios", async (importActual) => {
         common: {},
       },
     },
+    interceptors: {
+      response: { use: vi.fn() },
+    },
   };
 
   return {

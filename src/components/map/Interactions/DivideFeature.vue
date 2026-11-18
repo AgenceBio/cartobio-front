@@ -60,7 +60,7 @@ import { usePreferences } from "@/stores/preferences.js";
 import { legalProjectionSurface, inHa } from "@/utils/features.js";
 
 // Utils Geom
-import { createFeaturesFromOther } from "@/cartobio-api.js";
+import { createFeaturesFromOther } from "@/api/endpoints/audits.api";
 import { unByKey } from "ol/Observable";
 
 import { CartoBioFeature } from "@agencebio/cartobio-types";

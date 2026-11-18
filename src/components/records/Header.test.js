@@ -95,6 +95,11 @@ describe("RecordHeader", () => {
       await flushPromises();
       expect(await wrapper.find(".edit-version-info").exists()).toBe(false);
 
+      userStore.user = {
+        organismeCertificateur: {
+          id: 1,
+        },
+      };
       userStore.isOc = true;
       userStore.isOcCertif = true;
       wrapper = mount(AsyncComponent);

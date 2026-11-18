@@ -36,7 +36,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { convertGeographicalFileToGeoJSON } from "@/cartobio-api.js";
+import { convertGeographicalFileToGeoJSON } from "@/api/endpoints/imports.api";
 import { sources } from "@/referentiels/imports.js";
 
 const emit = defineEmits(["upload:start", "upload:complete"]);

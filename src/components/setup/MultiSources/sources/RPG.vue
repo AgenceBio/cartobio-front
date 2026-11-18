@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 
-import { pacageLookup } from "@/cartobio-api.js";
+import { pacageLookup } from "@/api/endpoints/imports.api";
 import { normalize, isValid, useTélépac } from "@/referentiels/pac.js";
 import { sources } from "@/referentiels/imports.js";
 import { useOperatorStore } from "@/stores/operator.js";
