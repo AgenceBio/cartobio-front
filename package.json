@@ -64,7 +64,7 @@
     "@pinia/testing": "^2.0.2",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-legacy": "^8.2.4",
-    "@vitejs/plugin-vue": "^6.0.10",
+    "@vitejs/plugin-vue": "^6.0.11",
     "@vitest/coverage-istanbul": "^5.1.0",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.6.0",
