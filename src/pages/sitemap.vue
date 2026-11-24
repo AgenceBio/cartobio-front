@@ -42,6 +42,9 @@ meta:
                 userStore.isOc ? "Listes des exploitations" : "Mes exploitations"
               }}</router-link>
             </li>
+            <li v-if="userStore.canAccessApiDashboard">
+              <router-link to="/suivi-api">Suivi des envois API</router-link>
+            </li>
           </ul>
         </section>
 
