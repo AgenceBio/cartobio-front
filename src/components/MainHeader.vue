@@ -361,7 +361,7 @@
                   type="button"
                   class="fr-nav__btn"
                   @click="toggleCartoBio"
-                  :aria-current="isActive('/projet') || isActive('/stats') ? 'page' : undefined"
+                  :aria-current="isActive('/projet') ? 'page' : undefined"
                 >
                   Qu'est ce que CartoBio ?
                 </button>
@@ -375,11 +375,6 @@
                       <router-link id="navigation-item-01-1" to="/projet" class="fr-nav__link" @click="closeAllMenus"
                         >A propos
                       </router-link>
-                    </li>
-                    <li>
-                      <router-link id="navigation-item-01-2" to="/stats" class="fr-nav__link" @click="closeAllMenus"
-                        >Les chiffres</router-link
-                      >
                     </li>
                   </ul>
                 </div>

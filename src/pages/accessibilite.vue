@@ -96,7 +96,6 @@ meta:
             Les cartes interactives permettant de gérer (ajouter, modifier) les parcelles des exploitations sont
             développées avec <a href="https://www.openstreetmap.org/" target="_blank">Openstreetmap<lien-externe /></a>
           </li>
-          <li>L’information de la page « Les chiffres » est gérée via un module développé par Tableau public</li>
         </ul>
       </AccordionSection>
     </AccordionGroup>
@@ -136,7 +135,6 @@ meta:
           <li><a href="/accessibilite">Accessibilité</a></li>
           <li><a href="/sitemap">Plan du site</a></li>
           <li><a href="/login">Authentification</a></li>
-          <li><a href="/stats">Les chiffres</a></li>
           <li><a href="/exploitations/67602">Sélectionner mon exploitation</a></li>
           <li>
             <a href="/exploitations/67602">Exploitations (Oui) - Choisir votre mode de création de parcellaire</a>

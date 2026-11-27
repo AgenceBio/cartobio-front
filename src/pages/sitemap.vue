@@ -21,7 +21,6 @@ meta:
             <h3>Qu'est ce que Cartobio ?</h3>
             <ul>
               <li><router-link to="/projet">À propos</router-link></li>
-              <li><router-link to="/stats">Les chiffres</router-link></li>
             </ul>
           </div>
           <ul>
